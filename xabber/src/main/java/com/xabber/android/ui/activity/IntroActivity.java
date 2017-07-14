@@ -4,28 +4,20 @@ import android.app.SearchManager;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Point;
-import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.method.LinkMovementMethod;
-import android.view.Display;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.xabber.android.R;
-import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.log.LogManager;
-
-import java.lang.reflect.InvocationTargetException;
-
 
 public class IntroActivity extends ManagedActivity {
 
@@ -66,6 +58,13 @@ public class IntroActivity extends ManagedActivity {
         Button haveAccountButton = (Button) findViewById(R.id.intro_have_account_button);
         Button registerAccountButton = (Button) findViewById(R.id.intro_register_account_button);
         Button createXabberAccountButton = (Button) findViewById(R.id.intro_create_xabber_account_button);
+
+        createXabberAccountButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(TutorialActivity.createIntent(IntroActivity.this));
+            }
+        });
 
         haveAccountButton.setOnClickListener(new View.OnClickListener() {
             @Override

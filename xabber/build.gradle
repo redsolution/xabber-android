@@ -135,6 +135,7 @@ dependencies {
     compile 'com.github.Str4tocaster:otr4j:custom-SNAPSHOT'
     compile 'com.google.zxing:android-integration:3.3.0'
 
+    compile 'com.github.apl-devs:appintro:v4.2.0'
     compile 'com.github.bumptech.glide:glide:3.7.0'
     compile 'com.squareup.okhttp3:okhttp:3.5.0'
     compile 'org.greenrobot:eventbus:3.0.0'
