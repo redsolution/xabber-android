@@ -234,6 +234,8 @@
 
     <color name="bookmark_list_separator">#24000000</color>
 
+    <color name="transparent">#00FFFFFF</color>
+
     <item name="contact_list_contact_small_right_icon_alpha_light" format="float" type="dimen">0.2</item>
     <item name="contact_list_contact_small_right_icon_alpha_dark" format="float" type="dimen">0.2</item>
 

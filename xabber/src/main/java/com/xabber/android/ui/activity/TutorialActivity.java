@@ -6,6 +6,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageButton;
@@ -65,39 +66,39 @@ public class TutorialActivity extends AppIntroBase {
                 "Lorem ipsum dolor sit amet",
                 "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi risus purus, lobortis at pulvinar eu, venenatis et erat.",
                 R.drawable.xabber_logo_large,
-                getResources().getColor(R.color.d2m_transparent)
+                ContextCompat.getColor(this, R.color.transparent)
         ));
 
         addSlide(AppIntroFragment.newInstance(
                 "Consectetur adipiscing elit",
                 "Suspendisse efficitur consectetur leo eu malesuada. Ut lacinia nisl vel mattis faucibus.",
                 R.drawable.xabber_logo_large,
-                getResources().getColor(R.color.d2m_transparent)
+                ContextCompat.getColor(this, R.color.transparent)
         ));
 
         addSlide(AppIntroFragment.newInstance(
                 "Morbi risus purus",
                 "Pellentesque ante tortor, ultrices nec ornare in, ultricies nec ipsum. Donec et vehicula sapien.",
                 R.drawable.xabber_logo_large,
-                getResources().getColor(R.color.d2m_transparent)
+                ContextCompat.getColor(this, R.color.transparent)
         ));
 
         addSlide(AppIntroFragment.newInstance(
                 "Lobortis at pulvinar eu",
                 "Ut porttitor magna sit amet mi maximus, at cursus est luctus. Aliquam fermentum gravida neque, in ultrices dui pellentesque vitae.",
                 R.drawable.xabber_logo_large,
-                getResources().getColor(R.color.d2m_transparent)
+                ContextCompat.getColor(this, R.color.transparent)
         ));
 
         addSlide(AppIntroFragment.newInstance(
                 "Venenatis et erat",
                 "Nunc dictum velit eu lacus sodales, eget efficitur lectus iaculis. Cras nec leo magna.",
                 R.drawable.xabber_logo_large,
-                getResources().getColor(R.color.d2m_transparent)
+                ContextCompat.getColor(this, R.color.transparent)
         ));
 
         showSkipButton(false);
-        setIndicatorColor(getResources().getColor(R.color.red_700), DEFAULT_COLOR);
+        setIndicatorColor(ContextCompat.getColor(this, R.color.red_700), DEFAULT_COLOR);
 
         imbDone = (ImageButton) findViewById(R.id.done);
         imbNext = (ImageButton) findViewById(R.id.next);
