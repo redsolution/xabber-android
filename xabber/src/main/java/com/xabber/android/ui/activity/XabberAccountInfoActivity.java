@@ -6,13 +6,23 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.xabber.android.R;
+import com.xabber.android.data.xaccount.AuthManager;
 import com.xabber.android.data.xaccount.XabberAccount;
 import com.xabber.android.data.xaccount.XabberAccountManager;
+
+import okhttp3.ResponseBody;
+import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
+import rx.schedulers.Schedulers;
+import rx.subscriptions.CompositeSubscription;
 
 /**
  * Created by valery.miller on 19.07.17.
@@ -20,9 +30,13 @@ import com.xabber.android.data.xaccount.XabberAccountManager;
 
 public class XabberAccountInfoActivity extends ManagedActivity {
 
+    private final static String TAG = XabberAccountInfoActivity.class.getSimpleName();
+
     private TextView tvUsername;
     private Button btnLogout;
     private XMPPUserListAdapter adapter;
+
+    private CompositeSubscription compositeSubscription = new CompositeSubscription();
 
     @NonNull
     public static Intent createIntent(Context context) {
@@ -41,7 +55,7 @@ public class XabberAccountInfoActivity extends ManagedActivity {
         btnLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // logout
+                logout();
             }
         });
 
@@ -55,6 +69,40 @@ public class XabberAccountInfoActivity extends ManagedActivity {
             adapter.setItems(account.getXmppUsers());
             recyclerView.setAdapter(adapter);
         }
+    }
+
+    private void logout() {
+        Subscription logoutSubscription = AuthManager.logout(this)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<ResponseBody>() {
+                    @Override
+                    public void call(ResponseBody s) {
+                        handleSuccessLogout(s);
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        handleErrorLogout(throwable);
+                    }
+                });
+        compositeSubscription.add(logoutSubscription);
+    }
+
+    private void handleSuccessLogout(ResponseBody s) {
+        XabberAccountManager.getInstance().removeAccount();
+        Toast.makeText(this, "Logout successful", Toast.LENGTH_SHORT).show();
+    }
+
+    private void handleErrorLogout(Throwable throwable) {
+        Toast.makeText(this, "Logout error", Toast.LENGTH_SHORT).show();
+        Log.d(TAG, "Error while logout request: " + throwable.toString());
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        compositeSubscription.clear();
     }
 }
 

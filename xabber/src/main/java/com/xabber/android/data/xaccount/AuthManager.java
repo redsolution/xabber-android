@@ -37,7 +37,15 @@ public class AuthManager {
             if (cookie.domain().equals("api.xabber.com") && cookie.name().equals("csrftoken"))
                 csrftoken = cookie.value();
         }
-        return HttpApiManager.getXabberApi(context).logout("https://api.xabber.com", csrftoken);
+        return HttpApiManager.getXabberApi(context).logout("https://api.xabber.com", csrftoken)
+                .flatMap(new Func1<ResponseBody, Single<? extends ResponseBody>>() {
+                    @Override
+                    public Single<? extends ResponseBody> call(ResponseBody responseBody) {
+                        if (XabberAccountManager.getInstance().deleteXabberAccountFromRealm())
+                            return Single.just(responseBody);
+                        else return Single.error(new Throwable("Realm deletion error"));
+                    }
+                });
     }
 
     public static Single<ResponseBody> loginSocial(Context context, String provider, String token) {

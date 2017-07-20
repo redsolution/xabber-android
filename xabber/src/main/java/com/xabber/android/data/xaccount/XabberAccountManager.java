@@ -57,6 +57,10 @@ public class XabberAccountManager implements OnLoadListener {
         return account;
     }
 
+    public void removeAccount() {
+        this.account = null;
+    }
+
     public Single<XabberAccount> saveOrUpdateXabberAccountToRealm(XabberAccountDTO xabberAccount) {
         XabberAccount account;
         XabberAccountRealm xabberAccountRealm = new XabberAccountRealm(String.valueOf(xabberAccount.getId()));
@@ -126,6 +130,21 @@ public class XabberAccountManager implements OnLoadListener {
 
         realm.close();
         return xabberAccount;
+    }
+
+    public boolean deleteXabberAccountFromRealm() {
+        final boolean[] success = new boolean[1];
+        Realm realm = RealmManager.getInstance().getNewBackgroundRealm();
+
+        final RealmResults<XabberAccountRealm> results = realm.where(XabberAccountRealm.class).findAll();
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                success[0] = results.deleteAllFromRealm();
+            }
+        });
+        realm.close();
+        return success[0];
     }
 }
 
