@@ -58,6 +58,15 @@
         android:text="login"
         />
 
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/passLabel"
+        android:visibility="gone"
+        />
+
     <RelativeLayout
         android:id="@+id/rlForgotPass"
         android:layout_width="match_parent"

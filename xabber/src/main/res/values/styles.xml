@@ -74,7 +74,7 @@
         <item name="colorAccent">@color/white</item>
     </style>
 
-    <style name="TextAppearence.App.TextInputLayout" parent="@android:style/TextAppearance">
+    <style name="TextAppearence.App.TextInputLayout" parent="Widget.Design.TextInputLayout">
         <item name="android:textColorHint">@color/red_700</item>
         <item name="colorControlNormal">@color/white</item>
 
