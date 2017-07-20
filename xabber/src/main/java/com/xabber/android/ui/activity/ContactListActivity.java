@@ -60,6 +60,7 @@ import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
+import com.xabber.android.data.xaccount.XabberAccountManager;
 import com.xabber.android.ui.color.BarPainter;
 import com.xabber.android.ui.dialog.AccountChooseDialogFragment;
 import com.xabber.android.ui.dialog.AccountChooseDialogFragment.OnChooseListener;
@@ -308,7 +309,7 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
     protected void onResume() {
         super.onResume();
 
-        if (!AccountManager.getInstance().hasAccounts()) {
+        if (!AccountManager.getInstance().hasAccounts() && XabberAccountManager.getInstance().getAccount() == null) {
             startActivity(IntroActivity.createIntent(this));
             finish();
             return;

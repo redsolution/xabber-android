@@ -52,6 +52,7 @@ import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.GroupManager;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterManager;
+import com.xabber.android.data.xaccount.XabberAccountManager;
 import com.xabber.android.service.XabberService;
 
 import io.fabric.sdk.android.Fabric;
@@ -325,6 +326,7 @@ public class Application extends android.app.Application {
         addManager(OTRManager.getInstance());
         addManager(ConnectionManager.getInstance());
         addManager(ScreenManager.getInstance());
+        addManager(XabberAccountManager.getInstance());
         addManager(AccountManager.getInstance());
         addManager(MUCManager.getInstance());
         addManager(MessageManager.getInstance());

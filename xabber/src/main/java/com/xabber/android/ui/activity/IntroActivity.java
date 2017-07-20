@@ -18,6 +18,7 @@ import com.bumptech.glide.Glide;
 import com.xabber.android.R;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.log.LogManager;
+import com.xabber.android.data.xaccount.XabberAccountManager;
 
 public class IntroActivity extends ManagedActivity {
 
@@ -127,7 +128,7 @@ public class IntroActivity extends ManagedActivity {
     protected void onResume() {
         super.onResume();
 
-        if (AccountManager.getInstance().hasAccounts()) {
+        if (AccountManager.getInstance().hasAccounts() || XabberAccountManager.getInstance().getAccount() != null) {
             Intent intent = ContactListActivity.createIntent(this);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             finish();
