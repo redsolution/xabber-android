@@ -13,6 +13,7 @@ import java.util.List;
 
 import io.realm.Realm;
 
+import io.realm.RealmList;
 import io.realm.RealmResults;
 import rx.Single;
 
@@ -65,16 +66,15 @@ public class XabberAccountManager implements OnLoadListener {
         xabberAccountRealm.setLastName(xabberAccount.getLastName());
         xabberAccountRealm.setRegisterDate(xabberAccount.getRegistrationDate());
 
-//        List<XMPPUserRealm> realmUsers = new ArrayList<>();
-//        for (XMPPUser user : xabberAccount.getXmppUsers()) {
-//            XMPPUserRealm realmUser = new XMPPUserRealm(user.getId());
-//            realmUser.setUsername(user.getUsername());
-//            realmUser.setHost(user.getHost());
-//            realmUser.setRegistration_date(user.getRegisterDate());
-//            realmUsers.add(realmUser);
-//        }
-//
-//        xabberAccountRealm.setXmppUsers(realmUsers);
+        RealmList<XMPPUserRealm> realmUsers = new RealmList<>();
+        for (XMPPUserDTO user : xabberAccount.getXmppUsers()) {
+            XMPPUserRealm realmUser = new XMPPUserRealm(String.valueOf(user.getId()));
+            realmUser.setUsername(user.getUsername());
+            realmUser.setHost(user.getHost());
+            realmUser.setRegistration_date(user.getRegistrationDate());
+            realmUsers.add(realmUser);
+        }
+        xabberAccountRealm.setXmppUsers(realmUsers);
 
         Realm realm = RealmManager.getInstance().getNewBackgroundRealm();
         realm.beginTransaction();

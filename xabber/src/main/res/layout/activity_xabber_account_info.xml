@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <TextView
         android:id="@+id/tvUsername"
@@ -20,5 +22,16 @@
         android:layout_below="@+id/tvUsername"
         android:text="logout"
         />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rcvXmppUsers"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="16dp"
+        android:layout_below="@+id/btnLogout"
+        tools:listitem="@layout/item_account"
+        >
+
+    </android.support.v7.widget.RecyclerView>
 
 </RelativeLayout>

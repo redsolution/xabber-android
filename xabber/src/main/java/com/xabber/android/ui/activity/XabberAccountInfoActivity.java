@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -18,8 +20,9 @@ import com.xabber.android.data.xaccount.XabberAccountManager;
 
 public class XabberAccountInfoActivity extends ManagedActivity {
 
-    TextView tvUsername;
-    Button btnLogout;
+    private TextView tvUsername;
+    private Button btnLogout;
+    private XMPPUserListAdapter adapter;
 
     @NonNull
     public static Intent createIntent(Context context) {
@@ -42,9 +45,15 @@ public class XabberAccountInfoActivity extends ManagedActivity {
             }
         });
 
+        adapter = new XMPPUserListAdapter();
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.rcvXmppUsers);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
         XabberAccount account = XabberAccountManager.getInstance().getAccount();
         if (account != null) {
             tvUsername.setText(account.getUsername());
+            adapter.setItems(account.getXmppUsers());
+            recyclerView.setAdapter(adapter);
         }
     }
 }

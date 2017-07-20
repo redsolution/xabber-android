@@ -29,7 +29,7 @@ public class XMPPUserDTO {
         return host;
     }
 
-    public String getRegistration_date() {
+    public String getRegistrationDate() {
         return registration_date;
     }
 }
