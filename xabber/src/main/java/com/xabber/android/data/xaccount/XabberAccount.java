@@ -15,15 +15,16 @@ public class XabberAccount {
     private String lastName;
     private String registerDate;
     private List<XMPPUser> xmppUsers;
+    private String token;
 
-    public XabberAccount(int id, String username, String firstName, String lastName, String registerDate, List<XMPPUser> xmppUsers) {
+    public XabberAccount(int id, String username, String firstName, String lastName, String registerDate, List<XMPPUser> xmppUsers, String token) {
         this.id = id;
         this.username = username;
         this.firstName = firstName;
         this.lastName = lastName;
         this.registerDate = registerDate;
-        this.xmppUsers = new ArrayList<>();
-        this.xmppUsers.addAll(xmppUsers);
+        this.xmppUsers = xmppUsers;
+        this.token = token;
     }
 
     public int getId() {
@@ -50,4 +51,7 @@ public class XabberAccount {
         return xmppUsers;
     }
 
+    public String getToken() {
+        return token;
+    }
 }

@@ -61,10 +61,11 @@ public class XabberAccountManager implements OnLoadListener {
         this.account = null;
     }
 
-    public Single<XabberAccount> saveOrUpdateXabberAccountToRealm(XabberAccountDTO xabberAccount) {
+    public Single<XabberAccount> saveOrUpdateXabberAccountToRealm(XabberAccountDTO xabberAccount, String token) {
         XabberAccount account;
         XabberAccountRealm xabberAccountRealm = new XabberAccountRealm(String.valueOf(xabberAccount.getId()));
 
+        xabberAccountRealm.setToken(token);
         xabberAccountRealm.setUsername(xabberAccount.getUsername());
         xabberAccountRealm.setFirstName(xabberAccount.getFirstName());
         xabberAccountRealm.setLastName(xabberAccount.getLastName());
@@ -111,7 +112,8 @@ public class XabberAccountManager implements OnLoadListener {
                 accountRealm.getFirstName(),
                 accountRealm.getLastName(),
                 accountRealm.getRegisterDate(),
-                xmppUsers
+                xmppUsers,
+                accountRealm.getToken()
         );
 
         return xabberAccount;

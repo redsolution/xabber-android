@@ -5,7 +5,6 @@ import android.util.Base64;
 
 import com.google.gson.Gson;
 
-import okhttp3.Cookie;
 import okhttp3.ResponseBody;
 import rx.Single;
 import rx.functions.Func1;
@@ -21,7 +20,7 @@ public class AuthManager {
     public static final String PROVIDER_GITHUB = "github";
     public static final String PROVIDER_GOOGLE = "google";
 
-    public static Single<ResponseBody> login(Context context, String login, String pass) {
+    public static Single<XAccountTokenDTO> login(Context context, String login, String pass) {
 
         String credentials = login + ":" + pass;
         byte[] data = credentials.getBytes();
@@ -31,13 +30,8 @@ public class AuthManager {
     }
 
     public static Single<ResponseBody> logout(Context context) {
-        // TODO: 20.07.17 delete setting referer and csrftoken
-        String csrftoken = "";
-        for (Cookie cookie : HttpApiManager.getCookieCache()) {
-            if (cookie.domain().equals("api.xabber.com") && cookie.name().equals("csrftoken"))
-                csrftoken = cookie.value();
-        }
-        return HttpApiManager.getXabberApi(context).logout("https://api.xabber.com", csrftoken)
+
+        return HttpApiManager.getXabberApi(context).logout(getXabberToken())
                 .flatMap(new Func1<ResponseBody, Single<? extends ResponseBody>>() {
                     @Override
                     public Single<? extends ResponseBody> call(ResponseBody responseBody) {
@@ -48,27 +42,28 @@ public class AuthManager {
                 });
     }
 
-    public static Single<ResponseBody> loginSocial(Context context, String provider, String token) {
+    public static Single<ResponseBody> loginSocial(Context context, String provider, String socialToken) {
 
         Gson gson = new Gson();
-        String credentials = gson.toJson(new AccessToken(token));
-        // TODO: 20.07.17 delete setting referer and csrftoken
-        String csrftoken = "";
-        for (Cookie cookie : HttpApiManager.getCookieCache()) {
-            if (cookie.domain().equals("api.xabber.com") && cookie.name().equals("csrftoken"))
-                csrftoken = cookie.value();
-        }
-        return HttpApiManager.getXabberApi(context).loginSocial(new SocialAuthRequest(provider, credentials), "https://api.xabber.com", csrftoken);
+        String credentials = gson.toJson(new AccessToken(socialToken));
+        return HttpApiManager.getXabberApi(context).loginSocial(new SocialAuthRequest(provider, credentials), getXabberToken());
     }
 
-    public static Single<XabberAccount> getAccount(Context context) {
-        return HttpApiManager.getXabberApi(context).getAccount()
+    public static Single<XabberAccount> getAccount(Context context, final String token) {
+        return HttpApiManager.getXabberApi(context).getAccount("Token " + token)
                 .flatMap(new Func1<XabberAccountDTO, Single<? extends XabberAccount>>() {
                     @Override
                     public Single<? extends XabberAccount> call(XabberAccountDTO xabberAccountDTO) {
-                        return XabberAccountManager.getInstance().saveOrUpdateXabberAccountToRealm(xabberAccountDTO);
+                        return XabberAccountManager.getInstance().saveOrUpdateXabberAccountToRealm(xabberAccountDTO, token);
                     }
                 });
+    }
+
+    private static String getXabberToken() {
+        XabberAccount account = XabberAccountManager.getInstance().getAccount();
+        if (account != null && account.getToken() != null)
+            return "Token " + account.getToken();
+        else return null;
     }
 
     public static class SocialAuthRequest {

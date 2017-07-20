@@ -21,6 +21,7 @@ import com.bumptech.glide.Glide;
 import com.xabber.android.R;
 import com.xabber.android.data.connection.NetworkManager;
 import com.xabber.android.data.xaccount.AuthManager;
+import com.xabber.android.data.xaccount.XAccountTokenDTO;
 import com.xabber.android.data.xaccount.XabberAccount;
 
 import java.util.Collections;
@@ -138,9 +139,9 @@ public class XabberLoginActivity extends ManagedActivity {
         Subscription loginSubscription = AuthManager.login(this, login, pass)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<ResponseBody>() {
+                .subscribe(new Action1<XAccountTokenDTO>() {
                     @Override
-                    public void call(ResponseBody s) {
+                    public void call(XAccountTokenDTO s) {
                         handleSuccessLogin(s);
                     }
                 }, new Action1<Throwable>() {
@@ -152,8 +153,8 @@ public class XabberLoginActivity extends ManagedActivity {
         compositeSubscription.add(loginSubscription);
     }
 
-    private void handleSuccessLogin(@NonNull ResponseBody response) {
-        getAccount();
+    private void handleSuccessLogin(@NonNull XAccountTokenDTO response) {
+        getAccount(response.getToken());
     }
 
     private void handleErrorLogin(Throwable throwable) {
@@ -170,8 +171,8 @@ public class XabberLoginActivity extends ManagedActivity {
 //        showProgress(false);
 //    }
 
-    private void getAccount() {
-        Subscription getAccountSubscription = AuthManager.getAccount(this)
+    private void getAccount(String token) {
+        Subscription getAccountSubscription = AuthManager.getAccount(this, token)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<XabberAccount>() {
