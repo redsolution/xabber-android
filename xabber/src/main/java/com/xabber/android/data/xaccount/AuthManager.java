@@ -49,6 +49,14 @@ public class AuthManager {
         return HttpApiManager.getXabberApi(context).loginSocial(new SocialAuthRequest(provider, credentials));
     }
 
+    public static Single<XAccountTokenDTO> loginSocialTwitter(
+            Context context, String socialToken, String twitterTokenSecret, String secret, String key) {
+
+        Gson gson = new Gson();
+        String credentials = gson.toJson(new TwitterAccessToken(new TwitterTokens(twitterTokenSecret, socialToken), secret, key));
+        return HttpApiManager.getXabberApi(context).loginSocial(new SocialAuthRequest(PROVIDER_TWITTER, credentials));
+    }
+
     public static Single<XabberAccount> getAccount(Context context, final String token) {
         return HttpApiManager.getXabberApi(context).getAccount("Token " + token)
                 .flatMap(new Func1<XabberAccountDTO, Single<? extends XabberAccount>>() {
@@ -81,6 +89,28 @@ public class AuthManager {
 
         public AccessToken(String access_token) {
             this.access_token = access_token;
+        }
+    }
+
+    public static class TwitterAccessToken {
+        final TwitterTokens access_token;
+        final String secret;
+        final String key;
+
+        public TwitterAccessToken(TwitterTokens access_token, String secret, String key) {
+            this.access_token = access_token;
+            this.secret = secret;
+            this.key = key;
+        }
+    }
+
+    public static class TwitterTokens {
+        final String oauth_token_secret;
+        final String oauth_token;
+
+        public TwitterTokens(String oauth_token_secret, String oauth_token) {
+            this.oauth_token_secret = oauth_token_secret;
+            this.oauth_token = oauth_token;
         }
     }
 

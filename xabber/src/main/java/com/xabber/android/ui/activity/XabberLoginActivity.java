@@ -23,6 +23,17 @@ import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
+import com.twitter.sdk.android.core.Callback;
+import com.twitter.sdk.android.core.DefaultLogger;
+import com.twitter.sdk.android.core.Result;
+import com.twitter.sdk.android.core.Twitter;
+import com.twitter.sdk.android.core.TwitterAuthConfig;
+import com.twitter.sdk.android.core.TwitterAuthToken;
+import com.twitter.sdk.android.core.TwitterConfig;
+import com.twitter.sdk.android.core.TwitterCore;
+import com.twitter.sdk.android.core.TwitterException;
+import com.twitter.sdk.android.core.TwitterSession;
+import com.twitter.sdk.android.core.identity.TwitterAuthClient;
 import com.xabber.android.R;
 import com.xabber.android.data.connection.NetworkManager;
 import com.xabber.android.data.xaccount.AuthManager;
@@ -58,6 +69,10 @@ public class XabberLoginActivity extends ManagedActivity implements View.OnClick
 
     // facebook auth
     private CallbackManager callbackManager;
+
+    // twitter auth
+    private TwitterAuthClient twitterAuthClient;
+    private Callback<TwitterSession> twitterSessionCallback;
 
     private CompositeSubscription compositeSubscription = new CompositeSubscription();
 
@@ -101,6 +116,7 @@ public class XabberLoginActivity extends ManagedActivity implements View.OnClick
 
         // social auth
         initFacebookAuth();
+        initTwitterAuth();
     }
 
     @Override
@@ -114,6 +130,8 @@ public class XabberLoginActivity extends ManagedActivity implements View.OnClick
         super.onActivityResult(requestCode, resultCode, data);
         // facebook auth
         callbackManager.onActivityResult(requestCode, resultCode, data);
+        // twitter auth
+        twitterAuthClient.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
@@ -171,6 +189,7 @@ public class XabberLoginActivity extends ManagedActivity implements View.OnClick
                 case R.id.ivGithub:
                     break;
                 case R.id.ivTwitter:
+                    twitterAuthClient.authorize(this, twitterSessionCallback);
                     break;
             }
         } else
@@ -199,9 +218,56 @@ public class XabberLoginActivity extends ManagedActivity implements View.OnClick
         });
     }
 
+    private void initTwitterAuth() {
+        TwitterConfig config = new TwitterConfig.Builder(this)
+                .logger(new DefaultLogger(Log.DEBUG))
+                .twitterAuthConfig(new TwitterAuthConfig(
+                        getResources().getString(R.string.SOCIAL_AUTH_TWITTER_KEY),
+                        getResources().getString(R.string.SOCIAL_AUTH_TWITTER_SECRET)))
+                .debug(true)
+                .build();
+        Twitter.initialize(config);
+        twitterAuthClient = new TwitterAuthClient();
+        twitterSessionCallback = new Callback<TwitterSession>() {
+            @Override
+            public void success(Result<TwitterSession> result) {
+                String token = result.data.getAuthToken().token;
+                String secret = result.data.getAuthToken().secret;
+                if (token != null && secret != null)
+                    loginSocialTwitter(token, secret,
+                            getResources().getString(R.string.SOCIAL_AUTH_TWITTER_SECRET),
+                            getResources().getString(R.string.SOCIAL_AUTH_TWITTER_KEY));
+            }
+
+            @Override
+            public void failure(TwitterException exception) {
+                Toast.makeText(XabberLoginActivity.this, "twitter error", Toast.LENGTH_SHORT).show();
+            }
+        };
+    }
+
     private void loginSocial(String provider, String token) {
         showProgress(true);
         Subscription loginSocialSubscription = AuthManager.loginSocial(this, provider, token)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<XAccountTokenDTO>() {
+                    @Override
+                    public void call(XAccountTokenDTO s) {
+                        handleSuccessLogin(s);
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        handleErrorSocialLogin(throwable);
+                    }
+                });
+        compositeSubscription.add(loginSocialSubscription);
+    }
+
+    private void loginSocialTwitter(String token, String twitterTokenSecret, String secret, String key) {
+        showProgress(true);
+        Subscription loginSocialSubscription = AuthManager.loginSocialTwitter(this, token, twitterTokenSecret, secret, key)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<XAccountTokenDTO>() {
