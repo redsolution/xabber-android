@@ -54,12 +54,14 @@
         >
 
         <ImageView
+            android:id="@+id/ivGoogle"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:src="@drawable/ic_google_plus"
             />
 
         <ImageView
+            android:id="@+id/ivFacebook"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_marginLeft="30dp"
@@ -67,6 +69,7 @@
             />
 
         <ImageView
+            android:id="@+id/ivTwitter"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_marginLeft="30dp"
@@ -74,6 +77,7 @@
             />
 
         <ImageView
+            android:id="@+id/ivGithub"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_marginLeft="30dp"

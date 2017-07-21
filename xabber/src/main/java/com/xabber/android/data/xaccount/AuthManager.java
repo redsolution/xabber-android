@@ -42,11 +42,11 @@ public class AuthManager {
                 });
     }
 
-    public static Single<ResponseBody> loginSocial(Context context, String provider, String socialToken) {
+    public static Single<XAccountTokenDTO> loginSocial(Context context, String provider, String socialToken) {
 
         Gson gson = new Gson();
         String credentials = gson.toJson(new AccessToken(socialToken));
-        return HttpApiManager.getXabberApi(context).loginSocial(new SocialAuthRequest(provider, credentials), getXabberToken());
+        return HttpApiManager.getXabberApi(context).loginSocial(new SocialAuthRequest(provider, credentials));
     }
 
     public static Single<XabberAccount> getAccount(Context context, final String token) {

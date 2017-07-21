@@ -18,6 +18,11 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.login.LoginManager;
+import com.facebook.login.LoginResult;
 import com.xabber.android.R;
 import com.xabber.android.data.connection.NetworkManager;
 import com.xabber.android.data.xaccount.AuthManager;
@@ -26,7 +31,6 @@ import com.xabber.android.data.xaccount.XabberAccount;
 
 import java.util.Collections;
 
-import okhttp3.ResponseBody;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
@@ -37,7 +41,7 @@ import rx.subscriptions.CompositeSubscription;
  * Created by valery.miller on 14.07.17.
  */
 
-public class XabberLoginActivity extends ManagedActivity {
+public class XabberLoginActivity extends ManagedActivity implements View.OnClickListener {
 
     private final static String TAG = XabberLoginActivity.class.getSimpleName();
 
@@ -46,6 +50,14 @@ public class XabberLoginActivity extends ManagedActivity {
     private Button btnLogin;
     private RelativeLayout rlForgotPass;
     private ProgressBar progressBar;
+
+    private ImageView ivFacebook;
+    private ImageView ivGoogle;
+    private ImageView ivTwitter;
+    private ImageView ivGithub;
+
+    // facebook auth
+    private CallbackManager callbackManager;
 
     private CompositeSubscription compositeSubscription = new CompositeSubscription();
 
@@ -67,6 +79,11 @@ public class XabberLoginActivity extends ManagedActivity {
         btnLogin = (Button) findViewById(R.id.btnLogin);
         rlForgotPass = (RelativeLayout) findViewById(R.id.rlForgotPass);
 
+        ivFacebook = (ImageView) findViewById(R.id.ivFacebook);
+        ivGoogle = (ImageView) findViewById(R.id.ivGoogle);
+        ivTwitter = (ImageView) findViewById(R.id.ivTwitter);
+        ivGithub = (ImageView) findViewById(R.id.ivGithub);
+
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
         progressBar.getIndeterminateDrawable().setColorFilter(ContextCompat.getColor(this, R.color.red_700), PorterDuff.Mode.MULTIPLY);
 
@@ -75,25 +92,51 @@ public class XabberLoginActivity extends ManagedActivity {
                 .centerCrop()
                 .into(backgroundImage);
 
-        btnLogin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onLoginClick();
-            }
-        });
+        btnLogin.setOnClickListener(this);
+        rlForgotPass.setOnClickListener(this);
+        ivFacebook.setOnClickListener(this);
+        ivGoogle.setOnClickListener(this);
+        ivTwitter.setOnClickListener(this);
+        ivGithub.setOnClickListener(this);
 
-        rlForgotPass.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
+        // social auth
+        initFacebookAuth();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         compositeSubscription.clear();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        // facebook auth
+        callbackManager.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.btnLogin:
+                onLoginClick();
+                break;
+            case R.id.rlForgotPass:
+                break;
+            case R.id.ivFacebook:
+                onSocialLoginClick(R.id.ivFacebook);
+                break;
+            case R.id.ivGoogle:
+                onSocialLoginClick(R.id.ivGoogle);
+                break;
+            case R.id.ivGithub:
+                onSocialLoginClick(R.id.ivGithub);
+                break;
+            case R.id.ivTwitter:
+                onSocialLoginClick(R.id.ivTwitter);
+                break;
+        }
     }
 
     private void onLoginClick() {
@@ -117,23 +160,63 @@ public class XabberLoginActivity extends ManagedActivity {
             Toast.makeText(this, "No internet connection", Toast.LENGTH_LONG).show();
     }
 
-//    private void loginSocial(String provider, String token) {
-//        Subscription loginSocialSubscription = AuthManager.loginSocial(this, provider, token)
-//                .subscribeOn(Schedulers.io())
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .subscribe(new Action1<ResponseBody>() {
-//                    @Override
-//                    public void call(ResponseBody s) {
-//                        handleSuccessLogin(s);
-//                    }
-//                }, new Action1<Throwable>() {
-//                    @Override
-//                    public void call(Throwable throwable) {
-//                        handleErrorSocialLogin(throwable);
-//                    }
-//                });
-//        compositeSubscription.add(loginSocialSubscription);
-//    }
+    private void onSocialLoginClick(int id) {
+        if (NetworkManager.isNetworkAvailable()) {
+            switch (id) {
+                case R.id.ivFacebook:
+                    LoginManager.getInstance().logInWithReadPermissions(this, Collections.singletonList("public_profile"));
+                    break;
+                case R.id.ivGoogle:
+                    break;
+                case R.id.ivGithub:
+                    break;
+                case R.id.ivTwitter:
+                    break;
+            }
+        } else
+            Toast.makeText(this, "No internet connection", Toast.LENGTH_LONG).show();
+    }
+
+    private void initFacebookAuth() {
+        callbackManager = CallbackManager.Factory.create();
+        LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(LoginResult loginResult) {
+                String token = loginResult.getAccessToken().getToken();
+                if (token != null)
+                    loginSocial(AuthManager.PROVIDER_FACEBOOK, token);
+            }
+
+            @Override
+            public void onCancel() {
+                Toast.makeText(XabberLoginActivity.this, "fcb cancel", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onError(FacebookException error) {
+                Toast.makeText(XabberLoginActivity.this, "fcb error", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void loginSocial(String provider, String token) {
+        showProgress(true);
+        Subscription loginSocialSubscription = AuthManager.loginSocial(this, provider, token)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<XAccountTokenDTO>() {
+                    @Override
+                    public void call(XAccountTokenDTO s) {
+                        handleSuccessLogin(s);
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        handleErrorSocialLogin(throwable);
+                    }
+                });
+        compositeSubscription.add(loginSocialSubscription);
+    }
 
     private void login(String login, String pass) {
         Subscription loginSubscription = AuthManager.login(this, login, pass)
@@ -163,13 +246,11 @@ public class XabberLoginActivity extends ManagedActivity {
         showProgress(false);
     }
 
-//    private void handleErrorSocialLogin(Throwable throwable) {
-//        Log.d(TAG, "Error while social login request: " + throwable.toString());
-//        Toast.makeText(this, "Authentication error", Toast.LENGTH_SHORT).show();
-//        // TODO: 19.07.17 временный костыль
-//        getAccount();
-//        showProgress(false);
-//    }
+    private void handleErrorSocialLogin(Throwable throwable) {
+        Log.d(TAG, "Error while social login request: " + throwable.toString());
+        Toast.makeText(this, "Authentication error", Toast.LENGTH_SHORT).show();
+        showProgress(false);
+    }
 
     private void getAccount(String token) {
         Subscription getAccountSubscription = AuthManager.getAccount(this, token)

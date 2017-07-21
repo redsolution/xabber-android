@@ -140,12 +140,13 @@ dependencies {
     compile 'com.squareup.retrofit2:adapter-rxjava:2.3.0'
     compile 'com.squareup.retrofit2:converter-gson:2.3.0'
     compile 'com.squareup.okhttp3:logging-interceptor:3.5.0'
-    // todo: delete this dependency if cookie cache no more need
-    compile 'com.github.franmontiel:PersistentCookieJar:v1.0.1'
 
     // rx java
     compile 'io.reactivex:rxandroid:1.1.0'
     compile 'io.reactivex:rxjava:1.1.0'
+
+    //social
+    compile 'com.facebook.android:facebook-android-sdk:[4,5)'
 
     compile 'com.github.apl-devs:appintro:v4.2.0'
     compile 'com.github.bumptech.glide:glide:3.7.0'

@@ -1,6 +1,5 @@
 package com.xabber.android.data.xaccount;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**

@@ -20,7 +20,7 @@ public interface IXabberApi {
     Single<ResponseBody> logout(@Header("Authorization") String token);
 
     @POST("accounts/social_auth/")
-    Single<ResponseBody> loginSocial(@Body AuthManager.SocialAuthRequest body, @Header("Authorization") String token);
+    Single<XAccountTokenDTO> loginSocial(@Body AuthManager.SocialAuthRequest body);
 
     @GET("accounts/current")
     Single<XabberAccountDTO> getAccount(@Header("Authorization") String token);
