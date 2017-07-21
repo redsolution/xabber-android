@@ -1,9 +1,8 @@
 package com.xabber.android.data.xaccount;
 
-import android.content.Context;
 import android.util.Base64;
-
 import com.google.gson.Gson;
+import java.util.List;
 
 import okhttp3.ResponseBody;
 import rx.Single;
@@ -20,18 +19,18 @@ public class AuthManager {
     public static final String PROVIDER_GITHUB = "github";
     public static final String PROVIDER_GOOGLE = "google";
 
-    public static Single<XAccountTokenDTO> login(Context context, String login, String pass) {
+    public static Single<XAccountTokenDTO> login(String login, String pass) {
 
         String credentials = login + ":" + pass;
         byte[] data = credentials.getBytes();
         String encodedCredentials = Base64.encodeToString(data, Base64.NO_WRAP);
 
-        return HttpApiManager.getXabberApi(context).login("Basic " + encodedCredentials);
+        return HttpApiManager.getXabberApi().login("Basic " + encodedCredentials);
     }
 
-    public static Single<ResponseBody> logout(Context context) {
+    public static Single<ResponseBody> logout() {
 
-        return HttpApiManager.getXabberApi(context).logout(getXabberToken())
+        return HttpApiManager.getXabberApi().logout(getXabberToken())
                 .flatMap(new Func1<ResponseBody, Single<? extends ResponseBody>>() {
                     @Override
                     public Single<? extends ResponseBody> call(ResponseBody responseBody) {
@@ -42,29 +41,37 @@ public class AuthManager {
                 });
     }
 
-    public static Single<XAccountTokenDTO> loginSocial(Context context, String provider, String socialToken) {
+    public static Single<XAccountTokenDTO> loginSocial(String provider, String socialToken) {
 
         Gson gson = new Gson();
         String credentials = gson.toJson(new AccessToken(socialToken));
-        return HttpApiManager.getXabberApi(context).loginSocial(new SocialAuthRequest(provider, credentials));
+        return HttpApiManager.getXabberApi().loginSocial(new SocialAuthRequest(provider, credentials));
     }
 
     public static Single<XAccountTokenDTO> loginSocialTwitter(
-            Context context, String socialToken, String twitterTokenSecret, String secret, String key) {
+           String socialToken, String twitterTokenSecret, String secret, String key) {
 
         Gson gson = new Gson();
         String credentials = gson.toJson(new TwitterAccessToken(new TwitterTokens(twitterTokenSecret, socialToken), secret, key));
-        return HttpApiManager.getXabberApi(context).loginSocial(new SocialAuthRequest(PROVIDER_TWITTER, credentials));
+        return HttpApiManager.getXabberApi().loginSocial(new SocialAuthRequest(PROVIDER_TWITTER, credentials));
     }
 
-    public static Single<XabberAccount> getAccount(Context context, final String token) {
-        return HttpApiManager.getXabberApi(context).getAccount("Token " + token)
+    public static Single<XabberAccount> getAccount(final String token) {
+        return HttpApiManager.getXabberApi().getAccount("Token " + token)
                 .flatMap(new Func1<XabberAccountDTO, Single<? extends XabberAccount>>() {
                     @Override
                     public Single<? extends XabberAccount> call(XabberAccountDTO xabberAccountDTO) {
                         return XabberAccountManager.getInstance().saveOrUpdateXabberAccountToRealm(xabberAccountDTO, token);
                     }
                 });
+    }
+
+    public static Single<ListClientSettingsDTO> getClientSettings() {
+        return HttpApiManager.getXabberApi().getClientSettings(getXabberToken());
+    }
+
+    public static Single<ResponseBody> updateClientSettings(UpdateClientSettings updateClientSettings) {
+        return HttpApiManager.getXabberApi().updateClientSettings(getXabberToken(), updateClientSettings);
     }
 
     private static String getXabberToken() {
@@ -114,4 +121,75 @@ public class AuthManager {
         }
     }
 
+    public static class UpdateClientSettings {
+        final String jid;
+        final UpdateSettingsValues settings;
+
+        public UpdateClientSettings(String jid, UpdateSettingsValues settings) {
+            this.jid = jid;
+            this.settings = settings;
+        }
+    }
+
+    public static class UpdateSettingsValues {
+        final int order;
+
+        public UpdateSettingsValues(int order) {
+            this.order = order;
+        }
+    }
+
+    public static class ListClientSettingsDTO {
+        final List<ClientSettingsDTO> settings;
+
+        public ListClientSettingsDTO(List<ClientSettingsDTO> settings) {
+            this.settings = settings;
+        }
+
+        public List<ClientSettingsDTO> getSettings() {
+            return settings;
+        }
+    }
+
+    public static class ClientSettingsDTO {
+        final String jid;
+        final SettingsValuesDTO settings;
+
+        public ClientSettingsDTO(String jid, SettingsValuesDTO settings) {
+            this.jid = jid;
+            this.settings = settings;
+        }
+
+        public String getJid() {
+            return jid;
+        }
+
+        public SettingsValuesDTO getSettings() {
+            return settings;
+        }
+    }
+
+    public static class SettingsValuesDTO {
+        final int order;
+        final String color;
+        final String token;
+
+        public SettingsValuesDTO(int order, String color, String token) {
+            this.order = order;
+            this.color = color;
+            this.token = token;
+        }
+
+        public int getOrder() {
+            return order;
+        }
+
+        public String getColor() {
+            return color;
+        }
+
+        public String getToken() {
+            return token;
+        }
+    }
 }

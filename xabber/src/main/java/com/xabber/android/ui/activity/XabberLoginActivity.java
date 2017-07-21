@@ -248,7 +248,7 @@ public class XabberLoginActivity extends ManagedActivity implements View.OnClick
 
     private void loginSocial(String provider, String token) {
         showProgress(true);
-        Subscription loginSocialSubscription = AuthManager.loginSocial(this, provider, token)
+        Subscription loginSocialSubscription = AuthManager.loginSocial(provider, token)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<XAccountTokenDTO>() {
@@ -267,7 +267,7 @@ public class XabberLoginActivity extends ManagedActivity implements View.OnClick
 
     private void loginSocialTwitter(String token, String twitterTokenSecret, String secret, String key) {
         showProgress(true);
-        Subscription loginSocialSubscription = AuthManager.loginSocialTwitter(this, token, twitterTokenSecret, secret, key)
+        Subscription loginSocialSubscription = AuthManager.loginSocialTwitter(token, twitterTokenSecret, secret, key)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<XAccountTokenDTO>() {
@@ -285,7 +285,7 @@ public class XabberLoginActivity extends ManagedActivity implements View.OnClick
     }
 
     private void login(String login, String pass) {
-        Subscription loginSubscription = AuthManager.login(this, login, pass)
+        Subscription loginSubscription = AuthManager.login(login, pass)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<XAccountTokenDTO>() {
@@ -319,7 +319,7 @@ public class XabberLoginActivity extends ManagedActivity implements View.OnClick
     }
 
     private void getAccount(String token) {
-        Subscription getAccountSubscription = AuthManager.getAccount(this, token)
+        Subscription getAccountSubscription = AuthManager.getAccount(token)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<XabberAccount>() {

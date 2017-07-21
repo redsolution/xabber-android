@@ -25,5 +25,11 @@ public interface IXabberApi {
     @GET("accounts/current")
     Single<XabberAccountDTO> getAccount(@Header("Authorization") String token);
 
+    @GET("accounts/current/client-settings/")
+    Single<AuthManager.ListClientSettingsDTO> getClientSettings(@Header("Authorization") String token);
+
+    @POST("accounts/current/client-settings/")
+    Single<ResponseBody> updateClientSettings(@Header("Authorization") String token, @Body AuthManager.UpdateClientSettings body);
+
 }
 

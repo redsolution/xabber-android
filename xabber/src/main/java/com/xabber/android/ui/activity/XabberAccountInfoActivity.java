@@ -14,8 +14,13 @@ import android.widget.Toast;
 
 import com.xabber.android.R;
 import com.xabber.android.data.xaccount.AuthManager;
+import com.xabber.android.data.xaccount.XMPPUser;
 import com.xabber.android.data.xaccount.XabberAccount;
 import com.xabber.android.data.xaccount.XabberAccountManager;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import okhttp3.ResponseBody;
 import rx.Subscription;
@@ -35,6 +40,7 @@ public class XabberAccountInfoActivity extends ManagedActivity {
     private TextView tvUsername;
     private Button btnLogout;
     private XMPPUserListAdapter adapter;
+    private List<XMPPUser> xmppAccounts;
 
     private CompositeSubscription compositeSubscription = new CompositeSubscription();
 
@@ -59,20 +65,58 @@ public class XabberAccountInfoActivity extends ManagedActivity {
             }
         });
 
+        Button btnSync = (Button) findViewById(R.id.btnSync);
+        btnSync.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getSettings();
+            }
+        });
+
         adapter = new XMPPUserListAdapter();
+        xmppAccounts = new ArrayList<>();
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.rcvXmppUsers);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         XabberAccount account = XabberAccountManager.getInstance().getAccount();
         if (account != null) {
             tvUsername.setText(account.getUsername());
-            adapter.setItems(account.getXmppUsers());
+            adapter.setItems(xmppAccounts);
             recyclerView.setAdapter(adapter);
         }
     }
 
+    private void getSettings() {
+        Subscription getSettingsSubscription = AuthManager.getClientSettings()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<AuthManager.ListClientSettingsDTO>() {
+                    @Override
+                    public void call(AuthManager.ListClientSettingsDTO s) {
+                        updateXmppAccounts(s);
+                        Toast.makeText(XabberAccountInfoActivity.this, "success", Toast.LENGTH_SHORT).show();
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        Log.d(TAG, "Error while get settings: " + throwable.toString());
+                        Toast.makeText(XabberAccountInfoActivity.this, "error", Toast.LENGTH_SHORT).show();
+                    }
+                });
+        compositeSubscription.add(getSettingsSubscription);
+    }
+
+    public void updateXmppAccounts(AuthManager.ListClientSettingsDTO list) {
+        int i = 0;
+        for (AuthManager.ClientSettingsDTO set : list.getSettings()) {
+            xmppAccounts.add(new XMPPUser(i, set.getJid().split("@")[0], set.getJid().split("@")[1], "date"));
+            i++;
+        }
+        adapter.setItems(xmppAccounts);
+    }
+
     private void logout() {
-        Subscription logoutSubscription = AuthManager.logout(this)
+        Subscription logoutSubscription = AuthManager.logout()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<ResponseBody>() {
