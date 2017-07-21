@@ -14,11 +14,11 @@ import android.widget.Toast;
 
 import com.xabber.android.R;
 import com.xabber.android.data.xaccount.AuthManager;
+import com.xabber.android.data.xaccount.XMPPAccountSettings;
 import com.xabber.android.data.xaccount.XMPPUser;
 import com.xabber.android.data.xaccount.XabberAccount;
 import com.xabber.android.data.xaccount.XabberAccountManager;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,8 +39,8 @@ public class XabberAccountInfoActivity extends ManagedActivity {
 
     private TextView tvUsername;
     private Button btnLogout;
-    private XMPPUserListAdapter adapter;
-    private List<XMPPUser> xmppAccounts;
+    private XMPPAccountAdapter adapter;
+    private List<XMPPAccountSettings> xmppAccounts;
 
     private CompositeSubscription compositeSubscription = new CompositeSubscription();
 
@@ -73,7 +73,7 @@ public class XabberAccountInfoActivity extends ManagedActivity {
             }
         });
 
-        adapter = new XMPPUserListAdapter();
+        adapter = new XMPPAccountAdapter();
         xmppAccounts = new ArrayList<>();
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.rcvXmppUsers);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -107,10 +107,9 @@ public class XabberAccountInfoActivity extends ManagedActivity {
     }
 
     public void updateXmppAccounts(AuthManager.ListClientSettingsDTO list) {
-        int i = 0;
         for (AuthManager.ClientSettingsDTO set : list.getSettings()) {
-            xmppAccounts.add(new XMPPUser(i, set.getJid().split("@")[0], set.getJid().split("@")[1], "date"));
-            i++;
+            // TODO: 21.07.17 use timestamp and sync
+            xmppAccounts.add(new XMPPAccountSettings(set.getJid(), false, 0));
         }
         adapter.setItems(xmppAccounts);
     }

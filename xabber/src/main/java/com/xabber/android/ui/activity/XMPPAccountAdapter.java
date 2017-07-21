@@ -9,7 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.xabber.android.R;
-import com.xabber.android.data.xaccount.XMPPUser;
+import com.xabber.android.data.xaccount.XMPPAccountSettings;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,15 +18,15 @@ import java.util.List;
  * Created by valery.miller on 20.07.17.
  */
 
-public class XMPPUserListAdapter extends RecyclerView.Adapter {
+public class XMPPAccountAdapter extends RecyclerView.Adapter {
 
-    List<XMPPUser> items;
+    List<XMPPAccountSettings> items;
 
-    public XMPPUserListAdapter() {
+    public XMPPAccountAdapter() {
         this.items = new ArrayList<>();
     }
 
-    public void setItems(List<XMPPUser> items) {
+    public void setItems(List<XMPPAccountSettings> items) {
         this.items.clear();
         this.items.addAll(items);
         notifyDataSetChanged();
@@ -34,17 +34,18 @@ public class XMPPUserListAdapter extends RecyclerView.Adapter {
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new XMPPUserViewHolder(LayoutInflater.from(parent.getContext())
+        return new XMPPAccountVH(LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_account, parent, false));
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        XMPPUser user = items.get(position);
-        XMPPUserViewHolder viewHolder = (XMPPUserViewHolder) holder;
+        XMPPAccountSettings account = items.get(position);
+        XMPPAccountVH viewHolder = (XMPPAccountVH) holder;
 
-        viewHolder.name.setText("User Name");
-        viewHolder.status.setText(user.getUsername() + "@" + user.getHost());
+        viewHolder.username.setText(account.getUsername());
+        viewHolder.jid.setText(account.getJid());
+        viewHolder.syncSwitch.setChecked(account.isSynchronization());
     }
 
     @Override
@@ -52,22 +53,22 @@ public class XMPPUserListAdapter extends RecyclerView.Adapter {
         return items.size();
     }
 
-    private class XMPPUserViewHolder extends RecyclerView.ViewHolder {
+    private class XMPPAccountVH extends RecyclerView.ViewHolder {
 
         ImageView color;
         ImageView avatar;
-        TextView name;
-        TextView status;
-        SwitchCompat enabledSwitch;
+        TextView username;
+        TextView jid;
+        SwitchCompat syncSwitch;
 
 
-        XMPPUserViewHolder(View itemView) {
+        XMPPAccountVH(View itemView) {
             super(itemView);
             color = (ImageView) itemView.findViewById(R.id.item_account_color);
             avatar = (ImageView) itemView.findViewById(R.id.avatar);
-            name = (TextView) itemView.findViewById(R.id.item_account_name);
-            status = (TextView) itemView.findViewById(R.id.item_account_status);
-            enabledSwitch = (SwitchCompat) itemView.findViewById(R.id.item_account_switch);
+            username = (TextView) itemView.findViewById(R.id.item_account_name);
+            jid = (TextView) itemView.findViewById(R.id.item_account_status);
+            syncSwitch = (SwitchCompat) itemView.findViewById(R.id.item_account_switch);
         }
 
     }
