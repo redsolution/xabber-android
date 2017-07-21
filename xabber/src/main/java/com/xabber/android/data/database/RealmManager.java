@@ -6,6 +6,7 @@ import android.os.Looper;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.database.realm.AccountRealm;
 import com.xabber.android.data.database.realm.DiscoveryInfoCache;
+import com.xabber.android.data.database.realm.XMPPAccountSettignsRealm;
 import com.xabber.android.data.database.realm.XMPPUserRealm;
 import com.xabber.android.data.database.realm.XabberAccountRealm;
 import com.xabber.android.data.database.sqlite.AccountTable;
@@ -51,7 +52,7 @@ public class RealmManager {
         realm.close();
     }
 
-    @RealmModule(classes = {DiscoveryInfoCache.class, AccountRealm.class, XabberAccountRealm.class, XMPPUserRealm.class})
+    @RealmModule(classes = {DiscoveryInfoCache.class, AccountRealm.class, XabberAccountRealm.class, XMPPUserRealm.class, XMPPAccountSettignsRealm.class})
     static class RealmDatabaseModule {
     }
 
@@ -94,6 +95,7 @@ public class RealmManager {
                             oldVersion++;
                         }
                         // TODO: 20.07.17 add migration to adding XabberAccount and XMPPUser to scheme
+                        // TODO: 21.07.17 add migration to adding XMPPAccountSettings to scheme
                     }
                 })
                 .modules(new RealmDatabaseModule())

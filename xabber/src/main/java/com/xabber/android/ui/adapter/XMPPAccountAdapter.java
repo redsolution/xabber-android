@@ -1,4 +1,4 @@
-package com.xabber.android.ui.activity;
+package com.xabber.android.ui.adapter;
 
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SwitchCompat;

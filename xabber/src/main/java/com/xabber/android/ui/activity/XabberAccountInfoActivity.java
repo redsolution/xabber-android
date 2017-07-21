@@ -15,9 +15,9 @@ import android.widget.Toast;
 import com.xabber.android.R;
 import com.xabber.android.data.xaccount.AuthManager;
 import com.xabber.android.data.xaccount.XMPPAccountSettings;
-import com.xabber.android.data.xaccount.XMPPUser;
 import com.xabber.android.data.xaccount.XabberAccount;
 import com.xabber.android.data.xaccount.XabberAccountManager;
+import com.xabber.android.ui.adapter.XMPPAccountAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -86,13 +86,19 @@ public class XabberAccountInfoActivity extends ManagedActivity {
         }
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadAccountsFromRealm();
+    }
+
     private void getSettings() {
         Subscription getSettingsSubscription = AuthManager.getClientSettings()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<AuthManager.ListClientSettingsDTO>() {
+                .subscribe(new Action1<List<XMPPAccountSettings>>() {
                     @Override
-                    public void call(AuthManager.ListClientSettingsDTO s) {
+                    public void call(List<XMPPAccountSettings> s) {
                         updateXmppAccounts(s);
                         Toast.makeText(XabberAccountInfoActivity.this, "success", Toast.LENGTH_SHORT).show();
                     }
@@ -106,11 +112,29 @@ public class XabberAccountInfoActivity extends ManagedActivity {
         compositeSubscription.add(getSettingsSubscription);
     }
 
-    public void updateXmppAccounts(AuthManager.ListClientSettingsDTO list) {
-        for (AuthManager.ClientSettingsDTO set : list.getSettings()) {
-            // TODO: 21.07.17 use timestamp and sync
-            xmppAccounts.add(new XMPPAccountSettings(set.getJid(), false, 0));
-        }
+    private void loadAccountsFromRealm() {
+        Subscription loadAccountsSubscription = XabberAccountManager.getInstance().loadXMPPAccountSettingsFromRealm()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<List<XMPPAccountSettings>>() {
+                    @Override
+                    public void call(List<XMPPAccountSettings> s) {
+                        updateXmppAccounts(s);
+                        Toast.makeText(XabberAccountInfoActivity.this, "success from realm", Toast.LENGTH_SHORT).show();
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        Log.d(TAG, "Error while get settings: " + throwable.toString());
+                        Toast.makeText(XabberAccountInfoActivity.this, "error", Toast.LENGTH_SHORT).show();
+                    }
+                });
+        compositeSubscription.add(loadAccountsSubscription);
+    }
+
+    public void updateXmppAccounts(List<XMPPAccountSettings> list) {
+        xmppAccounts.clear();
+        xmppAccounts.addAll(list);
         adapter.setItems(xmppAccounts);
     }
 

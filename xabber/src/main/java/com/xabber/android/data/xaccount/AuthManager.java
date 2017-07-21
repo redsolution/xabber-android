@@ -66,8 +66,14 @@ public class AuthManager {
                 });
     }
 
-    public static Single<ListClientSettingsDTO> getClientSettings() {
-        return HttpApiManager.getXabberApi().getClientSettings(getXabberToken());
+    public static Single<List<XMPPAccountSettings>> getClientSettings() {
+        return HttpApiManager.getXabberApi().getClientSettings(getXabberToken())
+                .flatMap(new Func1<ListClientSettingsDTO, Single<? extends List<XMPPAccountSettings>>>() {
+                    @Override
+                    public Single<? extends List<XMPPAccountSettings>> call(ListClientSettingsDTO listClientSettingsDTO) {
+                        return XabberAccountManager.getInstance().saveOrUpdateXMPPAccountSettingsToRealm(listClientSettingsDTO);
+                    }
+                });
     }
 
     public static Single<ResponseBody> updateClientSettings(UpdateClientSettings updateClientSettings) {
