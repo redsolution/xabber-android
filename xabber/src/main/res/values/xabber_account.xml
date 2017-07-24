@@ -15,4 +15,5 @@
     <string name="xabber_account_summary">Xabber account lets you easily sync your settings and connected XMPP accounts between various devices.</string>
 
     <string name="logout_button">LOGOUT</string>
+    <string name="login_button">LOGIN</string>
 </resources>

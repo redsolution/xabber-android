@@ -105,64 +105,111 @@
                                 android:textSize="14sp" />
                         </LinearLayout>
                     </LinearLayout>
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:background="?attr/settings_separator_background_color"
-                        android:layout_below="@id/llAccount"
-                        />
                     <RelativeLayout
                         android:id="@+id/rlSync"
                         android:layout_width="match_parent"
                         android:layout_height="48dp"
                         android:layout_below="@id/llAccount"
-                        android:paddingLeft="24dp"
-                        android:paddingRight="16dp"
-                        android:paddingTop="8dp"
-                        android:paddingBottom="8dp"
-                        android:background="?android:attr/selectableItemBackground"
                         >
 
-                        <ImageView
-                            android:id="@+id/ivSync"
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:src="@drawable/ic_sync"
-                            android:layout_centerVertical="true"
-                            android:tint="@color/grey_600"
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:background="?attr/settings_separator_background_color"
                             />
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_centerVertical="true"
-                            android:layout_toRightOf="@+id/ivSync"
-                            android:layout_marginLeft="24dp"
-                            android:textColor="?android:attr/textColorPrimary"
-                            android:text="Synced 1 day ago"
-                            />
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="48dp"
+                            android:paddingLeft="24dp"
+                            android:paddingRight="16dp"
+                            android:paddingTop="8dp"
+                            android:paddingBottom="8dp"
+                            android:background="?android:attr/selectableItemBackground"
+                            >
 
+                            <ImageView
+                                android:id="@+id/ivSync"
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:src="@drawable/ic_sync"
+                                android:layout_centerVertical="true"
+                                android:tint="@color/grey_600"
+                                />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_centerVertical="true"
+                                android:layout_toRightOf="@+id/ivSync"
+                                android:layout_marginLeft="24dp"
+                                android:textColor="?android:attr/textColorPrimary"
+                                android:text="Synced 1 day ago"
+                                />
+
+                        </RelativeLayout>
                     </RelativeLayout>
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:background="?attr/settings_separator_background_color"
-                        android:layout_below="@id/rlSync"
-                        />
                     <RelativeLayout
                         android:id="@+id/rlLogout"
                         android:layout_width="match_parent"
                         android:layout_height="48dp"
                         android:layout_below="@id/rlSync"
+                        >
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:background="?attr/settings_separator_background_color"
+                            />
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="48dp"
+                            android:paddingLeft="24dp"
+                            android:paddingRight="16dp"
+                            android:paddingTop="8dp"
+                            android:paddingBottom="8dp"
+                            android:background="?android:attr/selectableItemBackground"
+                            >
+
+                            <ImageView
+                                android:id="@+id/ivLogout"
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:src="@drawable/ic_exit_grey600_24dp"
+                                android:layout_centerVertical="true"
+                                android:tint="@color/grey_600"
+                                />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_centerVertical="true"
+                                android:layout_toRightOf="@+id/ivLogout"
+                                android:layout_marginLeft="24dp"
+                                android:textColor="?android:attr/textColorPrimary"
+                                android:text="@string/logout_button"
+                                />
+
+                        </RelativeLayout>
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:id="@+id/rlLogin"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:layout_below="@id/xabberAccountTitle"
                         android:paddingLeft="24dp"
                         android:paddingRight="16dp"
                         android:paddingTop="8dp"
                         android:paddingBottom="8dp"
+                        android:layout_marginTop="16dp"
                         android:background="?android:attr/selectableItemBackground"
+                        android:visibility="gone"
                         >
 
                         <ImageView
-                            android:id="@+id/ivLogout"
+                            android:id="@+id/ivLogin"
                             android:layout_width="24dp"
                             android:layout_height="24dp"
                             android:src="@drawable/ic_exit_grey600_24dp"
@@ -174,10 +221,10 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_centerVertical="true"
-                            android:layout_toRightOf="@+id/ivLogout"
+                            android:layout_toRightOf="@+id/ivLogin"
                             android:layout_marginLeft="24dp"
                             android:textColor="?android:attr/textColorPrimary"
-                            android:text="@string/logout_button"
+                            android:text="@string/login_button"
                             />
 
                     </RelativeLayout>
@@ -201,6 +248,7 @@
                 android:layout_height="match_parent"
                 android:layout_below="@+id/tvSummary"
                 android:layout_marginTop="12dp"
+                android:layout_marginBottom="12dp"
                 >
 
                 <RelativeLayout

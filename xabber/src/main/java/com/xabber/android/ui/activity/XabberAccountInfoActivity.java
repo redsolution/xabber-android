@@ -5,11 +5,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -45,6 +47,7 @@ public class XabberAccountInfoActivity extends ManagedActivity {
     private TextView tvAccountName;
     private TextView tvAccountJid;
     private RelativeLayout rlLogout;
+    private RelativeLayout rlLogin;
     private RelativeLayout rlSync;
     private XMPPAccountAdapter adapter;
     private List<XMPPAccountSettings> xmppAccounts;
@@ -76,6 +79,15 @@ public class XabberAccountInfoActivity extends ManagedActivity {
 
         tvAccountName = (TextView) findViewById(R.id.tvAccountName);
         tvAccountJid = (TextView) findViewById(R.id.tvAccountJid);
+
+        rlLogin = (RelativeLayout) findViewById(R.id.rlLogin);
+        rlLogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = XabberLoginActivity.createIntent(XabberAccountInfoActivity.this);
+                startActivity(intent);
+            }
+        });
 
         rlLogout = (RelativeLayout) findViewById(R.id.rlLogout);
         rlLogout.setOnClickListener(new View.OnClickListener() {
@@ -111,6 +123,8 @@ public class XabberAccountInfoActivity extends ManagedActivity {
             String accountName = account.getFirstName() + " " + account.getLastName();
             tvAccountName.setText(accountName);
             tvAccountJid.setText(account.getUsername());
+        } else {
+            showLogin();
         }
         List<XMPPAccountSettings> items = XabberAccountManager.getInstance().getXmppAccounts();
         if (items != null) {
@@ -202,6 +216,7 @@ public class XabberAccountInfoActivity extends ManagedActivity {
 
     private void handleSuccessLogout(ResponseBody s) {
         XabberAccountManager.getInstance().removeAccount();
+        showLogin();
         hideProgress();
         Toast.makeText(this, R.string.logout_success, Toast.LENGTH_SHORT).show();
     }
@@ -230,6 +245,20 @@ public class XabberAccountInfoActivity extends ManagedActivity {
             progressDialog.dismiss();
             progressDialog = null;
         }
+    }
+
+    private void showLogin() {
+        // hide other elements
+        CardView cardList = (CardView) findViewById(R.id.cardList);
+        LinearLayout llAccount = (LinearLayout) findViewById(R.id.llAccount);
+
+        rlLogout.setVisibility(View.GONE);
+        rlSync.setVisibility(View.GONE);
+        cardList.setVisibility(View.GONE);
+        llAccount.setVisibility(View.GONE);
+
+        // show login button
+        rlLogin.setVisibility(View.VISIBLE);
     }
 }
 
