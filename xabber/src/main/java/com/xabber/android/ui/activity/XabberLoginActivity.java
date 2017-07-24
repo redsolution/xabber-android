@@ -38,9 +38,11 @@ import com.xabber.android.R;
 import com.xabber.android.data.connection.NetworkManager;
 import com.xabber.android.data.xaccount.AuthManager;
 import com.xabber.android.data.xaccount.XAccountTokenDTO;
+import com.xabber.android.data.xaccount.XMPPAccountSettings;
 import com.xabber.android.data.xaccount.XabberAccount;
 
 import java.util.Collections;
+import java.util.List;
 
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
@@ -337,7 +339,28 @@ public class XabberLoginActivity extends ManagedActivity implements View.OnClick
     }
 
     private void handleSuccessGetAccount(@NonNull XabberAccount xabberAccount) {
-        Toast.makeText(this, xabberAccount.getId() + " " + xabberAccount.getFirstName() + " " + xabberAccount.getLastName(), Toast.LENGTH_LONG).show();
+        getSettings();
+    }
+
+    private void getSettings() {
+        Subscription getAccountSubscription = AuthManager.getClientSettings()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<List<XMPPAccountSettings>>() {
+                    @Override
+                    public void call(List<XMPPAccountSettings> s) {
+                        handleSuccessGetSettings(s);
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        handleErrorLogin(throwable);
+                    }
+                });
+        compositeSubscription.add(getAccountSubscription);
+    }
+
+    private void handleSuccessGetSettings(List<XMPPAccountSettings> settings) {
         showProgress(false);
 
         Intent intent = ContactListActivity.createIntent(this);

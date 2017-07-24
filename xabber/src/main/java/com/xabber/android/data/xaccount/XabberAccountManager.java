@@ -265,6 +265,7 @@ public class XabberAccountManager implements OnLoadListener {
         realm.commitTransaction();
         realm.close();
 
+        updateXmppAccounts(result);
         return Single.just(result);
     }
 
