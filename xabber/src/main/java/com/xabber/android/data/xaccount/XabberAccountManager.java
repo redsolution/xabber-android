@@ -121,6 +121,7 @@ public class XabberAccountManager implements OnLoadListener {
 
     public void removeAccount() {
         this.account = null;
+        this.xmppAccounts = null;
     }
 
     public Single<XabberAccount> saveOrUpdateXabberAccountToRealm(XabberAccountDTO xabberAccount, String token) {
@@ -203,6 +204,21 @@ public class XabberAccountManager implements OnLoadListener {
         Realm realm = RealmManager.getInstance().getNewBackgroundRealm();
 
         final RealmResults<XabberAccountRealm> results = realm.where(XabberAccountRealm.class).findAll();
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                success[0] = results.deleteAllFromRealm();
+            }
+        });
+        realm.close();
+        return success[0];
+    }
+
+    public boolean deleteXMPPAccountsFromRealm() {
+        final boolean[] success = new boolean[1];
+        Realm realm = RealmManager.getInstance().getNewBackgroundRealm();
+
+        final RealmResults<XMPPAccountSettignsRealm> results = realm.where(XMPPAccountSettignsRealm.class).findAll();
         realm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
