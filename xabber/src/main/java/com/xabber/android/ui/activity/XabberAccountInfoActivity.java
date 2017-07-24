@@ -89,7 +89,10 @@ public class XabberAccountInfoActivity extends ManagedActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        loadAccountsFromRealm();
+        List<XMPPAccountSettings> items = XabberAccountManager.getInstance().getXmppAccounts();
+        if (items != null) {
+            updateXmppAccounts(items);
+        }
     }
 
     private void getSettings() {

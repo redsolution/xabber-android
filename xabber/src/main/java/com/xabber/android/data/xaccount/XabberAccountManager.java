@@ -1,6 +1,8 @@
 package com.xabber.android.data.xaccount;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.OnLoadListener;
@@ -17,6 +19,11 @@ import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmResults;
 import rx.Single;
+import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
+import rx.schedulers.Schedulers;
+import rx.subscriptions.CompositeSubscription;
 
 /**
  * Created by valery.miller on 19.07.17.
@@ -28,6 +35,9 @@ public class XabberAccountManager implements OnLoadListener {
     private static XabberAccountManager instance;
 
     private XabberAccount account;
+    private List<XMPPAccountSettings> xmppAccounts;
+
+    private CompositeSubscription compositeSubscription = new CompositeSubscription();
 
     public static XabberAccountManager getInstance() {
         if (instance == null)
@@ -35,22 +45,73 @@ public class XabberAccountManager implements OnLoadListener {
         return instance;
     }
 
-    private XabberAccountManager() {}
+    private XabberAccountManager() {
+        xmppAccounts = new ArrayList<>();
+    }
 
     @Override
     public void onLoad() {
-        final XabberAccount account = loadXabberAccountFromRealm();
+        XabberAccount account = loadXabberAccountFromRealm();
+        this.account = account;
 
-        Application.getInstance().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                onLoaded(account);
-            }
-        });
+        if (account != null) {
+            getAccountFromNet(account.getToken());
+        }
     }
 
-    private void onLoaded(XabberAccount account) {
-        this.account = account;
+    private void getAccountFromNet(String token) {
+        Subscription getAccountSubscription = AuthManager.getAccount(token)
+                .subscribe(new Action1<XabberAccount>() {
+                    @Override
+                    public void call(XabberAccount xabberAccount) {
+                        handleSuccessGetAccount(xabberAccount);
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        handleErrorGetAccount(throwable);
+                    }
+                });
+        compositeSubscription.add(getAccountSubscription);
+    }
+
+    private void handleSuccessGetAccount(@NonNull XabberAccount xabberAccount) {
+        Log.d(LOG_TAG, "Xabber account loading from net: successfully");
+        this.account = xabberAccount;
+        getSettingsFromNet();
+    }
+
+    private void handleErrorGetAccount(Throwable throwable) {
+        Log.d(LOG_TAG, "Xabber account loading from net: error: " + throwable.toString());
+        // TODO: 24.07.17 need login
+    }
+
+    private void getSettingsFromNet() {
+        Subscription getSettingsSubscription = AuthManager.getClientSettings()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<List<XMPPAccountSettings>>() {
+                    @Override
+                    public void call(List<XMPPAccountSettings> s) {
+                        updateXmppAccounts(s);
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        Log.d(LOG_TAG, "XMPP accounts loading from net: error: " + throwable.toString());
+                    }
+                });
+        compositeSubscription.add(getSettingsSubscription);
+    }
+
+    private void updateXmppAccounts(List<XMPPAccountSettings> items) {
+        Log.d(LOG_TAG, "XMPP accounts loading from net: successfully");
+        this.xmppAccounts.clear();
+        this.xmppAccounts.addAll(items);
+    }
+
+    public List<XMPPAccountSettings> getXmppAccounts() {
+        return xmppAccounts;
     }
 
     @Nullable
