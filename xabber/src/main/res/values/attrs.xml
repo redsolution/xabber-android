@@ -48,6 +48,8 @@
         <attr name="conference_filter_input_background" format="reference" />
 
         <attr name="message_status_item_background_color" format="reference|color" />
+        <attr name="settings_background_color" format="reference|color" />
+        <attr name="settings_separator_background_color" format="reference|color" />
 
     </declare-styleable>
 </resources>
