@@ -1,5 +1,6 @@
 package com.xabber.android.ui.activity;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -41,6 +42,7 @@ public class XabberAccountInfoActivity extends ManagedActivity {
     private Button btnLogout;
     private XMPPAccountAdapter adapter;
     private List<XMPPAccountSettings> xmppAccounts;
+    private ProgressDialog progressDialog;
 
     private CompositeSubscription compositeSubscription = new CompositeSubscription();
 
@@ -97,7 +99,10 @@ public class XabberAccountInfoActivity extends ManagedActivity {
     private void synchronize() {
         XabberAccount account = XabberAccountManager.getInstance().getAccount();
         if (account != null && account.getToken() != null) {
+            showProgress(getResources().getString(R.string.progress_title_sync));
             getAccount(account.getToken());
+        } else {
+            Toast.makeText(XabberAccountInfoActivity.this, R.string.sync_fail, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -109,13 +114,15 @@ public class XabberAccountInfoActivity extends ManagedActivity {
                     @Override
                     public void call(List<XMPPAccountSettings> s) {
                         Log.d(LOG_TAG, "XMPP accounts loading from net: successfully");
-                        Toast.makeText(XabberAccountInfoActivity.this, R.string.sync_success, Toast.LENGTH_SHORT).show();
                         updateXmppAccounts(s);
+                        hideProgress();
+                        Toast.makeText(XabberAccountInfoActivity.this, R.string.sync_success, Toast.LENGTH_SHORT).show();
                     }
                 }, new Action1<Throwable>() {
                     @Override
                     public void call(Throwable throwable) {
                         Log.d(LOG_TAG, "XMPP accounts loading from net: error: " + throwable.toString());
+                        hideProgress();
                         Toast.makeText(XabberAccountInfoActivity.this, R.string.sync_fail, Toast.LENGTH_SHORT).show();
                     }
                 });
@@ -137,6 +144,7 @@ public class XabberAccountInfoActivity extends ManagedActivity {
                     @Override
                     public void call(Throwable throwable) {
                         Log.d(LOG_TAG, "Xabber account loading from net: error: " + throwable.toString());
+                        hideProgress();
                         Toast.makeText(XabberAccountInfoActivity.this, R.string.sync_fail, Toast.LENGTH_SHORT).show();
                     }
                 });
@@ -150,6 +158,7 @@ public class XabberAccountInfoActivity extends ManagedActivity {
     }
 
     private void logout() {
+        showProgress(getResources().getString(R.string.progress_title_logout));
         Subscription logoutSubscription = AuthManager.logout()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -169,10 +178,12 @@ public class XabberAccountInfoActivity extends ManagedActivity {
 
     private void handleSuccessLogout(ResponseBody s) {
         XabberAccountManager.getInstance().removeAccount();
+        hideProgress();
         Toast.makeText(this, R.string.logout_success, Toast.LENGTH_SHORT).show();
     }
 
     private void handleErrorLogout(Throwable throwable) {
+        hideProgress();
         Toast.makeText(this, R.string.logout_fail, Toast.LENGTH_SHORT).show();
         Log.d(LOG_TAG, "Error while logout request: " + throwable.toString());
     }
@@ -181,6 +192,20 @@ public class XabberAccountInfoActivity extends ManagedActivity {
     protected void onDestroy() {
         super.onDestroy();
         compositeSubscription.clear();
+    }
+
+    private void showProgress(String title) {
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setTitle(title);
+        progressDialog.setMessage(getResources().getString(R.string.progress_message));
+        progressDialog.show();
+    }
+
+    private void hideProgress() {
+        if (progressDialog != null) {
+            progressDialog.dismiss();
+            progressDialog = null;
+        }
     }
 }
 

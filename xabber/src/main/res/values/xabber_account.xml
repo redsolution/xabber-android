@@ -4,4 +4,9 @@
     <string name="sync_fail">Synchronization failed</string>
     <string name="logout_success">Logout successful</string>
     <string name="logout_fail">Logout failed</string>
+
+    <string name="progress_message">Please waiting</string>
+    <string name="progress_title_sync">Synchronization..</string>
+    <string name="progress_title_logout">Logout..</string>
+    <string name="progress_title_login">Login..</string>
 </resources>
