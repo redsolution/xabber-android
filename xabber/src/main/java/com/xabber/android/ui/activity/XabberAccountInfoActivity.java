@@ -7,9 +7,10 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,6 +20,7 @@ import com.xabber.android.data.xaccount.XMPPAccountSettings;
 import com.xabber.android.data.xaccount.XabberAccount;
 import com.xabber.android.data.xaccount.XabberAccountManager;
 import com.xabber.android.ui.adapter.XMPPAccountAdapter;
+import com.xabber.android.ui.color.BarPainter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,8 +40,12 @@ public class XabberAccountInfoActivity extends ManagedActivity {
 
     private final static String LOG_TAG = XabberAccountInfoActivity.class.getSimpleName();
 
-    private TextView tvUsername;
-    private Button btnLogout;
+    private Toolbar toolbar;
+    private BarPainter barPainter;
+    private TextView tvAccountName;
+    private TextView tvAccountJid;
+    private RelativeLayout rlLogout;
+    private RelativeLayout rlSync;
     private XMPPAccountAdapter adapter;
     private List<XMPPAccountSettings> xmppAccounts;
     private ProgressDialog progressDialog;
@@ -57,18 +63,30 @@ public class XabberAccountInfoActivity extends ManagedActivity {
 
         setContentView(R.layout.activity_xabber_account_info);
 
-        tvUsername = (TextView) findViewById(R.id.tvUsername);
+        toolbar = (Toolbar) findViewById(R.id.toolbar_default);
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+        toolbar.setTitle(R.string.xabber_account_title);
+        barPainter = new BarPainter(this, toolbar);
 
-        btnLogout = (Button) findViewById(R.id.btnLogout);
-        btnLogout.setOnClickListener(new View.OnClickListener() {
+        tvAccountName = (TextView) findViewById(R.id.tvAccountName);
+        tvAccountJid = (TextView) findViewById(R.id.tvAccountJid);
+
+        rlLogout = (RelativeLayout) findViewById(R.id.rlLogout);
+        rlLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 logout();
             }
         });
 
-        Button btnSync = (Button) findViewById(R.id.btnSync);
-        btnSync.setOnClickListener(new View.OnClickListener() {
+        rlSync = (RelativeLayout) findViewById(R.id.rlSync);
+        rlSync.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 synchronize();
@@ -79,6 +97,7 @@ public class XabberAccountInfoActivity extends ManagedActivity {
         xmppAccounts = new ArrayList<>();
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.rcvXmppUsers);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setNestedScrollingEnabled(false);
         adapter.setItems(xmppAccounts);
         recyclerView.setAdapter(adapter);
     }
@@ -86,9 +105,12 @@ public class XabberAccountInfoActivity extends ManagedActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        barPainter.setDefaultColor();
         XabberAccount account = XabberAccountManager.getInstance().getAccount();
         if (account != null) {
-            tvUsername.setText(account.getUsername());
+            String accountName = account.getFirstName() + " " + account.getLastName();
+            tvAccountName.setText(accountName);
+            tvAccountJid.setText(account.getUsername());
         }
         List<XMPPAccountSettings> items = XabberAccountManager.getInstance().getXmppAccounts();
         if (items != null) {
@@ -137,7 +159,9 @@ public class XabberAccountInfoActivity extends ManagedActivity {
                     @Override
                     public void call(XabberAccount s) {
                         Log.d(LOG_TAG, "Xabber account loading from net: successfully");
-                        tvUsername.setText(s.getUsername());
+                        String accountName = s.getFirstName() + " " + s.getLastName();
+                        tvAccountName.setText(accountName);
+                        tvAccountJid.setText(s.getUsername());
                         getSettings();
                     }
                 }, new Action1<Throwable>() {

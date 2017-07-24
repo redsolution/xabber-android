@@ -9,4 +9,10 @@
     <string name="progress_title_sync">Synchronization..</string>
     <string name="progress_title_logout">Logout..</string>
     <string name="progress_title_login">Login..</string>
+
+    <string name="xabber_account_title">Xabber Account</string>
+    <string name="xmpp_account_title">XMPP Accounts</string>
+    <string name="xabber_account_summary">Xabber account lets you easily sync your settings and connected XMPP accounts between various devices.</string>
+
+    <string name="logout_button">LOGOUT</string>
 </resources>

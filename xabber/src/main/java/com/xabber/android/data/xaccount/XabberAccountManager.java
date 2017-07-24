@@ -121,7 +121,7 @@ public class XabberAccountManager implements OnLoadListener {
 
     public void removeAccount() {
         this.account = null;
-        this.xmppAccounts = null;
+        this.xmppAccounts.clear();
     }
 
     public Single<XabberAccount> saveOrUpdateXabberAccountToRealm(XabberAccountDTO xabberAccount, String token) {
