@@ -35,7 +35,7 @@ import rx.subscriptions.CompositeSubscription;
 
 public class XabberAccountInfoActivity extends ManagedActivity {
 
-    private final static String TAG = XabberAccountInfoActivity.class.getSimpleName();
+    private final static String LOG_TAG = XabberAccountInfoActivity.class.getSimpleName();
 
     private TextView tvUsername;
     private Button btnLogout;
@@ -69,7 +69,7 @@ public class XabberAccountInfoActivity extends ManagedActivity {
         btnSync.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getSettings();
+                synchronize();
             }
         });
 
@@ -77,21 +77,27 @@ public class XabberAccountInfoActivity extends ManagedActivity {
         xmppAccounts = new ArrayList<>();
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.rcvXmppUsers);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-        XabberAccount account = XabberAccountManager.getInstance().getAccount();
-        if (account != null) {
-            tvUsername.setText(account.getUsername());
-            adapter.setItems(xmppAccounts);
-            recyclerView.setAdapter(adapter);
-        }
+        adapter.setItems(xmppAccounts);
+        recyclerView.setAdapter(adapter);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        XabberAccount account = XabberAccountManager.getInstance().getAccount();
+        if (account != null) {
+            tvUsername.setText(account.getUsername());
+        }
         List<XMPPAccountSettings> items = XabberAccountManager.getInstance().getXmppAccounts();
         if (items != null) {
             updateXmppAccounts(items);
+        }
+    }
+
+    private void synchronize() {
+        XabberAccount account = XabberAccountManager.getInstance().getAccount();
+        if (account != null && account.getToken() != null) {
+            getAccount(account.getToken());
         }
     }
 
@@ -102,34 +108,36 @@ public class XabberAccountInfoActivity extends ManagedActivity {
                 .subscribe(new Action1<List<XMPPAccountSettings>>() {
                     @Override
                     public void call(List<XMPPAccountSettings> s) {
+                        Log.d(LOG_TAG, "XMPP accounts loading from net: successfully");
+                        Toast.makeText(XabberAccountInfoActivity.this, R.string.sync_success, Toast.LENGTH_SHORT).show();
                         updateXmppAccounts(s);
-                        Toast.makeText(XabberAccountInfoActivity.this, "success", Toast.LENGTH_SHORT).show();
                     }
                 }, new Action1<Throwable>() {
                     @Override
                     public void call(Throwable throwable) {
-                        Log.d(TAG, "Error while get settings: " + throwable.toString());
-                        Toast.makeText(XabberAccountInfoActivity.this, "error", Toast.LENGTH_SHORT).show();
+                        Log.d(LOG_TAG, "XMPP accounts loading from net: error: " + throwable.toString());
+                        Toast.makeText(XabberAccountInfoActivity.this, R.string.sync_fail, Toast.LENGTH_SHORT).show();
                     }
                 });
         compositeSubscription.add(getSettingsSubscription);
     }
 
-    private void loadAccountsFromRealm() {
-        Subscription loadAccountsSubscription = XabberAccountManager.getInstance().loadXMPPAccountSettingsFromRealm()
+    private void getAccount(String token) {
+        Subscription loadAccountsSubscription = AuthManager.getAccount(token)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<List<XMPPAccountSettings>>() {
+                .subscribe(new Action1<XabberAccount>() {
                     @Override
-                    public void call(List<XMPPAccountSettings> s) {
-                        updateXmppAccounts(s);
-                        Toast.makeText(XabberAccountInfoActivity.this, "success from realm", Toast.LENGTH_SHORT).show();
+                    public void call(XabberAccount s) {
+                        Log.d(LOG_TAG, "Xabber account loading from net: successfully");
+                        tvUsername.setText(s.getUsername());
+                        getSettings();
                     }
                 }, new Action1<Throwable>() {
                     @Override
                     public void call(Throwable throwable) {
-                        Log.d(TAG, "Error while get settings: " + throwable.toString());
-                        Toast.makeText(XabberAccountInfoActivity.this, "error", Toast.LENGTH_SHORT).show();
+                        Log.d(LOG_TAG, "Xabber account loading from net: error: " + throwable.toString());
+                        Toast.makeText(XabberAccountInfoActivity.this, R.string.sync_fail, Toast.LENGTH_SHORT).show();
                     }
                 });
         compositeSubscription.add(loadAccountsSubscription);
@@ -161,12 +169,12 @@ public class XabberAccountInfoActivity extends ManagedActivity {
 
     private void handleSuccessLogout(ResponseBody s) {
         XabberAccountManager.getInstance().removeAccount();
-        Toast.makeText(this, "Logout successful", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, R.string.logout_success, Toast.LENGTH_SHORT).show();
     }
 
     private void handleErrorLogout(Throwable throwable) {
-        Toast.makeText(this, "Logout error", Toast.LENGTH_SHORT).show();
-        Log.d(TAG, "Error while logout request: " + throwable.toString());
+        Toast.makeText(this, R.string.logout_fail, Toast.LENGTH_SHORT).show();
+        Log.d(LOG_TAG, "Error while logout request: " + throwable.toString());
     }
 
     @Override

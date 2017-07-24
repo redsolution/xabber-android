@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="sync_success">Synchronization successful</string>
+    <string name="sync_fail">Synchronization failed</string>
+    <string name="logout_success">Logout successful</string>
+    <string name="logout_fail">Logout failed</string>
+</resources>
