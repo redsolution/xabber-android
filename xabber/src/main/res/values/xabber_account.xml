@@ -20,6 +20,7 @@
     <string name="progress_title_sync">Synchronization..</string>
     <string name="progress_title_logout">Logout..</string>
     <string name="progress_title_login">Login..</string>
+    <string name="progress_title_signup">SignUp..</string>
 
     <string name="xabber_account_title">Xabber Account</string>
     <string name="xmpp_account_title">XMPP Accounts</string>
@@ -27,4 +28,7 @@
 
     <string name="logout_button">LOGOUT</string>
     <string name="login_button">LOGIN</string>
+
+    <string name="no_internet">No internet connection</string>
+    <string name="empty_field">Empty field</string>
 </resources>

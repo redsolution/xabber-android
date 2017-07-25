@@ -9,9 +9,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.xabber.android.R;
+import com.xabber.android.data.connection.NetworkManager;
 import com.xabber.android.ui.activity.XabberLoginActivity;
 
 /**
@@ -23,6 +26,7 @@ public class XabberSignUpFragment extends Fragment implements View.OnClickListen
     private AppCompatCheckBox checkBox;
     private Button btnSignup;
     private RelativeLayout rlLogin;
+    private EditText edtEmail;
 
     @Nullable
     @Override
@@ -36,6 +40,7 @@ public class XabberSignUpFragment extends Fragment implements View.OnClickListen
 
         rlLogin = (RelativeLayout) view.findViewById(R.id.rlLogin);
         btnSignup = (Button) view.findViewById(R.id.btnSignup);
+        edtEmail = (EditText) view.findViewById(R.id.edtEmail);
 
         checkBox = (AppCompatCheckBox) view.findViewById(R.id.chbAgrees);
         checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -46,6 +51,7 @@ public class XabberSignUpFragment extends Fragment implements View.OnClickListen
         });
 
         rlLogin.setOnClickListener(this);
+        btnSignup.setOnClickListener(this);
     }
 
     @Override
@@ -54,6 +60,23 @@ public class XabberSignUpFragment extends Fragment implements View.OnClickListen
             case R.id.rlLogin:
                 ((XabberLoginActivity)getActivity()).showLoginFragment();
                 break;
+            case R.id.btnSignup:
+                onSignUpClick();
+                break;
         }
+    }
+
+    private void onSignUpClick() {
+        String email = edtEmail.getText().toString().trim();
+
+        if (email.isEmpty()) {
+            edtEmail.setError(getString(R.string.empty_field));
+            return;
+        }
+
+        if (NetworkManager.isNetworkAvailable()) {
+            ((XabberLoginActivity)getActivity()).signup(email);
+        } else
+            Toast.makeText(getActivity(), R.string.no_internet, Toast.LENGTH_LONG).show();
     }
 }

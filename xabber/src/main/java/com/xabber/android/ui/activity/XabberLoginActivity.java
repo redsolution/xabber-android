@@ -251,7 +251,7 @@ public class XabberLoginActivity extends ManagedActivity implements View.OnClick
     }
 
     private void loginSocial(String provider, String token) {
-        showProgress();
+        showProgress(getString(R.string.progress_title_login));
         Subscription loginSocialSubscription = AuthManager.loginSocial(provider, token)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -270,7 +270,7 @@ public class XabberLoginActivity extends ManagedActivity implements View.OnClick
     }
 
     private void loginSocialTwitter(String token, String twitterTokenSecret, String secret, String key) {
-        showProgress();
+        showProgress(getString(R.string.progress_title_login));
         Subscription loginSocialSubscription = AuthManager.loginSocialTwitter(token, twitterTokenSecret, secret, key)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -289,7 +289,7 @@ public class XabberLoginActivity extends ManagedActivity implements View.OnClick
     }
 
     public void login(String login, String pass) {
-        showProgress();
+        showProgress(getString(R.string.progress_title_login));
         Subscription loginSubscription = AuthManager.login(login, pass)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -372,9 +372,64 @@ public class XabberLoginActivity extends ManagedActivity implements View.OnClick
         startActivity(intent);
     }
 
-    private void showProgress() {
+    public void signup(String email) {
+        showProgress(getString(R.string.progress_title_signup));
+        Subscription signupSubscription = AuthManager.signup(email)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<XAccountTokenDTO>() {
+                    @Override
+                    public void call(XAccountTokenDTO s) {
+                        handleSuccessSignUp(s);
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        handleErrorSignUp(throwable);
+                    }
+                });
+        compositeSubscription.add(signupSubscription);
+    }
+
+    private void handleSuccessSignUp(XAccountTokenDTO s) {
+        getAccountAfterSignUp(s.getToken());
+    }
+
+    private void handleErrorSignUp(Throwable throwable) {
+        Log.d(TAG, "Error while signup request: " + throwable.toString());
+        hideProgress();
+    }
+
+    private void getAccountAfterSignUp(String token) {
+        Subscription getAccountSubscription = AuthManager.getAccount(token)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<XabberAccount>() {
+                    @Override
+                    public void call(XabberAccount xabberAccount) {
+                        handleSuccessGetAccountAfterSignUp(xabberAccount);
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        handleErrorSignUp(throwable);
+                    }
+                });
+        compositeSubscription.add(getAccountSubscription);
+    }
+
+    private void handleSuccessGetAccountAfterSignUp(XabberAccount account) {
+        hideProgress();
+
+        Intent intent = ContactListActivity.createIntent(this);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        finish();
+        startActivity(intent);
+    }
+
+    private void showProgress(String title) {
         progressDialog = new ProgressDialog(this);
-        progressDialog.setTitle(getResources().getString(R.string.progress_title_login));
+        progressDialog.setTitle(title);
         progressDialog.setMessage(getResources().getString(R.string.progress_message));
         progressDialog.show();
     }
