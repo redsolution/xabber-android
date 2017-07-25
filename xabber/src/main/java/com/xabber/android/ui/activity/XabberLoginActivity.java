@@ -1,20 +1,16 @@
 package com.xabber.android.ui.activity;
 
+import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.PorterDuff;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -28,9 +24,7 @@ import com.twitter.sdk.android.core.DefaultLogger;
 import com.twitter.sdk.android.core.Result;
 import com.twitter.sdk.android.core.Twitter;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
-import com.twitter.sdk.android.core.TwitterAuthToken;
 import com.twitter.sdk.android.core.TwitterConfig;
-import com.twitter.sdk.android.core.TwitterCore;
 import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.TwitterSession;
 import com.twitter.sdk.android.core.identity.TwitterAuthClient;
@@ -40,6 +34,8 @@ import com.xabber.android.data.xaccount.AuthManager;
 import com.xabber.android.data.xaccount.XAccountTokenDTO;
 import com.xabber.android.data.xaccount.XMPPAccountSettings;
 import com.xabber.android.data.xaccount.XabberAccount;
+import com.xabber.android.ui.fragment.XabberLoginFragment;
+import com.xabber.android.ui.fragment.XabberSignUpFragment;
 
 import java.util.Collections;
 import java.util.List;
@@ -57,12 +53,14 @@ import rx.subscriptions.CompositeSubscription;
 public class XabberLoginActivity extends ManagedActivity implements View.OnClickListener {
 
     private final static String TAG = XabberLoginActivity.class.getSimpleName();
+    private final static String CURRENT_FRAGMENT = "current_fragment";
+    private final static String FRAGMENT_LOGIN = "fragment_login";
+    private final static String FRAGMENT_SIGNUP = "fragment_signup";
 
-    private EditText edtLogin;
-    private EditText edtPass;
-    private Button btnLogin;
-    private RelativeLayout rlForgotPass;
-    private ProgressBar progressBar;
+    private Fragment fragmentLogin;
+    private Fragment fragmentSignUp;
+    private FragmentTransaction fTrans;
+    private String currentFragment = FRAGMENT_LOGIN;
 
     private ImageView ivFacebook;
     private ImageView ivGoogle;
@@ -86,31 +84,25 @@ public class XabberLoginActivity extends ManagedActivity implements View.OnClick
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        if (savedInstanceState != null)
+            currentFragment = savedInstanceState.getString(CURRENT_FRAGMENT);
+
         setContentView(R.layout.activity_xabber_login);
         setStatusBarTranslucent();
         overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
 
         ImageView backgroundImage = (ImageView) findViewById(R.id.intro_background_image);
-        edtLogin = (EditText) findViewById(R.id.edtLogin);
-        edtPass = (EditText) findViewById(R.id.edtPass);
-        btnLogin = (Button) findViewById(R.id.btnLogin);
-        rlForgotPass = (RelativeLayout) findViewById(R.id.rlForgotPass);
 
         ivFacebook = (ImageView) findViewById(R.id.ivFacebook);
         ivGoogle = (ImageView) findViewById(R.id.ivGoogle);
         ivTwitter = (ImageView) findViewById(R.id.ivTwitter);
         ivGithub = (ImageView) findViewById(R.id.ivGithub);
 
-        progressBar = (ProgressBar) findViewById(R.id.progressBar);
-        progressBar.getIndeterminateDrawable().setColorFilter(ContextCompat.getColor(this, R.color.red_700), PorterDuff.Mode.MULTIPLY);
-
         Glide.with(this)
                 .load(R.drawable.intro_background)
                 .centerCrop()
                 .into(backgroundImage);
 
-        btnLogin.setOnClickListener(this);
-        rlForgotPass.setOnClickListener(this);
         ivFacebook.setOnClickListener(this);
         ivGoogle.setOnClickListener(this);
         ivTwitter.setOnClickListener(this);
@@ -121,10 +113,43 @@ public class XabberLoginActivity extends ManagedActivity implements View.OnClick
         initTwitterAuth();
     }
 
+    public void showSignUpFragment() {
+        if (fragmentSignUp == null)
+            fragmentSignUp = new XabberSignUpFragment();
+
+        fTrans = getFragmentManager().beginTransaction();
+        fTrans.replace(R.id.container, fragmentSignUp);
+        fTrans.commit();
+        currentFragment = FRAGMENT_SIGNUP;
+    }
+
+    public void showLoginFragment() {
+        if (fragmentLogin == null)
+            fragmentLogin = new XabberLoginFragment();
+
+        fTrans = getFragmentManager().beginTransaction();
+        fTrans.replace(R.id.container, fragmentLogin);
+        fTrans.commit();
+        currentFragment = FRAGMENT_LOGIN;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (currentFragment.equals(FRAGMENT_LOGIN)) showLoginFragment();
+        else showSignUpFragment();
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
         compositeSubscription.clear();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(CURRENT_FRAGMENT, currentFragment);
     }
 
     @Override
@@ -139,11 +164,6 @@ public class XabberLoginActivity extends ManagedActivity implements View.OnClick
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.btnLogin:
-                onLoginClick();
-                break;
-            case R.id.rlForgotPass:
-                break;
             case R.id.ivFacebook:
                 onSocialLoginClick(R.id.ivFacebook);
                 break;
@@ -157,27 +177,6 @@ public class XabberLoginActivity extends ManagedActivity implements View.OnClick
                 onSocialLoginClick(R.id.ivTwitter);
                 break;
         }
-    }
-
-    private void onLoginClick() {
-        String login = edtLogin.getText().toString().trim();
-        String pass = edtPass.getText().toString().trim();
-
-        if (login.isEmpty()) {
-            edtLogin.setError("empty field");
-            return;
-        }
-
-        if (pass.isEmpty()) {
-            edtPass.setError("empty field");
-            return;
-        }
-
-        if (NetworkManager.isNetworkAvailable()) {
-            showProgress(true);
-            login(login, pass);
-        } else
-            Toast.makeText(this, "No internet connection", Toast.LENGTH_LONG).show();
     }
 
     private void onSocialLoginClick(int id) {
@@ -286,7 +285,7 @@ public class XabberLoginActivity extends ManagedActivity implements View.OnClick
         compositeSubscription.add(loginSocialSubscription);
     }
 
-    private void login(String login, String pass) {
+    public void login(String login, String pass) {
         Subscription loginSubscription = AuthManager.login(login, pass)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -369,14 +368,8 @@ public class XabberLoginActivity extends ManagedActivity implements View.OnClick
         startActivity(intent);
     }
 
-    private void showProgress(boolean show) {
-        if (show) {
-            progressBar.setVisibility(View.VISIBLE);
-            btnLogin.setVisibility(View.INVISIBLE);
-        } else {
-            progressBar.setVisibility(View.GONE);
-            btnLogin.setVisibility(View.VISIBLE);
-        }
+    public void showProgress(boolean show) {
+        // TODO: 25.07.17 add progress popup
     }
 
     void setStatusBarTranslucent() {

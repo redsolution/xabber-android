@@ -1,5 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <string name="xabber_account_info">Xabber account is required to use redsolution XMPP services and sync device settings.</string>
+    <string name="social_sign_in">Social Sign In</string>
+
+    <string name="email_hint">Email</string>
+    <string name="username_hint">Xabber username or email</string>
+    <string name="pass_hint">Password</string>
+    <string name="signup">SIGN UP</string>
+    <string name="forgot_pass">FORGOT PASSWORD?</string>
+    <string name="agrees">I agree to receive occasional updates from Xabber team. We promise not to bother you too often with it.</string>
+
     <string name="sync_success">Synchronization successful</string>
     <string name="sync_fail">Synchronization failed</string>
     <string name="logout_success">Logout successful</string>

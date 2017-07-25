@@ -20,7 +20,7 @@
             android:layout_marginBottom="16dp"
             android:textColor="@color/white"
             android:inputType="textEmailAddress"
-            android:hint="Xabber username or email"
+            android:hint="@string/username_hint"
             />
 
     </android.support.design.widget.TextInputLayout>
@@ -41,7 +41,7 @@
             android:layout_marginBottom="16dp"
             android:inputType="textPassword"
             android:textColor="@color/white"
-            android:hint="Password"
+            android:hint="@string/pass_hint"
             />
 
     </android.support.design.widget.TextInputLayout>
@@ -55,7 +55,7 @@
         style="@style/Widget.AppCompat.Button.Colored"
         android:theme="@style/RedButton"
         android:textColor="@color/white"
-        android:text="login"
+        android:text="@string/login_button"
         />
 
     <ProgressBar
@@ -82,7 +82,28 @@
             android:layout_centerInParent="true"
             android:textColor="@color/white_text_secondary"
             android:textSize="12sp"
-            android:text="FORGOT PASSWORD?"
+            android:text="@string/forgot_pass"
+            />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/rlSignUp"
+        android:layout_width="match_parent"
+        android:layout_height="32dp"
+        android:layout_below="@id/rlForgotPass"
+        android:layout_marginTop="16dp"
+        android:background="?android:attr/selectableItemBackground"
+        android:clickable="true"
+        >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:textColor="@color/white_text_secondary"
+            android:textSize="12sp"
+            android:text="@string/signup"
             />
 
     </RelativeLayout>
