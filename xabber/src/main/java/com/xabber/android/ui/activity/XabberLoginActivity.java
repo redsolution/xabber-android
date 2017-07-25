@@ -2,6 +2,7 @@ package com.xabber.android.ui.activity;
 
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
@@ -61,6 +62,8 @@ public class XabberLoginActivity extends ManagedActivity implements View.OnClick
     private Fragment fragmentSignUp;
     private FragmentTransaction fTrans;
     private String currentFragment = FRAGMENT_LOGIN;
+
+    private ProgressDialog progressDialog;
 
     private ImageView ivFacebook;
     private ImageView ivGoogle;
@@ -248,7 +251,7 @@ public class XabberLoginActivity extends ManagedActivity implements View.OnClick
     }
 
     private void loginSocial(String provider, String token) {
-        showProgress(true);
+        showProgress();
         Subscription loginSocialSubscription = AuthManager.loginSocial(provider, token)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -267,7 +270,7 @@ public class XabberLoginActivity extends ManagedActivity implements View.OnClick
     }
 
     private void loginSocialTwitter(String token, String twitterTokenSecret, String secret, String key) {
-        showProgress(true);
+        showProgress();
         Subscription loginSocialSubscription = AuthManager.loginSocialTwitter(token, twitterTokenSecret, secret, key)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -286,6 +289,7 @@ public class XabberLoginActivity extends ManagedActivity implements View.OnClick
     }
 
     public void login(String login, String pass) {
+        showProgress();
         Subscription loginSubscription = AuthManager.login(login, pass)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -310,13 +314,13 @@ public class XabberLoginActivity extends ManagedActivity implements View.OnClick
     private void handleErrorLogin(Throwable throwable) {
         Log.d(TAG, "Error while login request: " + throwable.toString());
         Toast.makeText(this, "Username or password is incorrect", Toast.LENGTH_SHORT).show();
-        showProgress(false);
+        hideProgress();
     }
 
     private void handleErrorSocialLogin(Throwable throwable) {
         Log.d(TAG, "Error while social login request: " + throwable.toString());
         Toast.makeText(this, "Authentication error", Toast.LENGTH_SHORT).show();
-        showProgress(false);
+        hideProgress();
     }
 
     private void getAccount(String token) {
@@ -360,7 +364,7 @@ public class XabberLoginActivity extends ManagedActivity implements View.OnClick
     }
 
     private void handleSuccessGetSettings(List<XMPPAccountSettings> settings) {
-        showProgress(false);
+        hideProgress();
 
         Intent intent = ContactListActivity.createIntent(this);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -368,8 +372,18 @@ public class XabberLoginActivity extends ManagedActivity implements View.OnClick
         startActivity(intent);
     }
 
-    public void showProgress(boolean show) {
-        // TODO: 25.07.17 add progress popup
+    private void showProgress() {
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setTitle(getResources().getString(R.string.progress_title_login));
+        progressDialog.setMessage(getResources().getString(R.string.progress_message));
+        progressDialog.show();
+    }
+
+    private void hideProgress() {
+        if (progressDialog != null) {
+            progressDialog.dismiss();
+            progressDialog = null;
+        }
     }
 
     void setStatusBarTranslucent() {

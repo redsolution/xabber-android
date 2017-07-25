@@ -77,7 +77,6 @@ public class XabberLoginFragment extends Fragment implements View.OnClickListene
         }
 
         if (NetworkManager.isNetworkAvailable()) {
-            ((XabberLoginActivity)getActivity()).showProgress(true);
             ((XabberLoginActivity)getActivity()).login(login, pass);
         } else
             Toast.makeText(getActivity(), "No internet connection", Toast.LENGTH_LONG).show();
