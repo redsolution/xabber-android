@@ -34,5 +34,11 @@ public interface IXabberApi {
     @POST("accounts/current/client-settings/")
     Single<ResponseBody> updateClientSettings(@Header("Authorization") String token, @Body AuthManager.UpdateClientSettings body);
 
+    @POST("accounts/email_confirmation/")
+    Single<ResponseBody> confirmEmail(@Body AuthManager.Code code);
+
+    @POST("accounts/email_confirmation/")
+    Single<ResponseBody> confirmEmail(@Body AuthManager.Key key);
+
 }
 

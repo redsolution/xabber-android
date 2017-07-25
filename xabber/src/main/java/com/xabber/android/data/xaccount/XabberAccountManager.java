@@ -129,6 +129,7 @@ public class XabberAccountManager implements OnLoadListener {
         XabberAccountRealm xabberAccountRealm = new XabberAccountRealm(String.valueOf(xabberAccount.getId()));
 
         xabberAccountRealm.setToken(token);
+        xabberAccountRealm.setAccountStatus(xabberAccount.getAccountStatus());
         xabberAccountRealm.setUsername(xabberAccount.getUsername());
         xabberAccountRealm.setFirstName(xabberAccount.getFirstName());
         xabberAccountRealm.setLastName(xabberAccount.getLastName());
@@ -173,6 +174,7 @@ public class XabberAccountManager implements OnLoadListener {
 
         xabberAccount = new XabberAccount(
                 Integer.parseInt(accountRealm.getId()),
+                accountRealm.getAccountStatus(),
                 accountRealm.getUsername(),
                 accountRealm.getFirstName(),
                 accountRealm.getLastName(),

@@ -53,6 +53,11 @@ public class XabberAccountInfoActivity extends ManagedActivity {
     private List<XMPPAccountSettings> xmppAccounts;
     private ProgressDialog progressDialog;
 
+    // not verified
+    private TextView tvNotVerified;
+    private TextView tvNotVerifiedSummary;
+    private RelativeLayout rlResend;
+
     private CompositeSubscription compositeSubscription = new CompositeSubscription();
 
     @NonNull
@@ -105,6 +110,16 @@ public class XabberAccountInfoActivity extends ManagedActivity {
             }
         });
 
+        tvNotVerifiedSummary = (TextView) findViewById(R.id.tvNotVerifiedSummary);
+        tvNotVerified = (TextView) findViewById(R.id.tvNotVerified);
+        rlResend = (RelativeLayout) findViewById(R.id.rlResend);
+        rlResend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(XabberAccountInfoActivity.this, "resend", Toast.LENGTH_SHORT).show();
+            }
+        });
+
         adapter = new XMPPAccountAdapter();
         xmppAccounts = new ArrayList<>();
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.rcvXmppUsers);
@@ -120,9 +135,17 @@ public class XabberAccountInfoActivity extends ManagedActivity {
         barPainter.setDefaultColor();
         XabberAccount account = XabberAccountManager.getInstance().getAccount();
         if (account != null) {
-            String accountName = account.getFirstName() + " " + account.getLastName();
-            tvAccountName.setText(accountName);
-            tvAccountJid.setText(account.getUsername());
+            if (XabberAccount.STATUS_NOT_CONFIRMED.equals(account.getAccountStatus())) {
+                showNotVerified();
+            }
+            if (XabberAccount.STATUS_CONFIRMED.equals(account.getAccountStatus())) {
+                // show finish signup
+            }
+            if (XabberAccount.STATUS_REGISTERED.equals(account.getAccountStatus())) {
+                String accountName = account.getFirstName() + " " + account.getLastName();
+                tvAccountName.setText(accountName);
+                tvAccountJid.setText(account.getUsername());
+            }
         } else {
             showLogin();
         }
@@ -249,16 +272,43 @@ public class XabberAccountInfoActivity extends ManagedActivity {
 
     private void showLogin() {
         // hide other elements
-        CardView cardList = (CardView) findViewById(R.id.cardList);
-        LinearLayout llAccount = (LinearLayout) findViewById(R.id.llAccount);
-
-        rlLogout.setVisibility(View.GONE);
-        rlSync.setVisibility(View.GONE);
-        cardList.setVisibility(View.GONE);
-        llAccount.setVisibility(View.GONE);
+        setAccountVisibility(View.GONE);
 
         // show login button
         rlLogin.setVisibility(View.VISIBLE);
+
+        // hide not verified
+        tvNotVerified.setVisibility(View.GONE);
+        tvNotVerifiedSummary.setVisibility(View.GONE);
+        rlResend.setVisibility(View.GONE);
+        CardView cardList = (CardView) findViewById(R.id.cardConfirmation);
+        cardList.setVisibility(View.GONE);
+    }
+
+    private void showNotVerified() {
+        // hide other elements
+        setAccountVisibility(View.GONE);
+
+        // hide login button
+        rlLogin.setVisibility(View.GONE);
+
+        // show not verified
+        tvNotVerified.setVisibility(View.VISIBLE);
+        tvNotVerifiedSummary.setVisibility(View.VISIBLE);
+        rlResend.setVisibility(View.VISIBLE);
+        CardView cardList = (CardView) findViewById(R.id.cardConfirmation);
+        cardList.setVisibility(View.VISIBLE);
+    }
+
+    private void setAccountVisibility(int visibility) {
+        // show account
+        CardView cardList = (CardView) findViewById(R.id.cardList);
+        LinearLayout llAccount = (LinearLayout) findViewById(R.id.llAccount);
+
+        rlLogout.setVisibility(visibility);
+        rlSync.setVisibility(visibility);
+        cardList.setVisibility(visibility);
+        llAccount.setVisibility(visibility);
     }
 }
 

@@ -8,7 +8,12 @@ import java.util.List;
 
 public class XabberAccount {
 
+    public static final String STATUS_NOT_CONFIRMED = "not_confirmed";
+    public static final String STATUS_CONFIRMED = "confirmed";
+    public static final String STATUS_REGISTERED = "registered";
+
     private int id;
+    private String accountStatus;
     private String username;
     private String firstName;
     private String lastName;
@@ -16,14 +21,20 @@ public class XabberAccount {
     private List<XMPPUser> xmppUsers;
     private String token;
 
-    public XabberAccount(int id, String username, String firstName, String lastName, String registerDate, List<XMPPUser> xmppUsers, String token) {
+    public XabberAccount(int id, String accountStatus, String username, String firstName,
+                         String lastName, String registerDate, List<XMPPUser> xmppUsers, String token) {
         this.id = id;
+        this.accountStatus = accountStatus;
         this.username = username;
         this.firstName = firstName;
         this.lastName = lastName;
         this.registerDate = registerDate;
         this.xmppUsers = xmppUsers;
         this.token = token;
+    }
+
+    public String getAccountStatus() {
+        return accountStatus;
     }
 
     public int getId() {

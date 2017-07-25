@@ -16,7 +16,7 @@ public class XabberAccountRealm extends RealmObject {
     @PrimaryKey
     @Required
     private String id;
-
+    private String accountStatus;
     private String token;
     private String username;
     private String firstName;
@@ -34,6 +34,14 @@ public class XabberAccountRealm extends RealmObject {
 
     public String getId() {
         return id;
+    }
+
+    public String getAccountStatus() {
+        return accountStatus;
+    }
+
+    public void setAccountStatus(String accountStatus) {
+        this.accountStatus = accountStatus;
     }
 
     public String getToken() {
