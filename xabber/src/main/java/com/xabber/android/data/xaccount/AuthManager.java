@@ -42,9 +42,8 @@ public class AuthManager {
                 .flatMap(new Func1<ResponseBody, Single<? extends ResponseBody>>() {
                     @Override
                     public Single<? extends ResponseBody> call(ResponseBody responseBody) {
-                        if (XabberAccountManager.getInstance().deleteXMPPAccountsFromRealm())
-                            return Single.just(responseBody);
-                        else return Single.error(new Throwable("Realm: xmpp accounts deletion error"));
+                        XabberAccountManager.getInstance().deleteXMPPAccountsFromRealm();
+                        return Single.just(responseBody);
                     }
                 });
     }

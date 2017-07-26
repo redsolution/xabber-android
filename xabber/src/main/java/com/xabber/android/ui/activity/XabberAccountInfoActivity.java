@@ -487,6 +487,9 @@ public class XabberAccountInfoActivity extends ManagedActivity {
         // hide login button
         rlLogin.setVisibility(View.GONE);
 
+        // show logout button
+        rlLogout.setVisibility(View.VISIBLE);
+
         // show not verified
         tvNotVerified.setVisibility(View.VISIBLE);
         tvNotVerifiedSummary.setVisibility(View.VISIBLE);
@@ -505,6 +508,9 @@ public class XabberAccountInfoActivity extends ManagedActivity {
 
         // hide login button
         rlLogin.setVisibility(View.GONE);
+
+        // show logout button
+        rlLogout.setVisibility(View.VISIBLE);
 
         // hide not verified
         tvNotVerified.setVisibility(View.GONE);
