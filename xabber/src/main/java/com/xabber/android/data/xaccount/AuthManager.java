@@ -92,12 +92,24 @@ public class AuthManager {
         return HttpApiManager.getXabberApi().signup(new Email(email));
     }
 
-    public static Single<ResponseBody> confirmEmail(String code) {
-        return HttpApiManager.getXabberApi().confirmEmail(new Code(code));
+    public static Single<XabberAccount> confirmEmail(String code) {
+        return HttpApiManager.getXabberApi().confirmEmail(getXabberToken(), new Code(code))
+                .flatMap(new Func1<XabberAccountDTO, Single<? extends XabberAccount>>() {
+                    @Override
+                    public Single<? extends XabberAccount> call(XabberAccountDTO xabberAccountDTO) {
+                        return XabberAccountManager.getInstance().saveOrUpdateXabberAccountToRealm(xabberAccountDTO, getXabberToken());
+                    }
+                });
     }
 
-    public static Single<ResponseBody> confirmEmailWithKey(String key) {
-        return HttpApiManager.getXabberApi().confirmEmail(new Key(key));
+    public static Single<XabberAccount> confirmEmailWithKey(String key) {
+        return HttpApiManager.getXabberApi().confirmEmail(new Key(key))
+                .flatMap(new Func1<XabberAccountDTO, Single<? extends XabberAccount>>() {
+                    @Override
+                    public Single<? extends XabberAccount> call(XabberAccountDTO xabberAccountDTO) {
+                        return XabberAccountManager.getInstance().saveOrUpdateXabberAccountToRealm(xabberAccountDTO, getXabberToken());
+                    }
+                });
     }
 
     // support

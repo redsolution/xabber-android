@@ -11,12 +11,15 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.xabber.android.R;
+import com.xabber.android.data.connection.NetworkManager;
 import com.xabber.android.data.xaccount.AuthManager;
 import com.xabber.android.data.xaccount.XMPPAccountSettings;
 import com.xabber.android.data.xaccount.XabberAccount;
@@ -57,6 +60,8 @@ public class XabberAccountInfoActivity extends ManagedActivity {
     private TextView tvNotVerified;
     private TextView tvNotVerifiedSummary;
     private RelativeLayout rlResend;
+    private EditText edtCode;
+    private Button btnConfirm;
 
     private CompositeSubscription compositeSubscription = new CompositeSubscription();
 
@@ -110,6 +115,7 @@ public class XabberAccountInfoActivity extends ManagedActivity {
             }
         });
 
+        // not verified
         tvNotVerifiedSummary = (TextView) findViewById(R.id.tvNotVerifiedSummary);
         tvNotVerified = (TextView) findViewById(R.id.tvNotVerified);
         rlResend = (RelativeLayout) findViewById(R.id.rlResend);
@@ -117,6 +123,14 @@ public class XabberAccountInfoActivity extends ManagedActivity {
             @Override
             public void onClick(View v) {
                 Toast.makeText(XabberAccountInfoActivity.this, "resend", Toast.LENGTH_SHORT).show();
+            }
+        });
+        edtCode = (EditText) findViewById(R.id.edtCode);
+        btnConfirm = (Button) findViewById(R.id.btnConfirm);
+        btnConfirm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onConfirmClick();
             }
         });
 
@@ -139,7 +153,7 @@ public class XabberAccountInfoActivity extends ManagedActivity {
                 showNotVerified();
             }
             if (XabberAccount.STATUS_CONFIRMED.equals(account.getAccountStatus())) {
-                // show finish signup
+                showCompleteRegister();
             }
             if (XabberAccount.STATUS_REGISTERED.equals(account.getAccountStatus())) {
                 String accountName = account.getFirstName() + " " + account.getLastName();
@@ -153,6 +167,20 @@ public class XabberAccountInfoActivity extends ManagedActivity {
         if (items != null) {
             updateXmppAccounts(items);
         }
+    }
+
+    private void onConfirmClick() {
+        String code = edtCode.getText().toString().trim();
+
+        if (code.isEmpty()) {
+            edtCode.setError(getString(R.string.empty_field));
+            return;
+        }
+
+        if (NetworkManager.isNetworkAvailable()) {
+            confirm(code);
+        } else
+            Toast.makeText(this, R.string.no_internet, Toast.LENGTH_LONG).show();
     }
 
     private void synchronize() {
@@ -250,6 +278,37 @@ public class XabberAccountInfoActivity extends ManagedActivity {
         Log.d(LOG_TAG, "Error while logout request: " + throwable.toString());
     }
 
+    private void confirm(String code) {
+        showProgress(getResources().getString(R.string.progress_title_confirm));
+        Subscription confirmSubscription = AuthManager.confirmEmail(code)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<XabberAccount>() {
+                    @Override
+                    public void call(XabberAccount s) {
+                        handleSuccessConfirm(s);
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        handleErrorConfirm(throwable);
+                    }
+                });
+        compositeSubscription.add(confirmSubscription);
+    }
+
+    private void handleSuccessConfirm(XabberAccount response) {
+        showCompleteRegister();
+        hideProgress();
+        Toast.makeText(this, R.string.confirm_success, Toast.LENGTH_SHORT).show();
+    }
+
+    private void handleErrorConfirm(Throwable throwable) {
+        Log.d(LOG_TAG, "Error while confirm request: " + throwable.toString());
+        hideProgress();
+        Toast.makeText(this, R.string.confirm_fail, Toast.LENGTH_SHORT).show();
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -281,8 +340,12 @@ public class XabberAccountInfoActivity extends ManagedActivity {
         tvNotVerified.setVisibility(View.GONE);
         tvNotVerifiedSummary.setVisibility(View.GONE);
         rlResend.setVisibility(View.GONE);
-        CardView cardList = (CardView) findViewById(R.id.cardConfirmation);
-        cardList.setVisibility(View.GONE);
+        CardView cardConfirm = (CardView) findViewById(R.id.cardConfirmation);
+        cardConfirm.setVisibility(View.GONE);
+
+        // hide complete register
+        CardView cardComplete = (CardView) findViewById(R.id.cardCompleteRegister);
+        cardComplete.setVisibility(View.GONE);
     }
 
     private void showNotVerified() {
@@ -296,8 +359,31 @@ public class XabberAccountInfoActivity extends ManagedActivity {
         tvNotVerified.setVisibility(View.VISIBLE);
         tvNotVerifiedSummary.setVisibility(View.VISIBLE);
         rlResend.setVisibility(View.VISIBLE);
-        CardView cardList = (CardView) findViewById(R.id.cardConfirmation);
-        cardList.setVisibility(View.VISIBLE);
+        CardView cardConfirm = (CardView) findViewById(R.id.cardConfirmation);
+        cardConfirm.setVisibility(View.VISIBLE);
+
+        // hide complete register
+        CardView cardComplete = (CardView) findViewById(R.id.cardCompleteRegister);
+        cardComplete.setVisibility(View.GONE);
+    }
+
+    private void showCompleteRegister() {
+        // hide other elements
+        setAccountVisibility(View.GONE);
+
+        // hide login button
+        rlLogin.setVisibility(View.GONE);
+
+        // hide not verified
+        tvNotVerified.setVisibility(View.GONE);
+        tvNotVerifiedSummary.setVisibility(View.GONE);
+        rlResend.setVisibility(View.GONE);
+        CardView cardConfirm = (CardView) findViewById(R.id.cardConfirmation);
+        cardConfirm.setVisibility(View.GONE);
+
+        // show complete register
+        CardView cardComplete = (CardView) findViewById(R.id.cardCompleteRegister);
+        cardComplete.setVisibility(View.VISIBLE);
     }
 
     private void setAccountVisibility(int visibility) {
