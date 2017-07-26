@@ -17,13 +17,27 @@
     <string name="logout_fail">Logout failed</string>
     <string name="confirm_success">Confirm email successful</string>
     <string name="confirm_fail">Confirm email failed</string>
+    <string name="complete_success">Complete register successful</string>
+    <string name="complete_fail">Complete register failed</string>
 
     <string name="progress_message">Please waiting</string>
     <string name="progress_title_sync">Synchronization..</string>
     <string name="progress_title_logout">Logout..</string>
     <string name="progress_title_login">Login..</string>
-    <string name="progress_title_signup">SignUp..</string>
+    <string name="progress_title_signup">Register..</string>
     <string name="progress_title_confirm">Confirmation..</string>
+    <string name="progress_title_complete">Complete register..</string>
+
+    <string name="hint_username">Username</string>
+    <string name="hint_pass">Password</string>
+    <string name="hint_conf_pass">Confirm password</string>
+    <string name="hint_first_name">First name</string>
+    <string name="hint_last_name">Last name</string>
+    <string name="hint_host">Host</string>
+
+    <string name="default_host">xabber.org</string>
+
+    <string name="button_complete_register">complete register</string>
 
     <string name="xabber_account_title">Xabber Account</string>
     <string name="xmpp_account_title">XMPP Accounts</string>

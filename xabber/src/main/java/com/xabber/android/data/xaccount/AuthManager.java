@@ -30,7 +30,7 @@ public class AuthManager {
 
     public static Single<ResponseBody> logout() {
 
-        return HttpApiManager.getXabberApi().logout(getXabberToken())
+        return HttpApiManager.getXabberApi().logout(getXabberTokenHeader())
                 .flatMap(new Func1<ResponseBody, Single<? extends ResponseBody>>() {
                     @Override
                     public Single<? extends ResponseBody> call(ResponseBody responseBody) {
@@ -75,7 +75,7 @@ public class AuthManager {
     }
 
     public static Single<List<XMPPAccountSettings>> getClientSettings() {
-        return HttpApiManager.getXabberApi().getClientSettings(getXabberToken())
+        return HttpApiManager.getXabberApi().getClientSettings(getXabberTokenHeader())
                 .flatMap(new Func1<ListClientSettingsDTO, Single<? extends List<XMPPAccountSettings>>>() {
                     @Override
                     public Single<? extends List<XMPPAccountSettings>> call(ListClientSettingsDTO listClientSettingsDTO) {
@@ -85,7 +85,7 @@ public class AuthManager {
     }
 
     public static Single<ResponseBody> updateClientSettings(UpdateClientSettings updateClientSettings) {
-        return HttpApiManager.getXabberApi().updateClientSettings(getXabberToken(), updateClientSettings);
+        return HttpApiManager.getXabberApi().updateClientSettings(getXabberTokenHeader(), updateClientSettings);
     }
 
     public static Single<XAccountTokenDTO> signup(String email) {
@@ -93,7 +93,7 @@ public class AuthManager {
     }
 
     public static Single<XabberAccount> confirmEmail(String code) {
-        return HttpApiManager.getXabberApi().confirmEmail(getXabberToken(), new Code(code))
+        return HttpApiManager.getXabberApi().confirmEmail(getXabberTokenHeader(), new Code(code))
                 .flatMap(new Func1<XabberAccountDTO, Single<? extends XabberAccount>>() {
                     @Override
                     public Single<? extends XabberAccount> call(XabberAccountDTO xabberAccountDTO) {
@@ -112,16 +112,50 @@ public class AuthManager {
                 });
     }
 
+    public static Single<XabberAccount> completeRegister(String username, String pass, String confirmPass,
+                                                         String firstName, String lastName, String host) {
+        return HttpApiManager.getXabberApi().completeRegister(getXabberTokenHeader(),
+                new CompleteRegister(username, pass, confirmPass, firstName, lastName, host))
+                .flatMap(new Func1<XabberAccountDTO, Single<? extends XabberAccount>>() {
+                    @Override
+                    public Single<? extends XabberAccount> call(XabberAccountDTO xabberAccountDTO) {
+                        return XabberAccountManager.getInstance().saveOrUpdateXabberAccountToRealm(xabberAccountDTO, getXabberToken());
+                    }
+                });
+    }
+
     // support
+
+    private static String getXabberTokenHeader() {
+        return "Token " + getXabberToken();
+    }
 
     private static String getXabberToken() {
         XabberAccount account = XabberAccountManager.getInstance().getAccount();
-        if (account != null && account.getToken() != null)
-            return "Token " + account.getToken();
+        if (account != null)
+            return account.getToken();
         else return null;
     }
 
     // models
+
+    public static class CompleteRegister {
+        final String username;
+        final String password;
+        final String confirm_password;
+        final String first_name;
+        final String last_name;
+        final String host;
+
+        public CompleteRegister(String username, String password, String confirm_password, String first_name, String last_name, String host) {
+            this.username = username;
+            this.password = password;
+            this.confirm_password = confirm_password;
+            this.first_name = first_name;
+            this.last_name = last_name;
+            this.host = host;
+        }
+    }
 
     public static class Key {
         final String key;

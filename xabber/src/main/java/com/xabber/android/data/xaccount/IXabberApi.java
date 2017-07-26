@@ -40,5 +40,8 @@ public interface IXabberApi {
     @POST("accounts/email_confirmation/")
     Single<XabberAccountDTO> confirmEmail(@Body AuthManager.Key key);
 
+    @POST("accounts/current/complete_registration/")
+    Single<XabberAccountDTO> completeRegister(@Header("Authorization") String token, @Body AuthManager.CompleteRegister register);
+
 }
 

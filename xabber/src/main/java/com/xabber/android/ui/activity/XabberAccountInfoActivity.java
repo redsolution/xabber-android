@@ -62,6 +62,15 @@ public class XabberAccountInfoActivity extends ManagedActivity {
     private RelativeLayout rlResend;
     private EditText edtCode;
     private Button btnConfirm;
+    
+    // complete register
+    private EditText edtUsername;
+    private EditText edtPass;
+    private EditText edtPass2;
+    private EditText edtFirstName;
+    private EditText edtLastName;
+    private EditText edtHost;
+    private Button btnComplete;
 
     private CompositeSubscription compositeSubscription = new CompositeSubscription();
 
@@ -133,6 +142,21 @@ public class XabberAccountInfoActivity extends ManagedActivity {
                 onConfirmClick();
             }
         });
+        
+        // complete register
+        edtUsername = (EditText) findViewById(R.id.edtUsername); 
+        edtPass = (EditText) findViewById(R.id.edtPass); 
+        edtPass2 = (EditText) findViewById(R.id.edtPass2); 
+        edtFirstName = (EditText) findViewById(R.id.edtFirstName); 
+        edtLastName = (EditText) findViewById(R.id.edtLastName); 
+        edtHost = (EditText) findViewById(R.id.edtHost);
+        btnComplete = (Button) findViewById(R.id.btnComplete);
+        btnComplete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onCompleteClick();
+            }
+        });
 
         adapter = new XMPPAccountAdapter();
         xmppAccounts = new ArrayList<>();
@@ -167,6 +191,37 @@ public class XabberAccountInfoActivity extends ManagedActivity {
         if (items != null) {
             updateXmppAccounts(items);
         }
+    }
+    
+    private void onCompleteClick() {
+        String username = edtUsername.getText().toString().trim();
+        String pass = edtPass.getText().toString().trim();
+        String pass2 = edtPass2.getText().toString().trim();
+        String firstName = edtFirstName.getText().toString().trim();
+        String lastName = edtLastName.getText().toString().trim();
+        String host = edtHost.getText().toString().trim();
+
+        // TODO: 26.07.17 Username может содержать только латинские буквы a-z, цифры и точки.
+        // Причём начинаться он должен с буквы, а две точки рядом находиться не могут.
+        if (username.isEmpty()) {
+            edtUsername.setError(getString(R.string.empty_field));
+            return;
+        }
+
+        if (pass.isEmpty()) {
+            edtPass.setError(getString(R.string.empty_field));
+            return;
+        }
+
+        if (pass2.isEmpty()) {
+            edtPass2.setError(getString(R.string.empty_field));
+            return;
+        }
+
+        if (NetworkManager.isNetworkAvailable()) {
+            completeRegister(username, pass, pass2, firstName, lastName, host);
+        } else
+            Toast.makeText(this, R.string.no_internet, Toast.LENGTH_LONG).show();
     }
 
     private void onConfirmClick() {
@@ -309,6 +364,37 @@ public class XabberAccountInfoActivity extends ManagedActivity {
         Toast.makeText(this, R.string.confirm_fail, Toast.LENGTH_SHORT).show();
     }
 
+    private void completeRegister(String username, String pass, String pass2, String firstName, String lastName, String host) {
+        showProgress(getResources().getString(R.string.progress_title_complete));
+        Subscription completeSubscription = AuthManager.completeRegister(username, pass, pass2, firstName, lastName, host)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<XabberAccount>() {
+                    @Override
+                    public void call(XabberAccount s) {
+                        handleSuccessComplete(s);
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        handleErrorComplete(throwable);
+                    }
+                });
+        compositeSubscription.add(completeSubscription);
+    }
+
+    private void handleSuccessComplete(XabberAccount response) {
+        showAccountCompleted(response);
+        hideProgress();
+        Toast.makeText(this, R.string.complete_success, Toast.LENGTH_SHORT).show();
+    }
+
+    private void handleErrorComplete(Throwable throwable) {
+        Log.d(LOG_TAG, "Error while complete register request: " + throwable.toString());
+        hideProgress();
+        Toast.makeText(this, R.string.complete_fail, Toast.LENGTH_SHORT).show();
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -384,6 +470,33 @@ public class XabberAccountInfoActivity extends ManagedActivity {
         // show complete register
         CardView cardComplete = (CardView) findViewById(R.id.cardCompleteRegister);
         cardComplete.setVisibility(View.VISIBLE);
+    }
+
+    private void showAccountCompleted(XabberAccount account) {
+        // show other elements
+        setAccountVisibility(View.VISIBLE);
+
+        // hide login button
+        rlLogin.setVisibility(View.GONE);
+
+        // hide not verified
+        tvNotVerified.setVisibility(View.GONE);
+        tvNotVerifiedSummary.setVisibility(View.GONE);
+        rlResend.setVisibility(View.GONE);
+        CardView cardConfirm = (CardView) findViewById(R.id.cardConfirmation);
+        cardConfirm.setVisibility(View.GONE);
+
+        // show complete register
+        CardView cardComplete = (CardView) findViewById(R.id.cardCompleteRegister);
+        cardComplete.setVisibility(View.GONE);
+
+        if (account != null) {
+            String accountName = account.getFirstName() + " " + account.getLastName();
+            tvAccountName.setText(accountName);
+            tvAccountJid.setText(account.getUsername());
+        } else {
+            showLogin();
+        }
     }
 
     private void setAccountVisibility(int visibility) {

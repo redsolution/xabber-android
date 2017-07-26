@@ -390,6 +390,64 @@
                         android:text="Complete register"
                         />
 
+                    <EditText
+                        android:id="@+id/edtUsername"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/tvCompleteTitle"
+                        android:hint="@string/hint_username"
+                        />
+
+                    <EditText
+                        android:id="@+id/edtPass"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/edtUsername"
+                        android:hint="@string/hint_pass"
+                        />
+
+                    <EditText
+                        android:id="@+id/edtPass2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/edtPass"
+                        android:hint="@string/hint_conf_pass"
+                        />
+
+                    <EditText
+                        android:id="@+id/edtFirstName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/edtPass2"
+                        android:hint="@string/hint_first_name"
+                        />
+
+                    <EditText
+                        android:id="@+id/edtLastName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/edtFirstName"
+                        android:hint="@string/hint_last_name"
+                        />
+
+                    <EditText
+                        android:id="@+id/edtHost"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/edtLastName"
+                        android:text="@string/default_host"
+                        android:hint="@string/hint_host"
+                        />
+
+                    <Button
+                        android:id="@+id/btnComplete"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/edtHost"
+                        android:layout_marginTop="8dp"
+                        android:text="@string/button_complete_register"
+                        />
+
                 </RelativeLayout>
             </android.support.v7.widget.CardView>
 
