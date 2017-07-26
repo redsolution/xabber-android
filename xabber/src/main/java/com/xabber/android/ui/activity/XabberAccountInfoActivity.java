@@ -433,6 +433,7 @@ public class XabberAccountInfoActivity extends ManagedActivity {
         showAccountCompleted(response);
         hideProgress();
         Toast.makeText(this, R.string.complete_success, Toast.LENGTH_SHORT).show();
+        synchronize();
     }
 
     private void handleErrorComplete(Throwable throwable) {
