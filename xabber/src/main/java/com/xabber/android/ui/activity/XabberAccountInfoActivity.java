@@ -3,6 +3,7 @@ package com.xabber.android.ui.activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.CardView;
@@ -44,6 +45,7 @@ import rx.subscriptions.CompositeSubscription;
 public class XabberAccountInfoActivity extends ManagedActivity {
 
     private final static String LOG_TAG = XabberAccountInfoActivity.class.getSimpleName();
+    private final static String EMAIL_CONFIRMATION_URI = "https://www.xabber.com/account/emails/confirmation/";
 
     private Toolbar toolbar;
     private BarPainter barPainter;
@@ -191,6 +193,31 @@ public class XabberAccountInfoActivity extends ManagedActivity {
         if (items != null) {
             updateXmppAccounts(items);
         }
+
+        handleIntent(getIntent());
+    }
+
+    private void handleIntent(Intent intent) {
+        String appLinkAction = intent.getAction();
+        Uri appLinkData = intent.getData();
+        if (Intent.ACTION_VIEW.equals(appLinkAction) && appLinkData != null) {
+            String uri = appLinkData.toString();
+            String key = uri.replace(EMAIL_CONFIRMATION_URI, "");
+            key = key.replace("/", "");
+            handlerEmailConfirmIntent(key);
+        }
+    }
+
+    private void handlerEmailConfirmIntent(String key) {
+        XabberAccount account = XabberAccountManager.getInstance().getAccount();
+        if (account != null) {
+            if (XabberAccount.STATUS_NOT_CONFIRMED.equals(account.getAccountStatus())) {
+                confirmWithKey(key);
+            } else {
+                Toast.makeText(this, R.string.toast_email_already_confirm, Toast.LENGTH_SHORT).show();
+            }
+        } else
+            Toast.makeText(this, R.string.toast_not_authorized, Toast.LENGTH_SHORT).show();
     }
     
     private void onCompleteClick() {
@@ -350,6 +377,25 @@ public class XabberAccountInfoActivity extends ManagedActivity {
                     }
                 });
         compositeSubscription.add(confirmSubscription);
+    }
+
+    private void confirmWithKey(String key) {
+        showProgress(getResources().getString(R.string.progress_title_confirm));
+        Subscription confirmWithKeySubscription = AuthManager.confirmEmailWithKey(key)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<XabberAccount>() {
+                    @Override
+                    public void call(XabberAccount s) {
+                        handleSuccessConfirm(s);
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        handleErrorConfirm(throwable);
+                    }
+                });
+        compositeSubscription.add(confirmWithKeySubscription);
     }
 
     private void handleSuccessConfirm(XabberAccount response) {

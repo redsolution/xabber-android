@@ -20,6 +20,9 @@
     <string name="complete_success">Complete register successful</string>
     <string name="complete_fail">Complete register failed</string>
 
+    <string name="toast_email_already_confirm">Email already confirm</string>
+    <string name="toast_not_authorized">You are not authorized</string>
+
     <string name="progress_message">Please waiting</string>
     <string name="progress_title_sync">Synchronization..</string>
     <string name="progress_title_logout">Logout..</string>

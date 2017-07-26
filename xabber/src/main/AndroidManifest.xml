@@ -478,7 +478,17 @@
         <activity android:name=".ui.activity.XabberLoginActivity"
             android:theme="@style/ThemeDark"/>
         <activity android:name=".ui.activity.XabberAccountInfoActivity"
-            android:theme="@style/ThemeDark"/>
+            android:theme="@style/ThemeDark">
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" />
+                <data android:host="www.xabber.com" />
+            </intent-filter>
+
+        </activity>
         <meta-data android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/SOCIAL_AUTH_FACEBOOK_KEY"/>
         <activity android:name="com.facebook.FacebookActivity"
