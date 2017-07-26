@@ -7,6 +7,7 @@ import android.util.Log;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.database.RealmManager;
+import com.xabber.android.data.database.realm.EmailRealm;
 import com.xabber.android.data.database.realm.XMPPAccountSettignsRealm;
 import com.xabber.android.data.database.realm.XMPPUserRealm;
 import com.xabber.android.data.database.realm.XabberAccountRealm;
@@ -145,6 +146,16 @@ public class XabberAccountManager implements OnLoadListener {
         }
         xabberAccountRealm.setXmppUsers(realmUsers);
 
+        RealmList<EmailRealm> realmEmails = new RealmList<>();
+        for (EmailDTO email : xabberAccount.getEmails()) {
+            EmailRealm realmEmail = new EmailRealm(String.valueOf(email.getId()));
+            realmEmail.setEmail(email.getEmail());
+            realmEmail.setPrimary(email.isPrimary());
+            realmEmail.setVerified(email.isVerified());
+            realmEmails.add(realmEmail);
+        }
+        xabberAccountRealm.setEmails(realmEmails);
+
         Realm realm = RealmManager.getInstance().getNewBackgroundRealm();
         realm.beginTransaction();
         XabberAccountRealm accountRealm = realm.copyToRealmOrUpdate(xabberAccountRealm);
@@ -172,6 +183,17 @@ public class XabberAccountManager implements OnLoadListener {
             xmppUsers.add(xmppUser);
         }
 
+        List<EmailDTO> emails = new ArrayList<>();
+        for (EmailRealm emailRealm : accountRealm.getEmails()) {
+            EmailDTO email = new EmailDTO(
+                    Integer.parseInt(emailRealm.getId()),
+                    emailRealm.getEmail(),
+                    emailRealm.isVerified(),
+                    emailRealm.isPrimary());
+
+            emails.add(email);
+        }
+
         xabberAccount = new XabberAccount(
                 Integer.parseInt(accountRealm.getId()),
                 accountRealm.getAccountStatus(),
@@ -180,6 +202,7 @@ public class XabberAccountManager implements OnLoadListener {
                 accountRealm.getLastName(),
                 accountRealm.getRegisterDate(),
                 xmppUsers,
+                emails,
                 accountRealm.getToken()
         );
 

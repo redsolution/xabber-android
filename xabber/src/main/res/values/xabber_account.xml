@@ -19,6 +19,8 @@
     <string name="confirm_fail">Confirm email failed</string>
     <string name="complete_success">Complete register successful</string>
     <string name="complete_fail">Complete register failed</string>
+    <string name="resend_success">Resend verification email successful</string>
+    <string name="resend_fail">Resend verification email failed</string>
 
     <string name="toast_email_already_confirm">Email already confirm</string>
     <string name="toast_not_authorized">You are not authorized</string>
@@ -30,6 +32,7 @@
     <string name="progress_title_signup">Register..</string>
     <string name="progress_title_confirm">Confirmation..</string>
     <string name="progress_title_complete">Complete register..</string>
+    <string name="progress_title_resend">Resending email..</string>
 
     <string name="hint_username">Username</string>
     <string name="hint_pass">Password</string>

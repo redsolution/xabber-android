@@ -123,6 +123,10 @@ public class AuthManager {
                 });
     }
 
+    public static Single<ResponseBody> addEmail(String email) {
+        return HttpApiManager.getXabberApi().addEmail(getXabberTokenHeader(), new Email(email));
+    }
+
     // support
 
     private static String getXabberTokenHeader() {

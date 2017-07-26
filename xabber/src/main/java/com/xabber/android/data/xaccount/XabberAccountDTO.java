@@ -15,9 +15,11 @@ public class XabberAccountDTO {
     private String last_name;
     private String registration_date;
     private List<XMPPUserDTO> xmpp_users;
+    private List<EmailDTO> email_list;
 
     public XabberAccountDTO(int id, String account_status, String username, String first_name,
-                            String last_name, String registration_date, List<XMPPUserDTO> xmpp_users) {
+                            String last_name, String registration_date, List<XMPPUserDTO> xmpp_users,
+                            List<EmailDTO> email_list) {
         this.id = id;
         this.account_status = account_status;
         this.username = username;
@@ -25,6 +27,7 @@ public class XabberAccountDTO {
         this.last_name = last_name;
         this.registration_date = registration_date;
         this.xmpp_users = xmpp_users;
+        this.email_list = email_list;
     }
 
     public String getAccountStatus() {
@@ -53,6 +56,10 @@ public class XabberAccountDTO {
 
     public List<XMPPUserDTO> getXmppUsers() {
         return xmpp_users;
+    }
+
+    public List<EmailDTO> getEmails() {
+        return email_list;
     }
 }
 

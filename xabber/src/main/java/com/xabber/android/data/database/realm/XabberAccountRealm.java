@@ -23,6 +23,7 @@ public class XabberAccountRealm extends RealmObject {
     private String lastName;
     private String registerDate;
     private RealmList<XMPPUserRealm> xmppUsers;
+    private RealmList<EmailRealm> emails;
 
     public XabberAccountRealm(String id) {
         this.id = id;
@@ -90,6 +91,14 @@ public class XabberAccountRealm extends RealmObject {
 
     public void setXmppUsers(RealmList<XMPPUserRealm> xmppUsers) {
         this.xmppUsers = xmppUsers;
+    }
+
+    public RealmList<EmailRealm> getEmails() {
+        return emails;
+    }
+
+    public void setEmails(RealmList<EmailRealm> emails) {
+        this.emails = emails;
     }
 }
 

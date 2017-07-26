@@ -133,7 +133,7 @@ public class XabberAccountInfoActivity extends ManagedActivity {
         rlResend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(XabberAccountInfoActivity.this, "resend", Toast.LENGTH_SHORT).show();
+                onResendClick();
             }
         });
         edtCode = (EditText) findViewById(R.id.edtCode);
@@ -440,6 +440,49 @@ public class XabberAccountInfoActivity extends ManagedActivity {
         Log.d(LOG_TAG, "Error while complete register request: " + throwable.toString());
         hideProgress();
         Toast.makeText(this, R.string.complete_fail, Toast.LENGTH_SHORT).show();
+    }
+
+    private void onResendClick() {
+        XabberAccount account = XabberAccountManager.getInstance().getAccount();
+        String email;
+        if (account != null && account.getEmails() != null && account.getEmails().size() > 0) {
+            email = account.getEmails().get(0).getEmail();
+        } else return;
+
+        if (NetworkManager.isNetworkAvailable()) {
+            resendConfirmEmail(email);
+        } else
+            Toast.makeText(this, R.string.no_internet, Toast.LENGTH_LONG).show();
+    }
+
+    private void resendConfirmEmail(String email) {
+        showProgress(getResources().getString(R.string.progress_title_resend));
+        Subscription resendEmailSubscription = AuthManager.addEmail(email)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<ResponseBody>() {
+                    @Override
+                    public void call(ResponseBody s) {
+                        handleSuccessResendEmail(s);
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        handleErrorResendEmail(throwable);
+                    }
+                });
+        compositeSubscription.add(resendEmailSubscription);
+    }
+
+    private void handleSuccessResendEmail(ResponseBody response) {
+        hideProgress();
+        Toast.makeText(this, R.string.resend_success, Toast.LENGTH_SHORT).show();
+    }
+
+    private void handleErrorResendEmail(Throwable throwable) {
+        Log.d(LOG_TAG, "Error while resend email request: " + throwable.toString());
+        hideProgress();
+        Toast.makeText(this, R.string.resend_fail, Toast.LENGTH_SHORT).show();
     }
 
     @Override

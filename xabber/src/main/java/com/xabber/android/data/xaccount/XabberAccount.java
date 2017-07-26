@@ -19,10 +19,12 @@ public class XabberAccount {
     private String lastName;
     private String registerDate;
     private List<XMPPUser> xmppUsers;
+    private List<EmailDTO> emails;
     private String token;
 
     public XabberAccount(int id, String accountStatus, String username, String firstName,
-                         String lastName, String registerDate, List<XMPPUser> xmppUsers, String token) {
+                         String lastName, String registerDate, List<XMPPUser> xmppUsers,
+                         List<EmailDTO> emails, String token) {
         this.id = id;
         this.accountStatus = accountStatus;
         this.username = username;
@@ -30,6 +32,7 @@ public class XabberAccount {
         this.lastName = lastName;
         this.registerDate = registerDate;
         this.xmppUsers = xmppUsers;
+        this.emails = emails;
         this.token = token;
     }
 
@@ -59,6 +62,10 @@ public class XabberAccount {
 
     public List<XMPPUser> getXmppUsers() {
         return xmppUsers;
+    }
+
+    public List<EmailDTO> getEmails() {
+        return emails;
     }
 
     public String getToken() {
