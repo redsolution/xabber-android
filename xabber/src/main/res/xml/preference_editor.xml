@@ -12,13 +12,13 @@
 <PreferenceScreen
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <Preference
+    <com.xabber.android.ui.widget.AccountPreference
         android:key="preference_xabber_account"
         android:title="Xabber Account">
         <intent
             android:targetClass="com.xabber.android.ui.activity.XabberAccountInfoActivity"
             android:targetPackage="@string/application_package" />
-    </Preference>
+    </com.xabber.android.ui.widget.AccountPreference>
 
     <Preference
         android:key="@string/preference_accounts_key"
