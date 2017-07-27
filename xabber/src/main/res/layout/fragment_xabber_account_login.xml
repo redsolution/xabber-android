@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:background="?attr/settings_background_color">
+
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
+        >
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingTop="16dp"
+            >
+
+        <TextView
+            android:id="@+id/xabberAccountTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:textColor="?android:attr/textColorPrimary"
+            android:text="@string/title_xabber_account"
+            />
+
+        <TextView
+            android:id="@+id/tvSummary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/xabberAccountTitle"
+            android:layout_marginTop="8dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:text="@string/summary_xabber_account"
+            />
+
+        <RelativeLayout
+            android:id="@+id/rlLogin"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_below="@id/tvSummary"
+            android:layout_marginTop="16dp"
+            >
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="?attr/settings_separator_background_color"
+                />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:paddingLeft="24dp"
+                android:paddingRight="16dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:background="?android:attr/selectableItemBackground"
+                >
+
+                <ImageView
+                    android:id="@+id/ivLogin"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_exit_grey600_24dp"
+                    android:layout_centerVertical="true"
+                    android:tint="@color/grey_600"
+                    />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@+id/ivLogin"
+                    android:layout_marginLeft="24dp"
+                    android:textColor="?android:attr/textColorPrimary"
+                    android:text="@string/button_login"
+                    />
+
+            </RelativeLayout>
+        </RelativeLayout>
+
+        </RelativeLayout>
+    </android.support.v7.widget.CardView>
+</RelativeLayout>

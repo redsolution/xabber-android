@@ -1,5 +1,7 @@
 package com.xabber.android.ui.activity;
 
+import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -27,6 +29,10 @@ import com.xabber.android.data.xaccount.XabberAccount;
 import com.xabber.android.data.xaccount.XabberAccountManager;
 import com.xabber.android.ui.adapter.XMPPAccountAdapter;
 import com.xabber.android.ui.color.BarPainter;
+import com.xabber.android.ui.fragment.XabberAccountCompleteRegsiterFrament;
+import com.xabber.android.ui.fragment.XabberAccountConfirmationFragment;
+import com.xabber.android.ui.fragment.XabberAccountInfoFragment;
+import com.xabber.android.ui.fragment.XabberAccountLoginFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,32 +53,21 @@ public class XabberAccountInfoActivity extends ManagedActivity {
     private final static String LOG_TAG = XabberAccountInfoActivity.class.getSimpleName();
     private final static String EMAIL_CONFIRMATION_URI = "https://www.xabber.com/account/emails/confirmation/";
 
+    private final static String FRAGMENT_LOGIN = "fragment_login";
+    private final static String FRAGMENT_INFO = "fragment_info";
+    private final static String FRAGMENT_CONFIRM = "fragment_confirm";
+    private final static String FRAGMENT_COMPLETE = "fragment_complete";
+
+    private FragmentTransaction fTrans;
+
     private Toolbar toolbar;
     private BarPainter barPainter;
-    private TextView tvAccountName;
-    private TextView tvAccountJid;
-    private RelativeLayout rlLogout;
-    private RelativeLayout rlLogin;
-    private RelativeLayout rlSync;
-    private XMPPAccountAdapter adapter;
-    private List<XMPPAccountSettings> xmppAccounts;
     private ProgressDialog progressDialog;
 
-    // not verified
-    private TextView tvNotVerified;
-    private TextView tvNotVerifiedSummary;
-    private RelativeLayout rlResend;
-    private EditText edtCode;
-    private Button btnConfirm;
-    
-    // complete register
-    private EditText edtUsername;
-    private EditText edtPass;
-    private EditText edtPass2;
-    private EditText edtFirstName;
-    private EditText edtLastName;
-    private EditText edtHost;
-    private Button btnComplete;
+    private Fragment fragmentLogin;
+    private Fragment fragmentInfo;
+    private Fragment fragmentConfirmation;
+    private Fragment fragmentCompleteRegsiter;
 
     private CompositeSubscription compositeSubscription = new CompositeSubscription();
 
@@ -95,106 +90,151 @@ public class XabberAccountInfoActivity extends ManagedActivity {
                 finish();
             }
         });
-        toolbar.setTitle(R.string.xabber_account_title);
+        toolbar.setTitle(R.string.title_xabber_account);
         barPainter = new BarPainter(this, toolbar);
-
-        tvAccountName = (TextView) findViewById(R.id.tvAccountName);
-        tvAccountJid = (TextView) findViewById(R.id.tvAccountJid);
-
-        rlLogin = (RelativeLayout) findViewById(R.id.rlLogin);
-        rlLogin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = XabberLoginActivity.createIntent(XabberAccountInfoActivity.this);
-                startActivity(intent);
-            }
-        });
-
-        rlLogout = (RelativeLayout) findViewById(R.id.rlLogout);
-        rlLogout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                logout();
-            }
-        });
-
-        rlSync = (RelativeLayout) findViewById(R.id.rlSync);
-        rlSync.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                synchronize();
-            }
-        });
-
-        // not verified
-        tvNotVerifiedSummary = (TextView) findViewById(R.id.tvNotVerifiedSummary);
-        tvNotVerified = (TextView) findViewById(R.id.tvNotVerified);
-        rlResend = (RelativeLayout) findViewById(R.id.rlResend);
-        rlResend.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onResendClick();
-            }
-        });
-        edtCode = (EditText) findViewById(R.id.edtCode);
-        btnConfirm = (Button) findViewById(R.id.btnConfirm);
-        btnConfirm.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onConfirmClick();
-            }
-        });
-        
-        // complete register
-        edtUsername = (EditText) findViewById(R.id.edtUsername); 
-        edtPass = (EditText) findViewById(R.id.edtPass); 
-        edtPass2 = (EditText) findViewById(R.id.edtPass2); 
-        edtFirstName = (EditText) findViewById(R.id.edtFirstName); 
-        edtLastName = (EditText) findViewById(R.id.edtLastName); 
-        edtHost = (EditText) findViewById(R.id.edtHost);
-        btnComplete = (Button) findViewById(R.id.btnComplete);
-        btnComplete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onCompleteClick();
-            }
-        });
-
-        adapter = new XMPPAccountAdapter();
-        xmppAccounts = new ArrayList<>();
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.rcvXmppUsers);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setNestedScrollingEnabled(false);
-        adapter.setItems(xmppAccounts);
-        recyclerView.setAdapter(adapter);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+
         barPainter.setDefaultColor();
+
         XabberAccount account = XabberAccountManager.getInstance().getAccount();
         if (account != null) {
             if (XabberAccount.STATUS_NOT_CONFIRMED.equals(account.getAccountStatus())) {
-                showNotVerified();
+                showConfirmFragment();
             }
             if (XabberAccount.STATUS_CONFIRMED.equals(account.getAccountStatus())) {
-                showCompleteRegister();
+                showCompleteFragment();
             }
             if (XabberAccount.STATUS_REGISTERED.equals(account.getAccountStatus())) {
-                String accountName = account.getFirstName() + " " + account.getLastName();
-                tvAccountName.setText(accountName);
-                tvAccountJid.setText(account.getUsername());
+                showInfoFragment();
             }
         } else {
-            showLogin();
-        }
-        List<XMPPAccountSettings> items = XabberAccountManager.getInstance().getXmppAccounts();
-        if (items != null) {
-            updateXmppAccounts(items);
+            showLoginFragment();
         }
 
         handleIntent(getIntent());
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        compositeSubscription.clear();
+    }
+
+    private void showProgress(String title) {
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setTitle(title);
+        progressDialog.setMessage(getResources().getString(R.string.progress_message));
+        progressDialog.show();
+    }
+
+    private void hideProgress() {
+        if (progressDialog != null) {
+            progressDialog.dismiss();
+            progressDialog = null;
+        }
+    }
+
+    private void updateAccountInfo(XabberAccount account) {
+        if (account != null) {
+            XabberAccountInfoFragment fragment = (XabberAccountInfoFragment) getFragmentManager().findFragmentByTag(FRAGMENT_INFO);
+            if (fragment != null && fragment.isVisible())
+                ((XabberAccountInfoFragment) fragmentInfo).updateData(account);
+        }
+    }
+
+    private void updateXMPPAccountList(List<XMPPAccountSettings> list) {
+        if (list != null) {
+            XabberAccountInfoFragment fragment = (XabberAccountInfoFragment) getFragmentManager().findFragmentByTag(FRAGMENT_INFO);
+            if (fragment != null && fragment.isVisible())
+                ((XabberAccountInfoFragment) fragmentInfo).updateList(list);
+        }
+    }
+
+    public void showLoginFragment() {
+        if (fragmentLogin == null)
+            fragmentLogin = new XabberAccountLoginFragment();
+
+        fTrans = getFragmentManager().beginTransaction();
+        fTrans.replace(R.id.container, fragmentLogin, FRAGMENT_LOGIN);
+        fTrans.commit();
+    }
+
+    private void showInfoFragment() {
+        if (fragmentInfo == null)
+            fragmentInfo = new XabberAccountInfoFragment();
+
+        fTrans = getFragmentManager().beginTransaction();
+        fTrans.replace(R.id.container, fragmentInfo, FRAGMENT_INFO);
+        fTrans.commit();
+    }
+
+    private void showConfirmFragment() {
+        if (fragmentConfirmation == null)
+            fragmentConfirmation = new XabberAccountConfirmationFragment();
+
+        fTrans = getFragmentManager().beginTransaction();
+        fTrans.replace(R.id.container, fragmentConfirmation, FRAGMENT_CONFIRM);
+        fTrans.commit();
+    }
+
+    private void showCompleteFragment() {
+        if (fragmentCompleteRegsiter == null)
+            fragmentCompleteRegsiter = new XabberAccountCompleteRegsiterFrament();
+
+        fTrans = getFragmentManager().beginTransaction();
+        fTrans.replace(R.id.container, fragmentCompleteRegsiter, FRAGMENT_COMPLETE);
+        fTrans.commit();
+    }
+
+    public void onLoginClick() {
+        Intent intent = XabberLoginActivity.createIntent(XabberAccountInfoActivity.this);
+        startActivity(intent);
+    }
+
+    public void onLogoutClick() {
+        if (NetworkManager.isNetworkAvailable()) {
+            logout();
+        } else
+            Toast.makeText(this, R.string.toast_no_internet, Toast.LENGTH_LONG).show();
+    }
+
+    public void onSyncClick() {
+        if (NetworkManager.isNetworkAvailable()) {
+            synchronize();
+        } else
+            Toast.makeText(this, R.string.toast_no_internet, Toast.LENGTH_LONG).show();
+    }
+
+    public void onResendClick() {
+        XabberAccount account = XabberAccountManager.getInstance().getAccount();
+        String email;
+        if (account != null && account.getEmails() != null && account.getEmails().size() > 0) {
+            email = account.getEmails().get(0).getEmail();
+        } else return;
+
+        if (NetworkManager.isNetworkAvailable()) {
+            resendConfirmEmail(email);
+        } else
+            Toast.makeText(this, R.string.toast_no_internet, Toast.LENGTH_LONG).show();
+    }
+
+    public void onConfirmClick(String code) {
+        if (NetworkManager.isNetworkAvailable()) {
+            confirm(code);
+        } else
+            Toast.makeText(this, R.string.toast_no_internet, Toast.LENGTH_LONG).show();
+    }
+
+    public void onCompleteClick(String username, String pass, String pass2, String firstName,
+                                String lastName, String host) {
+        if (NetworkManager.isNetworkAvailable()) {
+            completeRegister(username, pass, pass2, firstName, lastName, host);
+        } else
+            Toast.makeText(this, R.string.toast_no_internet, Toast.LENGTH_LONG).show();
     }
 
     private void handleIntent(Intent intent) {
@@ -219,51 +259,6 @@ public class XabberAccountInfoActivity extends ManagedActivity {
         } else
             Toast.makeText(this, R.string.toast_not_authorized, Toast.LENGTH_SHORT).show();
     }
-    
-    private void onCompleteClick() {
-        String username = edtUsername.getText().toString().trim();
-        String pass = edtPass.getText().toString().trim();
-        String pass2 = edtPass2.getText().toString().trim();
-        String firstName = edtFirstName.getText().toString().trim();
-        String lastName = edtLastName.getText().toString().trim();
-        String host = edtHost.getText().toString().trim();
-
-        // TODO: 26.07.17 Username может содержать только латинские буквы a-z, цифры и точки.
-        // Причём начинаться он должен с буквы, а две точки рядом находиться не могут.
-        if (username.isEmpty()) {
-            edtUsername.setError(getString(R.string.empty_field));
-            return;
-        }
-
-        if (pass.isEmpty()) {
-            edtPass.setError(getString(R.string.empty_field));
-            return;
-        }
-
-        if (pass2.isEmpty()) {
-            edtPass2.setError(getString(R.string.empty_field));
-            return;
-        }
-
-        if (NetworkManager.isNetworkAvailable()) {
-            completeRegister(username, pass, pass2, firstName, lastName, host);
-        } else
-            Toast.makeText(this, R.string.no_internet, Toast.LENGTH_LONG).show();
-    }
-
-    private void onConfirmClick() {
-        String code = edtCode.getText().toString().trim();
-
-        if (code.isEmpty()) {
-            edtCode.setError(getString(R.string.empty_field));
-            return;
-        }
-
-        if (NetworkManager.isNetworkAvailable()) {
-            confirm(code);
-        } else
-            Toast.makeText(this, R.string.no_internet, Toast.LENGTH_LONG).show();
-    }
 
     private void synchronize() {
         XabberAccount account = XabberAccountManager.getInstance().getAccount();
@@ -283,7 +278,7 @@ public class XabberAccountInfoActivity extends ManagedActivity {
                     @Override
                     public void call(List<XMPPAccountSettings> s) {
                         Log.d(LOG_TAG, "XMPP accounts loading from net: successfully");
-                        updateXmppAccounts(s);
+                        updateXMPPAccountList(s);
                         hideProgress();
                         Toast.makeText(XabberAccountInfoActivity.this, R.string.sync_success, Toast.LENGTH_SHORT).show();
                     }
@@ -306,9 +301,7 @@ public class XabberAccountInfoActivity extends ManagedActivity {
                     @Override
                     public void call(XabberAccount s) {
                         Log.d(LOG_TAG, "Xabber account loading from net: successfully");
-                        String accountName = s.getFirstName() + " " + s.getLastName();
-                        tvAccountName.setText(accountName);
-                        tvAccountJid.setText(s.getUsername());
+                        updateAccountInfo(s);
                         getSettings();
                     }
                 }, new Action1<Throwable>() {
@@ -320,12 +313,6 @@ public class XabberAccountInfoActivity extends ManagedActivity {
                     }
                 });
         compositeSubscription.add(loadAccountsSubscription);
-    }
-
-    public void updateXmppAccounts(List<XMPPAccountSettings> list) {
-        xmppAccounts.clear();
-        xmppAccounts.addAll(list);
-        adapter.setItems(xmppAccounts);
     }
 
     private void logout() {
@@ -349,7 +336,7 @@ public class XabberAccountInfoActivity extends ManagedActivity {
 
     private void handleSuccessLogout(ResponseBody s) {
         XabberAccountManager.getInstance().removeAccount();
-        showLogin();
+        showLoginFragment();
         hideProgress();
         Toast.makeText(this, R.string.logout_success, Toast.LENGTH_SHORT).show();
     }
@@ -399,7 +386,7 @@ public class XabberAccountInfoActivity extends ManagedActivity {
     }
 
     private void handleSuccessConfirm(XabberAccount response) {
-        showCompleteRegister();
+        showCompleteFragment();
         hideProgress();
         Toast.makeText(this, R.string.confirm_success, Toast.LENGTH_SHORT).show();
     }
@@ -430,7 +417,7 @@ public class XabberAccountInfoActivity extends ManagedActivity {
     }
 
     private void handleSuccessComplete(XabberAccount response) {
-        showAccountCompleted(response);
+        showInfoFragment();
         hideProgress();
         Toast.makeText(this, R.string.complete_success, Toast.LENGTH_SHORT).show();
         synchronize();
@@ -440,19 +427,6 @@ public class XabberAccountInfoActivity extends ManagedActivity {
         Log.d(LOG_TAG, "Error while complete register request: " + throwable.toString());
         hideProgress();
         Toast.makeText(this, R.string.complete_fail, Toast.LENGTH_SHORT).show();
-    }
-
-    private void onResendClick() {
-        XabberAccount account = XabberAccountManager.getInstance().getAccount();
-        String email;
-        if (account != null && account.getEmails() != null && account.getEmails().size() > 0) {
-            email = account.getEmails().get(0).getEmail();
-        } else return;
-
-        if (NetworkManager.isNetworkAvailable()) {
-            resendConfirmEmail(email);
-        } else
-            Toast.makeText(this, R.string.no_internet, Toast.LENGTH_LONG).show();
     }
 
     private void resendConfirmEmail(String email) {
@@ -483,127 +457,6 @@ public class XabberAccountInfoActivity extends ManagedActivity {
         Log.d(LOG_TAG, "Error while resend email request: " + throwable.toString());
         hideProgress();
         Toast.makeText(this, R.string.resend_fail, Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        compositeSubscription.clear();
-    }
-
-    private void showProgress(String title) {
-        progressDialog = new ProgressDialog(this);
-        progressDialog.setTitle(title);
-        progressDialog.setMessage(getResources().getString(R.string.progress_message));
-        progressDialog.show();
-    }
-
-    private void hideProgress() {
-        if (progressDialog != null) {
-            progressDialog.dismiss();
-            progressDialog = null;
-        }
-    }
-
-    private void showLogin() {
-        // hide other elements
-        setAccountVisibility(View.GONE);
-
-        // show login button
-        rlLogin.setVisibility(View.VISIBLE);
-
-        // hide not verified
-        tvNotVerified.setVisibility(View.GONE);
-        tvNotVerifiedSummary.setVisibility(View.GONE);
-        rlResend.setVisibility(View.GONE);
-        CardView cardConfirm = (CardView) findViewById(R.id.cardConfirmation);
-        cardConfirm.setVisibility(View.GONE);
-
-        // hide complete register
-        CardView cardComplete = (CardView) findViewById(R.id.cardCompleteRegister);
-        cardComplete.setVisibility(View.GONE);
-    }
-
-    private void showNotVerified() {
-        // hide other elements
-        setAccountVisibility(View.GONE);
-
-        // hide login button
-        rlLogin.setVisibility(View.GONE);
-
-        // show logout button
-        rlLogout.setVisibility(View.VISIBLE);
-
-        // show not verified
-        tvNotVerified.setVisibility(View.VISIBLE);
-        tvNotVerifiedSummary.setVisibility(View.VISIBLE);
-        rlResend.setVisibility(View.VISIBLE);
-        CardView cardConfirm = (CardView) findViewById(R.id.cardConfirmation);
-        cardConfirm.setVisibility(View.VISIBLE);
-
-        // hide complete register
-        CardView cardComplete = (CardView) findViewById(R.id.cardCompleteRegister);
-        cardComplete.setVisibility(View.GONE);
-    }
-
-    private void showCompleteRegister() {
-        // hide other elements
-        setAccountVisibility(View.GONE);
-
-        // hide login button
-        rlLogin.setVisibility(View.GONE);
-
-        // show logout button
-        rlLogout.setVisibility(View.VISIBLE);
-
-        // hide not verified
-        tvNotVerified.setVisibility(View.GONE);
-        tvNotVerifiedSummary.setVisibility(View.GONE);
-        rlResend.setVisibility(View.GONE);
-        CardView cardConfirm = (CardView) findViewById(R.id.cardConfirmation);
-        cardConfirm.setVisibility(View.GONE);
-
-        // show complete register
-        CardView cardComplete = (CardView) findViewById(R.id.cardCompleteRegister);
-        cardComplete.setVisibility(View.VISIBLE);
-    }
-
-    private void showAccountCompleted(XabberAccount account) {
-        // show other elements
-        setAccountVisibility(View.VISIBLE);
-
-        // hide login button
-        rlLogin.setVisibility(View.GONE);
-
-        // hide not verified
-        tvNotVerified.setVisibility(View.GONE);
-        tvNotVerifiedSummary.setVisibility(View.GONE);
-        rlResend.setVisibility(View.GONE);
-        CardView cardConfirm = (CardView) findViewById(R.id.cardConfirmation);
-        cardConfirm.setVisibility(View.GONE);
-
-        // show complete register
-        CardView cardComplete = (CardView) findViewById(R.id.cardCompleteRegister);
-        cardComplete.setVisibility(View.GONE);
-
-        if (account != null) {
-            String accountName = account.getFirstName() + " " + account.getLastName();
-            tvAccountName.setText(accountName);
-            tvAccountJid.setText(account.getUsername());
-        } else {
-            showLogin();
-        }
-    }
-
-    private void setAccountVisibility(int visibility) {
-        // show account
-        CardView cardList = (CardView) findViewById(R.id.cardList);
-        LinearLayout llAccount = (LinearLayout) findViewById(R.id.llAccount);
-
-        rlLogout.setVisibility(visibility);
-        rlSync.setVisibility(visibility);
-        cardList.setVisibility(visibility);
-        llAccount.setVisibility(visibility);
     }
 }
 

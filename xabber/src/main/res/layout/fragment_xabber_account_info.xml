@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="?attr/settings_background_color">
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/cardInfo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        >
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingTop="16dp"
+            >
+
+            <TextView
+                android:id="@+id/xabberAccountTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:textColor="?android:attr/textColorPrimary"
+                android:text="@string/title_xabber_account"
+                />
+
+            <LinearLayout
+                android:id="@+id/llAccount"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/xabberAccountTitle"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:paddingTop="16dp"
+                android:paddingBottom="8dp"
+                >
+
+                <FrameLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical">
+
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:id="@+id/color"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:src="@color/green_500" />
+
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:id="@+id/avatar"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:src="@drawable/ic_avatar_1"
+                        app:civ_border_color="@android:color/transparent"
+                        app:civ_border_width="3dp" />
+
+                </FrameLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:paddingLeft="16dp">
+
+                    <TextView
+                        android:id="@+id/tvAccountName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:ellipsize="marquee"
+                        android:lines="1"
+                        android:text="@string/account_not_confirmed"
+                        android:textColor="@color/green_700"
+                        android:textSize="18sp" />
+
+                    <TextView
+                        android:id="@+id/tvAccountEmail"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:ellipsize="marquee"
+                        android:lines="1"
+                        android:text="@string/no_email"
+                        android:textColor="@color/grey_500"
+                        android:textSize="14sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <RelativeLayout
+                android:id="@+id/rlSync"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_below="@id/llAccount"
+                >
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="?attr/settings_separator_background_color"
+                    />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:paddingLeft="24dp"
+                    android:paddingRight="16dp"
+                    android:paddingTop="8dp"
+                    android:paddingBottom="8dp"
+                    android:background="?android:attr/selectableItemBackground"
+                    >
+
+                    <ImageView
+                        android:id="@+id/ivSync"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_sync"
+                        android:layout_centerVertical="true"
+                        android:tint="@color/grey_600"
+                        />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_toRightOf="@+id/ivSync"
+                        android:layout_marginLeft="24dp"
+                        android:textColor="?android:attr/textColorPrimary"
+                        android:text="Synced 1 day ago"
+                        />
+
+                </RelativeLayout>
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/rlLogout"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_below="@id/rlSync"
+                >
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="?attr/settings_separator_background_color"
+                    />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:paddingLeft="24dp"
+                    android:paddingRight="16dp"
+                    android:paddingTop="8dp"
+                    android:paddingBottom="8dp"
+                    android:background="?android:attr/selectableItemBackground"
+                    >
+
+                    <ImageView
+                        android:id="@+id/ivLogout"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_exit_grey600_24dp"
+                        android:layout_centerVertical="true"
+                        android:tint="@color/grey_600"
+                        />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_toRightOf="@+id/ivLogout"
+                        android:layout_marginLeft="24dp"
+                        android:textColor="?android:attr/textColorPrimary"
+                        android:text="@string/button_logout"
+                        />
+
+                </RelativeLayout>
+            </RelativeLayout>
+
+        </RelativeLayout>
+    </android.support.v7.widget.CardView>
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/cardList"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/cardInfo"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="12dp"
+        >
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingTop="16dp"
+            >
+
+            <TextView
+                android:id="@+id/tvAccountsTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:textColor="?android:attr/textColorPrimary"
+                android:text="@string/title_xmpp_account"
+                />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/rcvXmppUsers"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/tvAccountsTitle"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
+                tools:listitem="@layout/item_account"
+                />
+
+        </RelativeLayout>
+    </android.support.v7.widget.CardView>
+
+</RelativeLayout>

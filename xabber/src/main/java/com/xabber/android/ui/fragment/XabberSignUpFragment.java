@@ -77,6 +77,6 @@ public class XabberSignUpFragment extends Fragment implements View.OnClickListen
         if (NetworkManager.isNetworkAvailable()) {
             ((XabberLoginActivity)getActivity()).signup(email);
         } else
-            Toast.makeText(getActivity(), R.string.no_internet, Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity(), R.string.toast_no_internet, Toast.LENGTH_LONG).show();
     }
 }

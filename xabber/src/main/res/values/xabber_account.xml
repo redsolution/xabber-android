@@ -24,6 +24,7 @@
 
     <string name="toast_email_already_confirm">Email already confirm</string>
     <string name="toast_not_authorized">You are not authorized</string>
+    <string name="toast_no_internet">No internet connection</string>
 
     <string name="progress_message">Please waiting</string>
     <string name="progress_title_sync">Synchronization..</string>
@@ -41,20 +42,26 @@
     <string name="hint_last_name">Last name</string>
     <string name="hint_host">Host</string>
 
+    <string name="hint_code">code</string>
+
     <string name="default_host">xabber.org</string>
 
-    <string name="button_complete_register">complete register</string>
+    <string name="title_xabber_account">Xabber Account</string>
+    <string name="title_xmpp_account">XMPP Accounts</string>
+    <string name="title_email_confirm">Email confirmation</string>
 
-    <string name="xabber_account_title">Xabber Account</string>
-    <string name="xmpp_account_title">XMPP Accounts</string>
-    <string name="xabber_account_summary">Xabber account lets you easily sync your settings and connected XMPP accounts between various devices.</string>
-    <string name="xabber_account_confirm">Please confirm your email address</string>
-    <string name="xabber_account_not_verified">Account not verified</string>
+    <string name="summary_xabber_account">Xabber account lets you easily sync your settings and connected XMPP accounts between various devices.</string>
+    <string name="summary_confirm_account">Please confirm your email address</string>
+    <string name="summary_complete_register">Please complete register of your account</string>
 
-    <string name="logout_button">LOGOUT</string>
-    <string name="login_button">LOGIN</string>
+    <string name="button_logout">LOGOUT</string>
+    <string name="button_login">LOGIN</string>
     <string name="button_resend_link">RESEND LINK</string>
+    <string name="button_complete_register">complete register</string>
+    <string name="button_confirm">confirm</string>
 
-    <string name="no_internet">No internet connection</string>
+    <string name="no_email">no email</string>
     <string name="empty_field">Empty field</string>
+    <string name="account_not_confirmed">Account not confirmed</string>
+    <string name="register_not_completed">Register not completed</string>
 </resources>

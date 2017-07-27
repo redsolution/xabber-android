@@ -55,7 +55,7 @@
         style="@style/Widget.AppCompat.Button.Colored"
         android:theme="@style/RedButton"
         android:textColor="@color/white"
-        android:text="@string/login_button"
+        android:text="@string/button_login"
         />
 
     <ProgressBar
