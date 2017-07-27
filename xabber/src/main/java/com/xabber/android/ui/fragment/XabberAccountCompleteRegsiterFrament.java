@@ -90,10 +90,26 @@ public class XabberAccountCompleteRegsiterFrament extends Fragment {
         String lastName = edtLastName.getText().toString().trim();
         String host = edtHost.getText().toString().trim();
 
-        // TODO: 26.07.17 Username может содержать только латинские буквы a-z, цифры и точки.
-        // Причём начинаться он должен с буквы, а две точки рядом находиться не могут.
         if (username.isEmpty()) {
             edtUsername.setError(getString(R.string.empty_field));
+            return;
+        }
+
+        // Username can contain only latin letters, numbers and dots
+        if (!username.matches("[a-z0-9.]+")) {
+            edtUsername.setError(getString(R.string.username_rules));
+            return;
+        }
+
+        // Username must start with letter
+        if (!username.substring(0, 1).matches("[a-z]")) {
+            edtUsername.setError(getString(R.string.username_rules_first_symbol));
+            return;
+        }
+
+        // Username cannot have two dots in a row
+        if (username.contains("..")) {
+            edtUsername.setError(getString(R.string.username_rules_dots));
             return;
         }
 
@@ -104,6 +120,11 @@ public class XabberAccountCompleteRegsiterFrament extends Fragment {
 
         if (pass2.isEmpty()) {
             edtPass2.setError(getString(R.string.empty_field));
+            return;
+        }
+
+        if (!pass.equals(pass2)) {
+            edtPass2.setError(getString(R.string.passwords_not_match));
             return;
         }
 

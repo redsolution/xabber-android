@@ -63,6 +63,10 @@
 
     <string name="no_email">no email</string>
     <string name="empty_field">Empty field</string>
+    <string name="passwords_not_match">Passwords do not match</string>
+    <string name="username_rules">Username can contain only lowercase latin letters, numbers and dots</string>
+    <string name="username_rules_first_symbol">Username must start with letter</string>
+    <string name="username_rules_dots">Username cannot have two dots in a row</string>
     <string name="account_not_confirmed">Account not confirmed</string>
     <string name="register_not_completed">Registration not completed</string>
 </resources>
