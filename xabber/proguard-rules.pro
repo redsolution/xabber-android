@@ -5,6 +5,9 @@
 # Marshmallow removed Notification.setLatestEventInfo()
 -dontwarn android.app.Notification
 
+# RxJava
+-dontwarn rx.internal.util.**
+
 # realm
 -keep class io.realm.annotations.RealmModule
 -keep @io.realm.annotations.RealmModule class *
