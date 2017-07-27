@@ -54,9 +54,9 @@ import rx.subscriptions.CompositeSubscription;
 public class XabberLoginActivity extends ManagedActivity implements View.OnClickListener {
 
     private final static String TAG = XabberLoginActivity.class.getSimpleName();
-    private final static String CURRENT_FRAGMENT = "current_fragment";
-    private final static String FRAGMENT_LOGIN = "fragment_login";
-    private final static String FRAGMENT_SIGNUP = "fragment_signup";
+    public final static String CURRENT_FRAGMENT = "current_fragment";
+    public final static String FRAGMENT_LOGIN = "fragment_login";
+    public final static String FRAGMENT_SIGNUP = "fragment_signup";
 
     private Fragment fragmentLogin;
     private Fragment fragmentSignUp;
@@ -89,6 +89,10 @@ public class XabberLoginActivity extends ManagedActivity implements View.OnClick
 
         if (savedInstanceState != null)
             currentFragment = savedInstanceState.getString(CURRENT_FRAGMENT);
+        else {
+            Bundle extras = getIntent().getExtras();
+            if (extras != null) currentFragment = extras.getString(CURRENT_FRAGMENT);
+        }
 
         setContentView(R.layout.activity_xabber_login);
         setStatusBarTranslucent();

@@ -67,45 +67,57 @@
         android:visibility="gone"
         />
 
-    <RelativeLayout
-        android:id="@+id/rlForgotPass"
+    <LinearLayout
+        android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="32dp"
+        android:layout_height="wrap_content"
         android:layout_below="@id/btnLogin"
-        android:background="?android:attr/selectableItemBackground"
-        android:clickable="true"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
         >
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:textColor="@color/white_text_secondary"
-            android:textSize="12sp"
-            android:text="@string/forgot_pass"
-            />
+        <RelativeLayout
+            android:id="@+id/rlForgotPass"
+            android:layout_width="match_parent"
+            android:layout_height="32dp"
+            android:background="?android:attr/selectableItemBackground"
+            android:clickable="true"
+            android:layout_weight="1"
+            >
 
-    </RelativeLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
+                android:textColor="@color/white_text_secondary"
+                android:textSize="12sp"
+                android:text="@string/forgot_pass"
+                />
 
-    <RelativeLayout
-        android:id="@+id/rlSignUp"
-        android:layout_width="match_parent"
-        android:layout_height="32dp"
-        android:layout_below="@id/rlForgotPass"
-        android:layout_marginTop="16dp"
-        android:background="?android:attr/selectableItemBackground"
-        android:clickable="true"
-        >
+        </RelativeLayout>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:textColor="@color/white_text_secondary"
-            android:textSize="12sp"
-            android:text="@string/signup"
-            />
+        <RelativeLayout
+            android:id="@+id/rlSignUp"
+            android:layout_width="match_parent"
+            android:layout_height="32dp"
+            android:background="?android:attr/selectableItemBackground"
+            android:clickable="true"
+            android:layout_weight="1"
+            >
 
-    </RelativeLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:textColor="@color/white_text_secondary"
+                android:textSize="12sp"
+                android:text="@string/signup"
+                />
+
+        </RelativeLayout>
+
+    </LinearLayout>
 
 </RelativeLayout>

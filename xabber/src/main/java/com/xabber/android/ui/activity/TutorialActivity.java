@@ -56,6 +56,14 @@ public class TutorialActivity extends AppIntroBase {
         });
 
         rlRegister = (RelativeLayout) findViewById(R.id.rlRegister);
+        rlRegister.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = XabberLoginActivity.createIntent(TutorialActivity.this);
+                intent.putExtra(XabberLoginActivity.CURRENT_FRAGMENT, XabberLoginActivity.FRAGMENT_SIGNUP);
+                startActivity(intent);
+            }
+        });
 
         Glide.with(this)
                 .load(R.drawable.intro_background)
