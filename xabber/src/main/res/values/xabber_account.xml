@@ -60,6 +60,7 @@
     <string name="button_resend_link">RESEND LINK</string>
     <string name="button_complete_register">COMPLETE</string>
     <string name="button_confirm">confirm</string>
+    <string name="button_enter">ENTER XABBER</string>
 
     <string name="no_email">no email</string>
     <string name="empty_field">Empty field</string>

@@ -370,8 +370,9 @@ public class XabberLoginActivity extends ManagedActivity implements View.OnClick
     private void handleSuccessGetSettings(List<XMPPAccountSettings> settings) {
         hideProgress();
 
-        Intent intent = ContactListActivity.createIntent(this);
+        Intent intent = XabberAccountInfoActivity.createIntent(this);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        intent.putExtra(XabberAccountInfoActivity.CALL_FROM, XabberAccountInfoActivity.CALL_FROM_LOGIN);
         finish();
         startActivity(intent);
     }
@@ -425,8 +426,9 @@ public class XabberLoginActivity extends ManagedActivity implements View.OnClick
     private void handleSuccessGetAccountAfterSignUp(XabberAccount account) {
         hideProgress();
 
-        Intent intent = ContactListActivity.createIntent(this);
+        Intent intent = XabberAccountInfoActivity.createIntent(this);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        intent.putExtra(XabberAccountInfoActivity.CALL_FROM, XabberAccountInfoActivity.CALL_FROM_LOGIN);
         finish();
         startActivity(intent);
     }

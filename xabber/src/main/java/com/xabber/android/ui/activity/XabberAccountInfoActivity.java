@@ -13,6 +13,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -48,7 +50,7 @@ import rx.subscriptions.CompositeSubscription;
  * Created by valery.miller on 19.07.17.
  */
 
-public class XabberAccountInfoActivity extends ManagedActivity {
+public class XabberAccountInfoActivity extends ManagedActivity implements Toolbar.OnMenuItemClickListener {
 
     private final static String LOG_TAG = XabberAccountInfoActivity.class.getSimpleName();
     private final static String EMAIL_CONFIRMATION_URI = "https://www.xabber.com/account/emails/confirmation/";
@@ -57,6 +59,10 @@ public class XabberAccountInfoActivity extends ManagedActivity {
     private final static String FRAGMENT_INFO = "fragment_info";
     private final static String FRAGMENT_CONFIRM = "fragment_confirm";
     private final static String FRAGMENT_COMPLETE = "fragment_complete";
+
+    public final static String CALL_FROM = "call_from";
+    public final static String CALL_FROM_LOGIN = "call_from_login";
+    private final static String CALL_FROM_SETTINGS = "call_from_settings";
 
     private FragmentTransaction fTrans;
 
@@ -71,6 +77,9 @@ public class XabberAccountInfoActivity extends ManagedActivity {
 
     private CompositeSubscription compositeSubscription = new CompositeSubscription();
 
+    private String callFrom = CALL_FROM_SETTINGS;
+    private boolean isVisibleEnterXabberButton = false;
+
     @NonNull
     public static Intent createIntent(Context context) {
         return new Intent(context, XabberAccountInfoActivity.class);
@@ -80,16 +89,15 @@ public class XabberAccountInfoActivity extends ManagedActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // handle call from
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) callFrom = extras.getString(CALL_FROM);
+
         setContentView(R.layout.activity_xabber_account_info);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar_default);
-        toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        toolbar.inflateMenu(R.menu.toolbar_xabber_account_info);
+        toolbar.setOnMenuItemClickListener(this);
         toolbar.setTitle(R.string.title_xabber_account);
         barPainter = new BarPainter(this, toolbar);
     }
@@ -115,6 +123,7 @@ public class XabberAccountInfoActivity extends ManagedActivity {
             showLoginFragment();
         }
 
+        handleCallFrom(account);
         handleIntent(getIntent());
     }
 
@@ -122,6 +131,49 @@ public class XabberAccountInfoActivity extends ManagedActivity {
     protected void onDestroy() {
         super.onDestroy();
         compositeSubscription.clear();
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        if (isVisibleEnterXabberButton) {
+            menu.findItem(R.id.action_enter_xabber).setVisible(true);
+        } else menu.findItem(R.id.action_enter_xabber).setVisible(false);
+        return true;
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_enter_xabber:
+                // complete login and perform sync
+                Intent intent = ContactListActivity.createIntent(this);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                finish();
+                startActivity(intent);
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void handleCallFrom(XabberAccount account) {
+        if (CALL_FROM_SETTINGS.equals(callFrom)) {
+            toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
+            toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    finish();
+                }
+            });
+        }
+
+        if (account != null && XabberAccount.STATUS_REGISTERED.equals(account.getAccountStatus())
+                && CALL_FROM_LOGIN.equals(callFrom))
+            isVisibleEnterXabberButton = true;
+        else isVisibleEnterXabberButton = false;
+
+        onPrepareOptionsMenu(toolbar.getMenu());
     }
 
     private void showProgress(String title) {
@@ -418,6 +470,10 @@ public class XabberAccountInfoActivity extends ManagedActivity {
 
     private void handleSuccessComplete(XabberAccount response) {
         showInfoFragment();
+
+        isVisibleEnterXabberButton = true;
+        onPrepareOptionsMenu(toolbar.getMenu());
+
         hideProgress();
         Toast.makeText(this, R.string.complete_success, Toast.LENGTH_SHORT).show();
         synchronize();
