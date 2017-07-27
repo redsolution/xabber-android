@@ -159,11 +159,12 @@
         android:layout_marginBottom="12dp"
         >
 
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:orientation="vertical"
             android:paddingTop="16dp"
-            android:paddingBottom="16dp"
+            android:paddingBottom="8dp"
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
             >
@@ -174,68 +175,154 @@
                 android:layout_height="wrap_content"
                 android:textColor="?android:attr/textColorPrimary"
                 android:layout_marginBottom="16dp"
-                android:text="@string/button_complete_register"
+                android:text="@string/title_complete_register"
                 />
 
-            <EditText
-                android:id="@+id/edtUsername"
+            <LinearLayout
+                android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/tvCompleteTitle"
-                android:hint="@string/hint_username"
-                />
+                android:layout_height="wrap_content">
 
-            <EditText
-                android:id="@+id/edtPass"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/edtUsername"
-                android:hint="@string/hint_pass"
-                />
+                <EditText
+                    android:id="@+id/edtUsername"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:imeOptions="actionNext"
+                    android:singleLine="true"
+                    android:hint="@string/hint_username"
+                    android:textSize="16sp"
+                    android:layout_weight="1"
+                    />
 
-            <EditText
-                android:id="@+id/edtPass2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/edtPass"
-                android:hint="@string/hint_conf_pass"
-                />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="\@"
+                    android:textSize="16sp"
+                    />
 
-            <EditText
-                android:id="@+id/edtFirstName"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/edtPass2"
-                android:hint="@string/hint_first_name"
-                />
+                <EditText
+                    android:id="@+id/edtHost"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:imeOptions="actionNext"
+                    android:singleLine="true"
+                    android:textSize="16sp"
+                    android:text="@string/default_host"
+                    android:hint="@string/hint_host"
+                    />
 
-            <EditText
-                android:id="@+id/edtLastName"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/edtFirstName"
-                android:hint="@string/hint_last_name"
-                />
+            </LinearLayout>
 
-            <EditText
-                android:id="@+id/edtHost"
+            <LinearLayout
+                android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/edtLastName"
-                android:text="@string/default_host"
-                android:hint="@string/hint_host"
-                />
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="4dp"
+                    android:layout_marginLeft="4dp"
+                    android:textSize="16sp"
+                    android:text="@string/hint_pass"
+                    />
+
+                <EditText
+                    android:id="@+id/edtPass"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:imeOptions="actionNext"
+                    android:singleLine="true"
+                    />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="4dp"
+                    android:layout_marginLeft="4dp"
+                    android:textSize="16sp"
+                    android:text="@string/hint_conf_pass"
+                    />
+
+                <EditText
+                    android:id="@+id/edtPass2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:imeOptions="actionNext"
+                    android:singleLine="true"
+                    />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="4dp"
+                    android:layout_marginLeft="4dp"
+                    android:textSize="16sp"
+                    android:text="@string/hint_first_name"
+                    />
+
+                <EditText
+                    android:id="@+id/edtFirstName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:imeOptions="actionNext"
+                    android:singleLine="true"
+                    />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="4dp"
+                    android:layout_marginLeft="4dp"
+                    android:textSize="16sp"
+                    android:text="@string/hint_last_name"
+                    />
+
+                <EditText
+                    android:id="@+id/edtLastName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:imeOptions="actionDone"
+                    android:singleLine="true"
+                    />
+
+            </LinearLayout>
 
             <Button
                 android:id="@+id/btnComplete"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/edtHost"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="16dp"
+                style="@style/Widget.AppCompat.Button.Colored"
+                android:theme="@style/GreenButton"
+                android:textColor="@color/white"
                 android:text="@string/button_complete_register"
                 />
 
-        </RelativeLayout>
+        </LinearLayout>
     </android.support.v7.widget.CardView>
 
 </RelativeLayout>

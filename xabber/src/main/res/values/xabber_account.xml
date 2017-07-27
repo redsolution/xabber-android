@@ -17,8 +17,8 @@
     <string name="logout_fail">Logout failed</string>
     <string name="confirm_success">Confirm email successful</string>
     <string name="confirm_fail">Confirm email failed</string>
-    <string name="complete_success">Complete register successful</string>
-    <string name="complete_fail">Complete register failed</string>
+    <string name="complete_success">Registration completed successfully</string>
+    <string name="complete_fail">Registration failed</string>
     <string name="resend_success">Resend verification email successful</string>
     <string name="resend_fail">Resend verification email failed</string>
 
@@ -30,14 +30,14 @@
     <string name="progress_title_sync">Synchronization..</string>
     <string name="progress_title_logout">Logout..</string>
     <string name="progress_title_login">Login..</string>
-    <string name="progress_title_signup">Register..</string>
+    <string name="progress_title_signup">Registration..</string>
     <string name="progress_title_confirm">Confirmation..</string>
-    <string name="progress_title_complete">Complete register..</string>
+    <string name="progress_title_complete">Registration completion..</string>
     <string name="progress_title_resend">Resending email..</string>
 
-    <string name="hint_username">Username</string>
-    <string name="hint_pass">Password</string>
-    <string name="hint_conf_pass">Confirm password</string>
+    <string name="hint_username">Username *</string>
+    <string name="hint_pass">Password *</string>
+    <string name="hint_conf_pass">Confirm password *</string>
     <string name="hint_first_name">First name</string>
     <string name="hint_last_name">Last name</string>
     <string name="hint_host">Host</string>
@@ -49,19 +49,20 @@
     <string name="title_xabber_account">Xabber Account</string>
     <string name="title_xmpp_account">XMPP Accounts</string>
     <string name="title_email_confirm">Email confirmation</string>
+    <string name="title_complete_register">Complete registration</string>
 
     <string name="summary_xabber_account">Xabber account lets you easily sync your settings and connected XMPP accounts between various devices.</string>
     <string name="summary_confirm_account">Please confirm your email address</string>
-    <string name="summary_complete_register">Please complete register of your account</string>
+    <string name="summary_complete_register">Please complete registration of your account</string>
 
     <string name="button_logout">LOGOUT</string>
     <string name="button_login">LOGIN</string>
     <string name="button_resend_link">RESEND LINK</string>
-    <string name="button_complete_register">complete register</string>
+    <string name="button_complete_register">COMPLETE</string>
     <string name="button_confirm">confirm</string>
 
     <string name="no_email">no email</string>
     <string name="empty_field">Empty field</string>
     <string name="account_not_confirmed">Account not confirmed</string>
-    <string name="register_not_completed">Register not completed</string>
+    <string name="register_not_completed">Registration not completed</string>
 </resources>

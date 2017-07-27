@@ -70,6 +70,10 @@
         <item name="colorAccent">@color/red_700</item>
     </style>
 
+    <style name="GreenButton" parent="ThemeOverlay.AppCompat">
+        <item name="colorAccent">@color/green_700</item>
+    </style>
+
     <style name="WhiteButton" parent="ThemeOverlay.AppCompat">
         <item name="colorAccent">@color/white</item>
     </style>
