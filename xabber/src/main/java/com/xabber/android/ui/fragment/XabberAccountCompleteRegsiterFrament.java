@@ -79,7 +79,8 @@ public class XabberAccountCompleteRegsiterFrament extends Fragment {
     }
 
     public void updateData(@NonNull XabberAccount account) {
-        tvAccountEmail.setText(account.getEmails().get(0).getEmail());
+        if (account.getEmails().size() > 0)
+            tvAccountEmail.setText(account.getEmails().get(0).getEmail());
     }
 
     private void verifyFields() {

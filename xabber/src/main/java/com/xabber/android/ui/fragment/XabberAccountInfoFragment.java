@@ -88,7 +88,8 @@ public class XabberAccountInfoFragment extends Fragment {
     public void updateData(@NonNull XabberAccount account) {
         String accountName = account.getFirstName() + " " + account.getLastName();
         tvAccountName.setText(accountName);
-        tvAccountEmail.setText(account.getEmails().get(0).getEmail());
+        if (account.getEmails().size() > 0)
+            tvAccountEmail.setText(account.getEmails().get(0).getEmail());
     }
 
     public void updateList(@NonNull List<XMPPAccountSettings> list) {

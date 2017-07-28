@@ -42,18 +42,23 @@ public class AccountPreference extends Preference {
         if (account != null) {
             llAccountInfo.setVisibility(View.VISIBLE);
             llNoAccount.setVisibility(View.GONE);
+
+            String email = getContext().getString(R.string.no_email);
+            if (account.getEmails().size() > 0)
+                email = account.getEmails().get(0).getEmail();
+
             if (XabberAccount.STATUS_NOT_CONFIRMED.equals(account.getAccountStatus())) {
                 tvAccountName.setText(R.string.account_not_confirmed);
-                tvAccountEmail.setText(account.getEmails().get(0).getEmail());
+                tvAccountEmail.setText(email);
             }
             if (XabberAccount.STATUS_CONFIRMED.equals(account.getAccountStatus())) {
                 tvAccountName.setText(R.string.register_not_completed);
-                tvAccountEmail.setText(account.getEmails().get(0).getEmail());
+                tvAccountEmail.setText(email);
             }
             if (XabberAccount.STATUS_REGISTERED.equals(account.getAccountStatus())) {
                 String accountName = account.getFirstName() + " " + account.getLastName();
                 tvAccountName.setText(accountName);
-                tvAccountEmail.setText(account.getEmails().get(0).getEmail());
+                tvAccountEmail.setText(email);
             }
         } else {
             llAccountInfo.setVisibility(View.GONE);

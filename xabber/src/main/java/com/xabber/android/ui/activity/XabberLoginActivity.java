@@ -436,7 +436,10 @@ public class XabberLoginActivity extends ManagedActivity implements View.OnClick
     }
 
     private void handleSuccessGetAccount(@NonNull XabberAccount xabberAccount) {
-        getSettings();
+        if (!XabberAccount.STATUS_REGISTERED.equals(xabberAccount.getAccountStatus()))
+            handleSuccessGetAccountAfterSignUp(xabberAccount);
+        else
+            getSettings();
     }
 
     private void getSettings() {
