@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
@@ -44,7 +43,6 @@ import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.connection.NetworkManager;
 import com.xabber.android.data.xaccount.AuthManager;
-import com.xabber.android.data.xaccount.HttpApiManager;
 import com.xabber.android.data.xaccount.XAccountTokenDTO;
 import com.xabber.android.data.xaccount.XMPPAccountSettings;
 import com.xabber.android.data.xaccount.XabberAccount;
@@ -53,15 +51,9 @@ import com.xabber.android.ui.fragment.XabberSignUpFragment;
 import com.xabber.android.utils.RetrofitErrorConverter;
 
 import java.io.IOException;
-import java.lang.annotation.Annotation;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import okhttp3.ResponseBody;
-import retrofit2.Converter;
-import retrofit2.HttpException;
-import retrofit2.Response;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
@@ -527,9 +519,8 @@ public class XabberLoginActivity extends ManagedActivity implements View.OnClick
     private void handleSuccessGetAccountAfterSignUp(XabberAccount account) {
         hideProgress();
 
-        Intent intent = XabberAccountInfoActivity.createIntent(this);
+        Intent intent = ContactListActivity.createIntent(this);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        intent.putExtra(XabberAccountInfoActivity.CALL_FROM, XabberAccountInfoActivity.CALL_FROM_LOGIN);
         finish();
         startActivity(intent);
     }

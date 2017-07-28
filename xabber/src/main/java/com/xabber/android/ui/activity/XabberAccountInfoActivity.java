@@ -244,7 +244,7 @@ public class XabberAccountInfoActivity extends ManagedActivity implements Toolba
     }
 
     public void onLoginClick() {
-        Intent intent = XabberLoginActivity.createIntent(XabberAccountInfoActivity.this);
+        Intent intent = TutorialActivity.createIntent(XabberAccountInfoActivity.this);
         startActivity(intent);
     }
 
