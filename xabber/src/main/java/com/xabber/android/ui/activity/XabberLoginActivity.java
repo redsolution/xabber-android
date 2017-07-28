@@ -20,6 +20,16 @@ import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.auth.api.signin.GoogleSignInResult;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeTokenRequest;
+import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.jackson2.JacksonFactory;
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.DefaultLogger;
 import com.twitter.sdk.android.core.Result;
@@ -30,6 +40,7 @@ import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.TwitterSession;
 import com.twitter.sdk.android.core.identity.TwitterAuthClient;
 import com.xabber.android.R;
+import com.xabber.android.data.Application;
 import com.xabber.android.data.connection.NetworkManager;
 import com.xabber.android.data.xaccount.AuthManager;
 import com.xabber.android.data.xaccount.XAccountTokenDTO;
@@ -38,6 +49,7 @@ import com.xabber.android.data.xaccount.XabberAccount;
 import com.xabber.android.ui.fragment.XabberLoginFragment;
 import com.xabber.android.ui.fragment.XabberSignUpFragment;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
@@ -47,11 +59,12 @@ import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
+
 /**
  * Created by valery.miller on 14.07.17.
  */
 
-public class XabberLoginActivity extends ManagedActivity implements View.OnClickListener {
+public class XabberLoginActivity extends ManagedActivity implements View.OnClickListener, GoogleApiClient.OnConnectionFailedListener {
 
     private final static String TAG = XabberLoginActivity.class.getSimpleName();
     public final static String CURRENT_FRAGMENT = "current_fragment";
@@ -76,6 +89,11 @@ public class XabberLoginActivity extends ManagedActivity implements View.OnClick
     // twitter auth
     private TwitterAuthClient twitterAuthClient;
     private Callback<TwitterSession> twitterSessionCallback;
+
+    // google auth
+    private GoogleApiClient mGoogleApiClient;
+    private static final int RC_SIGN_IN = 9001;
+    private static final String GOOGLE_TOKEN_SERVER = "https://www.googleapis.com/oauth2/v4/token";
 
     private CompositeSubscription compositeSubscription = new CompositeSubscription();
 
@@ -118,6 +136,7 @@ public class XabberLoginActivity extends ManagedActivity implements View.OnClick
         // social auth
         initFacebookAuth();
         initTwitterAuth();
+        initGoogleAuth();
     }
 
     public void showSignUpFragment() {
@@ -166,6 +185,11 @@ public class XabberLoginActivity extends ManagedActivity implements View.OnClick
         callbackManager.onActivityResult(requestCode, resultCode, data);
         // twitter auth
         twitterAuthClient.onActivityResult(requestCode, resultCode, data);
+        // google auth
+        if (requestCode == RC_SIGN_IN) {
+            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+            handleSignInResult(result);
+        }
     }
 
     @Override
@@ -193,6 +217,8 @@ public class XabberLoginActivity extends ManagedActivity implements View.OnClick
                     LoginManager.getInstance().logInWithReadPermissions(this, Collections.singletonList("public_profile"));
                     break;
                 case R.id.ivGoogle:
+                    Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
+                    startActivityForResult(signInIntent, RC_SIGN_IN);
                     break;
                 case R.id.ivGithub:
                     break;
@@ -202,6 +228,54 @@ public class XabberLoginActivity extends ManagedActivity implements View.OnClick
             }
         } else
             Toast.makeText(this, "No internet connection", Toast.LENGTH_LONG).show();
+    }
+
+    private void initGoogleAuth() {
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestServerAuthCode(getString(R.string.SOCIAL_AUTH_GOOGLE_KEY), false)
+                .build();
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .enableAutoManage(this, this)
+                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                .build();
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {}
+
+    private void handleSignInResult(GoogleSignInResult result) {
+        if (result.isSuccess()) {
+            GoogleSignInAccount acct = result.getSignInAccount();
+
+            if (acct != null) {
+                final String googleAuthCode = acct.getServerAuthCode();
+
+                Application.getInstance().runInBackground(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            GoogleTokenResponse tokenResponse = new GoogleAuthorizationCodeTokenRequest(
+                                new NetHttpTransport(),
+                                JacksonFactory.getDefaultInstance(),
+                                GOOGLE_TOKEN_SERVER,
+                                getString(R.string.SOCIAL_AUTH_GOOGLE_KEY),
+                                getString(R.string.SOCIAL_AUTH_GOOGLE_SECRET),
+                                googleAuthCode,
+                                "").execute();
+                            final String token = tokenResponse.getAccessToken();
+                            Application.getInstance().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    loginSocial(AuthManager.PROVIDER_GOOGLE, token);
+                                }
+                            });
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+            }
+        } else Toast.makeText(this, "google error", Toast.LENGTH_LONG).show();
     }
 
     private void initFacebookAuth() {
