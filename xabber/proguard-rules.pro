@@ -8,6 +8,10 @@
 # RxJava
 -dontwarn rx.internal.util.**
 
+# google
+-keep class com.google.**
+-dontwarn com.google.**
+
 # realm
 -keep class io.realm.annotations.RealmModule
 -keep @io.realm.annotations.RealmModule class *
