@@ -35,6 +35,7 @@ import com.xabber.android.ui.fragment.XabberAccountCompleteRegsiterFrament;
 import com.xabber.android.ui.fragment.XabberAccountConfirmationFragment;
 import com.xabber.android.ui.fragment.XabberAccountInfoFragment;
 import com.xabber.android.ui.fragment.XabberAccountLoginFragment;
+import com.xabber.android.utils.RetrofitErrorConverter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -395,8 +396,15 @@ public class XabberAccountInfoActivity extends ManagedActivity implements Toolba
 
     private void handleErrorLogout(Throwable throwable) {
         hideProgress();
-        Toast.makeText(this, R.string.logout_fail, Toast.LENGTH_SHORT).show();
-        Log.d(LOG_TAG, "Error while logout request: " + throwable.toString());
+
+        String message = RetrofitErrorConverter.throwableToHttpError(throwable);
+        if (message != null) {
+            Log.d(LOG_TAG, "Error while logout: " + message);
+            Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+        } else {
+            Log.d(LOG_TAG, "Error while logout: " + throwable.toString());
+            Toast.makeText(this, "Error while logout: " + throwable.toString(), Toast.LENGTH_LONG).show();
+        }
     }
 
     private void confirm(String code) {
@@ -444,9 +452,16 @@ public class XabberAccountInfoActivity extends ManagedActivity implements Toolba
     }
 
     private void handleErrorConfirm(Throwable throwable) {
-        Log.d(LOG_TAG, "Error while confirm request: " + throwable.toString());
         hideProgress();
-        Toast.makeText(this, R.string.confirm_fail, Toast.LENGTH_SHORT).show();
+
+        String message = RetrofitErrorConverter.throwableToHttpError(throwable);
+        if (message != null) {
+            Log.d(LOG_TAG, "Error while confirming email: " + message);
+            Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+        } else {
+            Log.d(LOG_TAG, "Error while confirming email: " + throwable.toString());
+            Toast.makeText(this, "Error while confirming email: " + throwable.toString(), Toast.LENGTH_LONG).show();
+        }
     }
 
     private void completeRegister(String username, String pass, String pass2, String firstName, String lastName, String host) {
@@ -480,9 +495,16 @@ public class XabberAccountInfoActivity extends ManagedActivity implements Toolba
     }
 
     private void handleErrorComplete(Throwable throwable) {
-        Log.d(LOG_TAG, "Error while complete register request: " + throwable.toString());
         hideProgress();
-        Toast.makeText(this, R.string.complete_fail, Toast.LENGTH_SHORT).show();
+
+        String message = RetrofitErrorConverter.throwableToHttpError(throwable);
+        if (message != null) {
+            Log.d(LOG_TAG, "Error while completing register: " + message);
+            Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+        } else {
+            Log.d(LOG_TAG, "Error while completing register: " + throwable.toString());
+            Toast.makeText(this, "Error while completing register: " + throwable.toString(), Toast.LENGTH_LONG).show();
+        }
     }
 
     private void resendConfirmEmail(String email) {
@@ -510,9 +532,16 @@ public class XabberAccountInfoActivity extends ManagedActivity implements Toolba
     }
 
     private void handleErrorResendEmail(Throwable throwable) {
-        Log.d(LOG_TAG, "Error while resend email request: " + throwable.toString());
         hideProgress();
-        Toast.makeText(this, R.string.resend_fail, Toast.LENGTH_SHORT).show();
+
+        String message = RetrofitErrorConverter.throwableToHttpError(throwable);
+        if (message != null) {
+            Log.d(LOG_TAG, "Error while send verification email: " + message);
+            Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+        } else {
+            Log.d(LOG_TAG, "Error while send verification email: " + throwable.toString());
+            Toast.makeText(this, "Error while send verification email: " + throwable.toString(), Toast.LENGTH_LONG).show();
+        }
     }
 }
 

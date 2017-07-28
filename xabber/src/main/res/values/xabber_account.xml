@@ -21,6 +21,7 @@
     <string name="complete_fail">Registration failed</string>
     <string name="resend_success">Resend verification email successful</string>
     <string name="resend_fail">Resend verification email failed</string>
+    <string name="social_auth_fail">Social authentication failed</string>
 
     <string name="toast_email_already_confirm">Email already confirm</string>
     <string name="toast_not_authorized">You are not authorized</string>

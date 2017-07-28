@@ -19,9 +19,16 @@ public class HttpApiManager {
     private static final String XABBER_API_URL = "https://api.xabber.com/api/v1/";
     private static final String XABBER_API_URL_TEST = "http://c0014.soni.redsolution.ru:9001/api/v1/";
     private static IXabberApi xabberApi;
+    private static Retrofit retrofit;
 
     public static IXabberApi getXabberApi() {
-        if (xabberApi == null) {
+        if (xabberApi == null)
+            xabberApi = getRetrofit().create(IXabberApi.class);
+        return xabberApi;
+    }
+
+    public static Retrofit getRetrofit() {
+        if (retrofit == null) {
 
             HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
             loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
@@ -39,16 +46,14 @@ public class HttpApiManager {
                     .setLenient()
                     .create();
 
-            Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl(XABBER_API_URL)
-                    .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
-                    .addConverterFactory(GsonConverterFactory.create(gson))
-                    .client(httpClient)
-                    .build();
-
-            xabberApi = retrofit.create(IXabberApi.class);
+            retrofit = new Retrofit.Builder()
+                .baseUrl(XABBER_API_URL)
+                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create(gson))
+                .client(httpClient)
+                .build();
         }
-        return xabberApi;
+        return retrofit;
     }
 }
 

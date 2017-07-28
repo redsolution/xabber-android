@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
@@ -43,16 +44,24 @@ import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.connection.NetworkManager;
 import com.xabber.android.data.xaccount.AuthManager;
+import com.xabber.android.data.xaccount.HttpApiManager;
 import com.xabber.android.data.xaccount.XAccountTokenDTO;
 import com.xabber.android.data.xaccount.XMPPAccountSettings;
 import com.xabber.android.data.xaccount.XabberAccount;
 import com.xabber.android.ui.fragment.XabberLoginFragment;
 import com.xabber.android.ui.fragment.XabberSignUpFragment;
+import com.xabber.android.utils.RetrofitErrorConverter;
 
 import java.io.IOException;
+import java.lang.annotation.Annotation;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import okhttp3.ResponseBody;
+import retrofit2.Converter;
+import retrofit2.HttpException;
+import retrofit2.Response;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
@@ -390,14 +399,21 @@ public class XabberLoginActivity extends ManagedActivity implements View.OnClick
     }
 
     private void handleErrorLogin(Throwable throwable) {
-        Log.d(TAG, "Error while login request: " + throwable.toString());
-        Toast.makeText(this, "Username or password is incorrect", Toast.LENGTH_SHORT).show();
         hideProgress();
+
+        String message = RetrofitErrorConverter.throwableToHttpError(throwable);
+        if (message != null) {
+            Log.d(TAG, "Error while login: " + message);
+            Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+        } else {
+            Log.d(TAG, "Error while login: " + throwable.toString());
+            Toast.makeText(this, "Error while login: " + throwable.toString(), Toast.LENGTH_LONG).show();
+        }
     }
 
     private void handleErrorSocialLogin(Throwable throwable) {
         Log.d(TAG, "Error while social login request: " + throwable.toString());
-        Toast.makeText(this, "Authentication error", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, R.string.social_auth_fail, Toast.LENGTH_LONG).show();
         hideProgress();
     }
 
@@ -475,8 +491,16 @@ public class XabberLoginActivity extends ManagedActivity implements View.OnClick
     }
 
     private void handleErrorSignUp(Throwable throwable) {
-        Log.d(TAG, "Error while signup request: " + throwable.toString());
         hideProgress();
+
+        String message = RetrofitErrorConverter.throwableToHttpError(throwable);
+        if (message != null) {
+            Log.d(TAG, "Error while registration: " + message);
+            Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+        } else {
+            Log.d(TAG, "Error while registration: " + throwable.toString());
+            Toast.makeText(this, "Error while registration: " + throwable.toString(), Toast.LENGTH_LONG).show();
+        }
     }
 
     private void getAccountAfterSignUp(String token) {
