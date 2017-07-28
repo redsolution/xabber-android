@@ -45,6 +45,10 @@ public class RetrofitErrorConverter {
                     errorMessage = error.getEmail().get(0);
                 else if (error.getCredentials() != null && error.getCredentials().size() > 0)
                     errorMessage = error.getCredentials().get(0);
+                else if (error.getCode() != null && error.getCode().size() > 0)
+                    errorMessage = error.getCode().get(0);
+                else if (error.getUsername() != null && error.getUsername().size() > 0)
+                    errorMessage = error.getUsername().get(0);
             }
         }
 
@@ -55,11 +59,15 @@ public class RetrofitErrorConverter {
         private String detail;
         private ArrayList<String> email;
         private ArrayList<String> credentials;
+        private ArrayList<String> code;
+        private ArrayList<String> username;
 
-        public APIError(String detail, ArrayList<String> email, ArrayList<String> credentials) {
+        public APIError(String detail, ArrayList<String> email, ArrayList<String> credentials, ArrayList<String> code, ArrayList<String> username) {
             this.detail = detail;
             this.email = email;
             this.credentials = credentials;
+            this.code = code;
+            this.username = username;
         }
 
         public String getDetail() {
@@ -72,6 +80,14 @@ public class RetrofitErrorConverter {
 
         public ArrayList<String> getCredentials() {
             return credentials;
+        }
+
+        public ArrayList<String> getCode() {
+            return code;
+        }
+
+        public ArrayList<String> getUsername() {
+            return username;
         }
     }
 
