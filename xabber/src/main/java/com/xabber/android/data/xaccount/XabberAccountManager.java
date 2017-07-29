@@ -5,12 +5,20 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.xabber.android.data.Application;
+import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.OnLoadListener;
+import com.xabber.android.data.account.AccountItem;
+import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.database.RealmManager;
 import com.xabber.android.data.database.realm.EmailRealm;
 import com.xabber.android.data.database.realm.XMPPAccountSettignsRealm;
 import com.xabber.android.data.database.realm.XMPPUserRealm;
 import com.xabber.android.data.database.realm.XabberAccountRealm;
+import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.entity.UserJid;
+
+import org.jxmpp.jid.BareJid;
+import org.jxmpp.stringprep.XmppStringprepException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -320,6 +328,33 @@ public class XabberAccountManager implements OnLoadListener {
         item.setUsername(realmItem.getUsername());
 
         return item;
+    }
+
+    @Nullable
+    public Single<List<XMPPAccountSettings>> updateLocalAccounts(@Nullable List<XMPPAccountSettings> accounts) {
+        if (accounts != null) {
+            for (XMPPAccountSettings account : accounts) {
+                if (!isAccountExist(account.getJid())) {
+                    // create new xmpp-account
+                    try {
+                        AccountManager.getInstance().addAccount(account.getJid(), "", false, true, false, false);
+                    } catch (NetworkException e) {
+                        Application.getInstance().onError(e);
+                    }
+                } else {
+                    // update existing xmpp-account
+                }
+            }
+        }
+        return Single.just(accounts);
+    }
+
+    public boolean isAccountExist(String jid) {
+        for (AccountJid accountJid : AccountManager.getInstance().getAllAccounts()) {
+            String accountJidString = accountJid.getFullJid().asBareJid().toString();
+            if (jid.equals(accountJidString)) return true;
+        }
+        return false;
     }
 }
 

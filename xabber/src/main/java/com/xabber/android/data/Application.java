@@ -326,8 +326,8 @@ public class Application extends android.app.Application {
         addManager(OTRManager.getInstance());
         addManager(ConnectionManager.getInstance());
         addManager(ScreenManager.getInstance());
-        addManager(XabberAccountManager.getInstance());
         addManager(AccountManager.getInstance());
+        addManager(XabberAccountManager.getInstance());
         addManager(MUCManager.getInstance());
         addManager(MessageManager.getInstance());
         addManager(ChatManager.getInstance());
