@@ -7,7 +7,6 @@ import android.util.Log;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.OnLoadListener;
-import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.database.RealmManager;
 import com.xabber.android.data.database.realm.EmailRealm;
@@ -15,16 +14,12 @@ import com.xabber.android.data.database.realm.XMPPAccountSettignsRealm;
 import com.xabber.android.data.database.realm.XMPPUserRealm;
 import com.xabber.android.data.database.realm.XabberAccountRealm;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.UserJid;
-
-import org.jxmpp.jid.BareJid;
-import org.jxmpp.stringprep.XmppStringprepException;
+import com.xabber.android.ui.color.ColorManager;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import io.realm.Realm;
-
 import io.realm.RealmList;
 import io.realm.RealmResults;
 import rx.Single;
@@ -334,7 +329,8 @@ public class XabberAccountManager implements OnLoadListener {
     public Single<List<XMPPAccountSettings>> updateLocalAccounts(@Nullable List<XMPPAccountSettings> accounts) {
         if (accounts != null) {
             for (XMPPAccountSettings account : accounts) {
-                if (!isAccountExist(account.getJid())) {
+                AccountJid accountJid = getExistingAccount(account.getJid());
+                if (accountJid == null) {
                     // create new xmpp-account
                     try {
                         AccountManager.getInstance().addAccount(account.getJid(), "", false, true, false, false);
@@ -343,18 +339,21 @@ public class XabberAccountManager implements OnLoadListener {
                     }
                 } else {
                     // update existing xmpp-account
+                    // now we are updated only color of account
+                    AccountManager.getInstance().setColor(accountJid, ColorManager.getInstance().convertColorNameToIndex(account.getColor()));
+                    AccountManager.getInstance().onAccountChanged(accountJid);
                 }
             }
         }
         return Single.just(accounts);
     }
 
-    public boolean isAccountExist(String jid) {
+    public AccountJid getExistingAccount(String jid) {
         for (AccountJid accountJid : AccountManager.getInstance().getAllAccounts()) {
             String accountJidString = accountJid.getFullJid().asBareJid().toString();
-            if (jid.equals(accountJidString)) return true;
+            if (jid.equals(accountJidString)) return accountJid;
         }
-        return false;
+        return null;
     }
 }
 
