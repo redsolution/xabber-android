@@ -63,6 +63,7 @@
     <string name="button_confirm">confirm</string>
     <string name="button_enter">ENTER XABBER</string>
 
+    <string name="sync_all">Synchronize all</string>
     <string name="no_email">no email</string>
     <string name="empty_field">Empty field</string>
     <string name="passwords_not_match">Passwords do not match</string>

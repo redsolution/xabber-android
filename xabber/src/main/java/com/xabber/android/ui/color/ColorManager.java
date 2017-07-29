@@ -4,12 +4,15 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
+import android.support.v4.content.ContextCompat;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
+
+import java.util.HashMap;
 
 public class ColorManager {
 
@@ -179,4 +182,19 @@ public class ColorManager {
     public int getNavigationDrawerBackgroundColor() {
         return navigationDrawerBackgroundColor;
     }
+
+    public int convertColorNameToId(String colorName) {
+        final Context context = Application.getInstance().getApplicationContext();
+
+        HashMap<String, Integer> colors = new HashMap<>();
+        colors.put("green", R.color.green_500);
+        colors.put("red", R.color.red_500);
+        colors.put("blue", R.color.blue_500);
+
+        Integer colorId = colors.get(colorName);
+        if (colorId != null)
+            return ContextCompat.getColor(context, colors.get(colorName));
+        else return ContextCompat.getColor(context, colors.get("green"));
+    }
+
 }
