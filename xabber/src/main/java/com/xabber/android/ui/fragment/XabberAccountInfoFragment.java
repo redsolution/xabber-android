@@ -22,6 +22,9 @@ import com.xabber.android.ui.activity.XabberAccountInfoActivity;
 import com.xabber.android.ui.adapter.XMPPAccountAdapter;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -107,6 +110,7 @@ public class XabberAccountInfoFragment extends Fragment {
     public void updateList(@NonNull List<XMPPAccountSettings> list) {
         xmppAccounts.clear();
         xmppAccounts.addAll(list);
+        Collections.sort(xmppAccounts);
         adapter.setItems(xmppAccounts);
     }
 

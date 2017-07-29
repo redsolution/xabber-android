@@ -1,10 +1,12 @@
 package com.xabber.android.data.xaccount;
 
+import android.support.annotation.NonNull;
+
 /**
  * Created by valery.miller on 21.07.17.
  */
 
-public class XMPPAccountSettings {
+public class XMPPAccountSettings implements Comparable<XMPPAccountSettings> {
 
     private String jid;
     private String username;
@@ -76,5 +78,10 @@ public class XMPPAccountSettings {
 
     public void setToken(String token) {
         this.token = token;
+    }
+
+    @Override
+    public int compareTo(@NonNull XMPPAccountSettings xmppAccountSettings) {
+        return this.getOrder() - xmppAccountSettings.getOrder();
     }
 }
