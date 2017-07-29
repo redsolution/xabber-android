@@ -21,7 +21,8 @@ import java.util.List;
 
 public class XMPPAccountAdapter extends RecyclerView.Adapter {
 
-    List<XMPPAccountSettings> items;
+    private List<XMPPAccountSettings> items;
+    private boolean isAllChecked;
 
     public XMPPAccountAdapter() {
         this.items = new ArrayList<>();
@@ -30,6 +31,11 @@ public class XMPPAccountAdapter extends RecyclerView.Adapter {
     public void setItems(List<XMPPAccountSettings> items) {
         this.items.clear();
         this.items.addAll(items);
+        notifyDataSetChanged();
+    }
+
+    public void setAllChecked(boolean checked) {
+        this.isAllChecked = checked;
         notifyDataSetChanged();
     }
 
@@ -54,9 +60,17 @@ public class XMPPAccountAdapter extends RecyclerView.Adapter {
             viewHolder.username.setText(account.getUsername());
         else viewHolder.username.setText(account.getJid());
 
-        // others
+        // set jid
         viewHolder.jid.setText(account.getJid());
-        viewHolder.chkAccountSync.setChecked(account.isSynchronization());
+
+        // set sync checkbox
+        if (isAllChecked) {
+            viewHolder.chkAccountSync.setChecked(true);
+            viewHolder.chkAccountSync.setEnabled(false);
+        } else {
+            viewHolder.chkAccountSync.setChecked(account.isSynchronization());
+            viewHolder.chkAccountSync.setEnabled(true);
+        }
     }
 
     @Override

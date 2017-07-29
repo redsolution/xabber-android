@@ -62,6 +62,10 @@
         <item name="android:textColor">?android:attr/textColorSecondary</item>
     </style>
 
+    <style name="RedCheckBox" parent="Theme.AppCompat.Light">
+        <item name="colorControlActivated">@color/red_700</item>
+    </style>
+
     <style name="WhiteSwitchStyle">
         <item name="colorControlActivated">@color/white</item>
     </style>

@@ -65,7 +65,7 @@
         android:layout_height="match_parent"
         android:layout_gravity="center"
         android:layout_marginLeft="8dp"
-        app:buttonTint="@color/red_700"
+        android:theme="@style/RedCheckBox"
         />
 
 </LinearLayout>
