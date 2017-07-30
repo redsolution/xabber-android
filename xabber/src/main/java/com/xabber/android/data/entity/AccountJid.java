@@ -24,6 +24,7 @@ public class AccountJid implements Comparable<AccountJid>, Parcelable, Serializa
     private final @NonNull FullJid fullJid;
 
     private static int counter = 0;
+    private int order = 0;
     private static Map<FullJid, AccountJid> instances = new ConcurrentHashMap<>();
 
 
@@ -55,10 +56,18 @@ public class AccountJid implements Comparable<AccountJid>, Parcelable, Serializa
         return fullJid;
     }
 
+    public void setOrder(int order) {
+        this.order = order;
+    }
+
+//    @Override
+//    public int compareTo(@NonNull AccountJid another) {
+//        return this.getFullJid().compareTo(another.getFullJid());
+//    }
 
     @Override
     public int compareTo(@NonNull AccountJid another) {
-        return this.getFullJid().compareTo(another.getFullJid());
+        return this.order - another.order;
     }
 
     @Override

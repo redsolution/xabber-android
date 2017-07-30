@@ -41,7 +41,7 @@ import java.util.UUID;
  *
  * @author alexander.ivanov
  */
-public class AccountItem extends ConnectionItem {
+public class AccountItem extends ConnectionItem implements Comparable<AccountItem> {
 
     public static final String UNDEFINED_PASSWORD = "";
 
@@ -52,6 +52,7 @@ public class AccountItem extends ConnectionItem {
      */
     private String id;
     private int colorIndex;
+    private int order;
 
     /**
      * Whether account is enabled.
@@ -160,6 +161,14 @@ public class AccountItem extends ConnectionItem {
      */
     void setId(String id) {
         this.id = id;
+    }
+
+    public int getOrder() {
+        return order;
+    }
+
+    public void setOrder(int order) {
+        this.order = order;
     }
 
     /**
@@ -402,5 +411,10 @@ public class AccountItem extends ConnectionItem {
 
     void setSuccessfulConnectionHappened(boolean successfulConnectionHappened) {
         this.successfulConnectionHappened = successfulConnectionHappened;
+    }
+
+    @Override
+    public int compareTo(@NonNull AccountItem accountItem) {
+        return order - accountItem.order;
     }
 }

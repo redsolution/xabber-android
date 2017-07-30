@@ -52,6 +52,8 @@ import com.xabber.android.data.roster.GroupManager;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.data.roster.ShowOfflineMode;
+import com.xabber.android.data.xaccount.XMPPAccountSettings;
+import com.xabber.android.data.xaccount.XabberAccountManager;
 import com.xabber.android.ui.activity.AccountActivity;
 import com.xabber.android.ui.activity.ManagedActivity;
 import com.xabber.android.ui.adapter.ComparatorByChat;
@@ -267,7 +269,15 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
         final Map<AccountJid, AccountConfiguration> accounts = new TreeMap<>();
 
+        List<XMPPAccountSettings> accountSettings = new ArrayList<>();
+        accountSettings = XabberAccountManager.getInstance().getXmppAccounts();
+
         for (AccountJid account : AccountManager.getInstance().getEnabledAccounts()) {
+            for (XMPPAccountSettings set : accountSettings) {
+                String accountJidString = account.getFullJid().asBareJid().toString();
+                if (set.getJid().equals(accountJidString))
+                    account.setOrder(set.getOrder());
+            }
             accounts.put(account, null);
         }
 

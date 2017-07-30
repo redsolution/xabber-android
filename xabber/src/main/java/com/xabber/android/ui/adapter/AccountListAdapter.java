@@ -31,10 +31,13 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.log.LogManager;
+import com.xabber.android.data.xaccount.XMPPAccountSettings;
+import com.xabber.android.data.xaccount.XabberAccountManager;
 import com.xabber.android.ui.activity.ManagedActivity;
 import com.xabber.android.ui.color.ColorManager;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class AccountListAdapter extends RecyclerView.Adapter {
@@ -62,6 +65,18 @@ public class AccountListAdapter extends RecyclerView.Adapter {
 
     public void setAccountItems(List<AccountItem> accountItems) {
         this.accountItems = accountItems;
+
+        List<XMPPAccountSettings> accountSettings = new ArrayList<>();
+        accountSettings = XabberAccountManager.getInstance().getXmppAccounts();
+
+        for (AccountItem account : accountItems) {
+            for (XMPPAccountSettings set : accountSettings) {
+                String accountJidString = account.getRealJid().asBareJid().toString();
+                if (set.getJid().equals(accountJidString))
+                    account.setOrder(set.getOrder());
+            }
+        }
+        Collections.sort(accountItems);
         notifyDataSetChanged();
     }
 
