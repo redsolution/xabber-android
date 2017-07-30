@@ -16,6 +16,8 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.roster.RosterManager;
+import com.xabber.android.data.xaccount.XMPPAccountSettings;
+import com.xabber.android.data.xaccount.XabberAccountManager;
 import com.xabber.android.ui.color.ColorManager;
 
 import java.util.ArrayList;
@@ -70,6 +72,18 @@ public class NavigationDrawerAccountAdapter extends BaseListEditorAdapter<Accoun
     protected Collection<AccountJid> getTags() {
         List<AccountJid> list = new ArrayList<>();
         list.addAll(AccountManager.getInstance().getEnabledAccounts());
+
+        List<XMPPAccountSettings> accountSettings = new ArrayList<>();
+        accountSettings = XabberAccountManager.getInstance().getXmppAccounts();
+
+        for (AccountJid account : list) {
+            for (XMPPAccountSettings set : accountSettings) {
+                String accountJidString = account.getFullJid().asBareJid().toString();
+                if (set.getJid().equals(accountJidString))
+                    account.setOrder(set.getOrder());
+            }
+        }
+
         Collections.sort(list);
         return list;
     }
