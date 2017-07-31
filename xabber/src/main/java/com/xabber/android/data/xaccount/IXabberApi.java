@@ -32,7 +32,7 @@ public interface IXabberApi {
     Single<AuthManager.ListClientSettingsDTO> getClientSettings(@Header("Authorization") String token);
 
     @POST("accounts/current/client-settings/")
-    Single<ResponseBody> updateClientSettings(@Header("Authorization") String token, @Body AuthManager.UpdateClientSettings body);
+    Single<AuthManager.ListClientSettingsDTO> updateClientSettings(@Header("Authorization") String token, @Body AuthManager.ListClientSettingsDTO body);
 
     @POST("accounts/email_confirmation/")
     Single<XabberAccountDTO> confirmEmail(@Header("Authorization") String token, @Body AuthManager.Code code);

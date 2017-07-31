@@ -8,19 +8,11 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v7.widget.CardView;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.xabber.android.R;
@@ -29,7 +21,6 @@ import com.xabber.android.data.xaccount.AuthManager;
 import com.xabber.android.data.xaccount.XMPPAccountSettings;
 import com.xabber.android.data.xaccount.XabberAccount;
 import com.xabber.android.data.xaccount.XabberAccountManager;
-import com.xabber.android.ui.adapter.XMPPAccountAdapter;
 import com.xabber.android.ui.color.BarPainter;
 import com.xabber.android.ui.fragment.XabberAccountCompleteRegsiterFrament;
 import com.xabber.android.ui.fragment.XabberAccountConfirmationFragment;
@@ -37,7 +28,6 @@ import com.xabber.android.ui.fragment.XabberAccountInfoFragment;
 import com.xabber.android.ui.fragment.XabberAccountLoginFragment;
 import com.xabber.android.utils.RetrofitErrorConverter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import okhttp3.ResponseBody;
@@ -45,7 +35,6 @@ import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
-import rx.subscriptions.CompositeSubscription;
 
 /**
  * Created by valery.miller on 19.07.17.
@@ -259,7 +248,7 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
 
     public void onSyncClick() {
         if (NetworkManager.isNetworkAvailable()) {
-            synchronize();
+            loadUserSettings();
         } else
             Toast.makeText(this, R.string.toast_no_internet, Toast.LENGTH_LONG).show();
     }
@@ -319,10 +308,43 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
         XabberAccount account = XabberAccountManager.getInstance().getAccount();
         if (account != null && account.getToken() != null) {
             showProgress(getResources().getString(R.string.progress_title_sync));
+            getAccountWithUpdate(account.getToken());
+        } else {
+            Toast.makeText(XabberAccountInfoActivity.this, R.string.sync_fail, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void loadUserSettings() {
+        XabberAccount account = XabberAccountManager.getInstance().getAccount();
+        if (account != null && account.getToken() != null) {
+            showProgress(getResources().getString(R.string.progress_title_sync));
             getAccount(account.getToken());
         } else {
             Toast.makeText(XabberAccountInfoActivity.this, R.string.sync_fail, Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void updateSettings() {
+        Subscription getSettingsSubscription = AuthManager.updateClientSettings(XabberAccountManager.getInstance().getXmppAccounts())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<List<XMPPAccountSettings>>() {
+                    @Override
+                    public void call(List<XMPPAccountSettings> s) {
+                        Log.d(LOG_TAG, "XMPP accounts loading from net: successfully");
+                        updateXMPPAccountList(s);
+                        hideProgress();
+                        Toast.makeText(XabberAccountInfoActivity.this, R.string.sync_success, Toast.LENGTH_SHORT).show();
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        Log.d(LOG_TAG, "XMPP accounts loading from net: error: " + throwable.toString());
+                        hideProgress();
+                        Toast.makeText(XabberAccountInfoActivity.this, R.string.sync_fail, Toast.LENGTH_SHORT).show();
+                    }
+                });
+        compositeSubscription.add(getSettingsSubscription);
     }
 
     private void getSettings() {
@@ -346,6 +368,28 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
                     }
                 });
         compositeSubscription.add(getSettingsSubscription);
+    }
+
+    private void getAccountWithUpdate(String token) {
+        Subscription loadAccountsSubscription = AuthManager.getAccount(token)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<XabberAccount>() {
+                    @Override
+                    public void call(XabberAccount s) {
+                        Log.d(LOG_TAG, "Xabber account loading from net: successfully");
+                        updateAccountInfo(s);
+                        updateSettings();
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        Log.d(LOG_TAG, "Xabber account loading from net: error: " + throwable.toString());
+                        hideProgress();
+                        Toast.makeText(XabberAccountInfoActivity.this, R.string.sync_fail, Toast.LENGTH_SHORT).show();
+                    }
+                });
+        compositeSubscription.add(loadAccountsSubscription);
     }
 
     private void getAccount(String token) {
@@ -493,7 +537,7 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
 
         hideProgress();
         Toast.makeText(this, R.string.complete_success, Toast.LENGTH_SHORT).show();
-        synchronize();
+        loadUserSettings();
     }
 
     private void handleErrorComplete(Throwable throwable) {

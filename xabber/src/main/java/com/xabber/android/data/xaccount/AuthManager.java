@@ -2,6 +2,8 @@ package com.xabber.android.data.xaccount;
 
 import android.util.Base64;
 import com.google.gson.Gson;
+
+import java.util.ArrayList;
 import java.util.List;
 
 import okhttp3.ResponseBody;
@@ -89,8 +91,27 @@ public class AuthManager {
                 });
     }
 
-    public static Single<ResponseBody> updateClientSettings(UpdateClientSettings updateClientSettings) {
-        return HttpApiManager.getXabberApi().updateClientSettings(getXabberTokenHeader(), updateClientSettings);
+    public static Single<List<XMPPAccountSettings>> updateClientSettings(List<XMPPAccountSettings> accountSettingsList) {
+
+        List<ClientSettingsDTO> list = new ArrayList<>();
+        for (XMPPAccountSettings account : accountSettingsList) {
+            list.add(new ClientSettingsDTO(account.getJid(), new SettingsValuesDTO(account.getOrder(), account.getColor(), account.getToken())));
+        }
+        ListClientSettingsDTO body = new ListClientSettingsDTO(list);
+
+        return HttpApiManager.getXabberApi().updateClientSettings(getXabberTokenHeader(), body)
+                .flatMap(new Func1<ListClientSettingsDTO, Single<? extends List<XMPPAccountSettings>>>() {
+                    @Override
+                    public Single<? extends List<XMPPAccountSettings>> call(ListClientSettingsDTO listClientSettingsDTO) {
+                        return XabberAccountManager.getInstance().saveOrUpdateXMPPAccountSettingsToRealm(listClientSettingsDTO);
+                    }
+                })
+                .flatMap(new Func1<List<XMPPAccountSettings>, Single<? extends List<XMPPAccountSettings>>>() {
+                    @Override
+                    public Single<? extends List<XMPPAccountSettings>> call(List<XMPPAccountSettings> xmppAccounts) {
+                        return XabberAccountManager.getInstance().updateLocalAccounts(xmppAccounts);
+                    }
+                });
     }
 
     public static Single<XAccountTokenDTO> signup(String email) {
