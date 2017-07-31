@@ -237,6 +237,7 @@
     <color name="transparent">#00FFFFFF</color>
 
     <color name="account_register_blue">#FF2196F3</color>
+    <color name="account_register_blue_dark">#1565c0</color>
 
     <item name="contact_list_contact_small_right_icon_alpha_light" format="float" type="dimen">0.2</item>
     <item name="contact_list_contact_small_right_icon_alpha_dark" format="float" type="dimen">0.2</item>

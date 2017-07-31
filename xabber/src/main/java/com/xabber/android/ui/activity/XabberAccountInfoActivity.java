@@ -106,8 +106,7 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
     @Override
     protected void onResume() {
         super.onResume();
-
-        barPainter.setDefaultColor();
+        barPainter.setBlue(this);
 
         XabberAccount account = XabberAccountManager.getInstance().getAccount();
         if (account != null) {
@@ -118,6 +117,7 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
                 showCompleteFragment();
             }
             if (XabberAccount.STATUS_REGISTERED.equals(account.getAccountStatus())) {
+                barPainter.setDefaultColor();
                 showInfoFragment();
             }
         } else {
