@@ -23,12 +23,13 @@ import com.xabber.android.ui.activity.XabberAccountInfoActivity;
 
 public class XabberAccountConfirmationFragment extends Fragment {
 
-    private TextView tvAccountEmail;
-    private RelativeLayout rlLogout;
+    private TextView tvSignType;
+    private TextView tvAccountName;
+    //private RelativeLayout rlLogout;
 
-    private RelativeLayout rlResend;
     private EditText edtCode;
     private Button btnConfirm;
+    private Button btnResend;
 
     @Nullable
     @Override
@@ -40,29 +41,30 @@ public class XabberAccountConfirmationFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        tvAccountEmail = (TextView) view.findViewById(R.id.tvAccountEmail);
+        tvSignType = (TextView) view.findViewById(R.id.tvSignType);
+        tvAccountName = (TextView) view.findViewById(R.id.tvAccountEmail);
 
-        rlLogout = (RelativeLayout) view.findViewById(R.id.rlLogout);
-        rlLogout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ((XabberAccountInfoActivity)getActivity()).onLogoutClick();
-            }
-        });
+//        rlLogout = (RelativeLayout) view.findViewById(R.id.rlLogout);
+//        rlLogout.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                ((XabberAccountInfoActivity)getActivity()).onLogoutClick();
+//            }
+//        });
 
-        rlResend = (RelativeLayout) view.findViewById(R.id.rlResend);
-        rlResend.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ((XabberAccountInfoActivity)getActivity()).onResendClick();
-            }
-        });
         edtCode = (EditText) view.findViewById(R.id.edtCode);
         btnConfirm = (Button) view.findViewById(R.id.btnConfirm);
         btnConfirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 verifyFields();
+            }
+        });
+        btnResend = (Button) view.findViewById(R.id.btnResend);
+        btnResend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((XabberAccountInfoActivity)getActivity()).onResendClick();
             }
         });
     }
@@ -89,7 +91,8 @@ public class XabberAccountConfirmationFragment extends Fragment {
 
     public void updateData(@NonNull XabberAccount account) {
         if (account.getEmails().size() > 0)
-            tvAccountEmail.setText(account.getEmails().get(0).getEmail());
+            tvAccountName.setText(account.getEmails().get(0).getEmail());
+        // TODO: 31.07.17 вписывать имя аккаунта если оно доступно. Указывать тип регистрации email или соц.сеть
     }
 
 }
