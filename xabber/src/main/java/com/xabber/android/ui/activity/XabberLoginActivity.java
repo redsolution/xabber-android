@@ -121,15 +121,15 @@ public class XabberLoginActivity extends BaseLoginActivity implements View.OnCli
         ivGithub.setOnClickListener(this);
     }
 
-    public void showSignUpFragment() {
-        if (fragmentSignUp == null)
-            fragmentSignUp = new XabberSignUpFragment();
-
-        fTrans = getFragmentManager().beginTransaction();
-        fTrans.replace(R.id.container, fragmentSignUp);
-        fTrans.commit();
-        currentFragment = FRAGMENT_SIGNUP;
-    }
+//    public void showSignUpFragment() {
+//        if (fragmentSignUp == null)
+//            fragmentSignUp = new XabberSignUpFragment();
+//
+//        fTrans = getFragmentManager().beginTransaction();
+//        fTrans.replace(R.id.container, fragmentSignUp);
+//        fTrans.commit();
+//        currentFragment = FRAGMENT_SIGNUP;
+//    }
 
     public void showLoginFragment() {
         if (fragmentLogin == null)
@@ -144,8 +144,9 @@ public class XabberLoginActivity extends BaseLoginActivity implements View.OnCli
     @Override
     protected void onResume() {
         super.onResume();
-        if (currentFragment.equals(FRAGMENT_LOGIN)) showLoginFragment();
-        else showSignUpFragment();
+//        if (currentFragment.equals(FRAGMENT_LOGIN)) showLoginFragment();
+//        else showSignUpFragment();
+        showLoginFragment();
     }
 
     @Override

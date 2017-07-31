@@ -1,6 +1,7 @@
 package com.xabber.android.ui.fragment;
 
 import android.app.Fragment;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -13,6 +14,7 @@ import android.widget.Toast;
 
 import com.xabber.android.R;
 import com.xabber.android.data.connection.NetworkManager;
+import com.xabber.android.ui.activity.XabberAccountInfoActivity;
 import com.xabber.android.ui.activity.XabberLoginActivity;
 
 /**
@@ -57,7 +59,9 @@ public class XabberLoginFragment extends Fragment implements View.OnClickListene
             case R.id.rlForgotPass:
                 break;
             case R.id.rlSignUp:
-                ((XabberLoginActivity)getActivity()).showSignUpFragment();
+                Intent intent = XabberAccountInfoActivity.createIntent(getActivity());
+                intent.putExtra(XabberAccountInfoActivity.CALL_FROM, XabberAccountInfoActivity.CALL_FROM_LOGIN);
+                startActivity(intent);
                 break;
         }
     }

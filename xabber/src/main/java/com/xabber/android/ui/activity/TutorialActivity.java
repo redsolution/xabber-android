@@ -59,8 +59,8 @@ public class TutorialActivity extends AppIntroBase {
         rlRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = XabberLoginActivity.createIntent(TutorialActivity.this);
-                intent.putExtra(XabberLoginActivity.CURRENT_FRAGMENT, XabberLoginActivity.FRAGMENT_SIGNUP);
+                Intent intent = XabberAccountInfoActivity.createIntent(TutorialActivity.this);
+                intent.putExtra(XabberAccountInfoActivity.CALL_FROM, XabberAccountInfoActivity.CALL_FROM_LOGIN);
                 startActivity(intent);
             }
         });

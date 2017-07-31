@@ -6,7 +6,11 @@ import android.os.Bundle;
 import android.preference.Preference;
 
 import com.xabber.android.R;
+import com.xabber.android.data.xaccount.XabberAccount;
+import com.xabber.android.data.xaccount.XabberAccountManager;
 import com.xabber.android.ui.activity.PreferenceSummaryHelperActivity;
+import com.xabber.android.ui.activity.TutorialActivity;
+import com.xabber.android.ui.activity.XabberAccountInfoActivity;
 
 public class PreferencesFragment extends android.preference.PreferenceFragment {
 
@@ -22,6 +26,17 @@ public class PreferencesFragment extends android.preference.PreferenceFragment {
         about.setSummary(getString(R.string.application_title_full) + "\n" + mListener.getVersionName());
 
         PreferenceSummaryHelperActivity.updateSummary(getPreferenceScreen());
+
+        Preference xabberAccountPref = (Preference) getPreferenceScreen().findPreference("preference_xabber_account");
+        xabberAccountPref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            public boolean onPreferenceClick(Preference preference) {
+                XabberAccount account = XabberAccountManager.getInstance().getAccount();
+                if (account != null)
+                    startActivity(XabberAccountInfoActivity.createIntent(getActivity()));
+                else startActivity(TutorialActivity.createIntent(getActivity()));
+                return true;
+            }
+        });
     }
 
     @Override
