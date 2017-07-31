@@ -36,30 +36,38 @@
     <string name="progress_title_complete">Registration completion..</string>
     <string name="progress_title_resend">Resending email..</string>
 
-    <string name="hint_username">Username *</string>
-    <string name="hint_pass">Password *</string>
-    <string name="hint_conf_pass">Confirm password *</string>
+    <string name="label_username">Choose username*</string>
+    <string name="hint_username">Username</string>
+    <string name="label_pass">Password *</string>
+    <string name="hint_pass">Enter password</string>
+    <string name="label_conf_pass">Confirm password*</string>
+    <string name="hint_conf_pass">Confirm password</string>
+    <string name="label_first_name">First name</string>
     <string name="hint_first_name">First name</string>
+    <string name="label_last_name">Last name</string>
     <string name="hint_last_name">Last name</string>
     <string name="hint_host">Host</string>
 
     <string name="hint_code">code</string>
 
-    <string name="default_host">xabber.org</string>
+    <string name="default_host">\@xabber.org</string>
 
     <string name="title_xabber_account">Xabber Account</string>
     <string name="title_xmpp_account">XMPP Accounts</string>
-    <string name="title_email_confirm">Email confirmation</string>
+    <string name="title_email_confirm">Confirm Email address</string>
+    <string name="title_email_confirmed">Confirmed Email address</string>
     <string name="title_complete_register">Complete registration</string>
+    <string name="title_start_messaging">Start messaging!</string>
 
     <string name="summary_xabber_account">Xabber account lets you easily sync your settings and connected XMPP accounts between various devices.</string>
     <string name="summary_confirm_account">Please confirm your email address</string>
     <string name="summary_complete_register">Please complete registration of your account</string>
+    <string name="summary_username">Xabber username will also act as a free XMPP id</string>
 
     <string name="button_logout">LOGOUT</string>
     <string name="button_login">LOGIN</string>
-    <string name="button_resend_link">RESEND LINK</string>
-    <string name="button_complete_register">COMPLETE</string>
+    <string name="button_resend_link">RESEND CODE</string>
+    <string name="button_complete_register">REGISTER</string>
     <string name="button_confirm">confirm</string>
     <string name="button_enter">ENTER XABBER</string>
 
@@ -72,4 +80,10 @@
     <string name="username_rules_dots">Username cannot have two dots in a row</string>
     <string name="account_not_confirmed">Account not confirmed</string>
     <string name="register_not_completed">Registration not completed</string>
+
+    <string name="signed_up_email">Signed up with Email</string>
+    <string name="signed_up_google">Signed up with Google+</string>
+    <string name="signed_up_facebook">Signed up with Facebook</string>
+    <string name="signed_up_github">Signed up with Github</string>
+    <string name="signed_up_twitter">Signed up with Twitter</string>
 </resources>

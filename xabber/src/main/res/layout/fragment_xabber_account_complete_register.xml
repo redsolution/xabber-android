@@ -2,230 +2,211 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="?attr/settings_background_color">
+    android:paddingTop="16dp"
+    android:paddingBottom="16dp"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp">
 
-    <android.support.v7.widget.CardView
-        android:id="@+id/cardInfo"
+
+    <LinearLayout
+        android:id="@+id/stepOne"
+        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         >
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:paddingTop="16dp"
-            >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="8dp"
+            android:paddingTop="2dp"
+            android:paddingBottom="2dp"
+            android:paddingRight="7dp"
+            android:paddingLeft="7dp"
+            android:background="@drawable/rounded_background"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:text="1"
+            />
 
-            <TextView
-                android:id="@+id/xabberAccountTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp"
-                android:textColor="?android:attr/textColorPrimary"
-                android:text="@string/title_xabber_account"
-                />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="?android:attr/textColorPrimary"
+            android:text="@string/signed_up_email"
+            />
 
-            <LinearLayout
-                android:id="@+id/llAccount"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/xabberAccountTitle"
-                android:paddingLeft="16dp"
-                android:paddingRight="16dp"
-                android:paddingTop="16dp"
-                android:paddingBottom="8dp"
-                >
-
-                <FrameLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical">
-
-                    <de.hdodenhof.circleimageview.CircleImageView
-                        android:id="@+id/color"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:src="@color/green_500" />
-
-                    <de.hdodenhof.circleimageview.CircleImageView
-                        android:id="@+id/avatar"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:src="@drawable/ic_avatar_1"
-                        app:civ_border_color="@android:color/transparent"
-                        app:civ_border_width="3dp" />
-
-                </FrameLayout>
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:paddingLeft="16dp">
-
-                    <TextView
-                        android:id="@+id/tvAccountName"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:ellipsize="marquee"
-                        android:lines="1"
-                        android:text="@string/register_not_completed"
-                        android:textColor="@color/green_700"
-                        android:textSize="18sp" />
-
-                    <TextView
-                        android:id="@+id/tvAccountEmail"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:ellipsize="marquee"
-                        android:lines="1"
-                        android:text="@string/no_email"
-                        android:textColor="@color/grey_500"
-                        android:textSize="14sp" />
-                </LinearLayout>
-            </LinearLayout>
-
-            <RelativeLayout
-                android:id="@+id/rlLogout"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:layout_below="@id/llAccount"
-                >
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="?attr/settings_separator_background_color"
-                    />
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:paddingLeft="24dp"
-                    android:paddingRight="16dp"
-                    android:paddingTop="8dp"
-                    android:paddingBottom="8dp"
-                    android:background="?android:attr/selectableItemBackground"
-                    >
-
-                    <ImageView
-                        android:id="@+id/ivLogout"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:src="@drawable/ic_exit_grey600_24dp"
-                        android:layout_centerVertical="true"
-                        android:tint="@color/grey_600"
-                        />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:layout_toRightOf="@+id/ivLogout"
-                        android:layout_marginLeft="24dp"
-                        android:textColor="?android:attr/textColorPrimary"
-                        android:text="@string/button_logout"
-                        />
-
-                </RelativeLayout>
-            </RelativeLayout>
-
-        </RelativeLayout>
-    </android.support.v7.widget.CardView>
+    </LinearLayout>
 
     <TextView
-        android:id="@+id/tvSummary"
+        android:id="@+id/tvAccountName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/cardInfo"
-        android:layout_marginTop="10dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:text="@string/summary_complete_register"
+        android:layout_below="@+id/stepOne"
+        android:text="@string/no_email"
+        android:layout_toRightOf="@+id/lineOne"
+        android:layout_marginLeft="18dp"
         />
 
-    <android.support.v7.widget.CardView
-        android:id="@+id/cardCompleteRegister"
+    <LinearLayout
+        android:id="@+id/lineOne"
+        android:orientation="vertical"
+        android:layout_width="1dp"
+        android:layout_height="20dp"
+        android:layout_marginLeft="11dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:layout_below="@+id/stepOne"
+        android:background="#50616161"
+        />
+
+    <LinearLayout
+        android:id="@+id/stepTwo"
+        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/tvSummary"
-        android:layout_marginTop="12dp"
-        android:layout_marginBottom="12dp"
+        android:layout_below="@+id/lineOne"
         >
 
-        <LinearLayout
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="8dp"
+            android:paddingTop="2dp"
+            android:paddingBottom="2dp"
+            android:paddingRight="7dp"
+            android:paddingLeft="7dp"
+            android:background="@drawable/rounded_background"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:text="2"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="?android:attr/textColorPrimary"
+            android:text="@string/title_email_confirmed"
+            />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/lineTwo"
+        android:orientation="vertical"
+        android:layout_width="1dp"
+        android:layout_height="20dp"
+        android:layout_marginLeft="11dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:layout_below="@+id/stepTwo"
+        android:background="#50616161"
+        />
+
+    <LinearLayout
+        android:id="@+id/stepThree"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/lineTwo"
+        >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="8dp"
+            android:paddingTop="2dp"
+            android:paddingBottom="2dp"
+            android:paddingRight="7dp"
+            android:paddingLeft="7dp"
+            android:background="@drawable/rounded_background"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:text="3"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="?android:attr/textColorPrimary"
+            android:textStyle="bold"
+            android:text="@string/title_complete_register"
+            />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/rlContent"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/stepThree"
+        android:layout_toRightOf="@+id/lineThree"
+        android:layout_marginLeft="18dp"
+        android:layout_marginBottom="16dp"
+        >
+
+        <TextView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:paddingTop="16dp"
-            android:paddingBottom="8dp"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:paddingLeft="4dp"
+            android:text="@string/label_username"
+            />
+
+        <LinearLayout
+            android:id="@+id/llUsername"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             >
 
-            <TextView
-                android:id="@+id/tvCompleteTitle"
+            <EditText
+                android:id="@+id/edtUsername"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="?android:attr/textColorPrimary"
-                android:layout_marginBottom="16dp"
-                android:text="@string/title_complete_register"
+                android:imeOptions="actionNext"
+                android:singleLine="true"
+                android:hint="@string/hint_username"
+                android:textSize="16sp"
+                android:layout_weight="1"
+
                 />
 
-            <LinearLayout
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/default_host"
+                android:textColor="?android:attr/textColorPrimary"
+                android:textSize="16sp"
+                />
 
-                <EditText
-                    android:id="@+id/edtUsername"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:imeOptions="actionNext"
-                    android:singleLine="true"
-                    android:hint="@string/hint_username"
-                    android:textSize="16sp"
-                    android:layout_weight="1"
-                    />
+        </LinearLayout>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="4dp"
+            android:textSize="12sp"
+            android:text="@string/summary_username"
+            />
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            >
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1">
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="\@"
-                    android:textSize="16sp"
-                    />
-
-                <EditText
-                    android:id="@+id/edtHost"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:imeOptions="actionNext"
-                    android:singleLine="true"
-                    android:textSize="16sp"
-                    android:text="@string/default_host"
-                    android:hint="@string/hint_host"
-                    />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginRight="4dp"
-                    android:layout_marginLeft="4dp"
-                    android:textSize="16sp"
-                    android:text="@string/hint_pass"
+                    android:paddingLeft="4dp"
+                    android:text="@string/label_pass"
                     />
 
                 <EditText
@@ -234,22 +215,23 @@
                     android:layout_height="wrap_content"
                     android:imeOptions="actionNext"
                     android:singleLine="true"
+                    android:textSize="16sp"
+                    android:hint="@string/hint_pass"
                     />
 
             </LinearLayout>
-
             <LinearLayout
-                android:orientation="horizontal"
+                android:orientation="vertical"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_weight="1">
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginRight="4dp"
-                    android:layout_marginLeft="4dp"
-                    android:textSize="16sp"
-                    android:text="@string/hint_conf_pass"
+                    android:paddingLeft="4dp"
+                    android:text="@string/label_conf_pass"
                     />
 
                 <EditText
@@ -258,22 +240,28 @@
                     android:layout_height="wrap_content"
                     android:imeOptions="actionNext"
                     android:singleLine="true"
+                    android:textSize="16sp"
+                    android:hint="@string/hint_conf_pass"
                     />
 
             </LinearLayout>
-
+        </LinearLayout>
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp">
             <LinearLayout
-                android:orientation="horizontal"
+                android:orientation="vertical"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_weight="1">
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginRight="4dp"
-                    android:layout_marginLeft="4dp"
-                    android:textSize="16sp"
-                    android:text="@string/hint_first_name"
+                    android:paddingLeft="4dp"
+                    android:text="@string/label_first_name"
                     />
 
                 <EditText
@@ -282,47 +270,96 @@
                     android:layout_height="wrap_content"
                     android:imeOptions="actionNext"
                     android:singleLine="true"
+                    android:textSize="16sp"
+                    android:hint="@string/hint_first_name"
                     />
 
             </LinearLayout>
-
             <LinearLayout
-                android:orientation="horizontal"
+                android:orientation="vertical"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_weight="1">
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginRight="4dp"
-                    android:layout_marginLeft="4dp"
-                    android:textSize="16sp"
-                    android:text="@string/hint_last_name"
+                    android:paddingLeft="4dp"
+                    android:text="@string/label_last_name"
                     />
 
                 <EditText
                     android:id="@+id/edtLastName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:imeOptions="actionDone"
+                    android:imeOptions="actionNext"
                     android:singleLine="true"
+                    android:textSize="16sp"
+                    android:hint="@string/hint_last_name"
                     />
 
             </LinearLayout>
-
-            <Button
-                android:id="@+id/btnComplete"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/edtHost"
-                android:layout_marginTop="16dp"
-                style="@style/Widget.AppCompat.Button.Colored"
-
-                android:textColor="@color/white"
-                android:text="@string/button_complete_register"
-                />
-
         </LinearLayout>
-    </android.support.v7.widget.CardView>
+
+
+        <Button
+            android:id="@+id/btnConfirm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:theme="@style/BlueButton"
+            android:paddingRight="18dp"
+            android:paddingLeft="18dp"
+            android:textColor="@color/white"
+            android:text="@string/button_complete_register"
+            />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/lineThree"
+        android:orientation="vertical"
+        android:layout_width="1dp"
+        android:layout_height="20dp"
+        android:layout_marginLeft="11dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:layout_below="@+id/stepThree"
+        android:layout_above="@+id/stepFour"
+        android:background="#50616161"
+        />
+
+    <LinearLayout
+        android:id="@+id/stepFour"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/rlContent"
+        >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="8dp"
+            android:paddingTop="2dp"
+            android:paddingBottom="2dp"
+            android:paddingRight="7dp"
+            android:paddingLeft="7dp"
+            android:background="@drawable/rounded_background_grey"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:text="4"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="?android:attr/textColorPrimary"
+            android:text="@string/title_start_messaging"
+            />
+
+    </LinearLayout>
 
 </RelativeLayout>
