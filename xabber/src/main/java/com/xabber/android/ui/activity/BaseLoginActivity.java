@@ -100,20 +100,20 @@ public abstract class BaseLoginActivity extends ManagedActivity implements Googl
         }
     }
 
-    protected void loginFacebook() {
+    public void loginFacebook() {
         LoginManager.getInstance().logInWithReadPermissions(this, Collections.singletonList("public_profile"));
     }
 
-    protected void loginGoogle() {
+    public void loginGoogle() {
         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
 
-    protected void loginTwitter() {
+    public void loginTwitter() {
         twitterAuthClient.authorize(this, twitterSessionCallback);
     }
 
-    protected void loginGithub() {}
+    public void loginGithub() {}
 
     private void initGoogleAuth() {
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)

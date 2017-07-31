@@ -70,6 +70,7 @@
     <string name="button_complete_register">REGISTER</string>
     <string name="button_confirm">confirm</string>
     <string name="button_enter">ENTER XABBER</string>
+    <string name="button_continue">continue</string>
 
     <string name="sync_all">Synchronize all</string>
     <string name="no_email">no email</string>
@@ -81,6 +82,9 @@
     <string name="account_not_confirmed">Account not confirmed</string>
     <string name="register_not_completed">Registration not completed</string>
 
+    <string name="sign_up_email_social">Sign up with Social account or Email</string>
+    <string name="sign_up_social">Sign up with Social account</string>
+    <string name="sign_up_email">Sign up with Email</string>
     <string name="signed_up_email">Signed up with Email</string>
     <string name="signed_up_google">Signed up with Google+</string>
     <string name="signed_up_facebook">Signed up with Facebook</string>

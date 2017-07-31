@@ -37,7 +37,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="?android:attr/textColorPrimary"
-            android:text="Sign up with Social account or Email"
+            android:text="@string/sign_up_email_social"
             />
 
         <TextView
@@ -46,7 +46,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/stepOneTitle"
             android:layout_marginTop="16dp"
-            android:text="Sign up with Social account"
+            android:text="@string/sign_up_social"
             />
 
         <LinearLayout
@@ -96,8 +96,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/llSocialLogos"
-            android:layout_marginTop="16dp"
-            android:text="Sign up with Email"
+            android:layout_marginTop="20dp"
+            android:paddingLeft="4dp"
+            android:text="@string/sign_up_email"
             />
 
         <EditText
@@ -118,11 +119,11 @@
             android:padding="8dp"
             android:text="@string/agrees"
             android:textColor="@color/black_text_secondary"
-            android:theme="@style/RedCheckBox"
+            android:theme="@style/BlueCheckBox"
             />
 
         <Button
-            android:id="@+id/btnSignup"
+            android:id="@+id/btnContinue"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/chbAgrees"
@@ -132,8 +133,8 @@
             android:paddingRight="18dp"
             android:paddingLeft="18dp"
             android:textColor="@color/white"
-            android:text="continue"
-            android:enabled="true"
+            android:text="@string/button_continue"
+            android:enabled="false"
             />
 
     </RelativeLayout>
@@ -175,7 +176,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="?android:attr/textColorPrimary"
-            android:text="Confirm Email address"
+            android:text="@string/title_email_confirm"
             />
 
     </LinearLayout>
@@ -218,7 +219,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="?android:attr/textColorPrimary"
-            android:text="Complete registration"
+            android:text="@string/title_complete_register"
             />
 
     </LinearLayout>
@@ -261,7 +262,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="?android:attr/textColorPrimary"
-            android:text="Start messaging!"
+            android:text="@string/title_start_messaging"
             />
 
     </LinearLayout>
