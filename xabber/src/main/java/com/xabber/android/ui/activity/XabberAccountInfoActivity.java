@@ -285,9 +285,9 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
     }
 
     public void onCompleteClick(String username, String pass, String pass2, String firstName,
-                                String lastName, String host) {
+                                String lastName) {
         if (NetworkManager.isNetworkAvailable()) {
-            completeRegister(username, pass, pass2, firstName, lastName, host);
+            completeRegister(username, pass, pass2, firstName, lastName);
         } else
             Toast.makeText(this, R.string.toast_no_internet, Toast.LENGTH_LONG).show();
     }
@@ -466,9 +466,9 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
         }
     }
 
-    private void completeRegister(String username, String pass, String pass2, String firstName, String lastName, String host) {
+    private void completeRegister(String username, String pass, String pass2, String firstName, String lastName) {
         showProgress(getResources().getString(R.string.progress_title_complete));
-        Subscription completeSubscription = AuthManager.completeRegister(username, pass, pass2, firstName, lastName, host)
+        Subscription completeSubscription = AuthManager.completeRegister(username, pass, pass2, firstName, lastName, "@xabber.org")
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<XabberAccount>() {
