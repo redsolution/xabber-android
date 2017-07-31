@@ -45,6 +45,7 @@ public class XabberAccountCompleteRegsiterFrament extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         tvAccountName = (TextView) view.findViewById(R.id.tvAccountName);
+        tvSignType = (TextView) view.findViewById(R.id.tvSignType);
 
 //        rlLogout = (RelativeLayout) view.findViewById(R.id.rlLogout);
 //        rlLogout.setOnClickListener(new View.OnClickListener() {
@@ -79,9 +80,11 @@ public class XabberAccountCompleteRegsiterFrament extends Fragment {
     }
 
     public void updateData(@NonNull XabberAccount account) {
-        if (account.getEmails().size() > 0)
+        if (account.getEmails().size() > 0) {
             tvAccountName.setText(account.getEmails().get(0).getEmail());
-        // TODO: 31.07.17 вписывать имя аккаунта если оно доступно. Указывать тип регистрации email или соц.сеть
+            tvSignType.setText(R.string.signed_up_email);
+        }
+        // TODO: 31.07.17 вписывать имя аккаунта если оно доступно. Указывать соц.сеть
     }
 
     private void verifyFields() {

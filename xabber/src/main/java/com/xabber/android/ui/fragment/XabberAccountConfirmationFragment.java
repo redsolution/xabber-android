@@ -42,7 +42,7 @@ public class XabberAccountConfirmationFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         tvSignType = (TextView) view.findViewById(R.id.tvSignType);
-        tvAccountName = (TextView) view.findViewById(R.id.tvAccountEmail);
+        tvAccountName = (TextView) view.findViewById(R.id.tvAccountName);
 
 //        rlLogout = (RelativeLayout) view.findViewById(R.id.rlLogout);
 //        rlLogout.setOnClickListener(new View.OnClickListener() {
