@@ -51,7 +51,7 @@ import rx.subscriptions.CompositeSubscription;
  * Created by valery.miller on 19.07.17.
  */
 
-public class XabberAccountInfoActivity extends ManagedActivity implements Toolbar.OnMenuItemClickListener {
+public class XabberAccountInfoActivity extends BaseLoginActivity implements Toolbar.OnMenuItemClickListener {
 
     private final static String LOG_TAG = XabberAccountInfoActivity.class.getSimpleName();
     private final static String EMAIL_CONFIRMATION_URI = "https://www.xabber.com/account/emails/confirmation/";
@@ -76,7 +76,7 @@ public class XabberAccountInfoActivity extends ManagedActivity implements Toolba
     private Fragment fragmentConfirmation;
     private Fragment fragmentCompleteRegsiter;
 
-    private CompositeSubscription compositeSubscription = new CompositeSubscription();
+    //private CompositeSubscription compositeSubscription = new CompositeSubscription();
 
     private String callFrom = CALL_FROM_SETTINGS;
     private boolean isVisibleEnterXabberButton = false;
@@ -177,14 +177,16 @@ public class XabberAccountInfoActivity extends ManagedActivity implements Toolba
         onPrepareOptionsMenu(toolbar.getMenu());
     }
 
-    private void showProgress(String title) {
+    @Override
+    protected void showProgress(String title) {
         progressDialog = new ProgressDialog(this);
         progressDialog.setTitle(title);
         progressDialog.setMessage(getResources().getString(R.string.progress_message));
         progressDialog.show();
     }
 
-    private void hideProgress() {
+    @Override
+    protected void hideProgress() {
         if (progressDialog != null) {
             progressDialog.dismiss();
             progressDialog = null;
@@ -314,59 +316,59 @@ public class XabberAccountInfoActivity extends ManagedActivity implements Toolba
     }
 
     private void synchronize() {
-        XabberAccount account = XabberAccountManager.getInstance().getAccount();
-        if (account != null && account.getToken() != null) {
-            showProgress(getResources().getString(R.string.progress_title_sync));
-            getAccount(account.getToken());
-        } else {
-            Toast.makeText(XabberAccountInfoActivity.this, R.string.sync_fail, Toast.LENGTH_SHORT).show();
-        }
+//        XabberAccount account = XabberAccountManager.getInstance().getAccount();
+//        if (account != null && account.getToken() != null) {
+//            showProgress(getResources().getString(R.string.progress_title_sync));
+//            getAccount(account.getToken());
+//        } else {
+//            Toast.makeText(XabberAccountInfoActivity.this, R.string.sync_fail, Toast.LENGTH_SHORT).show();
+//        }
     }
 
-    private void getSettings() {
-        Subscription getSettingsSubscription = AuthManager.getClientSettings()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<List<XMPPAccountSettings>>() {
-                    @Override
-                    public void call(List<XMPPAccountSettings> s) {
-                        Log.d(LOG_TAG, "XMPP accounts loading from net: successfully");
-                        updateXMPPAccountList(s);
-                        hideProgress();
-                        Toast.makeText(XabberAccountInfoActivity.this, R.string.sync_success, Toast.LENGTH_SHORT).show();
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        Log.d(LOG_TAG, "XMPP accounts loading from net: error: " + throwable.toString());
-                        hideProgress();
-                        Toast.makeText(XabberAccountInfoActivity.this, R.string.sync_fail, Toast.LENGTH_SHORT).show();
-                    }
-                });
-        compositeSubscription.add(getSettingsSubscription);
-    }
+//    private void getSettings() {
+//        Subscription getSettingsSubscription = AuthManager.getClientSettings()
+//                .subscribeOn(Schedulers.io())
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribe(new Action1<List<XMPPAccountSettings>>() {
+//                    @Override
+//                    public void call(List<XMPPAccountSettings> s) {
+//                        Log.d(LOG_TAG, "XMPP accounts loading from net: successfully");
+//                        updateXMPPAccountList(s);
+//                        hideProgress();
+//                        Toast.makeText(XabberAccountInfoActivity.this, R.string.sync_success, Toast.LENGTH_SHORT).show();
+//                    }
+//                }, new Action1<Throwable>() {
+//                    @Override
+//                    public void call(Throwable throwable) {
+//                        Log.d(LOG_TAG, "XMPP accounts loading from net: error: " + throwable.toString());
+//                        hideProgress();
+//                        Toast.makeText(XabberAccountInfoActivity.this, R.string.sync_fail, Toast.LENGTH_SHORT).show();
+//                    }
+//                });
+//        compositeSubscription.add(getSettingsSubscription);
+//    }
 
-    private void getAccount(String token) {
-        Subscription loadAccountsSubscription = AuthManager.getAccount(token)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<XabberAccount>() {
-                    @Override
-                    public void call(XabberAccount s) {
-                        Log.d(LOG_TAG, "Xabber account loading from net: successfully");
-                        updateAccountInfo(s);
-                        getSettings();
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        Log.d(LOG_TAG, "Xabber account loading from net: error: " + throwable.toString());
-                        hideProgress();
-                        Toast.makeText(XabberAccountInfoActivity.this, R.string.sync_fail, Toast.LENGTH_SHORT).show();
-                    }
-                });
-        compositeSubscription.add(loadAccountsSubscription);
-    }
+//    private void getAccount(String token) {
+//        Subscription loadAccountsSubscription = AuthManager.getAccount(token)
+//                .subscribeOn(Schedulers.io())
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribe(new Action1<XabberAccount>() {
+//                    @Override
+//                    public void call(XabberAccount s) {
+//                        Log.d(LOG_TAG, "Xabber account loading from net: successfully");
+//                        updateAccountInfo(s);
+//                        getSettings();
+//                    }
+//                }, new Action1<Throwable>() {
+//                    @Override
+//                    public void call(Throwable throwable) {
+//                        Log.d(LOG_TAG, "Xabber account loading from net: error: " + throwable.toString());
+//                        hideProgress();
+//                        Toast.makeText(XabberAccountInfoActivity.this, R.string.sync_fail, Toast.LENGTH_SHORT).show();
+//                    }
+//                });
+//        compositeSubscription.add(loadAccountsSubscription);
+//    }
 
     private void logout() {
         showProgress(getResources().getString(R.string.progress_title_logout));
