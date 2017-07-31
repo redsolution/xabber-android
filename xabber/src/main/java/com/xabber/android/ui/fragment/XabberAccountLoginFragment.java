@@ -27,13 +27,13 @@ public class XabberAccountLoginFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        RelativeLayout rlLogin = (RelativeLayout) view.findViewById(R.id.rlLogin);
-        rlLogin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ((XabberAccountInfoActivity)getActivity()).onLoginClick();
-            }
-        });
+//        RelativeLayout rlLogin = (RelativeLayout) view.findViewById(R.id.rlLogin);
+//        rlLogin.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                ((XabberAccountInfoActivity)getActivity()).onLoginClick();
+//            }
+//        });
     }
 
 }

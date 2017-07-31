@@ -317,7 +317,7 @@
                 android:layout_below="@id/edtHost"
                 android:layout_marginTop="16dp"
                 style="@style/Widget.AppCompat.Button.Colored"
-                android:theme="@style/GreenButton"
+
                 android:textColor="@color/white"
                 android:text="@string/button_complete_register"
                 />

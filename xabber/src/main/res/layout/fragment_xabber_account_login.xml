@@ -1,87 +1,269 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent"
-    android:background="?attr/settings_background_color">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingTop="16dp"
+    android:paddingBottom="16dp"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp">
 
-    <android.support.v7.widget.CardView
+    <TextView
+        android:id="@+id/tvStepOne"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="8dp"
+        android:layout_marginBottom="8dp"
+        android:paddingTop="2dp"
+        android:paddingBottom="2dp"
+        android:paddingRight="7dp"
+        android:paddingLeft="7dp"
+        android:background="@drawable/rounded_background"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:text="1"
+        />
+
+    <RelativeLayout
+        android:id="@+id/rlContent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="12dp"
+        android:layout_toRightOf="@id/tvStepOne"
+        android:layout_marginTop="2dp"
+        android:layout_marginBottom="16dp"
         >
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:paddingTop="16dp"
-            >
-
         <TextView
-            android:id="@+id/xabberAccountTitle"
+            android:id="@+id/stepOneTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
             android:textColor="?android:attr/textColorPrimary"
-            android:text="@string/title_xabber_account"
+            android:text="Sign up with Social account or Email"
             />
 
         <TextView
-            android:id="@+id/tvSummary"
+            android:id="@+id/titleSocial"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/xabberAccountTitle"
-            android:layout_marginTop="8dp"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
-            android:text="@string/summary_xabber_account"
+            android:layout_below="@id/stepOneTitle"
+            android:layout_marginTop="16dp"
+            android:text="Sign up with Social account"
             />
 
-        <RelativeLayout
-            android:id="@+id/rlLogin"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_below="@id/tvSummary"
-            android:layout_marginTop="16dp"
+        <LinearLayout
+            android:id="@+id/llSocialLogos"
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/titleSocial"
+            android:layout_marginTop="10dp"
             >
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="?attr/settings_separator_background_color"
+            <ImageView
+                android:id="@+id/ivGoogle"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/ic_google_plus"
                 />
 
-            <RelativeLayout
-                android:layout_width="match_parent"
+            <ImageView
+                android:id="@+id/ivFacebook"
+                android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:paddingLeft="24dp"
-                android:paddingRight="16dp"
-                android:paddingTop="8dp"
-                android:paddingBottom="8dp"
-                android:background="?android:attr/selectableItemBackground"
-                >
+                android:layout_marginLeft="30dp"
+                android:src="@drawable/ic_facebook"
+                />
 
-                <ImageView
-                    android:id="@+id/ivLogin"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:src="@drawable/ic_exit_grey600_24dp"
-                    android:layout_centerVertical="true"
-                    android:tint="@color/grey_600"
-                    />
+            <ImageView
+                android:id="@+id/ivTwitter"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginLeft="30dp"
+                android:src="@drawable/ic_twitter"
+                />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_toRightOf="@+id/ivLogin"
-                    android:layout_marginLeft="24dp"
-                    android:textColor="?android:attr/textColorPrimary"
-                    android:text="@string/button_login"
-                    />
+            <ImageView
+                android:id="@+id/ivGithub"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginLeft="30dp"
+                android:src="@drawable/ic_github_logo_black"
+                />
 
-            </RelativeLayout>
-        </RelativeLayout>
+        </LinearLayout>
 
-        </RelativeLayout>
-    </android.support.v7.widget.CardView>
+        <TextView
+            android:id="@+id/titleEmail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/llSocialLogos"
+            android:layout_marginTop="16dp"
+            android:text="Sign up with Email"
+            />
+
+        <EditText
+            android:id="@+id/edtEmail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/titleEmail"
+            android:layout_marginTop="4dp"
+            android:inputType="textEmailAddress"
+            android:hint="@string/email_hint"
+            />
+
+        <android.support.v7.widget.AppCompatCheckBox
+            android:id="@+id/chbAgrees"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/edtEmail"
+            android:padding="8dp"
+            android:text="@string/agrees"
+            android:textColor="@color/black_text_secondary"
+            android:theme="@style/RedCheckBox"
+            />
+
+        <Button
+            android:id="@+id/btnSignup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/chbAgrees"
+            android:layout_marginTop="8dp"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:theme="@style/BlueButton"
+            android:paddingRight="18dp"
+            android:paddingLeft="18dp"
+            android:textColor="@color/white"
+            android:text="continue"
+            android:enabled="true"
+            />
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="1dp"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="11dp"
+        android:layout_marginBottom="8dp"
+        android:layout_below="@+id/tvStepOne"
+        android:layout_above="@+id/stepTwo"
+        android:background="#50616161"
+        />
+
+    <LinearLayout
+        android:id="@+id/stepTwo"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/rlContent"
+        >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="8dp"
+            android:paddingTop="2dp"
+            android:paddingBottom="2dp"
+            android:paddingRight="7dp"
+            android:paddingLeft="7dp"
+            android:background="@drawable/rounded_background_grey"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:text="2"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="?android:attr/textColorPrimary"
+            android:text="Confirm Email address"
+            />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/lineTwo"
+        android:orientation="vertical"
+        android:layout_width="1dp"
+        android:layout_height="20dp"
+        android:layout_marginLeft="11dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:layout_below="@+id/stepTwo"
+        android:background="#50616161"
+        />
+
+    <LinearLayout
+        android:id="@+id/stepThree"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/lineTwo"
+        >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="8dp"
+            android:paddingTop="2dp"
+            android:paddingBottom="2dp"
+            android:paddingRight="7dp"
+            android:paddingLeft="7dp"
+            android:background="@drawable/rounded_background_grey"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:text="3"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="?android:attr/textColorPrimary"
+            android:text="Complete registration"
+            />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/lineThree"
+        android:orientation="vertical"
+        android:layout_width="1dp"
+        android:layout_height="20dp"
+        android:layout_marginLeft="11dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:layout_below="@+id/stepThree"
+        android:background="#50616161"
+        />
+
+    <LinearLayout
+        android:id="@+id/stepFour"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/lineThree"
+        >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="8dp"
+            android:paddingTop="2dp"
+            android:paddingBottom="2dp"
+            android:paddingRight="7dp"
+            android:paddingLeft="7dp"
+            android:background="@drawable/rounded_background_grey"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:text="4"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="?android:attr/textColorPrimary"
+            android:text="Start messaging!"
+            />
+
+    </LinearLayout>
+
 </RelativeLayout>
