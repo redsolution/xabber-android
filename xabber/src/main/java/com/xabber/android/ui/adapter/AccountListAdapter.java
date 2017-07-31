@@ -71,9 +71,11 @@ public class AccountListAdapter extends RecyclerView.Adapter {
 
         for (AccountItem account : accountItems) {
             for (XMPPAccountSettings set : accountSettings) {
-                String accountJidString = account.getRealJid().asBareJid().toString();
-                if (set.getJid().equals(accountJidString))
-                    account.setOrder(set.getOrder());
+                if (account.getRealJid() != null) {
+                    String accountJidString = account.getRealJid().asBareJid().toString();
+                    if (set.getJid().equals(accountJidString))
+                        account.setOrder(set.getOrder());
+                }
             }
         }
         Collections.sort(accountItems);
