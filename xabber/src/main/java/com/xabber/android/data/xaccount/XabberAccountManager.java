@@ -298,6 +298,33 @@ public class XabberAccountManager implements OnLoadListener {
     }
 
     @Nullable
+    public Single<List<XMPPAccountSettings>> saveOrUpdateXMPPAccountSettingsToRealm(List<XMPPAccountSettings> items) {
+        List<XMPPAccountSettings> result;
+        RealmList<XMPPAccountSettignsRealm> realmItems = new RealmList<>();
+
+        for (XMPPAccountSettings item : items) {
+            XMPPAccountSettignsRealm realmItem = new XMPPAccountSettignsRealm(item.getJid());
+
+            realmItem.setToken(item.getToken());
+            realmItem.setColor(item.getColor());
+            realmItem.setOrder(item.getOrder());
+            // TODO: 21.07.17 add sync, timestamp, username
+
+            realmItems.add(realmItem);
+        }
+
+        Realm realm = RealmManager.getInstance().getNewBackgroundRealm();
+        realm.beginTransaction();
+        List<XMPPAccountSettignsRealm> resultRealm = realm.copyToRealmOrUpdate(realmItems);
+        result = xmppAccountSettingsRealmListToPOJO(resultRealm);
+        realm.commitTransaction();
+        realm.close();
+
+        updateXmppAccounts(result);
+        return Single.just(result);
+    }
+
+    @Nullable
     public List<XMPPAccountSettings> xmppAccountSettingsRealmListToPOJO(List<XMPPAccountSettignsRealm> realmitems) {
         if (realmitems == null) return null;
 
@@ -354,6 +381,15 @@ public class XabberAccountManager implements OnLoadListener {
             if (jid.equals(accountJidString)) return accountJid;
         }
         return null;
+    }
+
+    public void setColor(AccountJid accountJid, int colorIndex) {
+        if (accountJid != null) {
+            for (XMPPAccountSettings account : xmppAccounts) {
+                if (account.getJid().equals(accountJid.getFullJid().asBareJid().toString()))
+                    account.setColor(ColorManager.getInstance().convertIndexToColorName(colorIndex));
+            }
+        }
     }
 }
 

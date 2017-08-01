@@ -1,10 +1,12 @@
 package com.xabber.android.ui.color;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.support.v4.content.ContextCompat;
+import android.util.SparseArray;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
@@ -216,6 +218,22 @@ public class ColorManager {
         Integer colorId = colors.get(colorName);
         if (colorId != null) return colorId;
         else return 1;
+    }
+
+    public String convertIndexToColorName(int colorIndex) {
+        SparseArray<String> colors = new SparseArray<>();
+        colors.put(0, "green");
+        colors.put(1, "orange");
+        colors.put(2, "red");
+        colors.put(3, "blue");
+        colors.put(4, "indigo");
+        colors.put(5, "blue_grey");
+        colors.put(6, "cyan");
+        colors.put(7, "teal");
+
+        String colorName = colors.get(colorIndex);
+        if (colorName != null) return colorName;
+        else return "green";
     }
 
 }
