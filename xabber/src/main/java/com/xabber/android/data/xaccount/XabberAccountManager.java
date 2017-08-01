@@ -79,6 +79,24 @@ public class XabberAccountManager implements OnLoadListener {
         compositeSubscription.add(getAccountSubscription);
     }
 
+    private void updateAccountSettings() {
+        Subscription updateSettingsSubscription = AuthManager.updateClientSettings(this.xmppAccounts)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<List<XMPPAccountSettings>>() {
+                    @Override
+                    public void call(List<XMPPAccountSettings> s) {
+                        Log.d(LOG_TAG, "XMPP accounts loading from net: successfully");
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        Log.d(LOG_TAG, "XMPP accounts loading from net: error: " + throwable.toString());
+                    }
+                });
+        compositeSubscription.add(updateSettingsSubscription);
+    }
+
     private void handleSuccessGetAccount(@NonNull XabberAccount xabberAccount) {
         Log.d(LOG_TAG, "Xabber account loading from net: successfully");
         this.account = xabberAccount;
@@ -389,6 +407,7 @@ public class XabberAccountManager implements OnLoadListener {
                 if (account.getJid().equals(accountJid.getFullJid().asBareJid().toString()))
                     account.setColor(ColorManager.getInstance().convertIndexToColorName(colorIndex));
             }
+            updateAccountSettings();
         }
     }
 }
