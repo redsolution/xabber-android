@@ -5,7 +5,9 @@
     android:paddingTop="16dp"
     android:paddingBottom="16dp"
     android:paddingLeft="16dp"
-    android:paddingRight="16dp">
+    android:paddingRight="16dp"
+    android:background="@color/cardview_light_background"
+    >
 
 
     <LinearLayout
@@ -33,7 +35,7 @@
             android:id="@+id/tvSignType"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="?android:attr/textColorPrimary"
+            android:textColor="@color/black"
             android:text="@string/signed_up_email"
             />
 
@@ -44,6 +46,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/stepOne"
+        android:textColor="@color/black_text_secondary"
         android:text="@string/no_email"
         android:layout_toRightOf="@+id/lineOne"
         android:layout_marginLeft="18dp"
@@ -86,7 +89,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="?android:attr/textColorPrimary"
+            android:textColor="@color/black"
             android:textStyle="bold"
             android:text="@string/title_email_confirm"
             />
@@ -108,6 +111,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
+            android:textColor="@color/black_text_secondary"
+            android:textColorHint="@color/black_text_secondary"
+            android:backgroundTint="@color/black_text_secondary"
             android:hint="@string/hint_code"
             />
 
@@ -181,7 +187,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="?android:attr/textColorPrimary"
+            android:textColor="@color/black"
             android:text="@string/title_complete_register"
             />
 
@@ -224,7 +230,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="?android:attr/textColorPrimary"
+            android:textColor="@color/black"
             android:text="@string/title_start_messaging"
             />
 
