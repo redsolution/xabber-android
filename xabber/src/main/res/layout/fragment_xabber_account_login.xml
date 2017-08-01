@@ -5,7 +5,9 @@
     android:paddingTop="16dp"
     android:paddingBottom="16dp"
     android:paddingLeft="16dp"
-    android:paddingRight="16dp">
+    android:paddingRight="16dp"
+    android:background="@color/cardview_light_background"
+    >
 
     <TextView
         android:id="@+id/tvStepOne"
@@ -36,7 +38,7 @@
             android:id="@+id/stepOneTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="?android:attr/textColorPrimary"
+            android:textColor="@color/black"
             android:text="@string/sign_up_email_social"
             />
 
@@ -46,6 +48,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/stepOneTitle"
             android:layout_marginTop="16dp"
+            android:textColor="@color/black_text_secondary"
             android:text="@string/sign_up_social"
             />
 
@@ -98,6 +101,7 @@
             android:layout_below="@id/llSocialLogos"
             android:layout_marginTop="20dp"
             android:paddingLeft="4dp"
+            android:textColor="@color/black_text_secondary"
             android:text="@string/sign_up_email"
             />
 
@@ -108,6 +112,9 @@
             android:layout_below="@id/titleEmail"
             android:layout_marginTop="4dp"
             android:inputType="textEmailAddress"
+            android:textColor="@color/black_text_secondary"
+            android:textColorHint="@color/black_text_secondary"
+            android:backgroundTint="@color/black_text_secondary"
             android:hint="@string/email_hint"
             />
 
@@ -175,7 +182,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="?android:attr/textColorPrimary"
+            android:textColor="@color/black"
             android:text="@string/title_email_confirm"
             />
 
@@ -218,7 +225,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="?android:attr/textColorPrimary"
+            android:textColor="@color/black"
             android:text="@string/title_complete_register"
             />
 
@@ -261,7 +268,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="?android:attr/textColorPrimary"
+            android:textColor="@color/black"
             android:text="@string/title_start_messaging"
             />
 

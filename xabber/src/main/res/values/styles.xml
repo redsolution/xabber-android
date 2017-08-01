@@ -68,6 +68,7 @@
 
     <style name="BlueCheckBox" parent="Theme.AppCompat.Light">
         <item name="colorControlActivated">@color/account_register_blue</item>
+        <item name="colorControlNormal">@color/grey_700</item>
     </style>
 
     <style name="WhiteSwitchStyle">
