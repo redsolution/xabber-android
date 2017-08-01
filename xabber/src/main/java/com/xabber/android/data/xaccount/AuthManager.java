@@ -2,6 +2,9 @@ package com.xabber.android.data.xaccount;
 
 import android.util.Base64;
 import com.google.gson.Gson;
+import com.google.gson.annotations.SerializedName;
+
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -97,9 +100,8 @@ public class AuthManager {
         for (XMPPAccountSettings account : accountSettingsList) {
             list.add(new ClientSettingsDTO(account.getJid(), new SettingsValuesDTO(account.getOrder(), account.getColor(), account.getToken())));
         }
-        ListClientSettingsDTO body = new ListClientSettingsDTO(list);
 
-        return HttpApiManager.getXabberApi().updateClientSettings(getXabberTokenHeader(), body)
+        return HttpApiManager.getXabberApi().updateClientSettings(getXabberTokenHeader(), list)
                 .flatMap(new Func1<ListClientSettingsDTO, Single<? extends List<XMPPAccountSettings>>>() {
                     @Override
                     public Single<? extends List<XMPPAccountSettings>> call(ListClientSettingsDTO listClientSettingsDTO) {

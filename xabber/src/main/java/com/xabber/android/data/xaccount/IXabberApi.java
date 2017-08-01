@@ -1,9 +1,12 @@
 package com.xabber.android.data.xaccount;
 
+import java.util.List;
+
 import okhttp3.ResponseBody;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
+import retrofit2.http.PATCH;
 import retrofit2.http.POST;
 import rx.Single;
 
@@ -31,8 +34,8 @@ public interface IXabberApi {
     @GET("accounts/current/client-settings/")
     Single<AuthManager.ListClientSettingsDTO> getClientSettings(@Header("Authorization") String token);
 
-    @POST("accounts/current/client-settings/")
-    Single<AuthManager.ListClientSettingsDTO> updateClientSettings(@Header("Authorization") String token, @Body AuthManager.ListClientSettingsDTO body);
+    @PATCH("accounts/current/client-settings/")
+    Single<AuthManager.ListClientSettingsDTO> updateClientSettings(@Header("Authorization") String token, @Body List<AuthManager.ClientSettingsDTO> body);
 
     @POST("accounts/email_confirmation/")
     Single<XabberAccountDTO> confirmEmail(@Header("Authorization") String token, @Body AuthManager.Code code);

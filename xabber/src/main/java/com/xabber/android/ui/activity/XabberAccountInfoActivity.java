@@ -248,7 +248,7 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
 
     public void onSyncClick() {
         if (NetworkManager.isNetworkAvailable()) {
-            loadUserSettings();
+            synchronize();
         } else
             Toast.makeText(this, R.string.toast_no_internet, Toast.LENGTH_LONG).show();
     }
