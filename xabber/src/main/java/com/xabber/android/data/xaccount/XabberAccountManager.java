@@ -10,6 +10,7 @@ import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.database.RealmManager;
 import com.xabber.android.data.database.realm.EmailRealm;
+import com.xabber.android.data.database.realm.SocialBindingRealm;
 import com.xabber.android.data.database.realm.XMPPAccountSettignsRealm;
 import com.xabber.android.data.database.realm.XMPPUserRealm;
 import com.xabber.android.data.database.realm.XabberAccountRealm;
@@ -178,6 +179,17 @@ public class XabberAccountManager implements OnLoadListener {
         }
         xabberAccountRealm.setEmails(realmEmails);
 
+        RealmList<SocialBindingRealm> realmSocials = new RealmList<>();
+        for (SocialBindingDTO social : xabberAccount.getSocialBindings()) {
+            SocialBindingRealm realmSocial = new SocialBindingRealm(String.valueOf(social.getId()));
+            realmSocial.setProvider(social.getProvider());
+            realmSocial.setUid(social.getUid());
+            realmSocial.setFirstName(social.getFirstName());
+            realmSocial.setLastName(social.getLastName());
+            realmSocials.add(realmSocial);
+        }
+        xabberAccountRealm.setSocialBindings(realmSocials);
+
         Realm realm = RealmManager.getInstance().getNewBackgroundRealm();
         realm.beginTransaction();
         XabberAccountRealm accountRealm = realm.copyToRealmOrUpdate(xabberAccountRealm);
@@ -216,6 +228,18 @@ public class XabberAccountManager implements OnLoadListener {
             emails.add(email);
         }
 
+        List<SocialBindingDTO> socials = new ArrayList<>();
+        for (SocialBindingRealm socialRealm : accountRealm.getSocialBindings()) {
+            SocialBindingDTO social = new SocialBindingDTO(
+                    Integer.parseInt(socialRealm.getId()),
+                    socialRealm.getProvider(),
+                    socialRealm.getUid(),
+                    socialRealm.getFirstName(),
+                    socialRealm.getLastName());
+
+            socials.add(social);
+        }
+
         xabberAccount = new XabberAccount(
                 Integer.parseInt(accountRealm.getId()),
                 accountRealm.getAccountStatus(),
@@ -225,6 +249,7 @@ public class XabberAccountManager implements OnLoadListener {
                 accountRealm.getRegisterDate(),
                 xmppUsers,
                 emails,
+                socials,
                 accountRealm.getToken()
         );
 

@@ -81,10 +81,35 @@ public class XabberAccountCompleteRegsiterFrament extends Fragment {
 
     public void updateData(@NonNull XabberAccount account) {
         if (account.getEmails().size() > 0) {
+            // if registered via email
             tvAccountName.setText(account.getEmails().get(0).getEmail());
             tvSignType.setText(R.string.signed_up_email);
+        } else {
+            // if registered via social binding
+            String firstName = account.getFirstName();
+            String lastName = account.getLastName();
+            String name = "";
+            if (firstName != null) name = name + firstName;
+            if (lastName != null) name = name + " " + lastName;
+            if (!name.isEmpty()) tvAccountName.setText(name);
+
+            if (account.getSocialBindings().size() > 0) {
+                switch (account.getSocialBindings().get(0).getProvider()) {
+                    case "google":
+                        tvSignType.setText(R.string.signed_up_google);
+                        break;
+                    case "facebook":
+                        tvSignType.setText(R.string.signed_up_facebook);
+                        break;
+                    case "twitter":
+                        tvSignType.setText(R.string.signed_up_twitter);
+                        break;
+                    case "github":
+                        tvSignType.setText(R.string.signed_up_github);
+                        break;
+                }
+            }
         }
-        // TODO: 31.07.17 вписывать имя аккаунта если оно доступно. Указывать соц.сеть
     }
 
     private void verifyFields() {

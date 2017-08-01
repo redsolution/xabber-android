@@ -24,6 +24,7 @@ public class XabberAccountRealm extends RealmObject {
     private String registerDate;
     private RealmList<XMPPUserRealm> xmppUsers;
     private RealmList<EmailRealm> emails;
+    private RealmList<SocialBindingRealm> socialBindings;
 
     public XabberAccountRealm(String id) {
         this.id = id;
@@ -99,6 +100,14 @@ public class XabberAccountRealm extends RealmObject {
 
     public void setEmails(RealmList<EmailRealm> emails) {
         this.emails = emails;
+    }
+
+    public RealmList<SocialBindingRealm> getSocialBindings() {
+        return socialBindings;
+    }
+
+    public void setSocialBindings(RealmList<SocialBindingRealm> socialBindings) {
+        this.socialBindings = socialBindings;
     }
 }
 

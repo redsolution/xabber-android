@@ -7,6 +7,7 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.database.realm.AccountRealm;
 import com.xabber.android.data.database.realm.DiscoveryInfoCache;
 import com.xabber.android.data.database.realm.EmailRealm;
+import com.xabber.android.data.database.realm.SocialBindingRealm;
 import com.xabber.android.data.database.realm.XMPPAccountSettignsRealm;
 import com.xabber.android.data.database.realm.XMPPUserRealm;
 import com.xabber.android.data.database.realm.XabberAccountRealm;
@@ -54,7 +55,7 @@ public class RealmManager {
     }
 
     @RealmModule(classes = {DiscoveryInfoCache.class, AccountRealm.class, XabberAccountRealm.class,
-            XMPPUserRealm.class, EmailRealm.class, XMPPAccountSettignsRealm.class})
+            XMPPUserRealm.class, EmailRealm.class, SocialBindingRealm.class, XMPPAccountSettignsRealm.class})
     static class RealmDatabaseModule {
     }
 
