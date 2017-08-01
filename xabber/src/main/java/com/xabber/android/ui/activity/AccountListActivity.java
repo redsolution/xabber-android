@@ -45,6 +45,7 @@ public class AccountListActivity extends ManagedActivity implements OnAccountCha
 
     private AccountListAdapter accountListAdapter;
     private BarPainter barPainter;
+    private ItemTouchHelper touchHelper;
 
     public static Intent createIntent(Context context) {
         return new Intent(context, AccountListActivity.class);
@@ -79,7 +80,7 @@ public class AccountListActivity extends ManagedActivity implements OnAccountCha
 
         ItemTouchHelper.Callback callback =
                 new SimpleItemTouchHelperCallback(accountListAdapter);
-        ItemTouchHelper touchHelper = new ItemTouchHelper(callback);
+        touchHelper = new ItemTouchHelper(callback);
         touchHelper.attachToRecyclerView(recyclerView);
     }
 
@@ -156,5 +157,10 @@ public class AccountListActivity extends ManagedActivity implements OnAccountCha
         }
 
         return false;
+    }
+
+    @Override
+    public void onStartDrag(RecyclerView.ViewHolder viewHolder) {
+        touchHelper.startDrag(viewHolder);
     }
 }
