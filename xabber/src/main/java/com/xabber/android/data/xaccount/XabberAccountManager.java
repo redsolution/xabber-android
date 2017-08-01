@@ -17,6 +17,7 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.ui.color.ColorManager;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import io.realm.Realm;
@@ -409,6 +410,14 @@ public class XabberAccountManager implements OnLoadListener {
             }
             updateAccountSettings();
         }
+    }
+
+    public void setXMPPAccountOrder(HashMap<String, Integer> items) {
+        for (XMPPAccountSettings account : xmppAccounts) {
+            int orderValue = items.get(account.getJid());
+            if (orderValue > 0) account.setOrder(orderValue);
+        }
+        updateAccountSettings();
     }
 }
 

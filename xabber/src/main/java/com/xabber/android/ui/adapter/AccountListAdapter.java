@@ -35,12 +35,14 @@ import com.xabber.android.data.xaccount.XMPPAccountSettings;
 import com.xabber.android.data.xaccount.XabberAccountManager;
 import com.xabber.android.ui.activity.ManagedActivity;
 import com.xabber.android.ui.color.ColorManager;
+import com.xabber.android.ui.widget.ItemTouchHelperAdapter;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
-public class AccountListAdapter extends RecyclerView.Adapter {
+public class AccountListAdapter extends RecyclerView.Adapter implements ItemTouchHelperAdapter {
 
     @SuppressWarnings("WeakerAccess")
     static final String LOG_TAG = AccountListAdapter.class.getSimpleName();
@@ -80,6 +82,30 @@ public class AccountListAdapter extends RecyclerView.Adapter {
         }
         Collections.sort(accountItems);
         notifyDataSetChanged();
+    }
+
+    @Override
+    public boolean onItemMove(int fromPosition, int toPosition) {
+        if (fromPosition < toPosition) {
+            for (int i = fromPosition; i < toPosition; i++) {
+                Collections.swap(accountItems, i, i + 1);
+            }
+        } else {
+            for (int i = fromPosition; i > toPosition; i--) {
+                Collections.swap(accountItems, i, i - 1);
+            }
+        }
+        notifyItemMoved(fromPosition, toPosition);
+
+        // update local accounts order
+        HashMap<String, Integer> map = new HashMap<>();
+        int order = 1;
+        for (AccountItem account : accountItems) {
+            map.put(account.getRealJid().asBareJid().toString(), order);
+            order++;
+        }
+        XabberAccountManager.getInstance().setXMPPAccountOrder(map);
+        return true;
     }
 
     @Override
