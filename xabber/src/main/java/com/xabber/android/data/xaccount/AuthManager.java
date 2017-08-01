@@ -98,7 +98,8 @@ public class AuthManager {
 
         List<ClientSettingsDTO> list = new ArrayList<>();
         for (XMPPAccountSettings account : accountSettingsList) {
-            list.add(new ClientSettingsDTO(account.getJid(), new SettingsValuesDTO(account.getOrder(), account.getColor(), account.getToken())));
+            list.add(new ClientSettingsDTO(account.getJid(), new SettingsValuesDTO(account.getOrder(),
+                    account.getColor(), account.getToken(), account.getUsername()), account.getTimestamp()));
         }
 
         return HttpApiManager.getXabberApi().updateClientSettings(getXabberTokenHeader(), list)
@@ -286,10 +287,12 @@ public class AuthManager {
     public static class ClientSettingsDTO {
         final String jid;
         final SettingsValuesDTO settings;
+        final int timestamp;
 
-        public ClientSettingsDTO(String jid, SettingsValuesDTO settings) {
+        public ClientSettingsDTO(String jid, SettingsValuesDTO settings, int timestamp) {
             this.jid = jid;
             this.settings = settings;
+            this.timestamp = timestamp;
         }
 
         public String getJid() {
@@ -299,17 +302,23 @@ public class AuthManager {
         public SettingsValuesDTO getSettings() {
             return settings;
         }
+
+        public int getTimestamp() {
+            return timestamp;
+        }
     }
 
     public static class SettingsValuesDTO {
         final int order;
         final String color;
         final String token;
+        final String username;
 
-        public SettingsValuesDTO(int order, String color, String token) {
+        public SettingsValuesDTO(int order, String color, String token, String username) {
             this.order = order;
             this.color = color;
             this.token = token;
+            this.username = username;
         }
 
         public int getOrder() {
@@ -322,6 +331,10 @@ public class AuthManager {
 
         public String getToken() {
             return token;
+        }
+
+        public String getUsername() {
+            return username;
         }
     }
 }

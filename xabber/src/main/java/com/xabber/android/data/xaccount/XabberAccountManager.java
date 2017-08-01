@@ -325,8 +325,9 @@ public class XabberAccountManager implements OnLoadListener {
                 realmItem.setToken(valuesDTO.getToken());
                 realmItem.setColor(valuesDTO.getColor());
                 realmItem.setOrder(valuesDTO.getOrder());
-                // TODO: 21.07.17 add sync, timestamp, username
+                realmItem.setUsername(valuesDTO.getUsername());
             }
+            realmItem.setTimestamp(dtoItem.getTimestamp());
             realmItems.add(realmItem);
         }
 
@@ -352,7 +353,8 @@ public class XabberAccountManager implements OnLoadListener {
             realmItem.setToken(item.getToken());
             realmItem.setColor(item.getColor());
             realmItem.setOrder(item.getOrder());
-            // TODO: 21.07.17 add sync, timestamp, username
+            realmItem.setUsername(item.getUsername());
+            realmItem.setTimestamp(item.getTimestamp());
 
             realmItems.add(realmItem);
         }
@@ -430,8 +432,10 @@ public class XabberAccountManager implements OnLoadListener {
     public void setColor(AccountJid accountJid, int colorIndex) {
         if (accountJid != null) {
             for (XMPPAccountSettings account : xmppAccounts) {
-                if (account.getJid().equals(accountJid.getFullJid().asBareJid().toString()))
+                if (account.getJid().equals(accountJid.getFullJid().asBareJid().toString())) {
                     account.setColor(ColorManager.getInstance().convertIndexToColorName(colorIndex));
+                    account.setTimestamp(getCurrentTime());
+                }
             }
             updateAccountSettings();
         }
@@ -441,8 +445,13 @@ public class XabberAccountManager implements OnLoadListener {
         for (XMPPAccountSettings account : xmppAccounts) {
             int orderValue = items.get(account.getJid());
             if (orderValue > 0) account.setOrder(orderValue);
+            account.setTimestamp(getCurrentTime());
         }
         updateAccountSettings();
+    }
+
+    public int getCurrentTime() {
+        return (int) (System.currentTimeMillis() / 1000L);
     }
 }
 
