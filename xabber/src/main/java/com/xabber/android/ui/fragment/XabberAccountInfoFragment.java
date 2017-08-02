@@ -67,8 +67,8 @@ public class XabberAccountInfoFragment extends Fragment {
         rlSync.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AccountSyncDialogFragment dialog = new AccountSyncDialogFragment();
-                dialog.show(getFragmentManager(), AccountSyncDialogFragment.class.getSimpleName());
+                AccountSyncDialogFragment.newInstance()
+                        .show(getFragmentManager(), AccountSyncDialogFragment.class.getSimpleName());
             }
         });
     }

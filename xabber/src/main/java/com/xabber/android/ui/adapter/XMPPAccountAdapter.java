@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -12,7 +13,6 @@ import com.xabber.android.R;
 import com.xabber.android.data.xaccount.XMPPAccountSettings;
 import com.xabber.android.ui.color.ColorManager;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -24,18 +24,19 @@ public class XMPPAccountAdapter extends RecyclerView.Adapter {
     private List<XMPPAccountSettings> items;
     private boolean isAllChecked;
 
-    public XMPPAccountAdapter() {
-        this.items = new ArrayList<>();
-    }
+    public XMPPAccountAdapter() {}
 
     public void setItems(List<XMPPAccountSettings> items) {
-        this.items.clear();
-        this.items.addAll(items);
+        this.items = items;
         notifyDataSetChanged();
     }
 
     public void setAllChecked(boolean checked) {
-        this.isAllChecked = checked;
+        isAllChecked = checked;
+
+        for (XMPPAccountSettings item : items) {
+            item.setSynchronization(checked);
+        }
         notifyDataSetChanged();
     }
 
@@ -47,8 +48,15 @@ public class XMPPAccountAdapter extends RecyclerView.Adapter {
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        XMPPAccountSettings account = items.get(position);
+        final XMPPAccountSettings account = items.get(position);
         XMPPAccountVH viewHolder = (XMPPAccountVH) holder;
+
+        viewHolder.chkAccountSync.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                account.setSynchronization(isChecked);
+            }
+        });
 
         // set colors
         int colorId = ColorManager.getInstance().convertColorNameToId(account.getColor());
@@ -64,11 +72,11 @@ public class XMPPAccountAdapter extends RecyclerView.Adapter {
         viewHolder.jid.setText(account.getJid());
 
         // set sync checkbox
+        viewHolder.chkAccountSync.setChecked(account.isSynchronization());
+
         if (isAllChecked) {
-            viewHolder.chkAccountSync.setChecked(true);
             viewHolder.chkAccountSync.setEnabled(false);
         } else {
-            viewHolder.chkAccountSync.setChecked(account.isSynchronization());
             viewHolder.chkAccountSync.setEnabled(true);
         }
     }
