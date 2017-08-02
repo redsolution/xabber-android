@@ -26,6 +26,9 @@
 
     <string name="default_sound">com.xabber.android.DEFAULT_SOUND</string>
 
+    <string name="last_sync_date_key">last_sync_date_key</string>
+    <string name="last_sync_date_default">@string/last_sync_date_never</string>
+
     <!-- preference_spam -->
     <string name="spam_filter_key">spam_key</string>
     <string-array name="spam_filter_entries">

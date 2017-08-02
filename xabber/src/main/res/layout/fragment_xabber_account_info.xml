@@ -96,7 +96,7 @@
             <RelativeLayout
                 android:id="@+id/rlSync"
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
+                android:layout_height="wrap_content"
                 android:layout_below="@id/llAccount"
                 >
 
@@ -108,7 +108,7 @@
 
                 <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="48dp"
+                    android:layout_height="wrap_content"
                     android:paddingLeft="24dp"
                     android:paddingRight="16dp"
                     android:paddingTop="8dp"
@@ -125,15 +125,33 @@
                         android:tint="@color/grey_600"
                         />
 
-                    <TextView
-                        android:layout_width="wrap_content"
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
                         android:layout_toRightOf="@+id/ivSync"
                         android:layout_marginLeft="24dp"
-                        android:textColor="?android:attr/textColorPrimary"
-                        android:text="Synced 1 day ago"
-                        />
+                        >
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="?android:attr/textColorPrimary"
+                            android:text="@string/button_sync"
+                            />
+
+                        <TextView
+                            android:id="@+id/tvLastSyncDate"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:ellipsize="marquee"
+                            android:lines="1"
+                            android:text="@string/last_sync_date"
+                            android:textColor="@color/black_text_secondary"
+                            android:textSize="14sp" />
+
+                    </LinearLayout>
 
                 </RelativeLayout>
             </RelativeLayout>

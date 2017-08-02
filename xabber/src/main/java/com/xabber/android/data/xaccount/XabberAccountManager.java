@@ -7,6 +7,7 @@ import android.util.Log;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.OnLoadListener;
+import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.database.RealmManager;
 import com.xabber.android.data.database.realm.EmailRealm;
@@ -17,9 +18,12 @@ import com.xabber.android.data.database.realm.XabberAccountRealm;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.ui.color.ColorManager;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 import io.realm.Realm;
 import io.realm.RealmList;
@@ -338,6 +342,7 @@ public class XabberAccountManager implements OnLoadListener {
         realm.commitTransaction();
         realm.close();
 
+        SettingsManager.setLastSyncDate(getCurrentTimeString());
         updateXmppAccounts(result);
         return Single.just(result);
     }
@@ -452,6 +457,12 @@ public class XabberAccountManager implements OnLoadListener {
 
     public int getCurrentTime() {
         return (int) (System.currentTimeMillis() / 1000L);
+    }
+
+    public static String getCurrentTimeString() {
+        SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.US);
+        Date now = new Date();
+        return sdfDate.format(now);
     }
 }
 

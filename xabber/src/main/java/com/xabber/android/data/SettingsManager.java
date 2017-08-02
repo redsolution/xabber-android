@@ -668,6 +668,14 @@ public class SettingsManager implements OnInitializedListener,
         setString(R.string.status_text_key, statusText);
     }
 
+    public static void setLastSyncDate(String lastSyncDate) {
+        setString(R.string.last_sync_date_key, lastSyncDate);
+    }
+
+    public static String getLastSyncDate() {
+        return getString(R.string.last_sync_date_key, R.string.last_sync_date_default);
+    }
+
     @Override
     public void onInitialized() {
         incrementBootCount();

@@ -71,7 +71,10 @@
     <string name="button_confirm">confirm</string>
     <string name="button_enter">ENTER XABBER</string>
     <string name="button_continue">continue</string>
+    <string name="button_sync">SYNCHRONIZE</string>
 
+    <string name="last_sync_date">Last sync date: %1$s</string>
+    <string name="last_sync_date_never">never</string>
     <string name="sync_all">Synchronize all</string>
     <string name="no_email">no email</string>
     <string name="empty_field">Empty field</string>

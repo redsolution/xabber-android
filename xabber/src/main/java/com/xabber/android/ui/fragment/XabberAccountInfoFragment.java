@@ -15,6 +15,7 @@ import android.widget.Switch;
 import android.widget.TextView;
 
 import com.xabber.android.R;
+import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.xaccount.XMPPAccountSettings;
 import com.xabber.android.data.xaccount.XabberAccount;
 import com.xabber.android.data.xaccount.XabberAccountManager;
@@ -36,6 +37,7 @@ public class XabberAccountInfoFragment extends Fragment {
 
     private TextView tvAccountName;
     private TextView tvAccountEmail;
+    private TextView tvLastSyncDate;
     private RelativeLayout rlLogout;
     private RelativeLayout rlSync;
 
@@ -51,6 +53,7 @@ public class XabberAccountInfoFragment extends Fragment {
 
         tvAccountName = (TextView) view.findViewById(R.id.tvAccountName);
         tvAccountEmail = (TextView) view.findViewById(R.id.tvAccountEmail);
+        tvLastSyncDate = (TextView) view.findViewById(R.id.tvLastSyncDate);
 
         rlLogout = (RelativeLayout) view.findViewById(R.id.rlLogout);
         rlLogout.setOnClickListener(new View.OnClickListener() {
@@ -77,6 +80,7 @@ public class XabberAccountInfoFragment extends Fragment {
         XabberAccount account = XabberAccountManager.getInstance().getAccount();
         if (account != null) updateData(account);
         else ((XabberAccountInfoActivity)getActivity()).showLoginFragment();
+        updateLastSyncTime();
     }
 
     public void updateData(@NonNull XabberAccount account) {
@@ -84,6 +88,10 @@ public class XabberAccountInfoFragment extends Fragment {
         tvAccountName.setText(accountName);
         if (account.getEmails().size() > 0)
             tvAccountEmail.setText(account.getEmails().get(0).getEmail());
+    }
+
+    public void updateLastSyncTime() {
+        tvLastSyncDate.setText(getString(R.string.last_sync_date, SettingsManager.getLastSyncDate()));
     }
 
 }
