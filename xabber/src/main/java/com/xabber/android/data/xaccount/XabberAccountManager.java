@@ -122,7 +122,7 @@ public class XabberAccountManager implements OnLoadListener {
                 .subscribe(new Action1<List<XMPPAccountSettings>>() {
                     @Override
                     public void call(List<XMPPAccountSettings> s) {
-                        updateXmppAccounts(s);
+                        //updateXmppAccounts(s);
                     }
                 }, new Action1<Throwable>() {
                     @Override
@@ -334,11 +334,16 @@ public class XabberAccountManager implements OnLoadListener {
             }
             realmItem.setTimestamp(dtoItem.getTimestamp());
 
+            // add to sync only accounts required sync
             XMPPAccountSettings accountSettings = getAccountSettings(dtoItem.getJid());
-            if (accountSettings != null)
-                realmItem.setSynchronization(accountSettings.isSynchronization());
-
-            realmItems.add(realmItem);
+            if (accountSettings != null) {
+                if (accountSettings.isSynchronization()) {
+                    realmItem.setSynchronization(accountSettings.isSynchronization());
+                    realmItems.add(realmItem);
+                }
+            } else {
+                realmItems.add(realmItem);
+            }
         }
 
         Realm realm = RealmManager.getInstance().getNewBackgroundRealm();
@@ -349,7 +354,7 @@ public class XabberAccountManager implements OnLoadListener {
         realm.close();
 
         SettingsManager.setLastSyncDate(getCurrentTimeString());
-        updateXmppAccounts(result);
+        updateXmppAccounts(loadXMPPAccountSettingsFromRealm());
         return Single.just(result);
     }
 
@@ -478,6 +483,7 @@ public class XabberAccountManager implements OnLoadListener {
                     account.setSynchronization(accountNew.isSynchronization());
             }
         }
+        saveOrUpdateXMPPAccountSettingsToRealm(items);
     }
 
     public int getCurrentTime() {

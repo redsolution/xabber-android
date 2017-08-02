@@ -98,8 +98,11 @@ public class AuthManager {
 
         List<ClientSettingsDTO> list = new ArrayList<>();
         for (XMPPAccountSettings account : accountSettingsList) {
-            list.add(new ClientSettingsDTO(account.getJid(), new SettingsValuesDTO(account.getOrder(),
-                    account.getColor(), account.getToken(), account.getUsername()), account.getTimestamp()));
+            // add to sync only accounts required sync
+            if (account.isSynchronization()) {
+                list.add(new ClientSettingsDTO(account.getJid(), new SettingsValuesDTO(account.getOrder(),
+                        account.getColor(), account.getToken(), account.getUsername()), account.getTimestamp()));
+            }
         }
 
         return HttpApiManager.getXabberApi().updateClientSettings(getXabberTokenHeader(), list)
