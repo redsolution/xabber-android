@@ -20,6 +20,7 @@ import com.xabber.android.data.xaccount.XabberAccount;
 import com.xabber.android.data.xaccount.XabberAccountManager;
 import com.xabber.android.ui.activity.XabberAccountInfoActivity;
 import com.xabber.android.ui.adapter.XMPPAccountAdapter;
+import com.xabber.android.ui.dialog.AccountSyncDialogFragment;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,9 +38,6 @@ public class XabberAccountInfoFragment extends Fragment {
     private TextView tvAccountEmail;
     private RelativeLayout rlLogout;
     private RelativeLayout rlSync;
-    private Switch switchSyncAll;
-    private XMPPAccountAdapter adapter;
-    private List<XMPPAccountSettings> xmppAccounts;
 
     @Nullable
     @Override
@@ -66,34 +64,15 @@ public class XabberAccountInfoFragment extends Fragment {
         rlSync.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((XabberAccountInfoActivity)getActivity()).onSyncClick();
+                AccountSyncDialogFragment dialog = new AccountSyncDialogFragment();
+                dialog.show(getFragmentManager(), AccountSyncDialogFragment.class.getSimpleName());
             }
         });
-
-        switchSyncAll = (Switch) view.findViewById(R.id.switchSyncAll);
-        switchSyncAll.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (adapter != null)
-                    adapter.setAllChecked(b);
-            }
-        });
-
-        adapter = new XMPPAccountAdapter();
-        xmppAccounts = new ArrayList<>();
-        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.rcvXmppUsers);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        recyclerView.setNestedScrollingEnabled(false);
-        adapter.setItems(xmppAccounts);
-        recyclerView.setAdapter(adapter);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-
-        List<XMPPAccountSettings> items = XabberAccountManager.getInstance().getXmppAccounts();
-        if (items != null) updateList(items);
 
         XabberAccount account = XabberAccountManager.getInstance().getAccount();
         if (account != null) updateData(account);
@@ -105,13 +84,6 @@ public class XabberAccountInfoFragment extends Fragment {
         tvAccountName.setText(accountName);
         if (account.getEmails().size() > 0)
             tvAccountEmail.setText(account.getEmails().get(0).getEmail());
-    }
-
-    public void updateList(@NonNull List<XMPPAccountSettings> list) {
-        xmppAccounts.clear();
-        xmppAccounts.addAll(list);
-        Collections.sort(xmppAccounts);
-        adapter.setItems(xmppAccounts);
     }
 
 }

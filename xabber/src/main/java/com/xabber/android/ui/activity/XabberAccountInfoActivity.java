@@ -190,14 +190,6 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
         }
     }
 
-    private void updateXMPPAccountList(List<XMPPAccountSettings> list) {
-        if (list != null) {
-            XabberAccountInfoFragment fragment = (XabberAccountInfoFragment) getFragmentManager().findFragmentByTag(FRAGMENT_INFO);
-            if (fragment != null && fragment.isVisible())
-                ((XabberAccountInfoFragment) fragmentInfo).updateList(list);
-        }
-    }
-
     public void showLoginFragment() {
         if (fragmentLogin == null)
             fragmentLogin = new XabberAccountLoginFragment();
@@ -332,7 +324,6 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
                     @Override
                     public void call(List<XMPPAccountSettings> s) {
                         Log.d(LOG_TAG, "XMPP accounts loading from net: successfully");
-                        updateXMPPAccountList(s);
                         hideProgress();
                         Toast.makeText(XabberAccountInfoActivity.this, R.string.sync_success, Toast.LENGTH_SHORT).show();
                     }
@@ -355,7 +346,6 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
                     @Override
                     public void call(List<XMPPAccountSettings> s) {
                         Log.d(LOG_TAG, "XMPP accounts loading from net: successfully");
-                        updateXMPPAccountList(s);
                         hideProgress();
                         Toast.makeText(XabberAccountInfoActivity.this, R.string.sync_success, Toast.LENGTH_SHORT).show();
                     }
