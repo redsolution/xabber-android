@@ -194,7 +194,7 @@ public class ColorManager {
         colors.put("red", R.color.red_500);
         colors.put("blue", R.color.blue_500);
         colors.put("indigo", R.color.indigo_500);
-        colors.put("blue_grey", R.color.blue_grey_500);
+        colors.put("blue-grey", R.color.blue_grey_500);
         colors.put("cyan", R.color.cyan_500);
         colors.put("teal", R.color.teal_500);
 
@@ -211,7 +211,7 @@ public class ColorManager {
         colors.put("red", 2);
         colors.put("blue", 3);
         colors.put("indigo", 4);
-        colors.put("blue_grey", 5);
+        colors.put("blue-grey", 5);
         colors.put("cyan", 6);
         colors.put("teal", 7);
 
@@ -227,7 +227,7 @@ public class ColorManager {
         colors.put(2, "red");
         colors.put(3, "blue");
         colors.put(4, "indigo");
-        colors.put(5, "blue_grey");
+        colors.put(5, "blue-grey");
         colors.put(6, "cyan");
         colors.put(7, "teal");
 
