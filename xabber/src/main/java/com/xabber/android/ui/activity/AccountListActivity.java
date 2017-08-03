@@ -22,6 +22,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -31,13 +32,17 @@ import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.xaccount.XabberAccountManager;
 import com.xabber.android.ui.adapter.AccountListAdapter;
 import com.xabber.android.ui.color.BarPainter;
 import com.xabber.android.ui.dialog.AccountDeleteDialog;
 import com.xabber.android.ui.widget.SimpleItemTouchHelperCallback;
 
+import org.jxmpp.jid.BareJid;
+
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 
 public class AccountListActivity extends ManagedActivity implements OnAccountChangedListener,
@@ -46,6 +51,8 @@ public class AccountListActivity extends ManagedActivity implements OnAccountCha
     private AccountListAdapter accountListAdapter;
     private BarPainter barPainter;
     private ItemTouchHelper touchHelper;
+    private Toolbar toolbar;
+    private boolean swapMode = false;
 
     public static Intent createIntent(Context context) {
         return new Intent(context, AccountListActivity.class);
@@ -57,7 +64,7 @@ public class AccountListActivity extends ManagedActivity implements OnAccountCha
 
         setContentView(R.layout.activity_account_list);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_default);
+        toolbar = (Toolbar) findViewById(R.id.toolbar_default);
         toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -84,6 +91,42 @@ public class AccountListActivity extends ManagedActivity implements OnAccountCha
         touchHelper.attachToRecyclerView(recyclerView);
     }
 
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        menu.findItem(R.id.action_done).setVisible(swapMode);
+        menu.findItem(R.id.action_add_account).setVisible(!swapMode);
+        menu.findItem(R.id.action_sort).setVisible(!swapMode);
+        return true;
+    }
+
+    private void showHideSwapMode() {
+        if (swapMode) {
+            toolbar.setTitle(R.string.xmpp_accounts);
+            barPainter.setDefaultColor();
+            toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
+            toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    NavUtils.navigateUpFromSameTask(AccountListActivity.this);
+                }
+            });
+        } else {
+            toolbar.setTitle(R.string.title_reordering_account);
+            barPainter.setGrey();
+            toolbar.setNavigationIcon(R.drawable.ic_clear_white_24dp);
+            toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    showHideSwapMode();
+                }
+            });
+        }
+        swapMode = !swapMode;
+        if (accountListAdapter != null)
+            accountListAdapter.setShowAnchors(swapMode);
+        onPrepareOptionsMenu(toolbar.getMenu());
+    }
+
     private void update() {
         List<AccountItem> accountItems = new ArrayList<>();
         for (AccountItem accountItem : AccountManager.getInstance().getAllAccountItems()) {
@@ -93,6 +136,21 @@ public class AccountListActivity extends ManagedActivity implements OnAccountCha
         accountListAdapter.setAccountItems(accountItems);
 
         barPainter.setDefaultColor();
+    }
+
+    public void updateAccountOrder() {
+        if (accountListAdapter != null) {
+            HashMap<String, Integer> map = new HashMap<>();
+            int order = 1;
+            for (AccountItem account : accountListAdapter.getItems()) {
+                BareJid jid = account.getAccount().getFullJid().asBareJid();
+                if (jid != null) {
+                    map.put(jid.toString(), order);
+                    order++;
+                }
+            }
+            XabberAccountManager.getInstance().setXMPPAccountOrder(map);
+        }
     }
 
     @Override
@@ -153,6 +211,15 @@ public class AccountListActivity extends ManagedActivity implements OnAccountCha
     public boolean onMenuItemClick(MenuItem item) {
         if (item.getItemId() == R.id.action_add_account) {
             startActivity(AccountAddActivity.createIntent(this));
+            return true;
+        }
+        if (item.getItemId() == R.id.action_sort) {
+            showHideSwapMode();
+            return true;
+        }
+        if (item.getItemId() == R.id.action_done) {
+            updateAccountOrder();
+            showHideSwapMode();
             return true;
         }
 

@@ -1,8 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item android:id="@+id/action_sort"
+        android:title="@string/btn_reorder_account"
+        app:showAsAction="always"
+        android:icon="@drawable/ic_swap"/>
+
     <item android:id="@+id/action_add_account"
         android:title="@string/account_add"
         app:showAsAction="always"
         android:icon="@drawable/ic_add_white_24dp"/>
+
+    <item android:id="@+id/action_done"
+        android:title="@string/btn_done"
+        app:showAsAction="always"
+        android:visible="false"
+        android:icon="@drawable/ic_done"/>
 </menu>
