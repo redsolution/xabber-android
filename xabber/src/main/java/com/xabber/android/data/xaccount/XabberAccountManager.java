@@ -108,7 +108,7 @@ public class XabberAccountManager implements OnLoadListener {
     private void handleSuccessGetAccount(@NonNull XabberAccount xabberAccount) {
         Log.d(LOG_TAG, "Xabber account loading from net: successfully");
         this.account = xabberAccount;
-        getSettingsFromNet();
+        updateAccountSettings();
     }
 
     private void handleErrorGetAccount(Throwable throwable) {
