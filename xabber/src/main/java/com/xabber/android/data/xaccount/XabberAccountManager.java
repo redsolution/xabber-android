@@ -145,27 +145,31 @@ public class XabberAccountManager implements OnLoadListener {
     }
 
     public void addXmppAccountSettings(final AccountItem accountItem, final boolean sync) {
-        XMPPAccountSettings accountSettings = new XMPPAccountSettings(
-                accountItem.getAccount().getFullJid().asBareJid().toString(),
-                sync,
-                getCurrentTime());
-        accountSettings.setColor(ColorManager.getInstance().convertIndexToColorName(accountItem.getColorIndex()));
+        String jid = accountItem.getAccount().getFullJid().asBareJid().toString();
+        if (getAccountSettings(jid) == null) {
 
-        Subscription addAccountSettingsSubscription = saveOrUpdateXMPPAccountSettingsToRealm(accountSettings)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<XMPPAccountSettings>() {
-                    @Override
-                    public void call(XMPPAccountSettings s) {
-                        if (sync) updateAccountSettings();
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        Log.d(LOG_TAG, "add xmpp account settings: error: " + throwable.toString());
-                    }
-                });
-        compositeSubscription.add(addAccountSettingsSubscription);
+            XMPPAccountSettings accountSettings = new XMPPAccountSettings(
+                    jid,
+                    sync,
+                    getCurrentTime());
+            accountSettings.setColor(ColorManager.getInstance().convertIndexToColorName(accountItem.getColorIndex()));
+
+            Subscription addAccountSettingsSubscription = saveOrUpdateXMPPAccountSettingsToRealm(accountSettings)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Action1<XMPPAccountSettings>() {
+                        @Override
+                        public void call(XMPPAccountSettings s) {
+                            if (sync) updateAccountSettings();
+                        }
+                    }, new Action1<Throwable>() {
+                        @Override
+                        public void call(Throwable throwable) {
+                            Log.d(LOG_TAG, "add xmpp account settings: error: " + throwable.toString());
+                        }
+                    });
+            compositeSubscription.add(addAccountSettingsSubscription);
+        }
     }
 
     public void saveSettingsToRealm() {
@@ -395,6 +399,7 @@ public class XabberAccountManager implements OnLoadListener {
                     realmItems.add(realmItem);
                 }
             } else {
+                realmItem.setSynchronization(true);
                 realmItems.add(realmItem);
             }
         }
