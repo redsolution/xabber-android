@@ -19,6 +19,8 @@ import com.xabber.android.data.database.realm.XabberAccountRealm;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.ui.color.ColorManager;
 
+import org.jxmpp.jid.BareJid;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -583,6 +585,15 @@ public class XabberAccountManager implements OnLoadListener {
             if (account.getJid().equals(jid)) return account;
         }
         return null;
+    }
+
+    public void setSyncForAccount(AccountJid account, boolean sync) {
+        BareJid bareJid = account.getFullJid().asBareJid();
+        XMPPAccountSettings accountSettings = null;
+        if (bareJid != null)
+             accountSettings = getAccountSettings(bareJid.toString());
+        if (accountSettings != null)
+            accountSettings.setSynchronization(sync);
     }
 
     public void setSyncAllAccounts(List<XMPPAccountSettings> items) {
