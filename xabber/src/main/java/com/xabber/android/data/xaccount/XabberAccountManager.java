@@ -21,6 +21,7 @@ import com.xabber.android.ui.color.ColorManager;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -64,10 +65,37 @@ public class XabberAccountManager implements OnLoadListener {
     public void onLoad() {
         XabberAccount account = loadXabberAccountFromRealm();
         this.account = account;
+
+        // add xmpp settings for local account if not exist
+        addSettingsFromLocalAccounts();
+
         this.xmppAccounts = loadXMPPAccountSettingsFromRealm();
 
         if (account != null) {
             getAccountFromNet(account.getToken());
+        }
+    }
+
+    public void addSettingsFromLocalAccounts() {
+        Collection<AccountItem> items = AccountManager.getInstance().getAllAccountItems();
+        if (items == null) return;
+
+        List<XMPPAccountSettings> settingsList = new ArrayList<>();
+
+        for (AccountItem accountItem : items) {
+            String jid = accountItem.getAccount().getFullJid().asBareJid().toString();
+            if (getAccountSettings(jid) == null) {
+                XMPPAccountSettings accountSettings = new XMPPAccountSettings(
+                        jid,
+                        true,
+                        getCurrentTime());
+                accountSettings.setColor(ColorManager.getInstance().convertIndexToColorName(accountItem.getColorIndex()));
+                settingsList.add(accountSettings);
+            }
+        }
+
+        if (settingsList.size() > 0) {
+            saveOrUpdateXMPPAccountSettingsToRealm(settingsList);
         }
     }
 
