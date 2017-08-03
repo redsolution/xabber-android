@@ -39,6 +39,8 @@ import com.xabber.android.ui.activity.ManagedActivity;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.widget.ItemTouchHelperAdapter;
 
+import org.jxmpp.jid.BareJid;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -104,8 +106,11 @@ public class AccountListAdapter extends RecyclerView.Adapter implements ItemTouc
         HashMap<String, Integer> map = new HashMap<>();
         int order = 1;
         for (AccountItem account : accountItems) {
-            map.put(account.getRealJid().asBareJid().toString(), order);
-            order++;
+            BareJid jid = account.getAccount().getFullJid().asBareJid();
+            if (jid != null) {
+                map.put(jid.toString(), order);
+                order++;
+            }
         }
         XabberAccountManager.getInstance().setXMPPAccountOrder(map);
         return true;
