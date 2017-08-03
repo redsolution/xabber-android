@@ -168,6 +168,24 @@ public class XabberAccountManager implements OnLoadListener {
         compositeSubscription.add(addAccountSettingsSubscription);
     }
 
+    public void saveSettingsToRealm() {
+        Subscription saveSettingsSubscription = saveOrUpdateXMPPAccountSettingsToRealm(this.xmppAccounts)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<List<XMPPAccountSettings>>() {
+                    @Override
+                    public void call(List<XMPPAccountSettings> s) {
+                        updateAccountSettings();
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        Log.d(LOG_TAG, "add xmpp account settings: error: " + throwable.toString());
+                    }
+                });
+        compositeSubscription.add(saveSettingsSubscription);
+    }
+
     @Nullable
     public XabberAccount getAccount() {
         return account;
@@ -513,7 +531,7 @@ public class XabberAccountManager implements OnLoadListener {
                     account.setTimestamp(getCurrentTime());
                 }
             }
-            updateAccountSettings();
+            saveSettingsToRealm();
         }
     }
 
@@ -523,7 +541,7 @@ public class XabberAccountManager implements OnLoadListener {
             if (orderValue > 0) account.setOrder(orderValue);
             account.setTimestamp(getCurrentTime());
         }
-        updateAccountSettings();
+        saveSettingsToRealm();
     }
 
     @Nullable
