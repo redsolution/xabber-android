@@ -33,10 +33,6 @@ public class XMPPAccountAdapter extends RecyclerView.Adapter {
 
     public void setAllChecked(boolean checked) {
         isAllChecked = checked;
-
-        for (XMPPAccountSettings item : items) {
-            item.setSynchronization(checked);
-        }
         notifyDataSetChanged();
     }
 
@@ -72,12 +68,12 @@ public class XMPPAccountAdapter extends RecyclerView.Adapter {
         viewHolder.jid.setText(account.getJid());
 
         // set sync checkbox
-        viewHolder.chkAccountSync.setChecked(account.isSynchronization());
-
         if (isAllChecked) {
             viewHolder.chkAccountSync.setEnabled(false);
+            viewHolder.chkAccountSync.setChecked(true);
         } else {
             viewHolder.chkAccountSync.setEnabled(true);
+            viewHolder.chkAccountSync.setChecked(account.isSynchronization());
         }
     }
 

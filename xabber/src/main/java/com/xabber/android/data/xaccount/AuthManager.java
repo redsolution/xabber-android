@@ -3,6 +3,7 @@ package com.xabber.android.data.xaccount;
 import android.util.Base64;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
+import com.xabber.android.data.SettingsManager;
 
 import org.json.JSONObject;
 
@@ -99,13 +100,19 @@ public class AuthManager {
         List<ClientSettingsDTO> list = new ArrayList<>();
         for (XMPPAccountSettings account : accountSettingsList) {
             // add to sync only accounts required sync
-            if (account.isSynchronization()) {
+            if (account.isSynchronization() || SettingsManager.isSyncAllAccounts()) {
                 list.add(new ClientSettingsDTO(account.getJid(), new SettingsValuesDTO(account.getOrder(),
                         account.getColor(), account.getToken(), account.getUsername()), account.getTimestamp()));
             }
         }
 
         return HttpApiManager.getXabberApi().updateClientSettings(getXabberTokenHeader(), list)
+                .flatMap(new Func1<ListClientSettingsDTO, Single<? extends ListClientSettingsDTO>>() {
+                    @Override
+                    public Single<? extends ListClientSettingsDTO> call(ListClientSettingsDTO listClientSettingsDTO) {
+                        return HttpApiManager.getXabberApi().getClientSettings(getXabberTokenHeader());
+                    }
+                })
                 .flatMap(new Func1<ListClientSettingsDTO, Single<? extends List<XMPPAccountSettings>>>() {
                     @Override
                     public Single<? extends List<XMPPAccountSettings>> call(ListClientSettingsDTO listClientSettingsDTO) {

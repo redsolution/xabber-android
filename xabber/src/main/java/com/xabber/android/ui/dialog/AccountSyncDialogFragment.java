@@ -47,7 +47,8 @@ public class AccountSyncDialogFragment extends DialogFragment {
                 .setPositiveButton("synchronize", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        XabberAccountManager.getInstance().setSyncAllAccounts(xmppAccounts);
+                        if (!switchSyncAll.isChecked())
+                            XabberAccountManager.getInstance().setSyncAllAccounts(xmppAccounts);
                         SettingsManager.setSyncAllAccounts(switchSyncAll.isChecked());
                         ((XabberAccountInfoActivity)getActivity()).onSyncClick();
                     }
