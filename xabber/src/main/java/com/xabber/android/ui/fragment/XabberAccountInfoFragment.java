@@ -67,12 +67,12 @@ public class XabberAccountInfoFragment extends Fragment {
         rlSync.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showSyncDialog();
+                showSyncDialog(false);
             }
         });
 
         if (getArguments().getBoolean("SHOW_SYNC", false))
-            showSyncDialog();
+            showSyncDialog(true);
     }
 
     @Override
@@ -96,8 +96,8 @@ public class XabberAccountInfoFragment extends Fragment {
         tvLastSyncDate.setText(getString(R.string.last_sync_date, SettingsManager.getLastSyncDate()));
     }
 
-    public void showSyncDialog() {
-        AccountSyncDialogFragment.newInstance()
+    public void showSyncDialog(boolean noCancel) {
+        AccountSyncDialogFragment.newInstance(noCancel)
                 .show(getFragmentManager(), AccountSyncDialogFragment.class.getSimpleName());
     }
 

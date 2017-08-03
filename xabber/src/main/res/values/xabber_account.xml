@@ -59,6 +59,7 @@
     <string name="title_complete_register">Complete registration</string>
     <string name="title_start_messaging">Start messaging!</string>
     <string name="title_reordering_account">Reordering account</string>
+    <string name="title_sync">Synchronization</string>
 
     <string name="summary_xabber_account">Xabber account lets you easily sync your settings and connected XMPP accounts between various devices.</string>
     <string name="summary_confirm_account">Please confirm your email address</string>
