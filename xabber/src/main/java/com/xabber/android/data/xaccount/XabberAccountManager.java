@@ -146,23 +146,23 @@ public class XabberAccountManager implements OnLoadListener {
         // TODO: 24.07.17 need login
     }
 
-    private void getSettingsFromNet() {
-        Subscription getSettingsSubscription = AuthManager.getClientSettings()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<List<XMPPAccountSettings>>() {
-                    @Override
-                    public void call(List<XMPPAccountSettings> s) {
-                        //updateXmppAccounts(s);
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        Log.d(LOG_TAG, "XMPP accounts loading from net: error: " + throwable.toString());
-                    }
-                });
-        compositeSubscription.add(getSettingsSubscription);
-    }
+//    private void getSettingsFromNet() {
+//        Subscription getSettingsSubscription = AuthManager.getClientSettings()
+//                .subscribeOn(Schedulers.io())
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribe(new Action1<List<XMPPAccountSettings>>() {
+//                    @Override
+//                    public void call(List<XMPPAccountSettings> s) {
+//                        //updateXmppAccounts(s);
+//                    }
+//                }, new Action1<Throwable>() {
+//                    @Override
+//                    public void call(Throwable throwable) {
+//                        Log.d(LOG_TAG, "XMPP accounts loading from net: error: " + throwable.toString());
+//                    }
+//                });
+//        compositeSubscription.add(getSettingsSubscription);
+//    }
 
     private void updateXmppAccounts(List<XMPPAccountSettings> items) {
         Log.d(LOG_TAG, "XMPP accounts loading from net: successfully");
