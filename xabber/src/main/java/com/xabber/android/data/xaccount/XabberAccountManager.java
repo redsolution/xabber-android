@@ -8,6 +8,7 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.SettingsManager;
+import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.database.RealmManager;
 import com.xabber.android.data.database.realm.EmailRealm;
@@ -141,6 +142,30 @@ public class XabberAccountManager implements OnLoadListener {
 
     public List<XMPPAccountSettings> getXmppAccounts() {
         return xmppAccounts;
+    }
+
+    public void addXmppAccountSettings(final AccountItem accountItem, final boolean sync) {
+        XMPPAccountSettings accountSettings = new XMPPAccountSettings(
+                accountItem.getAccount().getFullJid().asBareJid().toString(),
+                sync,
+                getCurrentTime());
+        accountSettings.setColor(ColorManager.getInstance().convertIndexToColorName(accountItem.getColorIndex()));
+
+        Subscription addAccountSettingsSubscription = saveOrUpdateXMPPAccountSettingsToRealm(accountSettings)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<XMPPAccountSettings>() {
+                    @Override
+                    public void call(XMPPAccountSettings s) {
+                        updateAccountSettings();
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        Log.d(LOG_TAG, "add xmpp account settings: error: " + throwable.toString());
+                    }
+                });
+        compositeSubscription.add(addAccountSettingsSubscription);
     }
 
     @Nullable
@@ -316,6 +341,17 @@ public class XabberAccountManager implements OnLoadListener {
         return result;
     }
 
+    public List<XMPPAccountSettings> loadXMPPAccountSettingsFromRealmUI() {
+        List<XMPPAccountSettings> result = null;
+
+        Realm realm = RealmManager.getInstance().getNewRealm();
+        RealmResults<XMPPAccountSettignsRealm> realmItems = realm.where(XMPPAccountSettignsRealm.class).findAll();
+        result = xmppAccountSettingsRealmListToPOJO(realmItems);
+
+        realm.close();
+        return result;
+    }
+
     @Nullable
     public Single<List<XMPPAccountSettings>> saveOrUpdateXMPPAccountSettingsToRealm(AuthManager.ListClientSettingsDTO listXMPPAccountSettings) {
         List<XMPPAccountSettings> result;
@@ -384,6 +420,29 @@ public class XabberAccountManager implements OnLoadListener {
 
         updateXmppAccounts(result);
         return Single.just(result);
+    }
+
+    public Single<XMPPAccountSettings> saveOrUpdateXMPPAccountSettingsToRealm(XMPPAccountSettings item) {
+
+        XMPPAccountSettignsRealm realmItem = new XMPPAccountSettignsRealm(item.getJid());
+
+        realmItem.setToken(item.getToken());
+        realmItem.setColor(item.getColor());
+        realmItem.setOrder(item.getOrder());
+        realmItem.setUsername(item.getUsername());
+        realmItem.setTimestamp(item.getTimestamp());
+        realmItem.setSynchronization(item.isSynchronization());
+
+        Realm realm = RealmManager.getInstance().getNewRealm();
+        realm.beginTransaction();
+        XMPPAccountSettignsRealm resultRealm = realm.copyToRealmOrUpdate(realmItem);
+        XMPPAccountSettings result = xmppAccountSettingsRealmToPOJO(resultRealm);
+        realm.commitTransaction();
+        realm.close();
+
+        updateXmppAccounts(loadXMPPAccountSettingsFromRealmUI());
+        if (result != null) return Single.just(result);
+        else return Single.error(new Throwable("Create realm object error"));
     }
 
     @Nullable

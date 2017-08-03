@@ -52,6 +52,7 @@ import com.xabber.android.data.notification.BaseAccountNotificationProvider;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterManager;
+import com.xabber.android.data.xaccount.XabberAccountManager;
 
 import org.jivesoftware.smack.util.StringUtils;
 import org.jivesoftware.smackx.mam.element.MamPrefsIQ;
@@ -405,6 +406,11 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
         if (accountItems.size() > 1 && SettingsManager.contactsEnableShowAccounts()) {
             SettingsManager.enableContactsShowAccount();
         }
+
+        // add xmpp account settings
+        // TODO: 02.08.17 при добавлении - спрашивать нужна ли синхронизация
+        XabberAccountManager.getInstance().addXmppAccountSettings(accountItem, true);
+
         return accountItem.getAccount();
     }
 
