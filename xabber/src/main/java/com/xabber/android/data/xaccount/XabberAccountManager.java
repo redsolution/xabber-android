@@ -424,7 +424,7 @@ public class XabberAccountManager implements OnLoadListener {
             // add to sync only accounts required sync
             XMPPAccountSettings accountSettings = getAccountSettings(dtoItem.getJid());
             if (accountSettings != null) {
-                if (accountSettings.isSynchronization()) {
+                if (accountSettings.isSynchronization() || SettingsManager.isSyncAllAccounts()) {
                     realmItem.setSynchronization(accountSettings.isSynchronization());
                     realmItems.add(realmItem);
                 }
