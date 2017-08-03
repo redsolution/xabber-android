@@ -338,7 +338,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
      * @throws NetworkException if user or server part are invalid.
      */
     public AccountJid addAccount(String user, String password, boolean syncable,
-                                 boolean storePassword, boolean useOrbot, boolean registerNewAccount)
+                                 boolean storePassword, boolean xabberSync, boolean useOrbot, boolean registerNewAccount)
             throws NetworkException {
         if (user == null) {
             throw new NetworkException(R.string.EMPTY_USER_NAME);
@@ -408,8 +408,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
         }
 
         // add xmpp account settings
-        // TODO: 02.08.17 при добавлении - спрашивать нужна ли синхронизация
-        XabberAccountManager.getInstance().addXmppAccountSettings(accountItem, true);
+        XabberAccountManager.getInstance().addXmppAccountSettings(accountItem, xabberSync);
 
         return accountItem.getAccount();
     }

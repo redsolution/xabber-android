@@ -84,6 +84,7 @@
     <string name="username_rules_dots">Username cannot have two dots in a row</string>
     <string name="account_not_confirmed">Account not confirmed</string>
     <string name="register_not_completed">Registration not completed</string>
+    <string name="sync_with_xabber_account">Synchronize with Xabber-account</string>
 
     <string name="sign_up_email_social">Sign up with Social account or Email</string>
     <string name="sign_up_social">Sign up with Social account</string>

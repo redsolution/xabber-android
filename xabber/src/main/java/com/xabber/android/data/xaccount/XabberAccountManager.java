@@ -157,7 +157,7 @@ public class XabberAccountManager implements OnLoadListener {
                 .subscribe(new Action1<XMPPAccountSettings>() {
                     @Override
                     public void call(XMPPAccountSettings s) {
-                        updateAccountSettings();
+                        if (sync) updateAccountSettings();
                     }
                 }, new Action1<Throwable>() {
                     @Override
@@ -482,7 +482,7 @@ public class XabberAccountManager implements OnLoadListener {
                 if (accountJid == null) {
                     // create new xmpp-account
                     try {
-                        AccountManager.getInstance().addAccount(account.getJid(), "", false, true, false, false);
+                        AccountManager.getInstance().addAccount(account.getJid(), "", false, true, true, false, false);
                     } catch (NetworkException e) {
                         Application.getInstance().onError(e);
                     }

@@ -26,6 +26,7 @@ import com.xabber.android.ui.helper.OrbotHelper;
 public class AccountAddFragment extends Fragment implements View.OnClickListener {
 
     private CheckBox storePasswordView;
+    private CheckBox chkSync;
     private CheckBox useOrbotView;
     private CheckBox createAccountCheckBox;
     private LinearLayout passwordConfirmView;
@@ -42,6 +43,7 @@ public class AccountAddFragment extends Fragment implements View.OnClickListener
         View view = inflater.inflate(R.layout.fragment_account_add, container, false);
 
         storePasswordView = (CheckBox) view.findViewById(R.id.store_password);
+        chkSync = (CheckBox) view.findViewById(R.id.chkSync);
         useOrbotView = (CheckBox) view.findViewById(R.id.use_orbot);
         createAccountCheckBox = (CheckBox) view.findViewById(R.id.register_account);
         createAccountCheckBox.setOnClickListener(this);
@@ -91,6 +93,7 @@ public class AccountAddFragment extends Fragment implements View.OnClickListener
                     passwordView.getText().toString(),
                     false,
                     storePasswordView.isChecked(),
+                    chkSync.isChecked(),
                     useOrbotView.isChecked(),
                     createAccountCheckBox.isChecked());
         } catch (NetworkException e) {
