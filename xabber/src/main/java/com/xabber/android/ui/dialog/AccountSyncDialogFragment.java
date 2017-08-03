@@ -53,22 +53,32 @@ public class AccountSyncDialogFragment extends DialogFragment {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setView(setupView())
-                .setMessage(R.string.title_sync)
-                .setPositiveButton(R.string.button_sync, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        if (!switchSyncAll.isChecked())
-                            XabberAccountManager.getInstance().setSyncAllAccounts(xmppAccounts);
-                        SettingsManager.setSyncAllAccounts(switchSyncAll.isChecked());
-                        ((XabberAccountInfoActivity)getActivity()).onSyncClick();
-                    }
-                });
+                .setMessage(R.string.title_sync);
+
 
         if (!noCancel) {
             builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     AccountSyncDialogFragment.this.getDialog().cancel();
+                }
+            }).setPositiveButton(R.string.button_sync, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    if (!switchSyncAll.isChecked())
+                        XabberAccountManager.getInstance().setSyncAllAccounts(xmppAccounts);
+                    SettingsManager.setSyncAllAccounts(switchSyncAll.isChecked());
+                    ((XabberAccountInfoActivity)getActivity()).onSyncClick(false);
+                }
+            });
+        } else {
+            builder.setPositiveButton(R.string.button_sync, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    if (!switchSyncAll.isChecked())
+                        XabberAccountManager.getInstance().setSyncAllAccounts(xmppAccounts);
+                    SettingsManager.setSyncAllAccounts(switchSyncAll.isChecked());
+                    ((XabberAccountInfoActivity)getActivity()).onSyncClick(true);
                 }
             });
         }
@@ -125,6 +135,6 @@ public class AccountSyncDialogFragment extends DialogFragment {
     @Override
     public void onCancel(DialogInterface dialog) {
         super.onCancel(dialog);
-        if (noCancel) ((XabberAccountInfoActivity)getActivity()).onSyncClick();
+        if (noCancel) ((XabberAccountInfoActivity)getActivity()).onSyncClick(true);
     }
 }

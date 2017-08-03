@@ -221,9 +221,9 @@ public class XabberAccountInfoActivity extends BaseLoginActivity {
             Toast.makeText(this, R.string.toast_no_internet, Toast.LENGTH_LONG).show();
     }
 
-    public void onSyncClick() {
+    public void onSyncClick(boolean needGoToMainActivity) {
         if (NetworkManager.isNetworkAvailable()) {
-            synchronize();
+            synchronize(needGoToMainActivity);
         } else
             Toast.makeText(this, R.string.toast_no_internet, Toast.LENGTH_LONG).show();
     }
@@ -279,11 +279,11 @@ public class XabberAccountInfoActivity extends BaseLoginActivity {
             Toast.makeText(this, R.string.toast_not_authorized, Toast.LENGTH_SHORT).show();
     }
 
-    private void synchronize() {
+    private void synchronize(boolean needGoToMainActivity) {
         XabberAccount account = XabberAccountManager.getInstance().getAccount();
         if (account != null && account.getToken() != null) {
             showProgress(getResources().getString(R.string.progress_title_sync));
-            getAccountWithUpdate(account.getToken());
+            getAccountWithUpdate(account.getToken(), needGoToMainActivity);
         } else {
             Toast.makeText(XabberAccountInfoActivity.this, R.string.sync_fail, Toast.LENGTH_SHORT).show();
         }
@@ -299,7 +299,7 @@ public class XabberAccountInfoActivity extends BaseLoginActivity {
         }
     }
 
-    private void updateSettings() {
+    private void updateSettings(final boolean needGoToMainActivity) {
         Subscription getSettingsSubscription = AuthManager.updateClientSettings(XabberAccountManager.getInstance().getXmppAccounts())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -310,6 +310,12 @@ public class XabberAccountInfoActivity extends BaseLoginActivity {
                         hideProgress();
                         updateLastSyncTime();
                         Toast.makeText(XabberAccountInfoActivity.this, R.string.sync_success, Toast.LENGTH_SHORT).show();
+                        if (needGoToMainActivity) {
+                            Intent intent = ContactListActivity.createIntent(XabberAccountInfoActivity.this);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            finish();
+                            startActivity(intent);
+                        }
                     }
                 }, new Action1<Throwable>() {
                     @Override
@@ -343,7 +349,7 @@ public class XabberAccountInfoActivity extends BaseLoginActivity {
         compositeSubscription.add(getSettingsSubscription);
     }
 
-    private void getAccountWithUpdate(String token) {
+    private void getAccountWithUpdate(String token, final boolean needGoToMainActivity) {
         Subscription loadAccountsSubscription = AuthManager.getAccount(token)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -352,7 +358,7 @@ public class XabberAccountInfoActivity extends BaseLoginActivity {
                     public void call(XabberAccount s) {
                         Log.d(LOG_TAG, "Xabber account loading from net: successfully");
                         updateAccountInfo(s);
-                        updateSettings();
+                        updateSettings(needGoToMainActivity);
                     }
                 }, new Action1<Throwable>() {
                     @Override

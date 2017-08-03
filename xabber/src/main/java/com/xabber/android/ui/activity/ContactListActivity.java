@@ -427,6 +427,8 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
                 StartAtBootDialogFragment.newInstance().show(getFragmentManager(), "START_AT_BOOT");
             }
         }
+
+        XabberAccountManager.getInstance().createLocalAccountIfNotExist();
     }
 
     private void showMucInviteDialog() {

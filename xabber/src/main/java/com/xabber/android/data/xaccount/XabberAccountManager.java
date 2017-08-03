@@ -534,11 +534,11 @@ public class XabberAccountManager implements OnLoadListener {
                 AccountJid accountJid = getExistingAccount(account.getJid());
                 if (accountJid == null) {
                     // create new xmpp-account
-                    try {
-                        AccountManager.getInstance().addAccount(account.getJid(), "", false, true, true, false, false);
-                    } catch (NetworkException e) {
-                        Application.getInstance().onError(e);
-                    }
+//                    try {
+//                        AccountManager.getInstance().addAccount(account.getJid(), "", false, true, true, false, false);
+//                    } catch (NetworkException e) {
+//                        Application.getInstance().onError(e);
+//                    }
                 } else {
                     // update existing xmpp-account
                     // now we are updated only color of account
@@ -548,6 +548,22 @@ public class XabberAccountManager implements OnLoadListener {
             }
         }
         return Single.just(accounts);
+    }
+
+    public void createLocalAccountIfNotExist() {
+        for (XMPPAccountSettings account : this.xmppAccounts) {
+            if (account.isSynchronization()) {
+                AccountJid localAccountJid = getExistingAccount(account.getJid());
+                if (localAccountJid == null) {
+                    // create new xmpp-account
+                    try {
+                        AccountManager.getInstance().addAccount(account.getJid(), "", false, true, true, false, false);
+                    } catch (NetworkException e) {
+                        Application.getInstance().onError(e);
+                    }
+                }
+            }
+        }
     }
 
     public AccountJid getExistingAccount(String jid) {
