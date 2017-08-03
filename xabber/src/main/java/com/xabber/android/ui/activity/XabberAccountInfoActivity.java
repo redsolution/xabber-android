@@ -337,7 +337,11 @@ public class XabberAccountInfoActivity extends BaseLoginActivity {
                     public void call(List<XMPPAccountSettings> s) {
                         Log.d(LOG_TAG, "XMPP accounts loading from net: successfully");
                         hideProgress();
-                        showSyncDialog();
+                        //showSyncDialog();
+                        Intent intent = ContactListActivity.createIntent(XabberAccountInfoActivity.this);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        finish();
+                        startActivity(intent);
                     }
                 }, new Action1<Throwable>() {
                     @Override

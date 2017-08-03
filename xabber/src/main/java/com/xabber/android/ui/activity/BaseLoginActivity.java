@@ -403,7 +403,7 @@ public abstract class BaseLoginActivity extends ManagedActivity implements Googl
     private void handleSuccessGetAccountAfterSignUp(XabberAccount account) {
         hideProgress();
 
-        Intent intent = ContactListActivity.createIntent(this);
+        Intent intent = XabberAccountInfoActivity.createIntent(this);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         finish();
         startActivity(intent);
