@@ -30,10 +30,12 @@
     <TextView
         android:id="@+id/drawer_header_action_xmpp_accounts"
         android:layout_width="match_parent"
-        android:layout_height="48dp"
+        android:layout_height="wrap_content"
         android:gravity="center_vertical"
+        android:paddingTop="16dp"
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
+        android:paddingBottom="8dp"
         android:text="@string/xmpp_accounts"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:background="@drawable/ripple_background"
