@@ -16,8 +16,9 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class HttpApiManager {
 
+    public static final String XABBER_FORGOT_PASS_URL = "https://www.xabber.com/account/auth/forgot-password/";
+
     private static final String XABBER_API_URL = "https://api.xabber.com/api/v1/";
-    private static final String XABBER_API_URL_TEST = "http://c0014.soni.redsolution.ru:9001/api/v1/";
     private static IXabberApi xabberApi;
     private static Retrofit retrofit;
 

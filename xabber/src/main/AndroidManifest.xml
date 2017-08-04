@@ -486,6 +486,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="https" />
                 <data android:host="www.xabber.com" />
+                <data android:pathPrefix="/account/emails/confirmation" />
             </intent-filter>
 
         </activity>

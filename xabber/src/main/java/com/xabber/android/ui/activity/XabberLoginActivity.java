@@ -5,6 +5,7 @@ import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -43,6 +44,7 @@ import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.connection.NetworkManager;
 import com.xabber.android.data.xaccount.AuthManager;
+import com.xabber.android.data.xaccount.HttpApiManager;
 import com.xabber.android.data.xaccount.XAccountTokenDTO;
 import com.xabber.android.data.xaccount.XMPPAccountSettings;
 import com.xabber.android.data.xaccount.XabberAccount;
@@ -73,7 +75,6 @@ public class XabberLoginActivity extends BaseLoginActivity implements View.OnCli
     public final static String FRAGMENT_SIGNUP = "fragment_signup";
 
     private Fragment fragmentLogin;
-    private Fragment fragmentSignUp;
     private FragmentTransaction fTrans;
     private String currentFragment = FRAGMENT_LOGIN;
 
@@ -121,16 +122,6 @@ public class XabberLoginActivity extends BaseLoginActivity implements View.OnCli
         ivGithub.setOnClickListener(this);
     }
 
-//    public void showSignUpFragment() {
-//        if (fragmentSignUp == null)
-//            fragmentSignUp = new XabberSignUpFragment();
-//
-//        fTrans = getFragmentManager().beginTransaction();
-//        fTrans.replace(R.id.container, fragmentSignUp);
-//        fTrans.commit();
-//        currentFragment = FRAGMENT_SIGNUP;
-//    }
-
     public void showLoginFragment() {
         if (fragmentLogin == null)
             fragmentLogin = new XabberLoginFragment();
@@ -144,8 +135,6 @@ public class XabberLoginActivity extends BaseLoginActivity implements View.OnCli
     @Override
     protected void onResume() {
         super.onResume();
-//        if (currentFragment.equals(FRAGMENT_LOGIN)) showLoginFragment();
-//        else showSignUpFragment();
         showLoginFragment();
     }
 
@@ -173,6 +162,13 @@ public class XabberLoginActivity extends BaseLoginActivity implements View.OnCli
             }
         } else
             Toast.makeText(this, "No internet connection", Toast.LENGTH_LONG).show();
+    }
+
+    public void onForgotPassClick() {
+        String url = HttpApiManager.XABBER_FORGOT_PASS_URL;
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(Uri.parse(url));
+        startActivity(intent);
     }
 
     @Override

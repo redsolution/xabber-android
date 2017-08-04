@@ -57,6 +57,7 @@ public class XabberLoginFragment extends Fragment implements View.OnClickListene
                 onLoginClick();
                 break;
             case R.id.rlForgotPass:
+                ((XabberLoginActivity)getActivity()).onForgotPassClick();
                 break;
             case R.id.rlSignUp:
                 Intent intent = XabberAccountInfoActivity.createIntent(getActivity());
