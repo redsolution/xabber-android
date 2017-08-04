@@ -53,9 +53,10 @@
 
                     <de.hdodenhof.circleimageview.CircleImageView
                         android:id="@+id/avatar"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:src="@drawable/ic_avatar_1"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_stat_online"
                         app:civ_border_color="@android:color/transparent"
                         app:civ_border_width="3dp" />
 

@@ -78,6 +78,7 @@
     <string name="btn_done">done</string>
     <string name="btn_reorder_account">reorder account</string>
 
+    <string name="not_login">Not logged</string>
     <string name="enter_password">Please, enter password for this account</string>
     <string name="last_sync_date">Last sync date: %1$s</string>
     <string name="last_sync_date_never">never</string>

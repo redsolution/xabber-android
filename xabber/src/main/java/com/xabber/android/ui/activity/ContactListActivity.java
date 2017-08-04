@@ -60,6 +60,7 @@ import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
+import com.xabber.android.data.xaccount.XabberAccount;
 import com.xabber.android.data.xaccount.XabberAccountManager;
 import com.xabber.android.ui.color.BarPainter;
 import com.xabber.android.ui.dialog.AccountChooseDialogFragment;
@@ -748,6 +749,12 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
                 break;
             case R.id.drawer_header_action_xmpp_accounts:
                 startActivity(AccountListActivity.createIntent(this));
+                break;
+            case R.id.drawer_header_action_xabber_account:
+                XabberAccount account = XabberAccountManager.getInstance().getAccount();
+                if (account != null)
+                    startActivity(XabberAccountInfoActivity.createIntent(this));
+                else startActivity(TutorialActivity.createIntent(this));
                 break;
         }
     }

@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -22,6 +23,8 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.xaccount.XabberAccount;
+import com.xabber.android.data.xaccount.XabberAccountManager;
 import com.xabber.android.ui.adapter.NavigationDrawerAccountAdapter;
 import com.xabber.android.ui.color.AccountPainter;
 import com.xabber.android.ui.color.ColorManager;
@@ -87,6 +90,7 @@ public class ContactListDrawerFragment extends Fragment implements View.OnClickL
                 .inflate(R.layout.contact_list_drawer_header, listView, false);
         headerTitle = headerView.findViewById(R.id.drawer_header_action_xmpp_accounts);
         headerTitle.setOnClickListener(this);
+        headerView.findViewById(R.id.drawer_header_action_xabber_account).setOnClickListener(this);
 
         listView.addHeaderView(headerView);
 
@@ -100,7 +104,7 @@ public class ContactListDrawerFragment extends Fragment implements View.OnClickL
 
         divider = footerView.findViewById(R.id.drawer_divider);
 
-
+        setupXabberAccountView(view);
 
         return view;
     }
@@ -161,5 +165,39 @@ public class ContactListDrawerFragment extends Fragment implements View.OnClickL
         void onContactListDrawerListener(int viewId);
 
         void onAccountSelected(AccountJid account);
+    }
+
+    private void setupXabberAccountView(View view) {
+        LinearLayout llAccountInfo = (LinearLayout) view.findViewById(R.id.accountInfo);
+        LinearLayout llNoAccount = (LinearLayout) view.findViewById(R.id.noAccount);
+        TextView tvAccountName = (TextView) view.findViewById(R.id.tvAccountName);
+        TextView tvAccountEmail = (TextView) view.findViewById(R.id.tvAccountEmail);
+        XabberAccount account = XabberAccountManager.getInstance().getAccount();
+
+        if (account != null) {
+            llAccountInfo.setVisibility(View.VISIBLE);
+            llNoAccount.setVisibility(View.GONE);
+
+            String email = getContext().getString(R.string.no_email);
+            if (account.getEmails().size() > 0)
+                email = account.getEmails().get(0).getEmail();
+
+            if (XabberAccount.STATUS_NOT_CONFIRMED.equals(account.getAccountStatus())) {
+                tvAccountName.setText(R.string.account_not_confirmed);
+                tvAccountEmail.setText(email);
+            }
+            if (XabberAccount.STATUS_CONFIRMED.equals(account.getAccountStatus())) {
+                tvAccountName.setText(R.string.register_not_completed);
+                tvAccountEmail.setText(email);
+            }
+            if (XabberAccount.STATUS_REGISTERED.equals(account.getAccountStatus())) {
+                String accountName = account.getFirstName() + " " + account.getLastName();
+                tvAccountName.setText(accountName);
+                tvAccountEmail.setText(email);
+            }
+        } else {
+            llAccountInfo.setVisibility(View.GONE);
+            llNoAccount.setVisibility(View.VISIBLE);
+        }
     }
 }
