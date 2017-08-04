@@ -358,6 +358,11 @@ public class AccountItem extends ConnectionItem implements Comparable<AccountIte
         AccountManager.getInstance().removePasswordRequest(getAccount());
     }
 
+    void setPassword(String password) {
+        getConnectionSettings().setPassword(password);
+        AccountManager.getInstance().removePasswordRequest(getAccount());
+    }
+
     /**
      * Remove password and update notification if {@link #storePassword} is
      * disabled.

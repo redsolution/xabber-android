@@ -469,6 +469,19 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
         onAccountChanged(account);
     }
 
+    public void updateAccountPassword(AccountJid account, String pass) {
+
+        AccountItem result = getAccount(account);
+
+        if (result == null) {
+            return;
+        }
+
+        result.setPassword(pass);
+        result.recreateConnectionWithEnable(result.getAccount());
+        requestToWriteAccount(result);
+    }
+
     /**
      * Update user`s account.
      * <p/>

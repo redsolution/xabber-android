@@ -227,6 +227,31 @@ public abstract class ConnectionItem {
         thread.start();
     }
 
+    public void recreateConnectionWithEnable(final AccountJid account) {
+        LogManager.i(logTag, "recreateConnection");
+
+        Thread thread = new Thread("Disconnection thread for " + connection) {
+            @Override
+            public void run() {
+                updateState(ConnectionState.disconnecting);
+                connection.disconnect();
+
+                Application.getInstance().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        createNewConnection();
+                        AccountManager.getInstance().setEnabled(account, true);
+                    }
+                });
+
+            }
+
+        };
+        thread.setPriority(Thread.MIN_PRIORITY);
+        thread.setDaemon(true);
+        thread.start();
+    }
+
     @SuppressWarnings("WeakerAccess")
     void createNewConnection() {
         LogManager.i(logTag, "createNewConnection");

@@ -20,10 +20,13 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.xabber.android.data.ActivityManager;
 import com.xabber.android.data.account.AccountErrorEvent;
+import com.xabber.android.ui.dialog.AccountEnterPassDialog;
 import com.xabber.android.ui.dialog.AccountErrorDialogFragment;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
+
+import static com.xabber.android.data.account.AccountErrorEvent.Type.PASS_REQUIRED;
 
 /**
  * Base class for all Activities.
@@ -87,8 +90,15 @@ public abstract class ManagedActivity extends AppCompatActivity {
 
     @Subscribe(sticky = true)
     public void onAuthErrorEvent(AccountErrorEvent accountErrorEvent) {
-        AccountErrorDialogFragment.newInstance(accountErrorEvent)
-                .show(getFragmentManager(), AccountErrorDialogFragment.class.getSimpleName());
+        if (accountErrorEvent.getType().equals(PASS_REQUIRED)) {
+            // show enter pass dialog
+            AccountEnterPassDialog.newInstance(accountErrorEvent)
+                    .show(getFragmentManager(), AccountEnterPassDialog.class.getSimpleName());
+        } else {
+            // show error dialog
+            AccountErrorDialogFragment.newInstance(accountErrorEvent)
+                    .show(getFragmentManager(), AccountErrorDialogFragment.class.getSimpleName());
+        }
         EventBus.getDefault().removeStickyEvent(accountErrorEvent);
     }
 
