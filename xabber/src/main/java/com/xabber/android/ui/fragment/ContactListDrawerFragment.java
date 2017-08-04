@@ -41,6 +41,11 @@ public class ContactListDrawerFragment extends Fragment implements View.OnClickL
     private ImageView drawerHeaderImage;
     private int[] headerImageResources;
 
+    private LinearLayout llAccountInfo;
+    private LinearLayout llNoAccount;
+    private TextView tvAccountName;
+    private TextView tvAccountEmail;
+
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
@@ -104,7 +109,10 @@ public class ContactListDrawerFragment extends Fragment implements View.OnClickL
 
         divider = footerView.findViewById(R.id.drawer_divider);
 
-        setupXabberAccountView(view);
+        llAccountInfo = (LinearLayout) view.findViewById(R.id.accountInfo);
+        llNoAccount = (LinearLayout) view.findViewById(R.id.noAccount);
+        tvAccountName = (TextView) view.findViewById(R.id.tvAccountName);
+        tvAccountEmail = (TextView) view.findViewById(R.id.tvAccountEmail);
 
         return view;
     }
@@ -154,6 +162,7 @@ public class ContactListDrawerFragment extends Fragment implements View.OnClickL
             headerTitle.setVisibility(View.VISIBLE);
             divider.setVisibility(View.VISIBLE);
         }
+        setupXabberAccountView();
     }
 
     @Override
@@ -167,11 +176,7 @@ public class ContactListDrawerFragment extends Fragment implements View.OnClickL
         void onAccountSelected(AccountJid account);
     }
 
-    private void setupXabberAccountView(View view) {
-        LinearLayout llAccountInfo = (LinearLayout) view.findViewById(R.id.accountInfo);
-        LinearLayout llNoAccount = (LinearLayout) view.findViewById(R.id.noAccount);
-        TextView tvAccountName = (TextView) view.findViewById(R.id.tvAccountName);
-        TextView tvAccountEmail = (TextView) view.findViewById(R.id.tvAccountEmail);
+    private void setupXabberAccountView() {
         XabberAccount account = XabberAccountManager.getInstance().getAccount();
 
         if (account != null) {

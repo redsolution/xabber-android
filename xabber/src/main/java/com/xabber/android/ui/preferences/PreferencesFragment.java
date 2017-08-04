@@ -4,6 +4,7 @@ package com.xabber.android.ui.preferences;
 import android.app.Activity;
 import android.os.Bundle;
 import android.preference.Preference;
+import android.widget.BaseAdapter;
 
 import com.xabber.android.R;
 import com.xabber.android.data.xaccount.XabberAccount;
@@ -37,6 +38,13 @@ public class PreferencesFragment extends android.preference.PreferenceFragment {
                 return true;
             }
         });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        BaseAdapter adapter = (BaseAdapter) getPreferenceScreen().getRootAdapter();
+        adapter.notifyDataSetChanged();
     }
 
     @Override
