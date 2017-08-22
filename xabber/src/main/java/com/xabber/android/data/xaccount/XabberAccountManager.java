@@ -51,6 +51,8 @@ public class XabberAccountManager implements OnLoadListener {
     private XabberAccount account;
     private List<XMPPAccountSettings> xmppAccounts;
 
+    private int lastOrderChangeTimestamp;
+
     private CompositeSubscription compositeSubscription = new CompositeSubscription();
 
     public static XabberAccountManager getInstance() {
@@ -63,15 +65,20 @@ public class XabberAccountManager implements OnLoadListener {
         xmppAccounts = new ArrayList<>();
     }
 
+    public int getLastOrderChangeTimestamp() {
+        return lastOrderChangeTimestamp;
+    }
+
     @Override
     public void onLoad() {
         XabberAccount account = loadXabberAccountFromRealm();
         this.account = account;
 
+        this.lastOrderChangeTimestamp = SettingsManager.getLastOrderChangeTimestamp();
+        this.xmppAccounts = loadXMPPAccountSettingsFromRealm();
+
         // add xmpp settings for local account if not exist
         addSettingsFromLocalAccounts();
-
-        this.xmppAccounts = loadXMPPAccountSettingsFromRealm();
 
         if (account != null) {
             getAccountFromNet(account.getToken());
@@ -416,9 +423,16 @@ public class XabberAccountManager implements OnLoadListener {
             if (valuesDTO != null) {
                 realmItem.setToken(valuesDTO.getToken());
                 realmItem.setColor(valuesDTO.getColor());
-                realmItem.setOrder(valuesDTO.getOrder());
+                //realmItem.setOrder(valuesDTO.getOrder());
                 realmItem.setUsername(valuesDTO.getUsername());
             }
+
+            for (AuthManager.OrderDTO orderDTO : listXMPPAccountSettings.getOrderData().getSettings()) {
+                if (orderDTO.getJid().equals(realmItem.getJid())) {
+                    realmItem.setOrder(orderDTO.getOrder());
+                }
+            }
+
             realmItem.setTimestamp(dtoItem.getTimestamp());
 
             // add to sync only accounts required sync
@@ -590,8 +604,10 @@ public class XabberAccountManager implements OnLoadListener {
         for (XMPPAccountSettings account : xmppAccounts) {
             int orderValue = items.get(account.getJid());
             if (orderValue > 0) account.setOrder(orderValue);
-            account.setTimestamp(getCurrentTime());
+            //account.setTimestamp(getCurrentTime());
         }
+        lastOrderChangeTimestamp = getCurrentTime();
+        SettingsManager.setLastOrderChangeTimestamp(lastOrderChangeTimestamp);
         saveSettingsToRealm();
     }
 

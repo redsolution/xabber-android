@@ -83,6 +83,16 @@ public class SettingsManager implements OnInitializedListener,
         }
     }
 
+    private static int getInteger(int key, int def) {
+        return getSharedPreferences().getInt(Application.getInstance().getString(key), def);
+    }
+
+    private static void setInt(int key, int value) {
+        Editor editor = getSharedPreferences().edit();
+        editor.putInt(Application.getInstance().getString(key), value);
+        editor.commit();
+    }
+
     private static boolean getBoolean(int key, boolean def) {
         return getSharedPreferences().getBoolean(
                 Application.getInstance().getString(key), def);
@@ -682,6 +692,14 @@ public class SettingsManager implements OnInitializedListener,
 
     public static boolean isSyncAllAccounts() {
         return getBoolean(R.string.sync_all_key, true);
+    }
+
+    public static void setLastOrderChangeTimestamp(int lastOrderChange) {
+        setInt(R.string.order_last_timestamp_key, lastOrderChange);
+    }
+
+    public static int getLastOrderChangeTimestamp() {
+        return getInteger(R.string.order_last_timestamp_key, 1);
     }
 
     @Override

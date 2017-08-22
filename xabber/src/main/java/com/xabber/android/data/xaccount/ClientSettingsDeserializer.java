@@ -31,6 +31,10 @@ public class ClientSettingsDeserializer implements JsonDeserializer<AuthManager.
             AuthManager.ClientSettingsDTO settingsItem = context.deserialize(jsonElement, AuthManager.ClientSettingsDTO.class);
             items.add(settingsItem);
         }
-        return new AuthManager.ListClientSettingsDTO(items);
+
+        JsonElement orderData = json.getAsJsonObject().get("order_data").getAsJsonObject();
+        AuthManager.OrderDataDTO orderDataDTO = context.deserialize(orderData, AuthManager.OrderDataDTO.class);
+
+        return new AuthManager.ListClientSettingsDTO(items, orderDataDTO);
     }
 }

@@ -98,17 +98,30 @@ public class AuthManager {
     public static Single<List<XMPPAccountSettings>> updateClientSettings(List<XMPPAccountSettings> accountSettingsList) {
 
         List<ClientSettingsDTO> list = new ArrayList<>();
+        List<OrderDTO> listOrder = new ArrayList<>();
+
         for (XMPPAccountSettings account : accountSettingsList) {
             // add to sync only accounts required sync
             if (account.isSynchronization() || SettingsManager.isSyncAllAccounts()) {
                 list.add(new ClientSettingsDTO(account.getJid(), new SettingsValuesDTO(account.getOrder(),
                         account.getColor(), account.getToken(), account.getUsername()), account.getTimestamp()));
+                if (account.getOrder() > 0)
+                    listOrder.add(new OrderDTO(account.getJid(), account.getOrder()));
             }
         }
 
-        ListClientSettingsDTO listClientSettingsDTO = new ListClientSettingsDTO(list);
+        OrderDataDTO orderDataDTO = new OrderDataDTO(listOrder, XabberAccountManager.getInstance().getLastOrderChangeTimestamp());
+
+        ClientSettingsWithoutOrderDTO listClientSettingsDTO = new ClientSettingsWithoutOrderDTO(list);
+        final ClientSettingsOrderDTO clientSettingsOrderDTO = new ClientSettingsOrderDTO(orderDataDTO);
 
         return HttpApiManager.getXabberApi().updateClientSettings(getXabberTokenHeader(), listClientSettingsDTO)
+                .flatMap(new Func1<ListClientSettingsDTO, Single<? extends ListClientSettingsDTO>>() {
+                    @Override
+                    public Single<? extends ListClientSettingsDTO> call(ListClientSettingsDTO listClientSettingsDTO) {
+                        return HttpApiManager.getXabberApi().updateClientSettings(getXabberTokenHeader(), clientSettingsOrderDTO);
+                    }
+                })
                 .flatMap(new Func1<ListClientSettingsDTO, Single<? extends ListClientSettingsDTO>>() {
                     @Override
                     public Single<? extends ListClientSettingsDTO> call(ListClientSettingsDTO listClientSettingsDTO) {
@@ -286,8 +299,26 @@ public class AuthManager {
 
     public static class ListClientSettingsDTO {
         final List<ClientSettingsDTO> settings_data;
+        final OrderDataDTO order_data;
 
-        public ListClientSettingsDTO(List<ClientSettingsDTO> settings_data) {
+        public ListClientSettingsDTO(List<ClientSettingsDTO> settings_data, OrderDataDTO order_data) {
+            this.settings_data = settings_data;
+            this.order_data = order_data;
+        }
+
+        public List<ClientSettingsDTO> getSettings() {
+            return settings_data;
+        }
+
+        public OrderDataDTO getOrderData() {
+            return order_data;
+        }
+    }
+
+    public static class ClientSettingsWithoutOrderDTO {
+        final List<ClientSettingsDTO> settings_data;
+
+        public ClientSettingsWithoutOrderDTO(List<ClientSettingsDTO> settings_data) {
             this.settings_data = settings_data;
         }
 
@@ -296,15 +327,33 @@ public class AuthManager {
         }
     }
 
+    public static class ClientSettingsOrderDTO {
+        final OrderDataDTO order_data;
+
+        public ClientSettingsOrderDTO(OrderDataDTO order_data) {
+            this.order_data = order_data;
+        }
+
+        public OrderDataDTO getOrder_data() {
+            return order_data;
+        }
+    }
+
     public static class OrderDataDTO {
         final List<OrderDTO> settings;
+        final int timestamp;
 
-        public OrderDataDTO(List<OrderDTO> settings) {
+        public OrderDataDTO(List<OrderDTO> settings, int timestamp) {
             this.settings = settings;
+            this.timestamp = timestamp;
         }
 
         public List<OrderDTO> getSettings() {
             return settings;
+        }
+
+        public int getTimestamp() {
+            return timestamp;
         }
     }
 
