@@ -4,7 +4,10 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+
+import org.json.JSONObject;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -22,7 +25,7 @@ public class ClientSettingsDeserializer implements JsonDeserializer<AuthManager.
     public AuthManager.ListClientSettingsDTO deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
         items = new ArrayList<>();
 
-        JsonArray array = json.getAsJsonArray();
+        JsonArray array = json.getAsJsonObject().get("settings_data").getAsJsonArray();
         for (int i = 0; i < array.size(); i++) {
             JsonElement jsonElement = array.get(i);
             AuthManager.ClientSettingsDTO settingsItem = context.deserialize(jsonElement, AuthManager.ClientSettingsDTO.class);

@@ -106,7 +106,9 @@ public class AuthManager {
             }
         }
 
-        return HttpApiManager.getXabberApi().updateClientSettings(getXabberTokenHeader(), list)
+        ListClientSettingsDTO listClientSettingsDTO = new ListClientSettingsDTO(list);
+
+        return HttpApiManager.getXabberApi().updateClientSettings(getXabberTokenHeader(), listClientSettingsDTO)
                 .flatMap(new Func1<ListClientSettingsDTO, Single<? extends ListClientSettingsDTO>>() {
                     @Override
                     public Single<? extends ListClientSettingsDTO> call(ListClientSettingsDTO listClientSettingsDTO) {
@@ -283,14 +285,44 @@ public class AuthManager {
     }
 
     public static class ListClientSettingsDTO {
-        final List<ClientSettingsDTO> settings;
+        final List<ClientSettingsDTO> settings_data;
 
-        public ListClientSettingsDTO(List<ClientSettingsDTO> settings) {
-            this.settings = settings;
+        public ListClientSettingsDTO(List<ClientSettingsDTO> settings_data) {
+            this.settings_data = settings_data;
         }
 
         public List<ClientSettingsDTO> getSettings() {
+            return settings_data;
+        }
+    }
+
+    public static class OrderDataDTO {
+        final List<OrderDTO> settings;
+
+        public OrderDataDTO(List<OrderDTO> settings) {
+            this.settings = settings;
+        }
+
+        public List<OrderDTO> getSettings() {
             return settings;
+        }
+    }
+
+    public static class OrderDTO {
+        final String jid;
+        final int order;
+
+        public OrderDTO(String jid, int order) {
+            this.jid = jid;
+            this.order = order;
+        }
+
+        public String getJid() {
+            return jid;
+        }
+
+        public int getOrder() {
+            return order;
         }
     }
 
