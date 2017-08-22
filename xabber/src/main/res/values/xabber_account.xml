@@ -38,7 +38,7 @@
 
     <string name="label_username">Choose username*</string>
     <string name="hint_username">Username</string>
-    <string name="label_pass">Password *</string>
+    <string name="label_pass">Password*</string>
     <string name="hint_pass">Enter password</string>
     <string name="label_conf_pass">Confirm password*</string>
     <string name="hint_conf_pass">Confirm password</string>
@@ -85,6 +85,7 @@
     <string name="sync_all">Synchronize all</string>
     <string name="no_email">no email</string>
     <string name="empty_field">Empty field</string>
+    <string name="pass_too_short">Ensure that password has at least 4 characters</string>
     <string name="passwords_not_match">Passwords do not match</string>
     <string name="username_rules">Username can contain only lowercase latin letters, numbers and dots</string>
     <string name="username_rules_first_symbol">Username must start with letter</string>
@@ -94,8 +95,8 @@
     <string name="sync_with_xabber_account">Synchronize with Xabber-account</string>
 
     <string name="sign_up_email_social">Sign up with Social account or Email</string>
-    <string name="sign_up_social">Sign up with Social account</string>
-    <string name="sign_up_email">Sign up with Email</string>
+    <string name="sign_up_social">Sign up with Social account:</string>
+    <string name="sign_up_email">Sign up with Email:</string>
     <string name="signed_up_email">Signed up with Email</string>
     <string name="signed_up_google">Signed up with Google+</string>
     <string name="signed_up_facebook">Signed up with Facebook</string>

@@ -152,6 +152,11 @@ public class XabberAccountCompleteRegsiterFrament extends Fragment {
             return;
         }
 
+        if (pass.length() < 4) {
+            edtPass.setError(getString(R.string.pass_too_short));
+            return;
+        }
+
         if (!pass.equals(pass2)) {
             edtPass2.setError(getString(R.string.passwords_not_match));
             return;
