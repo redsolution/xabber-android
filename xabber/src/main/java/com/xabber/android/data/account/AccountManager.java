@@ -187,6 +187,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
                     resource,
                     accountRealm.isStorePassword(),
                     accountRealm.getPassword(),
+                    accountRealm.getToken(),
                     accountRealm.getColorIndex(),
                     accountRealm.getPriority(),
                     accountRealm.getStatusMode(),
@@ -311,7 +312,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
      */
     private AccountItem addAccount(boolean custom, String host, int port,
                                    DomainBareJid serverName, Localpart userName, boolean storePassword,
-                                   String password, Resourcepart resource, int color, int priority,
+                                   String password, String token, Resourcepart resource, int color, int priority,
                                    StatusMode statusMode, String statusText, boolean enabled,
                                    boolean saslEnabled, TLSMode tlsMode, boolean compression,
                                    ProxyType proxyType, String proxyHost, int proxyPort,
@@ -320,7 +321,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
                                    boolean registerNewAccount) {
 
         AccountItem accountItem = new AccountItem(custom, host, port, serverName, userName,
-                resource, storePassword, password, color, priority, statusMode, statusText, enabled,
+                resource, storePassword, password, token, color, priority, statusMode, statusText, enabled,
                 saslEnabled, tlsMode, compression, proxyType, proxyHost, proxyPort, proxyUser,
                 proxyPassword, syncable, keyPair, lastSync, archiveMode);
 
@@ -337,7 +338,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
      * @return assigned account name.
      * @throws NetworkException if user or server part are invalid.
      */
-    public AccountJid addAccount(String user, String password, boolean syncable,
+    public AccountJid addAccount(String user, String password, String token, boolean syncable,
                                  boolean storePassword, boolean xabberSync, boolean useOrbot, boolean registerNewAccount)
             throws NetworkException {
         if (user == null) {
@@ -394,7 +395,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
         ArchiveMode archiveMode = ArchiveMode.valueOf(application.getString(R.string.account_archive_mode_default_value));
 
         accountItem = addAccount(useCustomHost, host, port, serverName, userName,
-                storePassword, password, resource, getNextColorIndex(), 0, StatusMode.available,
+                storePassword, password, token, resource, getNextColorIndex(), 0, StatusMode.available,
                 SettingsManager.statusText(), true, true, tlsRequired ? TLSMode.required : TLSMode.enabled,
                 useCompression, useOrbot ? ProxyType.orbot : ProxyType.none, "localhost", 8080,
                 "", "", syncable, null, null, archiveMode, registerNewAccount);
@@ -492,7 +493,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
      * @param account       full source jid
      */
     public void updateAccount(AccountJid account, boolean custom, String host, int port, DomainBareJid serverName,
-                              Localpart userName, boolean storePassword, String password, Resourcepart resource,
+                              Localpart userName, boolean storePassword, String password, String token, Resourcepart resource,
                               int priority, boolean enabled, boolean saslEnabled, TLSMode tlsMode,
                               boolean compression, ProxyType proxyType, String proxyHost, int proxyPort,
                               String proxyUser, String proxyPassword, boolean syncable,
@@ -573,7 +574,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
             Date lastSync = accountItem.getLastSync();
             removeAccountWithoutCallback(account);
             result = addAccount(custom, host, port, serverName, userName, storePassword,
-                    password, resource, colorIndex, priority, statusMode, statusText, enabled,
+                    password, token, resource, colorIndex, priority, statusMode, statusText, enabled,
                     saslEnabled, tlsMode, compression, proxyType, proxyHost, proxyPort, proxyUser,
                     proxyPassword, syncable, keyPair, lastSync, archiveMode, false);
         }

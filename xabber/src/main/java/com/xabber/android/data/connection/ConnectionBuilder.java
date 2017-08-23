@@ -10,6 +10,7 @@ import com.xabber.android.data.log.LogManager;
 
 import org.apache.http.conn.ssl.AllowAllHostnameVerifier;
 import org.jivesoftware.smack.proxy.ProxyInfo;
+import org.jivesoftware.smack.sasl.core.SASLXOauth2Mechanism;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
 import org.jivesoftware.smack.util.TLSUtils;
@@ -63,6 +64,17 @@ class ConnectionBuilder {
             }
         } catch (NoSuchAlgorithmException | KeyManagementException e) {
             LogManager.exception(LOG_TAG, e);
+        }
+
+        // if account have token
+        if (connectionSettings.getToken() != null && !connectionSettings.getToken().isEmpty()
+                && connectionSettings.getPassword() != null
+                && connectionSettings.getPassword().isEmpty()) {
+            // then enable only SASLXOauth2Mechanism
+            builder.addEnabledSaslMechanism(SASLXOauth2Mechanism.NAME);
+
+            // and set token as password
+            builder.setUsernameAndPassword(connectionSettings.getUserName(), connectionSettings.getToken());
         }
 
         LogManager.i(LOG_TAG, "new XMPPTCPConnection " + connectionSettings.getServerName());

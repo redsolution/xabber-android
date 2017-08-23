@@ -53,6 +53,7 @@ public class AccountRealm extends RealmObject {
     private int port;
     private boolean storePassword;
     private String password;
+    private String token;
 
     private int colorIndex;
     private int priority;
@@ -161,6 +162,14 @@ public class AccountRealm extends RealmObject {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 
     public int getColorIndex() {

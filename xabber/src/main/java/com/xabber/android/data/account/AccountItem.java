@@ -112,7 +112,7 @@ public class AccountItem extends ConnectionItem implements Comparable<AccountIte
 
     public AccountItem(boolean custom, String host,
                        int port, DomainBareJid serverName, Localpart userName, Resourcepart resource,
-                       boolean storePassword, String password, int colorIndex,
+                       boolean storePassword, String password, String token, int colorIndex,
                        int priority, StatusMode statusMode, String statusText,
                        boolean enabled, boolean saslEnabled, TLSMode tlsMode,
                        boolean compression, ProxyType proxyType, String proxyHost,
@@ -120,7 +120,7 @@ public class AccountItem extends ConnectionItem implements Comparable<AccountIte
                        boolean syncable, KeyPair keyPair, Date lastSync,
                        ArchiveMode archiveMode) {
         super(custom, host, port, serverName, userName, resource,
-                storePassword, password, saslEnabled, tlsMode, compression,
+                storePassword, password, token, saslEnabled, tlsMode, compression,
                 proxyType, proxyHost, proxyPort, proxyUser, proxyPassword);
         this.id = UUID.randomUUID().toString();
         this.colorIndex = colorIndex;

@@ -60,6 +60,11 @@ public class ConnectionSettings {
     private String password;
 
     /**
+     * Token.
+     */
+    private String token;
+
+    /**
      * Whether SASL Authentication Enabled.
      */
     private boolean saslEnabled;
@@ -86,7 +91,7 @@ public class ConnectionSettings {
 
     public ConnectionSettings(Localpart userName,
                               DomainBareJid serverName, Resourcepart resource, boolean custom, String host,
-                              int port, String password, boolean saslEnabled, TLSMode tlsMode,
+                              int port, String password, String token, boolean saslEnabled, TLSMode tlsMode,
                               boolean compression, ProxyType proxyType, String proxyHost,
                               int proxyPort, String proxyUser, String proxyPassword) {
         super();
@@ -97,6 +102,7 @@ public class ConnectionSettings {
         this.host = host;
         this.port = port;
         this.password = password;
+        this.token = token;
         this.saslEnabled = saslEnabled;
         this.tlsMode = tlsMode;
         this.compression = compression;
@@ -145,6 +151,10 @@ public class ConnectionSettings {
 
     public String getPassword() {
         return password;
+    }
+
+    public String getToken() {
+        return token;
     }
 
     /**

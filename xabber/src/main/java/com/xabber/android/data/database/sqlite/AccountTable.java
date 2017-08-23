@@ -455,6 +455,7 @@ public class AccountTable extends AbstractTable {
         }
         accountRealm.setPassword(password);
 
+        accountRealm.setToken(connectionSettings.getToken());
         accountRealm.setResource(connectionSettings.getResource().toString());
         accountRealm.setColorIndex(accountItem.getColorIndex());
         accountRealm.setPriority(accountItem.getPriority());
