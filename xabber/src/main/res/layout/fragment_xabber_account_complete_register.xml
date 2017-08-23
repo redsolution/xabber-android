@@ -175,7 +175,7 @@
                 android:hint="@string/hint_username"
                 android:textSize="16sp"
                 android:textColor="@color/black_text"
-                android:textColorHint="@color/black_text_secondary"
+                android:textColorHint="@color/grey_500"
                 android:backgroundTint="@color/black_text_secondary"
                 android:layout_weight="1"
 
@@ -288,7 +288,7 @@
                     android:singleLine="true"
                     android:textSize="16sp"
                     android:textColor="@color/black_text"
-                    android:textColorHint="@color/black_text_secondary"
+                    android:textColorHint="@color/grey_500"
                     android:backgroundTint="@color/black_text_secondary"
                     android:hint="@string/hint_first_name"
                     />
@@ -317,7 +317,7 @@
                     android:singleLine="true"
                     android:textSize="16sp"
                     android:textColor="@color/black_text"
-                    android:textColorHint="@color/black_text_secondary"
+                    android:textColorHint="@color/grey_500"
                     android:backgroundTint="@color/black_text_secondary"
                     android:hint="@string/hint_last_name"
                     />
