@@ -89,8 +89,14 @@ public class XabberAccountCompleteRegsiterFrament extends Fragment {
             String firstName = account.getFirstName();
             String lastName = account.getLastName();
             String name = "";
-            if (firstName != null) name = name + firstName;
-            if (lastName != null) name = name + " " + lastName;
+            if (firstName != null) {
+                name = name + firstName;
+                edtFirstName.setText(firstName);
+            }
+            if (lastName != null) {
+                name = name + " " + lastName;
+                edtLastName.setText(lastName);
+            }
             if (!name.isEmpty()) tvAccountName.setText(name);
 
             if (account.getSocialBindings().size() > 0) {
