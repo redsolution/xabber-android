@@ -24,7 +24,7 @@ import io.realm.annotations.RealmModule;
 
 public class RealmManager {
     private static final String REALM_DATABASE_NAME = "realm_database.realm";
-    private static final int REALM_DATABASE_VERSION = 7;
+    private static final int REALM_DATABASE_VERSION = 8;
     private static final String LOG_TAG = RealmManager.class.getSimpleName();
     private final RealmConfiguration realmConfiguration;
 
@@ -139,6 +139,13 @@ public class RealmManager {
                                     .addField("order", int.class)
                                     .addField("timestamp", int.class)
                                     .addField("synchronization", boolean.class);
+
+                            oldVersion++;
+                        }
+
+                        if (oldVersion == 7) {
+                            schema.get(AccountRealm.class.getSimpleName())
+                                    .addField("token", String.class);
 
                             oldVersion++;
                         }
