@@ -10,13 +10,18 @@
     <FrameLayout
         android:id="@+id/drawer_header"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="172dp">
 
         <ImageView
             android:id="@+id/drawer_header_image"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             />
+
+        <RelativeLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -66,6 +71,20 @@
 
             </LinearLayout>
         </LinearLayout>
+        <LinearLayout
+            android:id="@+id/drawer_header_action_xabber_account"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            android:layout_alignParentBottom="true"
+            android:background="@drawable/ripple_background">
+
+            <include layout="@layout/item_nav_drawer_xabber_account" />
+
+        </LinearLayout>
+
+        </RelativeLayout>
 
         <TextView
             android:layout_width="wrap_content"

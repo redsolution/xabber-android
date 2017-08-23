@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -95,7 +96,8 @@ public class ContactListDrawerFragment extends Fragment implements View.OnClickL
                 .inflate(R.layout.contact_list_drawer_header, listView, false);
         headerTitle = headerView.findViewById(R.id.drawer_header_action_xmpp_accounts);
         headerTitle.setOnClickListener(this);
-        headerView.findViewById(R.id.drawer_header_action_xabber_account).setOnClickListener(this);
+
+        view.findViewById(R.id.drawer_header_action_xabber_account).setOnClickListener(this);
 
         listView.addHeaderView(headerView);
 
@@ -183,22 +185,26 @@ public class ContactListDrawerFragment extends Fragment implements View.OnClickL
             llAccountInfo.setVisibility(View.VISIBLE);
             llNoAccount.setVisibility(View.GONE);
 
-            String email = getContext().getString(R.string.no_email);
-            if (account.getEmails().size() > 0)
-                email = account.getEmails().get(0).getEmail();
+            //String email = getContext().getString(R.string.no_email);
+//            if (account.getEmails().size() > 0)
+//                email = account.getEmails().get(0).getEmail();
+
+            String accountName = account.getFirstName() + " " + account.getLastName();
+            if (accountName.trim().isEmpty())
+                accountName = getContext().getString(R.string.title_xabber_account);
 
             if (XabberAccount.STATUS_NOT_CONFIRMED.equals(account.getAccountStatus())) {
-                tvAccountName.setText(R.string.account_not_confirmed);
-                tvAccountEmail.setText(email);
+                tvAccountName.setText(accountName);
+                tvAccountEmail.setText(R.string.account_not_confirmed);
             }
             if (XabberAccount.STATUS_CONFIRMED.equals(account.getAccountStatus())) {
-                tvAccountName.setText(R.string.register_not_completed);
-                tvAccountEmail.setText(email);
+                tvAccountName.setText(accountName);
+                tvAccountEmail.setText(R.string.register_not_completed);
             }
             if (XabberAccount.STATUS_REGISTERED.equals(account.getAccountStatus())) {
-                String accountName = account.getFirstName() + " " + account.getLastName();
+
                 tvAccountName.setText(accountName);
-                tvAccountEmail.setText(email);
+                tvAccountEmail.setText(account.getUsername());
             }
         } else {
             llAccountInfo.setVisibility(View.GONE);

@@ -17,35 +17,12 @@
         android:visibility="gone"
         >
 
-        <FrameLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical">
-
-            <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/color"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:src="@color/green_500" />
-
-            <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/avatar"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_gravity="center"
-                android:src="@drawable/ic_stat_online"
-                app:civ_border_color="@android:color/transparent"
-                app:civ_border_width="3dp" />
-
-        </FrameLayout>
-
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_weight="1"
-            android:orientation="vertical"
-            android:paddingLeft="16dp">
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/tvAccountName"
@@ -54,8 +31,9 @@
                 android:layout_weight="1"
                 android:ellipsize="marquee"
                 android:lines="1"
-                android:text="@string/account_not_confirmed"
-                android:textColor="@color/green_700"
+                android:text="@string/title_xabber_account"
+                android:textStyle="bold"
+                android:textColor="@color/white_text"
                 android:textSize="18sp" />
 
             <TextView
@@ -65,10 +43,11 @@
                 android:layout_weight="1"
                 android:ellipsize="marquee"
                 android:lines="1"
-                android:text="@string/no_email"
-                android:textColor="@color/grey_500"
+                android:text="@string/no_username"
+                android:textColor="@color/white_text"
                 android:textSize="14sp" />
         </LinearLayout>
+
     </LinearLayout>
 
     <LinearLayout
@@ -85,16 +64,17 @@
             android:layout_weight="1"
             android:ellipsize="marquee"
             android:lines="1"
-            android:text="@string/not_login"
-            android:textColor="@color/green_700"
+            android:text="@string/title_xabber_account"
+            android:textColor="@color/white_text"
+            android:textStyle="bold"
             android:textSize="16sp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="12sp"
-            android:textColor="@color/grey_500"
-            android:text="@string/xabber_account_info"
+            android:textColor="@color/white_text"
+            android:text="@string/not_login"
             />
 
     </LinearLayout>

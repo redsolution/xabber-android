@@ -84,6 +84,7 @@
     <string name="last_sync_date_never">never</string>
     <string name="sync_all">Synchronize all</string>
     <string name="no_email">no email</string>
+    <string name="no_username">no username</string>
     <string name="empty_field">Empty field</string>
     <string name="pass_too_short">Ensure that password has at least 4 characters</string>
     <string name="passwords_not_match">Passwords do not match</string>
