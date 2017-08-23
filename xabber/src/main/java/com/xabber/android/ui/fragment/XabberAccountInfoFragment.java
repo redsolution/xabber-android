@@ -75,6 +75,9 @@ public class XabberAccountInfoFragment extends Fragment {
 
     public void updateData(@NonNull XabberAccount account) {
         String accountName = account.getFirstName() + " " + account.getLastName();
+        if (accountName.trim().isEmpty())
+            accountName = getContext().getString(R.string.title_xabber_account);
+
         tvAccountName.setText(accountName);
         if (account.getEmails().size() > 0)
             tvAccountEmail.setText(account.getEmails().get(0).getEmail());
