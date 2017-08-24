@@ -174,9 +174,7 @@
                 android:singleLine="true"
                 android:hint="@string/hint_username"
                 android:textSize="16sp"
-                android:textColor="@color/black_text"
-                android:textColorHint="@color/grey_500"
-                android:backgroundTint="@color/black_text_secondary"
+                android:theme="@style/Theme"
                 android:layout_weight="1"
 
                 />
@@ -226,8 +224,7 @@
                     android:imeOptions="actionNext"
                     android:singleLine="true"
                     android:textSize="16sp"
-                    android:textColor="@color/black_text"
-                    android:backgroundTint="@color/black_text_secondary"
+                    android:theme="@style/Theme"
                     android:inputType="textPassword"
                     />
 
@@ -254,8 +251,7 @@
                     android:imeOptions="actionNext"
                     android:singleLine="true"
                     android:textSize="16sp"
-                    android:textColor="@color/black_text"
-                    android:backgroundTint="@color/black_text_secondary"
+                    android:theme="@style/Theme"
                     android:inputType="textPassword"
                     />
 
@@ -287,9 +283,7 @@
                     android:imeOptions="actionNext"
                     android:singleLine="true"
                     android:textSize="16sp"
-                    android:textColor="@color/black_text"
-                    android:textColorHint="@color/grey_500"
-                    android:backgroundTint="@color/black_text_secondary"
+                    android:theme="@style/Theme"
                     android:hint="@string/hint_first_name"
                     />
 
@@ -316,9 +310,7 @@
                     android:imeOptions="actionDone"
                     android:singleLine="true"
                     android:textSize="16sp"
-                    android:textColor="@color/black_text"
-                    android:textColorHint="@color/grey_500"
-                    android:backgroundTint="@color/black_text_secondary"
+                    android:theme="@style/Theme"
                     android:hint="@string/hint_last_name"
                     />
 

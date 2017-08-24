@@ -111,9 +111,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:textColor="@color/black_text"
-            android:textColorHint="@color/grey_500"
-            android:backgroundTint="@color/black_text_secondary"
+            android:theme="@style/Theme"
             android:inputType="number"
             android:hint="@string/hint_code"
             />
