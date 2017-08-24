@@ -644,9 +644,9 @@ public class XabberAccountManager implements OnLoadListener {
             for (XMPPAccountSettings accountSettings : xmppAccounts) {
                 if (accountSettings.getJid().equals(bareJid.toString())) {
                     accountSettings.setSynchronization(sync);
-                    saveSettingsToRealm();
                 }
             }
+            saveSettingsToRealm();
         }
     }
 
