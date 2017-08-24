@@ -589,7 +589,9 @@ public class XabberAccountManager implements OnLoadListener {
                     if (localAccountJid == null) {
                         // create new xmpp-account
                         try {
-                            AccountManager.getInstance().addAccount(account.getJid(), "", account.getToken(), false, true, true, false, false);
+                            AccountJid accountJid = AccountManager.getInstance().addAccount(account.getJid(), "", account.getToken(), false, true, true, false, false);
+                            AccountManager.getInstance().setColor(accountJid, ColorManager.getInstance().convertColorNameToIndex(account.getColor()));
+                            AccountManager.getInstance().onAccountChanged(accountJid);
                         } catch (NetworkException e) {
                             Application.getInstance().onError(e);
                         }
