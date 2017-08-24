@@ -470,6 +470,19 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
         onAccountChanged(account);
     }
 
+    /**
+     * Remove user`s account.
+     * without set sync for account
+     */
+    public void removeAccountWithoutSync(AccountJid account) {
+        // disable synchronization all accounts
+        SettingsManager.setSyncAllAccounts(false);
+
+        // removing local account
+        removeAccountWithoutCallback(account);
+        onAccountChanged(account);
+    }
+
     public void updateAccountPassword(AccountJid account, String pass) {
 
         AccountItem result = getAccount(account);

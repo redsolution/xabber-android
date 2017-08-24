@@ -418,6 +418,7 @@ public class XabberAccountInfoActivity extends BaseLoginActivity {
 
     private void handleSuccessLogout(ResponseBody s) {
         XabberAccountManager.getInstance().removeAccount();
+        XabberAccountManager.getInstance().deleteAllSyncedAccounts();
         showLoginFragment();
         hideProgress();
         Toast.makeText(this, R.string.logout_success, Toast.LENGTH_SHORT).show();
