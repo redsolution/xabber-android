@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
@@ -670,8 +671,8 @@ public class XabberAccountManager implements OnLoadListener {
     }
 
     public void deleteAllSyncedAccounts() {
-        int i = 0;
-        for (XMPPAccountSettings accountSettings : this.xmppAccounts) {
+        for (Iterator<XMPPAccountSettings> it = this.xmppAccounts.iterator(); it.hasNext(); ) {
+            XMPPAccountSettings accountSettings = it.next();
             if (accountSettings.isSynchronization()) {
                 // delete local accounts
                 AccountJid localAccountJid = getExistingAccount(accountSettings.getJid());
@@ -680,9 +681,8 @@ public class XabberAccountManager implements OnLoadListener {
                 }
 
                 // delete local settings
-                this.xmppAccounts.remove(i);
+                it.remove();
             }
-            i++;
         }
     }
 }
