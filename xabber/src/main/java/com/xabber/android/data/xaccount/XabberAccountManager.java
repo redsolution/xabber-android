@@ -621,11 +621,14 @@ public class XabberAccountManager implements OnLoadListener {
 
     public void setSyncForAccount(AccountJid account, boolean sync) {
         BareJid bareJid = account.getFullJid().asBareJid();
-        XMPPAccountSettings accountSettings = null;
-        if (bareJid != null)
-             accountSettings = getAccountSettings(bareJid.toString());
-        if (accountSettings != null)
-            accountSettings.setSynchronization(sync);
+        if (bareJid != null) {
+            for (XMPPAccountSettings accountSettings : xmppAccounts) {
+                if (accountSettings.getJid().equals(bareJid.toString())) {
+                    accountSettings.setSynchronization(sync);
+                }
+            }
+        }
+        saveSettingsToRealm();
     }
 
     public void setSyncAllAccounts(List<XMPPAccountSettings> items) {
