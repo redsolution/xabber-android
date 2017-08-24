@@ -514,7 +514,7 @@ public class XabberAccountInfoActivity extends BaseLoginActivity {
     }
 
     private void handleSuccessComplete(XabberAccount response) {
-        showInfoFragment();
+        //showInfoFragment();
 
         hideProgress();
         Toast.makeText(this, R.string.complete_success, Toast.LENGTH_SHORT).show();
