@@ -1,12 +1,14 @@
 package com.xabber.android.ui.fragment;
 
 import android.app.Fragment;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
@@ -68,6 +70,10 @@ public class XabberLoginFragment extends Fragment implements View.OnClickListene
     }
 
     private void onLoginClick() {
+        // hide keyboard
+        InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(edtPass.getWindowToken(), 0);
+
         String login = edtLogin.getText().toString().trim();
         String pass = edtPass.getText().toString().trim();
 
