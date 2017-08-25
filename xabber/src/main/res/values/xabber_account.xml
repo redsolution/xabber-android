@@ -94,6 +94,8 @@
     <string name="account_not_confirmed">Account not confirmed</string>
     <string name="register_not_completed">Registration not completed</string>
     <string name="sync_with_xabber_account">Synchronize with Xabber-account</string>
+    <string name="delete_cynced_accounts">Do you want to delete synced XMPP-accounts?</string>
+    <string name="logout_summary">You will logout from Xabber Account</string>
 
     <string name="sign_up_email_social">Sign up with Social account or Email</string>
     <string name="sign_up_social">Sign up with Social account:</string>

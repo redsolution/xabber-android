@@ -1,15 +1,19 @@
 package com.xabber.android.ui.activity;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Toast;
 
@@ -214,9 +218,9 @@ public class XabberAccountInfoActivity extends BaseLoginActivity {
         startActivity(intent);
     }
 
-    public void onLogoutClick() {
+    public void onLogoutClick(boolean deleteAccounts) {
         if (NetworkManager.isNetworkAvailable()) {
-            logout();
+            logout(deleteAccounts);
         } else
             Toast.makeText(this, R.string.toast_no_internet, Toast.LENGTH_LONG).show();
     }
@@ -397,15 +401,15 @@ public class XabberAccountInfoActivity extends BaseLoginActivity {
         compositeSubscription.add(loadAccountsSubscription);
     }
 
-    private void logout() {
+    private void logout(final boolean deleteAccounts) {
         showProgress(getResources().getString(R.string.progress_title_logout));
-        Subscription logoutSubscription = AuthManager.logout()
+        Subscription logoutSubscription = AuthManager.logout(deleteAccounts)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<ResponseBody>() {
                     @Override
                     public void call(ResponseBody s) {
-                        handleSuccessLogout(s);
+                        handleSuccessLogout(s, deleteAccounts);
                     }
                 }, new Action1<Throwable>() {
                     @Override
@@ -416,9 +420,10 @@ public class XabberAccountInfoActivity extends BaseLoginActivity {
         compositeSubscription.add(logoutSubscription);
     }
 
-    private void handleSuccessLogout(ResponseBody s) {
+    private void handleSuccessLogout(ResponseBody s, boolean deleteAccounts) {
         XabberAccountManager.getInstance().removeAccount();
-        XabberAccountManager.getInstance().deleteAllSyncedAccounts();
+        if (deleteAccounts)
+            XabberAccountManager.getInstance().deleteAllSyncedAccounts();
         showLoginFragment();
         hideProgress();
         Toast.makeText(this, R.string.logout_success, Toast.LENGTH_SHORT).show();

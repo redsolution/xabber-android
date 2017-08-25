@@ -34,7 +34,7 @@ public class AuthManager {
         return HttpApiManager.getXabberApi().login("Basic " + encodedCredentials);
     }
 
-    public static Single<ResponseBody> logout() {
+    public static Single<ResponseBody> logout(final boolean deleteAccounts) {
 
         return HttpApiManager.getXabberApi().logout(getXabberTokenHeader())
                 .flatMap(new Func1<ResponseBody, Single<? extends ResponseBody>>() {
@@ -48,9 +48,12 @@ public class AuthManager {
                 .flatMap(new Func1<ResponseBody, Single<? extends ResponseBody>>() {
                     @Override
                     public Single<? extends ResponseBody> call(ResponseBody responseBody) {
-                        if (XabberAccountManager.getInstance().deleteSyncedXMPPAccountsFromRealm())
-                            return Single.just(responseBody);
-                        else return Single.error(new Throwable("Realm: xmpp accounts deletion error"));
+                        if (deleteAccounts) {
+                            if (XabberAccountManager.getInstance().deleteSyncedXMPPAccountsFromRealm())
+                                return Single.just(responseBody);
+                            else
+                                return Single.error(new Throwable("Realm: xmpp accounts deletion error"));
+                        } else return Single.just(responseBody);
                     }
                 });
     }
