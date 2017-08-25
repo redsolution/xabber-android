@@ -397,11 +397,13 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
         }
 
         if (Application.getInstance().doNotify()) {
-            if (BatteryHelper.isOptimizingBattery()
-                    && !SettingsManager.isBatteryOptimizationDisableSuggested()) {
-                BatteryOptimizationDisableDialog.newInstance().show(getFragmentManager(),
-                        BatteryOptimizationDisableDialog.class.getSimpleName());
-            }
+            // не ограничивать расход батареи (системное)
+
+//            if (BatteryHelper.isOptimizingBattery()
+//                    && !SettingsManager.isBatteryOptimizationDisableSuggested()) {
+//                BatteryOptimizationDisableDialog.newInstance().show(getFragmentManager(),
+//                        BatteryOptimizationDisableDialog.class.getSimpleName());
+//            }
 
             if (!SettingsManager.isTranslationSuggested()) {
                 Locale currentLocale = getResources().getConfiguration().locale;
@@ -410,23 +412,29 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
                 }
             }
 
-            if (SettingsManager.isCrashReportsSupported()
-                    && !SettingsManager.isCrashReportsDialogShown()) {
-                CrashReportDialog.newInstance().show(getFragmentManager(), CrashReportDialog.class.getSimpleName());
-            }
+            // сбор диагностич. информации
 
-            if (SettingsManager.interfaceTheme() != SettingsManager.InterfaceTheme.dark) {
-                if (!SettingsManager.isDarkThemeSuggested() && SettingsManager.bootCount() > 1) {
-                    new DarkThemeIntroduceDialog().show(getFragmentManager(), DarkThemeIntroduceDialog.class.getSimpleName());
-                }
-            } else {
-                SettingsManager.setDarkThemeSuggested();
-            }
+//            if (SettingsManager.isCrashReportsSupported()
+//                    && !SettingsManager.isCrashReportsDialogShown()) {
+//                CrashReportDialog.newInstance().show(getFragmentManager(), CrashReportDialog.class.getSimpleName());
+//            }
 
-            if (SettingsManager.bootCount() > 2 && !SettingsManager.connectionStartAtBoot()
-                    && !SettingsManager.startAtBootSuggested()) {
-                StartAtBootDialogFragment.newInstance().show(getFragmentManager(), "START_AT_BOOT");
-            }
+            // представление темной темы
+
+//            if (SettingsManager.interfaceTheme() != SettingsManager.InterfaceTheme.dark) {
+//                if (!SettingsManager.isDarkThemeSuggested() && SettingsManager.bootCount() > 1) {
+//                    new DarkThemeIntroduceDialog().show(getFragmentManager(), DarkThemeIntroduceDialog.class.getSimpleName());
+//                }
+//            } else {
+//                SettingsManager.setDarkThemeSuggested();
+//            }
+
+            // запускать Xabber при старте устройства
+
+//            if (SettingsManager.bootCount() > 2 && !SettingsManager.connectionStartAtBoot()
+//                    && !SettingsManager.startAtBootSuggested()) {
+//                StartAtBootDialogFragment.newInstance().show(getFragmentManager(), "START_AT_BOOT");
+//            }
         }
 
         XabberAccountManager.getInstance().createLocalAccountIfNotExist();
