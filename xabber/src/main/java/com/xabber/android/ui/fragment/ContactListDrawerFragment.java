@@ -204,7 +204,7 @@ public class ContactListDrawerFragment extends Fragment implements View.OnClickL
             if (XabberAccount.STATUS_REGISTERED.equals(account.getAccountStatus())) {
 
                 tvAccountName.setText(accountName);
-                tvAccountEmail.setText(account.getUsername());
+                tvAccountEmail.setText(getString(R.string.username, account.getUsername()));
             }
         } else {
             llAccountInfo.setVisibility(View.GONE);
