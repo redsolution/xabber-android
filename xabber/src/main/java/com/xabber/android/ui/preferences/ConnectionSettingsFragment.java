@@ -2,6 +2,7 @@ package com.xabber.android.ui.preferences;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.preference.PreferenceManager;
 
@@ -11,11 +12,15 @@ import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.ui.activity.PreferenceSummaryHelperActivity;
+import com.xabber.android.ui.helper.BatteryHelper;
 
 import java.util.Collection;
 
 public class ConnectionSettingsFragment extends android.preference.PreferenceFragment
         implements SharedPreferences.OnSharedPreferenceChangeListener {
+
+    private Preference batteryOptimizationPreference;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -25,6 +30,16 @@ public class ConnectionSettingsFragment extends android.preference.PreferenceFra
         PreferenceSummaryHelperActivity.updateSummary(getPreferenceScreen());
 
         setDnsResolverSummary(SettingsManager.connectionDnsResolver());
+
+        batteryOptimizationPreference = findPreference(getString(R.string.battery_optimization_disable_key));
+        batteryOptimizationPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                BatteryHelper.sendIgnoreButteryOptimizationIntent(getActivity());
+                updateBatteryOptimizationPreference();
+                return true;
+            }
+        });
     }
 
     @Override
@@ -32,6 +47,8 @@ public class ConnectionSettingsFragment extends android.preference.PreferenceFra
         super.onResume();
         PreferenceManager.getDefaultSharedPreferences(getActivity())
                 .registerOnSharedPreferenceChangeListener(this);
+
+        updateBatteryOptimizationPreference();
     }
 
     @Override
@@ -71,5 +88,11 @@ public class ConnectionSettingsFragment extends android.preference.PreferenceFra
                 break;
         }
         preference.setSummary(summary);
+    }
+
+    private void updateBatteryOptimizationPreference() {
+        if (!BatteryHelper.isOptimizingBattery())
+            batteryOptimizationPreference.setSummary(R.string.battery_optimization_disabled);
+        else batteryOptimizationPreference.setSummary(R.string.battery_optimization_enabled);
     }
 }

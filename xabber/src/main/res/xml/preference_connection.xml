@@ -5,6 +5,11 @@
         android:key="@string/connection_start_at_boot_key"
         android:defaultValue="@bool/connection_start_at_boot_default"
         />
+    <Preference
+        android:title="@string/battery_optimization"
+        android:key="@string/battery_optimization_disable_key"
+        android:summary="@string/battery_optimization_enabled"
+        />
     <ListPreference
         android:title="@string/connection_go_away"
         android:key="@string/connection_go_away_key"

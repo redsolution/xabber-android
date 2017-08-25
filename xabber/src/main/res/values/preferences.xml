@@ -243,6 +243,8 @@
     <string name="connection_start_at_boot_key">connection_start_at_boot</string>
     <bool name="connection_start_at_boot_default">false</bool>
 
+    <string name="battery_optimization_disable_key">battery_optimization_disable</string>
+
     <string name="connection_go_away_key">connection_go_away</string>
     <string-array name="connection_go_away_entries">
         <item>@string/never</item>

@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="battery_optimization">Battery optimization</string>
+    <string name="battery_optimization_disabled">Battery optimization disabled. To enable it go to device settings</string>
+    <string name="battery_optimization_enabled">Battery optimization enabled (default)</string>
+
     <string name="cache_clear">Clear cache\nClear all local data. This can free up some space.</string>
     <string name="cache_clear_warning">Do you really want to remove chat history and other local data?\nAccount and roster data are not affected. The app will close.</string>
     <string name="chats_send_by_enter">Send on Enter\nMessage can be sent by pressing the Enter button</string>
