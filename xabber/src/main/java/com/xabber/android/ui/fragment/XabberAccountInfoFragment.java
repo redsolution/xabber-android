@@ -28,7 +28,7 @@ import com.xabber.android.ui.dialog.AccountSyncDialogFragment;
 public class XabberAccountInfoFragment extends Fragment {
 
     private TextView tvAccountName;
-    private TextView tvAccountEmail;
+    private TextView tvAccountUsername;
     private TextView tvLastSyncDate;
     private RelativeLayout rlLogout;
     private RelativeLayout rlSync;
@@ -44,7 +44,7 @@ public class XabberAccountInfoFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         tvAccountName = (TextView) view.findViewById(R.id.tvAccountName);
-        tvAccountEmail = (TextView) view.findViewById(R.id.tvAccountEmail);
+        tvAccountUsername = (TextView) view.findViewById(R.id.tvAccountUsername);
         tvLastSyncDate = (TextView) view.findViewById(R.id.tvLastSyncDate);
 
         rlLogout = (RelativeLayout) view.findViewById(R.id.rlLogout);
@@ -80,11 +80,11 @@ public class XabberAccountInfoFragment extends Fragment {
     public void updateData(@NonNull XabberAccount account) {
         String accountName = account.getFirstName() + " " + account.getLastName();
         if (accountName.trim().isEmpty())
-            accountName = getContext().getString(R.string.title_xabber_account);
+            accountName = getString(R.string.title_xabber_account);
 
         tvAccountName.setText(accountName);
-        if (account.getEmails().size() > 0)
-            tvAccountEmail.setText(account.getEmails().get(0).getEmail());
+        if (account.getUsername() != null && !account.getUsername().isEmpty())
+            tvAccountUsername.setText(getString(R.string.username, account.getUsername()));
     }
 
     public void updateLastSyncTime() {

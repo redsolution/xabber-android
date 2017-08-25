@@ -82,13 +82,13 @@
                         android:textSize="18sp" />
 
                     <TextView
-                        android:id="@+id/tvAccountEmail"
+                        android:id="@+id/tvAccountUsername"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:ellipsize="marquee"
                         android:lines="1"
-                        android:text="@string/no_email"
+                        android:text="@string/no_username"
                         android:textColor="@color/grey_500"
                         android:textSize="14sp" />
                 </LinearLayout>
