@@ -91,9 +91,19 @@
             android:targetPackage="@string/application_package" />
     </Preference>
     <Preference
-        android:title="Presence"/>
+        android:key="@string/preference_presence"
+        android:title="@string/preference_presence">
+        <intent
+            android:targetClass="com.xabber.android.ui.preferences.PresenceSettings"
+            android:targetPackage="@string/application_package" />
+    </Preference>
     <Preference
-        android:title="Privacy"/>
+        android:key="@string/preference_privacy"
+        android:title="@string/preference_privacy">
+        <intent
+            android:targetClass="com.xabber.android.ui.preferences.PrivacySettings"
+            android:targetPackage="@string/application_package" />
+    </Preference>
     <Preference
         android:key="@string/preference_security"
         android:title="@string/preference_security">

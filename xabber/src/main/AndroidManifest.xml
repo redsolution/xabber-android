@@ -377,6 +377,24 @@
                 android:value="com.xabber.android.ui.preferences.PreferenceEditor" />
         </activity>
         <activity
+            android:name=".ui.preferences.PresenceSettings"
+            android:parentActivityName=".ui.preferences.PreferenceEditor">
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.xabber.android.ui.preferences.PreferenceEditor" />
+        </activity>
+        <activity
+            android:name=".ui.preferences.PrivacySettings"
+            android:parentActivityName=".ui.preferences.PreferenceEditor">
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.xabber.android.ui.preferences.PreferenceEditor" />
+        </activity>
+        <activity
             android:name=".ui.activity.ConferenceSelectActivity"
             android:parentActivityName=".ui.activity.ContactListActivity">
 

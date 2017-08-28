@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:title="@string/category_availability">
+
+        <ListPreference
+            android:title="@string/connection_go_away"
+            android:key="@string/connection_go_away_key"
+            android:entries="@array/connection_go_away_entries"
+            android:entryValues="@array/connection_go_away_entryvalues"
+            android:defaultValue="@string/connection_go_away_default"
+            />
+
+        <ListPreference
+            android:title="@string/connection_go_xa"
+            android:key="@string/connection_go_xa_key"
+            android:entries="@array/connection_go_xa_entries"
+            android:entryValues="@array/connection_go_xa_entryvalues"
+            android:defaultValue="@string/connection_go_xa_default"
+            />
+
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:title="@string/connection_priority"
+        >
+        <CheckBoxPreference
+            android:title="@string/connection_adjust_priority"
+            android:key="@string/connection_adjust_priority_key"
+            android:defaultValue="@bool/connection_adjust_priority_default"
+            />
+        <com.xabber.android.ui.widget.PriorityPreference
+            android:key="@string/connection_priority_chat_key"
+            android:defaultValue="@string/connection_priority_chat_default"
+            android:dependency="@string/connection_adjust_priority_key"
+            android:title="@string/chat"
+            android:inputType="numberSigned"
+            android:singleLine="true"
+            />
+        <com.xabber.android.ui.widget.PriorityPreference
+            android:key="@string/connection_priority_available_key"
+            android:defaultValue="@string/connection_priority_available_default"
+            android:dependency="@string/connection_adjust_priority_key"
+            android:title="@string/available"
+            android:inputType="numberSigned"
+            android:singleLine="true"
+            />
+        <com.xabber.android.ui.widget.PriorityPreference
+            android:key="@string/connection_priority_away_key"
+            android:defaultValue="@string/connection_priority_away_default"
+            android:dependency="@string/connection_adjust_priority_key"
+            android:title="@string/away"
+            android:inputType="numberSigned"
+            android:singleLine="true"
+            />
+        <com.xabber.android.ui.widget.PriorityPreference
+            android:key="@string/connection_priority_xa_key"
+            android:defaultValue="@string/connection_priority_xa_default"
+            android:dependency="@string/connection_adjust_priority_key"
+            android:title="@string/xa"
+            android:inputType="numberSigned"
+            android:singleLine="true"
+            />
+        <com.xabber.android.ui.widget.PriorityPreference
+            android:key="@string/connection_priority_dnd_key"
+            android:defaultValue="@string/connection_priority_dnd_default"
+            android:dependency="@string/connection_adjust_priority_key"
+            android:title="@string/dnd"
+            android:inputType="numberSigned"
+            android:singleLine="true"
+            />
+    </PreferenceCategory>
+
+</PreferenceScreen>
