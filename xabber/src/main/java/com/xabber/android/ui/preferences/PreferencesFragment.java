@@ -2,8 +2,10 @@ package com.xabber.android.ui.preferences;
 
 
 import android.app.Activity;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.Preference;
+import android.preference.PreferenceManager;
 import android.widget.BaseAdapter;
 
 import com.xabber.android.R;
@@ -13,7 +15,7 @@ import com.xabber.android.ui.activity.PreferenceSummaryHelperActivity;
 import com.xabber.android.ui.activity.TutorialActivity;
 import com.xabber.android.ui.activity.XabberAccountInfoActivity;
 
-public class PreferencesFragment extends android.preference.PreferenceFragment {
+public class PreferencesFragment extends android.preference.PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     private OnPreferencesFragmentInteractionListener mListener;
 
@@ -45,6 +47,15 @@ public class PreferencesFragment extends android.preference.PreferenceFragment {
         super.onResume();
         BaseAdapter adapter = (BaseAdapter) getPreferenceScreen().getRootAdapter();
         adapter.notifyDataSetChanged();
+        PreferenceManager.getDefaultSharedPreferences(getActivity())
+                .registerOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        PreferenceManager.getDefaultSharedPreferences(getActivity())
+                .unregisterOnSharedPreferenceChangeListener(this);
     }
 
     @Override
@@ -66,5 +77,13 @@ public class PreferencesFragment extends android.preference.PreferenceFragment {
 
     public interface OnPreferencesFragmentInteractionListener {
         String getVersionName();
+        void onThemeChanged();
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if (key.equals(getString(R.string.interface_theme_key))) {
+            mListener.onThemeChanged();
+        }
     }
 }

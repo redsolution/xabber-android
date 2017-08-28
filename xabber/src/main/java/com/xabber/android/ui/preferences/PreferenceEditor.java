@@ -21,8 +21,10 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 
 import com.xabber.android.R;
+import com.xabber.android.data.ActivityManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.SettingsManager;
+import com.xabber.android.ui.activity.ContactListActivity;
 import com.xabber.android.ui.activity.ManagedActivity;
 import com.xabber.android.ui.color.BarPainter;
 import com.xabber.android.ui.helper.ToolbarHelper;
@@ -72,5 +74,11 @@ public class PreferenceEditor extends ManagedActivity
             LogManager.exception(this, e);
         }
         return "";
+    }
+
+    @Override
+    public void onThemeChanged() {
+        ActivityManager.getInstance().clearStack(true);
+        startActivity(ContactListActivity.createIntent(this));
     }
 }
