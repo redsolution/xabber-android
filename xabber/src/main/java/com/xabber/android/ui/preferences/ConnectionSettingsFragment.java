@@ -29,7 +29,7 @@ public class ConnectionSettingsFragment extends android.preference.PreferenceFra
 
         PreferenceSummaryHelperActivity.updateSummary(getPreferenceScreen());
 
-        setDnsResolverSummary(SettingsManager.connectionDnsResolver());
+        //setDnsResolverSummary(SettingsManager.connectionDnsResolver());
 
         batteryOptimizationPreference = findPreference(getString(R.string.battery_optimization_disable_key));
         batteryOptimizationPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
@@ -60,20 +60,20 @@ public class ConnectionSettingsFragment extends android.preference.PreferenceFra
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if (key.equals(getString(R.string.connection_dns_resolver_type_key))) {
-            String value = sharedPreferences.getString(key, getString(R.string.connection_dns_resolver_type_default));
-            SettingsManager.DnsResolverType dnsResolverType = SettingsManager.getDnsResolverType(value);
-            setDnsResolverSummary(dnsResolverType);
-
-            // reconnect all enabled account to apply and check changes
-            Collection<AccountJid> enabledAccounts = AccountManager.getInstance().getEnabledAccounts();
-            for (AccountJid accountJid : enabledAccounts) {
-                AccountItem accountItem = AccountManager.getInstance().getAccount(accountJid);
-                if (accountItem != null) {
-                    accountItem.recreateConnection();
-                }
-            }
-        }
+//        if (key.equals(getString(R.string.connection_dns_resolver_type_key))) {
+//            String value = sharedPreferences.getString(key, getString(R.string.connection_dns_resolver_type_default));
+//            SettingsManager.DnsResolverType dnsResolverType = SettingsManager.getDnsResolverType(value);
+//            setDnsResolverSummary(dnsResolverType);
+//
+//            // reconnect all enabled account to apply and check changes
+//            Collection<AccountJid> enabledAccounts = AccountManager.getInstance().getEnabledAccounts();
+//            for (AccountJid accountJid : enabledAccounts) {
+//                AccountItem accountItem = AccountManager.getInstance().getAccount(accountJid);
+//                if (accountItem != null) {
+//                    accountItem.recreateConnection();
+//                }
+//            }
+//        }
     }
 
     private void setDnsResolverSummary(SettingsManager.DnsResolverType dnsResolverType) {
