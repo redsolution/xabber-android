@@ -756,7 +756,7 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
                 exit();
                 break;
             case R.id.drawer_header_action_xmpp_accounts:
-                startActivity(AccountListActivity.createIntent(this));
+                startActivity(PreferenceEditor.createIntent(this));
                 break;
             case R.id.drawer_header_action_xabber_account:
                 XabberAccount account = XabberAccountManager.getInstance().getAccount();

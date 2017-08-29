@@ -17,21 +17,15 @@
     android:layout_height="@dimen/contact_list_item_height"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:gravity="center_vertical"
-    android:background="@drawable/ripple_background">
-    <ImageView
-        android:id="@+id/ivAnchor"
-        android:layout_width="wrap_content"
-        android:layout_height="@dimen/avatar_size_toolbar"
-        android:layout_marginRight="8dp"
-        android:layout_marginLeft="8dp"
-        android:src="@drawable/ic_drag_vertical"
-        />
+    android:background="@color/white"
+    android:elevation="4dp">
 
     <FrameLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        android:layout_marginRight="8dp">
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp">
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/avatar"
@@ -73,5 +67,12 @@
             android:textColor="?android:attr/textColorSecondary"
             />
     </LinearLayout>
-
+    <ImageView
+        android:id="@+id/ivAnchor"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/avatar_size_toolbar"
+        android:layout_marginRight="8dp"
+        android:layout_marginLeft="8dp"
+        android:src="@drawable/ic_drag_vertical"
+        />
 </LinearLayout>
