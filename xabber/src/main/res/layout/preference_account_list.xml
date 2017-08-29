@@ -46,7 +46,7 @@
                 android:padding="12dp"
                 android:src="@drawable/ic_swap"
                 android:layout_centerVertical="true"
-                android:tint="@color/teal_500"
+                android:tint="@color/grey_500"
                 />
 
         </RelativeLayout>

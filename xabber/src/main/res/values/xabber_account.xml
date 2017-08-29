@@ -58,7 +58,7 @@
     <string name="title_email_confirmed">Confirmed Email address</string>
     <string name="title_complete_register">Complete registration</string>
     <string name="title_start_messaging">Start messaging!</string>
-    <string name="title_reordering_account">Reordering account</string>
+    <string name="title_reordering_account">Reorder accounts</string>
     <string name="title_sync">Synchronization</string>
 
     <string name="summary_xabber_account">Xabber account lets you easily sync your settings and connected XMPP accounts between various devices.</string>
@@ -106,5 +106,7 @@
     <string name="signed_up_github">Signed up with Github</string>
     <string name="signed_up_twitter">Signed up with Twitter</string>
 
-    <string name="username">\@%1$s</string>
+    <string name="username">%1$s\@xabber.org</string>
+
+    <string name="reorder_summary">Чтобы синхронизировать порядок аккаунтов на всех своих устройствах - используйте синхронизацию в Xabber Account</string>
 </resources>

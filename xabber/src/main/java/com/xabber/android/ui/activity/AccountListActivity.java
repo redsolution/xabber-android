@@ -25,6 +25,9 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
@@ -54,6 +57,7 @@ public class AccountListActivity extends ManagedActivity implements OnAccountCha
     private ItemTouchHelper touchHelper;
     private Toolbar toolbar;
     private boolean swapMode = false;
+    private TextView tvSummary;
 
     public static Intent createIntent(Context context) {
         return new Intent(context, AccountListActivity.class);
@@ -80,6 +84,7 @@ public class AccountListActivity extends ManagedActivity implements OnAccountCha
         barPainter = new BarPainter(this, toolbar);
 
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.account_list_recycler_view);
+        tvSummary = (TextView) findViewById(R.id.tvSummary);
 
         accountListAdapter = new AccountListReorderAdapter(this, this);
 
@@ -113,7 +118,7 @@ public class AccountListActivity extends ManagedActivity implements OnAccountCha
             });
         } else {
             toolbar.setTitle(R.string.title_reordering_account);
-            barPainter.setGrey();
+            barPainter.setDefaultColor();
             toolbar.setNavigationIcon(R.drawable.ic_clear_white_24dp);
             toolbar.setNavigationOnClickListener(new View.OnClickListener() {
                 @Override
@@ -137,6 +142,17 @@ public class AccountListActivity extends ManagedActivity implements OnAccountCha
         accountListAdapter.setAccountItems(accountItems);
 
         barPainter.setDefaultColor();
+
+        // set margin for textView
+        int height = 48 * (accountItems.size() + 1) + 38;
+        final float scale = getResources().getDisplayMetrics().density;
+        int pixels = (int) (height * scale + 0.5f);
+
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
+                RelativeLayout.LayoutParams.WRAP_CONTENT,
+                RelativeLayout.LayoutParams.WRAP_CONTENT);
+        params.setMargins(16, pixels, 16, 0);
+        tvSummary.setLayoutParams(params);
     }
 
     public void updateAccountOrder() {
