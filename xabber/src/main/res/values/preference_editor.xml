@@ -37,11 +37,11 @@
     <string name="events_sound">Audio alert\nChoose notification sound</string>
     <string name="events_vibro">Vibrate\nVibrate on notification</string>
 
-    <string name="interface_theme">Theme\nTheme settings</string>
+    <string name="interface_theme">Theme</string>
     <string name="interface_theme_dark">Dark</string>
     <string name="interface_theme_light">Light</string>
     <string name="interface_theme_normal">Default</string>
-    <string name="interface_smiles">Emoticons\nEmoticons (previously known as smiles) settings</string>
+    <string name="interface_smiles">Emoticons</string>
     <string name="interface_smiles_android">Android emoticons</string>
     <string name="interface_smiles_none">No graphical emoticons</string>
 

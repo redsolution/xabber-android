@@ -43,6 +43,7 @@
             android:entries="@array/interface_theme_entries"
             android:entryValues="@array/interface_theme_entryvalues"
             android:defaultValue="@string/interface_theme_default"
+            android:summary="%s"
             />
         <Preference
             android:key="@string/preference_chats"
@@ -64,6 +65,7 @@
             android:entries="@array/interface_smiles_entries"
             android:entryValues="@array/interface_smiles_entryvalues"
             android:defaultValue="@string/interface_smiles_default"
+            android:summary="%s"
             />
 
     </PreferenceCategory>

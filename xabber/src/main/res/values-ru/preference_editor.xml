@@ -29,11 +29,11 @@
   <string name="events_persistent">Иконка в панели задач\nОтображать постоянное уведомление. Включение предотвращает выгрузку приложения при нехватке памяти</string>
   <string name="events_sound">Звуковое оповещение\nВыберите звуковое оповещение</string>
   <string name="events_vibro">Вибрация\nВибрировать для оповещения</string>
-  <string name="interface_theme">Цветовая тема оформления\nНастройки цветовой темы оформления</string>
+  <string name="interface_theme">Цветовая тема оформления</string>
   <string name="interface_theme_dark">Темная</string>
   <string name="interface_theme_light">Светлая</string>
   <string name="interface_theme_normal">Стандартная</string>
-  <string name="interface_smiles">Смайлы\nНастройки смайлов</string>
+  <string name="interface_smiles">Смайлы</string>
   <string name="interface_smiles_android">Стандартные смайлы</string>
   <string name="interface_smiles_none">Отключить графические смайлы</string>
   <string name="preference_connection">Настройки подключения\nНастройки вариантов подключения</string>
@@ -42,6 +42,8 @@
   <string name="preference_editor">Настройки</string>
   <string name="preference_events">Оповещения\nНастройки вариантов оповещения</string>
   <string name="preference_interface">Темы\nНастройки внешнего вида</string>
+  <string name="preference_presence">Присутствие\nНастройки уведомлений о присутствии</string>
+  <string name="preference_privacy">Приватность\nНастройки приватности</string>
   <string name="about_viewer">О программе</string>
   <string name="chats_show_background">Отображать фон\nОтключение может увеличить производительность</string>
   <string name="chats_font_size">Размер шрифта\nРазмер текста сообщения</string>
@@ -100,4 +102,27 @@
   <string name="spam_filter_2">Принимать сообщения только из контакт-листа</string>
   <string name="spam_filter_3">Принимать сообщения только из контакт-листа. Запросы авторизации только через каптчу</string>
   <string name="spam_filter_4">Принимать сообщения только из контакт-листа. Не принимать запросы авторизации</string>
+
+  <string name="battery_optimization">Экономия батареи</string>
+  <string name="battery_optimization_disabled">Экономия батареи отключена. Чтобы включить перейдите в настройки устройства</string>
+  <string name="battery_optimization_enabled">Экономия батареи включена (по умолчанию)</string>
+
+  <string name="category_xabber_account">Xabber аккаунт</string>
+  <string name="category_xmpp_accounts">XMPP аккаунты</string>
+  <string name="category_interface">Интерфейс</string>
+  <string name="category_settings">Настройки</string>
+  <string name="category_about">О программе</string>
+
+  <string name="category_appearance">Внешний вид</string>
+  <string name="category_behavior">Поведение</string>
+  <string name="category_contact_list">Список контактов</string>
+  <string name="category_offline_contacts">Контакты не в сети</string>
+  <string name="category_reset">Сброс</string>
+  <string name="category_connection_settings">Настройки подключения</string>
+  <string name="category_advanced">Расширенные</string>
+  <string name="category_availability">Доступность</string>
+  <string name="category_message_notifications">Уведомления о сообщениях</string>
+  <string name="category_group_notifications">Групповые уведомления</string>
+  <string name="category_inapp_notifications">Уведомления в приложении</string>
+  <string name="category_key_phrase">Ключевые фразы</string>
 </resources>
