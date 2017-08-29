@@ -34,6 +34,7 @@ import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.xaccount.XabberAccountManager;
 import com.xabber.android.ui.adapter.AccountListAdapter;
+import com.xabber.android.ui.adapter.AccountListReorderAdapter;
 import com.xabber.android.ui.color.BarPainter;
 import com.xabber.android.ui.dialog.AccountDeleteDialog;
 import com.xabber.android.ui.widget.SimpleItemTouchHelperCallback;
@@ -48,7 +49,7 @@ import java.util.List;
 public class AccountListActivity extends ManagedActivity implements OnAccountChangedListener,
         AccountListAdapter.Listener, Toolbar.OnMenuItemClickListener {
 
-    private AccountListAdapter accountListAdapter;
+    private AccountListReorderAdapter accountListAdapter;
     private BarPainter barPainter;
     private ItemTouchHelper touchHelper;
     private Toolbar toolbar;
@@ -80,7 +81,7 @@ public class AccountListActivity extends ManagedActivity implements OnAccountCha
 
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.account_list_recycler_view);
 
-        accountListAdapter = new AccountListAdapter(this, this);
+        accountListAdapter = new AccountListReorderAdapter(this, this);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(accountListAdapter);
@@ -117,7 +118,7 @@ public class AccountListActivity extends ManagedActivity implements OnAccountCha
             toolbar.setNavigationOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    showHideSwapMode();
+                    finish();
                 }
             });
         }
@@ -158,6 +159,7 @@ public class AccountListActivity extends ManagedActivity implements OnAccountCha
         super.onResume();
         update();
         Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
+        showHideSwapMode();
     }
 
     @Override
@@ -219,7 +221,7 @@ public class AccountListActivity extends ManagedActivity implements OnAccountCha
         }
         if (item.getItemId() == R.id.action_done) {
             updateAccountOrder();
-            showHideSwapMode();
+            finish();
             return true;
         }
 

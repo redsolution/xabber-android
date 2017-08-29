@@ -8,13 +8,18 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.RelativeLayout;
 
 import com.xabber.android.R;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.ui.activity.AccountAddActivity;
 import com.xabber.android.ui.adapter.AccountListPreferenceAdapter;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -24,9 +29,11 @@ import java.util.List;
  * Created by valery.miller on 29.08.17.
  */
 
-public class XMPPListPreference extends Preference implements OnAccountChangedListener {
+public class XMPPListPreference extends Preference implements OnAccountChangedListener, View.OnClickListener {
 
     private AccountListPreferenceAdapter accountListAdapter;
+    private RelativeLayout rlReorder;
+    private Button btnAddAccount;
 
     public XMPPListPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -44,6 +51,11 @@ public class XMPPListPreference extends Preference implements OnAccountChangedLi
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(accountListAdapter);
+
+        rlReorder = (RelativeLayout) view.findViewById(R.id.rlReorder);
+        rlReorder.setOnClickListener(this);
+        btnAddAccount = (Button) view.findViewById(R.id.btnAddAccount);
+        btnAddAccount.setOnClickListener(this);
 
         return view;
     }
@@ -66,4 +78,19 @@ public class XMPPListPreference extends Preference implements OnAccountChangedLi
     public void onAccountsChanged(Collection<AccountJid> accounts) {
         update();
     }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.rlReorder:
+                EventBus.getDefault().post(new ReorderClickEvent());
+                break;
+            case R.id.btnAddAccount:
+                EventBus.getDefault().post(new AddAccountClickEvent());
+                break;
+        }
+    }
+
+    public static class AddAccountClickEvent {}
+    public static class ReorderClickEvent {}
 }

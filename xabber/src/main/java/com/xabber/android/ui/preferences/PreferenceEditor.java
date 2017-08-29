@@ -24,10 +24,17 @@ import com.xabber.android.R;
 import com.xabber.android.data.ActivityManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.SettingsManager;
+import com.xabber.android.ui.activity.AccountAddActivity;
+import com.xabber.android.ui.activity.AccountListActivity;
 import com.xabber.android.ui.activity.ContactListActivity;
 import com.xabber.android.ui.activity.ManagedActivity;
 import com.xabber.android.ui.color.BarPainter;
 import com.xabber.android.ui.helper.ToolbarHelper;
+import com.xabber.android.ui.widget.XMPPListPreference;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 public class PreferenceEditor extends ManagedActivity
         implements PreferencesFragment.OnPreferencesFragmentInteractionListener {
@@ -80,5 +87,15 @@ public class PreferenceEditor extends ManagedActivity
     public void onThemeChanged() {
         ActivityManager.getInstance().clearStack(true);
         startActivity(ContactListActivity.createIntent(this));
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onAddAccountClick(XMPPListPreference.AddAccountClickEvent event) {
+        startActivity(AccountAddActivity.createIntent(this));
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onReorderClick(XMPPListPreference.ReorderClickEvent event) {
+        startActivity(AccountListActivity.createIntent(this));
     }
 }
