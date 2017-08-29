@@ -4,10 +4,12 @@ package com.xabber.android.ui.adapter;
  * Created by valery.miller on 29.08.17.
  */
 
+import android.app.Activity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SwitchCompat;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,12 +18,12 @@ import android.widget.TextView;
 import com.xabber.android.R;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
+import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.xaccount.XMPPAccountSettings;
 import com.xabber.android.data.xaccount.XabberAccountManager;
 import com.xabber.android.ui.color.ColorManager;
-import com.xabber.android.ui.widget.ItemTouchHelperAdapter;
 
 import org.jxmpp.jid.BareJid;
 
@@ -38,9 +40,20 @@ public class AccountListPreferenceAdapter extends RecyclerView.Adapter {
     @SuppressWarnings("WeakerAccess")
     List<AccountItem> accountItems;
     @SuppressWarnings("WeakerAccess")
+    Listener listener;
+    Activity activity;
 
-    public AccountListPreferenceAdapter() {
+    public interface Listener {
+        void onAccountClick(AccountJid account);
+        void onEditAccountStatus(AccountItem accountItem);
+        void onEditAccount(AccountItem accountItem);
+        void onDeleteAccount(AccountItem accountItem);
+    }
+
+    public AccountListPreferenceAdapter(Activity activity, Listener listener) {
         this.accountItems = new ArrayList<>();
+        this.listener = listener;
+        this.activity = activity;
     }
 
     public void setAccountItems(List<AccountItem> accountItems) {
@@ -96,7 +109,7 @@ public class AccountListPreferenceAdapter extends RecyclerView.Adapter {
         return accountItems.size();
     }
 
-    private class AccountViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    private class AccountViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnCreateContextMenuListener, MenuItem.OnMenuItemClickListener {
         CircleImageView avatar;
         TextView name;
         TextView status;
@@ -114,6 +127,7 @@ public class AccountListPreferenceAdapter extends RecyclerView.Adapter {
             enabledSwitch.setOnClickListener(this);
 
             itemView.setOnClickListener(this);
+            itemView.setOnCreateContextMenuListener(this);
         }
 
         @Override
@@ -129,10 +143,61 @@ public class AccountListPreferenceAdapter extends RecyclerView.Adapter {
             switch (v.getId()) {
                 case R.id.item_account_switch:
                     AccountManager.getInstance().setEnabled(accountItem.getAccount(), enabledSwitch.isChecked());
-
                     break;
-
+                default:
+                    if (listener != null) {
+                        listener.onAccountClick(accountItem.getAccount());
+                    }
             }
+        }
+
+        @Override
+        public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+            int adapterPosition = getAdapterPosition();
+            if (adapterPosition == RecyclerView.NO_POSITION) {
+                LogManager.w(LOG_TAG, "onCreateContextMenu: no position");
+                return;
+            }
+
+            AccountItem accountItem = accountItems.get(adapterPosition);
+
+            MenuInflater inflater = activity.getMenuInflater();
+            inflater.inflate(R.menu.item_account, menu);
+
+            menu.setHeaderTitle(AccountManager.getInstance().getVerboseName(accountItem.getAccount()));
+            menu.findItem(R.id.action_account_edit_status).setVisible(accountItem.isEnabled());
+
+            menu.findItem(R.id.action_account_edit_status).setOnMenuItemClickListener(this);
+            menu.findItem(R.id.action_account_edit).setOnMenuItemClickListener(this);
+            menu.findItem(R.id.action_account_delete).setOnMenuItemClickListener(this);
+
+
+        }
+
+        @Override
+        public boolean onMenuItemClick(MenuItem item) {
+            int adapterPosition = getAdapterPosition();
+            if (adapterPosition == RecyclerView.NO_POSITION) {
+                LogManager.w(LOG_TAG, "onMenuItemClick: no position");
+                return false;
+            }
+
+            AccountItem accountItem = accountItems.get(adapterPosition);
+
+            switch (item.getItemId()) {
+                case R.id.action_account_edit_status:
+                    listener.onEditAccountStatus(accountItem);
+                    return true;
+
+                case R.id.action_account_edit:
+                    listener.onEditAccount(accountItem);
+                    return true;
+                case R.id.action_account_delete:
+                    listener.onDeleteAccount(accountItem);
+                    return true;
+            }
+
+            return false;
         }
     }
 

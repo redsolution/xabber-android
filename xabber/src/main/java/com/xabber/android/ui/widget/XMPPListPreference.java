@@ -17,7 +17,9 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.ui.activity.AccountAddActivity;
+import com.xabber.android.ui.activity.ManagedActivity;
 import com.xabber.android.ui.adapter.AccountListPreferenceAdapter;
+import com.xabber.android.ui.preferences.PreferenceEditor;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -34,9 +36,14 @@ public class XMPPListPreference extends Preference implements OnAccountChangedLi
     private AccountListPreferenceAdapter accountListAdapter;
     private RelativeLayout rlReorder;
     private Button btnAddAccount;
+    private PreferenceEditor activity;
 
     public XMPPListPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
+    }
+
+    public void setActivity(PreferenceEditor activity) {
+        this.activity = activity;
     }
 
     @Override
@@ -47,7 +54,7 @@ public class XMPPListPreference extends Preference implements OnAccountChangedLi
 
         RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.account_list_recycler_view);
 
-        accountListAdapter = new AccountListPreferenceAdapter();
+        accountListAdapter = new AccountListPreferenceAdapter(activity, activity);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(accountListAdapter);

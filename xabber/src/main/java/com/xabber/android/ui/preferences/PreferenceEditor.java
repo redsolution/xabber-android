@@ -22,13 +22,19 @@ import android.support.v7.widget.Toolbar;
 
 import com.xabber.android.R;
 import com.xabber.android.data.ActivityManager;
+import com.xabber.android.data.account.AccountItem;
+import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.SettingsManager;
+import com.xabber.android.ui.activity.AccountActivity;
 import com.xabber.android.ui.activity.AccountAddActivity;
 import com.xabber.android.ui.activity.AccountListActivity;
 import com.xabber.android.ui.activity.ContactListActivity;
 import com.xabber.android.ui.activity.ManagedActivity;
+import com.xabber.android.ui.activity.StatusEditActivity;
+import com.xabber.android.ui.adapter.AccountListPreferenceAdapter;
 import com.xabber.android.ui.color.BarPainter;
+import com.xabber.android.ui.dialog.AccountDeleteDialog;
 import com.xabber.android.ui.helper.ToolbarHelper;
 import com.xabber.android.ui.widget.XMPPListPreference;
 
@@ -37,7 +43,7 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 public class PreferenceEditor extends ManagedActivity
-        implements PreferencesFragment.OnPreferencesFragmentInteractionListener {
+        implements PreferencesFragment.OnPreferencesFragmentInteractionListener, AccountListPreferenceAdapter.Listener {
 
     private BarPainter barPainter;
 
@@ -97,5 +103,26 @@ public class PreferenceEditor extends ManagedActivity
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onReorderClick(XMPPListPreference.ReorderClickEvent event) {
         startActivity(AccountListActivity.createIntent(this));
+    }
+
+    @Override
+    public void onAccountClick(AccountJid account) {
+        startActivity(AccountActivity.createIntent(this, account));
+    }
+
+    @Override
+    public void onEditAccountStatus(AccountItem accountItem) {
+        startActivity(StatusEditActivity.createIntent(this, accountItem.getAccount()));
+    }
+
+    @Override
+    public void onEditAccount(AccountItem accountItem) {
+        startActivity(AccountActivity.createIntent(this, accountItem.getAccount()));
+    }
+
+    @Override
+    public void onDeleteAccount(AccountItem accountItem) {
+        AccountDeleteDialog.newInstance(accountItem.getAccount()).show(getFragmentManager(),
+                AccountDeleteDialog.class.getName());
     }
 }

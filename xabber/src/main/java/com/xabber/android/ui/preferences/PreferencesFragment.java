@@ -46,6 +46,7 @@ public class PreferencesFragment extends android.preference.PreferenceFragment i
         });
 
         xmppAccountsPref = (XMPPListPreference) getPreferenceScreen().findPreference("preference_accounts_key");
+        xmppAccountsPref.setActivity((PreferenceEditor) getActivity());
     }
 
     @Override

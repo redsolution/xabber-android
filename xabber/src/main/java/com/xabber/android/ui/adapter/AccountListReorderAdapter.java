@@ -14,6 +14,7 @@ import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.xaccount.XMPPAccountSettings;
 import com.xabber.android.data.xaccount.XabberAccountManager;
 import com.xabber.android.ui.activity.ManagedActivity;
@@ -103,7 +104,7 @@ public class AccountListReorderAdapter extends RecyclerView.Adapter implements I
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new AccountListReorderAdapter.AccountViewHolder(LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_account, parent, false));
+                .inflate(R.layout.item_account_for_reorder, parent, false));
     }
 
     @Override
