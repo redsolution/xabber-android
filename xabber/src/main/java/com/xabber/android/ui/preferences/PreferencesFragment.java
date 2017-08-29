@@ -9,15 +9,19 @@ import android.preference.PreferenceManager;
 import android.widget.BaseAdapter;
 
 import com.xabber.android.R;
+import com.xabber.android.data.Application;
+import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.xaccount.XabberAccount;
 import com.xabber.android.data.xaccount.XabberAccountManager;
 import com.xabber.android.ui.activity.PreferenceSummaryHelperActivity;
 import com.xabber.android.ui.activity.TutorialActivity;
 import com.xabber.android.ui.activity.XabberAccountInfoActivity;
+import com.xabber.android.ui.widget.XMPPListPreference;
 
 public class PreferencesFragment extends android.preference.PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     private OnPreferencesFragmentInteractionListener mListener;
+    private XMPPListPreference xmppAccountsPref;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -40,6 +44,8 @@ public class PreferencesFragment extends android.preference.PreferenceFragment i
                 return true;
             }
         });
+
+        xmppAccountsPref = (XMPPListPreference) getPreferenceScreen().findPreference("preference_accounts_key");
     }
 
     @Override
@@ -49,6 +55,7 @@ public class PreferencesFragment extends android.preference.PreferenceFragment i
         adapter.notifyDataSetChanged();
         PreferenceManager.getDefaultSharedPreferences(getActivity())
                 .registerOnSharedPreferenceChangeListener(this);
+        Application.getInstance().addUIListener(OnAccountChangedListener.class, xmppAccountsPref);
     }
 
     @Override
@@ -56,6 +63,7 @@ public class PreferencesFragment extends android.preference.PreferenceFragment i
         super.onPause();
         PreferenceManager.getDefaultSharedPreferences(getActivity())
                 .unregisterOnSharedPreferenceChangeListener(this);
+        Application.getInstance().removeUIListener(OnAccountChangedListener.class, xmppAccountsPref);
     }
 
     @Override
