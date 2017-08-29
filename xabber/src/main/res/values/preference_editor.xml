@@ -9,7 +9,7 @@
     <string name="chats_send_by_enter">Send on Enter\nMessage can be sent by pressing the Enter button</string>
     <string name="connection_go_away">Auto-away\nAutomatically set away status on screen lock</string>
 
-    <string name="contacts_order">Sort contacts\nSet the order in which contacts are displayed</string>
+    <string name="contacts_order">Sort contacts</string>
     <string name="contacts_order_alphabet">Alphabetic</string>
     <string name="contacts_order_status">By status</string>
     <string name="contacts_show_accounts">Group by account\nGroup contacts in contact list by account</string>
@@ -63,16 +63,16 @@
     <string name="about_viewer">About</string>
 
     <string name="chats_show_background">Show background\nDisabling may increase performance</string>
-    <string name="chats_font_size">Font size\nSize of message text</string>
+    <string name="chats_font_size">Font size</string>
     <string name="chats_font_size_large">Large</string>
     <string name="chats_font_size_normal">Normal</string>
     <string name="chats_font_size_small">Small</string>
     <string name="chats_font_size_xlarge">Extra large</string>
-    <string name="chats_hide_keyboard">Hide keyboard\nHide software keyboard after sending message</string>
+    <string name="chats_hide_keyboard">Hide keyboard</string>
     <string name="chats_hide_keyboard_landscape">In landscape mode</string>
     <string name="chats_receipt">Message delivery receipts\nSend and receive message delivery receipts</string>
     <string name="chats_show_avatars">Avatars in messages\nShow avatars in each message</string>
-    <string name="chats_show_status_change">Show status changes\nShow messages about status changes</string>
+    <string name="chats_show_status_change">Show status changes</string>
     <string name="chats_show_status_change_muc">In conferences</string>
     <string name="chats_state_notification">Send typing notifications\nNotify the other user that you are typing a message to them</string>
 

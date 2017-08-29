@@ -10,6 +10,7 @@
             android:entries="@array/contacts_order_entries"
             android:entryValues="@array/contacts_order_entryvalues"
             android:defaultValue="@string/contacts_order_default"
+            android:summary="%s"
             />
 
         <CheckBoxPreference

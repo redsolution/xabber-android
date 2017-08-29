@@ -10,6 +10,7 @@
         android:entryValues="@array/chats_font_size_entryvalues"
         android:key="@string/chats_font_size_key"
         android:title="@string/chats_font_size"
+        android:summary="%s"
         />
     <CheckBoxPreference
         android:defaultValue="@bool/chats_show_avatars_default"
@@ -21,7 +22,7 @@
         android:entries="@array/chats_show_status_change_entries"
         android:entryValues="@array/chats_show_status_change_entryvalues"
         android:key="@string/chats_show_status_change_key"
-        android:summary="@string/chats_show_status_change"
+        android:summary="%s"
         android:title="@string/chats_show_status_change"
         />
     <CheckBoxPreference
@@ -46,6 +47,7 @@
         android:entryValues="@array/chats_hide_keyboard_entryvalues"
         android:key="@string/chats_hide_keyboard_key"
         android:title="@string/chats_hide_keyboard"
+        android:summary="%s"
         />
 
     </PreferenceCategory>
