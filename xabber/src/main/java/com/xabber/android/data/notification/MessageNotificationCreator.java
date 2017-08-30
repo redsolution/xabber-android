@@ -1,7 +1,9 @@
 package com.xabber.android.data.notification;
 
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
+import android.media.AudioManager;
 import android.support.v4.app.NotificationCompat;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -80,7 +82,7 @@ public class MessageNotificationCreator {
         notificationBuilder.setCategory(NotificationCompat.CATEGORY_MESSAGE);
         notificationBuilder.setPriority(NotificationCompat.PRIORITY_HIGH);
 
-        NotificationManager.addEffects(notificationBuilder, messageItem, isMUC);
+        NotificationManager.addEffects(notificationBuilder, messageItem, isMUC, checkVibrateMode());
 
         return notificationBuilder.build();
     }
@@ -215,6 +217,11 @@ public class MessageNotificationCreator {
         Intent intent = ChatActivity.createClearTopIntent(application, message.getAccount(), message.getUser());
         return PendingIntent.getActivities(application, UNIQUE_REQUEST_CODE++,
                 new Intent[]{backIntent, intent}, PendingIntent.FLAG_ONE_SHOT);
+    }
+
+    private boolean checkVibrateMode() {
+        AudioManager am = (AudioManager) application.getSystemService(Context.AUDIO_SERVICE);
+        return am.getRingerMode() == AudioManager.RINGER_MODE_VIBRATE;
     }
 
 }

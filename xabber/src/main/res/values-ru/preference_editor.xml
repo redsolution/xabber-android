@@ -28,7 +28,7 @@
   <string name="events_lightning">Подсветка\nМигать подсветкой для оповещения</string>
   <string name="events_persistent">Иконка в панели задач\nОтображать постоянное уведомление. Включение предотвращает выгрузку приложения при нехватке памяти</string>
   <string name="events_sound">Звуковое оповещение\nВыберите звуковое оповещение</string>
-  <string name="events_vibro">Вибрация\nВибрировать для оповещения</string>
+  <string name="events_vibro">Вибрация</string>
   <string name="interface_theme">Цветовая тема оформления</string>
   <string name="interface_theme_dark">Темная</string>
   <string name="interface_theme_light">Светлая</string>

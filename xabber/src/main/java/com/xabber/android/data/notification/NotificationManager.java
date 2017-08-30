@@ -156,7 +156,7 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
         persistentNotificationColor = application.getResources().getColor(R.color.persistent_notification_color);
     }
 
-    public static void addEffects(NotificationCompat.Builder notificationBuilder, MessageItem messageItem, boolean isMUC) {
+    public static void addEffects(NotificationCompat.Builder notificationBuilder, MessageItem messageItem, boolean isMUC, boolean isPhoneInVibrateMode) {
         if (messageItem == null) {
             return;
         }
@@ -170,8 +170,11 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
             if (isMUC) led = SettingsManager.eventsLightningForMuc();
             else led = SettingsManager.eventsLightning();
 
-            NotificationManager.getInstance().setNotificationDefaults(notificationBuilder,
-                    makeVibration, led, sound, AudioManager.STREAM_NOTIFICATION);
+            NotificationManager.getInstance().setNotificationDefaults(notificationBuilder, led, sound, AudioManager.STREAM_NOTIFICATION);
+
+            // vibration
+            if (makeVibration)
+                setVibration(isMUC, isPhoneInVibrateMode, notificationBuilder);
         }
     }
 
@@ -293,7 +296,7 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
         notificationBuilder.setContentIntent(taskStackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT));
 
         if (ticker != null) {
-            setNotificationDefaults(notificationBuilder, SettingsManager.eventsVibro(), SettingsManager.eventsLightning(), provider.getSound(), provider.getStreamType());
+            setNotificationDefaults(notificationBuilder, SettingsManager.eventsLightning(), provider.getSound(), provider.getStreamType());
         }
 
         notificationBuilder.setDeleteIntent(clearNotifications);
@@ -309,20 +312,11 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
      * @param notificationBuilder
      * @param streamType
      */
-    public void setNotificationDefaults(NotificationCompat.Builder notificationBuilder, boolean vibration, boolean led, Uri sound, int streamType) {
+    public void setNotificationDefaults(NotificationCompat.Builder notificationBuilder, boolean led, Uri sound, int streamType) {
         notificationBuilder.setSound(sound, streamType);
         notificationBuilder.setDefaults(0);
 
         int defaults = 0;
-
-        if (vibration) {
-            if (SettingsManager.eventsIgnoreSystemVibro()) {
-                startVibration();
-            } else {
-                defaults |= Notification.DEFAULT_VIBRATE;
-
-            }
-        }
 
         if (led) {
             defaults |= Notification.DEFAULT_LIGHTS;
@@ -618,5 +612,33 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
     @Override
     public void onClose() {
         notificationManager.cancelAll();
+    }
+
+    public static void setVibration(boolean isMUC, boolean isPhoneInVibrateMode, NotificationCompat.Builder notificationBuilder) {
+        SettingsManager.VibroMode vibroMode;
+        if (isMUC) vibroMode = SettingsManager.eventsVibroMuc();
+        else vibroMode = SettingsManager.eventsVibroChat();
+
+        switch (vibroMode) {
+            case disabled:
+                notificationBuilder.setVibrate(new long[] {0, 0});
+                break;
+            case defaultvibro:
+                notificationBuilder.setVibrate(new long[] {0, 500});
+                break;
+            case shortvibro:
+                notificationBuilder.setVibrate(new long[] {0, 250});
+                break;
+            case longvibro:
+                notificationBuilder.setVibrate(new long[] {0, 1000});
+                break;
+            case onlyifsilent:
+                if (isPhoneInVibrateMode)
+                    notificationBuilder.setVibrate(new long[] {0, 500});
+                break;
+            default:
+                notificationBuilder.setVibrate(new long[] {0, 500});
+                break;
+        }
     }
 }

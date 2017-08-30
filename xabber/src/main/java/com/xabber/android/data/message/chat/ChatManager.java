@@ -412,7 +412,7 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
     public boolean isMakeVibro(AccountJid account, UserJid user) {
         Boolean value = makeVibro.get(account.toString(), user.toString());
         if (value == null) {
-            return SettingsManager.eventsVibro();
+            return true;
         }
         return value;
     }

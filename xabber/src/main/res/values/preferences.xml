@@ -128,11 +128,27 @@
     <string name="events_sound_key">events_sound_uri</string>
     <string name="events_sound_default">@string/default_sound</string>
 
-    <string name="events_vibro_key">events_vibro</string>
-    <bool name="events_vibro_default">true</bool>
-
-    <string name="events_ignore_system_vibro_key">events_ignore_system_vibro</string>
-    <bool name="events_ignore_system_vibro_default">false</bool>
+    <string name="events_vibro_chat_key">events_vibro_chat_key</string>
+    <string name="events_vibro_muc_key">events_vibro_muc_key</string>
+    <string name="events_vibro_disable">disable</string>
+    <string name="events_vibro_bydefault">default</string>
+    <string name="events_vibro_short">short</string>
+    <string name="events_vibro_long">long</string>
+    <string name="events_vibro_if_silent">if silent</string>
+    <string-array name="events_vibro_entries">
+        <item>@string/disabled</item>
+        <item>@string/vibro_default</item>
+        <item>@string/vibro_short</item>
+        <item>@string/vibro_long</item>
+        <item>@string/vibro_if_silent</item>
+    </string-array>
+    <string-array name="events_vibro_entryvalues">
+        <item>@string/events_vibro_disable</item>
+        <item>@string/events_vibro_bydefault</item>
+        <item>@string/events_vibro_short</item>
+        <item>@string/events_vibro_long</item>
+        <item>@string/events_vibro_if_silent</item>
+    </string-array>
 
     <string name="events_lightning_key">events_lightning</string>
     <string name="events_lightning_muc_key">events_lightning_muc</string>

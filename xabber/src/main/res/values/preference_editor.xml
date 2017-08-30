@@ -36,7 +36,7 @@
     <string name="events_lightning_muc">Light indication\nBlink LED on notification from conferences</string>
     <string name="events_persistent">Taskbar icon\nShow persistent notification. This option prevents Android from unloading the app from memory</string>
     <string name="events_sound">Audio alert\nChoose notification sound</string>
-    <string name="events_vibro">Vibrate\nVibrate on notification</string>
+    <string name="events_vibro">Vibrate</string>
 
     <string name="interface_theme">Theme</string>
     <string name="interface_theme_dark">Dark</string>
@@ -145,4 +145,9 @@
     <string name="events_on_chat_summary">Alert about new messages in chats</string>
     <string name="events_on_muc_title">Alert</string>
     <string name="events_on_muc_summary">Alert about new messages in conferences</string>
+
+    <string name="vibro_default">By default</string>
+    <string name="vibro_short">Short vibration</string>
+    <string name="vibro_long">Long vibration</string>
+    <string name="vibro_if_silent">Only in silent mode</string>
 </resources>
