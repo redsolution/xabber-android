@@ -93,7 +93,8 @@
     <string name="events_message_chat">Chats only</string>
     <string name="events_message_chat_and_muc">Chats and conferences</string>
     <string name="events_message_none">Don\'t notify</string>
-    <string name="events_show_text">Show message in notification\nShow message text in notification area</string>
+    <string name="events_show_text">Message preview\nShow message text from chats in notification area</string>
+    <string name="events_show_text_muc">Message preview\nShow message text from conferences in notification area</string>
     <string name="events_visible_chat">Notify in current chat\nNotify on incoming messages in current chat</string>
     <string name="events_suppress_100">Suppress some status messages\nDon\'t get \'This room is not anonymous\' messages</string>
     <string name="negative_priotiry_summary">%s (you won\'t receive messages from any chat)</string>
@@ -139,5 +140,8 @@
     <string name="category_inapp_notifications">In-app notification</string>
     <string name="category_key_phrase">Key phrases</string>
 
-
+    <string name="events_on_chat_title">Alert</string>
+    <string name="events_on_chat_summary">Alert about new messages in chats</string>
+    <string name="events_on_muc_title">Alert</string>
+    <string name="events_on_muc_summary">Alert about new messages in conferences</string>
 </resources>

@@ -4,12 +4,11 @@
     <PreferenceCategory
         android:title="@string/category_message_notifications">
 
-        <ListPreference
-            android:title="@string/events_message"
-            android:key="@string/events_message_key"
-            android:entries="@array/events_message_entries"
-            android:entryValues="@array/events_message_entryvalues"
-            android:defaultValue="@string/events_message_default"
+        <CheckBoxPreference
+            android:title="@string/events_on_chat_title"
+            android:key="@string/events_on_chat_key"
+            android:defaultValue="@bool/events_on_chat_default"
+            android:summary="@string/events_on_chat_summary"
             />
 
         <CheckBoxPreference
@@ -43,17 +42,16 @@
     <PreferenceCategory
         android:title="@string/category_group_notifications">
 
-        <ListPreference
-            android:title="@string/events_message"
-            android:key="@string/events_message_key"
-            android:entries="@array/events_message_entries"
-            android:entryValues="@array/events_message_entryvalues"
-            android:defaultValue="@string/events_message_default"
+        <CheckBoxPreference
+            android:title="@string/events_on_muc_title"
+            android:key="@string/events_on_muc_key"
+            android:defaultValue="@bool/events_on_muc_default"
+            android:summary="@string/events_on_muc_summary"
             />
 
         <CheckBoxPreference
-            android:title="@string/events_show_text"
-            android:key="@string/events_show_text_key"
+            android:title="@string/events_show_text_muc"
+            android:key="@string/events_show_text_muc_key"
             android:defaultValue="@bool/events_show_text_default"
             />
 

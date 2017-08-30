@@ -273,21 +273,19 @@ public class SettingsManager implements OnInitializedListener,
                 R.bool.events_show_text_default);
     }
 
-    public static EventsMessage eventsMessage() {
-        String value = getString(R.string.events_message_key,
-                R.string.events_message_default);
-        if (Application.getInstance()
-                .getString(R.string.events_message_none_value).equals(value))
-            return EventsMessage.none;
-        else if (Application.getInstance()
-                .getString(R.string.events_message_chat_value).equals(value))
-            return EventsMessage.chat;
-        else if (Application.getInstance()
-                .getString(R.string.events_message_chat_and_muc_value)
-                .equals(value))
-            return EventsMessage.chatAndMuc;
-        else
-            throw new IllegalStateException();
+    public static boolean eventsShowTextOnMuc() {
+        return getBoolean(R.string.events_show_text_muc_key,
+                R.bool.events_show_text_default);
+    }
+
+    public static boolean eventsOnChat() {
+        return getBoolean(R.string.events_on_chat_key,
+                R.bool.events_on_chat_default);
+    }
+
+    public static boolean eventsOnMuc() {
+        return getBoolean(R.string.events_on_muc_key,
+                R.bool.events_on_muc_default);
     }
 
     public static boolean eventsVisibleChat() {

@@ -372,6 +372,18 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
         }
     }
 
+    public boolean isShowTextOnMuc(AccountJid account, UserJid user) {
+        switch (getShowText(account, user)) {
+            case show:
+                return true;
+            case hide:
+                return false;
+            case default_settings:
+            default:
+                return SettingsManager.eventsShowTextOnMuc();
+        }
+    }
+
     public ShowMessageTextInNotification getShowText(AccountJid account, UserJid user) {
         ShowMessageTextInNotification showMessageTextInNotification = showText.get(account.toString(), user.toString());
         if (showMessageTextInNotification == null) {

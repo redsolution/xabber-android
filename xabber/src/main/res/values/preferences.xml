@@ -141,23 +141,13 @@
     <bool name="events_persistent_default">true</bool>
 
     <string name="events_show_text_key">events_show_text</string>
+    <string name="events_show_text_muc_key">events_show_text_muc</string>
     <bool name="events_show_text_default">true</bool>
 
-    <string name="events_message_key">events_message</string>
-    <string name="events_message_none_value">none</string>
-    <string name="events_message_chat_value">chat</string>
-    <string name="events_message_chat_and_muc_value">chat_and_muc</string>
-    <string-array name="events_message_entries">
-        <item>@string/events_message_none</item>
-        <item>@string/events_message_chat</item>
-        <item>@string/events_message_chat_and_muc</item>
-    </string-array>
-    <string-array name="events_message_entryvalues">
-        <item>@string/events_message_none_value</item>
-        <item>@string/events_message_chat_value</item>
-        <item>@string/events_message_chat_and_muc_value</item>
-    </string-array>
-    <string name="events_message_default">@string/events_message_chat_value</string>
+    <string name="events_on_chat_key">events_on_chat</string>
+    <bool name="events_on_chat_default">true</bool>
+    <string name="events_on_muc_key">events_on_muc</string>
+    <bool name="events_on_muc_default">true</bool>
 
     <string name="events_visible_chat_key">events_visible_chat</string>
     <bool name="events_visible_chat_default">false</bool>

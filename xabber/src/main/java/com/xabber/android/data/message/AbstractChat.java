@@ -211,7 +211,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
      * @return Whether user should be notified about incoming messages in chat.
      */
     protected boolean notifyAboutMessage() {
-        return SettingsManager.eventsMessage() != SettingsManager.EventsMessage.none;
+        return SettingsManager.eventsOnChat();
     }
 
     abstract protected MessageItem createNewMessageItem(String text);

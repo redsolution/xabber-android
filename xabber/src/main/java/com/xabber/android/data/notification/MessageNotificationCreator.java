@@ -48,7 +48,14 @@ public class MessageNotificationCreator {
 
         MessageNotification message = messageNotifications.get(messageNotifications.size() - 1);
 
-        boolean showText  = ChatManager.getInstance().isShowText(message.getAccount(), message.getUser());
+        boolean showText = true;
+        // muc
+        if (MUCManager.getInstance().hasRoom(message.getAccount(), message.getUser().getJid().asEntityBareJidIfPossible())) {
+            showText  = ChatManager.getInstance().isShowTextOnMuc(message.getAccount(), message.getUser());
+        // chat
+        } else {
+            showText  = ChatManager.getInstance().isShowText(message.getAccount(), message.getUser());
+        }
 
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(application);
         notificationBuilder.setContentTitle(getTitle(message, messageCount));
@@ -151,11 +158,13 @@ public class MessageNotificationCreator {
 
             return bigTextStyle;
         } else {
-            return getInboxStyle(messageCount, message.getAccount().toString());
+            if (MUCManager.getInstance().hasRoom(message.getAccount(), message.getUser().getJid().asEntityBareJidIfPossible()))
+                return getInboxStyle(messageCount, message.getAccount().toString(), true);
+            else return getInboxStyle(messageCount, message.getAccount().toString(), false);
         }
     }
 
-    private NotificationCompat.Style getInboxStyle(int messageCount, String accountName) {
+    private NotificationCompat.Style getInboxStyle(int messageCount, String accountName, boolean isMuc) {
         NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
 
         inboxStyle.setBigContentTitle(getMultiContactTitle(messageCount));
@@ -165,6 +174,9 @@ public class MessageNotificationCreator {
 
             boolean showTextForThisContact
                     = ChatManager.getInstance().isShowText(messageNotification.getAccount(), messageNotification.getUser());
+            if (isMuc)
+                showTextForThisContact
+                        = ChatManager.getInstance().isShowTextOnMuc(messageNotification.getAccount(), messageNotification.getUser());
 
             inboxStyle.addLine(getContactNameAndMessage(messageNotification, showTextForThisContact));
         }
