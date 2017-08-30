@@ -35,7 +35,7 @@
     <string name="events_lightning">Light indication\nBlink LED on notification</string>
     <string name="events_lightning_muc">Light indication\nBlink LED on notification from conferences</string>
     <string name="events_persistent">Taskbar icon\nShow persistent notification. This option prevents Android from unloading the app from memory</string>
-    <string name="events_sound">Audio alert\nChoose notification sound</string>
+    <string name="events_sound">Sound\nChoose notification sound</string>
     <string name="events_vibro">Vibrate</string>
 
     <string name="interface_theme">Theme</string>

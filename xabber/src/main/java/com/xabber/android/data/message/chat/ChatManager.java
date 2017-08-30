@@ -433,9 +433,10 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
      * @return Sound for notification. Common value if there is no user specific
      * value.
      */
-    public Uri getSound(AccountJid account, UserJid user) {
+    public Uri getSound(AccountJid account, UserJid user, boolean isMUC) {
         Uri value = sounds.get(account.toString(), user.toString());
         if (value == null) {
+            if (isMUC) return SettingsManager.eventsSoundMuc();
             return SettingsManager.eventsSound();
         }
         if (EMPTY_SOUND.equals(value)) {

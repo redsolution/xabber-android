@@ -8,6 +8,7 @@ import com.xabber.android.R;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.message.chat.ShowMessageTextInNotification;
 
@@ -37,6 +38,11 @@ public class ChatContactSettingsFragment extends BaseSettingsFragment {
         AccountJid account = mListener.getAccount();
         UserJid user = mListener.getUser();
 
+        boolean isMUC = false;
+        if (MUCManager.getInstance().hasRoom(account, user.getJid().asEntityBareJidIfPossible())) {
+            isMUC = true;
+        }
+
         putValue(map, R.string.chat_save_history_key, ChatManager.getInstance()
                 .isSaveMessages(account, user));
         putValue(map, R.string.chat_events_visible_chat_key, ChatManager
@@ -47,7 +53,7 @@ public class ChatContactSettingsFragment extends BaseSettingsFragment {
         putValue(map, R.string.chat_events_vibro_key, ChatManager.getInstance()
                 .isMakeVibro(account, user));
         putValue(map, R.string.chat_events_sound_key, ChatManager.getInstance()
-                .getSound(account, user));
+                .getSound(account, user, isMUC));
         putValue(map, R.string.chat_events_suppress_100_key, ChatManager.getInstance()
                 .isSuppress100(account, user));
         return map;

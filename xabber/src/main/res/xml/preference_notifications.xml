@@ -75,7 +75,7 @@
 
         <RingtonePreference
             android:title="@string/events_sound"
-            android:key="@string/events_sound_key"
+            android:key="@string/events_sound_muc_key"
             android:defaultValue="@string/events_sound_default"
             android:ringtoneType="notification"
             android:showSilent="true"

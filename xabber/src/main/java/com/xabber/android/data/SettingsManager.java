@@ -243,6 +243,12 @@ public class SettingsManager implements OnInitializedListener,
                 R.string.events_sound_default);
     }
 
+    public static Uri eventsSoundMuc() {
+        return getSound(R.string.events_sound_muc_key,
+                Settings.System.DEFAULT_NOTIFICATION_URI,
+                R.string.events_sound_default);
+    }
+
     public static VibroMode eventsVibroChat() {
         String value = getString(R.string.events_vibro_chat_key, R.string.events_vibro_bydefault);
         if (Application.getInstance().getString(R.string.events_vibro_disable).equals(value)) {

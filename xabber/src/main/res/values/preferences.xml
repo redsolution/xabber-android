@@ -126,6 +126,7 @@
 
 <!-- preference_events -->
     <string name="events_sound_key">events_sound_uri</string>
+    <string name="events_sound_muc_key">events_sound_muc_uri</string>
     <string name="events_sound_default">@string/default_sound</string>
 
     <string name="events_vibro_chat_key">events_vibro_chat_key</string>

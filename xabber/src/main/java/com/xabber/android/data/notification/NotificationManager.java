@@ -162,7 +162,7 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
         }
         if (MessageManager.getInstance().getChat(messageItem.getAccount(), messageItem.getUser()).getFirstNotification() || !SettingsManager.eventsFirstOnly()) {
             Uri sound = PhraseManager.getInstance().getSound(messageItem.getAccount(),
-                    messageItem.getUser(), messageItem.getText());
+                    messageItem.getUser(), messageItem.getText(), isMUC);
             boolean makeVibration = ChatManager.getInstance().isMakeVibro(messageItem.getAccount(),
                     messageItem.getUser());
 
