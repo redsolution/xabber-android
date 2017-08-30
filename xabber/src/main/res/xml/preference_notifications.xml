@@ -87,6 +87,24 @@
         android:title="@string/category_inapp_notifications">
 
         <CheckBoxPreference
+            android:title="@string/events_in_app_sounds_title"
+            android:key="@string/events_in_app_sounds_key"
+            android:defaultValue="@bool/events_in_app_sounds_default"
+            android:summary="@string/events_in_app_sounds_summary"
+            />
+        <CheckBoxPreference
+            android:title="@string/events_in_app_vibrate_title"
+            android:key="@string/events_in_app_vibrate_key"
+            android:defaultValue="@bool/events_in_app_vibrate_default"
+            android:summary="@string/events_in_app_vibrate_summary"
+            />
+        <CheckBoxPreference
+            android:title="@string/events_in_app_preview_title"
+            android:key="@string/events_in_app_preview_key"
+            android:defaultValue="@bool/events_in_app_preview_default"
+            android:summary="@string/events_in_app_preview_summary"
+            />
+        <CheckBoxPreference
             android:title="@string/events_visible_chat"
             android:key="@string/events_visible_chat_key"
             android:defaultValue="@bool/events_visible_chat_default"

@@ -173,6 +173,15 @@
     <string name="events_first_only_key">events_first_only</string>
     <bool name="events_first_only_default">false</bool>
 
+    <string name="events_in_app_sounds_key">events_in_app_sounds</string>
+    <bool name="events_in_app_sounds_default">true</bool>
+
+    <string name="events_in_app_vibrate_key">events_in_app_vibrate</string>
+    <bool name="events_in_app_vibrate_default">true</bool>
+
+    <string name="events_in_app_preview_key">events_in_app_preview</string>
+    <bool name="events_in_app_preview_default">true</bool>
+
 <!-- preference_chats -->
 	<string name="preference_chats">@string/chat_viewer</string>
 

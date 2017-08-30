@@ -328,6 +328,21 @@ public class SettingsManager implements OnInitializedListener,
                 R.bool.events_on_muc_default);
     }
 
+    public static boolean eventsInAppSounds() {
+        return getBoolean(R.string.events_in_app_sounds_key,
+                R.bool.events_in_app_sounds_default);
+    }
+
+    public static boolean eventsInAppVibrate() {
+        return getBoolean(R.string.events_in_app_vibrate_key,
+                R.bool.events_in_app_vibrate_default);
+    }
+
+    public static boolean eventsInAppPreview() {
+        return getBoolean(R.string.events_in_app_preview_key,
+                R.bool.events_in_app_preview_default);
+    }
+
     public static boolean eventsVisibleChat() {
         return getBoolean(R.string.events_visible_chat_key,
                 R.bool.events_visible_chat_default);

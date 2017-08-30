@@ -14,8 +14,10 @@
  */
 package com.xabber.android.data.notification;
 
+import android.app.ActivityManager;
 import android.app.Notification;
 import android.app.PendingIntent;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -175,6 +177,8 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
             // vibration
             if (makeVibration)
                 setVibration(isMUC, isPhoneInVibrateMode, notificationBuilder);
+
+            // in-app notifications
         }
     }
 
@@ -614,7 +618,7 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
         notificationManager.cancelAll();
     }
 
-    public static void setVibration(boolean isMUC, boolean isPhoneInVibrateMode, NotificationCompat.Builder notificationBuilder) {
+    private static void setVibration(boolean isMUC, boolean isPhoneInVibrateMode, NotificationCompat.Builder notificationBuilder) {
         SettingsManager.VibroMode vibroMode;
         if (isMUC) vibroMode = SettingsManager.eventsVibroMuc();
         else vibroMode = SettingsManager.eventsVibroChat();
@@ -640,5 +644,12 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
                 notificationBuilder.setVibrate(new long[] {0, 500});
                 break;
         }
+    }
+
+    private boolean isAppInForeground() {
+        ActivityManager am = (ActivityManager) application.getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningTaskInfo> taskInfo = am.getRunningTasks(1);
+        ComponentName componentInfo = taskInfo.get(0).topActivity;
+        return componentInfo.getPackageName().equals(application.getPackageName());
     }
 }
