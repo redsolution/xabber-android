@@ -38,7 +38,6 @@ import com.xabber.android.ui.dialog.AccountDeleteDialog;
 import com.xabber.android.ui.helper.ToolbarHelper;
 import com.xabber.android.ui.widget.XMPPListPreference;
 
-import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 

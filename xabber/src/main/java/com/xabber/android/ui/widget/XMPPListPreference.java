@@ -16,9 +16,8 @@ import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.ui.activity.AccountAddActivity;
-import com.xabber.android.ui.activity.ManagedActivity;
 import com.xabber.android.ui.adapter.AccountListPreferenceAdapter;
+import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.preferences.PreferenceEditor;
 
 import org.greenrobot.eventbus.EventBus;
@@ -79,6 +78,9 @@ public class XMPPListPreference extends Preference implements OnAccountChangedLi
             accountItems.add(accountItem);
         }
         accountListAdapter.setAccountItems(accountItems);
+
+        btnAddAccount.setTextColor(ColorManager.getInstance().getAccountPainter().
+                getAccountMainColor(accountItems.get(0).getAccount()));
     }
 
     @Override
