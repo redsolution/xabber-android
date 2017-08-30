@@ -56,8 +56,8 @@
             />
 
         <CheckBoxPreference
-            android:title="@string/events_lightning"
-            android:key="@string/events_lightning_key"
+            android:title="@string/events_lightning_muc"
+            android:key="@string/events_lightning_muc_key"
             android:defaultValue="@bool/events_lightning_default"
             />
 

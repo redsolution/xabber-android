@@ -49,12 +49,16 @@ public class MessageNotificationCreator {
         MessageNotification message = messageNotifications.get(messageNotifications.size() - 1);
 
         boolean showText = true;
+        boolean isMUC = false;
+
         // muc
         if (MUCManager.getInstance().hasRoom(message.getAccount(), message.getUser().getJid().asEntityBareJidIfPossible())) {
-            showText  = ChatManager.getInstance().isShowTextOnMuc(message.getAccount(), message.getUser());
-        // chat
-        } else {
-            showText  = ChatManager.getInstance().isShowText(message.getAccount(), message.getUser());
+            isMUC = true;
+            showText = ChatManager.getInstance().isShowTextOnMuc(message.getAccount(), message.getUser());
+
+        } else { // chat
+            isMUC = false;
+            showText = ChatManager.getInstance().isShowText(message.getAccount(), message.getUser());
         }
 
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(application);
@@ -76,7 +80,7 @@ public class MessageNotificationCreator {
         notificationBuilder.setCategory(NotificationCompat.CATEGORY_MESSAGE);
         notificationBuilder.setPriority(NotificationCompat.PRIORITY_HIGH);
 
-        NotificationManager.addEffects(notificationBuilder, messageItem);
+        NotificationManager.addEffects(notificationBuilder, messageItem, isMUC);
 
         return notificationBuilder.build();
     }

@@ -263,6 +263,11 @@ public class SettingsManager implements OnInitializedListener,
                 R.bool.events_lightning_default);
     }
 
+    public static boolean eventsLightningForMuc() {
+        return getBoolean(R.string.events_lightning_muc_key,
+                R.bool.events_lightning_default);
+    }
+
     public static boolean eventsPersistent() {
         return getBoolean(R.string.events_persistent_key,
                 R.bool.events_persistent_default);

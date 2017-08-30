@@ -156,7 +156,7 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
         persistentNotificationColor = application.getResources().getColor(R.color.persistent_notification_color);
     }
 
-    public static void addEffects(NotificationCompat.Builder notificationBuilder, MessageItem messageItem) {
+    public static void addEffects(NotificationCompat.Builder notificationBuilder, MessageItem messageItem, boolean isMUC) {
         if (messageItem == null) {
             return;
         }
@@ -166,8 +166,12 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
             boolean makeVibration = ChatManager.getInstance().isMakeVibro(messageItem.getAccount(),
                     messageItem.getUser());
 
+            boolean led;
+            if (isMUC) led = SettingsManager.eventsLightningForMuc();
+            else led = SettingsManager.eventsLightning();
+
             NotificationManager.getInstance().setNotificationDefaults(notificationBuilder,
-                    makeVibration, sound, AudioManager.STREAM_NOTIFICATION);
+                    makeVibration, led, sound, AudioManager.STREAM_NOTIFICATION);
         }
     }
 
@@ -289,7 +293,7 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
         notificationBuilder.setContentIntent(taskStackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT));
 
         if (ticker != null) {
-            setNotificationDefaults(notificationBuilder, SettingsManager.eventsVibro(), provider.getSound(), provider.getStreamType());
+            setNotificationDefaults(notificationBuilder, SettingsManager.eventsVibro(), SettingsManager.eventsLightning(), provider.getSound(), provider.getStreamType());
         }
 
         notificationBuilder.setDeleteIntent(clearNotifications);
@@ -305,7 +309,7 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
      * @param notificationBuilder
      * @param streamType
      */
-    public void setNotificationDefaults(NotificationCompat.Builder notificationBuilder, boolean vibration, Uri sound, int streamType) {
+    public void setNotificationDefaults(NotificationCompat.Builder notificationBuilder, boolean vibration, boolean led, Uri sound, int streamType) {
         notificationBuilder.setSound(sound, streamType);
         notificationBuilder.setDefaults(0);
 
@@ -320,7 +324,7 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
             }
         }
 
-        if (SettingsManager.eventsLightning()) {
+        if (led) {
             defaults |= Notification.DEFAULT_LIGHTS;
         }
 

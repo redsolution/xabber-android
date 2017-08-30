@@ -135,6 +135,7 @@
     <bool name="events_ignore_system_vibro_default">false</bool>
 
     <string name="events_lightning_key">events_lightning</string>
+    <string name="events_lightning_muc_key">events_lightning_muc</string>
     <bool name="events_lightning_default">true</bool>
 
     <string name="events_persistent_key">events_persistent</string>
