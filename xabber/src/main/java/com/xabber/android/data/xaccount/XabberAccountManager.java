@@ -623,9 +623,11 @@ public class XabberAccountManager implements OnLoadListener {
 
     public void setXMPPAccountOrder(HashMap<String, Integer> items) {
         for (XMPPAccountSettings account : xmppAccounts) {
-            int orderValue = items.get(account.getJid());
-            if (orderValue > 0) account.setOrder(orderValue);
-            //account.setTimestamp(getCurrentTime());
+            if (items.containsKey(account.getJid())) {
+                int orderValue = items.get(account.getJid());
+                if (orderValue > 0) account.setOrder(orderValue);
+                //account.setTimestamp(getCurrentTime());
+            }
         }
         lastOrderChangeTimestamp = getCurrentTime();
         SettingsManager.setLastOrderChangeTimestamp(lastOrderChangeTimestamp);
