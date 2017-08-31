@@ -158,7 +158,8 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
         persistentNotificationColor = application.getResources().getColor(R.color.persistent_notification_color);
     }
 
-    public static void addEffects(NotificationCompat.Builder notificationBuilder, MessageItem messageItem, boolean isMUC, boolean isPhoneInVibrateMode) {
+    public static void addEffects(NotificationCompat.Builder notificationBuilder,
+                                  MessageItem messageItem, boolean isMUC, boolean isPhoneInVibrateMode, boolean isAppInForeground) {
         if (messageItem == null) {
             return;
         }
@@ -179,6 +180,16 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
                 setVibration(isMUC, isPhoneInVibrateMode, notificationBuilder);
 
             // in-app notifications
+            if (isAppInForeground) {
+                // disable vibrate
+                if (!SettingsManager.eventsInAppVibrate()) {
+                    notificationBuilder.setVibrate(new long[] {0, 0});
+                }
+                // disable sounds
+                if (!SettingsManager.eventsInAppSounds()) {
+                    notificationBuilder.setSound(null);
+                }
+            }
         }
     }
 
@@ -644,12 +655,5 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
                 notificationBuilder.setVibrate(new long[] {0, 500});
                 break;
         }
-    }
-
-    private boolean isAppInForeground() {
-        ActivityManager am = (ActivityManager) application.getSystemService(Context.ACTIVITY_SERVICE);
-        List<ActivityManager.RunningTaskInfo> taskInfo = am.getRunningTasks(1);
-        ComponentName componentInfo = taskInfo.get(0).topActivity;
-        return componentInfo.getPackageName().equals(application.getPackageName());
     }
 }

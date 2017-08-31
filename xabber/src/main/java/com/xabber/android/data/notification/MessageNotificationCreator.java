@@ -1,6 +1,8 @@
 package com.xabber.android.data.notification;
 
+import android.app.ActivityManager;
 import android.app.PendingIntent;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
@@ -11,6 +13,7 @@ import android.text.style.StyleSpan;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.muc.MUCManager;
@@ -63,6 +66,13 @@ public class MessageNotificationCreator {
             showText = ChatManager.getInstance().isShowText(message.getAccount(), message.getUser());
         }
 
+        // in-app notifications
+        boolean isAppInForeground = isAppInForeground();
+        if (isAppInForeground) {
+            // disable message preview
+            if (!SettingsManager.eventsInAppPreview()) showText = false;
+        }
+
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(application);
         notificationBuilder.setContentTitle(getTitle(message, messageCount));
         notificationBuilder.setContentText(getText(message, showText));
@@ -82,7 +92,7 @@ public class MessageNotificationCreator {
         notificationBuilder.setCategory(NotificationCompat.CATEGORY_MESSAGE);
         notificationBuilder.setPriority(NotificationCompat.PRIORITY_HIGH);
 
-        NotificationManager.addEffects(notificationBuilder, messageItem, isMUC, checkVibrateMode());
+        NotificationManager.addEffects(notificationBuilder, messageItem, isMUC, checkVibrateMode(), isAppInForeground);
 
         return notificationBuilder.build();
     }
@@ -224,4 +234,10 @@ public class MessageNotificationCreator {
         return am.getRingerMode() == AudioManager.RINGER_MODE_VIBRATE;
     }
 
+    private boolean isAppInForeground() {
+        ActivityManager am = (ActivityManager) application.getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningTaskInfo> taskInfo = am.getRunningTasks(1);
+        ComponentName componentInfo = taskInfo.get(0).topActivity;
+        return componentInfo.getPackageName().equals(application.getPackageName());
+    }
 }
