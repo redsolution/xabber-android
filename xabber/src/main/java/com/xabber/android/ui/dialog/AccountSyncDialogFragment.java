@@ -53,7 +53,7 @@ public class AccountSyncDialogFragment extends DialogFragment {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setView(setupView())
-                .setMessage(R.string.title_sync);
+                .setTitle(R.string.title_sync);
 
 
         if (!noCancel) {
