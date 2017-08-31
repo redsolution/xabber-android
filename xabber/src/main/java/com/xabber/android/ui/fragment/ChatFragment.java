@@ -8,6 +8,7 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -700,6 +701,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
     public void onEvent(NewIncomingMessageEvent event) {
         if (event.getAccount().equals(account) && event.getUser().equals(user)) {
             playIncomingAnimation();
+            playIncomingSound();
         }
     }
 
@@ -1400,6 +1402,14 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
             shakeAnimation = AnimationUtils.loadAnimation(getActivity(), R.anim.shake);
         }
         toolbar.findViewById(R.id.name_holder).startAnimation(shakeAnimation);
+    }
+
+    public void playIncomingSound() {
+        if (SettingsManager.eventsInChatSounds()) {
+            MediaPlayer mp = MediaPlayer.create(getActivity(), SettingsManager.eventsSound());
+            mp.start();
+            mp.release();
+        }
     }
 
     @Override

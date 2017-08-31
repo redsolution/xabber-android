@@ -79,8 +79,6 @@ public class XMPPListPreference extends Preference implements OnAccountChangedLi
         }
         accountListAdapter.setAccountItems(accountItems);
 
-        btnAddAccount.setTextColor(ColorManager.getInstance().getAccountPainter().
-                getAccountMainColor(accountItems.get(0).getAccount()));
     }
 
     @Override

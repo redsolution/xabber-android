@@ -343,6 +343,11 @@ public class SettingsManager implements OnInitializedListener,
                 R.bool.events_in_app_preview_default);
     }
 
+    public static boolean eventsInChatSounds() {
+        return getBoolean(R.string.events_in_chat_sounds_key,
+                R.bool.events_in_chat_sounds_default);
+    }
+
     public static boolean eventsVisibleChat() {
         return getBoolean(R.string.events_visible_chat_key,
                 R.bool.events_visible_chat_default);

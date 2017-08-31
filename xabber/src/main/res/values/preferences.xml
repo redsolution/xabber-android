@@ -182,6 +182,9 @@
     <string name="events_in_app_preview_key">events_in_app_preview</string>
     <bool name="events_in_app_preview_default">true</bool>
 
+    <string name="events_in_chat_sounds_key">events_in_chat_sound</string>
+    <bool name="events_in_chat_sounds_default">true</bool>
+
 <!-- preference_chats -->
 	<string name="preference_chats">@string/chat_viewer</string>
 
