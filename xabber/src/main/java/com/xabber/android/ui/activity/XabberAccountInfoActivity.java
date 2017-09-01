@@ -174,6 +174,7 @@ public class XabberAccountInfoActivity extends BaseLoginActivity {
         fTrans = getFragmentManager().beginTransaction();
         fTrans.replace(R.id.container, fragmentLogin, FRAGMENT_LOGIN);
         fTrans.commit();
+        barPainter.setBlue(this);
     }
 
     private void showInfoFragment() {
