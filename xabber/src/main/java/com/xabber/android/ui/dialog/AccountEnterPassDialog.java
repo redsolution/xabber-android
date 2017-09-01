@@ -52,7 +52,7 @@ public class AccountEnterPassDialog extends DialogFragment implements DialogInte
         String message = getString(R.string.enter_password);
         if (accountErrorEvent!= null && accountErrorEvent.getType().equals(AUTHORIZATION)) {
             message = getString(R.string.auth_error, accountErrorEvent.getMessage());
-            builder.setNeutralButton(R.string.account_error_settings, this);
+            builder.setNeutralButton(R.string.settings, this);
         }
 
         builder.setMessage(message);
