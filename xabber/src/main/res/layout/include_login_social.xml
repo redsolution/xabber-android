@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:layout_marginLeft="16dp"
+    android:layout_marginRight="16dp"
+    android:layout_marginBottom="16dp">
 
     <RelativeLayout
         android:id="@+id/socialTitle"
@@ -20,7 +23,7 @@
             android:layout_marginLeft="7dp"
             android:layout_marginRight="7dp"
             android:text="Social Sign In"
-            android:textColor="@color/white_text_secondary"
+
             />
 
         <View
@@ -29,7 +32,7 @@
             android:layout_centerVertical="true"
             android:layout_toLeftOf="@+id/tvLabel"
             android:layout_marginLeft="5dp"
-            android:background="@color/white_text_secondary"
+            android:background="@color/black_text_secondary"
             />
 
         <View
@@ -38,7 +41,7 @@
             android:layout_centerVertical="true"
             android:layout_toRightOf="@+id/tvLabel"
             android:layout_marginRight="5dp"
-            android:background="@color/white_text_secondary"
+            android:background="@color/black_text_secondary"
             />
 
     </RelativeLayout>
@@ -81,7 +84,7 @@
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_marginLeft="30dp"
-            android:src="@drawable/ic_github_logo"
+            android:src="@drawable/ic_github_logo_black"
             />
 
     </LinearLayout>
@@ -92,9 +95,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:paddingBottom="8dp"
-        android:textColor="@color/white_text_secondary"
         android:textAlignment="center"
-        android:text="Xabber account is required to use redsolution XMPP services and sync device settings."
+        android:text="@string/summary_xabber_account_in_login"
         />
 
 </RelativeLayout>

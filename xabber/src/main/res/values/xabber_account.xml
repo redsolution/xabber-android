@@ -61,7 +61,11 @@
     <string name="title_reordering_account">Reorder accounts</string>
     <string name="title_sync">Synchronization</string>
 
+    <string name="title_login_xabber_account">Login to Xabber Account</string>
+    <string name="title_register_xabber_account">Register Xabber Account</string>
+
     <string name="summary_xabber_account">Xabber account lets you easily sync your settings and connected XMPP accounts between various devices.</string>
+    <string name="summary_xabber_account_in_login">Xabber account is required to use redsolution XMPP services and sync device settings.</string>
     <string name="summary_confirm_account">Please confirm your email address</string>
     <string name="summary_complete_register">Please complete registration of your account</string>
     <string name="summary_username">Xabber username will also act as a free XMPP id</string>

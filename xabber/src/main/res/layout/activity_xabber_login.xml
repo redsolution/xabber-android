@@ -3,26 +3,17 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <include layout="@layout/include_intro_background_image" />
+    <include layout="@layout/toolbar_default"
+        android:id="@+id/toolbar_default" />
 
-    <RelativeLayout
+    <FrameLayout
+        android:id="@+id/container"
+        android:layout_below="@+id/toolbar_default"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="100dp"
-        android:layout_marginLeft="32dp"
-        android:layout_marginRight="32dp"
-        android:fitsSystemWindows="true"
-        android:descendantFocusability="beforeDescendants"
-        android:focusableInTouchMode="true"
-        >
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"/>
 
-        <FrameLayout
-            android:id="@+id/container"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
-
-        <include layout="@layout/include_login_social" />
-
-    </RelativeLayout>
+    <include layout="@layout/include_login_social" />
 
 </RelativeLayout>

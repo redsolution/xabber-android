@@ -86,7 +86,7 @@ public class XabberAccountInfoActivity extends BaseLoginActivity {
         setContentView(R.layout.activity_xabber_account_info);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar_default);
-        toolbar.setTitle(R.string.title_xabber_account);
+        toolbar.setTitle(R.string.title_register_xabber_account);
         toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
