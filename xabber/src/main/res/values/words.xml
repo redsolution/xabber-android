@@ -17,5 +17,6 @@
     <string name="save">Save</string>
 
     <string name="cancel">Cancel</string>
+    <string name="skip">Skip</string>
     <string name="ok">OK</string>
 </resources>

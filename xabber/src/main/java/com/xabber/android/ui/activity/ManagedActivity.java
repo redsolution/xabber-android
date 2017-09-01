@@ -26,6 +26,8 @@ import com.xabber.android.ui.dialog.AccountErrorDialogFragment;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
+import static com.xabber.android.data.account.AccountErrorEvent.Type.AUTHORIZATION;
+import static com.xabber.android.data.account.AccountErrorEvent.Type.CONNECTION;
 import static com.xabber.android.data.account.AccountErrorEvent.Type.PASS_REQUIRED;
 
 /**
@@ -90,7 +92,7 @@ public abstract class ManagedActivity extends AppCompatActivity {
 
     @Subscribe(sticky = true)
     public void onAuthErrorEvent(AccountErrorEvent accountErrorEvent) {
-        if (accountErrorEvent.getType().equals(PASS_REQUIRED)) {
+        if (!accountErrorEvent.getType().equals(CONNECTION)) {
             // show enter pass dialog
             AccountEnterPassDialog.newInstance(accountErrorEvent)
                     .show(getFragmentManager(), AccountEnterPassDialog.class.getSimpleName());
