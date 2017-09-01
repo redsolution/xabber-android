@@ -185,6 +185,7 @@
     <string name="events_in_chat_sounds_key">events_in_chat_sound</string>
     <bool name="events_in_chat_sounds_default">true</bool>
 
+    <string name="events_reset_key">events_reset</string>
 <!-- preference_chats -->
 	<string name="preference_chats">@string/chat_viewer</string>
 

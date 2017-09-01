@@ -31,4 +31,9 @@ public class NotificationsSettings extends ManagedActivity {
                     .add(R.id.fragment_container, new NotificationsSettingsFragment()).commit();
         }
     }
+
+    public void restartFragment() {
+        getFragmentManager().beginTransaction()
+                .replace(R.id.fragment_container, new NotificationsSettingsFragment()).commit();
+    }
 }

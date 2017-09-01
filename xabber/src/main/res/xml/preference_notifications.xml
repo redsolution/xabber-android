@@ -165,7 +165,10 @@
     <PreferenceCategory
         android:title="@string/category_reset">
 
-        <Preference android:title="Reset"/>
+        <Preference
+            android:key="@string/events_reset_key"
+            android:title="@string/events_reset_title"
+            android:summary="@string/events_reset_summary"/>
 
     </PreferenceCategory>
 

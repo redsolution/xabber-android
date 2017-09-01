@@ -159,4 +159,9 @@
     <string name="events_in_app_preview_summary">Show preview on message if you in other chat</string>
     <string name="events_in_chat_sounds_title">In-chat sounds</string>
     <string name="events_in_chat_sounds_summary">Play sounds on message if you in current chat</string>
+
+    <string name="events_reset_title">Reset</string>
+    <string name="events_reset_summary">Reset notification preferences to default values</string>
+    <string name="events_reset_alert">Reset notification settings?</string>
+    <string name="events_reset_toast">Settings was reset</string>
 </resources>
