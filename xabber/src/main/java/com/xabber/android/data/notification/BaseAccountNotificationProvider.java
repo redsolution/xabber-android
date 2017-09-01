@@ -29,7 +29,7 @@ public class BaseAccountNotificationProvider<T extends AccountNotificationItem>
 
     public T get(AccountJid account) {
         for (T item : items)
-            if (item.getAccount().equals(account))
+            if (item != null && item.getAccount().equals(account))
                 return item;
         return null;
     }
