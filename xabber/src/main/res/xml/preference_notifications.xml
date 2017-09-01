@@ -15,12 +15,14 @@
             android:title="@string/events_show_text"
             android:key="@string/events_show_text_key"
             android:defaultValue="@bool/events_show_text_default"
+            android:dependency="@string/events_on_chat_key"
             />
 
         <CheckBoxPreference
             android:title="@string/events_lightning"
             android:key="@string/events_lightning_key"
             android:defaultValue="@bool/events_lightning_default"
+            android:dependency="@string/events_on_chat_key"
             />
 
         <ListPreference
@@ -30,6 +32,7 @@
             android:key="@string/events_vibro_chat_key"
             android:title="@string/events_vibro"
             android:summary="%s"
+            android:dependency="@string/events_on_chat_key"
             />
 
         <RingtonePreference
@@ -39,6 +42,7 @@
             android:ringtoneType="notification"
             android:showSilent="true"
             android:showDefault="true"
+            android:dependency="@string/events_on_chat_key"
             />
 
     </PreferenceCategory>
@@ -56,12 +60,14 @@
             android:title="@string/events_show_text_muc"
             android:key="@string/events_show_text_muc_key"
             android:defaultValue="@bool/events_show_text_default"
+            android:dependency="@string/events_on_muc_key"
             />
 
         <CheckBoxPreference
             android:title="@string/events_lightning_muc"
             android:key="@string/events_lightning_muc_key"
             android:defaultValue="@bool/events_lightning_default"
+            android:dependency="@string/events_on_muc_key"
             />
 
         <ListPreference
@@ -71,6 +77,7 @@
             android:key="@string/events_vibro_muc_key"
             android:title="@string/events_vibro"
             android:summary="%s"
+            android:dependency="@string/events_on_muc_key"
             />
 
         <RingtonePreference
@@ -80,6 +87,7 @@
             android:ringtoneType="notification"
             android:showSilent="true"
             android:showDefault="true"
+            android:dependency="@string/events_on_muc_key"
             />
 
     </PreferenceCategory>
