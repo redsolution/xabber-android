@@ -79,6 +79,8 @@ public class XMPPListPreference extends Preference implements OnAccountChangedLi
         }
         accountListAdapter.setAccountItems(accountItems);
 
+        if (accountItems.size() > 1) rlReorder.setVisibility(View.VISIBLE);
+        else rlReorder.setVisibility(View.GONE);
     }
 
     @Override
