@@ -84,7 +84,7 @@
 
     <string name="not_login">Not logged in</string>
     <string name="enter_password">Please, enter password for this account</string>
-    <string name="auth_error">Authorization error: %1$s \n\nPlease, check your login/pass.</string>
+    <string name="auth_error">Authorization error. Please, check your login/pass.</string>
     <string name="last_sync_date">Last sync date: %1$s</string>
     <string name="last_sync_date_never">never</string>
     <string name="sync_all">Synchronize all</string>
