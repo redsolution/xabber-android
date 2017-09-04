@@ -83,7 +83,7 @@
     <string name="otr_select_resource">Select resource to OTR:</string>
     <string name="otr_select_toast_no_chat">OTR-Session not started: no chat</string>
     <string name="otr_select_toast_no_resource">OTR-Session not started: no resource</string>
-    <string name="otr_select_toast_resources_not_found">Resources not found</string>
+    <string name="otr_select_toast_resources_not_found">To start OTR encryption, contact must be online</string>
     <string name="otr_verification_notify_title">OTR verification request</string>
     <string name="otr_verification_progress_title">OTR verification in progress</string>
     <string name="otr_verification_notify_button">OPEN</string>

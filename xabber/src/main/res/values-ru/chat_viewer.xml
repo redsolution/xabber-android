@@ -84,7 +84,7 @@
   <string name="otr_select_resource">Выберете ресурс для OTR:</string>
   <string name="otr_select_toast_no_chat">OTR-Сессия не установлена: no chat</string>
   <string name="otr_select_toast_no_resource">OTR-Сессия не установлена: no resource</string>
-  <string name="otr_select_toast_resources_not_found">Ресурсы не найдены</string>
+  <string name="otr_select_toast_resources_not_found">Чтобы начать OTR-шифрование, ваш собеседник должен быть онлайн</string>
   <string name="otr_verification_notify_title">Запрос OTR-авторизации</string>
   <string name="otr_verification_progress_title">Ожидание OTR-авторизации</string>
   <string name="otr_verification_notify_button">ОТКРЫТЬ</string>
