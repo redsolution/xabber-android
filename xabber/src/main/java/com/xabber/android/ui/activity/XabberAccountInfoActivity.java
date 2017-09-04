@@ -428,6 +428,9 @@ public class XabberAccountInfoActivity extends BaseLoginActivity {
         showLoginFragment();
         hideProgress();
         Toast.makeText(this, R.string.logout_success, Toast.LENGTH_SHORT).show();
+        Intent intent = ContactListActivity.createIntent(XabberAccountInfoActivity.this);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
     }
 
     private void handleErrorLogout(Throwable throwable) {
