@@ -391,6 +391,26 @@ public class XabberAccountManager implements OnLoadListener {
         return success[0];
     }
 
+    public boolean deleteDeadXMPPAccountsFromRealm() {
+        Realm realm = RealmManager.getInstance().getNewBackgroundRealm();
+
+        final RealmResults<XMPPAccountSettignsRealm> results = realm.where(XMPPAccountSettignsRealm.class).findAll();
+
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                for (XMPPAccountSettignsRealm set : results) {
+                    AccountJid accountJid = getExistingAccount(set.getJid());
+                    if (accountJid == null) {
+                        set.deleteFromRealm();
+                    }
+                }
+            }
+        });
+        realm.close();
+        return true;
+    }
+
     public boolean deleteSyncedXMPPAccountsFromRealm() {
         final boolean[] success = new boolean[1];
         Realm realm = RealmManager.getInstance().getNewBackgroundRealm();

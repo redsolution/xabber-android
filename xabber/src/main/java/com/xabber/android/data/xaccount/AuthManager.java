@@ -2,10 +2,7 @@ package com.xabber.android.data.xaccount;
 
 import android.util.Base64;
 import com.google.gson.Gson;
-import com.google.gson.annotations.SerializedName;
 import com.xabber.android.data.SettingsManager;
-
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,6 +51,15 @@ public class AuthManager {
                             else
                                 return Single.error(new Throwable("Realm: xmpp accounts deletion error"));
                         } else return Single.just(responseBody);
+                    }
+                })
+                .flatMap(new Func1<ResponseBody, Single<? extends ResponseBody>>() {
+                    @Override
+                    public Single<? extends ResponseBody> call(ResponseBody responseBody) {
+                        if (XabberAccountManager.getInstance().deleteDeadXMPPAccountsFromRealm())
+                            return Single.just(responseBody);
+                        else
+                            return Single.error(new Throwable("Realm: dead xmpp accounts deletion error"));
                     }
                 });
     }
