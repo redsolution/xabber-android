@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="xabber_account_info">Учетная запись Xabber требуется для использования XMPP-служб Redsolution и синхронизации настроек устройства.</string>
+    <string name="social_sign_in">Вход через соц.сети</string>
+
+    <string name="email_hint">Email</string>
+    <string name="username_hint">Xabber username или email</string>
+    <string name="pass_hint">Пароль</string>
+    <string name="signup">РЕГИСТРАЦИЯ</string>
+    <string name="forgot_pass">ЗАБЫЛИ ПАРОЛЬ?</string>
+    <string name="agrees">Я согласен получать периодические обновления от команды Xabber. Мы обещаем не беспокоить вас слишком часто.</string>
+
+    <string name="sync_success">Синхронизация завершена</string>
+    <string name="sync_fail">Синхронизация не удалась</string>
+    <string name="logout_success">Выход завершен</string>
+    <string name="logout_fail">Выход не удался</string>
+    <string name="confirm_success">Email подтвержден</string>
+    <string name="confirm_fail">Не удалось подтвердить e-mail</string>
+    <string name="complete_success">Регистрация завершена</string>
+    <string name="complete_fail">Регистрация не удалась</string>
+    <string name="resend_success">Письмо с подтверждением отправлено повторно</string>
+    <string name="resend_fail">Не удалось отправить письмо с подтверждением</string>
+    <string name="social_auth_fail">Не удалось авторизоваться с помощью соц. сети</string>
+
+    <string name="toast_email_already_confirm">Email уже подтвержден</string>
+    <string name="toast_not_authorized">Вы не авторизованы</string>
+    <string name="toast_no_internet">Отсутствует интернет-соединение</string>
+
+    <string name="progress_message">Пожалуйста, подождите</string>
+    <string name="progress_title_sync">Синхронизация..</string>
+    <string name="progress_title_logout">Выход..</string>
+    <string name="progress_title_login">Авторизация..</string>
+    <string name="progress_title_signup">Регистрация..</string>
+    <string name="progress_title_confirm">Подтверждение email..</string>
+    <string name="progress_title_complete">Завершение регистрации..</string>
+    <string name="progress_title_resend">Повторная отправка email..</string>
+
+    <string name="label_username">Имя пользователя*</string>
+    <string name="hint_username">Укажите имя пользователя</string>
+    <string name="label_pass">Пароль*</string>
+    <string name="hint_pass">Введите пароль</string>
+    <string name="label_conf_pass">Подтверждение пароля*</string>
+    <string name="hint_conf_pass">Повторите пароль</string>
+    <string name="label_first_name">Имя</string>
+    <string name="hint_first_name">Имя</string>
+    <string name="label_last_name">Фамилия</string>
+    <string name="hint_last_name">Фамилия</string>
+
+    <string name="hint_code">Код подтверждения</string>
+
+    <string name="default_host">\@xabber.org</string>
+
+    <string name="title_xabber_account">Учетная запись Xabber</string>
+    <string name="title_xmpp_account">Учетные записи XMPP</string>
+    <string name="title_email_confirm">Подтвердите Email-адрес</string>
+    <string name="title_email_confirmed">Email-адрес подтвержден</string>
+    <string name="title_complete_register">Завершите регистрацию</string>
+    <string name="title_start_messaging">Приступите к общению!</string>
+    <string name="title_reordering_account">Изменить порядок учетных записей</string>
+    <string name="title_sync">Синзронизация</string>
+
+    <string name="title_login_xabber_account">Вход в учетную запись Xabber</string>
+    <string name="title_register_xabber_account">Регистрация учетной записи Xabber</string>
+
+    <string name="summary_xabber_account">Учетная запись Xabber позволяет легко синхронизировать ваши настройки и подключенные учетные записи XMPP между различными устройствами.</string>
+    <string name="summary_xabber_account_in_login">Учетная запись Xabber требуется для использования XMPP-служб Redsolution и синхронизации настроек устройства.</string>
+    <string name="summary_username">Имя пользователя Xabber также будет действовать как бесплатный идентификатор XMPP</string>
+
+    <string name="button_logout">ВЫХОД</string>
+    <string name="button_login">ВХОД</string>
+    <string name="button_resend_link">ЗАПРОСИТЬ КОД</string>
+    <string name="button_complete_register">ЗАРЕГИСТРИРОВАТЬСЯ</string>
+    <string name="button_confirm">ПОДТВЕРДИТЬ</string>
+    <string name="button_enter">ВОЙТИ В XABBER</string>
+    <string name="button_continue">продолжить</string>
+    <string name="button_sync">СИНХРОНИЗИРОВАТЬ</string>
+
+    <string name="btn_done">готово</string>
+    <string name="btn_reorder_account">reorder account</string>
+
+    <string name="not_login">Пользователь не авторизован</string>
+    <string name="enter_password">Пожалуйста, введите пароль для этой учетной записи</string>
+    <string name="auth_error">Ошибка авторизации. Пожалуйста, проверьте имя пользователя/пароль.</string>
+    <string name="last_sync_date">Последняя синхронизация: %1$s</string>
+    <string name="last_sync_date_never">никогда</string>
+    <string name="sync_all">Синхронизировать все</string>
+    <string name="no_email">email отсутствует</string>
+    <string name="no_username">имя пользователя отсутствует</string>
+    <string name="empty_field">Поле не заполнено</string>
+    <string name="pass_too_short">Убедитесь, что парль содержит как-минимум 4 символа</string>
+    <string name="passwords_not_match">Пароли не совпадают</string>
+    <string name="username_rules">Имя пользовател может содржать только прописные латинские буквы, цифры и точки</string>
+    <string name="username_rules_first_symbol">Имя пользователя должно начинаться с буквы</string>
+    <string name="username_rules_dots">Имя пользователя не может содержать две точки подряд</string>
+    <string name="account_not_confirmed">Учетная запись не подтверждена</string>
+    <string name="register_not_completed">Регистрация не завершена</string>
+    <string name="sync_with_xabber_account">Синхронизировать с учетной записью Xabber</string>
+    <string name="delete_cynced_accounts">Удалить синхронизированные учетные записи XMPP ?</string>
+    <string name="logout_summary">Вы выйдите из учетной записи Xabber</string>
+
+    <string name="sign_up_email_social">Зарегистрироваться с помощью социальной сети или email</string>
+    <string name="signed_up_email">Регистраиция через Email</string>
+    <string name="signed_up_google">Регистраиция через Google+</string>
+    <string name="signed_up_facebook">Регистраиция через Facebook</string>
+    <string name="signed_up_github">Регистраиция через Github</string>
+    <string name="signed_up_twitter">Регистраиция через Twitter</string>
+
+    <string name="username">%1$s\@xabber.org</string>
+
+    <string name="reorder_summary">Чтобы синхронизировать порядок аккаунтов на всех своих устройствах - используйте синхронизацию в Xabber Account</string>
+</resources>
