@@ -40,7 +40,7 @@
     <string name="hint_username">Укажите имя пользователя</string>
     <string name="label_pass">Пароль*</string>
     <string name="hint_pass">Введите пароль</string>
-    <string name="label_conf_pass">Подтверждение пароля*</string>
+    <string name="label_conf_pass">Пароль еще раз*</string>
     <string name="hint_conf_pass">Повторите пароль</string>
     <string name="label_first_name">Имя</string>
     <string name="hint_first_name">Имя</string>

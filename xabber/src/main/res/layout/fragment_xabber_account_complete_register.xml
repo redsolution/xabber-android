@@ -241,6 +241,7 @@
                     android:layout_height="wrap_content"
                     android:paddingLeft="4dp"
                     android:textColor="@color/black_text_secondary"
+                    android:lines="1"
                     android:text="@string/label_conf_pass"
                     />
 
