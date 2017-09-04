@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginTop="30dp"
+    android:layout_marginTop="16dp"
     >
 
     <RelativeLayout
@@ -20,7 +20,6 @@
             android:layout_marginLeft="7dp"
             android:layout_marginRight="7dp"
             android:text="@string/social_sign_in"
-            android:textColor="@color/white_text_secondary"
             />
 
         <View
@@ -31,7 +30,7 @@
             android:layout_toStartOf="@+id/tvLabel"
             android:layout_marginLeft="5dp"
             android:layout_marginStart="5dp"
-            android:background="@color/white_text_secondary"
+            android:background="@color/black_text_secondary"
             />
 
         <View
@@ -42,7 +41,7 @@
             android:layout_toEndOf="@+id/tvLabel"
             android:layout_marginRight="5dp"
             android:layout_marginEnd="5dp"
-            android:background="@color/white_text_secondary"
+            android:background="@color/black_text_secondary"
             />
 
     </RelativeLayout>
@@ -98,7 +97,7 @@
             android:layout_height="48dp"
             android:layout_marginLeft="30dp"
             android:layout_marginStart="30dp"
-            android:src="@drawable/ic_github_logo"
+            android:src="@drawable/ic_github_logo_black"
             />
 
     </LinearLayout>
@@ -109,7 +108,6 @@
         android:layout_height="wrap_content"
         android:paddingBottom="8dp"
         android:layout_below="@+id/llSocialLogosSecond"
-        android:textColor="@color/white_text_secondary"
         android:textAlignment="center"
         android:text="@string/xabber_account_info"
         />
