@@ -93,6 +93,9 @@ public class AccountEnterPassDialog extends DialogFragment implements DialogInte
             }
         });
 
+        if (detailTextView.getText().toString().isEmpty())
+            expandIcon.setVisibility(View.INVISIBLE);
+
         return view;
     }
 
