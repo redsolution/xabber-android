@@ -185,21 +185,17 @@ public class ContactListDrawerFragment extends Fragment implements View.OnClickL
             llAccountInfo.setVisibility(View.VISIBLE);
             llNoAccount.setVisibility(View.GONE);
 
-            //String email = getContext().getString(R.string.no_email);
-//            if (account.getEmails().size() > 0)
-//                email = account.getEmails().get(0).getEmail();
-
             String accountName = account.getFirstName() + " " + account.getLastName();
             if (accountName.trim().isEmpty())
                 accountName = getContext().getString(R.string.title_xabber_account);
 
             if (XabberAccount.STATUS_NOT_CONFIRMED.equals(account.getAccountStatus())) {
                 tvAccountName.setText(accountName);
-                tvAccountEmail.setText(R.string.account_not_confirmed);
+                tvAccountEmail.setText(R.string.title_email_confirm);
             }
             if (XabberAccount.STATUS_CONFIRMED.equals(account.getAccountStatus())) {
                 tvAccountName.setText(accountName);
-                tvAccountEmail.setText(R.string.register_not_completed);
+                tvAccountEmail.setText(R.string.title_complete_register);
             }
             if (XabberAccount.STATUS_REGISTERED.equals(account.getAccountStatus())) {
 

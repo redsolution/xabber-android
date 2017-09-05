@@ -43,22 +43,22 @@ public class AccountPreference extends Preference {
             llAccountInfo.setVisibility(View.VISIBLE);
             llNoAccount.setVisibility(View.GONE);
 
-            String username = getContext().getString(R.string.no_username);
-            if (account.getUsername() != null && !account.getUsername().isEmpty())
-                username = getContext().getString(R.string.username, account.getUsername());
+            String accountName = account.getFirstName() + " " + account.getLastName();
+            if (accountName.trim().isEmpty())
+                accountName = getContext().getString(R.string.title_xabber_account);
 
-            if (XabberAccount.STATUS_NOT_CONFIRMED.equals(account.getAccountStatus()))
-                tvAccountName.setText(R.string.account_not_confirmed);
-
-            if (XabberAccount.STATUS_CONFIRMED.equals(account.getAccountStatus()))
-                tvAccountName.setText(R.string.register_not_completed);
-
-            if (XabberAccount.STATUS_REGISTERED.equals(account.getAccountStatus())) {
-                String accountName = account.getFirstName() + " " + account.getLastName();
+            if (XabberAccount.STATUS_NOT_CONFIRMED.equals(account.getAccountStatus())) {
                 tvAccountName.setText(accountName);
+                tvAccountUsername.setText(R.string.title_email_confirm);
             }
-
-            tvAccountUsername.setText(username);
+            if (XabberAccount.STATUS_CONFIRMED.equals(account.getAccountStatus())) {
+                tvAccountName.setText(accountName);
+                tvAccountUsername.setText(R.string.title_complete_register);
+            }
+            if (XabberAccount.STATUS_REGISTERED.equals(account.getAccountStatus())) {
+                tvAccountName.setText(accountName);
+                tvAccountUsername.setText(getContext().getString(R.string.username, account.getUsername()));
+            }
         } else {
             llAccountInfo.setVisibility(View.GONE);
             llNoAccount.setVisibility(View.VISIBLE);
