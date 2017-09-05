@@ -75,7 +75,7 @@
     <string name="button_resend_link">RESEND CODE</string>
     <string name="button_complete_register">REGISTER</string>
     <string name="button_confirm">confirm</string>
-    <string name="button_enter">ENTER XABBER</string>
+    <string name="button_cancel_register">cancel register</string>
     <string name="button_continue">continue</string>
     <string name="button_sync">SYNCHRONIZE</string>
 
@@ -114,4 +114,9 @@
     <string name="username">%1$s\@xabber.org</string>
 
     <string name="reorder_summary">Чтобы синхронизировать порядок аккаунтов на всех своих устройствах - используйте синхронизацию в Xabber Account</string>
+
+    <string name="cancel_register_dialog_title">Отмена регистрации</string>
+    <string name="cancel_register_progress">Отмена регистрации..</string>
+    <string name="cancel_register_dialog_message">Хотите прервать регистрацию? Вы не сможете продолжить регистрацию в будущем.</string>
+    <string name="cancel_register_dialog_pos_button">Прервать</string>
 </resources>

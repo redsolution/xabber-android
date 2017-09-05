@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <item android:id="@+id/action_enter_xabber"
-        android:title="@string/button_enter"
-        app:showAsAction="always" />
+    <item android:id="@+id/action_cancel_register"
+        android:title="@string/button_cancel_register"
+        android:icon="@drawable/ic_exit"
+        app:showAsAction="ifRoom"
+        android:visible="false"/>
 </menu>

@@ -1,15 +1,20 @@
 package com.xabber.android.ui.activity;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
@@ -39,7 +44,7 @@ import rx.schedulers.Schedulers;
  * Created by valery.miller on 19.07.17.
  */
 
-public class XabberAccountInfoActivity extends BaseLoginActivity {
+public class XabberAccountInfoActivity extends BaseLoginActivity implements Toolbar.OnMenuItemClickListener {
 
     private final static String LOG_TAG = XabberAccountInfoActivity.class.getSimpleName();
     private final static String EMAIL_CONFIRMATION_URI = "https://www.xabber.com/account/emails/confirmation/";
@@ -91,6 +96,8 @@ public class XabberAccountInfoActivity extends BaseLoginActivity {
                 finish();
             }
         });
+        toolbar.inflateMenu(R.menu.toolbar_xabber_account_info);
+        toolbar.setOnMenuItemClickListener(this);
         barPainter = new BarPainter(this, toolbar);
     }
 
@@ -98,6 +105,7 @@ public class XabberAccountInfoActivity extends BaseLoginActivity {
     protected void onResume() {
         super.onResume();
         barPainter.setBlue(this);
+        onPrepareOptionsMenu(toolbar.getMenu());
 
         XabberAccount account = XabberAccountManager.getInstance().getAccount();
         if (account != null) {
@@ -125,6 +133,58 @@ public class XabberAccountInfoActivity extends BaseLoginActivity {
     protected void onDestroy() {
         super.onDestroy();
         compositeSubscription.clear();
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        XabberAccount account = XabberAccountManager.getInstance().getAccount();
+        if (account != null) {
+            menu.findItem(R.id.action_cancel_register).setVisible(!XabberAccount.STATUS_REGISTERED.equals(account.getAccountStatus()));
+        } else menu.findItem(R.id.action_cancel_register).setVisible(false);
+        return true;
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        if (item.getItemId() == R.id.action_cancel_register) {
+            showCancelRegisterDialog();
+            return true;
+        }
+        return false;
+    }
+
+    private void showCancelRegisterDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.cancel_register_dialog_title)
+                .setMessage(R.string.cancel_register_dialog_message)
+                .setPositiveButton(R.string.cancel_register_dialog_pos_button, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        cancelRegistration();
+                    }
+                })
+                .setNegativeButton(R.string.cancel, null);
+        Dialog dialog = builder.create();
+        dialog.show();
+    }
+
+    private void cancelRegistration() {
+        showProgress(getString(R.string.cancel_register_progress));
+        Application.getInstance().runInBackground(new Runnable() {
+            @Override
+            public void run() {
+                XabberAccountManager.getInstance().deleteXabberAccountFromRealm();
+                Application.getInstance().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        XabberAccountManager.getInstance().removeAccount();
+                        showLoginFragment();
+                        onPrepareOptionsMenu(toolbar.getMenu());
+                        hideProgress();
+                    }
+                });
+            }
+        });
     }
 
     private void handleCallFrom(XabberAccount account) {
