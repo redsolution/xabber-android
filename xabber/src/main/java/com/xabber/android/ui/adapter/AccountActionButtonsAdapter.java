@@ -12,11 +12,14 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
+import com.xabber.android.data.xaccount.XMPPAccountSettings;
+import com.xabber.android.data.xaccount.XabberAccountManager;
 import com.xabber.android.ui.color.AccountPainter;
 import com.xabber.android.ui.color.ColorManager;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -77,6 +80,18 @@ public class AccountActionButtonsAdapter implements UpdatableAdapter {
 
     @Override
     public void onChange() {
+        List<XMPPAccountSettings> accountSettings
+                = XabberAccountManager.getInstance().getXmppAccounts();
+
+        for (AccountJid account : accounts) {
+            for (XMPPAccountSettings set : accountSettings) {
+                String accountJidString = account.getFullJid().asBareJid().toString();
+                if (set.getJid().equals(accountJidString))
+                    account.setOrder(set.getOrder());
+            }
+        }
+        Collections.sort(accounts);
+
         for (int index = 0; index < accounts.size(); index++) {
             View view = linearLayout.getChildAt(index);
 
