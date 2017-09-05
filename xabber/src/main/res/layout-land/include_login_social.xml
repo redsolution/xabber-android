@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_marginTop="16dp"
+    android:background="@color/cardview_light_background"
     >
 
     <RelativeLayout
@@ -20,6 +21,7 @@
             android:layout_marginLeft="7dp"
             android:layout_marginRight="7dp"
             android:text="@string/social_sign_in"
+            android:textColor="@color/black_text_secondary"
             />
 
         <View
@@ -109,6 +111,7 @@
         android:paddingBottom="8dp"
         android:layout_below="@+id/llSocialLogosSecond"
         android:textAlignment="center"
+        android:textColor="@color/black_text_secondary"
         android:text="@string/xabber_account_info"
         />
 
