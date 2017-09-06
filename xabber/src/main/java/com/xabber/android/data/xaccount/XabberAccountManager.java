@@ -18,6 +18,7 @@ import com.xabber.android.data.database.realm.XMPPUserRealm;
 import com.xabber.android.data.database.realm.XabberAccountRealm;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.ui.color.ColorManager;
+import com.xabber.android.utils.RetrofitErrorConverter;
 
 import org.jxmpp.jid.BareJid;
 import org.jxmpp.stringprep.XmppStringprepException;
@@ -152,7 +153,12 @@ public class XabberAccountManager implements OnLoadListener {
 
     private void handleErrorGetAccount(Throwable throwable) {
         Log.d(LOG_TAG, "Xabber account loading from net: error: " + throwable.toString());
-        // TODO: 24.07.17 need login
+
+        // invalid token
+        String message = RetrofitErrorConverter.throwableToHttpError(throwable);
+        if (message != null && message.equals("Invalid token")) {
+            onInvalidToken();
+        }
     }
 
 //    private void getSettingsFromNet() {
@@ -708,6 +714,19 @@ public class XabberAccountManager implements OnLoadListener {
                 it.remove();
             }
         }
+    }
+
+    public void onInvalidToken() {
+        Application.getInstance().runInBackground(new Runnable() {
+            @Override
+            public void run() {
+                deleteAllSyncedAccounts();
+                deleteXMPPAccountsFromRealm();
+                xmppAccounts.clear();
+                deleteXabberAccountFromRealm();
+                removeAccount();
+            }
+        });
     }
 }
 

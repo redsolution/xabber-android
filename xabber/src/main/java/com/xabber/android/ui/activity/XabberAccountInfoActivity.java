@@ -430,6 +430,12 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
                     @Override
                     public void call(Throwable throwable) {
                         Log.d(LOG_TAG, "Xabber account loading from net: error: " + throwable.toString());
+                        String message = RetrofitErrorConverter.throwableToHttpError(throwable);
+                        if (message != null && message.equals("Invalid token")) {
+                            XabberAccountManager.getInstance().onInvalidToken();
+                            showLoginFragment();
+                        }
+
                         hideProgress();
                         Toast.makeText(XabberAccountInfoActivity.this, R.string.sync_fail, Toast.LENGTH_SHORT).show();
                     }
@@ -494,8 +500,8 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
         String message = RetrofitErrorConverter.throwableToHttpError(throwable);
         if (message != null) {
             if (message.equals("Invalid token")) {
-                deleteAccountsIfLogoutFailed();
-                return;
+                XabberAccountManager.getInstance().onInvalidToken();
+                showLoginFragment();
             } else {
                 Log.d(LOG_TAG, "Error while logout: " + message);
                 Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
@@ -505,23 +511,6 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
             Toast.makeText(this, "Error while logout: " + throwable.toString(), Toast.LENGTH_LONG).show();
         }
         hideProgress();
-    }
-
-    private void deleteAccountsIfLogoutFailed() {
-        Application.getInstance().runInBackground(new Runnable() {
-            @Override
-            public void run() {
-                XabberAccountManager.getInstance().deleteXabberAccountFromRealm();
-                XabberAccountManager.getInstance().deleteSyncedXMPPAccountsFromRealm();
-                XabberAccountManager.getInstance().deleteDeadXMPPAccountsFromRealm();
-                Application.getInstance().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        handleSuccessLogout(null, true);
-                    }
-                });
-            }
-        });
     }
 
     private void confirm(String code) {
