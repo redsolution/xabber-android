@@ -74,6 +74,7 @@
     <string name="button_confirm">ПОДТВЕРДИТЬ</string>
     <string name="button_continue">продолжить</string>
     <string name="button_sync">СИНХРОНИЗИРОВАТЬ</string>
+    <string name="button_cancel_register">Прервать регистрацию</string>
 
     <string name="btn_done">готово</string>
     <string name="btn_reorder_account">reorder account</string>

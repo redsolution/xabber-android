@@ -75,7 +75,7 @@
     <string name="button_resend_link">RESEND CODE</string>
     <string name="button_complete_register">REGISTER</string>
     <string name="button_confirm">confirm</string>
-    <string name="button_cancel_register">cancel register</string>
+    <string name="button_cancel_register">Cancel register</string>
     <string name="button_continue">continue</string>
     <string name="button_sync">SYNCHRONIZE</string>
 
