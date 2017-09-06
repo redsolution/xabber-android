@@ -20,4 +20,5 @@
   <string name="skip">Пропустить</string>
   <string name="settings">Настройки</string>
   <string name="ok">OK</string>
+  <string name="login">Подключить</string>
 </resources>

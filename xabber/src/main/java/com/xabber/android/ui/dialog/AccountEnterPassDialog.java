@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -48,14 +49,17 @@ public class AccountEnterPassDialog extends DialogFragment implements DialogInte
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity())
                 .setTitle(AccountManager.getInstance().getVerboseName(accountErrorEvent.getAccount()))
                 .setView(setUpDialogView())
-                .setPositiveButton(R.string.ok, this)
+                .setPositiveButton(R.string.login, this)
                 .setNegativeButton(R.string.skip, this);
 
         if (accountErrorEvent!= null && accountErrorEvent.getType().equals(AUTHORIZATION)) {
             builder.setNeutralButton(R.string.settings, this);
         }
 
-        return builder.create();
+        Dialog dialog = builder.create();
+        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+
+        return dialog;
     }
 
     @NonNull
