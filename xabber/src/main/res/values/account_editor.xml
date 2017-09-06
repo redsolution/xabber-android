@@ -11,12 +11,12 @@
     <string name="account_server_name">Server</string>
     <string name="account_type">Account type</string>
     <string name="account_type_hints_gtalk">username for gmail.com or Google Apps domain</string>
-    <string name="account_type_helps_gtalk">If you don\'t have Google account you may create one at http://mail.google.com\nAlso you can use your_user_name@your_google_domain</string>
-    <string name="account_xmpp_register_warning">You must <a href="http://www.google.com/#q=register an XMPP account">register an XMPP account</a> before adding it to Xabber!</string>
+    <string name="account_type_helps_gtalk">If you don\'t have Google account you may create one at https://mail.google.com\nAlso you can use your_user_name@your_google_domain</string>
+    <string name="account_xmpp_register_warning">You must <a href="https://www.google.com/#q=register an XMPP account">register an XMPP account</a> before adding it to Xabber!</string>
     <string name="account_type_helps_xmpp">If you want to learn more about XMPP (Jabber) here: https://xmpp.org</string>
     <string name="account_user_name">Username</string>
-    <string name="EMPTY_SERVER_NAME">Server name is not specified</string>
-    <string name="EMPTY_USER_NAME">Username is not specified</string>
+    <string name="EMPTY_SERVER_NAME">Server name not specified</string>
+    <string name="EMPTY_USER_NAME">Username not specified</string>
     <string name="CONFIRM_PASSWORD">Passwords do not match</string>
     <string name="account_archive_mode">Store message history</string>
     <string name="account_archive_mode_available">On server if available</string>
@@ -43,22 +43,22 @@
     <string name="account_proxy_type_none">Disabled</string>
     <string name="account_proxy_user">Proxy user</string>
     <string name="account_sasl">Use SASL Authentication (recommended)</string>
-    <string name="account_sasl_summary">Disable for very old server</string>
+    <string name="account_sasl_summary">Disable for very old servers</string>
     <string name="account_store_password">Store password</string>
     <string name="account_store_password_summary">Disable this option to request password each time you go online</string>
     <string name="account_syncable">Integrate into system contacts</string>
-    <string name="account_syncable_summary">Show contacts from this account in phone`s contact list</string>
+    <string name="account_syncable_summary">Show contacts from this account in device's contact list</string>
     <string name="account_tls_enable">Enable TLS</string>
-    <string name="account_tls_enable_summary">Use TLS encryption when possible to connect to server</string>
+    <string name="account_tls_enable_summary">Connect to server with TLS encryption when possible</string>
     <string name="account_tls_legacy">Legacy SSL</string>
-    <string name="account_tls_legacy_summary">Use legacy SSL encryption when connect to server</string>
+    <string name="account_tls_legacy_summary">Connect to server with legacy SSL encryption</string>
     <string name="account_tls_mode">TLS/SSL usage</string>
     <string name="account_tls_require">Require TLS</string>
-    <string name="account_tls_require_summary">Require TLS encryption when connect to server</string>
-    <string name="account_use_orbot">Chat through TOR anonymity network and force TLS cryptographic protocol</string>
-    <string name="confirm_cancellation">Are you sure you want to discard all the changes?</string>
-    <string name="INCORRECT_USER_NAME">Incorrect user name. Check help text below for details.</string>
-    <string name="orbot_required_message">In order to process using TOR you must have Orbot installed and activated to proxy traffic through it. Would you like to install it from Google Play?</string>
+    <string name="account_tls_require_summary">Require TLS encryption to connect to server</string>
+    <string name="account_use_orbot">Chat through Tor anonymity network and force TLS cryptographic protocol</string>
+    <string name="confirm_cancellation">Are you sure you want to discard all changes?</string>
+    <string name="INCORRECT_USER_NAME">Incorrect username. Check help text below for details.</string>
+    <string name="orbot_required_message">In order to process using Tor you must have Orbot installed and activated to proxy traffic through it. Would you like to install it from Google Play?</string>
     <string name="orbot_required_title">Install Orbot?</string>
     <string name="install_orbot">Install Orbot</string>
     <string name="ACCOUNT_REGISTER_FAILED">Failed to register account on the server.</string>
@@ -89,7 +89,7 @@
     <string name="account_chat_history">Chat history</string>
     <string name="account_history_options_summary">Storage options for chat messages</string>
 
-    <string name="account_chat_history_unknown">Support for chat history server store is not determined yet</string>
+    <string name="account_chat_history_unknown">Support for storing chat history on server is not determined yet</string>
     <string name="account_chat_history_not_supported">The server does not support storing chat history.</string>
 
     <string name="account_mam_default_behavior_title">Message Archive Management</string>
@@ -108,5 +108,5 @@
     <string name="account_bookmarks">Bookmarks</string>
     <string name="account_bookmarks_summary">List of bookmarks for this account</string>
 
-    <string name="bookmark_not_supported">Server not supported bookmarks.</string>
+    <string name="bookmark_not_supported">Server does not not support bookmarks.</string>
 </resources>
