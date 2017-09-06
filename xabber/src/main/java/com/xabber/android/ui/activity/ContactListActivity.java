@@ -731,6 +731,7 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
     public void onAccountsChanged(Collection<AccountJid> accounts) {
         ((ContactListFragment)getFragmentManager().findFragmentById(R.id.container)).onAccountsChanged();
         barPainter.setDefaultColor();
+        rebuildAccountToggle();
     }
 
     @Override
