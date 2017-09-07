@@ -362,7 +362,7 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
     }
 
     private void updateSettings(final boolean needGoToMainActivity) {
-        Subscription getSettingsSubscription = AuthManager.updateClientSettings(XabberAccountManager.getInstance().getXmppAccounts())
+        Subscription getSettingsSubscription = AuthManager.updateClientSettings(XabberAccountManager.getInstance().getXmppAccountsForSync())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<List<XMPPAccountSettings>>() {

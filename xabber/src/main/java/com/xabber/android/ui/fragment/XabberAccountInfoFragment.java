@@ -13,13 +13,26 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
+import com.xabber.android.data.account.AccountManager;
+import com.xabber.android.data.xaccount.AuthManager;
+import com.xabber.android.data.xaccount.XMPPAccountSettings;
 import com.xabber.android.data.xaccount.XabberAccount;
 import com.xabber.android.data.xaccount.XabberAccountManager;
 import com.xabber.android.ui.activity.XabberAccountInfoActivity;
 import com.xabber.android.ui.dialog.AccountSyncDialogFragment;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
+import rx.schedulers.Schedulers;
+import rx.subscriptions.CompositeSubscription;
 
 /**
  * Created by valery.miller on 27.07.17.
@@ -32,6 +45,8 @@ public class XabberAccountInfoFragment extends Fragment {
     private TextView tvLastSyncDate;
     private RelativeLayout rlLogout;
     private RelativeLayout rlSync;
+
+    private CompositeSubscription compositeSubscription = new CompositeSubscription();
 
     @Nullable
     @Override
@@ -77,6 +92,12 @@ public class XabberAccountInfoFragment extends Fragment {
         updateLastSyncTime();
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        compositeSubscription.clear();
+    }
+
     public void updateData(@NonNull XabberAccount account) {
         String accountName = account.getFirstName() + " " + account.getLastName();
         if (accountName.trim().isEmpty())
@@ -91,9 +112,33 @@ public class XabberAccountInfoFragment extends Fragment {
         tvLastSyncDate.setText(getString(R.string.last_sync_date, SettingsManager.getLastSyncDate()));
     }
 
-    public void showSyncDialog(boolean noCancel) {
-        AccountSyncDialogFragment.newInstance(noCancel)
-                .show(getFragmentManager(), AccountSyncDialogFragment.class.getSimpleName());
+    public void showSyncDialog(final boolean noCancel) {
+        Subscription getSettingsSubscription = AuthManager.getClientSettingsWithoutSavingToRealm()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<List<XMPPAccountSettings>>() {
+                    @Override
+                    public void call(List<XMPPAccountSettings> list) {
+                        List<XMPPAccountSettings> items = createFullAccountsList(list);
+
+                        if (items != null && items.size() > 0) {
+                            // save full list to list for sync
+                            XabberAccountManager.getInstance().setXmppAccountsForSync(items);
+                            // show dialog
+                            AccountSyncDialogFragment.newInstance(noCancel)
+                                    .show(getFragmentManager(), AccountSyncDialogFragment.class.getSimpleName());
+                        } else Toast.makeText(getActivity(), "Не удалось начать синхронизацию", Toast.LENGTH_SHORT).show();
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        Toast.makeText(getActivity(), "Не удалось начать синхронизацию", Toast.LENGTH_SHORT).show();
+                    }
+                });
+        compositeSubscription.add(getSettingsSubscription);
+
+
+
     }
 
     private void showLogoutDialog() {
@@ -116,4 +161,44 @@ public class XabberAccountInfoFragment extends Fragment {
         dialog.show();
     }
 
+    private List<XMPPAccountSettings> createFullAccountsList(List<XMPPAccountSettings> remoteList) {
+        List<XMPPAccountSettings> resultList = new ArrayList<>();
+
+        List<XMPPAccountSettings> localList = XabberAccountManager.getInstance().getXmppAccounts();
+        for (XMPPAccountSettings remoteItem : remoteList) {
+            XMPPAccountSettings.SyncStatus status = XMPPAccountSettings.SyncStatus.remote;
+            for (XMPPAccountSettings localItem : localList) {
+                if (localItem.getJid().equals(remoteItem.getJid())) {
+                    if (XabberAccountManager.getInstance().getExistingAccount(remoteItem.getJid()) != null) {
+                        remoteItem.setSynchronization(localItem.isSynchronization());
+                        if (remoteItem.getTimestamp() == localItem.getTimestamp())
+                            status = XMPPAccountSettings.SyncStatus.localEqualsRemote;
+                        else if (remoteItem.getTimestamp() > localItem.getTimestamp())
+                            status = XMPPAccountSettings.SyncStatus.remoteNewer;
+                        else {
+                            status = XMPPAccountSettings.SyncStatus.localNewer;
+                        }
+                    }
+                }
+            }
+            remoteItem.setStatus(status);
+        }
+
+        for (XMPPAccountSettings localItem : localList) {
+            boolean exist = false;
+            for (XMPPAccountSettings remoteItem : remoteList) {
+                if (localItem.getJid().equals(remoteItem.getJid())) {
+                    exist = true;
+                }
+            }
+            if (!exist) {
+                localItem.setOrder(remoteList.size() + localItem.getOrder());
+                localItem.setStatus(XMPPAccountSettings.SyncStatus.local);
+                resultList.add(localItem);
+            }
+        }
+
+        resultList.addAll(remoteList);
+        return resultList;
+    }
 }

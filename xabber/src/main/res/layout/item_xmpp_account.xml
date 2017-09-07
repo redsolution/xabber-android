@@ -17,15 +17,15 @@
             android:id="@+id/color"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:src="@color/green_500" />
+            android:src="@color/green_500"
+            android:visibility="invisible"/>
 
-        <de.hdodenhof.circleimageview.CircleImageView
+        <ImageView
             android:id="@+id/avatar"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:src="@drawable/ic_avatar_1"
-            app:civ_border_color="@android:color/transparent"
-            app:civ_border_width="3dp" />
+            android:padding="8dp"
+            android:src="@drawable/ic_sync_disable" />
 
     </FrameLayout>
     <LinearLayout
@@ -34,7 +34,7 @@
         android:layout_gravity="center_vertical"
         android:layout_weight="1"
         android:orientation="vertical"
-        android:paddingLeft="16dp"
+        android:paddingLeft="8dp"
         >
 
         <TextView

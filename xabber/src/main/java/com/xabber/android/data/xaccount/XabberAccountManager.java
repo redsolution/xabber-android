@@ -53,6 +53,7 @@ public class XabberAccountManager implements OnLoadListener {
 
     private XabberAccount account;
     private List<XMPPAccountSettings> xmppAccounts;
+    private List<XMPPAccountSettings> xmppAccountsForSync;
 
     private int lastOrderChangeTimestamp;
 
@@ -66,6 +67,16 @@ public class XabberAccountManager implements OnLoadListener {
 
     private XabberAccountManager() {
         xmppAccounts = new ArrayList<>();
+        xmppAccountsForSync = new ArrayList<>();
+    }
+
+    public List<XMPPAccountSettings> getXmppAccountsForSync() {
+        return xmppAccountsForSync;
+    }
+
+    public void setXmppAccountsForSync(List<XMPPAccountSettings> items) {
+        this.xmppAccountsForSync.clear();
+        this.xmppAccountsForSync.addAll(items);
     }
 
     public int getLastOrderChangeTimestamp() {
@@ -668,6 +679,14 @@ public class XabberAccountManager implements OnLoadListener {
         return null;
     }
 
+    @Nullable
+    public XMPPAccountSettings getAccountSettingsForSync(String jid) {
+        for (XMPPAccountSettings account : xmppAccountsForSync) {
+            if (account.getJid().equals(jid)) return account;
+        }
+        return null;
+    }
+
     public void setSyncForAccount(AccountJid account, boolean sync) {
         BareJid bareJid = account.getFullJid().asBareJid();
         if (bareJid != null) {
@@ -687,7 +706,7 @@ public class XabberAccountManager implements OnLoadListener {
                     account.setSynchronization(accountNew.isSynchronization());
             }
         }
-        saveOrUpdateXMPPAccountSettingsToRealm(items);
+        saveOrUpdateXMPPAccountSettingsToRealm(xmppAccounts);
     }
 
     public int getCurrentTime() {
@@ -727,6 +746,41 @@ public class XabberAccountManager implements OnLoadListener {
                 removeAccount();
             }
         });
+    }
+
+    public Single<List<XMPPAccountSettings>> clientSettingsDTOListToPOJO(AuthManager.ListClientSettingsDTO list) {
+        List<XMPPAccountSettings> result = new ArrayList<>();
+
+        for (AuthManager.ClientSettingsDTO dtoItem : list.getSettings()) {
+
+            // create item
+            XMPPAccountSettings accountSettings = clientSettingsDTOToPOJO(dtoItem);
+
+            // set order
+            for (AuthManager.OrderDTO orderDTO : list.getOrderData().getSettings()) {
+                if (orderDTO.getJid().equals(accountSettings.getJid())) {
+                    accountSettings.setOrder(orderDTO.getOrder());
+                }
+            }
+
+            // add to list
+            result.add(accountSettings);
+        }
+
+        return Single.just(result);
+    }
+
+    public XMPPAccountSettings clientSettingsDTOToPOJO(AuthManager.ClientSettingsDTO dto) {
+        XMPPAccountSettings accountSettings = new XMPPAccountSettings(
+                dto.getJid(),
+                false,
+                dto.getTimestamp()
+        );
+        accountSettings.setColor(dto.getSettings().getColor());
+        accountSettings.setToken(dto.getSettings().getToken());
+        accountSettings.setUsername(dto.getSettings().getUsername());
+
+        return accountSettings;
     }
 }
 

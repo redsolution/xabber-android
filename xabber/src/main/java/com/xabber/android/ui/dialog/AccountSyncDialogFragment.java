@@ -67,7 +67,9 @@ public class AccountSyncDialogFragment extends DialogFragment {
                 public void onClick(DialogInterface dialog, int which) {
                     if (!switchSyncAll.isChecked())
                         XabberAccountManager.getInstance().setSyncAllAccounts(xmppAccounts);
+
                     SettingsManager.setSyncAllAccounts(switchSyncAll.isChecked());
+                    XabberAccountManager.getInstance().setXmppAccountsForSync(xmppAccounts);
                     ((XabberAccountInfoActivity)getActivity()).onSyncClick(false);
                 }
             });
@@ -77,7 +79,9 @@ public class AccountSyncDialogFragment extends DialogFragment {
                 public void onClick(DialogInterface dialog, int which) {
                     if (!switchSyncAll.isChecked())
                         XabberAccountManager.getInstance().setSyncAllAccounts(xmppAccounts);
+
                     SettingsManager.setSyncAllAccounts(switchSyncAll.isChecked());
+                    XabberAccountManager.getInstance().setXmppAccountsForSync(xmppAccounts);
                     ((XabberAccountInfoActivity)getActivity()).onSyncClick(true);
                 }
             });
@@ -101,9 +105,9 @@ public class AccountSyncDialogFragment extends DialogFragment {
             }
         });
 
-        setXmppAccounts(XabberAccountManager.getInstance().getXmppAccounts());
+        setXmppAccounts(XabberAccountManager.getInstance().getXmppAccountsForSync());
 
-        adapter = new XMPPAccountAdapter();
+        adapter = new XMPPAccountAdapter(getActivity());
         adapter.setItems(xmppAccounts);
 
         if (adapter != null && SettingsManager.isSyncAllAccounts())
@@ -126,6 +130,7 @@ public class AccountSyncDialogFragment extends DialogFragment {
             newAccount.setUsername(account.getUsername());
             newAccount.setColor(account.getColor());
             newAccount.setOrder(account.getOrder());
+            newAccount.setStatus(account.getStatus());
 
             this.xmppAccounts.add(newAccount);
         }
