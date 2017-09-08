@@ -56,6 +56,9 @@ public class AccountRealm extends RealmObject {
     private String token;
 
     private int colorIndex;
+    private int timestamp;
+    private int order;
+
     private int priority;
     private String statusMode;
     private String statusText;
@@ -178,6 +181,22 @@ public class AccountRealm extends RealmObject {
 
     public void setColorIndex(int colorIndex) {
         this.colorIndex = colorIndex;
+    }
+
+    public int getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(int timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public int getOrder() {
+        return order;
+    }
+
+    public void setOrder(int order) {
+        this.order = order;
     }
 
     public int getPriority() {

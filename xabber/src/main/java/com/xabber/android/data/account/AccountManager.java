@@ -189,6 +189,8 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
                     accountRealm.getPassword(),
                     accountRealm.getToken(),
                     accountRealm.getColorIndex(),
+                    accountRealm.getOrder(),
+                    accountRealm.getTimestamp(),
                     accountRealm.getPriority(),
                     accountRealm.getStatusMode(),
                     accountRealm.getStatusText(),
@@ -286,6 +288,10 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
         return result;
     }
 
+    int getNextOrder() {
+        return accountItems.size();
+    }
+
     /**
      * @param account full jid.
      * @return Specified account or <code>null</code> if account doesn't exists.
@@ -312,7 +318,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
      */
     private AccountItem addAccount(boolean custom, String host, int port,
                                    DomainBareJid serverName, Localpart userName, boolean storePassword,
-                                   String password, String token, Resourcepart resource, int color, int priority,
+                                   String password, String token, Resourcepart resource, int color, int order, int timestamp, int priority,
                                    StatusMode statusMode, String statusText, boolean enabled,
                                    boolean saslEnabled, TLSMode tlsMode, boolean compression,
                                    ProxyType proxyType, String proxyHost, int proxyPort,
@@ -321,7 +327,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
                                    boolean registerNewAccount) {
 
         AccountItem accountItem = new AccountItem(custom, host, port, serverName, userName,
-                resource, storePassword, password, token, color, priority, statusMode, statusText, enabled,
+                resource, storePassword, password, token, color, order, timestamp, priority, statusMode, statusText, enabled,
                 saslEnabled, tlsMode, compression, proxyType, proxyHost, proxyPort, proxyUser,
                 proxyPassword, syncable, keyPair, lastSync, archiveMode);
 
@@ -395,7 +401,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
         ArchiveMode archiveMode = ArchiveMode.valueOf(application.getString(R.string.account_archive_mode_default_value));
 
         accountItem = addAccount(useCustomHost, host, port, serverName, userName,
-                storePassword, password, token, resource, getNextColorIndex(), 0, StatusMode.available,
+                storePassword, password, token, resource, getNextColorIndex(), getNextOrder(), 0, 0, StatusMode.available,
                 SettingsManager.statusText(), true, true, tlsRequired ? TLSMode.required : TLSMode.enabled,
                 useCompression, useOrbot ? ProxyType.orbot : ProxyType.none, "localhost", 8080,
                 "", "", syncable, null, null, archiveMode, registerNewAccount);
@@ -587,7 +593,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
             Date lastSync = accountItem.getLastSync();
             removeAccountWithoutCallback(account);
             result = addAccount(custom, host, port, serverName, userName, storePassword,
-                    password, token, resource, colorIndex, priority, statusMode, statusText, enabled,
+                    password, token, resource, colorIndex, accountItem.getOrder(), accountItem.getTimestamp(), priority, statusMode, statusText, enabled,
                     saslEnabled, tlsMode, compression, proxyType, proxyHost, proxyPort, proxyUser,
                     proxyPassword, syncable, keyPair, lastSync, archiveMode, false);
         }
@@ -852,6 +858,22 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
         AccountItem accountItem = getAccount(accountJid);
         if (accountItem != null) {
             accountItem.setColorIndex(colorIndex);
+            requestToWriteAccount(accountItem);
+        }
+    }
+
+    public void setOrder(AccountJid accountJid, int order) {
+        AccountItem accountItem = getAccount(accountJid);
+        if (accountItem != null) {
+            accountItem.setOrder(order);
+            requestToWriteAccount(accountItem);
+        }
+    }
+
+    public void setTimestamp(AccountJid accountJid, int timestamp) {
+        AccountItem accountItem = getAccount(accountJid);
+        if (accountItem != null) {
+            accountItem.setTimestamp(timestamp);
             requestToWriteAccount(accountItem);
         }
     }
