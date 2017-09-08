@@ -32,6 +32,9 @@ import com.xabber.android.ui.fragment.XabberAccountInfoFragment;
 import com.xabber.android.ui.fragment.XabberAccountLoginFragment;
 import com.xabber.android.utils.RetrofitErrorConverter;
 
+import org.greenrobot.eventbus.EventBus;
+
+import java.util.ArrayList;
 import java.util.List;
 
 import okhttp3.ResponseBody;
@@ -362,7 +365,7 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
     }
 
     private void updateSettings(final boolean needGoToMainActivity) {
-        Subscription getSettingsSubscription = AuthManager.updateClientSettings(XabberAccountManager.getInstance().getXmppAccountsForSync())
+        Subscription getSettingsSubscription = AuthManager.patchClientSettings(XabberAccountManager.getInstance().createSettingsList())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<List<XMPPAccountSettings>>() {
@@ -391,13 +394,14 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
     }
 
     private void getSettings() {
-        Subscription getSettingsSubscription = AuthManager.getClientSettings()
+        Subscription getSettingsSubscription = AuthManager.getClientSettingsWithoutSavingToRealm()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<List<XMPPAccountSettings>>() {
                     @Override
-                    public void call(List<XMPPAccountSettings> s) {
+                    public void call(List<XMPPAccountSettings> settings) {
                         Log.d(LOG_TAG, "XMPP accounts loading from net: successfully");
+                        EventBus.getDefault().post(new CreateLocalAccountsEvents(settings));
                         hideProgress();
                         //showSyncDialog();
                         Intent intent = ContactListActivity.createIntent(XabberAccountInfoActivity.this);
@@ -424,7 +428,10 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
                     public void call(XabberAccount s) {
                         Log.d(LOG_TAG, "Xabber account loading from net: successfully");
                         updateAccountInfo(s);
-                        updateSettings(needGoToMainActivity);
+                        if (needGoToMainActivity)
+                            getSettings();
+                        else
+                            updateSettings(needGoToMainActivity);
                     }
                 }, new Action1<Throwable>() {
                     @Override
@@ -644,6 +651,19 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
         } else {
             Log.d(LOG_TAG, "Error while send verification email: " + throwable.toString());
             Toast.makeText(this, "Error while send verification email: " + throwable.toString(), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    public static class CreateLocalAccountsEvents {
+        private List<XMPPAccountSettings> settings;
+
+        public CreateLocalAccountsEvents(List<XMPPAccountSettings> settings) {
+            this.settings = new ArrayList<>();
+            this.settings.addAll(settings);
+        }
+
+        public List<XMPPAccountSettings> getSettings() {
+            return settings;
         }
     }
 }

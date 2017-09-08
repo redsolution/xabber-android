@@ -318,8 +318,9 @@ public abstract class BaseLoginActivity extends ManagedActivity implements Googl
             getSettings();
     }
 
+    // get settings on login
     private void getSettings() {
-        Subscription getAccountSubscription = AuthManager.getClientSettings()
+        Subscription getAccountSubscription = AuthManager.getClientSettingsWithoutSavingToRealm()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<List<XMPPAccountSettings>>() {
