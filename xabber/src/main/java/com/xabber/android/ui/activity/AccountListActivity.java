@@ -157,16 +157,12 @@ public class AccountListActivity extends ManagedActivity implements OnAccountCha
 
     public void updateAccountOrder() {
         if (accountListAdapter != null) {
-            HashMap<String, Integer> map = new HashMap<>();
             int order = 1;
-            for (AccountItem account : accountListAdapter.getItems()) {
-                BareJid jid = account.getAccount().getFullJid().asBareJid();
-                if (jid != null) {
-                    map.put(jid.toString(), order);
-                    order++;
-                }
-            }
-            XabberAccountManager.getInstance().setXMPPAccountOrder(map);
+            for (AccountItem account : accountListAdapter.getItems())
+                AccountManager.getInstance().setOrder(account.getAccount(), order++);
+
+            XabberAccountManager.getInstance().setLastOrderChangeTimestampIsNow();
+            XabberAccountManager.getInstance().updateAccountSettings();
         }
     }
 
