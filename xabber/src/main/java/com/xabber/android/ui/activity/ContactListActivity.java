@@ -75,10 +75,6 @@ import com.xabber.android.ui.fragment.ContactListFragment.ContactListFragmentLis
 import com.xabber.android.ui.preferences.PreferenceEditor;
 import com.xabber.xmpp.uri.XMPPUri;
 
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Locale;
@@ -436,12 +432,7 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
 //            }
         }
 
-        //XabberAccountManager.getInstance().createLocalAccountIfNotExist();
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onCreateLocalAccountsEvent(XabberAccountInfoActivity.CreateLocalAccountsEvents event) {
-        XabberAccountManager.getInstance().updateLocalAccounts(event.getSettings());
+        XabberAccountManager.getInstance().createLocalAccountIfNotExist();
     }
 
     private void showMucInviteDialog() {
