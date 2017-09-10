@@ -39,12 +39,25 @@ public class AuthManager {
                 .flatMap(new Func1<ResponseBody, Single<? extends ResponseBody>>() {
                     @Override
                     public Single<? extends ResponseBody> call(ResponseBody responseBody) {
-                        if (XabberAccountManager.getInstance().deleteXabberAccountFromRealm())
-                            return Single.just(responseBody);
-                        else return Single.error(new Throwable("Realm: xabber account deletion error"));
+                        if (deleteAccounts) {
+                            if (XabberAccountManager.getInstance().deleteXabberAccountFromRealm())
+                                return Single.just(responseBody);
+                            else
+                                return Single.error(new Throwable("Realm: xabber account deletion error"));
+                        } else return Single.just(responseBody);
+                    }
+                })
+                .flatMap(new Func1<ResponseBody, Single<? extends ResponseBody>>() {
+                    @Override
+                    public Single<? extends ResponseBody> call(ResponseBody responseBody) {
+                        if (deleteAccounts) {
+                            if (XabberAccountManager.getInstance().deleteSyncStatesFromRealm())
+                                return Single.just(responseBody);
+                            else
+                                return Single.error(new Throwable("Realm: xabber account deletion error"));
+                        } else return Single.just(responseBody);
                     }
                 });
-        // TODO: 10.09.2017 delete local synced accounts
     }
 
     public static Single<XAccountTokenDTO> loginSocial(String provider, String socialToken) {

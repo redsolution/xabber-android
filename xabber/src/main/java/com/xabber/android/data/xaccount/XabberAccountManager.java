@@ -14,21 +14,17 @@ import com.xabber.android.data.database.RealmManager;
 import com.xabber.android.data.database.realm.EmailRealm;
 import com.xabber.android.data.database.realm.SocialBindingRealm;
 import com.xabber.android.data.database.realm.SyncStateRealm;
-import com.xabber.android.data.database.realm.XMPPAccountSettignsRealm;
 import com.xabber.android.data.database.realm.XMPPUserRealm;
 import com.xabber.android.data.database.realm.XabberAccountRealm;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.utils.RetrofitErrorConverter;
 
-import org.jxmpp.jid.BareJid;
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -81,6 +77,11 @@ public class XabberAccountManager implements OnLoadListener {
 
     public void setAccountSyncState(Map<String, Boolean> accountsSyncState) {
         this.accountsSyncState.putAll(accountsSyncState);
+        saveSyncStatesToRealm(this.accountsSyncState);
+    }
+
+    public void setAccountSyncState(String jid, boolean sync) {
+        this.accountsSyncState.put(jid, sync);
         saveSyncStatesToRealm(this.accountsSyncState);
     }
 
@@ -192,6 +193,7 @@ public class XabberAccountManager implements OnLoadListener {
 
     public void removeAccount() {
         this.account = null;
+        this.accountsSyncState.clear();
     }
 
     public Single<XabberAccount> saveOrUpdateXabberAccountToRealm(XabberAccountDTO xabberAccount, String token) {
@@ -371,6 +373,13 @@ public class XabberAccountManager implements OnLoadListener {
         xmppAccountsForCreate.clear();
     }
 
+    public void deleteSyncedLocalAccounts() {
+        for (Map.Entry<String, Boolean> entry : accountsSyncState.entrySet()) {
+            AccountJid accountJid = getExistingAccount(entry.getKey());
+            if (accountJid != null && entry.getValue()) AccountManager.getInstance().removeAccount(accountJid);
+        }
+    }
+
     public AccountJid getExistingAccount(String jid) {
         for (AccountJid accountJid : AccountManager.getInstance().getAllAccounts()) {
             String accountJidString = accountJid.getFullJid().asBareJid().toString();
@@ -401,7 +410,8 @@ public class XabberAccountManager implements OnLoadListener {
         Application.getInstance().runInBackground(new Runnable() {
             @Override
             public void run() {
-                // TODO: 10.09.2017 delete local synced accounts
+                deleteSyncedLocalAccounts();
+                deleteSyncStatesFromRealm();
                 deleteXabberAccountFromRealm();
                 removeAccount();
             }
@@ -454,6 +464,21 @@ public class XabberAccountManager implements OnLoadListener {
         realm.close();
 
         return resultMap;
+    }
+
+    public boolean deleteSyncStatesFromRealm() {
+        final boolean[] success = new boolean[1];
+        Realm realm = RealmManager.getInstance().getNewBackgroundRealm();
+
+        final RealmResults<SyncStateRealm> results = realm.where(SyncStateRealm.class).findAll();
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                success[0] = results.deleteAllFromRealm();
+            }
+        });
+        realm.close();
+        return success[0];
     }
 
     public void saveSyncStatesToRealm(Map<String, Boolean> syncStateMap) {

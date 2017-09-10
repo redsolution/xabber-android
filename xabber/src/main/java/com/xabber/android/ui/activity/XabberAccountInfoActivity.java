@@ -20,6 +20,7 @@ import android.widget.Toast;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.connection.NetworkManager;
 import com.xabber.android.data.xaccount.AuthManager;
 import com.xabber.android.data.xaccount.XMPPAccountSettings;
@@ -174,6 +175,7 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
             @Override
             public void run() {
                 XabberAccountManager.getInstance().deleteXabberAccountFromRealm();
+                XabberAccountManager.getInstance().deleteSyncStatesFromRealm();
                 Application.getInstance().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -442,9 +444,10 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
     }
 
     private void handleSuccessLogout(ResponseBody s, boolean deleteAccounts) {
+        if (deleteAccounts) XabberAccountManager.getInstance().deleteSyncedLocalAccounts();
         XabberAccountManager.getInstance().removeAccount();
-        // TODO: 10.09.2017 delete local account
         showLoginFragment();
+        SettingsManager.setSyncAllAccounts(true);
         hideProgress();
         Toast.makeText(this, R.string.logout_success, Toast.LENGTH_SHORT).show();
         Intent intent = ContactListActivity.createIntent(XabberAccountInfoActivity.this);

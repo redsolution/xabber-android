@@ -466,7 +466,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
     public void removeAccount(AccountJid account) {
         // disable synchronization for this account in xabber account
         SettingsManager.setSyncAllAccounts(false);
-        // TODO: 10.09.2017 убрать синхронизацию для этого аккаунта
+        XabberAccountManager.getInstance().setAccountSyncState(account.getFullJid().asBareJid().toString(), false);
 
         // removing local account
         removeAccountWithoutCallback(account);
