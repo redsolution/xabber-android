@@ -53,7 +53,7 @@ public class XabberAccountManager implements OnLoadListener {
     private static XabberAccountManager instance;
 
     private XabberAccount account;
-    private List<XMPPAccountSettings> xmppAccounts;
+
     private List<XMPPAccountSettings> xmppAccountsForSync;
     private List<XMPPAccountSettings> xmppAccountsForCreate;
 
@@ -71,7 +71,6 @@ public class XabberAccountManager implements OnLoadListener {
 
     private XabberAccountManager() {
         accountsSyncState = new HashMap<>();
-        xmppAccounts = new ArrayList<>();
         xmppAccountsForSync = new ArrayList<>();
         xmppAccountsForCreate = new ArrayList<>();
     }
@@ -105,10 +104,6 @@ public class XabberAccountManager implements OnLoadListener {
     public void setXmppAccountsForSync(List<XMPPAccountSettings> items) {
         this.xmppAccountsForSync.clear();
         this.xmppAccountsForSync.addAll(items);
-    }
-
-    public List<XMPPAccountSettings> getXmppAccountsForCreate() {
-        return xmppAccountsForCreate;
     }
 
     public void setXmppAccountsForCreate(List<XMPPAccountSettings> items) {
@@ -188,62 +183,6 @@ public class XabberAccountManager implements OnLoadListener {
         if (message != null && message.equals("Invalid token")) {
             onInvalidToken();
         }
-    }
-
-    private void updateXmppAccounts(List<XMPPAccountSettings> items) {
-        Log.d(LOG_TAG, "XMPP accounts loading from net: successfully");
-        this.xmppAccounts.clear();
-        this.xmppAccounts.addAll(items);
-    }
-
-    public List<XMPPAccountSettings> getXmppAccounts() {
-        return xmppAccounts;
-    }
-
-    public void addXmppAccountSettings(final AccountItem accountItem, final boolean sync) {
-        String jid = accountItem.getAccount().getFullJid().asBareJid().toString();
-        if (getAccountSettings(jid) == null) {
-
-            XMPPAccountSettings accountSettings = new XMPPAccountSettings(
-                    jid,
-                    sync,
-                    getCurrentTime());
-            accountSettings.setColor(ColorManager.getInstance().convertIndexToColorName(accountItem.getColorIndex()));
-
-            Subscription addAccountSettingsSubscription = saveOrUpdateXMPPAccountSettingsToRealm(accountSettings)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new Action1<XMPPAccountSettings>() {
-                        @Override
-                        public void call(XMPPAccountSettings s) {
-                            if (sync) updateAccountSettings();
-                        }
-                    }, new Action1<Throwable>() {
-                        @Override
-                        public void call(Throwable throwable) {
-                            Log.d(LOG_TAG, "add xmpp account settings: error: " + throwable.toString());
-                        }
-                    });
-            compositeSubscription.add(addAccountSettingsSubscription);
-        }
-    }
-
-    public void saveSettingsToRealm() {
-        Subscription saveSettingsSubscription = saveOrUpdateXMPPAccountSettingsToRealm(this.xmppAccounts)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<List<XMPPAccountSettings>>() {
-                    @Override
-                    public void call(List<XMPPAccountSettings> s) {
-                        updateAccountSettings();
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        Log.d(LOG_TAG, "add xmpp account settings: error: " + throwable.toString());
-                    }
-                });
-        compositeSubscription.add(saveSettingsSubscription);
     }
 
     @Nullable
@@ -393,208 +332,6 @@ public class XabberAccountManager implements OnLoadListener {
         return success[0];
     }
 
-    public boolean deleteXMPPAccountsFromRealm() {
-        final boolean[] success = new boolean[1];
-        Realm realm = RealmManager.getInstance().getNewBackgroundRealm();
-
-        final RealmResults<XMPPAccountSettignsRealm> results = realm.where(XMPPAccountSettignsRealm.class).findAll();
-        realm.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                success[0] = results.deleteAllFromRealm();
-            }
-        });
-        realm.close();
-        return success[0];
-    }
-
-    public boolean deleteDeadXMPPAccountsFromRealm() {
-        Realm realm = RealmManager.getInstance().getNewBackgroundRealm();
-
-        final RealmResults<XMPPAccountSettignsRealm> results = realm.where(XMPPAccountSettignsRealm.class).findAll();
-
-        realm.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                for (XMPPAccountSettignsRealm set : results) {
-                    AccountJid accountJid = getExistingAccount(set.getJid());
-                    if (accountJid == null) {
-                        set.deleteFromRealm();
-                    }
-                }
-            }
-        });
-        realm.close();
-        return true;
-    }
-
-    public boolean deleteSyncedXMPPAccountsFromRealm() {
-        final boolean[] success = new boolean[1];
-        Realm realm = RealmManager.getInstance().getNewBackgroundRealm();
-
-        final RealmResults<XMPPAccountSettignsRealm> results = realm.where(XMPPAccountSettignsRealm.class).equalTo("synchronization", true).findAll();
-        realm.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                success[0] = results.deleteAllFromRealm();
-            }
-        });
-        realm.close();
-        return success[0];
-    }
-
-    public List<XMPPAccountSettings> loadXMPPAccountSettingsFromRealm() {
-        List<XMPPAccountSettings> result = null;
-
-        Realm realm = RealmManager.getInstance().getNewBackgroundRealm();
-        RealmResults<XMPPAccountSettignsRealm> realmItems = realm.where(XMPPAccountSettignsRealm.class).findAll();
-        result = xmppAccountSettingsRealmListToPOJO(realmItems);
-
-        realm.close();
-        return result;
-    }
-
-    public List<XMPPAccountSettings> loadXMPPAccountSettingsFromRealmUI() {
-        List<XMPPAccountSettings> result = null;
-
-        Realm realm = RealmManager.getInstance().getNewRealm();
-        RealmResults<XMPPAccountSettignsRealm> realmItems = realm.where(XMPPAccountSettignsRealm.class).findAll();
-        result = xmppAccountSettingsRealmListToPOJO(realmItems);
-
-        realm.close();
-        return result;
-    }
-
-    @Nullable
-    public Single<List<XMPPAccountSettings>> saveOrUpdateXMPPAccountSettingsToRealm(AuthManager.ListClientSettingsDTO listXMPPAccountSettings) {
-        List<XMPPAccountSettings> result;
-        RealmList<XMPPAccountSettignsRealm> realmItems = new RealmList<>();
-
-        for (AuthManager.ClientSettingsDTO dtoItem : listXMPPAccountSettings.getSettings()) {
-            XMPPAccountSettignsRealm realmItem = new XMPPAccountSettignsRealm(dtoItem.getJid());
-
-            AuthManager.SettingsValuesDTO valuesDTO = dtoItem.getSettings();
-            if (valuesDTO != null) {
-                realmItem.setToken(valuesDTO.getToken());
-                realmItem.setColor(valuesDTO.getColor());
-                //realmItem.setOrder(valuesDTO.getOrder());
-                realmItem.setUsername(valuesDTO.getUsername());
-            }
-
-            for (AuthManager.OrderDTO orderDTO : listXMPPAccountSettings.getOrderData().getSettings()) {
-                if (orderDTO.getJid().equals(realmItem.getJid())) {
-                    realmItem.setOrder(orderDTO.getOrder());
-                }
-            }
-
-            realmItem.setTimestamp(dtoItem.getTimestamp());
-
-            // add to sync only accounts required sync
-            XMPPAccountSettings accountSettings = getAccountSettings(dtoItem.getJid());
-            if (accountSettings != null) {
-                if (accountSettings.isSynchronization() || SettingsManager.isSyncAllAccounts()) {
-                    realmItem.setSynchronization(accountSettings.isSynchronization());
-                    realmItems.add(realmItem);
-                }
-            } else {
-                realmItem.setSynchronization(true);
-                realmItems.add(realmItem);
-            }
-        }
-
-        Realm realm = RealmManager.getInstance().getNewBackgroundRealm();
-        realm.beginTransaction();
-        List<XMPPAccountSettignsRealm> resultRealm = realm.copyToRealmOrUpdate(realmItems);
-        result = xmppAccountSettingsRealmListToPOJO(resultRealm);
-        realm.commitTransaction();
-        realm.close();
-
-        SettingsManager.setLastSyncDate(getCurrentTimeString());
-        updateXmppAccounts(loadXMPPAccountSettingsFromRealm());
-        return Single.just(result);
-    }
-
-    @Nullable
-    public Single<List<XMPPAccountSettings>> saveOrUpdateXMPPAccountSettingsToRealm(List<XMPPAccountSettings> items) {
-        List<XMPPAccountSettings> result;
-        RealmList<XMPPAccountSettignsRealm> realmItems = new RealmList<>();
-
-        for (XMPPAccountSettings item : items) {
-            XMPPAccountSettignsRealm realmItem = new XMPPAccountSettignsRealm(item.getJid());
-
-            realmItem.setToken(item.getToken());
-            realmItem.setColor(item.getColor());
-            realmItem.setOrder(item.getOrder());
-            realmItem.setUsername(item.getUsername());
-            realmItem.setTimestamp(item.getTimestamp());
-            realmItem.setSynchronization(item.isSynchronization());
-
-            realmItems.add(realmItem);
-        }
-
-        Realm realm = RealmManager.getInstance().getNewRealm();
-        realm.beginTransaction();
-        List<XMPPAccountSettignsRealm> resultRealm = realm.copyToRealmOrUpdate(realmItems);
-        result = xmppAccountSettingsRealmListToPOJO(resultRealm);
-        realm.commitTransaction();
-        realm.close();
-
-        updateXmppAccounts(result);
-        return Single.just(result);
-    }
-
-    public Single<XMPPAccountSettings> saveOrUpdateXMPPAccountSettingsToRealm(XMPPAccountSettings item) {
-
-        XMPPAccountSettignsRealm realmItem = new XMPPAccountSettignsRealm(item.getJid());
-
-        realmItem.setToken(item.getToken());
-        realmItem.setColor(item.getColor());
-        realmItem.setOrder(item.getOrder());
-        realmItem.setUsername(item.getUsername());
-        realmItem.setTimestamp(item.getTimestamp());
-        realmItem.setSynchronization(item.isSynchronization());
-
-        Realm realm = RealmManager.getInstance().getNewRealm();
-        realm.beginTransaction();
-        XMPPAccountSettignsRealm resultRealm = realm.copyToRealmOrUpdate(realmItem);
-        XMPPAccountSettings result = xmppAccountSettingsRealmToPOJO(resultRealm);
-        realm.commitTransaction();
-        realm.close();
-
-        updateXmppAccounts(loadXMPPAccountSettingsFromRealmUI());
-        if (result != null) return Single.just(result);
-        else return Single.error(new Throwable("Create realm object error"));
-    }
-
-    @Nullable
-    public List<XMPPAccountSettings> xmppAccountSettingsRealmListToPOJO(List<XMPPAccountSettignsRealm> realmitems) {
-        if (realmitems == null) return null;
-
-        List<XMPPAccountSettings> items = new ArrayList<>();
-        for (XMPPAccountSettignsRealm realmItem : realmitems) {
-            items.add(xmppAccountSettingsRealmToPOJO(realmItem));
-        }
-        return items;
-    }
-
-    @Nullable
-    public XMPPAccountSettings xmppAccountSettingsRealmToPOJO(XMPPAccountSettignsRealm realmItem) {
-        if (realmItem == null) return null;
-
-        XMPPAccountSettings item = new XMPPAccountSettings(
-                realmItem.getJid(),
-                realmItem.isSynchronization(),
-                realmItem.getTimestamp());
-
-        item.setOrder(realmItem.getOrder());
-        item.setColor(realmItem.getColor());
-        item.setToken(realmItem.getToken());
-        item.setUsername(realmItem.getUsername());
-        item.setSynchronization(realmItem.isSynchronization());
-
-        return item;
-    }
-
     @Nullable
     public Single<List<XMPPAccountSettings>> updateLocalAccounts(@Nullable List<XMPPAccountSettings> accounts) {
         if (accounts != null) {
@@ -642,67 +379,12 @@ public class XabberAccountManager implements OnLoadListener {
         return null;
     }
 
-    public void setColor(AccountJid accountJid, int colorIndex) {
-        if (accountJid != null) {
-            for (XMPPAccountSettings account : xmppAccounts) {
-                if (account.getJid().equals(accountJid.getFullJid().asBareJid().toString())) {
-                    account.setColor(ColorManager.getInstance().convertIndexToColorName(colorIndex));
-                    account.setTimestamp(getCurrentTime());
-                }
-            }
-            saveSettingsToRealm();
-        }
-    }
-
-    public void setXMPPAccountOrder(HashMap<String, Integer> items) {
-        for (XMPPAccountSettings account : xmppAccounts) {
-            if (items.containsKey(account.getJid())) {
-                int orderValue = items.get(account.getJid());
-                if (orderValue > 0) account.setOrder(orderValue);
-                //account.setTimestamp(getCurrentTime());
-            }
-        }
-//        lastOrderChangeTimestamp = getCurrentTime();
-//        SettingsManager.setLastOrderChangeTimestamp(lastOrderChangeTimestamp);
-        saveSettingsToRealm();
-    }
-
-    @Nullable
-    public XMPPAccountSettings getAccountSettings(String jid) {
-        for (XMPPAccountSettings account : xmppAccounts) {
-            if (account.getJid().equals(jid)) return account;
-        }
-        return null;
-    }
-
     @Nullable
     public XMPPAccountSettings getAccountSettingsForSync(String jid) {
         for (XMPPAccountSettings account : xmppAccountsForSync) {
             if (account.getJid().equals(jid)) return account;
         }
         return null;
-    }
-
-    public void setSyncForAccount(AccountJid account, boolean sync) {
-        BareJid bareJid = account.getFullJid().asBareJid();
-        if (bareJid != null) {
-            for (XMPPAccountSettings accountSettings : xmppAccounts) {
-                if (accountSettings.getJid().equals(bareJid.toString())) {
-                    accountSettings.setSynchronization(sync);
-                }
-            }
-            saveSettingsToRealm();
-        }
-    }
-
-    public void setSyncAllAccounts(List<XMPPAccountSettings> items) {
-        for (XMPPAccountSettings account : xmppAccounts) {
-            for (XMPPAccountSettings accountNew : items) {
-                if (account.getJid().equals(accountNew.getJid()))
-                    account.setSynchronization(accountNew.isSynchronization());
-            }
-        }
-        saveOrUpdateXMPPAccountSettingsToRealm(xmppAccounts);
     }
 
     public int getCurrentTime() {
@@ -715,29 +397,11 @@ public class XabberAccountManager implements OnLoadListener {
         return sdfDate.format(now);
     }
 
-    public void deleteAllSyncedAccounts() {
-        for (Iterator<XMPPAccountSettings> it = this.xmppAccounts.iterator(); it.hasNext(); ) {
-            XMPPAccountSettings accountSettings = it.next();
-            if (accountSettings.isSynchronization()) {
-                // delete local accounts
-                AccountJid localAccountJid = getExistingAccount(accountSettings.getJid());
-                if (localAccountJid != null) {
-                    AccountManager.getInstance().removeAccountWithoutSync(localAccountJid);
-                }
-
-                // delete local settings
-                it.remove();
-            }
-        }
-    }
-
     public void onInvalidToken() {
         Application.getInstance().runInBackground(new Runnable() {
             @Override
             public void run() {
-                deleteAllSyncedAccounts();
-                deleteXMPPAccountsFromRealm();
-                xmppAccounts.clear();
+                // TODO: 10.09.2017 delete local synced accounts
                 deleteXabberAccountFromRealm();
                 removeAccount();
             }

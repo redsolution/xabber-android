@@ -414,9 +414,6 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
             SettingsManager.enableContactsShowAccount();
         }
 
-        // add xmpp account settings
-        XabberAccountManager.getInstance().addXmppAccountSettings(accountItem, xabberSync);
-
         return accountItem.getAccount();
     }
 
@@ -469,7 +466,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
     public void removeAccount(AccountJid account) {
         // disable synchronization for this account in xabber account
         SettingsManager.setSyncAllAccounts(false);
-        XabberAccountManager.getInstance().setSyncForAccount(account, false);
+        // TODO: 10.09.2017 убрать синхронизацию для этого аккаунта
 
         // removing local account
         removeAccountWithoutCallback(account);

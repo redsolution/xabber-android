@@ -58,19 +58,6 @@ public class AccountListPreferenceAdapter extends RecyclerView.Adapter {
 
     public void setAccountItems(List<AccountItem> accountItems) {
         this.accountItems = accountItems;
-
-        List<XMPPAccountSettings> accountSettings = new ArrayList<>();
-        accountSettings = XabberAccountManager.getInstance().getXmppAccounts();
-
-        for (AccountItem account : accountItems) {
-            for (XMPPAccountSettings set : accountSettings) {
-                BareJid jid = account.getAccount().getFullJid().asBareJid();
-                if (jid != null) {
-                    if (set.getJid().equals(jid.toString()))
-                        account.setOrder(set.getOrder());
-                }
-            }
-        }
         Collections.sort(accountItems);
         notifyDataSetChanged();
     }

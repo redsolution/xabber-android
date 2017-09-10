@@ -11,6 +11,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.xabber.android.R;
+import com.xabber.android.data.account.AccountItem;
+import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.xaccount.XMPPAccountSettings;
 import com.xabber.android.data.xaccount.XabberAccount;
 import com.xabber.android.data.xaccount.XabberAccountManager;
@@ -78,9 +80,9 @@ public class XMPPAccountAdapter extends RecyclerView.Adapter {
                         account.setTimestamp((int) (System.currentTimeMillis() / 1000L));
 
                         // change settings
-                        XMPPAccountSettings set = XabberAccountManager.getInstance().getAccountSettings(account.getJid());
-                        if (set != null) {
-                            account.setColor(set.getColor());
+                        AccountItem item = AccountManager.getInstance().getAccount(XabberAccountManager.getInstance().getExistingAccount(account.getJid()));
+                        if (item != null) {
+                            account.setColor(ColorManager.getInstance().convertIndexToColorName(item.getColorIndex()));
                         }
                     }
                     notifyDataSetChanged();

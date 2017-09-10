@@ -80,16 +80,6 @@ public class AccountActionButtonsAdapter implements UpdatableAdapter {
 
     @Override
     public void onChange() {
-        List<XMPPAccountSettings> accountSettings
-                = XabberAccountManager.getInstance().getXmppAccounts();
-
-        for (AccountJid account : accounts) {
-            for (XMPPAccountSettings set : accountSettings) {
-                String accountJidString = account.getFullJid().asBareJid().toString();
-                if (set.getJid().equals(accountJidString))
-                    account.setOrder(set.getOrder());
-            }
-        }
         Collections.sort(accounts);
 
         for (int index = 0; index < accounts.size(); index++) {

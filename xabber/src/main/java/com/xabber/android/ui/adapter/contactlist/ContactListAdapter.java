@@ -269,33 +269,9 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
         final Map<AccountJid, AccountConfiguration> accounts = new TreeMap<>();
 
-        List<XMPPAccountSettings> accountSettings = new ArrayList<>();
-        accountSettings = XabberAccountManager.getInstance().getXmppAccounts();
-
         for (AccountJid account : AccountManager.getInstance().getEnabledAccounts()) {
-            for (XMPPAccountSettings set : accountSettings) {
-                String accountJidString = account.getFullJid().asBareJid().toString();
-                if (set.getJid().equals(accountJidString))
-                    account.setOrder(set.getOrder());
-            }
             accounts.put(account, null);
         }
-
-//        int orderAll = 1;
-//        for (AccountJid account : AccountManager.getInstance().getEnabledAccounts()) {
-//            for (XMPPAccountSettings set : accountSettings) {
-//                String accountJidString = account.getFullJid().asBareJid().toString();
-//                if (set.getJid().equals(accountJidString)) {
-//                    int order = set.getOrder();
-//                    if (order == 0) {
-//                        order = orderAll;
-//                        orderAll++;
-//                    }
-//                    account.setOrder(order);
-//                }
-//            }
-//            accounts.put(account, null);
-//        }
 
         /**
          * List of rooms and active chats grouped by users inside accounts.

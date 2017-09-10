@@ -443,8 +443,7 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
 
     private void handleSuccessLogout(ResponseBody s, boolean deleteAccounts) {
         XabberAccountManager.getInstance().removeAccount();
-        if (deleteAccounts)
-            XabberAccountManager.getInstance().deleteAllSyncedAccounts();
+        // TODO: 10.09.2017 delete local account
         showLoginFragment();
         hideProgress();
         Toast.makeText(this, R.string.logout_success, Toast.LENGTH_SHORT).show();

@@ -43,27 +43,8 @@ public class AuthManager {
                             return Single.just(responseBody);
                         else return Single.error(new Throwable("Realm: xabber account deletion error"));
                     }
-                })
-                .flatMap(new Func1<ResponseBody, Single<? extends ResponseBody>>() {
-                    @Override
-                    public Single<? extends ResponseBody> call(ResponseBody responseBody) {
-                        if (deleteAccounts) {
-                            if (XabberAccountManager.getInstance().deleteSyncedXMPPAccountsFromRealm())
-                                return Single.just(responseBody);
-                            else
-                                return Single.error(new Throwable("Realm: xmpp accounts deletion error"));
-                        } else return Single.just(responseBody);
-                    }
-                })
-                .flatMap(new Func1<ResponseBody, Single<? extends ResponseBody>>() {
-                    @Override
-                    public Single<? extends ResponseBody> call(ResponseBody responseBody) {
-                        if (XabberAccountManager.getInstance().deleteDeadXMPPAccountsFromRealm())
-                            return Single.just(responseBody);
-                        else
-                            return Single.error(new Throwable("Realm: dead xmpp accounts deletion error"));
-                    }
                 });
+        // TODO: 10.09.2017 delete local synced accounts
     }
 
     public static Single<XAccountTokenDTO> loginSocial(String provider, String socialToken) {
