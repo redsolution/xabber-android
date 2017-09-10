@@ -314,36 +314,13 @@ public abstract class BaseLoginActivity extends ManagedActivity implements Googl
     private void handleSuccessGetAccount(@NonNull XabberAccount xabberAccount) {
         if (!XabberAccount.STATUS_REGISTERED.equals(xabberAccount.getAccountStatus()))
             handleSuccessGetAccountAfterSignUp(xabberAccount);
-        else
-            getSettings();
-    }
-
-    private void getSettings() {
-        Subscription getAccountSubscription = AuthManager.getClientSettings()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<List<XMPPAccountSettings>>() {
-                    @Override
-                    public void call(List<XMPPAccountSettings> s) {
-                        handleSuccessGetSettings(s);
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        handleErrorLogin(throwable);
-                    }
-                });
-        compositeSubscription.add(getAccountSubscription);
-    }
-
-    private void handleSuccessGetSettings(List<XMPPAccountSettings> settings) {
-        hideProgress();
-
-        Intent intent = XabberAccountInfoActivity.createIntent(this);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        intent.putExtra(XabberAccountInfoActivity.CALL_FROM, XabberAccountInfoActivity.CALL_FROM_LOGIN);
-        finish();
-        startActivity(intent);
+        else {
+            Intent intent = XabberAccountInfoActivity.createIntent(this);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            intent.putExtra(XabberAccountInfoActivity.CALL_FROM, XabberAccountInfoActivity.CALL_FROM_LOGIN);
+            finish();
+            startActivity(intent);
+        }
     }
 
     public void signup(String email) {

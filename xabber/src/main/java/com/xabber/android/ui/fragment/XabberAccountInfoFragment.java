@@ -17,7 +17,6 @@ import android.widget.Toast;
 
 import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
-import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.xaccount.AuthManager;
 import com.xabber.android.data.xaccount.XMPPAccountSettings;
 import com.xabber.android.data.xaccount.XabberAccount;
@@ -25,7 +24,6 @@ import com.xabber.android.data.xaccount.XabberAccountManager;
 import com.xabber.android.ui.activity.XabberAccountInfoActivity;
 import com.xabber.android.ui.dialog.AccountSyncDialogFragment;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import rx.Subscription;
@@ -113,13 +111,13 @@ public class XabberAccountInfoFragment extends Fragment {
     }
 
     public void showSyncDialog(final boolean noCancel) {
-        Subscription getSettingsSubscription = AuthManager.getClientSettingsWithoutSavingToRealm()
+        Subscription getSettingsSubscription = AuthManager.getClientSettings()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<List<XMPPAccountSettings>>() {
                     @Override
                     public void call(List<XMPPAccountSettings> list) {
-                        List<XMPPAccountSettings> items = createFullAccountsList(list);
+                        List<XMPPAccountSettings> items = XabberAccountManager.getInstance().createSyncList(list);
 
                         if (items != null && items.size() > 0) {
                             // save full list to list for sync
@@ -159,46 +157,5 @@ public class XabberAccountInfoFragment extends Fragment {
                 .setNegativeButton(R.string.cancel, null);
         Dialog dialog = builder.create();
         dialog.show();
-    }
-
-    private List<XMPPAccountSettings> createFullAccountsList(List<XMPPAccountSettings> remoteList) {
-        List<XMPPAccountSettings> resultList = new ArrayList<>();
-
-        List<XMPPAccountSettings> localList = XabberAccountManager.getInstance().getXmppAccounts();
-        for (XMPPAccountSettings remoteItem : remoteList) {
-            XMPPAccountSettings.SyncStatus status = XMPPAccountSettings.SyncStatus.remote;
-            for (XMPPAccountSettings localItem : localList) {
-                if (localItem.getJid().equals(remoteItem.getJid())) {
-                    if (XabberAccountManager.getInstance().getExistingAccount(remoteItem.getJid()) != null) {
-                        remoteItem.setSynchronization(localItem.isSynchronization());
-                        if (remoteItem.getTimestamp() == localItem.getTimestamp())
-                            status = XMPPAccountSettings.SyncStatus.localEqualsRemote;
-                        else if (remoteItem.getTimestamp() > localItem.getTimestamp())
-                            status = XMPPAccountSettings.SyncStatus.remoteNewer;
-                        else {
-                            status = XMPPAccountSettings.SyncStatus.localNewer;
-                        }
-                    }
-                }
-            }
-            remoteItem.setStatus(status);
-        }
-
-        for (XMPPAccountSettings localItem : localList) {
-            boolean exist = false;
-            for (XMPPAccountSettings remoteItem : remoteList) {
-                if (localItem.getJid().equals(remoteItem.getJid())) {
-                    exist = true;
-                }
-            }
-            if (!exist) {
-                localItem.setOrder(remoteList.size() + localItem.getOrder());
-                localItem.setStatus(XMPPAccountSettings.SyncStatus.local);
-                resultList.add(localItem);
-            }
-        }
-
-        resultList.addAll(remoteList);
-        return resultList;
     }
 }

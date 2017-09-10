@@ -1,11 +1,13 @@
 package com.xabber.android.data.xaccount;
 
 import android.util.Base64;
+
 import com.google.gson.Gson;
-import com.xabber.android.data.SettingsManager;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import okhttp3.ResponseBody;
 import rx.Single;
@@ -94,69 +96,73 @@ public class AuthManager {
                 .flatMap(new Func1<ListClientSettingsDTO, Single<? extends List<XMPPAccountSettings>>>() {
                     @Override
                     public Single<? extends List<XMPPAccountSettings>> call(ListClientSettingsDTO listClientSettingsDTO) {
-                        return XabberAccountManager.getInstance().saveOrUpdateXMPPAccountSettingsToRealm(listClientSettingsDTO);
-                    }
-                });
-//                .flatMap(new Func1<List<XMPPAccountSettings>, Single<? extends List<XMPPAccountSettings>>>() {
-//                    @Override
-//                    public Single<? extends List<XMPPAccountSettings>> call(List<XMPPAccountSettings> xmppAccounts) {
-//                        return XabberAccountManager.getInstance().updateLocalAccounts(xmppAccounts);
-//                    }
-//                });
-    }
-
-    public static Single<List<XMPPAccountSettings>> getClientSettingsWithoutSavingToRealm() {
-        return HttpApiManager.getXabberApi().getClientSettings(getXabberTokenHeader())
-                .flatMap(new Func1<ListClientSettingsDTO, Single<? extends List<XMPPAccountSettings>>>() {
-                    @Override
-                    public Single<? extends List<XMPPAccountSettings>> call(ListClientSettingsDTO listClientSettingsDTO) {
                         return XabberAccountManager.getInstance().clientSettingsDTOListToPOJO(listClientSettingsDTO);
-                    }
-                });
-    }
-
-    public static Single<List<XMPPAccountSettings>> updateClientSettings(List<XMPPAccountSettings> accountSettingsList) {
-
-        List<ClientSettingsDTO> list = new ArrayList<>();
-        List<OrderDTO> listOrder = new ArrayList<>();
-
-        for (XMPPAccountSettings account : accountSettingsList) {
-            // add to sync only accounts required sync
-            if (account.isSynchronization() || SettingsManager.isSyncAllAccounts()) {
-                list.add(new ClientSettingsDTO(account.getJid(), new SettingsValuesDTO(account.getOrder(),
-                        account.getColor(), account.getToken(), account.getUsername()), account.getTimestamp()));
-                if (account.getOrder() > 0)
-                    listOrder.add(new OrderDTO(account.getJid(), account.getOrder()));
-            }
-        }
-
-        OrderDataDTO orderDataDTO = new OrderDataDTO(listOrder, XabberAccountManager.getInstance().getLastOrderChangeTimestamp());
-
-        ClientSettingsWithoutOrderDTO listClientSettingsDTO = new ClientSettingsWithoutOrderDTO(list);
-        final ClientSettingsOrderDTO clientSettingsOrderDTO = new ClientSettingsOrderDTO(orderDataDTO);
-
-        return HttpApiManager.getXabberApi().updateClientSettings(getXabberTokenHeader(), listClientSettingsDTO)
-                .flatMap(new Func1<ListClientSettingsDTO, Single<? extends ListClientSettingsDTO>>() {
-                    @Override
-                    public Single<? extends ListClientSettingsDTO> call(ListClientSettingsDTO listClientSettingsDTO) {
-                        return HttpApiManager.getXabberApi().updateClientSettings(getXabberTokenHeader(), clientSettingsOrderDTO);
-                    }
-                })
-                .flatMap(new Func1<ListClientSettingsDTO, Single<? extends ListClientSettingsDTO>>() {
-                    @Override
-                    public Single<? extends ListClientSettingsDTO> call(ListClientSettingsDTO listClientSettingsDTO) {
-                        return HttpApiManager.getXabberApi().getClientSettings(getXabberTokenHeader());
-                    }
-                })
-                .flatMap(new Func1<ListClientSettingsDTO, Single<? extends List<XMPPAccountSettings>>>() {
-                    @Override
-                    public Single<? extends List<XMPPAccountSettings>> call(ListClientSettingsDTO listClientSettingsDTO) {
-                        return XabberAccountManager.getInstance().saveOrUpdateXMPPAccountSettingsToRealm(listClientSettingsDTO);
                     }
                 })
                 .flatMap(new Func1<List<XMPPAccountSettings>, Single<? extends List<XMPPAccountSettings>>>() {
                     @Override
                     public Single<? extends List<XMPPAccountSettings>> call(List<XMPPAccountSettings> xmppAccounts) {
+                        // add only new accounts from server to sync map
+                        Map<String, Boolean> syncState = new HashMap<>();
+                        for (XMPPAccountSettings account : xmppAccounts) {
+                            if (XabberAccountManager.getInstance().getAccountSyncState(account.getJid()) == null)
+                                syncState.put(account.getJid(), true);
+                        }
+                        XabberAccountManager.getInstance().setAccountSyncState(syncState);
+
+                        return Single.just(xmppAccounts);
+                    }
+                });
+    }
+
+    public static Single<List<XMPPAccountSettings>> patchClientSettings(List<XMPPAccountSettings> accountSettingsList) {
+        List<OrderDTO> listOrder = new ArrayList<>();
+        List<ClientSettingsDTO> listSettings = new ArrayList<>();
+
+        // divide all data into two lists: settings and orders
+        for (XMPPAccountSettings account : accountSettingsList) {
+            listSettings.add(new ClientSettingsDTO(account.getJid(), new SettingsValuesDTO(account.getOrder(),
+                    account.getColor(), account.getToken(), account.getUsername()), account.getTimestamp()));
+
+            if (account.getOrder() > 0)
+                listOrder.add(new OrderDTO(account.getJid(), account.getOrder()));
+        }
+
+        // prepare dto for settings
+        ClientSettingsWithoutOrderDTO settingsDTO = new ClientSettingsWithoutOrderDTO(listSettings);
+
+        // prepare dto for orders
+        OrderDataDTO orderDataDTO = new OrderDataDTO(listOrder, XabberAccountManager.getInstance().getLastOrderChangeTimestamp());
+        final ClientSettingsOrderDTO orderDTO = new ClientSettingsOrderDTO(orderDataDTO);
+
+        // patch settings to server
+        return HttpApiManager.getXabberApi().updateClientSettings(getXabberTokenHeader(), settingsDTO)
+                .flatMap(new Func1<ListClientSettingsDTO, Single<? extends ListClientSettingsDTO>>() {
+                    @Override
+                    public Single<? extends ListClientSettingsDTO> call(ListClientSettingsDTO listClientSettingsDTO) {
+                        // patch orders to server
+                        return HttpApiManager.getXabberApi().updateClientSettings(getXabberTokenHeader(), orderDTO);
+                    }
+                })
+                .flatMap(new Func1<ListClientSettingsDTO, Single<? extends List<XMPPAccountSettings>>>() {
+                    @Override
+                    public Single<? extends List<XMPPAccountSettings>> call(ListClientSettingsDTO listClientSettingsDTO) {
+                        // convert dto to pojo
+                        return XabberAccountManager.getInstance().clientSettingsDTOListToPOJO(listClientSettingsDTO);
+                    }
+                })
+                .flatMap(new Func1<List<XMPPAccountSettings>, Single<? extends List<XMPPAccountSettings>>>() {
+                    @Override
+                    public Single<? extends List<XMPPAccountSettings>> call(List<XMPPAccountSettings> xmppAccounts) {
+                        // add only new accounts from server to sync map
+                        Map<String, Boolean> syncState = new HashMap<>();
+                        for (XMPPAccountSettings account : xmppAccounts) {
+                            if (XabberAccountManager.getInstance().getAccountSyncState(account.getJid()) == null)
+                                    syncState.put(account.getJid(), true);
+                        }
+                        XabberAccountManager.getInstance().setAccountSyncState(syncState);
+
+                        // update local accounts
                         return XabberAccountManager.getInstance().updateLocalAccounts(xmppAccounts);
                     }
                 });
