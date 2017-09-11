@@ -34,13 +34,11 @@ import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.xaccount.AuthManager;
 import com.xabber.android.data.xaccount.XAccountTokenDTO;
-import com.xabber.android.data.xaccount.XMPPAccountSettings;
 import com.xabber.android.data.xaccount.XabberAccount;
 import com.xabber.android.utils.RetrofitErrorConverter;
 
 import java.io.IOException;
 import java.util.Collections;
-import java.util.List;
 
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;

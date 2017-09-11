@@ -3,6 +3,7 @@ package com.xabber.android.data.xaccount;
 import android.util.Base64;
 
 import com.google.gson.Gson;
+import com.xabber.android.data.SettingsManager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,6 +26,7 @@ public class AuthManager {
     public static final String PROVIDER_GOOGLE = "google";
 
     public static Single<XAccountTokenDTO> login(String login, String pass) {
+        SettingsManager.setSyncAllAccounts(true);
 
         String credentials = login + ":" + pass;
         byte[] data = credentials.getBytes();
@@ -61,6 +63,7 @@ public class AuthManager {
     }
 
     public static Single<XAccountTokenDTO> loginSocial(String provider, String socialToken) {
+        SettingsManager.setSyncAllAccounts(true);
 
         Gson gson = new Gson();
         String credentials = gson.toJson(new AccessToken(socialToken));
@@ -69,6 +72,7 @@ public class AuthManager {
 
     public static Single<XAccountTokenDTO> loginSocialTwitter(
            String socialToken, String twitterTokenSecret, String secret, String key) {
+        SettingsManager.setSyncAllAccounts(true);
 
         Gson gson = new Gson();
         String credentials = gson.toJson(new TwitterAccessToken(new TwitterTokens(twitterTokenSecret, socialToken), secret, key));
@@ -163,6 +167,7 @@ public class AuthManager {
     }
 
     public static Single<XAccountTokenDTO> signup(String email) {
+        SettingsManager.setSyncAllAccounts(true);
         return HttpApiManager.getXabberApi().signup(new Email(email));
     }
 

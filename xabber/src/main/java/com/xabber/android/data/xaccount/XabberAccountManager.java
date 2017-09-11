@@ -75,14 +75,25 @@ public class XabberAccountManager implements OnLoadListener {
         return accountsSyncState;
     }
 
+    /**
+     * Add or update synchronization values
+     * @param accountsSyncState
+     */
     public void setAccountSyncState(Map<String, Boolean> accountsSyncState) {
         this.accountsSyncState.putAll(accountsSyncState);
         saveSyncStatesToRealm(this.accountsSyncState);
     }
 
+    /**
+     * Set synchronization for jid, if jid exist in map
+     * @param jid
+     * @param sync
+     */
     public void setAccountSyncState(String jid, boolean sync) {
-        this.accountsSyncState.put(jid, sync);
-        saveSyncStatesToRealm(this.accountsSyncState);
+        if (this.accountsSyncState.containsKey(jid)) {
+            this.accountsSyncState.put(jid, sync);
+            saveSyncStatesToRealm(this.accountsSyncState);
+        }
     }
 
     public boolean isAccountSynchronize(String jid) {
