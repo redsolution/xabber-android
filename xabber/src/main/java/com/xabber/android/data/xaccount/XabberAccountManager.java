@@ -71,10 +71,6 @@ public class XabberAccountManager implements OnLoadListener {
         xmppAccountsForCreate = new ArrayList<>();
     }
 
-    public Map<String, Boolean> getAccountsSyncState() {
-        return accountsSyncState;
-    }
-
     /**
      * Add or update synchronization values
      * @param accountsSyncState
@@ -94,6 +90,23 @@ public class XabberAccountManager implements OnLoadListener {
             this.accountsSyncState.put(jid, sync);
             saveSyncStatesToRealm(this.accountsSyncState);
         }
+    }
+
+    /**
+     * Add or update synchronization value to map
+     * @param jid
+     * @param sync
+     */
+    public void addAccountSyncState(String jid, boolean sync) {
+        this.accountsSyncState.put(jid, sync);
+        saveSyncStatesToRealm(this.accountsSyncState);
+    }
+
+    public void setAllExistingAccountSync(boolean sync) {
+        for (Map.Entry<String, Boolean> entry : accountsSyncState.entrySet()) {
+            entry.setValue(sync);
+        }
+        saveSyncStatesToRealm(this.accountsSyncState);
     }
 
     public boolean isAccountSynchronize(String jid) {

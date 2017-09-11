@@ -37,6 +37,7 @@ import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.AbstractContact;
+import com.xabber.android.data.xaccount.XabberAccountManager;
 import com.xabber.android.service.XabberService;
 import com.xabber.android.ui.adapter.ComparatorByName;
 import com.xabber.android.ui.adapter.ComparatorByStatus;
@@ -746,6 +747,7 @@ public class SettingsManager implements OnInitializedListener,
 
     public static void setSyncAllAccounts(boolean syncAll) {
         setBoolean(R.string.sync_all_key, syncAll);
+        if (syncAll) XabberAccountManager.getInstance().setAllExistingAccountSync(true);
     }
 
     public static boolean isSyncAllAccounts() {

@@ -447,7 +447,6 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
         if (deleteAccounts) XabberAccountManager.getInstance().deleteSyncedLocalAccounts();
         XabberAccountManager.getInstance().removeAccount();
         showLoginFragment();
-        SettingsManager.setSyncAllAccounts(true);
         hideProgress();
         Toast.makeText(this, R.string.logout_success, Toast.LENGTH_SHORT).show();
         Intent intent = ContactListActivity.createIntent(XabberAccountInfoActivity.this);

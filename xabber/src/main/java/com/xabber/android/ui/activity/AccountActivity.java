@@ -161,6 +161,8 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
     }
 
     private void updateOptions() {
+        AccountOption.SYNCHRONIZATION.setDescription(getString(R.string.account_sync_summary));
+
         AccountOption.CONNECTION_SETTINGS.setDescription(account.getFullJid().asBareJid().toString());
 
         AccountOption.COLOR.setDescription(ColorManager.getInstance().getAccountPainter().getAccountColorName(account));
@@ -257,6 +259,9 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
                 break;
             case BOOKMARKS:
                 startActivity(BookmarksActivity.createIntent(this, account));
+                break;
+            case SYNCHRONIZATION:
+                startActivity(AccountSyncActivity.createIntent(this, account));
                 break;
         }
     }

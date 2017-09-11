@@ -473,6 +473,15 @@
                 android:value="com.xabber.android.ui.activity.AccountActivity" />
         </activity>
         <activity
+            android:name=".ui.activity.AccountSyncActivity"
+            android:parentActivityName=".ui.activity.AccountActivity">
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.xabber.android.ui.activity.AccountActivity" />
+        </activity>
+        <activity
             android:name=".ui.activity.AccountSettingsActivity"
             android:parentActivityName=".ui.activity.AccountActivity">
 
