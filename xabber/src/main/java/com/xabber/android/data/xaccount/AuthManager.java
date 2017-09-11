@@ -320,10 +320,12 @@ public class AuthManager {
     public static class ListClientSettingsDTO {
         final List<ClientSettingsDTO> settings_data;
         final OrderDataDTO order_data;
+        final List<DeletedDTO> deleted;
 
-        public ListClientSettingsDTO(List<ClientSettingsDTO> settings_data, OrderDataDTO order_data) {
+        public ListClientSettingsDTO(List<ClientSettingsDTO> settings_data, OrderDataDTO order_data, List<DeletedDTO> deleted) {
             this.settings_data = settings_data;
             this.order_data = order_data;
+            this.deleted = deleted;
         }
 
         public List<ClientSettingsDTO> getSettings() {
@@ -332,6 +334,28 @@ public class AuthManager {
 
         public OrderDataDTO getOrderData() {
             return order_data;
+        }
+
+        public List<DeletedDTO> getDeleted() {
+            return deleted;
+        }
+    }
+
+    public static class DeletedDTO {
+        final String jid;
+        final int timestamp;
+
+        public DeletedDTO(String jid, int timestamp) {
+            this.jid = jid;
+            this.timestamp = timestamp;
+        }
+
+        public String getJid() {
+            return jid;
+        }
+
+        public int getTimestamp() {
+            return timestamp;
         }
     }
 

@@ -119,8 +119,13 @@ public class XMPPAccountAdapter extends RecyclerView.Adapter {
                         viewHolder.avatar.setImageResource(R.drawable.ic_sync_upload);
                         break;
                     case remoteNewer:
-                        viewHolder.jid.setText("local < remote");
-                        viewHolder.avatar.setImageResource(R.drawable.ic_sync_download);
+                        if (account.isDeleted()) {
+                            viewHolder.jid.setText("remote account deleted");
+                            viewHolder.avatar.setImageResource(R.drawable.ic_delete_grey);
+                        } else {
+                            viewHolder.jid.setText("local < remote");
+                            viewHolder.avatar.setImageResource(R.drawable.ic_sync_download);
+                        }
                         break;
                     case localEqualsRemote:
                         viewHolder.jid.setText("local = remote");

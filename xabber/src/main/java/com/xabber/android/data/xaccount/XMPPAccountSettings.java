@@ -18,6 +18,8 @@ public class XMPPAccountSettings implements Comparable<XMPPAccountSettings> {
     private String color;
     private String token;
 
+    private boolean deleted;
+
     private SyncStatus status;
 
     public XMPPAccountSettings(String jid, boolean synchronization, int timestamp) {
@@ -88,6 +90,14 @@ public class XMPPAccountSettings implements Comparable<XMPPAccountSettings> {
 
     public void setStatus(SyncStatus status) {
         this.status = status;
+    }
+
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
     }
 
     @Override

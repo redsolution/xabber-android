@@ -478,10 +478,6 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
      * without set sync for account
      */
     public void removeAccountWithoutSync(AccountJid account) {
-        // disable synchronization all accounts
-        SettingsManager.setSyncAllAccounts(false);
-
-        // removing local account
         removeAccountWithoutCallback(account);
         onAccountChanged(account);
     }

@@ -14,6 +14,8 @@ import android.widget.Switch;
 
 import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
+import com.xabber.android.data.account.AccountManager;
+import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.xaccount.XMPPAccountSettings;
 import com.xabber.android.data.xaccount.XabberAccountManager;
 import com.xabber.android.ui.activity.XabberAccountInfoActivity;
@@ -123,6 +125,7 @@ public class AccountSyncDialogFragment extends DialogFragment {
             newAccount.setColor(account.getColor());
             newAccount.setOrder(account.getOrder());
             newAccount.setStatus(account.getStatus());
+            newAccount.setDeleted(account.isDeleted());
 
             this.xmppAccounts.add(newAccount);
         }
@@ -144,6 +147,13 @@ public class AccountSyncDialogFragment extends DialogFragment {
                     syncState.put(account.getJid(), account.isSynchronization());
             }
             XabberAccountManager.getInstance().setAccountSyncState(syncState);
+        }
+
+        // update timestamp in accounts if timestamp was changed in dialog
+        for (XMPPAccountSettings account : xmppAccounts) {
+            AccountJid accountJid = XabberAccountManager.getInstance().getExistingAccount(account.getJid());
+            if (accountJid != null)
+                AccountManager.getInstance().setTimestamp(accountJid, account.getTimestamp());
         }
 
         // set sync all

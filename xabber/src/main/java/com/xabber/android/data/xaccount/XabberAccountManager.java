@@ -343,7 +343,7 @@ public class XabberAccountManager implements OnLoadListener {
                     AccountJid accountJid = getExistingAccount(account.getJid());
 
                     // create new xmpp-account
-                    if (accountJid == null) {
+                    if (accountJid == null && !account.isDeleted()) {
                         try {
                             AccountJid jid = AccountManager.getInstance().addAccount(account.getJid(), "", account.getToken(), false, true, true, false, false);
                             AccountManager.getInstance().setColor(jid, ColorManager.getInstance().convertColorNameToIndex(account.getColor()));
@@ -356,11 +356,15 @@ public class XabberAccountManager implements OnLoadListener {
 
                     // update existing xmpp-account
                     // now we are updated only color of account
-                    } else {
+                    } else if (accountJid != null && !account.isDeleted()) {
                         AccountManager.getInstance().setOrder(accountJid, account.getOrder());
                         AccountManager.getInstance().setTimestamp(accountJid, account.getTimestamp());
                         AccountManager.getInstance().setColor(accountJid, ColorManager.getInstance().convertColorNameToIndex(account.getColor()));
                         AccountManager.getInstance().onAccountChanged(accountJid);
+
+                    // delete existing account
+                    } else if (accountJid != null && account.isDeleted()) {
+                        AccountManager.getInstance().removeAccountWithoutSync(accountJid);
                     }
                 }
             }
@@ -434,6 +438,14 @@ public class XabberAccountManager implements OnLoadListener {
             }
 
             // add to list
+            result.add(accountSettings);
+        }
+
+        // add deleted items to list
+        for (AuthManager.DeletedDTO deletedDTO : list.getDeleted()) {
+            XMPPAccountSettings accountSettings = new XMPPAccountSettings(deletedDTO.getJid(), true, deletedDTO.getTimestamp());
+            accountSettings.setDeleted(true);
+            accountSettings.setOrder(result.size() + 1);
             result.add(accountSettings);
         }
 
@@ -547,9 +559,16 @@ public class XabberAccountManager implements OnLoadListener {
                         status = XMPPAccountSettings.SyncStatus.localNewer;
                     }
                 }
+
+                remoteItem.setStatus(status);
+                remoteItem.setSynchronization(isAccountSynchronize(remoteItem.getJid()));
+                resultList.add(remoteItem);
+
+            } else if (!remoteItem.isDeleted()){
+                remoteItem.setStatus(status);
+                remoteItem.setSynchronization(isAccountSynchronize(remoteItem.getJid()));
+                resultList.add(remoteItem);
             }
-            remoteItem.setStatus(status);
-            remoteItem.setSynchronization(isAccountSynchronize(remoteItem.getJid()));
         }
 
         // add local accounts to list
@@ -573,7 +592,7 @@ public class XabberAccountManager implements OnLoadListener {
             }
         }
 
-        resultList.addAll(remoteList);
+
         return resultList;
     }
 }
