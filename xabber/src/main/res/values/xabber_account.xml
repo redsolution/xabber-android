@@ -22,6 +22,7 @@
     <string name="resend_success">Resend verification email successful</string>
     <string name="resend_fail">Resend verification email failed</string>
     <string name="social_auth_fail">Social authentication failed</string>
+    <string name="settings_delete_success">Settings deleted successful</string>
 
     <string name="toast_email_already_confirm">Email already confirm</string>
     <string name="toast_not_authorized">You are not authorized</string>
@@ -35,6 +36,7 @@
     <string name="progress_title_confirm">Confirmation..</string>
     <string name="progress_title_complete">Registration completion..</string>
     <string name="progress_title_resend">Resending email..</string>
+    <string name="progress_title_delete_settings">Deleting settings..</string>
 
     <string name="label_username">Choose username*</string>
     <string name="hint_username">Username</string>
@@ -119,4 +121,7 @@
     <string name="cancel_register_progress">Отмена регистрации..</string>
     <string name="cancel_register_dialog_message">Хотите прервать регистрацию? Вы не сможете продолжить регистрацию в будущем.</string>
     <string name="cancel_register_dialog_pos_button">Прервать</string>
+
+    <string name="delete_settings_button">Delete settings</string>
+    <string name="account_sync_enable_summary">Enable synchronization with Xabber Account</string>
 </resources>

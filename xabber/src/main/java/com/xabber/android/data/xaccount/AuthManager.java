@@ -169,6 +169,36 @@ public class AuthManager {
                 });
     }
 
+    public static Single<List<XMPPAccountSettings>> deleteClientSettings(String jid) {
+        // delete settings from server
+        return HttpApiManager.getXabberApi().deleteClientSettings(getXabberTokenHeader(), new Jid(jid))
+                .flatMap(new Func1<ListClientSettingsDTO, Single<? extends List<XMPPAccountSettings>>>() {
+                    @Override
+                    public Single<? extends List<XMPPAccountSettings>> call(ListClientSettingsDTO listClientSettingsDTO) {
+                        // convert dto to pojo
+                        return XabberAccountManager.getInstance().clientSettingsDTOListToPOJO(listClientSettingsDTO);
+                    }
+                })
+                .flatMap(new Func1<List<XMPPAccountSettings>, Single<? extends List<XMPPAccountSettings>>>() {
+                    @Override
+                    public Single<? extends List<XMPPAccountSettings>> call(List<XMPPAccountSettings> xmppAccounts) {
+                        // add only new accounts from server to sync map
+                        Map<String, Boolean> syncState = new HashMap<>();
+                        for (XMPPAccountSettings account : xmppAccounts) {
+                            if (XabberAccountManager.getInstance().getAccountSyncState(account.getJid()) == null)
+                                syncState.put(account.getJid(), true);
+                        }
+                        XabberAccountManager.getInstance().setAccountSyncState(syncState);
+
+                        // update last synchronization time
+                        SettingsManager.setLastSyncDate(XabberAccountManager.getCurrentTimeString());
+
+                        // update local accounts
+                        return XabberAccountManager.getInstance().updateLocalAccounts(xmppAccounts);
+                    }
+                });
+    }
+
     public static Single<XAccountTokenDTO> signup(String email) {
         SettingsManager.setSyncAllAccounts(true);
         return HttpApiManager.getXabberApi().signup(new Email(email));
@@ -240,6 +270,14 @@ public class AuthManager {
             this.first_name = first_name;
             this.last_name = last_name;
             this.host = host;
+        }
+    }
+
+    public static class Jid {
+        final String jid;
+
+        public Jid(String jid) {
+            this.jid = jid;
         }
     }
 

@@ -1,23 +1,38 @@
 package com.xabber.android.ui.activity;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.Switch;
+import android.widget.Toast;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
+import com.xabber.android.data.connection.NetworkManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.intent.AccountIntentBuilder;
+import com.xabber.android.data.xaccount.AuthManager;
+import com.xabber.android.data.xaccount.XMPPAccountSettings;
 import com.xabber.android.data.xaccount.XabberAccountManager;
 import com.xabber.android.ui.color.BarPainter;
+import com.xabber.android.utils.RetrofitErrorConverter;
+
+import java.util.List;
+
+import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
+import rx.schedulers.Schedulers;
+import rx.subscriptions.CompositeSubscription;
 
 /**
  * Created by valery.miller on 11.09.17.
@@ -25,14 +40,18 @@ import com.xabber.android.ui.color.BarPainter;
 
 public class AccountSyncActivity extends ManagedActivity implements View.OnClickListener {
 
+    private final static String LOG_TAG = AccountSyncActivity.class.getSimpleName();
+
     private Toolbar toolbar;
     private BarPainter barPainter;
     private RelativeLayout rlSyncSwitch;
     private Button btnDeleteSettings;
     private Switch switchSync;
+    private ProgressDialog progressDialog;
 
     private AccountItem accountItem;
     private String jid;
+    protected CompositeSubscription compositeSubscription = new CompositeSubscription();
 
     public static Intent createIntent(Context context, AccountJid account) {
         return new AccountIntentBuilder(context, AccountSyncActivity.class).setAccount(account).build();
@@ -80,7 +99,15 @@ public class AccountSyncActivity extends ManagedActivity implements View.OnClick
         btnDeleteSettings = (Button) findViewById(R.id.btnDeleteSettings);
         switchSync = (Switch) findViewById(R.id.switchSync);
         rlSyncSwitch = (RelativeLayout) findViewById(R.id.rlSyncSwitch);
+
         rlSyncSwitch.setOnClickListener(this);
+        btnDeleteSettings.setOnClickListener(this);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        compositeSubscription.clear();
     }
 
     @Override
@@ -98,6 +125,10 @@ public class AccountSyncActivity extends ManagedActivity implements View.OnClick
                 updateSyncSwitchButton();
                 break;
             case R.id.btnDeleteSettings:
+                if (NetworkManager.isNetworkAvailable()) {
+                    deleteAccountSettings();
+                } else
+                    Toast.makeText(this, R.string.toast_no_internet, Toast.LENGTH_LONG).show();
                 break;
         }
     }
@@ -105,5 +136,59 @@ public class AccountSyncActivity extends ManagedActivity implements View.OnClick
     private void updateSyncSwitchButton() {
         switchSync.setChecked(XabberAccountManager.getInstance().isAccountSynchronize(jid)
                 || SettingsManager.isSyncAllAccounts());
+    }
+
+    private void deleteAccountSettings() {
+        showProgress(getResources().getString(R.string.progress_title_delete_settings));
+        Subscription deleteSubscription = AuthManager.deleteClientSettings(jid)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<List<XMPPAccountSettings>>() {
+                    @Override
+                    public void call(List<XMPPAccountSettings> settings) {
+                        handleSuccessDelete(settings);
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        handleErrorDelete(throwable);
+                    }
+                });
+        compositeSubscription.add(deleteSubscription);
+    }
+
+    private void handleSuccessDelete(List<XMPPAccountSettings> settings) {
+        hideProgress();
+        Toast.makeText(this, R.string.settings_delete_success, Toast.LENGTH_SHORT).show();
+    }
+
+    private void handleErrorDelete(Throwable throwable) {
+        String message = RetrofitErrorConverter.throwableToHttpError(throwable);
+        if (message != null) {
+            if (message.equals("Invalid token")) {
+                XabberAccountManager.getInstance().onInvalidToken();
+            } else {
+                Log.d(LOG_TAG, "Error while deleting settings: " + message);
+                Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            Log.d(LOG_TAG, "Error while deleting settings: " + throwable.toString());
+            Toast.makeText(this, "Error while deleting settings: " + throwable.toString(), Toast.LENGTH_LONG).show();
+        }
+        hideProgress();
+    }
+
+    protected void showProgress(String title) {
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setTitle(title);
+        progressDialog.setMessage(getResources().getString(R.string.progress_message));
+        progressDialog.show();
+    }
+
+    protected void hideProgress() {
+        if (progressDialog != null) {
+            progressDialog.dismiss();
+            progressDialog = null;
+        }
     }
 }

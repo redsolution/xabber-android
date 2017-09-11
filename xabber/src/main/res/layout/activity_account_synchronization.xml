@@ -28,7 +28,7 @@
                 android:layout_height="wrap_content"
                 android:textColor="?android:attr/textColorPrimary"
                 android:textSize="16sp"
-                android:text="Synchronization"
+                android:text="@string/account_sync"
                 />
 
             <TextView
@@ -38,7 +38,7 @@
                 android:lines="1"
                 android:textColor="?android:attr/textColorSecondary"
                 android:textSize="14sp"
-                android:text="Enable synchronization with Xabber Account"
+                android:text="@string/account_sync_enable_summary"
                 />
 
         </LinearLayout>
@@ -59,6 +59,7 @@
             android:layout_height="1dp"
             android:background="@color/grey_300"
             android:layout_below="@+id/text"
+            android:visibility="gone"
             />
 
     </RelativeLayout>
@@ -71,7 +72,7 @@
         android:layout_gravity="center_horizontal"
         android:background="?android:attr/selectableItemBackground"
         android:textColor="?colorAccent"
-        android:text="delete settings"
+        android:text="@string/delete_settings_button"
         />
 
 </LinearLayout>
