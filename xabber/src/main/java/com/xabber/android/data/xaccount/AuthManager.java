@@ -3,6 +3,7 @@ package com.xabber.android.data.xaccount;
 import android.util.Base64;
 
 import com.google.gson.Gson;
+import com.xabber.android.BuildConfig;
 import com.xabber.android.data.SettingsManager;
 
 import java.util.ArrayList;
@@ -25,6 +26,8 @@ public class AuthManager {
     public static final String PROVIDER_GITHUB = "github";
     public static final String PROVIDER_GOOGLE = "google";
 
+    private static final String SOURCE_NAME = "Xabber Android";
+
     public static Single<XAccountTokenDTO> login(String login, String pass) {
         SettingsManager.setSyncAllAccounts(true);
 
@@ -32,7 +35,7 @@ public class AuthManager {
         byte[] data = credentials.getBytes();
         String encodedCredentials = Base64.encodeToString(data, Base64.NO_WRAP);
 
-        return HttpApiManager.getXabberApi().login("Basic " + encodedCredentials);
+        return HttpApiManager.getXabberApi().login("Basic " + encodedCredentials, new Source(getSource()));
     }
 
     public static Single<ResponseBody> logout(final boolean deleteAccounts) {
@@ -67,7 +70,7 @@ public class AuthManager {
 
         Gson gson = new Gson();
         String credentials = gson.toJson(new AccessToken(socialToken));
-        return HttpApiManager.getXabberApi().loginSocial(new SocialAuthRequest(provider, credentials));
+        return HttpApiManager.getXabberApi().loginSocial(new SocialAuthRequest(provider, credentials, getSource()));
     }
 
     public static Single<XAccountTokenDTO> loginSocialTwitter(
@@ -76,7 +79,7 @@ public class AuthManager {
 
         Gson gson = new Gson();
         String credentials = gson.toJson(new TwitterAccessToken(new TwitterTokens(twitterTokenSecret, socialToken), secret, key));
-        return HttpApiManager.getXabberApi().loginSocial(new SocialAuthRequest(PROVIDER_TWITTER, credentials));
+        return HttpApiManager.getXabberApi().loginSocial(new SocialAuthRequest(PROVIDER_TWITTER, credentials, getSource()));
     }
 
     public static Single<XabberAccount> getAccount(final String token) {
@@ -201,7 +204,7 @@ public class AuthManager {
 
     public static Single<XAccountTokenDTO> signup(String email) {
         SettingsManager.setSyncAllAccounts(true);
-        return HttpApiManager.getXabberApi().signup(new Email(email));
+        return HttpApiManager.getXabberApi().signup(new Email(email, getSource()));
     }
 
     public static Single<XabberAccount> confirmEmail(String code) {
@@ -215,7 +218,7 @@ public class AuthManager {
     }
 
     public static Single<XabberAccount> confirmEmailWithKey(String key) {
-        return HttpApiManager.getXabberApi().confirmEmail(new Key(key))
+        return HttpApiManager.getXabberApi().confirmEmail(new Key(key, getSource()))
                 .flatMap(new Func1<XabberAccountDTO, Single<? extends XabberAccount>>() {
                     @Override
                     public Single<? extends XabberAccount> call(XabberAccountDTO xabberAccountDTO) {
@@ -237,7 +240,7 @@ public class AuthManager {
     }
 
     public static Single<ResponseBody> addEmail(String email) {
-        return HttpApiManager.getXabberApi().addEmail(getXabberTokenHeader(), new Email(email));
+        return HttpApiManager.getXabberApi().addEmail(getXabberTokenHeader(), new Email(email, getSource()));
     }
 
     // support
@@ -251,6 +254,10 @@ public class AuthManager {
         if (account != null)
             return account.getToken();
         else return null;
+    }
+
+    private static String getSource() {
+        return SOURCE_NAME + " " + BuildConfig.FLAVOR + " " + BuildConfig.VERSION_NAME;
     }
 
     // models
@@ -273,6 +280,14 @@ public class AuthManager {
         }
     }
 
+    public static class Source {
+        final String source;
+
+        public Source(String source) {
+            this.source = source;
+        }
+    }
+
     public static class Jid {
         final String jid;
 
@@ -283,9 +298,11 @@ public class AuthManager {
 
     public static class Key {
         final String key;
+        final String source;
 
-        public Key(String key) {
+        public Key(String key, String source) {
             this.key = key;
+            this.source = source;
         }
     }
 
@@ -299,19 +316,23 @@ public class AuthManager {
 
     public static class Email {
         final String email;
+        final String source;
 
-        public Email(String email) {
+        public Email(String email, String source) {
             this.email = email;
+            this.source = source;
         }
     }
 
     public static class SocialAuthRequest {
         final String provider;
         final String credentials;
+        final String source;
 
-        public SocialAuthRequest(String provider, String credentials) {
+        public SocialAuthRequest(String provider, String credentials, String source) {
             this.provider = provider;
             this.credentials = credentials;
+            this.source = source;
         }
     }
 

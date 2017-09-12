@@ -1,16 +1,12 @@
 package com.xabber.android.data.xaccount;
 
-import java.util.List;
-
 import okhttp3.ResponseBody;
 import retrofit2.http.Body;
-import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.HTTP;
 import retrofit2.http.Header;
 import retrofit2.http.PATCH;
 import retrofit2.http.POST;
-import retrofit2.http.Query;
 import rx.Single;
 
 /**
@@ -20,7 +16,7 @@ import rx.Single;
 public interface IXabberApi {
 
     @POST("accounts/login/")
-    Single<XAccountTokenDTO> login(@Header("Authorization") String credentials);
+    Single<XAccountTokenDTO> login(@Header("Authorization") String credentials, @Body AuthManager.Source source);
 
     @POST("accounts/logout/")
     Single<ResponseBody> logout(@Header("Authorization") String token);
