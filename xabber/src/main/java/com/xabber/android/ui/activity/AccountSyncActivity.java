@@ -215,6 +215,10 @@ public class AccountSyncActivity extends ManagedActivity implements View.OnClick
             finish();
             return;
         }
+
+        if (XabberAccountManager.getInstance().getAccountSyncState(jid) != null)
+            btnDeleteSettings.setVisibility(View.VISIBLE);
+        else btnDeleteSettings.setVisibility(View.GONE);
     }
 
     private void showDeleteDialog() {
