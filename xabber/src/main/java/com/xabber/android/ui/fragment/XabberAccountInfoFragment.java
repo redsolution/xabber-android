@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +24,7 @@ import com.xabber.android.data.xaccount.XabberAccount;
 import com.xabber.android.data.xaccount.XabberAccountManager;
 import com.xabber.android.ui.activity.XabberAccountInfoActivity;
 import com.xabber.android.ui.dialog.AccountSyncDialogFragment;
+import com.xabber.android.utils.RetrofitErrorConverter;
 
 import java.util.List;
 
@@ -37,6 +39,8 @@ import rx.subscriptions.CompositeSubscription;
  */
 
 public class XabberAccountInfoFragment extends Fragment {
+
+    private static final String LOG_TAG = XabberAccountInfoFragment.class.getSimpleName();
 
     private TextView tvAccountName;
     private TextView tvAccountUsername;
@@ -138,13 +142,27 @@ public class XabberAccountInfoFragment extends Fragment {
                 }, new Action1<Throwable>() {
                     @Override
                     public void call(Throwable throwable) {
-                        Toast.makeText(getActivity(), "Не удалось начать синхронизацию", Toast.LENGTH_SHORT).show();
+                        handleErrorGetSettings(throwable);
                     }
                 });
         compositeSubscription.add(getSettingsSubscription);
+    }
 
-
-
+    private void handleErrorGetSettings(Throwable throwable) {
+        String message = RetrofitErrorConverter.throwableToHttpError(throwable);
+        if (message != null) {
+            if (message.equals("Invalid token")) {
+                XabberAccountManager.getInstance().onInvalidToken();
+                ((XabberAccountInfoActivity)getActivity()).showLoginFragment();
+                Toast.makeText(getActivity(), "Аккаунт был удален", Toast.LENGTH_LONG).show();
+            } else {
+                Log.d(LOG_TAG, "Error while synchronization: " + message);
+                Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            Log.d(LOG_TAG, "Error while synchronization: " + throwable.toString());
+            Toast.makeText(getActivity(), "Error while synchronization: " + throwable.toString(), Toast.LENGTH_LONG).show();
+        }
     }
 
     private void showLogoutDialog() {
