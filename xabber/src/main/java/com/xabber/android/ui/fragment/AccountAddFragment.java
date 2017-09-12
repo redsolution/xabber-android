@@ -46,8 +46,10 @@ public class AccountAddFragment extends Fragment implements View.OnClickListener
 
         storePasswordView = (CheckBox) view.findViewById(R.id.store_password);
         chkSync = (CheckBox) view.findViewById(R.id.chkSync);
-        if (XabberAccountManager.getInstance().getAccount() == null)
+        if (XabberAccountManager.getInstance().getAccount() == null) {
             chkSync.setVisibility(View.GONE);
+            chkSync.setChecked(false);
+        }
 
         useOrbotView = (CheckBox) view.findViewById(R.id.use_orbot);
         createAccountCheckBox = (CheckBox) view.findViewById(R.id.register_account);
