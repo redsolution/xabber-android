@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.xabber.android.R;
+import com.xabber.android.data.xaccount.XabberAccountManager;
 
 public class AccountOptionsAdapter extends RecyclerView.Adapter<AccountOptionViewHolder>
         implements AccountOptionClickListener {
@@ -43,6 +44,15 @@ public class AccountOptionsAdapter extends RecyclerView.Adapter<AccountOptionVie
             holder.separator.setVisibility(View.GONE);
         } else {
             holder.separator.setVisibility(View.VISIBLE);
+        }
+
+        if (XabberAccountManager.getInstance().getAccount() == null && position == 1) {
+            holder.title.setEnabled(false);
+            holder.icon.setImageResource(R.drawable.ic_sync_lightgrey);
+            holder.description.setEnabled(false);
+        } else {
+            holder.title.setEnabled(true);
+            holder.description.setEnabled(true);
         }
     }
 

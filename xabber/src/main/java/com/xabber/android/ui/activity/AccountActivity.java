@@ -29,6 +29,7 @@ import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.RosterManager;
+import com.xabber.android.data.xaccount.XabberAccountManager;
 import com.xabber.android.ui.adapter.accountoptions.AccountOption;
 import com.xabber.android.ui.adapter.accountoptions.AccountOptionsAdapter;
 import com.xabber.android.ui.color.BarPainter;
@@ -261,7 +262,8 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
                 startActivity(BookmarksActivity.createIntent(this, account));
                 break;
             case SYNCHRONIZATION:
-                startActivity(AccountSyncActivity.createIntent(this, account));
+                if (XabberAccountManager.getInstance().getAccount() != null)
+                    startActivity(AccountSyncActivity.createIntent(this, account));
                 break;
         }
     }
