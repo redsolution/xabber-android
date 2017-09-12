@@ -43,6 +43,7 @@ public class XabberAccountInfoFragment extends Fragment {
     private TextView tvLastSyncDate;
     private RelativeLayout rlLogout;
     private RelativeLayout rlSync;
+    private boolean dialogShowed;
 
     private CompositeSubscription compositeSubscription = new CompositeSubscription();
 
@@ -64,7 +65,10 @@ public class XabberAccountInfoFragment extends Fragment {
         rlLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showLogoutDialog();
+                if (!dialogShowed) {
+                    dialogShowed = true;
+                    showLogoutDialog();
+                }
             }
         });
 
@@ -72,7 +76,10 @@ public class XabberAccountInfoFragment extends Fragment {
         rlSync.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showSyncDialog(false);
+                if (!dialogShowed) {
+                    dialogShowed = true;
+                    showSyncDialog(false);
+                }
             }
         });
 
@@ -125,6 +132,7 @@ public class XabberAccountInfoFragment extends Fragment {
                             // show dialog
                             AccountSyncDialogFragment.newInstance(noCancel)
                                     .show(getFragmentManager(), AccountSyncDialogFragment.class.getSimpleName());
+                            dialogShowed = false;
                         } else Toast.makeText(getActivity(), "Не удалось начать синхронизацию", Toast.LENGTH_SHORT).show();
                     }
                 }, new Action1<Throwable>() {
@@ -157,5 +165,6 @@ public class XabberAccountInfoFragment extends Fragment {
                 .setNegativeButton(R.string.cancel, null);
         Dialog dialog = builder.create();
         dialog.show();
+        dialogShowed = false;
     }
 }
