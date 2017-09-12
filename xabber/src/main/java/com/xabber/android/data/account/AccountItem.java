@@ -53,6 +53,7 @@ public class AccountItem extends ConnectionItem implements Comparable<AccountIte
     private String id;
     private int colorIndex;
     private int order;
+    private int timestamp;
 
     /**
      * Whether account is enabled.
@@ -112,7 +113,7 @@ public class AccountItem extends ConnectionItem implements Comparable<AccountIte
 
     public AccountItem(boolean custom, String host,
                        int port, DomainBareJid serverName, Localpart userName, Resourcepart resource,
-                       boolean storePassword, String password, String token, int colorIndex,
+                       boolean storePassword, String password, String token, int colorIndex, int order, int timestamp,
                        int priority, StatusMode statusMode, String statusText,
                        boolean enabled, boolean saslEnabled, TLSMode tlsMode,
                        boolean compression, ProxyType proxyType, String proxyHost,
@@ -124,6 +125,8 @@ public class AccountItem extends ConnectionItem implements Comparable<AccountIte
                 proxyType, proxyHost, proxyPort, proxyUser, proxyPassword);
         this.id = UUID.randomUUID().toString();
         this.colorIndex = colorIndex;
+        this.order = order;
+        this.timestamp = timestamp;
 
         this.enabled = enabled;
         this.priority = getValidPriority(priority);
@@ -243,6 +246,14 @@ public class AccountItem extends ConnectionItem implements Comparable<AccountIte
     void setStatus(StatusMode statusMode, String statusText) {
         this.statusMode = statusMode;
         this.statusText = statusText;
+    }
+
+    public int getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(int timestamp) {
+        this.timestamp = timestamp;
     }
 
     /**

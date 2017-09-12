@@ -29,6 +29,7 @@ import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.RosterManager;
+import com.xabber.android.data.xaccount.XabberAccountManager;
 import com.xabber.android.ui.adapter.accountoptions.AccountOption;
 import com.xabber.android.ui.adapter.accountoptions.AccountOptionsAdapter;
 import com.xabber.android.ui.color.BarPainter;
@@ -161,6 +162,8 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
     }
 
     private void updateOptions() {
+        AccountOption.SYNCHRONIZATION.setDescription(getString(R.string.account_sync_summary));
+
         AccountOption.CONNECTION_SETTINGS.setDescription(account.getFullJid().asBareJid().toString());
 
         AccountOption.COLOR.setDescription(ColorManager.getInstance().getAccountPainter().getAccountColorName(account));
@@ -257,6 +260,10 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
                 break;
             case BOOKMARKS:
                 startActivity(BookmarksActivity.createIntent(this, account));
+                break;
+            case SYNCHRONIZATION:
+                if (XabberAccountManager.getInstance().getAccount() != null)
+                    startActivity(AccountSyncActivity.createIntent(this, account));
                 break;
         }
     }

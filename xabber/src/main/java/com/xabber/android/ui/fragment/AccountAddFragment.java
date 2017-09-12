@@ -18,6 +18,8 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.xaccount.XabberAccount;
+import com.xabber.android.data.xaccount.XabberAccountManager;
 import com.xabber.android.ui.activity.AccountAddActivity;
 import com.xabber.android.ui.activity.AccountActivity;
 import com.xabber.android.ui.dialog.OrbotInstallerDialog;
@@ -44,6 +46,11 @@ public class AccountAddFragment extends Fragment implements View.OnClickListener
 
         storePasswordView = (CheckBox) view.findViewById(R.id.store_password);
         chkSync = (CheckBox) view.findViewById(R.id.chkSync);
+        if (XabberAccountManager.getInstance().getAccount() == null) {
+            chkSync.setVisibility(View.GONE);
+            chkSync.setChecked(false);
+        }
+
         useOrbotView = (CheckBox) view.findViewById(R.id.use_orbot);
         createAccountCheckBox = (CheckBox) view.findViewById(R.id.register_account);
         createAccountCheckBox.setOnClickListener(this);

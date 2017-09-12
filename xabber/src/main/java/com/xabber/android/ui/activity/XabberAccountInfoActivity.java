@@ -20,6 +20,7 @@ import android.widget.Toast;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.connection.NetworkManager;
 import com.xabber.android.data.xaccount.AuthManager;
 import com.xabber.android.data.xaccount.XMPPAccountSettings;
@@ -174,6 +175,7 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
             @Override
             public void run() {
                 XabberAccountManager.getInstance().deleteXabberAccountFromRealm();
+                XabberAccountManager.getInstance().deleteSyncStatesFromRealm();
                 Application.getInstance().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -265,12 +267,6 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
         fTrans.commit();
     }
 
-    private void showSyncDialog() {
-        XabberAccountInfoFragment fragment = (XabberAccountInfoFragment) getFragmentManager().findFragmentByTag(FRAGMENT_INFO);
-        if (fragment != null && fragment.isVisible())
-            ((XabberAccountInfoFragment) fragmentInfo).updateLastSyncTime();
-    }
-
     public void onLoginClick() {
         Intent intent = TutorialActivity.createIntent(XabberAccountInfoActivity.this);
         startActivity(intent);
@@ -351,18 +347,8 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
         }
     }
 
-    private void loadUserSettings() {
-        XabberAccount account = XabberAccountManager.getInstance().getAccount();
-        if (account != null && account.getToken() != null) {
-            showProgress(getResources().getString(R.string.progress_title_sync));
-            getAccount(account.getToken());
-        } else {
-            Toast.makeText(XabberAccountInfoActivity.this, R.string.sync_fail, Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private void updateSettings(final boolean needGoToMainActivity) {
-        Subscription getSettingsSubscription = AuthManager.updateClientSettings(XabberAccountManager.getInstance().getXmppAccounts())
+    private void updateSettings() {
+        Subscription getSettingsSubscription = AuthManager.patchClientSettings(XabberAccountManager.getInstance().createSettingsList())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<List<XMPPAccountSettings>>() {
@@ -372,12 +358,6 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
                         hideProgress();
                         updateLastSyncTime();
                         Toast.makeText(XabberAccountInfoActivity.this, R.string.sync_success, Toast.LENGTH_SHORT).show();
-                        if (needGoToMainActivity) {
-                            Intent intent = ContactListActivity.createIntent(XabberAccountInfoActivity.this);
-                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                            finish();
-                            startActivity(intent);
-                        }
                     }
                 }, new Action1<Throwable>() {
                     @Override
@@ -396,10 +376,10 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<List<XMPPAccountSettings>>() {
                     @Override
-                    public void call(List<XMPPAccountSettings> s) {
+                    public void call(List<XMPPAccountSettings> settings) {
                         Log.d(LOG_TAG, "XMPP accounts loading from net: successfully");
+                        XabberAccountManager.getInstance().setXmppAccountsForCreate(settings);
                         hideProgress();
-                        //showSyncDialog();
                         Intent intent = ContactListActivity.createIntent(XabberAccountInfoActivity.this);
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         finish();
@@ -424,7 +404,8 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
                     public void call(XabberAccount s) {
                         Log.d(LOG_TAG, "Xabber account loading from net: successfully");
                         updateAccountInfo(s);
-                        updateSettings(needGoToMainActivity);
+                        if (needGoToMainActivity) getSettings();
+                        else updateSettings();
                     }
                 }, new Action1<Throwable>() {
                     @Override
@@ -436,28 +417,6 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
                             showLoginFragment();
                         }
 
-                        hideProgress();
-                        Toast.makeText(XabberAccountInfoActivity.this, R.string.sync_fail, Toast.LENGTH_SHORT).show();
-                    }
-                });
-        compositeSubscription.add(loadAccountsSubscription);
-    }
-
-    private void getAccount(String token) {
-        Subscription loadAccountsSubscription = AuthManager.getAccount(token)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<XabberAccount>() {
-                    @Override
-                    public void call(XabberAccount s) {
-                        Log.d(LOG_TAG, "Xabber account loading from net: successfully");
-                        updateAccountInfo(s);
-                        getSettings();
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        Log.d(LOG_TAG, "Xabber account loading from net: error: " + throwable.toString());
                         hideProgress();
                         Toast.makeText(XabberAccountInfoActivity.this, R.string.sync_fail, Toast.LENGTH_SHORT).show();
                     }
@@ -485,9 +444,8 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
     }
 
     private void handleSuccessLogout(ResponseBody s, boolean deleteAccounts) {
+        if (deleteAccounts) XabberAccountManager.getInstance().deleteSyncedLocalAccounts();
         XabberAccountManager.getInstance().removeAccount();
-        if (deleteAccounts)
-            XabberAccountManager.getInstance().deleteAllSyncedAccounts();
         showLoginFragment();
         hideProgress();
         Toast.makeText(this, R.string.logout_success, Toast.LENGTH_SHORT).show();
@@ -590,11 +548,9 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
     }
 
     private void handleSuccessComplete(XabberAccount response) {
-        //showInfoFragment();
-
         hideProgress();
         Toast.makeText(this, R.string.complete_success, Toast.LENGTH_SHORT).show();
-        loadUserSettings();
+        getSettings();
     }
 
     private void handleErrorComplete(Throwable throwable) {

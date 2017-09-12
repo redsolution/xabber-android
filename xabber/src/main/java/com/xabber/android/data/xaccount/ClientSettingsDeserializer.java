@@ -20,10 +20,12 @@ import java.util.List;
 public class ClientSettingsDeserializer implements JsonDeserializer<AuthManager.ListClientSettingsDTO> {
 
     private List<AuthManager.ClientSettingsDTO> items;
+    private List<AuthManager.DeletedDTO> deleted;
 
     @Override
     public AuthManager.ListClientSettingsDTO deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
         items = new ArrayList<>();
+        deleted = new ArrayList<>();
 
         JsonArray array = json.getAsJsonObject().get("settings_data").getAsJsonArray();
         for (int i = 0; i < array.size(); i++) {
@@ -35,6 +37,13 @@ public class ClientSettingsDeserializer implements JsonDeserializer<AuthManager.
         JsonElement orderData = json.getAsJsonObject().get("order_data").getAsJsonObject();
         AuthManager.OrderDataDTO orderDataDTO = context.deserialize(orderData, AuthManager.OrderDataDTO.class);
 
-        return new AuthManager.ListClientSettingsDTO(items, orderDataDTO);
+        JsonArray deletedArray = json.getAsJsonObject().get("deleted").getAsJsonArray();
+        for (int i = 0; i < deletedArray.size(); i++) {
+            JsonElement jsonElement = deletedArray.get(i);
+            AuthManager.DeletedDTO deletedDTO = context.deserialize(jsonElement, AuthManager.DeletedDTO.class);
+            deleted.add(deletedDTO);
+        }
+
+        return new AuthManager.ListClientSettingsDTO(items, orderDataDTO, deleted);
     }
 }

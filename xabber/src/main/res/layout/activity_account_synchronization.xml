@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include layout="@layout/toolbar_default" />
+
+    <RelativeLayout
+        android:id="@+id/rlSyncSwitch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?android:attr/selectableItemBackground"
+        >
+
+        <LinearLayout
+            android:id="@+id/text"
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginBottom="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="18dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="?android:attr/textColorPrimary"
+                android:textSize="16sp"
+                android:text="@string/account_sync"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="marquee"
+                android:lines="1"
+                android:textColor="?android:attr/textColorSecondary"
+                android:textSize="14sp"
+                android:text="@string/account_sync_enable_summary"
+                />
+
+        </LinearLayout>
+
+        <Switch
+            android:id="@+id/switchSync"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="12dp"
+            android:layout_centerVertical="true"
+            android:clickable="false"
+            />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/grey_300"
+            android:layout_below="@+id/text"
+            android:visibility="gone"
+            />
+
+    </RelativeLayout>
+
+    <Button
+        android:id="@+id/btnDeleteSettings"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:layout_gravity="center_horizontal"
+        android:background="?android:attr/selectableItemBackground"
+        android:textColor="?colorAccent"
+        android:text="@string/delete_settings_button"
+        />
+
+</LinearLayout>

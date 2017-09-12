@@ -7,6 +7,7 @@ import com.xabber.android.R;
 
 public enum  AccountOption {
     CONNECTION_SETTINGS(R.drawable.ic_settings_grey600_24dp, R.string.account_connection_settings),
+    SYNCHRONIZATION(R.drawable.ic_sync_grey, R.string.account_sync),
     COLOR(R.drawable.ic_color_lens_grey600_24dp, R.string.account_color),
     BLOCK_LIST(R.drawable.ic_block_grey600_24dp, R.string.blocked_contacts),
     SERVER_INFO(R.drawable.ic_info_grey600_24dp, R.string.account_server_info),

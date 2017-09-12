@@ -72,18 +72,6 @@ public class NavigationDrawerAccountAdapter extends BaseListEditorAdapter<Accoun
     protected Collection<AccountJid> getTags() {
         List<AccountJid> list = new ArrayList<>();
         list.addAll(AccountManager.getInstance().getEnabledAccounts());
-
-        List<XMPPAccountSettings> accountSettings = new ArrayList<>();
-        accountSettings = XabberAccountManager.getInstance().getXmppAccounts();
-
-        for (AccountJid account : list) {
-            for (XMPPAccountSettings set : accountSettings) {
-                String accountJidString = account.getFullJid().asBareJid().toString();
-                if (set.getJid().equals(accountJidString))
-                    account.setOrder(set.getOrder());
-            }
-        }
-
         Collections.sort(list);
         return list;
     }

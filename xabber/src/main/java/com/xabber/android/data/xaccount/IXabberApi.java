@@ -4,10 +4,13 @@ import java.util.List;
 
 import okhttp3.ResponseBody;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
+import retrofit2.http.HTTP;
 import retrofit2.http.Header;
 import retrofit2.http.PATCH;
 import retrofit2.http.POST;
+import retrofit2.http.Query;
 import rx.Single;
 
 /**
@@ -39,6 +42,9 @@ public interface IXabberApi {
 
     @PATCH("accounts/current/client-settings/")
     Single<AuthManager.ListClientSettingsDTO> updateClientSettings(@Header("Authorization") String token, @Body AuthManager.ClientSettingsOrderDTO body);
+
+    @HTTP(method = "DELETE", path = "accounts/current/client-settings/", hasBody = true)
+    Single<AuthManager.ListClientSettingsDTO> deleteClientSettings(@Header("Authorization") String token, @Body AuthManager.Jid jid);
 
     @POST("accounts/email_confirmation/")
     Single<XabberAccountDTO> confirmEmail(@Header("Authorization") String token, @Body AuthManager.Code code);

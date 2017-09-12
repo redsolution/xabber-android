@@ -1,11 +1,14 @@
 package com.xabber.android.data.xaccount;
 
 import android.util.Base64;
+
 import com.google.gson.Gson;
 import com.xabber.android.data.SettingsManager;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import okhttp3.ResponseBody;
 import rx.Single;
@@ -23,6 +26,7 @@ public class AuthManager {
     public static final String PROVIDER_GOOGLE = "google";
 
     public static Single<XAccountTokenDTO> login(String login, String pass) {
+        SettingsManager.setSyncAllAccounts(true);
 
         String credentials = login + ":" + pass;
         byte[] data = credentials.getBytes();
@@ -37,34 +41,29 @@ public class AuthManager {
                 .flatMap(new Func1<ResponseBody, Single<? extends ResponseBody>>() {
                     @Override
                     public Single<? extends ResponseBody> call(ResponseBody responseBody) {
-                        if (XabberAccountManager.getInstance().deleteXabberAccountFromRealm())
-                            return Single.just(responseBody);
-                        else return Single.error(new Throwable("Realm: xabber account deletion error"));
-                    }
-                })
-                .flatMap(new Func1<ResponseBody, Single<? extends ResponseBody>>() {
-                    @Override
-                    public Single<? extends ResponseBody> call(ResponseBody responseBody) {
                         if (deleteAccounts) {
-                            if (XabberAccountManager.getInstance().deleteSyncedXMPPAccountsFromRealm())
+                            if (XabberAccountManager.getInstance().deleteXabberAccountFromRealm())
                                 return Single.just(responseBody);
                             else
-                                return Single.error(new Throwable("Realm: xmpp accounts deletion error"));
+                                return Single.error(new Throwable("Realm: xabber account deletion error"));
                         } else return Single.just(responseBody);
                     }
                 })
                 .flatMap(new Func1<ResponseBody, Single<? extends ResponseBody>>() {
                     @Override
                     public Single<? extends ResponseBody> call(ResponseBody responseBody) {
-                        if (XabberAccountManager.getInstance().deleteDeadXMPPAccountsFromRealm())
-                            return Single.just(responseBody);
-                        else
-                            return Single.error(new Throwable("Realm: dead xmpp accounts deletion error"));
+                        if (deleteAccounts) {
+                            if (XabberAccountManager.getInstance().deleteSyncStatesFromRealm())
+                                return Single.just(responseBody);
+                            else
+                                return Single.error(new Throwable("Realm: xabber account deletion error"));
+                        } else return Single.just(responseBody);
                     }
                 });
     }
 
     public static Single<XAccountTokenDTO> loginSocial(String provider, String socialToken) {
+        SettingsManager.setSyncAllAccounts(true);
 
         Gson gson = new Gson();
         String credentials = gson.toJson(new AccessToken(socialToken));
@@ -73,6 +72,7 @@ public class AuthManager {
 
     public static Single<XAccountTokenDTO> loginSocialTwitter(
            String socialToken, String twitterTokenSecret, String secret, String key) {
+        SettingsManager.setSyncAllAccounts(true);
 
         Gson gson = new Gson();
         String credentials = gson.toJson(new TwitterAccessToken(new TwitterTokens(twitterTokenSecret, socialToken), secret, key));
@@ -94,65 +94,113 @@ public class AuthManager {
                 .flatMap(new Func1<ListClientSettingsDTO, Single<? extends List<XMPPAccountSettings>>>() {
                     @Override
                     public Single<? extends List<XMPPAccountSettings>> call(ListClientSettingsDTO listClientSettingsDTO) {
-                        return XabberAccountManager.getInstance().saveOrUpdateXMPPAccountSettingsToRealm(listClientSettingsDTO);
-                    }
-                });
-//                .flatMap(new Func1<List<XMPPAccountSettings>, Single<? extends List<XMPPAccountSettings>>>() {
-//                    @Override
-//                    public Single<? extends List<XMPPAccountSettings>> call(List<XMPPAccountSettings> xmppAccounts) {
-//                        return XabberAccountManager.getInstance().updateLocalAccounts(xmppAccounts);
-//                    }
-//                });
-    }
-
-    public static Single<List<XMPPAccountSettings>> updateClientSettings(List<XMPPAccountSettings> accountSettingsList) {
-
-        List<ClientSettingsDTO> list = new ArrayList<>();
-        List<OrderDTO> listOrder = new ArrayList<>();
-
-        for (XMPPAccountSettings account : accountSettingsList) {
-            // add to sync only accounts required sync
-            if (account.isSynchronization() || SettingsManager.isSyncAllAccounts()) {
-                list.add(new ClientSettingsDTO(account.getJid(), new SettingsValuesDTO(account.getOrder(),
-                        account.getColor(), account.getToken(), account.getUsername()), account.getTimestamp()));
-                if (account.getOrder() > 0)
-                    listOrder.add(new OrderDTO(account.getJid(), account.getOrder()));
-            }
-        }
-
-        OrderDataDTO orderDataDTO = new OrderDataDTO(listOrder, XabberAccountManager.getInstance().getLastOrderChangeTimestamp());
-
-        ClientSettingsWithoutOrderDTO listClientSettingsDTO = new ClientSettingsWithoutOrderDTO(list);
-        final ClientSettingsOrderDTO clientSettingsOrderDTO = new ClientSettingsOrderDTO(orderDataDTO);
-
-        return HttpApiManager.getXabberApi().updateClientSettings(getXabberTokenHeader(), listClientSettingsDTO)
-                .flatMap(new Func1<ListClientSettingsDTO, Single<? extends ListClientSettingsDTO>>() {
-                    @Override
-                    public Single<? extends ListClientSettingsDTO> call(ListClientSettingsDTO listClientSettingsDTO) {
-                        return HttpApiManager.getXabberApi().updateClientSettings(getXabberTokenHeader(), clientSettingsOrderDTO);
-                    }
-                })
-                .flatMap(new Func1<ListClientSettingsDTO, Single<? extends ListClientSettingsDTO>>() {
-                    @Override
-                    public Single<? extends ListClientSettingsDTO> call(ListClientSettingsDTO listClientSettingsDTO) {
-                        return HttpApiManager.getXabberApi().getClientSettings(getXabberTokenHeader());
-                    }
-                })
-                .flatMap(new Func1<ListClientSettingsDTO, Single<? extends List<XMPPAccountSettings>>>() {
-                    @Override
-                    public Single<? extends List<XMPPAccountSettings>> call(ListClientSettingsDTO listClientSettingsDTO) {
-                        return XabberAccountManager.getInstance().saveOrUpdateXMPPAccountSettingsToRealm(listClientSettingsDTO);
+                        return XabberAccountManager.getInstance().clientSettingsDTOListToPOJO(listClientSettingsDTO);
                     }
                 })
                 .flatMap(new Func1<List<XMPPAccountSettings>, Single<? extends List<XMPPAccountSettings>>>() {
                     @Override
                     public Single<? extends List<XMPPAccountSettings>> call(List<XMPPAccountSettings> xmppAccounts) {
+                        // add only new accounts from server to sync map
+                        Map<String, Boolean> syncState = new HashMap<>();
+                        for (XMPPAccountSettings account : xmppAccounts) {
+                            if (XabberAccountManager.getInstance().getAccountSyncState(account.getJid()) == null)
+                                syncState.put(account.getJid(), true);
+                        }
+                        XabberAccountManager.getInstance().setAccountSyncState(syncState);
+
+                        return Single.just(xmppAccounts);
+                    }
+                });
+    }
+
+    public static Single<List<XMPPAccountSettings>> patchClientSettings(List<XMPPAccountSettings> accountSettingsList) {
+        List<OrderDTO> listOrder = new ArrayList<>();
+        List<ClientSettingsDTO> listSettings = new ArrayList<>();
+
+        // divide all data into two lists: settings and orders
+        for (XMPPAccountSettings account : accountSettingsList) {
+            listSettings.add(new ClientSettingsDTO(account.getJid(), new SettingsValuesDTO(account.getOrder(),
+                    account.getColor(), account.getToken(), account.getUsername()), account.getTimestamp()));
+
+            if (account.getOrder() > 0)
+                listOrder.add(new OrderDTO(account.getJid(), account.getOrder()));
+        }
+
+        // prepare dto for settings
+        ClientSettingsWithoutOrderDTO settingsDTO = new ClientSettingsWithoutOrderDTO(listSettings);
+
+        // prepare dto for orders
+        OrderDataDTO orderDataDTO = new OrderDataDTO(listOrder, XabberAccountManager.getInstance().getLastOrderChangeTimestamp());
+        final ClientSettingsOrderDTO orderDTO = new ClientSettingsOrderDTO(orderDataDTO);
+
+        // patch settings to server
+        return HttpApiManager.getXabberApi().updateClientSettings(getXabberTokenHeader(), settingsDTO)
+                .flatMap(new Func1<ListClientSettingsDTO, Single<? extends ListClientSettingsDTO>>() {
+                    @Override
+                    public Single<? extends ListClientSettingsDTO> call(ListClientSettingsDTO listClientSettingsDTO) {
+                        // patch orders to server
+                        return HttpApiManager.getXabberApi().updateClientSettings(getXabberTokenHeader(), orderDTO);
+                    }
+                })
+                .flatMap(new Func1<ListClientSettingsDTO, Single<? extends List<XMPPAccountSettings>>>() {
+                    @Override
+                    public Single<? extends List<XMPPAccountSettings>> call(ListClientSettingsDTO listClientSettingsDTO) {
+                        // convert dto to pojo
+                        return XabberAccountManager.getInstance().clientSettingsDTOListToPOJO(listClientSettingsDTO);
+                    }
+                })
+                .flatMap(new Func1<List<XMPPAccountSettings>, Single<? extends List<XMPPAccountSettings>>>() {
+                    @Override
+                    public Single<? extends List<XMPPAccountSettings>> call(List<XMPPAccountSettings> xmppAccounts) {
+                        // add only new accounts from server to sync map
+                        Map<String, Boolean> syncState = new HashMap<>();
+                        for (XMPPAccountSettings account : xmppAccounts) {
+                            if (XabberAccountManager.getInstance().getAccountSyncState(account.getJid()) == null)
+                                    syncState.put(account.getJid(), true);
+                        }
+                        XabberAccountManager.getInstance().setAccountSyncState(syncState);
+
+                        // update last synchronization time
+                        SettingsManager.setLastSyncDate(XabberAccountManager.getCurrentTimeString());
+
+                        // update local accounts
+                        return XabberAccountManager.getInstance().updateLocalAccounts(xmppAccounts);
+                    }
+                });
+    }
+
+    public static Single<List<XMPPAccountSettings>> deleteClientSettings(String jid) {
+        // delete settings from server
+        return HttpApiManager.getXabberApi().deleteClientSettings(getXabberTokenHeader(), new Jid(jid))
+                .flatMap(new Func1<ListClientSettingsDTO, Single<? extends List<XMPPAccountSettings>>>() {
+                    @Override
+                    public Single<? extends List<XMPPAccountSettings>> call(ListClientSettingsDTO listClientSettingsDTO) {
+                        // convert dto to pojo
+                        return XabberAccountManager.getInstance().clientSettingsDTOListToPOJO(listClientSettingsDTO);
+                    }
+                })
+                .flatMap(new Func1<List<XMPPAccountSettings>, Single<? extends List<XMPPAccountSettings>>>() {
+                    @Override
+                    public Single<? extends List<XMPPAccountSettings>> call(List<XMPPAccountSettings> xmppAccounts) {
+                        // add only new accounts from server to sync map
+                        Map<String, Boolean> syncState = new HashMap<>();
+                        for (XMPPAccountSettings account : xmppAccounts) {
+                            if (XabberAccountManager.getInstance().getAccountSyncState(account.getJid()) == null)
+                                syncState.put(account.getJid(), true);
+                        }
+                        XabberAccountManager.getInstance().setAccountSyncState(syncState);
+
+                        // update last synchronization time
+                        SettingsManager.setLastSyncDate(XabberAccountManager.getCurrentTimeString());
+
+                        // update local accounts
                         return XabberAccountManager.getInstance().updateLocalAccounts(xmppAccounts);
                     }
                 });
     }
 
     public static Single<XAccountTokenDTO> signup(String email) {
+        SettingsManager.setSyncAllAccounts(true);
         return HttpApiManager.getXabberApi().signup(new Email(email));
     }
 
@@ -222,6 +270,14 @@ public class AuthManager {
             this.first_name = first_name;
             this.last_name = last_name;
             this.host = host;
+        }
+    }
+
+    public static class Jid {
+        final String jid;
+
+        public Jid(String jid) {
+            this.jid = jid;
         }
     }
 
@@ -310,10 +366,12 @@ public class AuthManager {
     public static class ListClientSettingsDTO {
         final List<ClientSettingsDTO> settings_data;
         final OrderDataDTO order_data;
+        final List<DeletedDTO> deleted;
 
-        public ListClientSettingsDTO(List<ClientSettingsDTO> settings_data, OrderDataDTO order_data) {
+        public ListClientSettingsDTO(List<ClientSettingsDTO> settings_data, OrderDataDTO order_data, List<DeletedDTO> deleted) {
             this.settings_data = settings_data;
             this.order_data = order_data;
+            this.deleted = deleted;
         }
 
         public List<ClientSettingsDTO> getSettings() {
@@ -322,6 +380,28 @@ public class AuthManager {
 
         public OrderDataDTO getOrderData() {
             return order_data;
+        }
+
+        public List<DeletedDTO> getDeleted() {
+            return deleted;
+        }
+    }
+
+    public static class DeletedDTO {
+        final String jid;
+        final int timestamp;
+
+        public DeletedDTO(String jid, int timestamp) {
+            this.jid = jid;
+            this.timestamp = timestamp;
+        }
+
+        public String getJid() {
+            return jid;
+        }
+
+        public int getTimestamp() {
+            return timestamp;
         }
     }
 

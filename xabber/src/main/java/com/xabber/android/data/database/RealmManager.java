@@ -8,6 +8,7 @@ import com.xabber.android.data.database.realm.AccountRealm;
 import com.xabber.android.data.database.realm.DiscoveryInfoCache;
 import com.xabber.android.data.database.realm.EmailRealm;
 import com.xabber.android.data.database.realm.SocialBindingRealm;
+import com.xabber.android.data.database.realm.SyncStateRealm;
 import com.xabber.android.data.database.realm.XMPPAccountSettignsRealm;
 import com.xabber.android.data.database.realm.XMPPUserRealm;
 import com.xabber.android.data.database.realm.XabberAccountRealm;
@@ -24,7 +25,7 @@ import io.realm.annotations.RealmModule;
 
 public class RealmManager {
     private static final String REALM_DATABASE_NAME = "realm_database.realm";
-    private static final int REALM_DATABASE_VERSION = 8;
+    private static final int REALM_DATABASE_VERSION = 9;
     private static final String LOG_TAG = RealmManager.class.getSimpleName();
     private final RealmConfiguration realmConfiguration;
 
@@ -56,7 +57,7 @@ public class RealmManager {
     }
 
     @RealmModule(classes = {DiscoveryInfoCache.class, AccountRealm.class, XabberAccountRealm.class,
-            XMPPUserRealm.class, EmailRealm.class, SocialBindingRealm.class, XMPPAccountSettignsRealm.class})
+            XMPPUserRealm.class, EmailRealm.class, SocialBindingRealm.class, XMPPAccountSettignsRealm.class, SyncStateRealm.class})
     static class RealmDatabaseModule {
     }
 
@@ -146,6 +147,19 @@ public class RealmManager {
                         if (oldVersion == 7) {
                             schema.get(AccountRealm.class.getSimpleName())
                                     .addField("token", String.class);
+
+                            oldVersion++;
+                        }
+
+                        if (oldVersion == 8) {
+                            schema.get(AccountRealm.class.getSimpleName())
+                                    .addField("order", Integer.class)
+                                    .addField("timestamp", Integer.class);
+
+                            schema.create(SyncStateRealm.class.getSimpleName())
+                                    .addField("id", String.class, FieldAttribute.PRIMARY_KEY, FieldAttribute.REQUIRED)
+                                    .addField("jid", String.class)
+                                    .addField("sync", boolean.class);
 
                             oldVersion++;
                         }
