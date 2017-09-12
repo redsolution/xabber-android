@@ -122,7 +122,7 @@
 
     <string name="cancel_register_dialog_title">Отмена регистрации</string>
     <string name="cancel_register_progress">Отмена регистрации..</string>
-    <string name="cancel_register_dialog_message">Хотите прервать регистрацию? Вы не сможете продолжить регистрацию в будущем.</string>
+    <string name="cancel_register_dialog_message">Хотите прервать регистрацию?</string>
     <string name="cancel_register_dialog_pos_button">Прервать</string>
 
     <string name="delete_settings_button">Delete settings</string>
