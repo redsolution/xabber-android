@@ -289,7 +289,11 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
     }
 
     int getNextOrder() {
-        return accountItems.size();
+        int max = 0;
+        for (AccountItem item : accountItems.values()) {
+            if (item.getOrder() > max) max = item.getOrder();
+        }
+        return max + 1;
     }
 
     /**
