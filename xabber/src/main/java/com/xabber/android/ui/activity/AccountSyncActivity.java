@@ -1,13 +1,18 @@
 package com.xabber.android.ui.activity;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.RelativeLayout;
 import android.widget.Switch;
 import android.widget.Toast;
@@ -52,6 +57,7 @@ public class AccountSyncActivity extends ManagedActivity implements View.OnClick
     private AccountItem accountItem;
     private String jid;
     protected CompositeSubscription compositeSubscription = new CompositeSubscription();
+    private boolean dialogShowed;
 
     public static Intent createIntent(Context context, AccountJid account) {
         return new AccountIntentBuilder(context, AccountSyncActivity.class).setAccount(account).build();
@@ -113,6 +119,7 @@ public class AccountSyncActivity extends ManagedActivity implements View.OnClick
     @Override
     protected void onResume() {
         super.onResume();
+        checkAccount();
         updateSyncSwitchButton();
     }
 
@@ -126,7 +133,10 @@ public class AccountSyncActivity extends ManagedActivity implements View.OnClick
                 break;
             case R.id.btnDeleteSettings:
                 if (NetworkManager.isNetworkAvailable()) {
-                    deleteAccountSettings();
+                    if (!dialogShowed) {
+                        dialogShowed = true;
+                        showDeleteDialog();
+                    }
                 } else
                     Toast.makeText(this, R.string.toast_no_internet, Toast.LENGTH_LONG).show();
                 break;
@@ -138,8 +148,14 @@ public class AccountSyncActivity extends ManagedActivity implements View.OnClick
                 || SettingsManager.isSyncAllAccounts());
     }
 
-    private void deleteAccountSettings() {
+    private void deleteAccountSettings(boolean deleteAccount) {
         showProgress(getResources().getString(R.string.progress_title_delete_settings));
+
+        if (XabberAccountManager.getInstance().getAccountSyncState(jid) != null && !deleteAccount) {
+            SettingsManager.setSyncAllAccounts(false);
+            XabberAccountManager.getInstance().setAccountSyncState(jid, false);
+        }
+
         Subscription deleteSubscription = AuthManager.deleteClientSettings(jid)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -189,6 +205,37 @@ public class AccountSyncActivity extends ManagedActivity implements View.OnClick
         if (progressDialog != null) {
             progressDialog.dismiss();
             progressDialog = null;
+            checkAccount();
         }
+    }
+
+    private void checkAccount() {
+        if (AccountManager.getInstance().getAccount(accountItem.getAccount()) == null) {
+            // in case if account was removed
+            finish();
+            return;
+        }
+    }
+
+    private void showDeleteDialog() {
+        LayoutInflater inflater = getLayoutInflater();
+        View view = inflater.inflate(R.layout.dialog_delete_account_settings, null);
+        final CheckBox chbDeleteAccount = (CheckBox) view.findViewById(R.id.chbDeleteAccount);
+        chbDeleteAccount.setChecked(switchSync.isChecked());
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.progress_title_delete_settings)
+                .setMessage(R.string.delete_settings_summary)
+                .setView(view)
+                .setPositiveButton(R.string.delete_settings_button, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        deleteAccountSettings(chbDeleteAccount.isChecked());
+                    }
+                })
+                .setNegativeButton(R.string.cancel, null);
+        Dialog dialog = builder.create();
+        dialog.show();
+        dialogShowed = false;
     }
 }
