@@ -143,8 +143,12 @@ public class AccountSyncDialogFragment extends DialogFragment {
         if (!switchSyncAll.isChecked()) {
             Map<String, Boolean> syncState = new HashMap<>();
             for (XMPPAccountSettings account : xmppAccounts) {
-                if (account.isSynchronization() || account.getStatus() != XMPPAccountSettings.SyncStatus.local)
+                if (account.getStatus() != XMPPAccountSettings.SyncStatus.local) {
                     syncState.put(account.getJid(), account.isSynchronization());
+                } else if (account.isSynchronization() || XabberAccountManager.getInstance()
+                        .getAccountSyncState(account.getJid()) != null) {
+                    syncState.put(account.getJid(), account.isSynchronization());
+                }
             }
             XabberAccountManager.getInstance().setAccountSyncState(syncState);
         }

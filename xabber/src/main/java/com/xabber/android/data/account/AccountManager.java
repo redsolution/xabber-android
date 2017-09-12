@@ -414,6 +414,11 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
             SettingsManager.enableContactsShowAccount();
         }
 
+        // add xmpp account settings
+        if (xabberSync) XabberAccountManager.getInstance()
+                .addAccountSyncState(accountItem.getAccount().getFullJid().asBareJid().toString(), true);
+        else SettingsManager.setSyncAllAccounts(false);
+
         return accountItem.getAccount();
     }
 

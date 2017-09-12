@@ -612,6 +612,7 @@ public class XabberAccountManager implements OnLoadListener {
                 localItem.setOrder(remoteList.size() + localAccount.getOrder());
                 localItem.setColor(ColorManager.getInstance().convertIndexToColorName(localAccount.getColorIndex()));
                 localItem.setStatus(XMPPAccountSettings.SyncStatus.local);
+                localItem.setSynchronization(isAccountSynchronize(localItem.getJid()));
                 resultList.add(localItem);
             }
         }
