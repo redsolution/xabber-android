@@ -201,7 +201,7 @@ public class ColorManager {
         Integer colorId = colors.get(colorName);
         if (colorId != null)
             return ContextCompat.getColor(context, colors.get(colorName));
-        else return ContextCompat.getColor(context, colors.get("green"));
+        else return ContextCompat.getColor(context, R.color.grey_800);
     }
 
     public int convertColorNameToIndex(String colorName) {
