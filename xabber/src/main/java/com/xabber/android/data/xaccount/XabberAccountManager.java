@@ -581,6 +581,7 @@ public class XabberAccountManager implements OnLoadListener {
                         status = XMPPAccountSettings.SyncStatus.remoteNewer;
                     else {
                         status = XMPPAccountSettings.SyncStatus.localNewer;
+                        remoteItem.setTimestamp(localItem.getTimestamp());
                     }
                 }
 
