@@ -132,5 +132,6 @@
     <string name="sync_status_local">Local settings have changes</string>
     <string name="sync_status_remote">Remote settings have changes</string>
     <string name="sync_status_ok">Synchronized</string>
+    <string name="sync_status_deleted">Remote settings was deleted</string>
 
 </resources>

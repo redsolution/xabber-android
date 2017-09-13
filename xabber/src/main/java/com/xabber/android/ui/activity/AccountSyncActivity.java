@@ -197,6 +197,8 @@ public class AccountSyncActivity extends ManagedActivity implements View.OnClick
     private void handleSuccessDelete(List<XMPPAccountSettings> settings) {
         hideProgress();
         Toast.makeText(this, R.string.settings_delete_success, Toast.LENGTH_SHORT).show();
+        getSyncStatus();
+        updateSyncSwitchButton();
     }
 
     private void handleErrorDelete(Throwable throwable) {
@@ -236,10 +238,6 @@ public class AccountSyncActivity extends ManagedActivity implements View.OnClick
             finish();
             return;
         }
-
-        if (XabberAccountManager.getInstance().getAccountSyncState(jid) != null)
-            btnDeleteSettings.setVisibility(View.VISIBLE);
-        else btnDeleteSettings.setVisibility(View.GONE);
     }
 
     private void showDeleteDialog() {
@@ -305,6 +303,11 @@ public class AccountSyncActivity extends ManagedActivity implements View.OnClick
 
         for (XMPPAccountSettings item : list) {
             if (jid.equals(item.getJid())) {
+                if (item.isDeleted()) {
+                    status = XMPPAccountSettings.SyncStatus.deleted;
+                    break;
+                }
+
                 if (item.getTimestamp() == accountItem.getTimestamp())
                     status = XMPPAccountSettings.SyncStatus.localEqualsRemote;
                 else if (item.getTimestamp() > accountItem.getTimestamp())
@@ -323,26 +326,37 @@ public class AccountSyncActivity extends ManagedActivity implements View.OnClick
             case local:
                 tvStatus.setText(R.string.sync_status_no);
                 ivStatus.setImageResource(R.drawable.ic_sync_disable);
+                btnDeleteSettings.setVisibility(View.GONE);
                 break;
             case remote:
                 tvStatus.setText(R.string.sync_status_no);
                 ivStatus.setImageResource(R.drawable.ic_sync_disable);
+                btnDeleteSettings.setVisibility(View.GONE);
                 break;
             case localNewer:
                 tvStatus.setText(R.string.sync_status_local);
                 ivStatus.setImageResource(R.drawable.ic_sync_upload);
+                btnDeleteSettings.setVisibility(View.VISIBLE);
                 break;
             case remoteNewer:
                 tvStatus.setText(R.string.sync_status_remote);
                 ivStatus.setImageResource(R.drawable.ic_sync_download);
+                btnDeleteSettings.setVisibility(View.VISIBLE);
                 break;
             case localEqualsRemote:
                 tvStatus.setText(R.string.sync_status_ok);
                 ivStatus.setImageResource(R.drawable.ic_sync_done);
+                btnDeleteSettings.setVisibility(View.VISIBLE);
+                break;
+            case deleted:
+                tvStatus.setText(R.string.sync_status_deleted);
+                ivStatus.setImageResource(R.drawable.ic_delete_grey);
+                btnDeleteSettings.setVisibility(View.GONE);
                 break;
             default:
                 tvStatus.setText(R.string.sync_status_no);
                 ivStatus.setImageResource(R.drawable.ic_sync_disable);
+                btnDeleteSettings.setVisibility(View.GONE);
                 break;
         }
     }

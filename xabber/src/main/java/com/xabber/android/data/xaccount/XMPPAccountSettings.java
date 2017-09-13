@@ -133,7 +133,13 @@ public class XMPPAccountSettings implements Comparable<XMPPAccountSettings> {
          * Settings exist in local and remote
          * Both settings has same time
          */
-        localEqualsRemote
+        localEqualsRemote,
+
+        /**
+         * Remote settings was deleted
+         * Remote settings newer than local
+         */
+        deleted
 
     }
 }
