@@ -145,6 +145,38 @@ public class XabberAccountManager implements OnLoadListener {
         SettingsManager.setLastOrderChangeTimestamp(lastOrderChangeTimestamp);
     }
 
+    /**
+     * Update account settings
+     * If catches Invalid Token error disable sync in last account before logout
+     * Calls only in Add Account function
+     */
+    public void updateSettingsWithSaveLastAccount(final AccountJid jid) {
+        Subscription updateSettingsSubscription = AuthManager.patchClientSettings(createSettingsList())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<List<XMPPAccountSettings>>() {
+                    @Override
+                    public void call(List<XMPPAccountSettings> s) {
+                        Log.d(LOG_TAG, "XMPP accounts loading from net: successfully");
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        Log.d(LOG_TAG, "XMPP accounts loading from net: error: " + throwable.toString());
+
+                        // invalid token
+                        String message = RetrofitErrorConverter.throwableToHttpError(throwable);
+                        if (message != null && message.equals("Invalid token")) {
+                            // save last account
+                            setAccountSyncState(jid.getFullJid().asBareJid().toString(), false);
+                            // logout from deleted account
+                            onInvalidToken();
+                        }
+                    }
+                });
+        compositeSubscription.add(updateSettingsSubscription);
+    }
+
     @Override
     public void onLoad() {
         XabberAccount account = loadXabberAccountFromRealm();
@@ -189,6 +221,13 @@ public class XabberAccountManager implements OnLoadListener {
                     @Override
                     public void call(Throwable throwable) {
                         Log.d(LOG_TAG, "XMPP accounts loading from net: error: " + throwable.toString());
+
+                        // invalid token
+                        String message = RetrofitErrorConverter.throwableToHttpError(throwable);
+                        if (message != null && message.equals("Invalid token")) {
+                            // logout from deleted account
+                            onInvalidToken();
+                        }
                     }
                 });
         compositeSubscription.add(updateSettingsSubscription);

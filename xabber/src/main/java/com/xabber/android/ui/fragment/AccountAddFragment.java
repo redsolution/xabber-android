@@ -110,7 +110,7 @@ public class AccountAddFragment extends Fragment implements View.OnClickListener
         }
 
         // update remote settings
-        if (chkSync.isChecked()) XabberAccountManager.getInstance().updateAccountSettings();
+        if (chkSync.isChecked()) XabberAccountManager.getInstance().updateSettingsWithSaveLastAccount(account);
 
         getActivity().setResult(Activity.RESULT_OK, AccountAddActivity.createAuthenticatorResult(account));
         startActivity(AccountActivity.createIntent(getActivity(), account));
