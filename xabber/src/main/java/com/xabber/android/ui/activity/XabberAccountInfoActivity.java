@@ -183,6 +183,7 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
                         XabberAccountManager.getInstance().removeAccount();
                         showLoginFragment();
                         onPrepareOptionsMenu(toolbar.getMenu());
+                        goToMainActivity();
                         hideProgress();
                     }
                 });
