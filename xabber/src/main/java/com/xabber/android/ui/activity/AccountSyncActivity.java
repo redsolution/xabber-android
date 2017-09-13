@@ -13,8 +13,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.xabber.android.R;
@@ -53,6 +57,12 @@ public class AccountSyncActivity extends ManagedActivity implements View.OnClick
     private Button btnDeleteSettings;
     private Switch switchSync;
     private ProgressDialog progressDialog;
+
+    private TextView tvJid;
+    private TextView tvStatus;
+    private ImageView ivStatus;
+    private LinearLayout syncStatusView;
+    private ProgressBar progressBar;
 
     private AccountItem accountItem;
     private String jid;
@@ -105,9 +115,15 @@ public class AccountSyncActivity extends ManagedActivity implements View.OnClick
         btnDeleteSettings = (Button) findViewById(R.id.btnDeleteSettings);
         switchSync = (Switch) findViewById(R.id.switchSync);
         rlSyncSwitch = (RelativeLayout) findViewById(R.id.rlSyncSwitch);
+        tvJid = (TextView) findViewById(R.id.tvJid);
+        tvStatus = (TextView) findViewById(R.id.tvStatus);
+        ivStatus = (ImageView) findViewById(R.id.ivStatus);
+        syncStatusView = (LinearLayout) findViewById(R.id.syncStatusView);
+        progressBar = (ProgressBar) findViewById(R.id.progressBar);
 
         rlSyncSwitch.setOnClickListener(this);
         btnDeleteSettings.setOnClickListener(this);
+        ivStatus.setOnClickListener(this);
     }
 
     @Override
@@ -121,6 +137,8 @@ public class AccountSyncActivity extends ManagedActivity implements View.OnClick
         super.onResume();
         checkAccount();
         updateSyncSwitchButton();
+        updateTitle();
+        getSyncStatus();
     }
 
     @Override
@@ -139,6 +157,9 @@ public class AccountSyncActivity extends ManagedActivity implements View.OnClick
                     }
                 } else
                     Toast.makeText(this, R.string.toast_no_internet, Toast.LENGTH_LONG).show();
+                break;
+            case R.id.ivStatus:
+                getSyncStatus();
                 break;
         }
     }
@@ -241,5 +262,104 @@ public class AccountSyncActivity extends ManagedActivity implements View.OnClick
         Dialog dialog = builder.create();
         dialog.show();
         dialogShowed = false;
+    }
+
+    private void updateTitle() {
+        syncStatusView.setBackgroundColor(barPainter.getAccountPainter().getAccountMainColor(accountItem.getAccount()));
+        barPainter.updateWithAccountName(accountItem.getAccount());
+        tvJid.setText(accountItem.getAccount().getFullJid().asBareJid().toString());
+    }
+
+    private void getSyncStatus() {
+        if (!XabberAccountManager.getInstance().isAccountSynchronize(jid) || !NetworkManager.isNetworkAvailable()) {
+            setSyncStatus(XMPPAccountSettings.SyncStatus.local);
+            return;
+        }
+
+        ivStatus.setVisibility(View.INVISIBLE);
+        progressBar.setVisibility(View.VISIBLE);
+
+        Subscription getSettingsSubscription = AuthManager.getClientSettings()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<List<XMPPAccountSettings>>() {
+                    @Override
+                    public void call(List<XMPPAccountSettings> list) {
+                        handleSuccessGetSettings(list);
+                        ivStatus.setVisibility(View.VISIBLE);
+                        progressBar.setVisibility(View.INVISIBLE);
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        handleErrorGetSettings(throwable);
+                        ivStatus.setVisibility(View.VISIBLE);
+                        progressBar.setVisibility(View.INVISIBLE);
+                    }
+                });
+        compositeSubscription.add(getSettingsSubscription);
+    }
+
+    private void handleSuccessGetSettings(List<XMPPAccountSettings> list) {
+        XMPPAccountSettings.SyncStatus status = XMPPAccountSettings.SyncStatus.local;
+
+        for (XMPPAccountSettings item : list) {
+            if (jid.equals(item.getJid())) {
+                if (item.getTimestamp() == accountItem.getTimestamp())
+                    status = XMPPAccountSettings.SyncStatus.localEqualsRemote;
+                else if (item.getTimestamp() > accountItem.getTimestamp())
+                    status = XMPPAccountSettings.SyncStatus.remoteNewer;
+                else {
+                    status = XMPPAccountSettings.SyncStatus.localNewer;
+                }
+                break;
+            }
+        }
+        setSyncStatus(status);
+    }
+
+    private void setSyncStatus(XMPPAccountSettings.SyncStatus status) {
+        switch (status) {
+            case local:
+                tvStatus.setText(R.string.sync_status_no);
+                ivStatus.setImageResource(R.drawable.ic_sync_disable);
+                break;
+            case remote:
+                tvStatus.setText(R.string.sync_status_no);
+                ivStatus.setImageResource(R.drawable.ic_sync_disable);
+                break;
+            case localNewer:
+                tvStatus.setText(R.string.sync_status_local);
+                ivStatus.setImageResource(R.drawable.ic_sync_upload);
+                break;
+            case remoteNewer:
+                tvStatus.setText(R.string.sync_status_remote);
+                ivStatus.setImageResource(R.drawable.ic_sync_download);
+                break;
+            case localEqualsRemote:
+                tvStatus.setText(R.string.sync_status_ok);
+                ivStatus.setImageResource(R.drawable.ic_sync_done);
+                break;
+            default:
+                tvStatus.setText(R.string.sync_status_no);
+                ivStatus.setImageResource(R.drawable.ic_sync_disable);
+                break;
+        }
+    }
+
+    private void handleErrorGetSettings(Throwable throwable) {
+        String message = RetrofitErrorConverter.throwableToHttpError(throwable);
+        if (message != null) {
+            if (message.equals("Invalid token")) {
+                XabberAccountManager.getInstance().onInvalidToken();
+                Toast.makeText(this, "Аккаунт был удален", Toast.LENGTH_LONG).show();
+            } else {
+                Log.d(LOG_TAG, "Error while synchronization: " + message);
+                Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            Log.d(LOG_TAG, "Error while synchronization: " + throwable.toString());
+            Toast.makeText(this, "Error while synchronization: " + throwable.toString(), Toast.LENGTH_LONG).show();
+        }
     }
 }

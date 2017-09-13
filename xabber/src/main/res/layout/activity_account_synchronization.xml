@@ -5,6 +5,83 @@
 
     <include layout="@layout/toolbar_default" />
 
+    <LinearLayout
+        android:id="@+id/syncStatusView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/black"
+        android:elevation="8dp"
+        android:paddingBottom="16dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <RelativeLayout
+                android:id="@+id/status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="16dp"
+                android:layout_gravity="center_vertical">
+
+                <ImageView
+                    android:id="@+id/ivStatus"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:src="@drawable/ic_sync_disable"
+                    android:tint="@color/white"
+                    android:paddingTop="4dp"
+                    />
+
+                <ProgressBar
+                    android:id="@+id/progressBar"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    style="?android:attr/progressBarStyle"
+                    android:indeterminate="true"
+                    android:indeterminateTintMode="src_in"
+                    android:indeterminateTint="@color/white"
+                    android:visibility="gone"
+                    />
+
+            </RelativeLayout>
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/status"
+                android:layout_gravity="center_vertical">
+
+                <TextView
+                    android:id="@+id/tvJid"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:lines="1"
+                    android:textColor="@color/primary_text_default_material_dark"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:text="Jid"
+                    />
+
+                <TextView
+                    android:id="@+id/tvStatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:lines="1"
+                    android:textColor="@color/grey_200"
+                    android:text="Synchronization status"
+                    />
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
     <RelativeLayout
         android:id="@+id/rlSyncSwitch"
         android:layout_width="match_parent"

@@ -127,4 +127,10 @@
 
     <string name="delete_settings_button">Delete settings</string>
     <string name="account_sync_enable_summary">Enable synchronization with Xabber Account</string>
+
+    <string name="sync_status_no">Not synchronized</string>
+    <string name="sync_status_local">Local settings have changes</string>
+    <string name="sync_status_remote">Remote settings have changes</string>
+    <string name="sync_status_ok">Synchronized</string>
+
 </resources>
