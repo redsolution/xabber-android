@@ -32,7 +32,7 @@ public class TutorialActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.tutorial_activity);
+        setContentView(R.layout.activity_tutorial);
 
         overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
 
