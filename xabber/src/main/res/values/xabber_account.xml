@@ -134,4 +134,14 @@
     <string name="sync_status_ok">Synchronized</string>
     <string name="sync_status_deleted">Remote settings was deleted</string>
 
+    <string name="tutorial_title_1">A better way to chat</string>
+    <string name="tutorial_title_2">Introducing Xabber Account</string>
+    <string name="tutorial_title_3">Perfectly in Sync</string>
+    <string name="tutorial_title_4">Social Login</string>
+
+    <string name="tutorial_description_1">Get free XMPP account from creators of Xabber, with guaranteed support of all latest features and extensions.</string>
+    <string name="tutorial_description_2">Create an account to manage our services and enhance XMPP experience on all supported platforms</string>
+    <string name="tutorial_description_3">Xabber account lets you easily sync your accounts and their settings between devices and platforms.</string>
+    <string name="tutorial_description_4">Use social authentification to quickly login to Xabber and instantly connect all your accounts on new device.</string>
+
 </resources>

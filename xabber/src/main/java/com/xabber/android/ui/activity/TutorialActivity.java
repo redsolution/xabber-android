@@ -2,61 +2,58 @@ package com.xabber.android.ui.activity;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
+import android.support.v13.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.view.WindowManager;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
+import android.widget.Button;
 
-import com.bumptech.glide.Glide;
-import com.github.paolorotolo.appintro.AppIntroBase;
-import com.github.paolorotolo.appintro.AppIntroFragment;
 import com.xabber.android.R;
+import com.xabber.android.ui.adapter.TutorialAdapter;
+
+import me.relex.circleindicator.CircleIndicator;
 
 /**
- * Created by valery.miller on 14.07.17.
+ * Created by valery.miller on 14.09.17.
  */
 
-public class TutorialActivity extends AppIntroBase {
+public class TutorialActivity extends AppCompatActivity {
 
-    private ImageButton imbDone;
-    private ImageButton imbNext;
-    private RelativeLayout rlLogin;
-    private RelativeLayout rlRegister;
+    private Button btnLogin;
+    private Button btnRegister;
 
     public static Intent createIntent(Context context) {
         return new Intent(context, TutorialActivity.class);
     }
 
     @Override
-    protected int getLayoutId() {
-        return R.layout.activity_tutorial;
-    }
-
-    @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setStatusBarTranslucent();
+        setContentView(R.layout.tutorial_activity);
+
         overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
 
-        ImageView backgroundImage = (ImageView) findViewById(R.id.intro_background_image);
+        ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
 
-        rlLogin = (RelativeLayout) findViewById(R.id.rlLogin);
-        rlLogin.setOnClickListener(new View.OnClickListener() {
+        FragmentPagerAdapter pagerAdapter = new TutorialAdapter(getFragmentManager());
+        viewPager.setAdapter(pagerAdapter);
+
+        CircleIndicator indicator = (CircleIndicator) findViewById(R.id.indicator);
+        indicator.setViewPager(viewPager);
+
+        btnLogin = (Button) findViewById(R.id.btnLogin);
+        btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startActivity(XabberLoginActivity.createIntent(TutorialActivity.this));
             }
         });
 
-        rlRegister = (RelativeLayout) findViewById(R.id.rlRegister);
-        rlRegister.setOnClickListener(new View.OnClickListener() {
+        btnRegister = (Button) findViewById(R.id.btnRegister);
+        btnRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = XabberAccountInfoActivity.createIntent(TutorialActivity.this);
@@ -64,68 +61,6 @@ public class TutorialActivity extends AppIntroBase {
                 startActivity(intent);
             }
         });
-
-        Glide.with(this)
-                .load(R.drawable.intro_background)
-                .centerCrop()
-                .into(backgroundImage);
-
-        addSlide(AppIntroFragment.newInstance(
-                "Lorem ipsum dolor sit amet",
-                "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi risus purus, lobortis at pulvinar eu, venenatis et erat.",
-                R.drawable.xabber_logo_large,
-                ContextCompat.getColor(this, R.color.transparent)
-        ));
-
-        addSlide(AppIntroFragment.newInstance(
-                "Consectetur adipiscing elit",
-                "Suspendisse efficitur consectetur leo eu malesuada. Ut lacinia nisl vel mattis faucibus.",
-                R.drawable.xabber_logo_large,
-                ContextCompat.getColor(this, R.color.transparent)
-        ));
-
-        addSlide(AppIntroFragment.newInstance(
-                "Morbi risus purus",
-                "Pellentesque ante tortor, ultrices nec ornare in, ultricies nec ipsum. Donec et vehicula sapien.",
-                R.drawable.xabber_logo_large,
-                ContextCompat.getColor(this, R.color.transparent)
-        ));
-
-        addSlide(AppIntroFragment.newInstance(
-                "Lobortis at pulvinar eu",
-                "Ut porttitor magna sit amet mi maximus, at cursus est luctus. Aliquam fermentum gravida neque, in ultrices dui pellentesque vitae.",
-                R.drawable.xabber_logo_large,
-                ContextCompat.getColor(this, R.color.transparent)
-        ));
-
-        addSlide(AppIntroFragment.newInstance(
-                "Venenatis et erat",
-                "Nunc dictum velit eu lacus sodales, eget efficitur lectus iaculis. Cras nec leo magna.",
-                R.drawable.xabber_logo_large,
-                ContextCompat.getColor(this, R.color.transparent)
-        ));
-
-        showSkipButton(false);
-        setIndicatorColor(ContextCompat.getColor(this, R.color.red_700), DEFAULT_COLOR);
-
-        imbDone = (ImageButton) findViewById(R.id.done);
-        imbNext = (ImageButton) findViewById(R.id.next);
-        imbDone.setVisibility(View.GONE);
-        imbNext.setVisibility(View.GONE);
-    }
-
-    @Override
-    public void onSlideChanged(@Nullable Fragment oldFragment, @Nullable Fragment newFragment) {
-        super.onSlideChanged(oldFragment, newFragment);
-        imbDone.setVisibility(View.GONE);
-        imbNext.setVisibility(View.GONE);
-    }
-
-    void setStatusBarTranslucent() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-        }
     }
 
     @Override

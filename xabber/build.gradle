@@ -152,7 +152,7 @@ dependencies {
     compile 'com.google.android.gms:play-services-auth:9.0.0'
     compile 'com.google.api-client:google-api-client-android:1.22.0'
 
-    compile 'com.github.apl-devs:appintro:v4.2.0'
+    compile 'me.relex:circleindicator:1.2.2@aar'
     compile 'com.github.bumptech.glide:glide:3.7.0'
     compile 'com.squareup.okhttp3:okhttp:3.5.0'
     compile 'org.greenrobot:eventbus:3.0.0'
