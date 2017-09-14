@@ -138,7 +138,7 @@ public class XMPPAccountAdapter extends RecyclerView.Adapter {
         } else {
             viewHolder.jid.setText("sync disabled");
             viewHolder.avatar.setImageResource(R.drawable.ic_sync_disable);
-            viewHolder.username.setTextColor(context.getResources().getColor(R.color.grey_800));
+            viewHolder.username.setTextColor(context.getResources().getColor(R.color.black_text));
         }
 
         // set sync checkbox

@@ -45,7 +45,7 @@
             android:ellipsize="marquee"
             android:lines="1"
             android:text="Username"
-            android:textColor="@color/grey_800"
+            android:textColor="@color/black_text"
             android:textSize="18sp" />
 
         <TextView
