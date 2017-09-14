@@ -236,6 +236,8 @@
 
     <color name="transparent">#00FFFFFF</color>
 
+    <color name="intro_background">#FFFAFAFA</color>
+
     <color name="account_register_blue">#FF2196F3</color>
     <color name="account_register_blue_dark">#1565c0</color>
 
