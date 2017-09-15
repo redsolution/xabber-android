@@ -73,6 +73,15 @@
   <string name="account_color_name_teal">Изумрудный</string>
   <string name="account_color_name_blue_grey">Серо-голубой</string>
   <string name="account_color_name_cyan">Циан</string>
+  <string name="account_color_name_deep_purple">Темно-пурпурный</string>
+  <string name="account_color_name_lime">Лайм</string>
+  <string name="account_color_name_pink">Розовый</string>
+  <string name="account_color_name_purple">Пурпурный</string>
+  <string name="account_color_name_light_blue">Светло-синий</string>
+  <string name="account_color_name_light_green">Светло-зеленый</string>
+  <string name="account_color_name_amber">Янтарный</string>
+  <string name="account_color_name_deep_orange">Темно-оранжевый</string>
+  <string name="account_color_name_brown">Коричневый</string>
   <string name="account_connection_settings">Параметры подключения</string>
   <string name="blocked_contacts">Заблокированные контакты</string>
   <string name="blocked_contacts_unknown">Поддержка блокировки контактов ещё не определена.</string>

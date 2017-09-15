@@ -197,6 +197,15 @@ public class ColorManager {
         colors.put("blue-grey", R.color.blue_grey_500);
         colors.put("cyan", R.color.cyan_500);
         colors.put("teal", R.color.teal_500);
+        colors.put("purple", R.color.purple_500);
+        colors.put("deep-purple", R.color.dark_purple_500);
+        colors.put("lime", R.color.lime_500);
+        colors.put("pink", R.color.pink_500);
+        colors.put("light-blue", R.color.light_blue_500);
+        colors.put("light-green", R.color.light_green_500);
+        colors.put("deep-orange", R.color.deep_orange_500);
+        colors.put("brown", R.color.brown_500);
+        colors.put("amber", R.color.amber_500);
 
         Integer colorId = colors.get(colorName);
         if (colorId != null)
@@ -214,6 +223,15 @@ public class ColorManager {
         colors.put("blue-grey", 5);
         colors.put("cyan", 6);
         colors.put("teal", 7);
+        colors.put("purple", 8);
+        colors.put("deep-purple", 9);
+        colors.put("lime", 10);
+        colors.put("pink", 11);
+        colors.put("light-blue", 12);
+        colors.put("light-green", 13);
+        colors.put("deep-orange", 14);
+        colors.put("brown", 15);
+        colors.put("amber", 16);
 
         Integer colorId = colors.get(colorName);
         if (colorId != null) return colorId;
@@ -230,6 +248,15 @@ public class ColorManager {
         colors.put(5, "blue-grey");
         colors.put(6, "cyan");
         colors.put(7, "teal");
+        colors.put(8, "purple");
+        colors.put(9, "deep-purple");
+        colors.put(10, "lime");
+        colors.put(11, "pink");
+        colors.put(12, "light-blue");
+        colors.put(13, "light-green");
+        colors.put(14, "deep-orange");
+        colors.put(15, "brown");
+        colors.put(16, "amber");
 
         String colorName = colors.get(colorIndex);
         if (colorName != null) return colorName;
