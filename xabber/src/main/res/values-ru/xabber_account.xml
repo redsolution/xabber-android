@@ -22,6 +22,7 @@
     <string name="resend_success">Письмо с подтверждением отправлено повторно</string>
     <string name="resend_fail">Не удалось отправить письмо с подтверждением</string>
     <string name="social_auth_fail">Не удалось авторизоваться с помощью соц. сети</string>
+    <string name="settings_delete_success">Настройки удалены</string>
 
     <string name="toast_email_already_confirm">Email уже подтвержден</string>
     <string name="toast_not_authorized">Вы не авторизованы</string>
@@ -35,6 +36,7 @@
     <string name="progress_title_confirm">Подтверждение email..</string>
     <string name="progress_title_complete">Завершение регистрации..</string>
     <string name="progress_title_resend">Повторная отправка email..</string>
+    <string name="progress_title_delete_settings">Удаление настроек..</string>
 
     <string name="label_username">Имя пользователя*</string>
     <string name="hint_username">Укажите имя пользователя</string>
@@ -97,7 +99,10 @@
     <string name="register_not_completed">Регистрация не завершена</string>
     <string name="sync_with_xabber_account">Синхронизировать с учетной записью Xabber</string>
     <string name="delete_cynced_accounts">Удалить синхронизированные учетные записи XMPP ?</string>
+    <string name="delete_cynced_account">Удалить XMPP-аккаунт связанный с этими настройками?</string>
+    <string name="delete_settings">Удалить облачные настройки связанные с этим аккаунтом?</string>
     <string name="logout_summary">Вы выйдите из учетной записи Xabber</string>
+    <string name="delete_settings_summary">Облачные настройки для этого аккаунта будут удалены из Xabber Account</string>
 
     <string name="sign_up_email_social">Зарегистрироваться с помощью социальной сети или email</string>
     <string name="signed_up_email">Регистрация через Email</string>
@@ -109,4 +114,30 @@
     <string name="username">%1$s\@xabber.org</string>
 
     <string name="reorder_summary">Чтобы синхронизировать порядок аккаунтов на всех своих устройствах - используйте синхронизацию в Xabber Account</string>
+
+    <string name="cancel_register_dialog_title">Отмена регистрации</string>
+    <string name="cancel_register_progress">Отмена регистрации..</string>
+    <string name="cancel_register_dialog_message">Хотите прервать регистрацию?</string>
+    <string name="cancel_register_dialog_pos_button">Прервать</string>
+
+    <string name="delete_settings_button">Удалить настройки</string>
+    <string name="account_sync_enable_summary">Включить синхронизацию с Xabber Account</string>
+
+    <string name="sync_status_no">Не синхронизирован</string>
+    <string name="sync_status_local">Локальные настройки изменены</string>
+    <string name="sync_status_remote">Облачные настройки изменены</string>
+    <string name="sync_status_ok">Синхронизирован</string>
+    <string name="sync_status_deleted">Облачные настройки удалены</string>
+
+    <string name="tutorial_title_1">A better way to chat</string>
+    <string name="tutorial_title_2">Introducing Xabber Account</string>
+    <string name="tutorial_title_3">Perfectly in Sync</string>
+    <string name="tutorial_title_4">Social Login</string>
+
+    <string name="tutorial_description_1">Get free XMPP account from creators of Xabber, with guaranteed support of all latest features and extensions.</string>
+    <string name="tutorial_description_2">Create an account to manage our services and enhance XMPP experience on all supported platforms</string>
+    <string name="tutorial_description_3">Xabber account lets you easily sync your accounts and their settings between devices and platforms.</string>
+    <string name="tutorial_description_4">Use social authentification to quickly login to Xabber and instantly connect all your accounts on new device.</string>
+
+    <string name="account_deleted">Используемый Вами Xabber Account был удалён</string>
 </resources>
