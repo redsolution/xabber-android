@@ -31,6 +31,7 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.data.xaccount.AuthManager;
 import com.xabber.android.data.xaccount.XMPPAccountSettings;
+import com.xabber.android.data.xaccount.XabberAccount;
 import com.xabber.android.data.xaccount.XabberAccountManager;
 import com.xabber.android.ui.color.BarPainter;
 import com.xabber.android.utils.RetrofitErrorConverter;
@@ -147,6 +148,9 @@ public class AccountSyncActivity extends ManagedActivity implements View.OnClick
             case R.id.rlSyncSwitch:
                 SettingsManager.setSyncAllAccounts(false);
                 XabberAccountManager.getInstance().addAccountSyncState(jid, !switchSync.isChecked());
+                if (!switchSync.isChecked()) {
+                    updateAccountSettings();
+                }
                 updateSyncSwitchButton();
                 break;
             case R.id.btnDeleteSettings:
@@ -375,5 +379,47 @@ public class AccountSyncActivity extends ManagedActivity implements View.OnClick
             Log.d(LOG_TAG, "Error while synchronization: " + throwable.toString());
             Toast.makeText(this, "Error while synchronization: " + throwable.toString(), Toast.LENGTH_LONG).show();
         }
+    }
+
+    public void updateAccountSettings() {
+        showProgress(getResources().getString(R.string.progress_title_sync));
+        Subscription updateSettingsSubscription =
+                AuthManager.patchClientSettings(XabberAccountManager.getInstance().createSettingsList())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<List<XMPPAccountSettings>>() {
+                    @Override
+                    public void call(List<XMPPAccountSettings> s) {
+                        handleSuccessUpdateSettings();
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        handleErrorUpdateSettings(throwable);
+                    }
+                });
+        compositeSubscription.add(updateSettingsSubscription);
+    }
+
+    public void handleSuccessUpdateSettings() {
+        Log.d(LOG_TAG, "XMPP accounts loading from net: successfully");
+        hideProgress();
+        Toast.makeText(this, R.string.sync_success, Toast.LENGTH_SHORT).show();
+        getSyncStatus();
+    }
+
+    public void handleErrorUpdateSettings(Throwable throwable) {
+        Log.d(LOG_TAG, "XMPP accounts loading from net: error: " + throwable.toString());
+
+        // invalid token
+        String message = RetrofitErrorConverter.throwableToHttpError(throwable);
+        if (message != null && message.equals("Invalid token")) {
+            // logout from deleted account
+            XabberAccountManager.getInstance().onInvalidToken();
+        }
+
+        hideProgress();
+        Toast.makeText(this, R.string.sync_fail, Toast.LENGTH_SHORT).show();
+        getSyncStatus();
     }
 }
