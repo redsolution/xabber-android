@@ -24,13 +24,13 @@ public class TutorialAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int position) {
         switch (position) {
             case 0:
-                return TutorialFragment.newInstance(R.string.tutorial_title_1, R.string.tutorial_description_1, R.drawable.art);
+                return TutorialFragment.newInstance(R.string.tutorial_title_1, R.string.tutorial_description_1, R.drawable.art_tutorial_1);
             case 1:
-                return TutorialFragment.newInstance(R.string.tutorial_title_2, R.string.tutorial_description_2, R.drawable.art);
+                return TutorialFragment.newInstance(R.string.tutorial_title_2, R.string.tutorial_description_2, R.drawable.art_tutorial_1);
             case 2:
-                return TutorialFragment.newInstance(R.string.tutorial_title_3, R.string.tutorial_description_3, R.drawable.art);
+                return TutorialFragment.newInstance(R.string.tutorial_title_3, R.string.tutorial_description_3, R.drawable.art_tutorial_1);
             case 3:
-                return TutorialFragment.newInstance(R.string.tutorial_title_4, R.string.tutorial_description_4, R.drawable.art);
+                return TutorialFragment.newInstance(R.string.tutorial_title_4, R.string.tutorial_description_4, R.drawable.art_tutorial_4);
             default:
                 return null;
         }
