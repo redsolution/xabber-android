@@ -107,28 +107,28 @@ public class XMPPAccountAdapter extends RecyclerView.Adapter {
             if (account.getStatus() != null) {
                 switch (account.getStatus()) {
                     case local:
-                        viewHolder.jid.setText("local");
+                        viewHolder.jid.setText(R.string.sync_status_local);
                         viewHolder.avatar.setImageResource(R.drawable.ic_sync_upload);
                         break;
                     case remote:
-                        viewHolder.jid.setText("remote");
+                        viewHolder.jid.setText(R.string.sync_status_remote);
                         viewHolder.avatar.setImageResource(R.drawable.ic_sync_download);
                         break;
                     case localNewer:
-                        viewHolder.jid.setText("local > remote");
+                        viewHolder.jid.setText(R.string.sync_status_local);
                         viewHolder.avatar.setImageResource(R.drawable.ic_sync_upload);
                         break;
                     case remoteNewer:
                         if (account.isDeleted()) {
-                            viewHolder.jid.setText("remote account deleted");
+                            viewHolder.jid.setText(R.string.sync_status_deleted);
                             viewHolder.avatar.setImageResource(R.drawable.ic_delete_grey);
                         } else {
-                            viewHolder.jid.setText("local < remote");
+                            viewHolder.jid.setText(R.string.sync_status_remote);
                             viewHolder.avatar.setImageResource(R.drawable.ic_sync_download);
                         }
                         break;
                     case localEqualsRemote:
-                        viewHolder.jid.setText("local = remote");
+                        viewHolder.jid.setText(R.string.sync_status_ok);
                         viewHolder.avatar.setImageResource(R.drawable.ic_sync_done);
                         break;
                     default:
@@ -136,7 +136,7 @@ public class XMPPAccountAdapter extends RecyclerView.Adapter {
                 }
             }
         } else {
-            viewHolder.jid.setText("sync disabled");
+            viewHolder.jid.setText(R.string.sync_status_no);
             viewHolder.avatar.setImageResource(R.drawable.ic_sync_disable);
             viewHolder.username.setTextColor(context.getResources().getColor(R.color.black_text));
         }
