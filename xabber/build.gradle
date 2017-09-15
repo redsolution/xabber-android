@@ -125,10 +125,10 @@ dependencies {
     compile project('MemorizingTrustManager')
     compile project('emojicon')
 
-    compile 'com.github.str4tocaster.smack:smack-android-extensions:400be8f'
-    compile 'com.github.str4tocaster.smack:smack-experimental:400be8f'
-    compile 'com.github.str4tocaster.smack:smack-tcp:400be8f'
-    compile 'com.github.str4tocaster.smack:smack-resolver-dnsjava:400be8f'
+    compile 'com.github.str4tocaster.smack:smack-android-extensions:ffb99cc'
+    compile 'com.github.str4tocaster.smack:smack-experimental:ffb99cc'
+    compile 'com.github.str4tocaster.smack:smack-tcp:ffb99cc'
+    compile 'com.github.str4tocaster.smack:smack-resolver-dnsjava:ffb99cc'
 
     compile "com.android.support:design:$supportVersion"
     compile "com.android.support:support-v13:$supportVersion"
@@ -150,7 +150,9 @@ dependencies {
     compile 'com.facebook.android:facebook-android-sdk:4.23.0'
     compile 'com.twitter.sdk.android:twitter:3.0.0'
     compile 'com.google.android.gms:play-services-auth:9.0.0'
-    compile 'com.google.api-client:google-api-client-android:1.22.0'
+    compile ('com.google.api-client:google-api-client-android:1.22.0') {
+        exclude module: 'httpclient'
+    }
 
     compile 'me.relex:circleindicator:1.2.2@aar'
     compile 'com.github.bumptech.glide:glide:3.7.0'
