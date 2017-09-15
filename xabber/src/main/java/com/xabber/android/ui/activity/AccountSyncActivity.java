@@ -36,6 +36,8 @@ import com.xabber.android.data.xaccount.XabberAccountManager;
 import com.xabber.android.ui.color.BarPainter;
 import com.xabber.android.utils.RetrofitErrorConverter;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.util.List;
 
 import rx.Subscription;
@@ -421,5 +423,20 @@ public class AccountSyncActivity extends ManagedActivity implements View.OnClick
         hideProgress();
         Toast.makeText(this, R.string.sync_fail, Toast.LENGTH_SHORT).show();
         getSyncStatus();
+    }
+
+    @Override
+    public void showAlert(String message) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(message)
+                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        EventBus.getDefault().removeStickyEvent(XabberAccountManager.XabberAccountDeletedEvent.class);
+                        checkAccount();
+                    }
+                });
+        Dialog dialog = builder.create();
+        dialog.show();
     }
 }

@@ -144,4 +144,6 @@
     <string name="tutorial_description_3">Xabber account lets you easily sync your accounts and their settings between devices and platforms.</string>
     <string name="tutorial_description_4">Use social authentification to quickly login to Xabber and instantly connect all your accounts on new device.</string>
 
+    <string name="account_deleted">Xabber Account was deleted</string>
+
 </resources>

@@ -1,5 +1,6 @@
 package com.xabber.android.data.xaccount;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -17,8 +18,11 @@ import com.xabber.android.data.database.realm.SyncStateRealm;
 import com.xabber.android.data.database.realm.XMPPUserRealm;
 import com.xabber.android.data.database.realm.XabberAccountRealm;
 import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.ui.activity.ManagedActivity;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.utils.RetrofitErrorConverter;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -474,6 +478,7 @@ public class XabberAccountManager implements OnLoadListener {
     }
 
     public void onInvalidToken() {
+        EventBus.getDefault().postSticky(new XabberAccountDeletedEvent());
         Application.getInstance().runInBackground(new Runnable() {
             @Override
             public void run() {
@@ -484,6 +489,8 @@ public class XabberAccountManager implements OnLoadListener {
             }
         });
     }
+
+    public static class XabberAccountDeletedEvent {}
 
     public Single<List<XMPPAccountSettings>> clientSettingsDTOListToPOJO(AuthManager.ListClientSettingsDTO list) {
         List<XMPPAccountSettings> result = new ArrayList<>();
