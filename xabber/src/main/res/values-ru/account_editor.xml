@@ -108,4 +108,7 @@
   <string name="account_clear_history_on_exit_summary">Удалять все сообщения с устройства перед выходом из Xabber.</string>
   <string name="account_bookmarks">Закладки</string>
   <string name="account_bookmarks_summary">Список закладок для этого аккаунта</string>
+  <string name="account_sync">Синхронизация</string>
+  <string name="account_sync_summary">Синхронизация Xabber Account</string>
+  <string name="bookmark_not_supported">Сервер не поддерживает закладки.</string>
 </resources>

@@ -126,7 +126,7 @@ public class AccountSyncActivity extends ManagedActivity implements View.OnClick
 
         rlSyncSwitch.setOnClickListener(this);
         btnDeleteSettings.setOnClickListener(this);
-        ivStatus.setOnClickListener(this);
+        syncStatusView.setOnClickListener(this);
     }
 
     @Override
@@ -164,7 +164,7 @@ public class AccountSyncActivity extends ManagedActivity implements View.OnClick
                 } else
                     Toast.makeText(this, R.string.toast_no_internet, Toast.LENGTH_LONG).show();
                 break;
-            case R.id.ivStatus:
+            case R.id.syncStatusView:
                 getSyncStatus();
                 break;
         }
@@ -269,7 +269,6 @@ public class AccountSyncActivity extends ManagedActivity implements View.OnClick
     }
 
     private void updateTitle() {
-        syncStatusView.setBackgroundColor(barPainter.getAccountPainter().getAccountMainColor(accountItem.getAccount()));
         barPainter.updateWithAccountName(accountItem.getAccount());
         tvJid.setText(accountItem.getAccount().getFullJid().asBareJid().toString());
     }

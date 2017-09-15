@@ -121,7 +121,7 @@
     <string name="cancel_register_dialog_pos_button">Прервать</string>
 
     <string name="delete_settings_button">Удалить настройки</string>
-    <string name="account_sync_enable_summary">Включить синхронизацию с Xabber Account</string>
+    <string name="account_sync_enable_summary">Включить синхронизацию</string>
 
     <string name="sync_status_no">Не синхронизирован</string>
     <string name="sync_status_local">Локальные настройки изменены</string>
