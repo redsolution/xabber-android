@@ -10,6 +10,7 @@
     <string name="signup">РЕГИСТРАЦИЯ</string>
     <string name="forgot_pass">ЗАБЫЛИ ПАРОЛЬ?</string>
     <string name="agrees">Я согласен получать периодические обновления от команды Xabber. Мы обещаем не беспокоить вас слишком часто.</string>
+    <string name="create_xabber_org">Создать учетную запись XMPP на сервере Xabber.org?</string>
 
     <string name="sync_success">Синхронизация завершена</string>
     <string name="sync_fail">Синхронизация не удалась</string>
