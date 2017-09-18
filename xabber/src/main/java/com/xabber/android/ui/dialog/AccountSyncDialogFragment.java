@@ -98,6 +98,7 @@ public class AccountSyncDialogFragment extends DialogFragment {
                     adapter.setAllChecked(b);
             }
         });
+        if (AccountManager.getInstance().haveNotAllowedSyncAccounts()) switchSyncAll.setEnabled(false);
 
         setXmppAccounts(XabberAccountManager.getInstance().getXmppAccountsForSync());
 
@@ -126,6 +127,7 @@ public class AccountSyncDialogFragment extends DialogFragment {
             newAccount.setOrder(account.getOrder());
             newAccount.setStatus(account.getStatus());
             newAccount.setDeleted(account.isDeleted());
+            newAccount.setSyncNotAllowed(account.isSyncNotAllowed());
 
             this.xmppAccounts.add(newAccount);
         }

@@ -634,6 +634,7 @@ public class XabberAccountManager implements OnLoadListener {
                         status = XMPPAccountSettings.SyncStatus.localNewer;
                         remoteItem.setTimestamp(localItem.getTimestamp());
                     }
+                    remoteItem.setSyncNotAllowed(localItem.isSyncNotAllowed());
                 }
 
                 remoteItem.setStatus(status);
@@ -665,6 +666,7 @@ public class XabberAccountManager implements OnLoadListener {
                 localItem.setColor(ColorManager.getInstance().convertIndexToColorName(localAccount.getColorIndex()));
                 localItem.setStatus(XMPPAccountSettings.SyncStatus.local);
                 localItem.setSynchronization(isAccountSynchronize(localItem.getJid()));
+                localItem.setSyncNotAllowed(localAccount.isSyncNotAllowed());
                 resultList.add(localItem);
             }
         }

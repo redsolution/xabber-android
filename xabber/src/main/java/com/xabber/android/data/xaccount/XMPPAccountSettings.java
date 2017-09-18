@@ -17,6 +17,7 @@ public class XMPPAccountSettings implements Comparable<XMPPAccountSettings> {
     private int order;
     private String color;
     private String token;
+    private boolean syncNotAllowed;
 
     private boolean deleted;
 
@@ -98,6 +99,14 @@ public class XMPPAccountSettings implements Comparable<XMPPAccountSettings> {
 
     public void setDeleted(boolean deleted) {
         this.deleted = deleted;
+    }
+
+    public boolean isSyncNotAllowed() {
+        return syncNotAllowed;
+    }
+
+    public void setSyncNotAllowed(boolean syncNotAllowed) {
+        this.syncNotAllowed = syncNotAllowed;
     }
 
     @Override

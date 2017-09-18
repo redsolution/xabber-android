@@ -129,6 +129,7 @@
     <string name="sync_status_remote">Облачные настройки изменены</string>
     <string name="sync_status_ok">Синхронизирован</string>
     <string name="sync_status_deleted">Облачные настройки удалены</string>
+    <string name="sync_status_not_allowed">Синхронизация не доступна</string>
 
     <string name="tutorial_title_1">A better way to chat</string>
     <string name="tutorial_title_2">Introducing Xabber Account</string>

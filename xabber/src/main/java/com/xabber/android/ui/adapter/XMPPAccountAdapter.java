@@ -138,11 +138,14 @@ public class XMPPAccountAdapter extends RecyclerView.Adapter {
         } else {
             viewHolder.jid.setText(R.string.sync_status_no);
             viewHolder.avatar.setImageResource(R.drawable.ic_sync_disable);
-            viewHolder.username.setTextColor(context.getResources().getColor(R.color.black_text));
+            viewHolder.username.setTextColor(context.getResources().getColor(R.color.grey_500));
         }
 
         // set sync checkbox
-        if (isAllChecked) {
+        if (account.isSyncNotAllowed()) {
+            viewHolder.jid.setText(R.string.sync_status_not_allowed);
+            viewHolder.chkAccountSync.setEnabled(false);
+        } else if (isAllChecked) {
             viewHolder.chkAccountSync.setEnabled(false);
             viewHolder.chkAccountSync.setChecked(true);
         } else {
