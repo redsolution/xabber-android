@@ -175,7 +175,7 @@ public class AccountSyncActivity extends ManagedActivity implements View.OnClick
                 || SettingsManager.isSyncAllAccounts());
     }
 
-    private void deleteAccountSettings(boolean deleteAccount) {
+    private void deleteAccountSettings(final boolean deleteAccount) {
         showProgress(getResources().getString(R.string.progress_title_delete_settings));
 
         if (XabberAccountManager.getInstance().getAccountSyncState(jid) != null && !deleteAccount) {
@@ -189,7 +189,7 @@ public class AccountSyncActivity extends ManagedActivity implements View.OnClick
                 .subscribe(new Action1<List<XMPPAccountSettings>>() {
                     @Override
                     public void call(List<XMPPAccountSettings> settings) {
-                        handleSuccessDelete(settings);
+                        handleSuccessDelete(settings, deleteAccount);
                     }
                 }, new Action1<Throwable>() {
                     @Override
@@ -200,7 +200,8 @@ public class AccountSyncActivity extends ManagedActivity implements View.OnClick
         compositeSubscription.add(deleteSubscription);
     }
 
-    private void handleSuccessDelete(List<XMPPAccountSettings> settings) {
+    private void handleSuccessDelete(List<XMPPAccountSettings> settings, boolean deleteAccount) {
+        if (!deleteAccount) accountItem.setTimestamp(XabberAccountManager.getInstance().getCurrentTime());
         hideProgress();
         Toast.makeText(this, R.string.settings_delete_success, Toast.LENGTH_SHORT).show();
         getSyncStatus();
