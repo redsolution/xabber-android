@@ -751,6 +751,7 @@ public class SettingsManager implements OnInitializedListener,
     }
 
     public static boolean isSyncAllAccounts() {
+        if (AccountManager.getInstance().haveNotAllowedSyncAccounts()) return false;
         return getBoolean(R.string.sync_all_key, true);
     }
 

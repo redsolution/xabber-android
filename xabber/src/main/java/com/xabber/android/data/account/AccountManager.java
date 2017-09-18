@@ -22,6 +22,7 @@ import android.text.TextUtils;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.OnUnloadListener;
+import com.xabber.android.data.connection.ConnectionSettings;
 import com.xabber.android.data.database.MessageDatabaseManager;
 import com.xabber.android.data.database.RealmManager;
 import com.xabber.android.data.database.realm.AccountRealm;
@@ -601,6 +602,22 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
                     proxyPassword, syncable, keyPair, lastSync, archiveMode, false);
         }
         onAccountChanged(result.getAccount());
+
+        // disable sync for account if it use not default settings
+        ConnectionSettings connectionSettings = result.getConnectionSettings();
+        if (connectionSettings.isCustomHostAndPort()
+                || connectionSettings.getProxyType() != ProxyType.none
+                || connectionSettings.getTlsMode() == TLSMode.legacy) {
+
+            result.setSyncNotAllowed(true);
+        } else result.setSyncNotAllowed(false);
+    }
+
+    public boolean haveNotAllowedSyncAccounts() {
+        for (AccountItem account : accountItems.values()) {
+            if (account.isSyncNotAllowed()) return true;
+        }
+        return false;
     }
 
     public void setKeyPair(AccountJid account, KeyPair keyPair) {

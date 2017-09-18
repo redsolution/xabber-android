@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.xabber.android.R;
+import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.xaccount.XabberAccountManager;
 
 public class AccountOptionsAdapter extends RecyclerView.Adapter<AccountOptionViewHolder>
@@ -14,14 +15,16 @@ public class AccountOptionsAdapter extends RecyclerView.Adapter<AccountOptionVie
 
     private final AccountOption[] options;
     private final Listener listener;
+    private final AccountItem accountItem;
 
     public interface Listener {
         void onAccountOptionClick(AccountOption option);
     }
 
-    public AccountOptionsAdapter(AccountOption[] options, Listener listener) {
+    public AccountOptionsAdapter(AccountOption[] options, Listener listener, AccountItem accountItem) {
         this.options = options;
         this.listener = listener;
+        this.accountItem = accountItem;
     }
 
     @Override
@@ -46,7 +49,7 @@ public class AccountOptionsAdapter extends RecyclerView.Adapter<AccountOptionVie
             holder.separator.setVisibility(View.VISIBLE);
         }
 
-        if (XabberAccountManager.getInstance().getAccount() == null && position == 1) {
+        if ((XabberAccountManager.getInstance().getAccount() == null || accountItem.isSyncNotAllowed()) && position == 1) {
             holder.title.setEnabled(false);
             holder.icon.setImageResource(R.drawable.ic_sync_lightgrey);
             holder.description.setEnabled(false);

@@ -322,7 +322,6 @@
             android:id="@+id/chbAgrees"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/edtEmail"
             android:padding="8dp"
             android:text="@string/create_xabber_org"
             android:textColor="@color/black_text_secondary"

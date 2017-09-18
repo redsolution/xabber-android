@@ -1,6 +1,5 @@
 package com.xabber.android.data.xaccount;
 
-import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -18,7 +17,6 @@ import com.xabber.android.data.database.realm.SyncStateRealm;
 import com.xabber.android.data.database.realm.XMPPUserRealm;
 import com.xabber.android.data.database.realm.XabberAccountRealm;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.ui.activity.ManagedActivity;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.utils.RetrofitErrorConverter;
 
@@ -114,7 +112,14 @@ public class XabberAccountManager implements OnLoadListener {
     }
 
     public boolean isAccountSynchronize(String jid) {
-        if (accountsSyncState.containsKey(jid))
+        boolean syncNotAllowed = false;
+        AccountJid accountJid = getExistingAccount(jid);
+        if (accountJid != null) {
+            AccountItem accountItem = AccountManager.getInstance().getAccount(accountJid);
+            if (accountItem != null) syncNotAllowed = accountItem.isSyncNotAllowed();
+        }
+
+        if (accountsSyncState.containsKey(jid) && !syncNotAllowed)
             return accountsSyncState.get(jid);
         else return false;
     }

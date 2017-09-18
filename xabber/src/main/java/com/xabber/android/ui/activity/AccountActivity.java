@@ -146,7 +146,7 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.account_options_recycler_view);
 
 
-        accountOptionsAdapter = new AccountOptionsAdapter(AccountOption.values(), this);
+        accountOptionsAdapter = new AccountOptionsAdapter(AccountOption.values(), this, accountItem);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(accountOptionsAdapter);
@@ -262,7 +262,7 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
                 startActivity(BookmarksActivity.createIntent(this, account));
                 break;
             case SYNCHRONIZATION:
-                if (XabberAccountManager.getInstance().getAccount() != null)
+                if (XabberAccountManager.getInstance().getAccount() != null || accountItem.isSyncNotAllowed())
                     startActivity(AccountSyncActivity.createIntent(this, account));
                 break;
         }

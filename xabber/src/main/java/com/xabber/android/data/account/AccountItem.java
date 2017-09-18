@@ -54,6 +54,7 @@ public class AccountItem extends ConnectionItem implements Comparable<AccountIte
     private int colorIndex;
     private int order;
     private int timestamp;
+    private boolean syncNotAllowed;
 
     /**
      * Whether account is enabled.
@@ -172,6 +173,14 @@ public class AccountItem extends ConnectionItem implements Comparable<AccountIte
 
     public void setOrder(int order) {
         this.order = order;
+    }
+
+    public boolean isSyncNotAllowed() {
+        return syncNotAllowed;
+    }
+
+    public void setSyncNotAllowed(boolean syncNotAllowed) {
+        this.syncNotAllowed = syncNotAllowed;
     }
 
     /**
