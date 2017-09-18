@@ -96,7 +96,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:paddingBottom="8dp"
-        android:textAlignment="center"
+        android:gravity="center"
         android:textColor="@color/black_text_secondary"
         android:text="@string/summary_xabber_account_in_login"
         />

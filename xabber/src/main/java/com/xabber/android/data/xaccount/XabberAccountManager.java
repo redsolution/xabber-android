@@ -458,7 +458,7 @@ public class XabberAccountManager implements OnLoadListener {
                     for (XMPPAccountSettings account : xmppAccountsForCreate) {
                         updateLocalAccount(account);
                         try {
-                            Thread.sleep(50);
+                            Thread.sleep(100);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
