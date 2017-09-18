@@ -154,7 +154,8 @@ public class RealmManager {
                         if (oldVersion == 8) {
                             schema.get(AccountRealm.class.getSimpleName())
                                     .addField("order", Integer.class)
-                                    .addField("timestamp", Integer.class);
+                                    .addField("timestamp", Integer.class)
+                                    .addField("syncNotAllowed", boolean.class);
 
                             schema.create(SyncStateRealm.class.getSimpleName())
                                     .addField("id", String.class, FieldAttribute.PRIMARY_KEY, FieldAttribute.REQUIRED)

@@ -58,6 +58,7 @@ public class AccountRealm extends RealmObject {
     private int colorIndex;
     private int timestamp;
     private int order;
+    private boolean syncNotAllowed;
 
     private int priority;
     private String statusMode;
@@ -197,6 +198,14 @@ public class AccountRealm extends RealmObject {
 
     public void setOrder(int order) {
         this.order = order;
+    }
+
+    public boolean isSyncNotAllowed() {
+        return syncNotAllowed;
+    }
+
+    public void setSyncNotAllowed(boolean syncNotAllowed) {
+        this.syncNotAllowed = syncNotAllowed;
     }
 
     public int getPriority() {

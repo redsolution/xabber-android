@@ -114,7 +114,8 @@ public class AccountItem extends ConnectionItem implements Comparable<AccountIte
 
     public AccountItem(boolean custom, String host,
                        int port, DomainBareJid serverName, Localpart userName, Resourcepart resource,
-                       boolean storePassword, String password, String token, int colorIndex, int order, int timestamp,
+                       boolean storePassword, String password, String token, int colorIndex, int order,
+                       boolean syncNotAllowed, int timestamp,
                        int priority, StatusMode statusMode, String statusText,
                        boolean enabled, boolean saslEnabled, TLSMode tlsMode,
                        boolean compression, ProxyType proxyType, String proxyHost,
@@ -128,6 +129,7 @@ public class AccountItem extends ConnectionItem implements Comparable<AccountIte
         this.colorIndex = colorIndex;
         this.order = order;
         this.timestamp = timestamp;
+        this.syncNotAllowed = syncNotAllowed;
 
         this.enabled = enabled;
         this.priority = getValidPriority(priority);
