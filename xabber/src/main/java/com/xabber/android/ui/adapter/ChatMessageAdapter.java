@@ -257,7 +257,7 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
             incomingMessage.statusIcon.setVisibility(View.GONE);
         }
 
-        setUpMessageBalloonBackground(incomingMessage.messageBalloon,
+        setUpMessageBalloonBackgroundIncoming(incomingMessage.messageBalloon,
                 ColorManager.getInstance().getChatIncomingBalloonColorsStateList(account), R.drawable.message_incoming);
 
         setUpAvatar(messageItem, incomingMessage);
@@ -309,6 +309,32 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
             messageBalloon.getBackground().setLevel(AccountManager.getInstance().getColorLevel(account));
             messageBalloon.setPadding(pL, pT, pR, pB);
         }
+    }
+
+    private void setUpMessageBalloonBackgroundIncoming(View messageBalloon, ColorStateList darkColorStateList, int lightBackgroundId) {
+
+            final Drawable originalBackgroundDrawable = messageBalloon.getBackground();
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                originalBackgroundDrawable.setTintList(darkColorStateList);
+            } else {
+                Drawable wrapDrawable = DrawableCompat.wrap(originalBackgroundDrawable);
+                DrawableCompat.setTintList(wrapDrawable, darkColorStateList);
+
+                int pL = messageBalloon.getPaddingLeft();
+                int pT = messageBalloon.getPaddingTop();
+                int pR = messageBalloon.getPaddingRight();
+                int pB = messageBalloon.getPaddingBottom();
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                    messageBalloon.setBackground(wrapDrawable);
+                } else {
+                    messageBalloon.setBackgroundDrawable(wrapDrawable);
+                }
+
+                messageBalloon.setPadding(pL, pT, pR, pB);
+            }
+
     }
 
     @Override
