@@ -262,7 +262,7 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
                 startActivity(BookmarksActivity.createIntent(this, account));
                 break;
             case SYNCHRONIZATION:
-                if (XabberAccountManager.getInstance().getAccount() != null || accountItem.isSyncNotAllowed())
+                if (XabberAccountManager.getInstance().getAccount() != null && !accountItem.isSyncNotAllowed())
                     startActivity(AccountSyncActivity.createIntent(this, account));
                 break;
         }
