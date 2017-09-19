@@ -103,7 +103,7 @@ public class AccountAddFragment extends Fragment implements View.OnClickListener
                     storePasswordView.isChecked(),
                     chkSync.isChecked(),
                     useOrbotView.isChecked(),
-                    createAccountCheckBox.isChecked());
+                    createAccountCheckBox.isChecked(), true);
         } catch (NetworkException e) {
             Application.getInstance().onError(e);
             return;

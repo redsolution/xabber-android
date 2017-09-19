@@ -351,7 +351,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
      * @throws NetworkException if user or server part are invalid.
      */
     public AccountJid addAccount(String user, String password, String token, boolean syncable,
-                                 boolean storePassword, boolean xabberSync, boolean useOrbot, boolean registerNewAccount)
+                                 boolean storePassword, boolean xabberSync, boolean useOrbot, boolean registerNewAccount, boolean enabled)
             throws NetworkException {
         if (user == null) {
             throw new NetworkException(R.string.EMPTY_USER_NAME);
@@ -409,7 +409,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
         accountItem = addAccount(useCustomHost, host, port, serverName, userName,
                 storePassword, password, token, resource, getNextColorIndex(), getNextOrder(), false,
                 XabberAccountManager.getInstance().getCurrentTime(), 0, StatusMode.available,
-                SettingsManager.statusText(), true, true, tlsRequired ? TLSMode.required : TLSMode.enabled,
+                SettingsManager.statusText(), enabled, true, tlsRequired ? TLSMode.required : TLSMode.enabled,
                 useCompression, useOrbot ? ProxyType.orbot : ProxyType.none, "localhost", 8080,
                 "", "", syncable, null, null, archiveMode, registerNewAccount);
         if (accountItem == null) {

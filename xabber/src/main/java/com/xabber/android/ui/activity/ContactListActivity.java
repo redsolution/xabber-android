@@ -60,12 +60,15 @@ import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
+import com.xabber.android.data.xaccount.XMPPAccountSettings;
 import com.xabber.android.data.xaccount.XabberAccount;
 import com.xabber.android.data.xaccount.XabberAccountManager;
 import com.xabber.android.ui.color.BarPainter;
+import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.dialog.AccountChooseDialogFragment;
 import com.xabber.android.ui.dialog.AccountChooseDialogFragment.OnChooseListener;
 import com.xabber.android.ui.dialog.ContactSubscriptionDialog;
+import com.xabber.android.ui.dialog.EnterPassDialog;
 import com.xabber.android.ui.dialog.MucInviteDialog;
 import com.xabber.android.ui.dialog.MucPrivateChatInvitationDialog;
 import com.xabber.android.ui.dialog.TranslationDialog;
@@ -77,6 +80,7 @@ import com.xabber.xmpp.uri.XMPPUri;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -432,7 +436,35 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
 //            }
         }
 
-        XabberAccountManager.getInstance().createLocalAccountIfNotExist();
+        //XabberAccountManager.getInstance().createLocalAccountIfNotExist();
+        showPassDialogs();
+    }
+
+    public void showPassDialogs() {
+        List<XMPPAccountSettings> items = XabberAccountManager.getInstance().getXmppAccountsForCreate();
+        if (items != null && items.size() > 0) {
+            for (XMPPAccountSettings item : items) {
+                if (XabberAccountManager.getInstance().isAccountSynchronize(item.getJid()) || SettingsManager.isSyncAllAccounts()) {
+                    if (!item.isDeleted() && XabberAccountManager.getInstance().getExistingAccount(item.getJid()) == null) {
+                        if (item.getToken() != null && !item.getToken().isEmpty()) {
+                            // create account if exist token
+                            try {
+                                AccountJid accountJid = AccountManager.getInstance().addAccount(item.getJid(),
+                                        "", item.getToken(), false, true, true, false, false, true);
+                                AccountManager.getInstance().setColor(accountJid, ColorManager.getInstance().convertColorNameToIndex(item.getColor()));
+                                AccountManager.getInstance().setOrder(accountJid, item.getOrder());
+                                AccountManager.getInstance().setTimestamp(accountJid, item.getTimestamp());
+                                AccountManager.getInstance().onAccountChanged(accountJid);
+                            } catch (NetworkException e) {
+                                Application.getInstance().onError(e);
+                            }
+                            // require pass if token not exist
+                        } else EnterPassDialog.newInstance(item).show(getFragmentManager(), EnterPassDialog.class.getName());
+                    }
+                }
+            }
+            XabberAccountManager.getInstance().clearXmppAccountsForCreate();
+        }
     }
 
     private void showMucInviteDialog() {

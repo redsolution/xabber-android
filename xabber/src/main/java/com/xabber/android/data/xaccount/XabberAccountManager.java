@@ -146,6 +146,16 @@ public class XabberAccountManager implements OnLoadListener {
         this.xmppAccountsForCreate.addAll(items);
     }
 
+    @Nullable
+    public List<XMPPAccountSettings> getXmppAccountsForCreate() {
+        Collections.sort(xmppAccountsForCreate, Collections.reverseOrder());
+        return xmppAccountsForCreate;
+    }
+
+    public void clearXmppAccountsForCreate() {
+        this.xmppAccountsForCreate.clear();
+    }
+
     public int getLastOrderChangeTimestamp() {
         return lastOrderChangeTimestamp;
     }
@@ -219,28 +229,31 @@ public class XabberAccountManager implements OnLoadListener {
     }
 
     public void updateAccountSettings() {
-        Subscription updateSettingsSubscription = AuthManager.patchClientSettings(createSettingsList())
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<List<XMPPAccountSettings>>() {
-                    @Override
-                    public void call(List<XMPPAccountSettings> s) {
-                        Log.d(LOG_TAG, "XMPP accounts loading from net: successfully");
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        Log.d(LOG_TAG, "XMPP accounts loading from net: error: " + throwable.toString());
-
-                        // invalid token
-                        String message = RetrofitErrorConverter.throwableToHttpError(throwable);
-                        if (message != null && message.equals("Invalid token")) {
-                            // logout from deleted account
-                            onInvalidToken();
+        List<XMPPAccountSettings> list = createSettingsList();
+        if (list != null && list.size() > 0) {
+            Subscription updateSettingsSubscription = AuthManager.patchClientSettings(list)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Action1<List<XMPPAccountSettings>>() {
+                        @Override
+                        public void call(List<XMPPAccountSettings> s) {
+                            Log.d(LOG_TAG, "XMPP accounts loading from net: successfully");
                         }
-                    }
-                });
-        compositeSubscription.add(updateSettingsSubscription);
+                    }, new Action1<Throwable>() {
+                        @Override
+                        public void call(Throwable throwable) {
+                            Log.d(LOG_TAG, "XMPP accounts loading from net: error: " + throwable.toString());
+
+                            // invalid token
+                            String message = RetrofitErrorConverter.throwableToHttpError(throwable);
+                            if (message != null && message.equals("Invalid token")) {
+                                // logout from deleted account
+                                onInvalidToken();
+                            }
+                        }
+                    });
+            compositeSubscription.add(updateSettingsSubscription);
+        }
     }
 
     private void handleSuccessGetAccount(@NonNull XabberAccount xabberAccount) {
@@ -425,7 +438,7 @@ public class XabberAccountManager implements OnLoadListener {
             // create new xmpp-account
             if (accountJid == null && !account.isDeleted()) {
                 try {
-                    AccountJid jid = AccountManager.getInstance().addAccount(account.getJid(), "", account.getToken(), false, true, true, false, false);
+                    AccountJid jid = AccountManager.getInstance().addAccount(account.getJid(), "", account.getToken(), false, true, true, false, false, true);
                     AccountManager.getInstance().setColor(jid, ColorManager.getInstance().convertColorNameToIndex(account.getColor()));
                     AccountManager.getInstance().setOrder(jid, account.getOrder());
                     AccountManager.getInstance().setTimestamp(jid, account.getTimestamp());
