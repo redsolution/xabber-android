@@ -143,4 +143,6 @@
 
     <string name="account_deleted">This Xabber Account was deleted</string>
 
+    <string name="login_without_xabber_account">basic xmpp experience</string>
+
 </resources>

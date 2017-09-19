@@ -142,4 +142,6 @@
     <string name="tutorial_description_4">Use social authentification to quickly login to Xabber and instantly connect all your accounts on new device.</string>
 
     <string name="account_deleted">Используемый Вами Xabber Account был удалён</string>
+
+    <string name="login_without_xabber_account">использовать xmpp-аккаунт</string>
 </resources>

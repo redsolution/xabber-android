@@ -2,7 +2,11 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/intro_background">
+    android:background="@color/intro_background"
+    android:paddingLeft="@dimen/intro_horizontal_margin"
+    android:paddingRight="@dimen/intro_horizontal_margin"
+    android:paddingTop="@dimen/intro_vertical_margin"
+    android:paddingBottom="@dimen/intro_vertical_margin">
 
     <ImageView
         android:id="@+id/ivImage"

@@ -2,15 +2,19 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/intro_background">
+    android:background="@color/intro_background"
+    android:paddingLeft="@dimen/intro_horizontal_margin"
+    android:paddingRight="@dimen/intro_horizontal_margin"
+    android:paddingTop="@dimen/intro_vertical_margin"
+    android:paddingBottom="@dimen/intro_vertical_margin">
 
     <ImageView
         android:id="@+id/ivImage"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="48dp"
+        android:layout_marginTop="20dp"
         android:src="@drawable/art_welcome"
-        android:layout_weight="7"
+        android:layout_weight="5"
         />
 
     <LinearLayout
@@ -22,53 +26,57 @@
         android:layout_marginRight="16dp"
         android:layout_weight="3">
 
-        <TextView
-            android:id="@+id/tvTitle"
-            android:layout_width="match_parent"
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:layout_marginBottom="10dp"
-            android:textSize="22sp"
-            android:textColor="@color/black_text"
-            android:text="@string/intro_welcome"
-            />
+            android:layout_gravity="center_horizontal">
 
-        <TextView
-            android:id="@+id/tvDescription"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="16sp"
-            android:gravity="center"
-            android:textColor="@color/black_text_secondary"
-            android:text="@string/intro_xabber_description"
-            />
+            <TextView
+                android:id="@+id/tvTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_marginBottom="10dp"
+                android:textSize="22sp"
+                android:textColor="@color/black_text"
+                android:text="@string/intro_welcome"
+                />
+
+            <TextView
+                android:id="@+id/tvDescription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:gravity="center"
+                android:textColor="@color/black_text_secondary"
+                android:text="@string/intro_xabber_description"
+                android:layout_marginBottom="16dp"
+                />
+
+            <Button
+                android:id="@+id/btnLoginXabber"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/intro_create_xabber_account"
+                android:textColor="@color/white"
+                style="@style/Widget.AppCompat.Button.Colored"
+                android:theme="@style/BlueButton"
+                />
+
+            <Button
+                android:id="@+id/btnBasicXmpp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:theme="@style/BlueButton"
+                android:textColor="@color/account_register_blue"
+                android:text="@string/login_without_xabber_account"
+                />
+
+        </LinearLayout>
 
     </LinearLayout>
-
-    <Button
-        android:id="@+id/btnLoginXabber"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="24dp"
-        android:layout_marginRight="24dp"
-        android:text="@string/intro_create_xabber_account"
-        android:textColor="@color/white"
-        style="@style/Widget.AppCompat.Button.Colored"
-        android:theme="@style/BlueButton"
-        />
-
-    <Button
-        android:id="@+id/btnBasicXmpp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="24dp"
-        android:layout_marginRight="24dp"
-        android:layout_marginBottom="16dp"
-        style="@style/Widget.AppCompat.Button.Borderless"
-        android:theme="@style/BlueButton"
-        android:textColor="@color/account_register_blue"
-        android:text="basic xmpp experience"
-        />
-
 
 </LinearLayout>
