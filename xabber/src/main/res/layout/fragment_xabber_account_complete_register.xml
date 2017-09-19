@@ -319,7 +319,7 @@
         </LinearLayout>
 
         <android.support.v7.widget.AppCompatCheckBox
-            android:id="@+id/chbAgrees"
+            android:id="@+id/chbCreateToken"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="8dp"

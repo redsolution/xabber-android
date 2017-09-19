@@ -228,9 +228,9 @@ public class AuthManager {
     }
 
     public static Single<XabberAccount> completeRegister(String username, String pass, String confirmPass,
-                                                         String firstName, String lastName, String host) {
+                                                         String firstName, String lastName, String host, boolean createToken) {
         return HttpApiManager.getXabberApi().completeRegister(getXabberTokenHeader(),
-                new CompleteRegister(username, pass, confirmPass, firstName, lastName, host))
+                new CompleteRegister(username, pass, confirmPass, firstName, lastName, host, createToken))
                 .flatMap(new Func1<XabberAccountDTO, Single<? extends XabberAccount>>() {
                     @Override
                     public Single<? extends XabberAccount> call(XabberAccountDTO xabberAccountDTO) {
@@ -269,14 +269,16 @@ public class AuthManager {
         final String first_name;
         final String last_name;
         final String host;
+        final boolean create_token;
 
-        public CompleteRegister(String username, String password, String confirm_password, String first_name, String last_name, String host) {
+        public CompleteRegister(String username, String password, String confirm_password, String first_name, String last_name, String host, boolean create_token) {
             this.username = username;
             this.password = password;
             this.confirm_password = confirm_password;
             this.first_name = first_name;
             this.last_name = last_name;
             this.host = host;
+            this.create_token = create_token;
         }
     }
 
