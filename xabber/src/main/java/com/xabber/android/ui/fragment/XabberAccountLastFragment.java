@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.xabber.android.R;
 import com.xabber.android.data.xaccount.XMPPUser;
@@ -26,6 +27,7 @@ public class XabberAccountLastFragment extends Fragment {
 
     private Button btnYes;
     private Button btnNo;
+    private TextView tvDescription;
 
     private String jid;
 
@@ -41,6 +43,7 @@ public class XabberAccountLastFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        tvDescription = (TextView) view.findViewById(R.id.tvDescription);
         btnYes = (Button) view.findViewById(R.id.btnYes);
         btnYes.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -67,6 +70,7 @@ public class XabberAccountLastFragment extends Fragment {
         if (account != null) {
             XMPPUser user = account.getXmppUsers().get(0);
             if (user != null) jid = user.getUsername() + "@" + user.getHost();
+            tvDescription.setText(getString(R.string.complete_register_summary, jid));
         }
     }
 

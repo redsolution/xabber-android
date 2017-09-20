@@ -59,6 +59,7 @@
     <string name="title_email_confirm">Подтвердите Email-адрес</string>
     <string name="title_email_confirmed">Email-адрес подтвержден</string>
     <string name="title_complete_register">Завершите регистрацию</string>
+    <string name="title_completed_register">Регистрация завершена</string>
     <string name="title_start_messaging">Приступите к общению!</string>
     <string name="title_reordering_account">Изменить порядок учетных записей</string>
     <string name="title_sync">Синхронизация</string>
@@ -147,4 +148,8 @@
 
     <string name="sync_not_allowed_summary">XMPP-аккаунты с нестандaртными настройками (указать хост вручную, legasy SSL, прокси) не могут быть синхронизированы.</string>
     <string name="github_alert">Авторизация с помощью GitHub пока не доступна</string>
+
+    <string name="complete_register_summary">Добавить только что зарегистрированный аккаунт %1$s в список Ваших XMPP аккаунтов?</string>
+    <string name="complete_register_add">Добавить</string>
+    <string name="complete_register_no">Нет</string>
 </resources>

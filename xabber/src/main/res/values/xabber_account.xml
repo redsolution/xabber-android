@@ -149,7 +149,7 @@
     <string name="sync_not_allowed_summary">Accounts with unusual settings (custom host, legasy SSL, proxy) not can not be synchronized.</string>
     <string name="github_alert">Authorization with GitHub is not yet available</string>
 
-    <string name="complete_register_summary">Добавить только что зарегистрированный аккаунт test12345@xabber.org в список Ваших XMPP аккаунтов?</string>
-    <string name="complete_register_add">Добавить</string>
-    <string name="complete_register_no">Нет</string>
+    <string name="complete_register_summary">Do you want to add new account: %1$s in your xmpp-accounts list?</string>
+    <string name="complete_register_add">Add</string>
+    <string name="complete_register_no">No</string>
 </resources>
