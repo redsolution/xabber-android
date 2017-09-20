@@ -55,8 +55,8 @@ public class AccountOptionsAdapter extends RecyclerView.Adapter<AccountOptionVie
             if (XabberAccountManager.getInstance().isAccountSynchronize(
                     accountItem.getAccount().getFullJid().asBareJid().toString())
                     || SettingsManager.isSyncAllAccounts()) {
-                holder.description.setText(R.string.sync_status_ok);
-            } else holder.description.setText(R.string.sync_status_no);
+                holder.description.setText(R.string.sync_status_enabled);
+            } else holder.description.setText(R.string.sync_status_disabled);
 
             if (XabberAccountManager.getInstance().getAccount() == null || accountItem.isSyncNotAllowed()) {
                 holder.title.setEnabled(false);

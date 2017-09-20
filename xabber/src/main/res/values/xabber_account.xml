@@ -131,6 +131,8 @@
     <string name="sync_status_ok">Synchronized</string>
     <string name="sync_status_deleted">Remote settings was deleted</string>
     <string name="sync_status_not_allowed">Synchronization not available</string>
+    <string name="sync_status_enabled">Synchronization enabled</string>
+    <string name="sync_status_disabled">Synchronization disabled</string>
 
     <string name="tutorial_title_1">A better way to chat</string>
     <string name="tutorial_title_2">Introducing Xabber Account</string>
