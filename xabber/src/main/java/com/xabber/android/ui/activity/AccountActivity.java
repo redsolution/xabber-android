@@ -1,5 +1,6 @@
 package com.xabber.android.ui.activity;
 
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
@@ -264,6 +265,14 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
             case SYNCHRONIZATION:
                 if (XabberAccountManager.getInstance().getAccount() != null && !accountItem.isSyncNotAllowed())
                     startActivity(AccountSyncActivity.createIntent(this, account));
+                else {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                    builder.setMessage(R.string.sync_not_allowed_summary)
+                            .setTitle(R.string.sync_status_not_allowed)
+                            .setPositiveButton(R.string.ok, null);
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
+                }
                 break;
         }
     }
