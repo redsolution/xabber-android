@@ -7,7 +7,9 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.xabber.android.R;
+import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
+import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.xaccount.XabberAccountManager;
 
 public class AccountOptionsAdapter extends RecyclerView.Adapter<AccountOptionViewHolder>
@@ -49,13 +51,21 @@ public class AccountOptionsAdapter extends RecyclerView.Adapter<AccountOptionVie
             holder.separator.setVisibility(View.VISIBLE);
         }
 
-        if ((XabberAccountManager.getInstance().getAccount() == null || accountItem.isSyncNotAllowed()) && position == 1) {
-            holder.title.setEnabled(false);
-            holder.icon.setImageResource(R.drawable.ic_sync_lightgrey);
-            holder.description.setEnabled(false);
-        } else {
-            holder.title.setEnabled(true);
-            holder.description.setEnabled(true);
+        if (position == 1) {
+            if (XabberAccountManager.getInstance().getAccount() == null || accountItem.isSyncNotAllowed()) {
+                holder.title.setEnabled(false);
+                holder.icon.setImageResource(R.drawable.ic_cloud_sync_lightgrey);
+                holder.description.setEnabled(false);
+            } else {
+                holder.title.setEnabled(true);
+                holder.description.setEnabled(true);
+            }
+
+            if (XabberAccountManager.getInstance().isAccountSynchronize(
+                    accountItem.getAccount().getFullJid().asBareJid().toString())
+                    || SettingsManager.isSyncAllAccounts()) {
+                holder.description.setText(R.string.sync_status_ok);
+            } else holder.description.setText(R.string.sync_status_no);
         }
     }
 
