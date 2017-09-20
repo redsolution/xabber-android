@@ -201,7 +201,13 @@ public class AccountSyncActivity extends ManagedActivity implements View.OnClick
     }
 
     private void handleSuccessDelete(List<XMPPAccountSettings> settings, boolean deleteAccount) {
-        if (!deleteAccount) accountItem.setTimestamp(XabberAccountManager.getInstance().getCurrentTime());
+        if (!deleteAccount) {
+            for (XMPPAccountSettings set : settings) {
+                if (set.getJid().equals(jid))
+                    AccountManager.getInstance().setTimestamp(accountItem.getAccount(), set.getTimestamp() + 1);
+            }
+        }
+
         hideProgress();
         Toast.makeText(this, R.string.settings_delete_success, Toast.LENGTH_SHORT).show();
         getSyncStatus();
