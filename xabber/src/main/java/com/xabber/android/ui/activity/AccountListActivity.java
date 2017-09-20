@@ -25,7 +25,6 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -42,11 +41,8 @@ import com.xabber.android.ui.color.BarPainter;
 import com.xabber.android.ui.dialog.AccountDeleteDialog;
 import com.xabber.android.ui.widget.SimpleItemTouchHelperCallback;
 
-import org.jxmpp.jid.BareJid;
-
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 
 public class AccountListActivity extends ManagedActivity implements OnAccountChangedListener,
@@ -144,7 +140,7 @@ public class AccountListActivity extends ManagedActivity implements OnAccountCha
         barPainter.setDefaultColor();
 
         // set margin for textView
-        int height = 48 * (accountItems.size() + 1) + 38;
+        int height = 52 * (accountItems.size() + 1) + 16;
         final float scale = getResources().getDisplayMetrics().density;
         int pixels = (int) (height * scale + 0.5f);
 
