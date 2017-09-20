@@ -146,4 +146,5 @@
     <string name="login_without_xabber_account">использовать xmpp-аккаунт</string>
 
     <string name="sync_not_allowed_summary">XMPP-аккаунты с нестандaртными настройками (указать хост вручную, legasy SSL, прокси) не могут быть синхронизированы.</string>
+    <string name="github_alert">Авторизация с помощью GitHub пока не доступна</string>
 </resources>

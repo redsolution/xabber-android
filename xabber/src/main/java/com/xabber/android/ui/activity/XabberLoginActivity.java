@@ -117,6 +117,7 @@ public class XabberLoginActivity extends BaseLoginActivity implements View.OnCli
                     loginGoogle();
                     break;
                 case R.id.ivGithub:
+                    loginGithub();
                     break;
                 case R.id.ivTwitter:
                     loginTwitter();

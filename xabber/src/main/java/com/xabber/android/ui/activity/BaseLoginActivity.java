@@ -1,5 +1,6 @@
 package com.xabber.android.ui.activity;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -111,7 +112,14 @@ public abstract class BaseLoginActivity extends ManagedActivity implements Googl
         twitterAuthClient.authorize(this, twitterSessionCallback);
     }
 
-    public void loginGithub() {}
+    public void loginGithub() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.github_alert)
+                .setTitle("GitHub")
+                .setPositiveButton(R.string.ok, null);
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
 
     private void initGoogleAuth() {
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
