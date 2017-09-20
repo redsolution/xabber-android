@@ -318,18 +318,6 @@
             </LinearLayout>
         </LinearLayout>
 
-        <android.support.v7.widget.AppCompatCheckBox
-            android:id="@+id/chbCreateToken"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="8dp"
-            android:text="@string/create_xabber_org"
-            android:textColor="@color/black_text_secondary"
-            android:theme="@style/BlueCheckBox"
-            android:visibility="gone"
-            android:checked="true"
-            />
-
         <Button
             android:id="@+id/btnRegister"
             android:layout_width="wrap_content"

@@ -59,6 +59,7 @@
     <string name="title_email_confirm">Confirm Email address</string>
     <string name="title_email_confirmed">Confirmed Email address</string>
     <string name="title_complete_register">Complete registration</string>
+    <string name="title_completed_register">Registration completed</string>
     <string name="title_start_messaging">Start messaging!</string>
     <string name="title_reordering_account">Reorder accounts</string>
     <string name="title_sync">Synchronization</string>
@@ -147,4 +148,8 @@
 
     <string name="sync_not_allowed_summary">Accounts with unusual settings (custom host, legasy SSL, proxy) not can not be synchronized.</string>
     <string name="github_alert">Authorization with GitHub is not yet available</string>
+
+    <string name="complete_register_summary">Добавить только что зарегистрированный аккаунт test12345@xabber.org в список Ваших XMPP аккаунтов?</string>
+    <string name="complete_register_add">Добавить</string>
+    <string name="complete_register_no">Нет</string>
 </resources>

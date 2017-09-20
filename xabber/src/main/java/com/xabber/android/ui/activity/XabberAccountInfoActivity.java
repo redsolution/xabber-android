@@ -31,6 +31,7 @@ import com.xabber.android.ui.color.BarPainter;
 import com.xabber.android.ui.fragment.XabberAccountCompleteRegsiterFrament;
 import com.xabber.android.ui.fragment.XabberAccountConfirmationFragment;
 import com.xabber.android.ui.fragment.XabberAccountInfoFragment;
+import com.xabber.android.ui.fragment.XabberAccountLastFragment;
 import com.xabber.android.ui.fragment.XabberAccountLoginFragment;
 import com.xabber.android.utils.RetrofitErrorConverter;
 
@@ -55,6 +56,7 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
     private final static String FRAGMENT_INFO = "fragment_info";
     private final static String FRAGMENT_CONFIRM = "fragment_confirm";
     private final static String FRAGMENT_COMPLETE = "fragment_complete";
+    private final static String FRAGMENT_LAST = "fragment_last";
 
     public final static String CALL_FROM = "call_from";
     public final static String CALL_FROM_LOGIN = "call_from_login";
@@ -70,6 +72,7 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
     private Fragment fragmentInfo;
     private Fragment fragmentConfirmation;
     private Fragment fragmentCompleteRegsiter;
+    private Fragment fragmentLastStep;
 
     private String callFrom = CALL_FROM_SETTINGS;
     private boolean needShowSyncDialog = false;
@@ -238,7 +241,7 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
         barPainter.setBlue(this);
     }
 
-    private void showInfoFragment() {
+    public void showInfoFragment() {
         if (fragmentInfo == null) {
             fragmentInfo = new XabberAccountInfoFragment();
             Bundle bundle = new Bundle();
@@ -266,6 +269,15 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
 
         fTrans = getFragmentManager().beginTransaction();
         fTrans.replace(R.id.container, fragmentCompleteRegsiter, FRAGMENT_COMPLETE);
+        fTrans.commit();
+    }
+
+    public void showLastFragment() {
+        if (fragmentLastStep == null)
+            fragmentLastStep = new XabberAccountLastFragment();
+
+        fTrans = getFragmentManager().beginTransaction();
+        fTrans.replace(R.id.container, fragmentLastStep, FRAGMENT_LAST);
         fTrans.commit();
     }
 
@@ -314,6 +326,48 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
             completeRegister(username, pass, pass2, firstName, lastName, createToken);
         } else
             Toast.makeText(this, R.string.toast_no_internet, Toast.LENGTH_LONG).show();
+    }
+
+    public void onDeleteXabberOrgClick(String jid) {
+        showProgress(getString(R.string.progress_title_complete));
+        Subscription deleteSubscription = AuthManager.deleteClientSettings(jid)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<List<XMPPAccountSettings>>() {
+                    @Override
+                    public void call(List<XMPPAccountSettings> settings) {
+                        handleSuccessDelete(settings);
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        handleErrorDelete(throwable);
+                    }
+                });
+        compositeSubscription.add(deleteSubscription);
+    }
+
+    private void handleSuccessDelete(List<XMPPAccountSettings> settings) {
+        showInfoFragment();
+        hideProgress();
+        Toast.makeText(this, R.string.complete_success, Toast.LENGTH_SHORT).show();
+    }
+
+    private void handleErrorDelete(Throwable throwable) {
+        String message = RetrofitErrorConverter.throwableToHttpError(throwable);
+        if (message != null) {
+            if (message.equals("Invalid token")) {
+                XabberAccountManager.getInstance().onInvalidToken();
+            } else {
+                Log.d(LOG_TAG, "Error while deleting settings: " + message);
+                Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            Log.d(LOG_TAG, "Error while deleting settings: " + throwable.toString());
+            Toast.makeText(this, "Error while deleting settings: " + throwable.toString(), Toast.LENGTH_LONG).show();
+        }
+        showInfoFragment();
+        hideProgress();
     }
 
     private void handleIntent(Intent intent) {
@@ -567,7 +621,7 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
 
         if (AccountManager.getInstance().getAllAccountItems().size() > 0) {
             needShowSyncDialog = true;
-            showInfoFragment();
+            showLastFragment();
         } else getSettings();
     }
 

@@ -32,7 +32,6 @@ public class XabberAccountCompleteRegsiterFrament extends Fragment {
     private EditText edtPass2;
     private EditText edtFirstName;
     private EditText edtLastName;
-    private AppCompatCheckBox chbCreateToken;
     private Button btnRegister;
 
     @Nullable
@@ -53,7 +52,6 @@ public class XabberAccountCompleteRegsiterFrament extends Fragment {
         edtPass2 = (EditText) view.findViewById(R.id.edtPass2);
         edtFirstName = (EditText) view.findViewById(R.id.edtFirstName);
         edtLastName = (EditText) view.findViewById(R.id.edtLastName);
-        chbCreateToken = (AppCompatCheckBox) view.findViewById(R.id.chbCreateToken);
 
         btnRegister = (Button) view.findViewById(R.id.btnRegister);
         btnRegister.setOnClickListener(new View.OnClickListener() {
@@ -111,10 +109,6 @@ public class XabberAccountCompleteRegsiterFrament extends Fragment {
             }
         }
 
-        if (AccountManager.getInstance().getAllAccountItems().size() > 0)
-            chbCreateToken.setVisibility(View.VISIBLE);
-        else chbCreateToken.setVisibility(View.GONE);
-
     }
 
     private void verifyFields() {
@@ -167,7 +161,7 @@ public class XabberAccountCompleteRegsiterFrament extends Fragment {
             return;
         }
 
-        ((XabberAccountInfoActivity)getActivity()).onCompleteClick(username, pass, pass2, firstName, lastName, chbCreateToken.isChecked());
+        ((XabberAccountInfoActivity)getActivity()).onCompleteClick(username, pass, pass2, firstName, lastName, true);
     }
 
 }
