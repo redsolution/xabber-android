@@ -165,7 +165,8 @@ public class AccountSyncActivity extends ManagedActivity implements View.OnClick
                     Toast.makeText(this, R.string.toast_no_internet, Toast.LENGTH_LONG).show();
                 break;
             case R.id.syncStatusView:
-                getSyncStatus();
+                updateAccountSettings();
+                //getSyncStatus();
                 break;
         }
     }
@@ -398,7 +399,7 @@ public class AccountSyncActivity extends ManagedActivity implements View.OnClick
                 .subscribe(new Action1<List<XMPPAccountSettings>>() {
                     @Override
                     public void call(List<XMPPAccountSettings> s) {
-                        handleSuccessUpdateSettings();
+                        handleSuccessUpdateSettings(s);
                     }
                 }, new Action1<Throwable>() {
                     @Override
@@ -409,11 +410,12 @@ public class AccountSyncActivity extends ManagedActivity implements View.OnClick
         compositeSubscription.add(updateSettingsSubscription);
     }
 
-    public void handleSuccessUpdateSettings() {
+    public void handleSuccessUpdateSettings(List<XMPPAccountSettings> list) {
+        handleSuccessGetSettings(list);
         Log.d(LOG_TAG, "XMPP accounts loading from net: successfully");
         hideProgress();
         Toast.makeText(this, R.string.sync_success, Toast.LENGTH_SHORT).show();
-        getSyncStatus();
+        //getSyncStatus();
     }
 
     public void handleErrorUpdateSettings(Throwable throwable) {
