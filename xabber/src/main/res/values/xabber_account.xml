@@ -44,13 +44,13 @@
     <string name="label_conf_pass">Confirm password*</string>
     <string name="hint_conf_pass">Confirm password</string>
     <string name="label_first_name">First name</string>
-    <string name="hint_first_name">First name</string>
+    <string name="hint_first_name">John</string>
     <string name="label_last_name">Last name</string>
-    <string name="hint_last_name">Last name</string>
+    <string name="hint_last_name">Doe</string>
 
     <string name="hint_code">code</string>
 
-    <string name="default_host">\@xabber.org</string>
+    <string name="default_host" translatable="false">\@xabber.org</string>
 
     <string name="title_xabber_account">Xabber Account</string>
     <string name="title_xmpp_account">XMPP Accounts</string>
@@ -94,7 +94,7 @@
     <string name="username_rules_first_symbol">Username must start with letter</string>
     <string name="username_rules_dots">Username must not contain two dots in a row</string>
 
-    <string name="sync_with_xabber_account">Synchronize with Xabber-account</string>
+    <string name="sync_with_xabber_account">Synchronize with Xabber account</string>
     <string name="delete_synced_accounts">Delete synchronized XMPP accounts from this device?</string>
     <string name="delete_synced_account">Delete account %1$s from this device?</string>
     <string name="delete_settings">Delete synchronised settings for this XMPP account from Xabber Account?</string>
@@ -105,10 +105,10 @@
     <string name="signed_up_email">Signed up with Email</string>
     <string name="signed_up_google">Signed up with Google+</string>
     <string name="signed_up_facebook">Signed up with Facebook</string>
-    <string name="signed_up_github">Signed up with Github</string>
+    <string name="signed_up_github">Signed up with GitHub</string>
     <string name="signed_up_twitter">Signed up with Twitter</string>
 
-    <string name="username">%1$s\@xabber.org</string>
+    <string name="username" translatable="false">%1$s\@xabber.org</string>
 
     <string name="reorder_summary">To synchronize accounts order between devices you need to enable "Synchronize all" option in Xabber Account settings</string>
 
@@ -143,7 +143,7 @@
 
     <string name="login_without_xabber_account">basic xmpp experience</string>
 
-    <string name="sync_not_allowed_summary">Accounts with non-standard settings (custom host, legasy SSL, proxy) can not be synchronized.</string>
+    <string name="sync_not_allowed_summary">Accounts with non-standard settings (custom host, legacy SSL, proxy) can not be synchronized.</string>
     <string name="github_alert">Authorization with GitHub is not available yet</string>
 
     <string name="complete_register_summary">Do you want to add %1$s to your XMPP accounts?</string>
