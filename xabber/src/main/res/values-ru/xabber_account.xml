@@ -50,8 +50,6 @@
 
     <string name="hint_code">Код подтверждения</string>
 
-    <string name="default_host">\@xabber.org</string>
-
     <string name="title_xabber_account">Учетная запись Xabber</string>
     <string name="title_xmpp_account">Учетные записи XMPP</string>
     <string name="title_email_confirm">Подтвердите Email-адрес</string>
@@ -107,8 +105,6 @@
     <string name="signed_up_facebook">Регистрация через Facebook</string>
     <string name="signed_up_github">Регистрация через Github</string>
     <string name="signed_up_twitter">Регистрация через Twitter</string>
-
-    <string name="username">%1$s\@xabber.org</string>
 
     <string name="reorder_summary">Чтобы синхронизировать порядок аккаунтов на всех своих устройствах - используйте синхронизацию в Xabber Account</string>
 
