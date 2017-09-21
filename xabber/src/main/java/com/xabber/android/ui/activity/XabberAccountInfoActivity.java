@@ -158,21 +158,21 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
 
     private void showCancelRegisterDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(R.string.cancel_register_dialog_title)
-                .setMessage(R.string.cancel_register_dialog_message)
-                .setPositiveButton(R.string.cancel_register_dialog_pos_button, new DialogInterface.OnClickListener() {
+        builder.setTitle(R.string.cancel_registration_progress)
+                .setMessage(R.string.cancel_registration_dialog_message)
+                .setPositiveButton(R.string.cancel_registration_dialog_resume, null)
+                .setNegativeButton(R.string.cancel_registration_dialog_cancel, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         cancelRegistration();
                     }
-                })
-                .setNegativeButton(R.string.resume, null);
+                });
         Dialog dialog = builder.create();
         dialog.show();
     }
 
     private void cancelRegistration() {
-        showProgress(getString(R.string.cancel_register_progress));
+        showProgress(getString(R.string.cancel_registration_progress));
         Application.getInstance().runInBackground(new Runnable() {
             @Override
             public void run() {
@@ -505,7 +505,7 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
     }
 
     private void logout(final boolean deleteAccounts) {
-        showProgress(getResources().getString(R.string.progress_title_logout));
+        showProgress(getResources().getString(R.string.progress_title_quit));
         Subscription logoutSubscription = AuthManager.logout(deleteAccounts)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -528,7 +528,7 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
         XabberAccountManager.getInstance().removeAccount();
         showLoginFragment();
         hideProgress();
-        Toast.makeText(this, R.string.logout_success, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, R.string.quit_success, Toast.LENGTH_SHORT).show();
         Intent intent = ContactListActivity.createIntent(XabberAccountInfoActivity.this);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);

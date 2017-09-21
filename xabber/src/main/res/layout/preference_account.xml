@@ -56,7 +56,6 @@
                 android:layout_weight="1"
                 android:ellipsize="marquee"
                 android:lines="1"
-                android:text="@string/account_not_confirmed"
                 android:textColor="@color/green_700"
                 android:textSize="18sp" />
 

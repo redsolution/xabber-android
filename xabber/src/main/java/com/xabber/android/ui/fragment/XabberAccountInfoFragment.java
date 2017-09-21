@@ -171,10 +171,10 @@ public class XabberAccountInfoFragment extends Fragment {
         final CheckBox chbDeleteAccounts = (CheckBox) view.findViewById(R.id.chbDeleteAccounts);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle(R.string.progress_title_logout)
+        builder.setTitle(R.string.progress_title_quit)
                 .setMessage(R.string.logout_summary)
                 .setView(view)
-                .setPositiveButton(R.string.button_logout, new DialogInterface.OnClickListener() {
+                .setPositiveButton(R.string.button_quit, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         ((XabberAccountInfoActivity)getActivity()).onLogoutClick(chbDeleteAccounts.isChecked());

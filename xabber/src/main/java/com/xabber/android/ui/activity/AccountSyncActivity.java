@@ -258,6 +258,7 @@ public class AccountSyncActivity extends ManagedActivity implements View.OnClick
         LayoutInflater inflater = getLayoutInflater();
         View view = inflater.inflate(R.layout.dialog_delete_account_settings, null);
         final CheckBox chbDeleteAccount = (CheckBox) view.findViewById(R.id.chbDeleteAccount);
+        chbDeleteAccount.setText(getString(R.string.delete_synced_account, jid));
         chbDeleteAccount.setChecked(switchSync.isChecked());
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);

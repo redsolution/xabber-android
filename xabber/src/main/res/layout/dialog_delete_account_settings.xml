@@ -10,7 +10,7 @@
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         android:layout_marginTop="10dp"
-        android:text="@string/delete_cynced_account"
+        android:text="@string/delete_synced_account"
         android:checked="true"
         />
 

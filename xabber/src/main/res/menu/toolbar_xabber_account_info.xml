@@ -2,7 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item android:id="@+id/action_cancel_register"
-        android:title="@string/button_cancel_register"
+        android:title="@string/button_cancel_registration"
         app:showAsAction="never"
         android:visible="false"/>
 </menu>

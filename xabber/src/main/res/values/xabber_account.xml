@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="xabber_account_info">Xabber account is required to use redsolution XMPP services and sync device settings.</string>
+    <string name="xabber_account_info">Xabber account is required to use Xabber services and sync device settings.</string>
     <string name="social_sign_in">Social Sign In</string>
 
     <string name="email_hint">Email</string>
@@ -12,8 +12,8 @@
 
     <string name="sync_success">Synchronization successful</string>
     <string name="sync_fail">Synchronization failed</string>
-    <string name="logout_success">Logout successful</string>
-    <string name="logout_fail">Quit failed</string>
+    <string name="quit_success">Quit successful</string>
+    <string name="quit_fail">Quit failed</string>
     <string name="confirm_success">Email confirmation successful</string>
     <string name="confirm_fail">Email confirmation failed</string>
     <string name="complete_success">Registration completed successfully</string>
@@ -28,14 +28,14 @@
     <string name="toast_no_internet">No internet connection</string>
 
     <string name="progress_message">Please wait</string>
-    <string name="progress_title_sync">Synchronization..</string>
-    <string name="progress_title_logout">Quit..</string>
-    <string name="progress_title_login">Login..</string>
-    <string name="progress_title_signup">Registration..</string>
-    <string name="progress_title_confirm">Confirmation..</string>
-    <string name="progress_title_complete">Registration completion..</string>
-    <string name="progress_title_resend">Resending email..</string>
-    <string name="progress_title_delete_settings">Delete settings..</string>
+    <string name="progress_title_sync">Synchronization</string>
+    <string name="progress_title_quit">Quit</string>
+    <string name="progress_title_login">Login</string>
+    <string name="progress_title_signup">Registration</string>
+    <string name="progress_title_confirm">Confirmation</string>
+    <string name="progress_title_complete">Registration completion</string>
+    <string name="progress_title_resend">Resending email</string>
+    <string name="progress_title_delete_settings">Delete settings</string>
 
     <string name="label_username">Choose username*</string>
     <string name="hint_username">username</string>
@@ -68,12 +68,12 @@
     <string name="summary_xabber_account_in_login">Xabber account is required to use Xabber services and sync device settings.</string>
     <string name="summary_username">Xabber username will also act as a free XMPP id</string>
 
-    <string name="button_logout">QUIT</string>
+    <string name="button_quit">QUIT</string>
     <string name="button_login">LOGIN</string>
     <string name="button_resend_link">RESEND CODE</string>
-    <string name="button_complete_register">REGISTER</string>
+    <string name="button_complete_registration">REGISTER</string>
     <string name="button_confirm">confirm</string>
-    <string name="button_cancel_register">Cancel registration</string>
+    <string name="button_cancel_registration">Cancel registration</string>
     <string name="button_continue">continue</string>
     <string name="button_sync">SYNCHRONIZE</string>
 
@@ -93,11 +93,10 @@
     <string name="username_rules">Username may contain only lowercase latin letters, numbers and dots</string>
     <string name="username_rules_first_symbol">Username must start with letter</string>
     <string name="username_rules_dots">Username must not contain two dots in a row</string>
-    <string name="account_not_confirmed">Account not confirmed</string>
-    <string name="register_not_completed">Registration not completed</string>
+
     <string name="sync_with_xabber_account">Synchronize with Xabber-account</string>
-    <string name="delete_cynced_accounts">Delete synchronized XMPP accounts from this device?</string>
-    <string name="delete_cynced_account">Delete account %1$s from this device?</string>
+    <string name="delete_synced_accounts">Delete synchronized XMPP accounts from this device?</string>
+    <string name="delete_synced_account">Delete account %1$s from this device?</string>
     <string name="delete_settings">Delete synchronised settings for this XMPP account from Xabber Account?</string>
     <string name="logout_summary">You will quit from Xabber Account. You will not be able to use enhanced Xabber services, but basic XMPP will work as usual.</string>
     <string name="delete_settings_summary">Synchronized settings for this XMPP account will be deleted from Xabber Account</string>
@@ -113,10 +112,10 @@
 
     <string name="reorder_summary">To synchronize accounts order between devices you need to enable "Synchronize all" option in Xabber Account settings</string>
 
-    <string name="cancel_register_dialog_title">Cancel registration</string>
-    <string name="cancel_register_progress">Cancel registration..</string>
-    <string name="cancel_register_dialog_message">Xabber account greatly improves chat experience, but is not required to use Xabber. You may complete registration later.</string>
-    <string name="cancel_register_dialog_pos_button">Cancel</string>
+    <string name="cancel_registration_progress">Cancel registration</string>
+    <string name="cancel_registration_dialog_message">Xabber account greatly improves chat experience, but is not required to use Xabber. You may complete registration later.</string>
+    <string name="cancel_registration_dialog_cancel">Cancel</string>
+    <string name="cancel_registration_dialog_resume">Resume</string>
 
     <string name="delete_settings_button">Delete settings</string>
     <string name="account_sync_enable_summary">Enable synchronization</string>

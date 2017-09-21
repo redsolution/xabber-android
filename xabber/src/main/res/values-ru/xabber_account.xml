@@ -12,8 +12,8 @@
 
     <string name="sync_success">Синхронизация завершена</string>
     <string name="sync_fail">Синхронизация не удалась</string>
-    <string name="logout_success">Выход завершен</string>
-    <string name="logout_fail">Выход не удался</string>
+    <string name="quit_success">Выход завершен</string>
+    <string name="quit_fail">Выход не удался</string>
     <string name="confirm_success">Email подтвержден</string>
     <string name="confirm_fail">Не удалось подтвердить e-mail</string>
     <string name="complete_success">Регистрация завершена</string>
@@ -29,7 +29,7 @@
 
     <string name="progress_message">Пожалуйста, подождите</string>
     <string name="progress_title_sync">Синхронизация..</string>
-    <string name="progress_title_logout">Выход..</string>
+    <string name="progress_title_quit">Выход..</string>
     <string name="progress_title_login">Авторизация..</string>
     <string name="progress_title_signup">Регистрация..</string>
     <string name="progress_title_confirm">Подтверждение email..</string>
@@ -68,17 +68,16 @@
     <string name="summary_xabber_account_in_login">Учетная запись Xabber требуется для использования XMPP-служб Redsolution и синхронизации настроек устройства.</string>
     <string name="summary_username">Имя пользователя Xabber также будет действовать как бесплатный идентификатор XMPP</string>
 
-    <string name="button_logout">ВЫХОД</string>
+    <string name="button_quit">ВЫХОД</string>
     <string name="button_login">ВХОД</string>
     <string name="button_resend_link">ЗАПРОСИТЬ КОД</string>
-    <string name="button_complete_register">РЕГИСТРАЦИЯ</string>
+    <string name="button_complete_registration">РЕГИСТРАЦИЯ</string>
     <string name="button_confirm">ПОДТВЕРДИТЬ</string>
     <string name="button_continue">продолжить</string>
     <string name="button_sync">СИНХРОНИЗИРОВАТЬ</string>
-    <string name="button_cancel_register">Прервать регистрацию</string>
+    <string name="button_cancel_registration">Прервать регистрацию</string>
 
     <string name="btn_done">готово</string>
-    <string name="btn_reorder_account">reorder account</string>
 
     <string name="not_login">Пользователь не авторизован</string>
     <string name="enter_password">Пожалуйста, введите пароль для этой учетной записи</string>
@@ -94,11 +93,10 @@
     <string name="username_rules">Имя пользовател может содржать только прописные латинские буквы, цифры и точки</string>
     <string name="username_rules_first_symbol">Имя пользователя должно начинаться с буквы</string>
     <string name="username_rules_dots">Имя пользователя не может содержать две точки подряд</string>
-    <string name="account_not_confirmed">Учетная запись не подтверждена</string>
-    <string name="register_not_completed">Регистрация не завершена</string>
+
     <string name="sync_with_xabber_account">Синхронизировать с учетной записью Xabber</string>
-    <string name="delete_cynced_accounts">Удалить синхронизированные учетные записи XMPP ?</string>
-    <string name="delete_cynced_account">Удалить XMPP-аккаунт связанный с этими настройками?</string>
+    <string name="delete_synced_accounts">Удалить синхронизированные учетные записи XMPP ?</string>
+    <string name="delete_synced_account">Delete account %1$s from this device?</string>
     <string name="delete_settings">Удалить облачные настройки связанные с этим аккаунтом?</string>
     <string name="logout_summary">Вы выйдите из учетной записи Xabber</string>
     <string name="delete_settings_summary">Облачные настройки для этого аккаунта будут удалены из Xabber Account</string>
@@ -114,10 +112,10 @@
 
     <string name="reorder_summary">Чтобы синхронизировать порядок аккаунтов на всех своих устройствах - используйте синхронизацию в Xabber Account</string>
 
-    <string name="cancel_register_dialog_title">Отмена регистрации</string>
-    <string name="cancel_register_progress">Отмена регистрации..</string>
-    <string name="cancel_register_dialog_message">Хотите прервать регистрацию?</string>
-    <string name="cancel_register_dialog_pos_button">Прервать</string>
+    <string name="cancel_registration_progress">Отмена регистрации..</string>
+    <string name="cancel_registration_dialog_message">Хотите прервать регистрацию?</string>
+    <string name="cancel_registration_dialog_cancel">Прервать</string>
+    <string name="cancel_registration_dialog_resume">Продолжить</string>
 
     <string name="delete_settings_button">Удалить настройки</string>
     <string name="account_sync_enable_summary">Включить синхронизацию</string>

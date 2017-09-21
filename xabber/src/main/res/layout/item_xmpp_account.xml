@@ -53,8 +53,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:ellipsize="marquee"
-            android:lines="1"
             android:text="jid"
             android:textColor="@color/grey_500"
             android:textSize="14sp" />

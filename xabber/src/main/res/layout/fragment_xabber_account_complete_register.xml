@@ -328,7 +328,7 @@
             android:paddingRight="18dp"
             android:paddingLeft="18dp"
             android:textColor="@color/white"
-            android:text="@string/button_complete_register"
+            android:text="@string/button_complete_registration"
             />
 
     </LinearLayout>

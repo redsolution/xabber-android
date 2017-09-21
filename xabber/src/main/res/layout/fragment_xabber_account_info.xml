@@ -64,7 +64,6 @@
                         android:layout_weight="1"
                         android:ellipsize="marquee"
                         android:lines="1"
-                        android:text="@string/account_not_confirmed"
                         android:textColor="@color/green_700"
                         android:textSize="18sp" />
 
@@ -183,7 +182,7 @@
                         android:layout_toRightOf="@+id/ivLogout"
                         android:layout_marginLeft="24dp"
                         android:textColor="?android:attr/textColorPrimary"
-                        android:text="@string/button_logout"
+                        android:text="@string/button_quit"
                         />
 
                 </RelativeLayout>
