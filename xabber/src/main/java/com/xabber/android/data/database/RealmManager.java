@@ -25,7 +25,7 @@ import io.realm.annotations.RealmModule;
 
 public class RealmManager {
     private static final String REALM_DATABASE_NAME = "realm_database.realm";
-    private static final int REALM_DATABASE_VERSION = 9;
+    private static final int REALM_DATABASE_VERSION = 7;
     private static final String LOG_TAG = RealmManager.class.getSimpleName();
     private final RealmConfiguration realmConfiguration;
 
@@ -57,7 +57,7 @@ public class RealmManager {
     }
 
     @RealmModule(classes = {DiscoveryInfoCache.class, AccountRealm.class, XabberAccountRealm.class,
-            XMPPUserRealm.class, EmailRealm.class, SocialBindingRealm.class, XMPPAccountSettignsRealm.class, SyncStateRealm.class})
+            XMPPUserRealm.class, EmailRealm.class, SocialBindingRealm.class, SyncStateRealm.class})
     static class RealmDatabaseModule {
     }
 
@@ -132,29 +132,10 @@ public class RealmManager {
                                     .addRealmListField("emails", schema.get(EmailRealm.class.getSimpleName()))
                                     .addRealmListField("socialBindings", schema.get(SocialBindingRealm.class.getSimpleName()));
 
-                            schema.create(XMPPAccountSettignsRealm.class.getSimpleName())
-                                    .addField("jid", String.class, FieldAttribute.PRIMARY_KEY, FieldAttribute.REQUIRED)
-                                    .addField("username", String.class)
-                                    .addField("color", String.class)
+                            schema.get(AccountRealm.class.getSimpleName())
                                     .addField("token", String.class)
                                     .addField("order", int.class)
                                     .addField("timestamp", int.class)
-                                    .addField("synchronization", boolean.class);
-
-                            oldVersion++;
-                        }
-
-                        if (oldVersion == 7) {
-                            schema.get(AccountRealm.class.getSimpleName())
-                                    .addField("token", String.class);
-
-                            oldVersion++;
-                        }
-
-                        if (oldVersion == 8) {
-                            schema.get(AccountRealm.class.getSimpleName())
-                                    .addField("order", Integer.class)
-                                    .addField("timestamp", Integer.class)
                                     .addField("syncNotAllowed", boolean.class);
 
                             schema.create(SyncStateRealm.class.getSimpleName())
