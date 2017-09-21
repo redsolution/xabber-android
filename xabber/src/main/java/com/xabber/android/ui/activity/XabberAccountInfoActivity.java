@@ -168,7 +168,7 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
                         cancelRegistration();
                     }
                 })
-                .setNegativeButton(R.string.cancel, null);
+                .setNegativeButton(R.string.resume, null);
         Dialog dialog = builder.create();
         dialog.show();
     }
