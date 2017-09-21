@@ -90,28 +90,28 @@
 
     </RelativeLayout>
 
-    <RelativeLayout
-        android:id="@+id/rlSignUp"
-        android:layout_width="wrap_content"
-        android:layout_height="32dp"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="16dp"
-        android:paddingRight="12dp"
-        android:paddingLeft="12dp"
-        android:background="?android:attr/selectableItemBackground"
-        android:clickable="true"
-        android:layout_below="@id/rlForgotPass"
-        >
+    <!--<RelativeLayout-->
+        <!--android:id="@+id/rlSignUp"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="32dp"-->
+        <!--android:layout_centerHorizontal="true"-->
+        <!--android:layout_marginTop="16dp"-->
+        <!--android:paddingRight="12dp"-->
+        <!--android:paddingLeft="12dp"-->
+        <!--android:background="?android:attr/selectableItemBackground"-->
+        <!--android:clickable="true"-->
+        <!--android:layout_below="@id/rlForgotPass"-->
+        <!--&gt;-->
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:textSize="12sp"
-            android:text="@string/signup"
-            android:visibility="gone"
-            />
+        <!--<TextView-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_centerInParent="true"-->
+            <!--android:textSize="12sp"-->
+            <!--android:text="@string/signup"-->
+            <!--android:visibility="gone"-->
+            <!--/>-->
 
-    </RelativeLayout>
+    <!--</RelativeLayout>-->
 
 </RelativeLayout>

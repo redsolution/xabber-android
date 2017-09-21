@@ -7,10 +7,8 @@
     <string name="email_hint">Email</string>
     <string name="username_hint">Xabber username или email</string>
     <string name="pass_hint">Пароль</string>
-    <string name="signup">РЕГИСТРАЦИЯ</string>
     <string name="forgot_pass">ЗАБЫЛИ ПАРОЛЬ?</string>
     <string name="agrees">Я согласен получать периодические обновления от команды Xabber. Мы обещаем не беспокоить вас слишком часто.</string>
-    <string name="create_xabber_org">Вы хотите добавить учетную запись Xabber.org в приложение?</string>
 
     <string name="sync_success">Синхронизация завершена</string>
     <string name="sync_fail">Синхронизация не удалась</string>
@@ -67,7 +65,6 @@
     <string name="title_login_xabber_account">Вход в учетную запись Xabber</string>
     <string name="title_register_xabber_account">Регистрация учетной записи Xabber</string>
 
-    <string name="summary_xabber_account">Учетная запись Xabber позволяет легко синхронизировать ваши настройки и подключенные учетные записи XMPP между различными устройствами.</string>
     <string name="summary_xabber_account_in_login">Учетная запись Xabber требуется для использования XMPP-служб Redsolution и синхронизации настроек устройства.</string>
     <string name="summary_username">Имя пользователя Xabber также будет действовать как бесплатный идентификатор XMPP</string>
 

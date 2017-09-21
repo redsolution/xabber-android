@@ -7,10 +7,8 @@
     <string name="email_hint">Email</string>
     <string name="username_hint">Xabber username or email</string>
     <string name="pass_hint">Password</string>
-    <string name="signup">SIGN UP</string>
     <string name="forgot_pass">FORGOT PASSWORD?</string>
     <string name="agrees">I agree to receive occasional updates from Xabber team. We promise not to bother you too often with it.</string>
-    <string name="create_xabber_org">Do you want to add the Xabber.org account to the application?</string>
 
     <string name="sync_success">Synchronization successful</string>
     <string name="sync_fail">Synchronization failed</string>
@@ -67,7 +65,6 @@
     <string name="title_login_xabber_account">Login to Xabber Account</string>
     <string name="title_register_xabber_account">Register Xabber Account</string>
 
-    <string name="summary_xabber_account">Xabber account lets you easily sync your settings and connected XMPP accounts between various devices.</string>
     <string name="summary_xabber_account_in_login">Xabber account is required to use redsolution XMPP services and sync device settings.</string>
     <string name="summary_username">Xabber username will also act as a free XMPP id</string>
 
@@ -81,7 +78,6 @@
     <string name="button_sync">SYNCHRONIZE</string>
 
     <string name="btn_done">done</string>
-    <string name="btn_reorder_account">reorder account</string>
 
     <string name="not_login">Not logged in</string>
     <string name="enter_password">Please, enter password for this account</string>

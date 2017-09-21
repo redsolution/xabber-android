@@ -97,7 +97,7 @@ public class AccountListActivity extends ManagedActivity implements OnAccountCha
     public boolean onPrepareOptionsMenu(Menu menu) {
         menu.findItem(R.id.action_done).setVisible(swapMode);
         menu.findItem(R.id.action_add_account).setVisible(!swapMode);
-        menu.findItem(R.id.action_sort).setVisible(!swapMode);
+        //menu.findItem(R.id.action_sort).setVisible(!swapMode);
         return true;
     }
 
@@ -223,10 +223,10 @@ public class AccountListActivity extends ManagedActivity implements OnAccountCha
             startActivity(AccountAddActivity.createIntent(this));
             return true;
         }
-        if (item.getItemId() == R.id.action_sort) {
-            showHideSwapMode();
-            return true;
-        }
+//        if (item.getItemId() == R.id.action_sort) {
+//            showHideSwapMode();
+//            return true;
+//        }
         if (item.getItemId() == R.id.action_done) {
             updateAccountOrder();
             finish();

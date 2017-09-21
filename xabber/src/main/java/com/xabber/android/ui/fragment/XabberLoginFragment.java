@@ -45,11 +45,11 @@ public class XabberLoginFragment extends Fragment implements View.OnClickListene
         edtPass = (EditText) view.findViewById(R.id.edtPass);
         btnLogin = (Button) view.findViewById(R.id.btnLogin);
         rlForgotPass = (RelativeLayout) view.findViewById(R.id.rlForgotPass);
-        rlSignUp = (RelativeLayout) view.findViewById(R.id.rlSignUp);
+        //rlSignUp = (RelativeLayout) view.findViewById(R.id.rlSignUp);
 
         btnLogin.setOnClickListener(this);
         rlForgotPass.setOnClickListener(this);
-        rlSignUp.setOnClickListener(this);
+        //rlSignUp.setOnClickListener(this);
     }
 
     @Override
@@ -61,11 +61,11 @@ public class XabberLoginFragment extends Fragment implements View.OnClickListene
             case R.id.rlForgotPass:
                 ((XabberLoginActivity)getActivity()).onForgotPassClick();
                 break;
-            case R.id.rlSignUp:
-                Intent intent = XabberAccountInfoActivity.createIntent(getActivity());
-                intent.putExtra(XabberAccountInfoActivity.CALL_FROM, XabberAccountInfoActivity.CALL_FROM_LOGIN);
-                startActivity(intent);
-                break;
+//            case R.id.rlSignUp:
+//                Intent intent = XabberAccountInfoActivity.createIntent(getActivity());
+//                intent.putExtra(XabberAccountInfoActivity.CALL_FROM, XabberAccountInfoActivity.CALL_FROM_LOGIN);
+//                startActivity(intent);
+//                break;
         }
     }
 

@@ -93,7 +93,6 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
         setContentView(R.layout.activity_xabber_account_info);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar_default);
-        toolbar.setTitle(R.string.title_xabber_account);
         toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -109,7 +108,6 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
     @Override
     protected void onResume() {
         super.onResume();
-        barPainter.setBlue(this);
         onPrepareOptionsMenu(toolbar.getMenu());
 
         XabberAccount account = XabberAccountManager.getInstance().getAccount();
@@ -123,7 +121,7 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
                 showCompleteFragment();
             }
             if (XabberAccount.STATUS_REGISTERED.equals(account.getAccountStatus())) {
-                barPainter.setDefaultColor();
+
                 showInfoFragment();
                 needShowSyncDialog = false;
             }
@@ -238,6 +236,8 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
         fTrans = getFragmentManager().beginTransaction();
         fTrans.replace(R.id.container, fragmentLogin, FRAGMENT_LOGIN);
         fTrans.commit();
+
+        toolbar.setTitle(R.string.title_register_xabber_account);
         barPainter.setBlue(this);
     }
 
@@ -252,6 +252,9 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
         fTrans = getFragmentManager().beginTransaction();
         fTrans.replace(R.id.container, fragmentInfo, FRAGMENT_INFO);
         fTrans.commit();
+
+        toolbar.setTitle(R.string.title_xabber_account);
+        barPainter.setDefaultColor();
     }
 
     private void showConfirmFragment() {
@@ -261,6 +264,9 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
         fTrans = getFragmentManager().beginTransaction();
         fTrans.replace(R.id.container, fragmentConfirmation, FRAGMENT_CONFIRM);
         fTrans.commit();
+
+        toolbar.setTitle(R.string.title_register_xabber_account);
+        barPainter.setBlue(this);
     }
 
     private void showCompleteFragment() {
@@ -270,6 +276,9 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
         fTrans = getFragmentManager().beginTransaction();
         fTrans.replace(R.id.container, fragmentCompleteRegsiter, FRAGMENT_COMPLETE);
         fTrans.commit();
+
+        toolbar.setTitle(R.string.title_register_xabber_account);
+        barPainter.setBlue(this);
     }
 
     public void showLastFragment() {
@@ -279,6 +288,9 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
         fTrans = getFragmentManager().beginTransaction();
         fTrans.replace(R.id.container, fragmentLastStep, FRAGMENT_LAST);
         fTrans.commit();
+
+        toolbar.setTitle(R.string.title_register_xabber_account);
+        barPainter.setBlue(this);
     }
 
     public void onLoginClick() {

@@ -2,11 +2,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item android:id="@+id/action_sort"
-        android:title="@string/btn_reorder_account"
-        app:showAsAction="always"
-        android:icon="@drawable/ic_swap"/>
-
     <item android:id="@+id/action_add_account"
         android:title="@string/account_add"
         app:showAsAction="always"
