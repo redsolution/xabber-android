@@ -132,7 +132,7 @@
     <string name="category_behavior">Behavior</string>
     <string name="category_contact_list">Contact list</string>
     <string name="category_offline_contacts">Offline contacts</string>
-    <string name="category_reset">Reset</string>
+    <string name="category_reset">Reset notifications</string>
     <string name="category_connection_settings">Connection settings</string>
     <string name="category_advanced">Advanced</string>
     <string name="category_availability">Availability</string>
@@ -146,22 +146,22 @@
     <string name="events_on_muc_title">Alert</string>
     <string name="events_on_muc_summary">Alert about new messages in conferences</string>
 
-    <string name="vibro_default">By default</string>
+    <string name="vibro_default">Default</string>
     <string name="vibro_short">Short vibration</string>
     <string name="vibro_long">Long vibration</string>
     <string name="vibro_if_silent">Only in silent mode</string>
 
     <string name="events_in_app_sounds_title">In-app sounds</string>
-    <string name="events_in_app_sounds_summary">Play sounds on message if you in other chat</string>
+    <string name="events_in_app_sounds_summary">Play sounds on message in another chat</string>
     <string name="events_in_app_vibrate_title">In-app vibrate</string>
-    <string name="events_in_app_vibrate_summary">Do vibrate on message if you in other chat</string>
+    <string name="events_in_app_vibrate_summary">Vibrate on message in another chat</string>
     <string name="events_in_app_preview_title">In-app preview</string>
-    <string name="events_in_app_preview_summary">Show preview on message if you in other chat</string>
+    <string name="events_in_app_preview_summary">Show preview on message in another chat</string>
     <string name="events_in_chat_sounds_title">In-chat sounds</string>
-    <string name="events_in_chat_sounds_summary">Play sounds on message if you in current chat</string>
+    <string name="events_in_chat_sounds_summary">Play sound on message in current chat</string>
 
     <string name="events_reset_title">Reset</string>
-    <string name="events_reset_summary">Reset notification preferences to default values</string>
+    <string name="events_reset_summary">All notification settings would be set to default values</string>
     <string name="events_reset_alert">Reset notification settings?</string>
-    <string name="events_reset_toast">Settings was reset</string>
+    <string name="events_reset_toast">Settings were reset</string>
 </resources>
