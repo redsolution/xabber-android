@@ -73,12 +73,12 @@
   <string name="account_color_name_teal">Изумрудный</string>
   <string name="account_color_name_blue_grey">Серо-голубой</string>
   <string name="account_color_name_cyan">Циан</string>
-  <string name="account_color_name_deep_purple">Темно-пурпурный</string>
-  <string name="account_color_name_lime">Лайм</string>
+  <string name="account_color_name_deep_purple">Багровый</string>
+  <string name="account_color_name_lime">Лаймовый</string>
   <string name="account_color_name_pink">Розовый</string>
-  <string name="account_color_name_purple">Пурпурный</string>
+  <string name="account_color_name_purple">Фиолетовый</string>
   <string name="account_color_name_light_blue">Светло-синий</string>
-  <string name="account_color_name_light_green">Светло-зеленый</string>
+  <string name="account_color_name_light_green">Светло-зелёный</string>
   <string name="account_color_name_amber">Янтарный</string>
   <string name="account_color_name_deep_orange">Темно-оранжевый</string>
   <string name="account_color_name_brown">Коричневый</string>
@@ -107,8 +107,8 @@
   <string name="account_clear_history_on_exit_title">Очищать историю при выходе</string>
   <string name="account_clear_history_on_exit_summary">Удалять все сообщения с устройства перед выходом из Xabber.</string>
   <string name="account_bookmarks">Закладки</string>
-  <string name="account_bookmarks_summary">Список закладок для этого аккаунта</string>
+  <string name="account_bookmarks_summary">Список закладок этой учётной записи</string>
   <string name="account_sync">Синхронизация</string>
-  <string name="account_sync_summary">Синхронизация Xabber Account</string>
+  <string name="account_sync_summary">Синхронизация с аккаунтом Xabber</string>
   <string name="bookmark_not_supported">Сервер не поддерживает закладки.</string>
 </resources>

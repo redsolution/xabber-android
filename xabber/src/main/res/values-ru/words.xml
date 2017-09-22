@@ -15,11 +15,10 @@
   <string name="required">Обязательно</string>
   <string name="auto">Автоматически</string>
   <string name="save">Сохранить</string>
-
   <string name="cancel">Отмена</string>
   <string name="skip">Пропустить</string>
   <string name="settings">Настройки</string>
-  <string name="ok">OK</string>
-  <string name="login">Подключить</string>
+  <string name="ok">ОК</string>
+  <string name="login">Вход</string>
   <string name="resume">Продолжить</string>
 </resources>
