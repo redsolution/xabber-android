@@ -92,7 +92,6 @@ public class XabberAccountConfirmationFragment extends Fragment {
     public void updateData(@NonNull XabberAccount account) {
         if (account.getEmails().size() > 0)
             tvAccountName.setText(account.getEmails().get(0).getEmail());
-        // TODO: 31.07.17 вписывать имя аккаунта если оно доступно. Указывать тип регистрации email или соц.сеть
     }
 
 }
