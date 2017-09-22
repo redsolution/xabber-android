@@ -1197,11 +1197,11 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
                             if (restartSession) restartEncryption(account, user);
                             else startEncryption(account, user);
                         } else {
-                            Toast.makeText(getActivity(), R.string.otr_select_toast_no_chat, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getActivity(), R.string.otr_select_toast_error, Toast.LENGTH_SHORT).show();
                         }
                     } catch (XmppStringprepException e) {
                         e.printStackTrace();
-                        Toast.makeText(getActivity(), R.string.otr_select_toast_no_resource, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), R.string.otr_select_toast_error, Toast.LENGTH_SHORT).show();
                     }
                 }
             });

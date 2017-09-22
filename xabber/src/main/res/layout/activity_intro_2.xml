@@ -58,7 +58,7 @@
                 android:id="@+id/btnLoginXabber"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/intro_create_xabber_account"
+                android:text="@string/login_xabber_account"
                 android:textColor="@color/white"
                 style="@style/Widget.AppCompat.Button.Colored"
                 android:theme="@style/BlueButton"

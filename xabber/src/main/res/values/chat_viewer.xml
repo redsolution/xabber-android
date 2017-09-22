@@ -80,10 +80,9 @@
     <string name="otr_verify_fingerprint">Verify with fingerprint</string>
     <string name="otr_verify_question">Verify with question</string>
     <string name="otr_verify_secret">Verify with shared secret</string>
-    <string name="otr_select_resource">Select resource to OTR:</string>
-    <string name="otr_select_toast_no_chat">OTR-Session not started: no chat</string>
-    <string name="otr_select_toast_no_resource">OTR-Session not started: no resource</string>
-    <string name="otr_select_toast_resources_not_found">To start OTR encryption, contact must be online</string>
+    <string name="otr_select_resource">Select device to establish OTR session:</string>
+    <string name="otr_select_toast_error">OTR-Session not started.</string>
+    <string name="otr_select_toast_resources_not_found">OTR-Session not started. The contact is offline.</string>
     <string name="otr_verification_notify_title">OTR verification request</string>
     <string name="otr_verification_progress_title">OTR verification in progress</string>
     <string name="otr_verification_notify_button">OPEN</string>
