@@ -116,6 +116,24 @@ def initFabricPropertiesIfNeeded() {
     }
 }
 
+def build_param = "${build}";
+
+if (build_param != "dev") {
+    //exclude dev
+    android.variantFilter { variant ->
+        if (variant.getFlavors().get(0).name.equals('dev')) {
+            variant.setIgnore(true);
+        }
+    }
+} else {
+    //exclude all but dev
+    android.variantFilter { variant ->
+        if (!variant.getFlavors().get(0).name.equals('dev')) {
+            variant.setIgnore(true);
+        }
+    }
+}
+
 ext {
     smackVersion = '4.2.1-SNAPSHOT'
     supportVersion = '25.3.1'
