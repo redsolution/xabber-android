@@ -52,12 +52,13 @@
   <string name="title_start_messaging">Начните общение!</string>
   <string name="title_reordering_account">Порядок аккаунтов</string>
   <string name="title_sync">Синхронизация</string>
-  <string name="title_login_xabber_account">Вход в аккаунт Xabber</string>
-  <string name="title_register_xabber_account">Регистрация аккаунта Xabber</string>
+  <string name="title_login_xabber_account">Вход в Xabber</string>
+  <string name="title_register_xabber_account">Регистрация в Xabber</string>
   <string name="summary_xabber_account_in_login">Аккаунт Xabber требуется для использования сервисов Xabber и синхронизации настроек устройств.</string>
   <string name="summary_username">Имя пользователя Xabber также является XMPP id</string>
   <string name="button_quit">ВЫХОД</string>
   <string name="button_login">ВХОД</string>
+  <string name="button_registration">РЕГИСТРАЦИЯ</string>
   <string name="button_resend_link">ОТПРАВИТЬ КОД</string>
   <string name="button_complete_registration">ЗАРЕГИСТРИРОВАТЬ</string>
   <string name="button_confirm">подтвердить</string>

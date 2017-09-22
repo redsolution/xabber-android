@@ -40,7 +40,7 @@
   <string name="request_subscription">Запросить подписку</string>
   <string name="XMPP_EXCEPTION">Ошибка соединения</string>
   <string name="application_state_closing">Сохранение изменений...\nПриложение скоро закроется.</string>
-  <string name="certificate_confirmation">%1$s. \nВы доверяете сертификату с цифровым отпечатком пальца: %2$s?\nНе уведомлять о подобных проблемах с этим сертификатом?</string>
+  <string name="certificate_confirmation">%1$s. \nВы доверяете сертификату с цифровым отпечатком SHA-1: %2$s?\nНе уведомлять о подобных проблемах с этим сертификатом?</string>
   <string name="certificate_details">\n\nКому выдан:\nИмя (CN): %1$s\nОрганизация (O): %2$s\nПодразделение (OU): %3$s\nСерийный номер: %4$s\n\nКем выдан:\nИмя (CN): %5$s\nОрганизация (O): %6$s\nПодразделение (OU): %7$s\n\nСрок действия:\nВступает в силу: %8$s\nИстекает: %9$s.</string>
   <string name="certificate_invalid_chane">Ошибка при проверке цепочки подписей</string>
   <string name="certificate_invalid_target">Сертификат выдан другому домену</string>
@@ -82,9 +82,9 @@
   <string name="send_log_file">Отправить</string>
   <string name="intro_welcome">Добро пожаловать в Xabber</string>
   <string name="intro_xabber_description">XMPP-клиент для Android с открытым исходным кодом</string>
-  <string name="intro_have_account">Подключить XMPP аккаунт</string>
+  <string name="intro_have_account">Войти в XMPP аккаунт</string>
   <string name="intro_register_account">Зарегистрировать учётную запись XMPP</string>
-  <string name="intro_create_xabber_account">Вход в Xabber</string>
+  <string name="intro_create_xabber_account">Использовать аккаунт Xabber</string>
   <string name="intro_use_third_party_accounts">сторонние XMPP аккаунты</string>
   <string name="intro_faq">Если у вас нет учётной записи XMPP, пожалуйста, <a href="https://www.xabber.com/faq/">прочтите наш F.A.Q.</a> о том, как зарегистрироваться.</string>
   <string name="intro_web_search_register_xmpp">Зарегистрировать учётную запись XMPP</string>

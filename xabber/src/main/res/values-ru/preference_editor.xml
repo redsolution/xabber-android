@@ -31,7 +31,7 @@
   <string name="events_lightning">Подсветка\nМигать подсветкой для оповещения</string>
   <string name="events_lightning_muc">Подсветка\nМигать подсветкой для оповещения в конференциях</string>
   <string name="events_persistent">Иконка в панели задач\nОтображать постоянное уведомление. Включение предотвращает выгрузку приложения при нехватке памяти</string>
-  <string name="events_sound">Звуковое оповещение\nВыберите звуковое оповещение</string>
+  <string name="events_sound">Звук оповещения\nВыберите звуковое оповещение</string>
   <string name="events_vibro">Вибрация</string>
   <string name="interface_theme">Тема</string>
   <string name="interface_theme_dark">Темная</string>
@@ -123,9 +123,9 @@
   <string name="category_group_notifications">Групповые уведомления</string>
   <string name="category_inapp_notifications">Уведомления в приложении</string>
   <string name="category_key_phrase">Ключевые фразы</string>
-  <string name="events_on_chat_title">Звуковое оповещение</string>
+  <string name="events_on_chat_title">Оповещение</string>
   <string name="events_on_chat_summary">Уведомлять о новых сообщениях в чатах</string>
-  <string name="events_on_muc_title">Звуковое оповещение</string>
+  <string name="events_on_muc_title">Оповещение</string>
   <string name="events_on_muc_summary">Уведомлять о новых сообщениях в групповых чатах</string>
   <string name="vibro_default">По умолчанию</string>
   <string name="vibro_short">Короткая вибрация</string>

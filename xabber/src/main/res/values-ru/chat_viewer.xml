@@ -82,8 +82,8 @@
   <string name="otr_verify_question">Проверка вопросом</string>
   <string name="otr_verify_secret">Проверка секретным ключом</string>
   <string name="otr_select_resource">Выберите устройство для установки сеанса OTR:</string>
-  <string name="otr_select_toast_error">OTR-Сессия не установлена.</string>
-  <string name="otr_select_toast_resources_not_found">OTR-Сессия не установлена. Cобеседник не в сети.</string>
+  <string name="otr_select_toast_error">Сеанс OTR не установлен.</string>
+  <string name="otr_select_toast_resources_not_found">Сеанс OTR не установлен. Собеседник не в сети.</string>
   <string name="otr_verification_notify_title">Запрос на подтверждение подлинности сеанса OTR</string>
   <string name="otr_verification_progress_title">Идёт подтверждение подлинности сеанса OTR</string>
   <string name="otr_verification_notify_button">ОТКРЫТЬ</string>
