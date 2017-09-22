@@ -141,7 +141,6 @@
 
     <string name="account_deleted">This Xabber Account was deleted</string>
 
-    <string name="login_xabber_account">Login Xabber Account</string>
     <string name="login_without_xabber_account">basic xmpp experience</string>
 
     <string name="sync_not_allowed_summary">Accounts with non-standard settings (custom host, legacy SSL, proxy) can not be synchronized.</string>

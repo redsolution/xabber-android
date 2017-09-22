@@ -137,7 +137,6 @@
 
     <string name="account_deleted">Используемый Вами Xabber Account был удалён</string>
 
-    <string name="login_xabber_account">Вход в Xabber</string>
     <string name="login_without_xabber_account">использовать xmpp-аккаунт</string>
 
     <string name="sync_not_allowed_summary">XMPP-аккаунты с нестандaртными настройками (указать хост вручную, legasy SSL, прокси) не могут быть синхронизированы.</string>
