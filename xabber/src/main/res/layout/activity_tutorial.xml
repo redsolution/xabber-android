@@ -47,7 +47,7 @@
             style="@style/Widget.AppCompat.Button.Borderless"
             android:theme="@style/BlueButton"
             android:textColor="@color/account_register_blue"
-            android:text="@string/button_complete_registration"
+            android:text="@string/button_registration"
             android:layout_weight="1"
             />
 
