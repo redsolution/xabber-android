@@ -5,16 +5,10 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.text.method.LinkMovementMethod;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
 import com.xabber.android.R;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.log.LogManager;
@@ -36,7 +30,7 @@ public class IntroActivity extends ManagedActivity {
             return;
         }
 
-        setContentView(R.layout.activity_intro_2);
+        setContentView(R.layout.activity_intro);
 
 //        ((TextView) findViewById(R.id.intro_faq_text))
 //                .setMovementMethod(LinkMovementMethod.getInstance());
