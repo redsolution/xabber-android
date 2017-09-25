@@ -263,16 +263,16 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
                 startActivity(BookmarksActivity.createIntent(this, account));
                 break;
             case SYNCHRONIZATION:
-                if (XabberAccountManager.getInstance().getAccount() != null && !accountItem.isSyncNotAllowed())
-                    startActivity(AccountSyncActivity.createIntent(this, account));
-                else {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                    builder.setMessage(R.string.sync_not_allowed_summary)
-                            .setTitle(R.string.sync_status_not_allowed)
-                            .setPositiveButton(R.string.ok, null);
-                    AlertDialog dialog = builder.create();
-                    dialog.show();
-                }
+                if (XabberAccountManager.getInstance().getAccount() != null) {
+                    if (accountItem.isSyncNotAllowed()) {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                        builder.setMessage(R.string.sync_not_allowed_summary)
+                                .setTitle(R.string.sync_status_not_allowed)
+                                .setPositiveButton(R.string.ok, null);
+                        AlertDialog dialog = builder.create();
+                        dialog.show();
+                    } else startActivity(AccountSyncActivity.createIntent(this, account));
+                } else startActivity(TutorialActivity.createIntent(this));
                 break;
         }
     }
