@@ -766,26 +766,36 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
             return false;
         }
         AbstractChat abstractChat = getChat(account, user);
-        return abstractChat != null && abstractChat instanceof RegularChat && abstractChat.isStatusTrackingEnabled();
+        return abstractChat != null && abstractChat instanceof RegularChat && (isVisibleChat(abstractChat) || abstractChat.isActive());
     }
 
     @Override
-    public void onStatusChanged(AccountJid account, UserJid user, String statusText) {
+    public void onStatusChanged(AccountJid account, final UserJid user, final String statusText) {
         if (isStatusTrackingEnabled(account, user)) {
-            AbstractChat chat = getChat(account, user);
+            final AbstractChat chat = getChat(account, user);
             if (chat != null) {
-                chat.newAction(user.getJid().getResourceOrNull(), statusText, ChatAction.status);
+                Application.getInstance().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        chat.newAction(user.getJid().getResourceOrNull(), statusText, ChatAction.status);
+                    }
+                });
             }
         }
     }
 
     @Override
-    public void onStatusChanged(AccountJid account, UserJid user, StatusMode statusMode, String statusText) {
+    public void onStatusChanged(AccountJid account, final UserJid user, final StatusMode statusMode, final String statusText) {
         if (isStatusTrackingEnabled(account, user)) {
-            AbstractChat chat = getChat(account, user);
+            final AbstractChat chat = getChat(account, user);
             if (chat != null) {
-                chat.newAction(user.getJid().getResourceOrNull(),
-                        statusText, ChatAction.getChatAction(statusMode));
+                Application.getInstance().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        chat.newAction(user.getJid().getResourceOrNull(),
+                                statusText, ChatAction.getChatAction(statusMode));
+                    }
+                });
             }
         }
     }
