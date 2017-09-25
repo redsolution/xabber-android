@@ -201,10 +201,12 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
 
     @Override
     protected void showProgress(String title) {
-        progressDialog = new ProgressDialog(this);
-        progressDialog.setTitle(title);
-        progressDialog.setMessage(getResources().getString(R.string.progress_message));
-        progressDialog.show();
+        if (!isFinishing()) {
+            progressDialog = new ProgressDialog(this);
+            progressDialog.setTitle(title);
+            progressDialog.setMessage(getResources().getString(R.string.progress_message));
+            progressDialog.show();
+        }
     }
 
     @Override

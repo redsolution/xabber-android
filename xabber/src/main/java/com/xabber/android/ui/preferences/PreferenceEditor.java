@@ -103,10 +103,12 @@ public class PreferenceEditor extends ManagedActivity
     }
 
     protected void showProgress(String title) {
-        progressDialog = new ProgressDialog(this);
-        progressDialog.setTitle(title);
-        progressDialog.setMessage(getResources().getString(R.string.progress_message));
-        progressDialog.show();
+        if (!isFinishing()) {
+            progressDialog = new ProgressDialog(this);
+            progressDialog.setTitle(title);
+            progressDialog.setMessage(getResources().getString(R.string.progress_message));
+            progressDialog.show();
+        }
     }
 
     protected void hideProgress() {
