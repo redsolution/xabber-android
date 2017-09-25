@@ -86,7 +86,7 @@
             android:layout_height="wrap_content"
             android:textColor="?android:attr/textColorPrimary"
             android:textSize="16sp"
-            android:text="@string/title_xabber_account"
+            android:text="@string/not_login"
             />
 
         <TextView

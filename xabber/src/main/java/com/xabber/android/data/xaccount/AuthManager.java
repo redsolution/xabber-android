@@ -44,23 +44,19 @@ public class AuthManager {
                 .flatMap(new Func1<ResponseBody, Single<? extends ResponseBody>>() {
                     @Override
                     public Single<? extends ResponseBody> call(ResponseBody responseBody) {
-                        if (deleteAccounts) {
-                            if (XabberAccountManager.getInstance().deleteXabberAccountFromRealm())
-                                return Single.just(responseBody);
-                            else
-                                return Single.error(new Throwable("Realm: xabber account deletion error"));
-                        } else return Single.just(responseBody);
+                        if (XabberAccountManager.getInstance().deleteXabberAccountFromRealm())
+                            return Single.just(responseBody);
+                        else
+                            return Single.error(new Throwable("Realm: xabber account deletion error"));
                     }
                 })
                 .flatMap(new Func1<ResponseBody, Single<? extends ResponseBody>>() {
                     @Override
                     public Single<? extends ResponseBody> call(ResponseBody responseBody) {
-                        if (deleteAccounts) {
-                            if (XabberAccountManager.getInstance().deleteSyncStatesFromRealm())
-                                return Single.just(responseBody);
-                            else
-                                return Single.error(new Throwable("Realm: xabber account deletion error"));
-                        } else return Single.just(responseBody);
+                        if (XabberAccountManager.getInstance().deleteSyncStatesFromRealm())
+                            return Single.just(responseBody);
+                        else
+                            return Single.error(new Throwable("Realm: xabber account deletion error"));
                     }
                 });
     }
