@@ -60,7 +60,6 @@ public class AccountOptionsAdapter extends RecyclerView.Adapter<AccountOptionVie
 
             if (XabberAccountManager.getInstance().getAccount() == null || accountItem.isSyncNotAllowed()) {
                 holder.title.setEnabled(false);
-                holder.icon.setImageResource(R.drawable.ic_cloud_sync_lightgrey);
                 holder.description.setEnabled(false);
                 holder.description.setText(R.string.sync_status_not_allowed);
             } else {
