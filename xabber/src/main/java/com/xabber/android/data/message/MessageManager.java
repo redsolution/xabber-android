@@ -777,7 +777,11 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
                 Application.getInstance().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        chat.newAction(user.getJid().getResourceOrNull(), statusText, ChatAction.status);
+                        // fix for saving to realm
+                        String text = statusText;
+                        if (text.isEmpty() || text.length() < 1) text = " ";
+                        // create new action
+                        chat.newAction(user.getJid().getResourceOrNull(), text, ChatAction.status);
                     }
                 });
             }
@@ -792,8 +796,13 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
                 Application.getInstance().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        // fix for saving to realm
+                        String text = statusText;
+                        if (text.isEmpty() || text.length() < 1)
+                            text = Application.getInstance().getResources().getString(statusMode.getStringID());
+                        // create new action
                         chat.newAction(user.getJid().getResourceOrNull(),
-                                statusText, ChatAction.getChatAction(statusMode));
+                                text, ChatAction.getChatAction(statusMode));
                     }
                 });
             }
