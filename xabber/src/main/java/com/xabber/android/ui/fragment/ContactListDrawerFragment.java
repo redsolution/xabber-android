@@ -187,7 +187,7 @@ public class ContactListDrawerFragment extends Fragment implements View.OnClickL
 
             String accountName = account.getFirstName() + " " + account.getLastName();
             if (accountName.trim().isEmpty())
-                accountName = getContext().getString(R.string.title_xabber_account);
+                accountName = getActivity().getString(R.string.title_xabber_account);
 
             if (XabberAccount.STATUS_NOT_CONFIRMED.equals(account.getAccountStatus())) {
                 tvAccountName.setText(accountName);
