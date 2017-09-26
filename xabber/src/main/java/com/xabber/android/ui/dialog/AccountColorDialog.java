@@ -52,7 +52,8 @@ public class AccountColorDialog extends DialogFragment {
             AccountManager.getInstance().setTimestamp(accountJid, XabberAccountManager.getInstance().getCurrentTime());
             AccountManager.getInstance().onAccountChanged(accountJid);
 
-            XabberAccountManager.getInstance().updateAccountSettings();
+            if (XabberAccountManager.getInstance().getAccount() != null)
+                XabberAccountManager.getInstance().updateAccountSettings();
             dialog.dismiss();
         }
     };

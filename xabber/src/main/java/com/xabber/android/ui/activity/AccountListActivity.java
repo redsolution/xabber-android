@@ -158,7 +158,8 @@ public class AccountListActivity extends ManagedActivity implements OnAccountCha
                 AccountManager.getInstance().setOrder(account.getAccount(), order++);
 
             XabberAccountManager.getInstance().setLastOrderChangeTimestampIsNow();
-            XabberAccountManager.getInstance().updateAccountSettings();
+            if (XabberAccountManager.getInstance().getAccount() != null)
+                XabberAccountManager.getInstance().updateAccountSettings();
         }
     }
 
