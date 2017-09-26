@@ -131,8 +131,8 @@
   <string name="vibro_short">Короткая вибрация</string>
   <string name="vibro_long">Долгая вибрация</string>
   <string name="vibro_if_silent">Только в бесшумном режиме</string>
-  <string name="events_in_app_sounds_title">Оповещения в приложении</string>
-  <string name="events_in_app_sounds_summary">Уведомлять о сообщениях в других чатах</string>
+  <string name="events_in_app_sounds_title">Звуковое оповещение в приложении</string>
+  <string name="events_in_app_sounds_summary">Воспроизводить уведомление при сообщениях в других чатах</string>
   <string name="events_in_app_vibrate_title">Вибрация в приложении</string>
   <string name="events_in_app_vibrate_summary">Вибрировать при сообщениях в других чатах</string>
   <string name="events_in_app_preview_title">Предпросмотр в приложении</string>
