@@ -778,8 +778,9 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
                     @Override
                     public void run() {
                         // fix for saving to realm
-                        String text = statusText;
-                        if (text.isEmpty() || text.length() < 1) text = " ";
+                        String text;
+                        if (statusText != null && !statusText.isEmpty() && statusText.length() > 0) text = statusText;
+                        else text = " ";
                         // create new action
                         chat.newAction(user.getJid().getResourceOrNull(), text, ChatAction.status);
                     }
@@ -797,9 +798,9 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
                     @Override
                     public void run() {
                         // fix for saving to realm
-                        String text = statusText;
-                        if (text.isEmpty() || text.length() < 1)
-                            text = Application.getInstance().getResources().getString(statusMode.getStringID());
+                        String text;
+                        if (statusText != null && !statusText.isEmpty() && statusText.length() > 0) text = statusText;
+                        else text = Application.getInstance().getResources().getString(statusMode.getStringID());
                         // create new action
                         chat.newAction(user.getJid().getResourceOrNull(),
                                 text, ChatAction.getChatAction(statusMode));
