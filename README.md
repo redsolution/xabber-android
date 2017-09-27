@@ -15,12 +15,6 @@ Xabber uses Gradle build system. The only specific thing is git submodule for ge
  git submodule update
  ```
  And MemorizingTrustManager would be cloned to your local repository.
- 
-**2. Build**
- 
- You may build a **dev** flavor of project. This does not require additional files.
- 
- Or, if you want to build other flavors, you need to copy the file: `xabber-android/xabber/src/dev/google-services.json` to the `xabber-android/xabber` folder and copy the file `xabber-android/xabber/src/dev/res/values/social_keys.xml` to the folder `xabber-android/xabber/src/main/res/values/`.
 
 ## Translations [![Crowdin](https://d322cqt584bo4o.cloudfront.net/xabber/localized.svg)](https://crowdin.com/project/xabber)
 
