@@ -803,8 +803,8 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
                         String text;
                         if (statusText != null) {
                             if (!statusText.isEmpty() && statusText.length() > 0) text = statusText;
-                            else text = Application.getInstance().getResources().getString(statusMode.getStringID());
-                        } else text = Application.getInstance().getResources().getString(statusMode.getStringID());
+                            else text = " ";
+                        } else text = " ";
                         // create new action
                         chat.newAction(user.getJid().getResourceOrNull(),
                                 text, ChatAction.getChatAction(statusMode));
