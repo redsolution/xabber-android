@@ -71,7 +71,16 @@
             android:layout_height="48dp"
             android:layout_marginLeft="30dp"
             android:layout_marginStart="30dp"
+            android:layout_marginRight="30dp"
+            android:layout_marginEnd="30dp"
             android:src="@drawable/ic_facebook"
+            />
+
+        <ImageView
+            android:id="@+id/ivTwitter"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/ic_twitter"
             />
 
     </LinearLayout>
@@ -86,12 +95,12 @@
         android:layout_below="@+id/llSocialLogos"
         >
 
-        <ImageView
-            android:id="@+id/ivTwitter"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:src="@drawable/ic_twitter"
-            />
+        <!--<ImageView-->
+            <!--android:id="@+id/ivTwitter"-->
+            <!--android:layout_width="48dp"-->
+            <!--android:layout_height="48dp"-->
+            <!--android:src="@drawable/ic_twitter"-->
+            <!--/>-->
 
         <ImageView
             android:id="@+id/ivGithub"
@@ -100,6 +109,7 @@
             android:layout_marginLeft="30dp"
             android:layout_marginStart="30dp"
             android:src="@drawable/ic_github_logo_black"
+            android:visibility="gone"
             />
 
     </LinearLayout>
@@ -110,7 +120,7 @@
         android:layout_height="wrap_content"
         android:paddingBottom="8dp"
         android:layout_below="@+id/llSocialLogosSecond"
-        android:textAlignment="center"
+        android:gravity="center"
         android:textColor="@color/black_text_secondary"
         android:text="@string/xabber_account_info"
         />

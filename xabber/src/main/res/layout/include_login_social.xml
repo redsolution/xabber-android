@@ -86,6 +86,7 @@
             android:layout_height="48dp"
             android:layout_marginLeft="30dp"
             android:src="@drawable/ic_github_logo_black"
+            android:visibility="gone"
             />
 
     </LinearLayout>

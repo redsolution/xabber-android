@@ -72,7 +72,7 @@
                 android:id="@+id/ivFacebook"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:layout_marginLeft="16dp"
+                android:layout_marginLeft="32dp"
                 android:src="@drawable/ic_facebook"
                 />
 
@@ -80,7 +80,7 @@
                 android:id="@+id/ivTwitter"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:layout_marginLeft="16dp"
+                android:layout_marginLeft="32dp"
                 android:src="@drawable/ic_twitter"
                 />
 
@@ -90,6 +90,7 @@
                 android:layout_height="48dp"
                 android:layout_marginLeft="16dp"
                 android:src="@drawable/ic_github_logo_black"
+                android:visibility="gone"
                 />
 
         </LinearLayout>
