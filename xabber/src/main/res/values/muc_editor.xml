@@ -28,4 +28,6 @@
     <string name="muc_type_conference_name">Type conference name</string>
     <string name="contact_is_blocked">Contact is blocked!</string>
     <string name="conference_invitation">Conference invitation</string>
+
+    <string name="domen_part">conference.%1$s</string>
 </resources>

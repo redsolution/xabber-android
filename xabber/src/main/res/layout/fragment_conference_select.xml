@@ -27,6 +27,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
             >
 
             <LinearLayout
@@ -40,6 +42,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginLeft="4dp"
                     android:text="@string/muc_server" />
 
                 <EditText
@@ -71,6 +74,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="4dp"
             android:text="@string/muc_room" />
 
         <EditText
@@ -123,6 +127,7 @@
         android:id="@android:id/list"
         android:layout_above="@id/bottom_bar"
         android:layout_below="@id/top_panel"
+        android:paddingLeft="2dp"
         />
 
 </RelativeLayout>
