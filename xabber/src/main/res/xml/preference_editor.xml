@@ -109,13 +109,6 @@
             android:targetClass="com.xabber.android.ui.preferences.SecuritySettings"
             android:targetPackage="@string/application_package" />
     </Preference>
-    <Preference
-        android:key="@string/preference_debug"
-        android:title="@string/preference_debug">
-        <intent
-            android:targetClass="com.xabber.android.ui.preferences.DebugSettings"
-            android:targetPackage="@string/application_package" />
-    </Preference>
     <ListPreference
         android:title="@string/preference_spam_filter"
         android:key="@string/spam_filter_key"
@@ -124,6 +117,13 @@
         android:defaultValue="@string/spam_filter_default"
         android:summary="%s"
         />
+    <Preference
+        android:key="@string/preference_debug"
+        android:title="@string/preference_debug">
+        <intent
+            android:targetClass="com.xabber.android.ui.preferences.DebugSettings"
+            android:targetPackage="@string/application_package" />
+    </Preference>
     </PreferenceCategory>
     <PreferenceCategory
         android:title="@string/category_about">
