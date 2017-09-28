@@ -89,9 +89,11 @@ public abstract class BaseLoginActivity extends ManagedActivity implements Googl
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         // facebook auth
-        callbackManager.onActivityResult(requestCode, resultCode, data);
+        if (callbackManager != null)
+            callbackManager.onActivityResult(requestCode, resultCode, data);
         // twitter auth
-        twitterAuthClient.onActivityResult(requestCode, resultCode, data);
+        if (twitterAuthClient != null)
+            twitterAuthClient.onActivityResult(requestCode, resultCode, data);
         // google auth
         if (requestCode == RC_SIGN_IN) {
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
