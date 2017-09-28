@@ -22,7 +22,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.RelativeLayout;
@@ -52,7 +51,6 @@ public class AccountListActivity extends ManagedActivity implements OnAccountCha
     private BarPainter barPainter;
     private ItemTouchHelper touchHelper;
     private Toolbar toolbar;
-    private boolean swapMode = false;
     private TextView tvSummary;
 
     public static Intent createIntent(Context context) {
@@ -66,14 +64,14 @@ public class AccountListActivity extends ManagedActivity implements OnAccountCha
         setContentView(R.layout.activity_account_list);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar_default);
-        toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
+        toolbar.setNavigationIcon(R.drawable.ic_clear_white_24dp);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 NavUtils.navigateUpFromSameTask(AccountListActivity.this);
             }
         });
-        toolbar.setTitle(R.string.xmpp_accounts);
+        toolbar.setTitle(R.string.title_reordering_account);
         toolbar.inflateMenu(R.menu.toolbar_account_list);
         toolbar.setOnMenuItemClickListener(this);
 
@@ -91,42 +89,6 @@ public class AccountListActivity extends ManagedActivity implements OnAccountCha
                 new SimpleItemTouchHelperCallback(accountListAdapter);
         touchHelper = new ItemTouchHelper(callback);
         touchHelper.attachToRecyclerView(recyclerView);
-    }
-
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        menu.findItem(R.id.action_done).setVisible(swapMode);
-        menu.findItem(R.id.action_add_account).setVisible(!swapMode);
-        //menu.findItem(R.id.action_sort).setVisible(!swapMode);
-        return true;
-    }
-
-    private void showHideSwapMode() {
-        if (swapMode) {
-            toolbar.setTitle(R.string.xmpp_accounts);
-            barPainter.setDefaultColor();
-            toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
-            toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    NavUtils.navigateUpFromSameTask(AccountListActivity.this);
-                }
-            });
-        } else {
-            toolbar.setTitle(R.string.title_reordering_account);
-            barPainter.setDefaultColor();
-            toolbar.setNavigationIcon(R.drawable.ic_clear_white_24dp);
-            toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    finish();
-                }
-            });
-        }
-        swapMode = !swapMode;
-        if (accountListAdapter != null)
-            accountListAdapter.setShowAnchors(swapMode);
-        onPrepareOptionsMenu(toolbar.getMenu());
     }
 
     private void update() {
@@ -168,7 +130,6 @@ public class AccountListActivity extends ManagedActivity implements OnAccountCha
         super.onResume();
         update();
         Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
-        showHideSwapMode();
     }
 
     @Override
@@ -220,14 +181,6 @@ public class AccountListActivity extends ManagedActivity implements OnAccountCha
 
     @Override
     public boolean onMenuItemClick(MenuItem item) {
-        if (item.getItemId() == R.id.action_add_account) {
-            startActivity(AccountAddActivity.createIntent(this));
-            return true;
-        }
-//        if (item.getItemId() == R.id.action_sort) {
-//            showHideSwapMode();
-//            return true;
-//        }
         if (item.getItemId() == R.id.action_done) {
             updateAccountOrder();
             finish();

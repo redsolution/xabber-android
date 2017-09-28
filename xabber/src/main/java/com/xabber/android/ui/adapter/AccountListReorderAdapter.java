@@ -14,14 +14,9 @@ import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
-import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.xaccount.XMPPAccountSettings;
-import com.xabber.android.data.xaccount.XabberAccountManager;
 import com.xabber.android.ui.activity.ManagedActivity;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.widget.ItemTouchHelperAdapter;
-
-import org.jxmpp.jid.BareJid;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -42,7 +37,6 @@ public class AccountListReorderAdapter extends RecyclerView.Adapter implements I
     @SuppressWarnings("WeakerAccess")
     AccountListAdapter.Listener listener;
     ManagedActivity activity;
-    boolean showAnchors = false;
 
     public interface Listener {
         void onAccountClick(AccountJid account);
@@ -56,11 +50,6 @@ public class AccountListReorderAdapter extends RecyclerView.Adapter implements I
         this.accountItems = new ArrayList<>();
         this.activity = activity;
         this.listener = listener;
-    }
-
-    public void setShowAnchors(boolean showAnchors) {
-        this.showAnchors = showAnchors;
-        notifyDataSetChanged();
     }
 
     public void setAccountItems(List<AccountItem> accountItems) {
@@ -118,8 +107,6 @@ public class AccountListReorderAdapter extends RecyclerView.Adapter implements I
             }
         });
 
-        if (showAnchors) accountHolder.ivAnchor.setVisibility(View.VISIBLE);
-        else accountHolder.ivAnchor.setVisibility(View.GONE);
     }
 
     @Override
