@@ -1,5 +1,6 @@
 package com.xabber.android.ui.dialog;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
@@ -66,7 +67,9 @@ public class AccountDeleteDialog extends DialogFragment implements DialogInterfa
         AccountManager.getInstance().removeAccount(account);
 
         if (chbDeleteSettings != null && chbDeleteSettings.isChecked()) {
-            ((PreferenceEditor)getActivity()).onDeleteAccountSettings(jid);
+            Activity activity = getActivity();
+            if (activity instanceof PreferenceEditor)
+                ((PreferenceEditor)activity).onDeleteAccountSettings(jid);
         }
     }
 }
