@@ -179,6 +179,15 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
                 continue;
             }
 
+            // fix for db migration
+            int order = accountRealm.getOrder();
+            if (order == 0) {
+                for (AccountItem item : accountItems) {
+                    if (item.getOrder() > order) order = item.getOrder();
+                }
+                order++;
+            }
+
             AccountItem accountItem = new AccountItem(
                     accountRealm.isCustom(),
                     accountRealm.getHost(),
@@ -190,7 +199,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
                     accountRealm.getPassword(),
                     accountRealm.getToken(),
                     accountRealm.getColorIndex(),
-                    accountRealm.getOrder(),
+                    order,
                     accountRealm.isSyncNotAllowed(),
                     accountRealm.getTimestamp(),
                     accountRealm.getPriority(),
