@@ -518,6 +518,41 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
 
     /**
      * Update user`s account.
+     * It will reconnect to the server with new generated Resourcepart
+     * @param account       full source jid
+     */
+    public void generateNewResourceForAccount(AccountJid account) {
+        AccountItem accountItem = getAccount(account);
+        if (accountItem == null) return;
+        ConnectionSettings connectionSettings = accountItem.getConnectionSettings();
+
+        updateAccount(account,
+                connectionSettings.isCustomHostAndPort(),
+                connectionSettings.getHost(),
+                connectionSettings.getPort(),
+                connectionSettings.getServerName(),
+                connectionSettings.getUserName(),
+                accountItem.isStorePassword(),
+                connectionSettings.getPassword(),
+                connectionSettings.getToken(),
+                generateResource(),
+                accountItem.getPriority(),
+                accountItem.isEnabled(),
+                connectionSettings.isSaslEnabled(),
+                connectionSettings.getTlsMode(),
+                connectionSettings.useCompression(),
+                connectionSettings.getProxyType(),
+                connectionSettings.getProxyHost(),
+                connectionSettings.getProxyPort(),
+                connectionSettings.getProxyUser(),
+                connectionSettings.getProxyPassword(),
+                accountItem.isSyncable(),
+                accountItem.getArchiveMode(),
+                accountItem.getColorIndex());
+    }
+
+    /**
+     * Update user`s account.
      * <p/>
      * It will reconnect to the server if changes was made.
      * <p/>
