@@ -98,6 +98,14 @@
 
     </FrameLayout>
 
+    <include layout="@layout/item_patreon_capaign" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="@color/grey_300"
+        />
+
     <ListView
         android:id="@+id/drawer_account_list"
         android:layout_width="match_parent"
