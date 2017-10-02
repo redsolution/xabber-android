@@ -8,15 +8,15 @@
     <string name="username_hint">Xabber username or email</string>
     <string name="pass_hint">Password</string>
     <string name="forgot_pass">FORGOT PASSWORD?</string>
-    <string name="agrees">I agree to receive occasional updates from Xabber team. We promise not to bother you too often with it.</string>
+    <string name="agrees">I agree to receive occasional newsletter from Xabber team. We promise not to bother you too often with it.</string>
 
-    <string name="sync_success">Synchronization successful</string>
+    <string name="sync_success">Synchronized</string>
     <string name="sync_fail">Synchronization failed</string>
     <string name="quit_success">Quit successful</string>
     <string name="quit_fail">Quit failed</string>
-    <string name="confirm_success">Email confirmation successful</string>
+    <string name="confirm_success">Email confirmed</string>
     <string name="confirm_fail">Email confirmation failed</string>
-    <string name="complete_success">Registration completed successfully</string>
+    <string name="complete_success">Registration completed</string>
     <string name="complete_fail">Registration failed</string>
     <string name="resend_success">Verification email sent</string>
     <string name="resend_fail">Failed to send verification email</string>
@@ -62,11 +62,11 @@
     <string name="title_reordering_account">Reorder accounts</string>
     <string name="title_sync">Synchronization</string>
 
-    <string name="title_login_xabber_account">Xabber Sign In </string>
+    <string name="title_login_xabber_account">Xabber Sign In</string>
     <string name="title_register_xabber_account">Xabber Sign Up</string>
 
     <string name="summary_xabber_account_in_login">Xabber account is required to use Xabber services and sync device settings.</string>
-    <string name="summary_username">Xabber username will also act as a free XMPP id</string>
+    <string name="summary_username">Xabber username will also act as a free XMPP ID</string>
 
     <string name="button_quit">QUIT</string>
     <string name="button_login">SIGN IN</string>
@@ -138,7 +138,7 @@
     <string name="tutorial_description_1">Get free XMPP account from creators of Xabber, with guaranteed support of all latest features and extensions</string>
     <string name="tutorial_description_2">Create an account to manage our services and enhance XMPP experience on all supported platforms</string>
     <string name="tutorial_description_3">Xabber account lets you easily sync your accounts and their settings between devices and platforms</string>
-    <string name="tutorial_description_4">Use social authentification to quickly login to Xabber and instantly connect all your accounts on new device</string>
+    <string name="tutorial_description_4">Use social authentification to quickly log in to Xabber and instantly connect all your accounts on new device</string>
 
     <string name="account_deleted">This Xabber Account was deleted</string>
 

@@ -39,7 +39,7 @@
     <string name="request_subscription">Request subscription</string>
     <string name="XMPP_EXCEPTION">Stream error</string>
     <string name="application_state_closing">Saving changes…\nApplication will be closed soon.</string>
-    <string name="certificate_confirmation">%1$s.\nDo you absolutely trust a certificate with SHA-1 fingerprint: %2$s? Do you want not to be notified about this issue with this certificate?</string>
+    <string name="certificate_confirmation">%1$s.\nIssuer uses deprecated (SHA-1) fingerprint that can\'t be trusted: %2$s? Do you want to not be notified about this issue with this certificate?</string>
     <string name="certificate_details">\n\nIssued to:\nCommon Name (CN): %1$s\nOrganization (O): %2$s\nOrganizational Unit (OU): %3$s\nSerial Number: %4$s\n\nIssued by:\nCommon Name (CN): %5$s\nOrganization (O): %6$s\nOrganizational Unit (OU): %7$s\n\nValidity:\nIssued on: %8$s\nExpires on: %9$s.</string>
     <string name="certificate_invalid_chane">Signature chain verification failed</string>
     <string name="certificate_invalid_target">Target verification failed</string>
@@ -84,7 +84,7 @@
 
     <string name="intro_welcome">Welcome to Xabber</string>
     <string name="intro_xabber_description">Open source XMPP client for Android</string>
-    <string name="intro_have_account">Login XMPP account</string>
+    <string name="intro_have_account">XMPP login</string>
     <string name="intro_register_account">Register XMPP account</string>
     <string name="intro_create_xabber_account">Use Xabber Account</string>
     <string name="intro_use_third_party_accounts">use third party XMPP accounts</string>
