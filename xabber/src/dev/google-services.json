@@ -1,12 +1,12 @@
 {
   "project_info": {
     "project_number": "",
-    "project_id": ""
+    "project_id": "this-is-a-sample"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "",
+        "mobilesdk_app_id": "1:999999999999:android:0000000000000000",
         "android_client_info": {
           "package_name": "com.xabber.android.beta"
         }
@@ -53,7 +53,7 @@
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "",
+        "mobilesdk_app_id": "1:999999999999:android:0000000000000000",
         "android_client_info": {
           "package_name": "com.xabber.android"
         }
@@ -92,7 +92,7 @@
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "",
+        "mobilesdk_app_id": "1:999999999999:android:0000000000000000",
         "android_client_info": {
           "package_name": "com.xabber.androidvip"
         }
@@ -131,7 +131,7 @@
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "",
+        "mobilesdk_app_id": "1:999999999999:android:0000000000000000",
         "android_client_info": {
           "package_name": "com.xabber.androiddev"
         }
