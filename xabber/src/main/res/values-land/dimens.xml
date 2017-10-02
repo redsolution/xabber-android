@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="intro_screen_bottom_space_height">0dp</dimen>
+    <dimen name="intro_screen_right_space_wight">48dp</dimen>
+
+    <dimen name="intro_horizontal_margin">16dp</dimen>
+    <dimen name="intro_vertical_margin">16dp</dimen>
+</resources>

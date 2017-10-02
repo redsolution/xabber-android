@@ -21,8 +21,11 @@ import android.support.v4.app.NavUtils;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
@@ -30,9 +33,12 @@ import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.xaccount.XabberAccountManager;
 import com.xabber.android.ui.adapter.AccountListAdapter;
+import com.xabber.android.ui.adapter.AccountListReorderAdapter;
 import com.xabber.android.ui.color.BarPainter;
 import com.xabber.android.ui.dialog.AccountDeleteDialog;
+import com.xabber.android.ui.widget.SimpleItemTouchHelperCallback;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -41,8 +47,11 @@ import java.util.List;
 public class AccountListActivity extends ManagedActivity implements OnAccountChangedListener,
         AccountListAdapter.Listener, Toolbar.OnMenuItemClickListener {
 
-    private AccountListAdapter accountListAdapter;
+    private AccountListReorderAdapter accountListAdapter;
     private BarPainter barPainter;
+    private ItemTouchHelper touchHelper;
+    private Toolbar toolbar;
+    private TextView tvSummary;
 
     public static Intent createIntent(Context context) {
         return new Intent(context, AccountListActivity.class);
@@ -54,26 +63,32 @@ public class AccountListActivity extends ManagedActivity implements OnAccountCha
 
         setContentView(R.layout.activity_account_list);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_default);
-        toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
+        toolbar = (Toolbar) findViewById(R.id.toolbar_default);
+        toolbar.setNavigationIcon(R.drawable.ic_clear_white_24dp);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 NavUtils.navigateUpFromSameTask(AccountListActivity.this);
             }
         });
-        toolbar.setTitle(R.string.xmpp_accounts);
+        toolbar.setTitle(R.string.title_reordering_account);
         toolbar.inflateMenu(R.menu.toolbar_account_list);
         toolbar.setOnMenuItemClickListener(this);
 
         barPainter = new BarPainter(this, toolbar);
 
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.account_list_recycler_view);
+        tvSummary = (TextView) findViewById(R.id.tvSummary);
 
-        accountListAdapter = new AccountListAdapter(this, this);
+        accountListAdapter = new AccountListReorderAdapter(this, this);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(accountListAdapter);
+
+        ItemTouchHelper.Callback callback =
+                new SimpleItemTouchHelperCallback(accountListAdapter);
+        touchHelper = new ItemTouchHelper(callback);
+        touchHelper.attachToRecyclerView(recyclerView);
     }
 
     private void update() {
@@ -85,6 +100,29 @@ public class AccountListActivity extends ManagedActivity implements OnAccountCha
         accountListAdapter.setAccountItems(accountItems);
 
         barPainter.setDefaultColor();
+
+        // set margin for textView
+        int height = 52 * (accountItems.size() + 1) + 16;
+        final float scale = getResources().getDisplayMetrics().density;
+        int pixels = (int) (height * scale + 0.5f);
+
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
+                RelativeLayout.LayoutParams.WRAP_CONTENT,
+                RelativeLayout.LayoutParams.WRAP_CONTENT);
+        params.setMargins(16, pixels, 16, 0);
+        tvSummary.setLayoutParams(params);
+    }
+
+    public void updateAccountOrder() {
+        if (accountListAdapter != null) {
+            int order = 1;
+            for (AccountItem account : accountListAdapter.getItems())
+                AccountManager.getInstance().setOrder(account.getAccount(), order++);
+
+            XabberAccountManager.getInstance().setLastOrderChangeTimestampIsNow();
+            if (XabberAccountManager.getInstance().getAccount() != null)
+                XabberAccountManager.getInstance().updateAccountSettings();
+        }
     }
 
     @Override
@@ -143,11 +181,17 @@ public class AccountListActivity extends ManagedActivity implements OnAccountCha
 
     @Override
     public boolean onMenuItemClick(MenuItem item) {
-        if (item.getItemId() == R.id.action_add_account) {
-            startActivity(AccountAddActivity.createIntent(this));
+        if (item.getItemId() == R.id.action_done) {
+            updateAccountOrder();
+            finish();
             return true;
         }
 
         return false;
+    }
+
+    @Override
+    public void onStartDrag(RecyclerView.ViewHolder viewHolder) {
+        touchHelper.startDrag(viewHolder);
     }
 }

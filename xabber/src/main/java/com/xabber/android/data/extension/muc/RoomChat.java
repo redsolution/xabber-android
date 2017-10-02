@@ -117,7 +117,7 @@ public class RoomChat extends AbstractChat {
         return user.getJid().asEntityBareJidIfPossible();
     }
 
-    Resourcepart getNickname() {
+    public Resourcepart getNickname() {
         return nickname;
     }
 
@@ -184,12 +184,12 @@ public class RoomChat extends AbstractChat {
 
     @Override
     protected boolean notifyAboutMessage() {
-        return SettingsManager.eventsMessage() == SettingsManager.EventsMessage.chatAndMuc;
+        return SettingsManager.eventsOnMuc();
     }
 
     @Override
-    protected boolean onPacket(UserJid bareAddress, Stanza stanza) {
-        if (!super.onPacket(bareAddress, stanza)) {
+    protected boolean onPacket(UserJid bareAddress, Stanza stanza, boolean isCarbons) {
+        if (!super.onPacket(bareAddress, stanza, isCarbons)) {
             return false;
         }
 
@@ -447,7 +447,8 @@ public class RoomChat extends AbstractChat {
      */
     private void onKick(Resourcepart resource, org.jxmpp.jid.Jid actor) {
         if (showStatusChange()) {
-            newAction(resource, actor.toString(), ChatAction.kick);
+            if (actor != null) newAction(resource, actor.toString(), ChatAction.kick);
+            else newAction(resource, "", ChatAction.kick);
         }
         if (isSelf(resource)) {
             MUCManager.getInstance().leaveRoom(account, getRoom());

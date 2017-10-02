@@ -48,6 +48,7 @@ import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.muc.RoomContact;
+import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.ChatAction;
@@ -60,7 +61,9 @@ import com.xabber.android.utils.StringUtils;
 import org.jxmpp.jid.impl.JidCreate;
 import org.jxmpp.jid.parts.Resourcepart;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmRecyclerViewAdapter;
@@ -92,7 +95,7 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
     private AccountJid account;
     private UserJid user;
     private int prevItemCount;
-    private long lastUpdateTimeMillis;
+    private List<String> itemsNeedOriginalText;
 
     public ChatMessageAdapter(Context context, RealmResults<MessageItem> messageItems, AbstractChat chat, ChatFragment chatFragment) {
         super(context, messageItems, true);
@@ -112,11 +115,19 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
         this.listener = chatFragment;
 
         prevItemCount = getItemCount();
+
+        itemsNeedOriginalText = new ArrayList<>();
     }
 
     public interface Listener {
         void onMessageNumberChanged(int prevItemCount);
         void onMessagesUpdated();
+    }
+
+    public void addOrRemoveItemNeedOriginalText(String messageId) {
+        if (itemsNeedOriginalText.contains(messageId))
+            itemsNeedOriginalText.remove(messageId);
+        else itemsNeedOriginalText.add(messageId);
     }
 
     private void setUpOutgoingMessage(Message holder, final MessageItem messageItem) {
@@ -246,7 +257,7 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
             incomingMessage.statusIcon.setVisibility(View.GONE);
         }
 
-        setUpMessageBalloonBackground(incomingMessage.messageBalloon,
+        setUpMessageBalloonBackgroundIncoming(incomingMessage.messageBalloon,
                 ColorManager.getInstance().getChatIncomingBalloonColorsStateList(account), R.drawable.message_incoming);
 
         setUpAvatar(messageItem, incomingMessage);
@@ -300,6 +311,32 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
         }
     }
 
+    private void setUpMessageBalloonBackgroundIncoming(View messageBalloon, ColorStateList darkColorStateList, int lightBackgroundId) {
+
+            final Drawable originalBackgroundDrawable = messageBalloon.getBackground();
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                originalBackgroundDrawable.setTintList(darkColorStateList);
+            } else {
+                Drawable wrapDrawable = DrawableCompat.wrap(originalBackgroundDrawable);
+                DrawableCompat.setTintList(wrapDrawable, darkColorStateList);
+
+                int pL = messageBalloon.getPaddingLeft();
+                int pT = messageBalloon.getPaddingTop();
+                int pR = messageBalloon.getPaddingRight();
+                int pB = messageBalloon.getPaddingBottom();
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                    messageBalloon.setBackground(wrapDrawable);
+                } else {
+                    messageBalloon.setBackgroundDrawable(wrapDrawable);
+                }
+
+                messageBalloon.setPadding(pL, pT, pR, pB);
+            }
+
+    }
+
     @Override
     public int getItemCount() {
         if (realmResults.isValid() && realmResults.isLoaded()) {
@@ -327,11 +364,11 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
         switch (viewType) {
             case VIEW_TYPE_HINT:
                 return new BasicMessage(LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.item_message_info, parent, false), appearanceStyle);
+                        .inflate(R.layout.item_message_info, parent, false));
 
             case VIEW_TYPE_ACTION_MESSAGE:
                 return new BasicMessage(LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.item_action_message, parent, false), appearanceStyle);
+                        .inflate(R.layout.item_action_message, parent, false));
 
             case VIEW_TYPE_INCOMING_MESSAGE:
                 return new IncomingMessage(LayoutInflater.from(parent.getContext())
@@ -414,7 +451,6 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
 
     @Override
     public void onChange() {
-        lastUpdateTimeMillis = System.currentTimeMillis();
         notifyDataSetChanged();
         listener.onMessagesUpdated();
         int itemCount = getItemCount();
@@ -432,14 +468,22 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
             message.messageHeader.setVisibility(View.GONE);
         }
 
-        if (messageItem.isUnencrypted()) {
-            message.messageUnencrypted.setVisibility(View.VISIBLE);
+        if (messageItem.isEncrypted()) {
+            message.ivEncrypted.setVisibility(View.VISIBLE);
         } else {
-            message.messageUnencrypted.setVisibility(View.GONE);
+            message.ivEncrypted.setVisibility(View.GONE);
         }
 
         message.messageText.setText(messageItem.getText());
-        message.messageText.setVisibility(View.VISIBLE);
+        if (OTRManager.getInstance().isEncrypted(messageItem.getText())) {
+            if (itemsNeedOriginalText.contains(messageItem.getUniqueId()))
+                message.messageText.setVisibility(View.VISIBLE);
+            else message.messageText.setVisibility(View.GONE);
+            message.messageNotDecrypted.setVisibility(View.VISIBLE);
+        } else {
+            message.messageText.setVisibility(View.VISIBLE);
+            message.messageNotDecrypted.setVisibility(View.GONE);
+        }
 
         String time = StringUtils.getSmartTimeText(context, new Date(messageItem.getTimestamp()));
 
@@ -471,7 +515,7 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
         } else if (messageItem.isError()) {
             messageIcon = R.drawable.ic_message_has_error_14dp;
         } else if (!isFileUploadInProgress && !messageItem.isSent()
-                && lastUpdateTimeMillis - messageItem.getTimestamp() > 1000) {
+                && System.currentTimeMillis() - messageItem.getTimestamp() > 1000) {
             messageIcon = R.drawable.ic_message_not_sent_14dp;
         } else if (!messageItem.isDelivered()) {
             if (messageItem.isAcknowledged()) {
@@ -557,6 +601,12 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
             messageText = (TextView) itemView.findViewById(R.id.message_text);
             messageText.setTextAppearance(itemView.getContext(), appearance);
         }
+
+        BasicMessage(View itemView) {
+            super(itemView);
+
+            messageText = (TextView) itemView.findViewById(R.id.message_text);
+        }
     }
 
     public static abstract class Message extends BasicMessage implements View.OnClickListener {
@@ -564,13 +614,14 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
         private static final String LOG_TAG = Message.class.getSimpleName();
         TextView messageTime;
         TextView messageHeader;
-        TextView messageUnencrypted;
+        TextView messageNotDecrypted;
         View messageBalloon;
 
         MessageClickListener onClickListener;
 
         ImageView messageImage;
         ImageView statusIcon;
+        ImageView ivEncrypted;
 
 
         public Message(View itemView, MessageClickListener onClickListener, @StyleRes int appearance) {
@@ -579,12 +630,13 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
 
             messageTime = (TextView) itemView.findViewById(R.id.message_time);
             messageHeader = (TextView) itemView.findViewById(R.id.message_header);
-            messageUnencrypted = (TextView) itemView.findViewById(R.id.message_unencrypted);
+            messageNotDecrypted = (TextView) itemView.findViewById(R.id.message_not_decrypted);
             messageBalloon = itemView.findViewById(R.id.message_balloon);
 
             messageImage = (ImageView) itemView.findViewById(R.id.message_image);
 
             statusIcon = (ImageView) itemView.findViewById(R.id.message_status_icon);
+            ivEncrypted = (ImageView) itemView.findViewById(R.id.message_encrypted_icon);
 
             itemView.setOnClickListener(this);
             messageImage.setOnClickListener(this);

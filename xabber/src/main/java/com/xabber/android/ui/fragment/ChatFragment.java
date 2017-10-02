@@ -6,12 +6,17 @@ import android.content.ActivityNotFoundException;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NavUtils;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
+
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
@@ -27,11 +32,14 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.PopupWindow;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.xabber.android.R;
@@ -46,6 +54,8 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.attention.AttentionManager;
+import com.xabber.android.data.extension.capability.CapabilitiesManager;
+import com.xabber.android.data.extension.capability.ClientInfo;
 import com.xabber.android.data.extension.cs.ChatStateManager;
 import com.xabber.android.data.extension.file.FileUtils;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
@@ -59,6 +69,7 @@ import com.xabber.android.data.extension.mam.PreviousHistoryLoadStartedEvent;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.muc.RoomChat;
 import com.xabber.android.data.extension.muc.RoomState;
+import com.xabber.android.data.extension.otr.AuthAskEvent;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.otr.SecurityLevel;
 import com.xabber.android.data.log.LogManager;
@@ -79,6 +90,8 @@ import com.xabber.android.ui.activity.FingerprintActivity;
 import com.xabber.android.ui.activity.OccupantListActivity;
 import com.xabber.android.ui.activity.QuestionActivity;
 import com.xabber.android.ui.adapter.ChatMessageAdapter;
+import com.xabber.android.ui.adapter.CustomMessageMenuAdapter;
+import com.xabber.android.ui.adapter.ResourceAdapter;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.dialog.BlockContactDialog;
 import com.xabber.android.ui.dialog.ChatExportDialogFragment;
@@ -86,12 +99,21 @@ import com.xabber.android.ui.dialog.ChatHistoryClearDialog;
 import com.xabber.android.ui.helper.ContactTitleInflater;
 import com.xabber.android.ui.helper.PermissionsRequester;
 import com.xabber.android.ui.preferences.ChatContactSettings;
+import com.xabber.android.ui.widget.CustomMessageMenu;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.jivesoftware.smack.packet.Presence;
+import org.jxmpp.jid.Jid;
 import org.jxmpp.jid.impl.JidCreate;
+import org.jxmpp.jid.parts.Resourcepart;
+import org.jxmpp.stringprep.XmppStringprepException;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -104,7 +126,7 @@ import io.realm.Sort;
 public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickListener,
         View.OnClickListener, Toolbar.OnMenuItemClickListener,
         ChatMessageAdapter.Message.MessageClickListener, HttpUploadListener,
-        ChatMessageAdapter.Listener {
+        ChatMessageAdapter.Listener, AdapterView.OnItemClickListener, PopupWindow.OnDismissListener {
 
     public static final String ARGUMENT_ACCOUNT = "ARGUMENT_ACCOUNT";
     public static final String ARGUMENT_USER = "ARGUMENT_USER";
@@ -132,9 +154,14 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
     private View lastHistoryProgressBar;
     private View previousHistoryProgressBar;
 
+    private RelativeLayout notifyLayout;
+    private TextView tvNotifyTitle;
+    private TextView tvNotifyAction;
+
     private RecyclerView realmRecyclerView;
     private ChatMessageAdapter chatMessageAdapter;
     private LinearLayoutManager layoutManager;
+    private SwipeRefreshLayout swipeContainer;
 
     boolean isInputEmpty = true;
     private boolean skipOnTextChanges = false;
@@ -152,6 +179,12 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
     private RealmResults<SyncInfo> syncInfoResults;
     private RealmResults<MessageItem> messageItems;
     private boolean toBeScrolled;
+
+    private List<HashMap<String, String>> menuItems = null;
+
+    private int checkedResource; // use only for alert dialog
+
+    private Intent notifyIntent;
 
     public static ChatFragment newInstance(AccountJid account, UserJid user) {
         ChatFragment fragment = new ChatFragment();
@@ -277,6 +310,32 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
             }
         });
 
+        swipeContainer = (SwipeRefreshLayout) view.findViewById(R.id.swipeContainer);
+        swipeContainer.setColorSchemeColors(ColorManager.getInstance().getAccountPainter().getAccountMainColor(account));
+        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                swipeContainer.setRefreshing(false);
+                AbstractChat chat = getChat();
+                if (chat != null) {
+                    if (chat.isRemotePreviousHistoryCompletelyLoaded())
+                        Toast.makeText(getActivity(), R.string.toast_no_history, Toast.LENGTH_SHORT).show();
+                    else requestRemoteHistoryLoad();
+                }
+            }
+        });
+
+        tvNotifyTitle = (TextView) view.findViewById(R.id.tvNotifyTitle);
+        tvNotifyAction = (TextView) view.findViewById(R.id.tvNotifyAction);
+        notifyLayout = (RelativeLayout) view.findViewById(R.id.notifyLayout);
+        notifyLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (notifyIntent != null) startActivity(notifyIntent);
+                notifyLayout.setVisibility(View.GONE);
+            }
+        });
+
         setChat(account, user);
 
         return view;
@@ -329,6 +388,8 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         updateContact();
         restoreInputState();
         restoreScrollState();
+
+        showHideNotifyIfNeed();
     }
 
     @Override
@@ -617,6 +678,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
             LogManager.i(this, "PreviousHistoryLoadStartedEvent");
             previousHistoryProgressBar.setVisibility(View.VISIBLE);
             isRemoteHistoryRequested = true;
+            swipeContainer.setRefreshing(true);
         }
     }
 
@@ -626,6 +688,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
             LogManager.i(this, "PreviousHistoryLoadFinishedEvent");
             isRemoteHistoryRequested = false;
             previousHistoryProgressBar.setVisibility(View.GONE);
+            swipeContainer.setRefreshing(false);
         }
     }
 
@@ -638,6 +701,14 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
     public void onEvent(NewIncomingMessageEvent event) {
         if (event.getAccount().equals(account) && event.getUser().equals(user)) {
             playIncomingAnimation();
+            playIncomingSound();
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(AuthAskEvent event) {
+        if (event.getAccount() == getAccount() && event.getUser() == getUser()) {
+            showHideNotifyIfNeed();
         }
     }
 
@@ -876,6 +947,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         toolbar.setBackgroundColor(ColorManager.getInstance().getAccountPainter().getAccountMainColor(account));
         setUpOptionsMenu(toolbar.getMenu());
         updateSecurityButton();
+        updateSendButtonSecurityLevel();
     }
 
     private void scrollDown() {
@@ -891,6 +963,12 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         }
     }
 
+    private void updateSendButtonSecurityLevel() {
+        SecurityLevel securityLevel = OTRManager.getInstance().getSecurityLevel(account, user);
+        if (sendButton != null)
+            sendButton.setImageLevel(securityLevel.getImageLevel());
+    }
+
     public boolean isEqual(BaseEntity chat) {
         return chat != null && this.account.equals(chat.getAccount()) && this.user.equals(chat.getUser());
     }
@@ -899,6 +977,22 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         skipOnTextChanges = true;
         inputView.setText(additional);
         inputView.setSelection(additional.length());
+        skipOnTextChanges = false;
+    }
+
+    public void setInputTextAtCursor(String additional) {
+        skipOnTextChanges = true;
+        String currentText = inputView.getText().toString();
+        if (currentText.isEmpty()) {
+            inputView.setText(additional);
+            inputView.setSelection(additional.length());
+        } else {
+            int cursorPosition = inputView.getSelectionStart();
+            String first = currentText.substring(0, cursorPosition);
+            String second = currentText.substring(cursorPosition);
+            inputView.setText(first.concat(additional).concat(second));
+            inputView.setSelection(first.length() + additional.length());
+        }
         skipOnTextChanges = false;
     }
 
@@ -923,11 +1017,11 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
             /* security menu */
 
             case R.id.action_start_encryption:
-                startEncryption(account, user);
+                showResourceChoiceAlert(account, user, false);
                 return true;
 
             case R.id.action_restart_encryption:
-                restartEncryption(account, user);
+                showResourceChoiceAlert(account, user, true);
                 return true;
 
             case R.id.action_stop_encryption:
@@ -998,45 +1092,6 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
                 startActivity(OccupantListActivity.createIntent(getActivity(), account, user));
                 return true;
 
-            /* message popup menu */
-
-            case R.id.action_message_repeat:
-                if (MessageItem.isUploadFileMessage(clickedMessageItem)) {
-                    uploadFile(clickedMessageItem.getFilePath());
-                } else {
-                    sendMessage(clickedMessageItem.getText());
-                }
-                return true;
-
-            case R.id.action_message_copy:
-                Spannable spannable = MessageItem.getSpannable(clickedMessageItem);
-                ((ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE))
-                        .setPrimaryClip(ClipData.newPlainText(spannable, spannable));
-                return true;
-
-            case R.id.action_message_quote:
-                setInputText("> " + clickedMessageItem.getText() + "\n");
-                return true;
-
-            case R.id.action_message_remove:
-                MessageManager.getInstance().removeMessage(clickedMessageItem.getUniqueId());
-                return true;
-
-            case R.id.action_message_open_muc_private_chat:
-                UserJid occupantFullJid = null;
-                try {
-                    occupantFullJid = UserJid.from(
-                            JidCreate.domainFullFrom(user.getJid().asDomainBareJid(),
-                                    clickedMessageItem.getResource()));
-                    MessageManager.getInstance().openChat(account, occupantFullJid);
-                    startActivity(ChatActivity.createSpecificChatIntent(getActivity(), account, occupantFullJid));
-
-                } catch (UserJid.UserJidCreateException e) {
-                    LogManager.exception(this, e);
-                }
-
-                return true;
-
             default:
                 return false;
         }
@@ -1074,6 +1129,85 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
             OTRManager.getInstance().startSession(account, user);
         } catch (NetworkException e) {
             Application.getInstance().onError(e);
+        }
+    }
+
+    private void showResourceChoiceAlert(final AccountJid account, final UserJid user, final boolean restartSession) {
+        final List<Presence> allPresences = RosterManager.getInstance().getPresences(account, user.getJid());
+
+        final List<Map<String, String>> items = new ArrayList<>();
+        for (Presence presence : allPresences) {
+            Jid fromJid = presence.getFrom();
+            ClientInfo clientInfo = CapabilitiesManager.getInstance().getCachedClientInfo(fromJid);
+
+            String client = "";
+            if (clientInfo == null) {
+                CapabilitiesManager.getInstance().requestClientInfoByUser(account, fromJid);
+            } else if (clientInfo == ClientInfo.INVALID_CLIENT_INFO) {
+                client = getString(R.string.unknown);
+            } else {
+                String name = clientInfo.getName();
+                if (name != null) {
+                    client = name;
+                }
+
+                String type = clientInfo.getType();
+                if (type != null) {
+                    if (client.isEmpty()) {
+                        client = type;
+                    } else {
+                        client = client + "/" + type;
+                    }
+                }
+            }
+
+            Map<String, String> map = new HashMap<>();
+            if (!client.isEmpty()) {
+                map.put(ResourceAdapter.KEY_CLIENT, client);
+            }
+
+            Resourcepart resourceOrNull = fromJid.getResourceOrNull();
+            if (resourceOrNull != null) {
+                map.put(ResourceAdapter.KEY_RESOURCE, resourceOrNull.toString());
+                items.add(map);
+            }
+        }
+        final ResourceAdapter adapter = new ResourceAdapter(getActivity(), items);
+        adapter.setCheckedItem(checkedResource);
+
+        if (items.size() > 0) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setTitle(R.string.otr_select_resource);
+            builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                    checkedResource = adapter.getCheckedItem();
+                }
+            });
+            builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                    checkedResource = adapter.getCheckedItem();
+                    try {
+                        RegularChat chat = (RegularChat) getChat();
+                        if (chat != null) {
+                            chat.setOTRresource(Resourcepart.from(items.get(checkedResource).get(ResourceAdapter.KEY_RESOURCE)));
+                            if (restartSession) restartEncryption(account, user);
+                            else startEncryption(account, user);
+                        } else {
+                            Toast.makeText(getActivity(), R.string.otr_select_toast_error, Toast.LENGTH_SHORT).show();
+                        }
+                    } catch (XmppStringprepException e) {
+                        e.printStackTrace();
+                        Toast.makeText(getActivity(), R.string.otr_select_toast_error, Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+            builder.setSingleChoiceItems(adapter, checkedResource, null).show();
+        } else {
+            Toast.makeText(getActivity(), R.string.otr_select_toast_resources_not_found, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -1129,30 +1263,119 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
                 LogManager.w(LOG_TAG, "onMessageClick null message item. Position: " + position);
                 return;
             }
-
-            PopupMenu popup = new PopupMenu(getActivity(), caller);
-            popup.inflate(R.menu.item_message);
-            popup.setOnMenuItemClickListener(this);
-
-            final Menu menu = popup.getMenu();
-
-            if (clickedMessageItem.isError()) {
-                menu.findItem(R.id.action_message_repeat).setVisible(true);
-            }
-
-            if (MessageItem.isUploadFileMessage(clickedMessageItem)) {
-                menu.findItem(R.id.action_message_copy).setVisible(false);
-                menu.findItem(R.id.action_message_quote).setVisible(false);
-                menu.findItem(R.id.action_message_remove).setVisible(false);
-            }
-
-            if (clickedMessageItem.isIncoming() && MUCManager.getInstance()
-                    .hasRoom(account, user.getJid().asEntityBareJidIfPossible())) {
-                menu.findItem(R.id.action_message_open_muc_private_chat).setVisible(true);
-            }
-
-            popup.show();
+            showCustomMenu(caller);
         }
+    }
+
+    public void showCustomMenu(View anchor) {
+        menuItems = new ArrayList<HashMap<String, String>>();
+
+        if (clickedMessageItem.isError()) {
+            CustomMessageMenu.addMenuItem(menuItems, "action_message_repeat", getString(R.string.message_repeat));
+        }
+
+        if (clickedMessageItem.isIncoming() && MUCManager.getInstance()
+                .hasRoom(account, user.getJid().asEntityBareJidIfPossible())) {
+            CustomMessageMenu.addMenuItem(menuItems, "action_message_appeal", getString(R.string.message_appeal));
+        }
+
+        if (!MessageItem.isUploadFileMessage(clickedMessageItem)) {
+            CustomMessageMenu.addMenuItem(menuItems, "action_message_quote", getString(R.string.message_quote));
+            CustomMessageMenu.addMenuItem(menuItems, "action_message_copy", getString(R.string.message_copy));
+            CustomMessageMenu.addMenuItem(menuItems, "action_message_remove", getString(R.string.message_remove));
+        }
+
+        if (clickedMessageItem.isIncoming() && MUCManager.getInstance()
+                .hasRoom(account, user.getJid().asEntityBareJidIfPossible())) {
+            CustomMessageMenu.addMenuItem(menuItems, "action_message_open_muc_private_chat", getString(R.string.message_open_private_chat));
+        }
+
+        if (OTRManager.getInstance().isEncrypted(clickedMessageItem.getText())) {
+            CustomMessageMenu.addMenuItem(menuItems, "action_message_show_original_otr", getString(R.string.message_otr_show_original));
+        }
+
+        if (clickedMessageItem.isForwarded()) {
+            CustomMessageMenu.addMenuItem(menuItems, "action_message_status", CustomMessageMenuAdapter.STATUS_FORWARDED);
+        } else if (clickedMessageItem.isReceivedFromMessageArchive()) {
+            CustomMessageMenu.addMenuItem(menuItems, "action_message_status", CustomMessageMenuAdapter.STATUS_SYNCED);
+        } else if (clickedMessageItem.isError()) {
+            CustomMessageMenu.addMenuItem(menuItems, "action_message_status", CustomMessageMenuAdapter.STATUS_ERROR);
+        } else if (!clickedMessageItem.isSent()) {
+            CustomMessageMenu.addMenuItem(menuItems, "action_message_status", CustomMessageMenuAdapter.STATUS_NOT_SEND);
+        } else if (clickedMessageItem.isDelivered()) {
+            CustomMessageMenu.addMenuItem(menuItems, "action_message_status", CustomMessageMenuAdapter.STATUS_DELIVERED);
+        } else if (clickedMessageItem.isAcknowledged()) {
+            CustomMessageMenu.addMenuItem(menuItems, "action_message_status", CustomMessageMenuAdapter.STATUS_ACK);
+        }
+
+        CustomMessageMenu.showMenu(getActivity(), anchor, menuItems, this, this);
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        if (menuItems != null && menuItems.size() > position) {
+            HashMap<String, String> menuItem = menuItems.get(position);
+
+            switch (menuItem.get(CustomMessageMenuAdapter.KEY_ID)) {
+                case "action_message_repeat":
+                    if (MessageItem.isUploadFileMessage(clickedMessageItem)) {
+                        uploadFile(clickedMessageItem.getFilePath());
+                    } else {
+                        sendMessage(clickedMessageItem.getText());
+                    }
+                    break;
+                case "action_message_copy":
+                    Spannable spannable = MessageItem.getSpannable(clickedMessageItem);
+                    ((ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE))
+                            .setPrimaryClip(ClipData.newPlainText(spannable, spannable));
+                    break;
+                case "action_message_appeal":
+                    setInputTextAtCursor(clickedMessageItem.getResource().toString() + ", ");
+                    break;
+                case "action_message_quote":
+                    setInputTextAtCursor("> " + clickedMessageItem.getText() + "\n");
+                    break;
+                case "action_message_remove":
+                    MessageManager.getInstance().removeMessage(clickedMessageItem.getUniqueId());
+                    break;
+                case "action_message_open_muc_private_chat":
+                    UserJid occupantFullJid = null;
+                    try {
+                        occupantFullJid = UserJid.from(
+                                JidCreate.domainFullFrom(user.getJid().asDomainBareJid(),
+                                        clickedMessageItem.getResource()));
+                        MessageManager.getInstance().openChat(account, occupantFullJid);
+                        startActivity(ChatActivity.createSpecificChatIntent(getActivity(), account, occupantFullJid));
+
+                    } catch (UserJid.UserJidCreateException e) {
+                        LogManager.exception(this, e);
+                    }
+                    break;
+                case "action_message_show_original_otr":
+                    chatMessageAdapter.addOrRemoveItemNeedOriginalText(clickedMessageItem.getUniqueId());
+                    chatMessageAdapter.notifyDataSetChanged();
+                    break;
+                case "action_message_status":
+                    if (clickedMessageItem.isError())
+                        showError(clickedMessageItem.getErrorDescription());
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    @Override
+    public void onDismiss() {
+        menuItems = null;
+    }
+
+    private void showError(String message) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle(R.string.error_description_title)
+                .setMessage(message)
+                .setPositiveButton("Ok", null)
+                .show();
     }
 
     @Override
@@ -1179,6 +1402,14 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
             shakeAnimation = AnimationUtils.loadAnimation(getActivity(), R.anim.shake);
         }
         toolbar.findViewById(R.id.name_holder).startAnimation(shakeAnimation);
+    }
+
+    public void playIncomingSound() {
+        if (SettingsManager.eventsInChatSounds()) {
+            MediaPlayer mp = MediaPlayer.create(getActivity(), SettingsManager.eventsSound());
+            mp.start();
+            mp.release();
+        }
     }
 
     @Override
@@ -1236,5 +1467,22 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         void registerChatFragment(ChatFragment chatFragment);
 
         void unregisterChatFragment();
+    }
+
+    public void showHideNotifyIfNeed() {
+        AbstractChat chat = getChat();
+        if (chat != null && chat instanceof RegularChat) {
+            notifyIntent = ((RegularChat)chat).getIntent();
+            if (notifyIntent != null) {
+                if (notifyIntent.getBooleanExtra(QuestionActivity.EXTRA_FIELD_CANCEL, false)) {
+                    tvNotifyTitle.setText(R.string.otr_verification_progress_title);
+                    tvNotifyAction.setText(R.string.otr_verification_notify_button_cancel);
+                } else {
+                    tvNotifyTitle.setText(R.string.otr_verification_notify_title);
+                    tvNotifyAction.setText(R.string.otr_verification_notify_button);
+                }
+                notifyLayout.setVisibility(View.VISIBLE);
+            } else notifyLayout.setVisibility(View.GONE);
+        }
     }
 }

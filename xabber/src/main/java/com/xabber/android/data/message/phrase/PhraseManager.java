@@ -91,7 +91,7 @@ public class PhraseManager implements OnLoadListener {
      * @return Sound associated with first matched phrase. Chat specific setting
      * if no one matches .
      */
-    public Uri getSound(AccountJid account, UserJid user, String text) {
+    public Uri getSound(AccountJid account, UserJid user, String text, boolean isMUC) {
         Collection<String> groups = RosterManager.getInstance().getGroups(
                 account, user);
         for (Phrase phrase : phrases)
@@ -101,7 +101,7 @@ public class PhraseManager implements OnLoadListener {
                     return null;
                 return value;
             }
-        return ChatManager.getInstance().getSound(account, user);
+        return ChatManager.getInstance().getSound(account, user, isMUC);
     }
 
     /**

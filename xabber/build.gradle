@@ -11,8 +11,8 @@ android {
     defaultConfig {
         minSdkVersion 15
         targetSdkVersion 25
-        versionCode 353
-        versionName '2.0.2(353)'
+        versionCode 401
+        versionName '2.1(401)'
     }
 
     lintOptions {
@@ -115,6 +115,24 @@ def initFabricPropertiesIfNeeded() {
     }
 }
 
+def build_param = "${build}";
+
+if (build_param != "dev") {
+    //exclude dev
+    android.variantFilter { variant ->
+        if (variant.getFlavors().get(0).name.equals('dev')) {
+            variant.setIgnore(true);
+        }
+    }
+} else {
+    //exclude all but dev
+    android.variantFilter { variant ->
+        if (!variant.getFlavors().get(0).name.equals('dev')) {
+            variant.setIgnore(true);
+        }
+    }
+}
+
 ext {
     smackVersion = '4.2.1-SNAPSHOT'
     supportVersion = '25.3.1'
@@ -124,17 +142,37 @@ dependencies {
     compile project('MemorizingTrustManager')
     compile project('emojicon')
 
-    compile "org.igniterealtime.smack:smack-android-extensions:4.2.1-20170405.080126-7"
-    compile "org.igniterealtime.smack:smack-experimental:4.2.1-20170405.080149-7"
-    compile "org.igniterealtime.smack:smack-tcp:4.2.1-20170405.080228-7"
-    compile "org.igniterealtime.smack:smack-resolver-dnsjava:4.2.1-20170405.080225-7"
+    compile 'com.github.str4tocaster.smack:smack-android-extensions:ffb99cc'
+    compile 'com.github.str4tocaster.smack:smack-experimental:ffb99cc'
+    compile 'com.github.str4tocaster.smack:smack-tcp:ffb99cc'
+    compile 'com.github.str4tocaster.smack:smack-resolver-dnsjava:ffb99cc'
 
     compile "com.android.support:design:$supportVersion"
     compile "com.android.support:support-v13:$supportVersion"
+    compile 'com.android.support:multidex:1.0.1'
 
-    compile 'org.jitsi:org.otr4j:0.22'
+    compile 'com.github.Str4tocaster:otr4j:custom-SNAPSHOT'
     compile 'com.google.zxing:android-integration:3.3.0'
 
+    // retrofit
+    compile 'com.squareup.retrofit2:retrofit:2.3.0'
+    compile 'com.squareup.retrofit2:adapter-rxjava:2.3.0'
+    compile 'com.squareup.retrofit2:converter-gson:2.3.0'
+    compile 'com.squareup.okhttp3:logging-interceptor:3.5.0'
+
+    // rx java
+    compile 'io.reactivex:rxandroid:1.1.0'
+    compile 'io.reactivex:rxjava:1.1.0'
+
+    //social
+    compile 'com.facebook.android:facebook-android-sdk:4.27.0'
+    compile 'com.twitter.sdk.android:twitter:3.0.0'
+    compile 'com.google.android.gms:play-services-auth:11.4.0'
+    compile ('com.google.api-client:google-api-client-android:1.22.0') {
+        exclude module: 'httpclient'
+    }
+
+    compile 'me.relex:circleindicator:1.2.2@aar'
     compile 'com.github.bumptech.glide:glide:3.7.0'
     compile 'com.squareup.okhttp3:okhttp:3.5.0'
     compile 'org.greenrobot:eventbus:3.0.0'
@@ -146,6 +184,7 @@ dependencies {
         transitive = true;
     }
 }
+apply plugin: 'com.google.gms.google-services'
 
 configurations {
     all*.exclude group: 'xpp3', module: 'xpp3'

@@ -9,9 +9,8 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.log.LogManager;
 
 import org.apache.http.conn.ssl.AllowAllHostnameVerifier;
-import org.jivesoftware.smack.SASLAuthentication;
 import org.jivesoftware.smack.proxy.ProxyInfo;
-import org.jivesoftware.smack.sasl.provided.SASLDigestMD5Mechanism;
+import org.jivesoftware.smack.sasl.core.SASLXOauth2Mechanism;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
 import org.jivesoftware.smack.util.TLSUtils;
@@ -67,7 +66,16 @@ class ConnectionBuilder {
             LogManager.exception(LOG_TAG, e);
         }
 
-        setUpSasl();
+        // if account have token
+        if (connectionSettings.getToken() != null && !connectionSettings.getToken().isEmpty()
+                && connectionSettings.getPassword() != null
+                && connectionSettings.getPassword().isEmpty()) {
+            // then enable only SASLXOauth2Mechanism
+            builder.addEnabledSaslMechanism(SASLXOauth2Mechanism.NAME);
+
+            // and set token as password
+            builder.setUsernameAndPassword(connectionSettings.getUserName(), connectionSettings.getToken());
+        }
 
         LogManager.i(LOG_TAG, "new XMPPTCPConnection " + connectionSettings.getServerName());
         return new XMPPTCPConnection(builder.build());
@@ -143,11 +151,5 @@ class ConnectionBuilder {
         }
 
         return proxyInfo;
-    }
-
-    private synchronized static void setUpSasl() {
-        // TODO: DIGEST-MD5 mechanism disabled due to implementation problems
-        // should be enabled back when fixed in Smack
-        SASLAuthentication.blacklistSASLMechanism(SASLDigestMD5Mechanism.NAME);
     }
 }

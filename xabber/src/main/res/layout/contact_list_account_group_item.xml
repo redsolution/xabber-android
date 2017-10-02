@@ -32,6 +32,7 @@
             android:layout_height="@dimen/avatar_size_toolbar"
             android:src="@drawable/ic_avatar_1"
             android:layout_marginLeft="8dp"
+            android:scaleType="centerCrop"
             />
 
         <LinearLayout

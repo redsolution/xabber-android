@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.app.NavUtils;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -15,6 +14,7 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.extension.bookmarks.BookmarksManager;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.data.log.LogManager;
@@ -155,6 +155,7 @@ public class ServerInfoActivity extends ManagedActivity {
             boolean push = PushNotificationsManager.getInstanceFor(connection).isSupportedByServer();
             boolean fileUpload = HttpFileUploadManager.getInstance().isFileUploadSupported(accountItem.getAccount());
             boolean mucLight = !MultiUserChatLightManager.getInstanceFor(connection).getLocalServices().isEmpty();
+            boolean bookmarks = BookmarksManager.getInstance().isSupported(accountItem.getAccount());
 
             serverInfoList.add(getString(R.string.xep_0045_muc) + " " + getCheckOrCross(muc));
             serverInfoList.add(getString(R.string.xep_0163_pep) + " " + getCheckOrCross(pep));
@@ -167,6 +168,7 @@ public class ServerInfoActivity extends ManagedActivity {
             serverInfoList.add(getString(R.string.xep_0357_push) + " " + getCheckOrCross(push));
             serverInfoList.add(getString(R.string.xep_0363_file_upload) + " " + getCheckOrCross(fileUpload));
             serverInfoList.add(getString(R.string.xep_xxxx_muc_light) + " " + getCheckOrCross(mucLight));
+            serverInfoList.add(getString(R.string.xep_0048_bookmarks) + " " + getCheckOrCross(bookmarks));
             serverInfoList.add("");
         } catch (InterruptedException | SmackException.NoResponseException
                 | XMPPException.XMPPErrorException | SmackException.NotConnectedException e) {

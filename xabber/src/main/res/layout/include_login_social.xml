@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginLeft="16dp"
+    android:layout_marginRight="16dp"
+    android:layout_marginBottom="16dp">
+
+    <RelativeLayout
+        android:id="@+id/socialTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/llSocialLogos"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="12dp"
+        >
+
+        <TextView
+            android:id="@+id/tvLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_marginLeft="7dp"
+            android:layout_marginRight="7dp"
+            android:textColor="@color/black_text_secondary"
+            android:text="Social Sign In"
+
+            />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@+id/tvLabel"
+            android:layout_marginLeft="5dp"
+            android:background="@color/black_text_secondary"
+            />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/tvLabel"
+            android:layout_marginRight="5dp"
+            android:background="@color/black_text_secondary"
+            />
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/llSocialLogos"
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/tvInfo"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="16dp"
+        >
+
+        <ImageView
+            android:id="@+id/ivGoogle"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/ic_google_plus"
+            />
+
+        <ImageView
+            android:id="@+id/ivFacebook"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginLeft="30dp"
+            android:src="@drawable/ic_facebook"
+            />
+
+        <ImageView
+            android:id="@+id/ivTwitter"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginLeft="30dp"
+            android:src="@drawable/ic_twitter"
+            />
+
+        <ImageView
+            android:id="@+id/ivGithub"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginLeft="30dp"
+            android:src="@drawable/ic_github_logo_black"
+            android:visibility="gone"
+            />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tvInfo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:paddingBottom="8dp"
+        android:gravity="center"
+        android:textColor="@color/black_text_secondary"
+        android:text="@string/summary_xabber_account_in_login"
+        />
+
+</RelativeLayout>

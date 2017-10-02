@@ -6,10 +6,17 @@ import android.os.Looper;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.database.realm.AccountRealm;
 import com.xabber.android.data.database.realm.DiscoveryInfoCache;
+import com.xabber.android.data.database.realm.EmailRealm;
+import com.xabber.android.data.database.realm.SocialBindingRealm;
+import com.xabber.android.data.database.realm.SyncStateRealm;
+import com.xabber.android.data.database.realm.XMPPAccountSettignsRealm;
+import com.xabber.android.data.database.realm.XMPPUserRealm;
+import com.xabber.android.data.database.realm.XabberAccountRealm;
 import com.xabber.android.data.database.sqlite.AccountTable;
 import com.xabber.android.data.log.LogManager;
 
 import io.realm.DynamicRealm;
+import io.realm.FieldAttribute;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import io.realm.RealmMigration;
@@ -18,7 +25,7 @@ import io.realm.annotations.RealmModule;
 
 public class RealmManager {
     private static final String REALM_DATABASE_NAME = "realm_database.realm";
-    private static final int REALM_DATABASE_VERSION = 6;
+    private static final int REALM_DATABASE_VERSION = 7;
     private static final String LOG_TAG = RealmManager.class.getSimpleName();
     private final RealmConfiguration realmConfiguration;
 
@@ -49,7 +56,8 @@ public class RealmManager {
         realm.close();
     }
 
-    @RealmModule(classes = {DiscoveryInfoCache.class, AccountRealm.class})
+    @RealmModule(classes = {DiscoveryInfoCache.class, AccountRealm.class, XabberAccountRealm.class,
+            XMPPUserRealm.class, EmailRealm.class, SocialBindingRealm.class, SyncStateRealm.class})
     static class RealmDatabaseModule {
     }
 
@@ -88,6 +96,52 @@ public class RealmManager {
                         if (oldVersion == 5) {
                             schema.get(AccountRealm.class.getSimpleName())
                                     .addField(AccountRealm.Fields.SUCCESSFUL_CONNECTION_HAPPENED, boolean.class);
+
+                            oldVersion++;
+                        }
+
+                        if (oldVersion == 6) {
+                            schema.create(XMPPUserRealm.class.getSimpleName())
+                                    .addField("id", String.class, FieldAttribute.PRIMARY_KEY, FieldAttribute.REQUIRED)
+                                    .addField("username", String.class)
+                                    .addField("host", String.class)
+                                    .addField("registration_date", String.class);
+
+                            schema.create(EmailRealm.class.getSimpleName())
+                                    .addField("id", String.class, FieldAttribute.PRIMARY_KEY, FieldAttribute.REQUIRED)
+                                    .addField("email", String.class)
+                                    .addField("verified", boolean.class)
+                                    .addField("primary", boolean.class);
+
+                            schema.create(SocialBindingRealm.class.getSimpleName())
+                                    .addField("id", String.class, FieldAttribute.PRIMARY_KEY, FieldAttribute.REQUIRED)
+                                    .addField("provider", String.class)
+                                    .addField("uid", String.class)
+                                    .addField("firstName", String.class)
+                                    .addField("lastName", String.class);
+
+                            schema.create(XabberAccountRealm.class.getSimpleName())
+                                    .addField("id", String.class, FieldAttribute.PRIMARY_KEY, FieldAttribute.REQUIRED)
+                                    .addField("accountStatus", String.class)
+                                    .addField("token", String.class)
+                                    .addField("username", String.class)
+                                    .addField("firstName", String.class)
+                                    .addField("lastName", String.class)
+                                    .addField("registerDate", String.class)
+                                    .addRealmListField("xmppUsers", schema.get(XMPPUserRealm.class.getSimpleName()))
+                                    .addRealmListField("emails", schema.get(EmailRealm.class.getSimpleName()))
+                                    .addRealmListField("socialBindings", schema.get(SocialBindingRealm.class.getSimpleName()));
+
+                            schema.get(AccountRealm.class.getSimpleName())
+                                    .addField("token", String.class)
+                                    .addField("order", int.class)
+                                    .addField("timestamp", int.class)
+                                    .addField("syncNotAllowed", boolean.class);
+
+                            schema.create(SyncStateRealm.class.getSimpleName())
+                                    .addField("id", String.class, FieldAttribute.PRIMARY_KEY, FieldAttribute.REQUIRED)
+                                    .addField("jid", String.class)
+                                    .addField("sync", boolean.class);
 
                             oldVersion++;
                         }

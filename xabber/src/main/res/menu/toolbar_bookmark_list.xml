@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item android:id="@+id/action_remove_all"
+        android:title="@string/remove_all_bookmarks"
+        app:showAsAction="collapseActionView"
+        android:orderInCategory="90"
+        />
+
+    <item android:id="@+id/action_synchronize"
+        android:title="@string/synchronize_bookmarks"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/ic_sync"
+        android:orderInCategory="90"
+        />
+
+    <item android:id="@+id/action_remove_selected"
+        android:title="@string/remove_selected_bookmarks"
+        app:showAsAction="ifRoom"
+        android:visible="false"
+        android:orderInCategory="100"
+        />
+</menu>

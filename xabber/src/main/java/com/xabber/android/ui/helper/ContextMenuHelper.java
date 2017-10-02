@@ -28,7 +28,6 @@ import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
-import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.connection.ConnectionState;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
@@ -247,7 +246,7 @@ public class ContextMenuHelper {
                     && !MUCManager.getInstance().isMucPrivateChat(account, user)) {
                 menu.findItem(R.id.action_block_contact).setVisible(false);
             }
-            if (abstractContact.getStatusMode() != StatusMode.unsubscribed) {
+            if (abstractContact.isSubscribed()) {
                 menu.findItem(R.id.action_request_subscription).setVisible(false);
             }
         } else { // is conference
@@ -353,14 +352,6 @@ public class ContextMenuHelper {
         menu.findItem(R.id.action_edit_account).setIntent(AccountActivity.createIntent(activity, account));
 
         if (state.isConnected()) {
-            menu.findItem(R.id.action_contact_info).setVisible(true).setOnMenuItemClickListener(
-                    new MenuItem.OnMenuItemClickListener() {
-                        @Override
-                        public boolean onMenuItemClick(MenuItem item) {
-                            activity.startActivity(AccountActivity.createIntent(activity, account));
-                            return true;
-                        }
-                    });
             menu.findItem(R.id.action_add_contact).setVisible(true).setIntent(ContactAddActivity.createIntent(activity, account));
         }
 

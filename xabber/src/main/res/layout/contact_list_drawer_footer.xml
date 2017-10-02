@@ -64,7 +64,7 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_help_circle_grey600_24dp" />
+            android:src="@drawable/ic_info_grey600_24dp" />
 
         <TextView
             android:layout_width="wrap_content"

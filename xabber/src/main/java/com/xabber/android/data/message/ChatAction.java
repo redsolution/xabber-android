@@ -210,7 +210,7 @@ public enum ChatAction {
      * @return String to be added to the status mode change action.
      */
     private static String getOptionalText(String text) {
-        if ("".equals(text))
+        if ("".equals(text.trim()))
             return "";
         else
             return " (" + text + ")";

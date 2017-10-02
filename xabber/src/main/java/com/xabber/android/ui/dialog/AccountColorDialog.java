@@ -11,6 +11,7 @@ import android.support.annotation.Nullable;
 import com.xabber.android.R;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.xaccount.XabberAccountManager;
 
 public class AccountColorDialog extends DialogFragment {
     private static final String ARGUMENT_ACCOUNT = AccountColorDialog.class.getName();
@@ -48,7 +49,11 @@ public class AccountColorDialog extends DialogFragment {
 
         @Override public void onClick(DialogInterface dialog, int which) {
             AccountManager.getInstance().setColor(accountJid, which);
+            AccountManager.getInstance().setTimestamp(accountJid, XabberAccountManager.getInstance().getCurrentTime());
             AccountManager.getInstance().onAccountChanged(accountJid);
+
+            if (XabberAccountManager.getInstance().getAccount() != null)
+                XabberAccountManager.getInstance().updateAccountSettings();
             dialog.dismiss();
         }
     };

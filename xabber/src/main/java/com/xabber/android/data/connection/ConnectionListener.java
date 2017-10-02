@@ -5,13 +5,17 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.listeners.OnConnectedListener;
 import com.xabber.android.data.connection.listeners.OnDisconnectListener;
 import com.xabber.android.data.extension.blocking.BlockingManager;
+import com.xabber.android.data.extension.bookmarks.BookmarksManager;
 import com.xabber.android.data.extension.carbons.CarbonManager;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.mam.MamManager;
 import com.xabber.android.data.log.LogManager;
+import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.roster.PresenceManager;
 
 import org.jivesoftware.smack.XMPPConnection;
+import org.jivesoftware.smack.XMPPException;
+import org.jivesoftware.smack.packet.StreamError;
 import org.jivesoftware.smack.sasl.SASLErrorException;
 
 class ConnectionListener implements org.jivesoftware.smack.ConnectionListener {
@@ -64,6 +68,7 @@ class ConnectionListener implements org.jivesoftware.smack.ConnectionListener {
         HttpFileUploadManager.getInstance().onAuthorized(connectionItem);
 
         PresenceManager.getInstance().onAuthorized(connectionItem);
+        BookmarksManager.getInstance().onAuthorized(connectionItem.getAccount());
 
         Application.getInstance().runOnUiThread(new Runnable() {
             @Override
@@ -100,9 +105,21 @@ class ConnectionListener implements org.jivesoftware.smack.ConnectionListener {
             public void run() {
                 connectionItem.updateState(ConnectionState.waiting);
 
+                if (e instanceof XMPPException.StreamErrorException) {
+                    String message = e.getMessage();
+                    if (message.contains("conflict")) {
+                        AccountManager.getInstance().generateNewResourceForAccount(connectionItem.getAccount());
+                    }
+                }
+
                 if (e instanceof SASLErrorException) {
                     AccountManager.getInstance().setEnabled(connectionItem.getAccount(), false);
                 }
+                /*
+                  Send to chats action of disconnect
+                  Then RoomChat set state in "waiting" which need for rejoin to room
+                 */
+                MessageManager.getInstance().onDisconnect(connectionItem);
             }
         });
     }

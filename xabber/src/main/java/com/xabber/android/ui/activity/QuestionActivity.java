@@ -51,9 +51,9 @@ import java.util.Collection;
 public class QuestionActivity extends ManagedActivity implements
         OnAccountChangedListener, OnContactChangedListener, OnClickListener {
 
-    private static final String EXTRA_FIELD_SHOW_QUESTION = "com.xabber.android.data.ui.QuestionViewer.SHOW_QUESTION";
-    private static final String EXTRA_FIELD_ANSWER_REQUEST = "com.xabber.android.data.ui.QuestionViewer.ANSWER_REQUEST";
-    private static final String EXTRA_FIELD_CANCEL = "com.xabber.android.data.ui.QuestionViewer.CANCEL";
+    public static final String EXTRA_FIELD_SHOW_QUESTION = "com.xabber.android.data.ui.QuestionViewer.SHOW_QUESTION";
+    public static final String EXTRA_FIELD_ANSWER_REQUEST = "com.xabber.android.data.ui.QuestionViewer.ANSWER_REQUEST";
+    public static final String EXTRA_FIELD_CANCEL = "com.xabber.android.data.ui.QuestionViewer.CANCEL";
     ContactTitleActionBarInflater contactTitleActionBarInflater;
     private AccountJid account;
     private UserJid user;

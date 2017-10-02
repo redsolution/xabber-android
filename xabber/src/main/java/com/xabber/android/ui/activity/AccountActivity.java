@@ -1,5 +1,6 @@
 package com.xabber.android.ui.activity;
 
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
@@ -29,6 +30,7 @@ import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.RosterManager;
+import com.xabber.android.data.xaccount.XabberAccountManager;
 import com.xabber.android.ui.adapter.accountoptions.AccountOption;
 import com.xabber.android.ui.adapter.accountoptions.AccountOptionsAdapter;
 import com.xabber.android.ui.color.BarPainter;
@@ -145,7 +147,7 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.account_options_recycler_view);
 
 
-        accountOptionsAdapter = new AccountOptionsAdapter(AccountOption.values(), this);
+        accountOptionsAdapter = new AccountOptionsAdapter(AccountOption.values(), this, accountItem);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(accountOptionsAdapter);
@@ -161,6 +163,8 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
     }
 
     private void updateOptions() {
+        AccountOption.SYNCHRONIZATION.setDescription(getString(R.string.account_sync_summary));
+
         AccountOption.CONNECTION_SETTINGS.setDescription(account.getFullJid().asBareJid().toString());
 
         AccountOption.COLOR.setDescription(ColorManager.getInstance().getAccountPainter().getAccountColorName(account));
@@ -170,6 +174,8 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
         AccountOption.SERVER_INFO.setDescription(getString(R.string.account_server_info_description));
 
         AccountOption.CHAT_HISTORY.setDescription(getString(R.string.account_history_options_summary));
+
+        AccountOption.BOOKMARKS.setDescription(getString(R.string.account_bookmarks_summary));
 
         accountOptionsAdapter.notifyDataSetChanged();
     }
@@ -252,6 +258,21 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
                 break;
             case CHAT_HISTORY:
                 startActivity(AccountHistorySettingsActivity.createIntent(this, account));
+                break;
+            case BOOKMARKS:
+                startActivity(BookmarksActivity.createIntent(this, account));
+                break;
+            case SYNCHRONIZATION:
+                if (XabberAccountManager.getInstance().getAccount() != null) {
+                    if (accountItem.isSyncNotAllowed()) {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                        builder.setMessage(R.string.sync_not_allowed_summary)
+                                .setTitle(R.string.sync_status_not_allowed)
+                                .setPositiveButton(R.string.ok, null);
+                        AlertDialog dialog = builder.create();
+                        dialog.show();
+                    } else startActivity(AccountSyncActivity.createIntent(this, account));
+                } else startActivity(TutorialActivity.createIntent(this));
                 break;
         }
     }

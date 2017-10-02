@@ -12,5 +12,6 @@
         android:entries="@array/security_otr_mode_entries"
         android:entryValues="@array/security_otr_mode_entryvalues"
         android:defaultValue="@string/security_otr_mode_default"
+        android:summary="%s"
         />
 </PreferenceScreen>

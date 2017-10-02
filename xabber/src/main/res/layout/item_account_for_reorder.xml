@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) 2013, Redsolution LTD. All rights reserved.
+
+     This file is part of Xabber project; you can redistribute it and/or
+     modify it under the terms of the GNU General Public License, Version 3.
+
+     Xabber is distributed in the hope that it will be useful, but
+     WITHOUT ANY WARRANTY; without even the implied warranty of
+     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+     See the GNU General Public License for more details.
+
+     You should have received a copy of the GNU General Public License,
+     along with this program. If not, see http://www.gnu.org/licenses/.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/contact_list_item_height"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:gravity="center_vertical"
+    android:background="?attr/navigation_drawer_background"
+    android:elevation="4dp">
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/avatar"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            app:civ_border_width="2dp"/>
+
+    </FrameLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_weight="1"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:paddingLeft="4dip"
+        android:paddingRight="4dip"
+        >
+        <TextView
+            android:id="@+id/item_account_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:singleLine="true"
+            android:ellipsize="marquee"
+            android:gravity="bottom"
+            android:textColor="?android:attr/textColorPrimary"
+            android:textStyle="bold"
+            android:text="test"
+            />
+        <TextView
+            android:id="@+id/item_account_status"
+            android:text="@android:string/cancel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:singleLine="true"
+            android:ellipsize="marquee"
+            android:gravity="top"
+            android:textColor="?android:attr/textColorSecondary"
+            />
+    </LinearLayout>
+    <ImageView
+        android:id="@+id/ivAnchor"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/avatar_size_toolbar"
+        android:layout_marginRight="8dp"
+        android:layout_marginLeft="8dp"
+        android:src="@drawable/ic_drag_vertical"
+        />
+</LinearLayout>

@@ -16,6 +16,8 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.roster.RosterManager;
+import com.xabber.android.data.xaccount.XMPPAccountSettings;
+import com.xabber.android.data.xaccount.XabberAccountManager;
 import com.xabber.android.ui.color.ColorManager;
 
 import java.util.ArrayList;

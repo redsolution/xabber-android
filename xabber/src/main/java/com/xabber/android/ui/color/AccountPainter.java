@@ -7,6 +7,8 @@ import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.xaccount.XMPPAccountSettings;
+import com.xabber.android.data.xaccount.XabberAccountManager;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -49,6 +51,7 @@ public class AccountPainter {
         List<AccountJid> list = new ArrayList<>();
         list.addAll(AccountManager.getInstance().getEnabledAccounts());
         Collections.sort(list);
+
         if (list.isEmpty()) {
             return null;
         } else {

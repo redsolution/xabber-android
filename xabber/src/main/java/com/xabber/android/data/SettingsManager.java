@@ -37,6 +37,7 @@ import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.AbstractContact;
+import com.xabber.android.data.xaccount.XabberAccountManager;
 import com.xabber.android.service.XabberService;
 import com.xabber.android.ui.adapter.ComparatorByName;
 import com.xabber.android.ui.adapter.ComparatorByStatus;
@@ -81,6 +82,16 @@ public class SettingsManager implements OnInitializedListener,
         } catch (NumberFormatException e) {
             return Integer.parseInt(Application.getInstance().getString(def));
         }
+    }
+
+    private static int getInteger(int key, int def) {
+        return getSharedPreferences().getInt(Application.getInstance().getString(key), def);
+    }
+
+    private static void setInt(int key, int value) {
+        Editor editor = getSharedPreferences().edit();
+        editor.putInt(Application.getInstance().getString(key), value);
+        editor.commit();
     }
 
     private static boolean getBoolean(int key, boolean def) {
@@ -233,9 +244,44 @@ public class SettingsManager implements OnInitializedListener,
                 R.string.events_sound_default);
     }
 
-    public static boolean eventsVibro() {
-        return getBoolean(R.string.events_vibro_key,
-                R.bool.events_vibro_default);
+    public static Uri eventsSoundMuc() {
+        return getSound(R.string.events_sound_muc_key,
+                Settings.System.DEFAULT_NOTIFICATION_URI,
+                R.string.events_sound_default);
+    }
+
+    public static VibroMode eventsVibroChat() {
+        String value = getString(R.string.events_vibro_chat_key, R.string.events_vibro_bydefault);
+        if (Application.getInstance().getString(R.string.events_vibro_disable).equals(value)) {
+            return VibroMode.disabled;
+        } else if (Application.getInstance().getString(R.string.events_vibro_bydefault).equals(value)) {
+            return VibroMode.defaultvibro;
+        } else if (Application.getInstance().getString(R.string.events_vibro_short).equals(value)) {
+            return VibroMode.shortvibro;
+        } else if (Application.getInstance().getString(R.string.events_vibro_long).equals(value)) {
+            return VibroMode.longvibro;
+        } else if (Application.getInstance().getString(R.string.events_vibro_if_silent).equals(value)) {
+            return VibroMode.onlyifsilent;
+        } else {
+            throw new IllegalStateException();
+        }
+    }
+
+    public static VibroMode eventsVibroMuc() {
+        String value = getString(R.string.events_vibro_muc_key, R.string.events_vibro_bydefault);
+        if (Application.getInstance().getString(R.string.events_vibro_disable).equals(value)) {
+            return VibroMode.disabled;
+        } else if (Application.getInstance().getString(R.string.events_vibro_bydefault).equals(value)) {
+            return VibroMode.defaultvibro;
+        } else if (Application.getInstance().getString(R.string.events_vibro_short).equals(value)) {
+            return VibroMode.shortvibro;
+        } else if (Application.getInstance().getString(R.string.events_vibro_long).equals(value)) {
+            return VibroMode.longvibro;
+        } else if (Application.getInstance().getString(R.string.events_vibro_if_silent).equals(value)) {
+            return VibroMode.onlyifsilent;
+        } else {
+            throw new IllegalStateException();
+        }
     }
 
     public static boolean eventsSuppress100() {
@@ -243,13 +289,18 @@ public class SettingsManager implements OnInitializedListener,
                 R.bool.chat_events_suppress_100_default);
     }
 
-    public static boolean eventsIgnoreSystemVibro() {
-        return getBoolean(R.string.events_ignore_system_vibro_key,
-                R.bool.events_ignore_system_vibro_default);
-    }
+//    public static boolean eventsIgnoreSystemVibro() {
+//        return getBoolean(R.string.events_ignore_system_vibro_key,
+//                R.bool.events_ignore_system_vibro_default);
+//    }
 
     public static boolean eventsLightning() {
         return getBoolean(R.string.events_lightning_key,
+                R.bool.events_lightning_default);
+    }
+
+    public static boolean eventsLightningForMuc() {
+        return getBoolean(R.string.events_lightning_muc_key,
                 R.bool.events_lightning_default);
     }
 
@@ -263,21 +314,39 @@ public class SettingsManager implements OnInitializedListener,
                 R.bool.events_show_text_default);
     }
 
-    public static EventsMessage eventsMessage() {
-        String value = getString(R.string.events_message_key,
-                R.string.events_message_default);
-        if (Application.getInstance()
-                .getString(R.string.events_message_none_value).equals(value))
-            return EventsMessage.none;
-        else if (Application.getInstance()
-                .getString(R.string.events_message_chat_value).equals(value))
-            return EventsMessage.chat;
-        else if (Application.getInstance()
-                .getString(R.string.events_message_chat_and_muc_value)
-                .equals(value))
-            return EventsMessage.chatAndMuc;
-        else
-            throw new IllegalStateException();
+    public static boolean eventsShowTextOnMuc() {
+        return getBoolean(R.string.events_show_text_muc_key,
+                R.bool.events_show_text_default);
+    }
+
+    public static boolean eventsOnChat() {
+        return getBoolean(R.string.events_on_chat_key,
+                R.bool.events_on_chat_default);
+    }
+
+    public static boolean eventsOnMuc() {
+        return getBoolean(R.string.events_on_muc_key,
+                R.bool.events_on_muc_default);
+    }
+
+    public static boolean eventsInAppSounds() {
+        return getBoolean(R.string.events_in_app_sounds_key,
+                R.bool.events_in_app_sounds_default);
+    }
+
+    public static boolean eventsInAppVibrate() {
+        return getBoolean(R.string.events_in_app_vibrate_key,
+                R.bool.events_in_app_vibrate_default);
+    }
+
+    public static boolean eventsInAppPreview() {
+        return getBoolean(R.string.events_in_app_preview_key,
+                R.bool.events_in_app_preview_default);
+    }
+
+    public static boolean eventsInChatSounds() {
+        return getBoolean(R.string.events_in_chat_sounds_key,
+                R.bool.events_in_chat_sounds_default);
     }
 
     public static boolean eventsVisibleChat() {
@@ -562,6 +631,24 @@ public class SettingsManager implements OnInitializedListener,
             throw new IllegalStateException();
     }
 
+    public static SpamFilterMode spamFilterMode() {
+        String value = getString(R.string.spam_filter_key, R.string.spam_filter_default);
+
+        if (Application.getInstance().getString(R.string.spam_filter_1_value).equals(value))
+            return SpamFilterMode.disabled;
+
+        else if (Application.getInstance().getString(R.string.spam_filter_2_value).equals(value))
+            return SpamFilterMode.onlyRoster;
+
+        else if (Application.getInstance().getString(R.string.spam_filter_3_value).equals(value))
+            return SpamFilterMode.authCaptcha;
+
+        else if (Application.getInstance().getString(R.string.spam_filter_4_value).equals(value))
+            return SpamFilterMode.noAuth;
+
+        else throw new IllegalStateException();
+    }
+
     public static boolean securityOtrHistory() {
         return getBoolean(R.string.security_otr_history_key,
                 R.bool.security_otr_history_default);
@@ -648,6 +735,32 @@ public class SettingsManager implements OnInitializedListener,
 
     public static void setStatusText(String statusText) {
         setString(R.string.status_text_key, statusText);
+    }
+
+    public static void setLastSyncDate(String lastSyncDate) {
+        setString(R.string.last_sync_date_key, lastSyncDate);
+    }
+
+    public static String getLastSyncDate() {
+        return getString(R.string.last_sync_date_key, R.string.last_sync_date_default);
+    }
+
+    public static void setSyncAllAccounts(boolean syncAll) {
+        setBoolean(R.string.sync_all_key, syncAll);
+        if (syncAll) XabberAccountManager.getInstance().setAllExistingAccountSync(true);
+    }
+
+    public static boolean isSyncAllAccounts() {
+        if (AccountManager.getInstance().haveNotAllowedSyncAccounts()) return false;
+        return getBoolean(R.string.sync_all_key, true);
+    }
+
+    public static void setLastOrderChangeTimestamp(int lastOrderChange) {
+        setInt(R.string.order_last_timestamp_key, lastOrderChange);
+    }
+
+    public static int getLastOrderChangeTimestamp() {
+        return getInteger(R.string.order_last_timestamp_key, 1);
     }
 
     @Override
@@ -866,6 +979,57 @@ public class SettingsManager implements OnInitializedListener,
          */
         required
 
+    }
+
+    public enum SpamFilterMode {
+        /**
+         * Spam filter is disabled.
+         */
+        disabled,
+
+        /**
+         * Receiving messages only from roster.
+         */
+        onlyRoster,
+
+        /**
+         * Receiving messages only from roster.
+         * Auth requests only with captcha.
+         */
+        authCaptcha,
+
+        /**
+         * Receiving messages only from roster.
+         * No auth requests.
+         */
+        noAuth
+    }
+
+    public enum VibroMode {
+        /**
+         * Vibrate is disabled.
+         */
+        disabled,
+
+        /**
+         * Default vibration
+         */
+        defaultvibro,
+
+        /**
+         * Short vibration
+         */
+        shortvibro,
+
+        /**
+         * Long vibration
+         */
+        longvibro,
+
+        /**
+         * Vibration only in silent mode
+         */
+        onlyifsilent
     }
 
 }

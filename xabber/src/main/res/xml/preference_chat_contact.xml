@@ -36,10 +36,10 @@
         android:key="@string/chat_events_vibro_key"
         android:title="@string/events_vibro"
         />
-    <CheckBoxPreference
-        android:key="@string/chat_events_visible_chat_key"
-        android:title="@string/events_visible_chat"
-        />
+    <!--<CheckBoxPreference-->
+        <!--android:key="@string/chat_events_visible_chat_key"-->
+        <!--android:title="@string/events_visible_chat"-->
+        <!--/>-->
     <CheckBoxPreference
             android:key="@string/chat_events_suppress_100_key"
             android:title="@string/events_suppress_100"

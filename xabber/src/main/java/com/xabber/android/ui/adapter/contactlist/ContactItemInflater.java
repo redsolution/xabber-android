@@ -2,6 +2,7 @@ package com.xabber.android.ui.adapter.contactlist;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.view.View;
 
 import com.xabber.android.R;
@@ -13,6 +14,7 @@ import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.extension.capability.ClientSoftware;
 import com.xabber.android.data.extension.muc.MUCManager;
+import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.ui.activity.ContactActivity;
@@ -135,7 +137,14 @@ class ContactItemInflater {
             viewHolder.secondLineMessage.setVisibility(View.GONE);
         } else {
             viewHolder.secondLineMessage.setVisibility(View.VISIBLE);
-            viewHolder.secondLineMessage.setText(statusText);
+            if (OTRManager.getInstance().isEncrypted(statusText)) {
+                viewHolder.secondLineMessage.setText(R.string.otr_not_decrypted_message);
+                viewHolder.secondLineMessage.
+                        setTypeface(viewHolder.secondLineMessage.getTypeface(), Typeface.ITALIC);
+            } else {
+                viewHolder.secondLineMessage.setText(statusText);
+                viewHolder.secondLineMessage.setTypeface(Typeface.DEFAULT);
+            }
         }
 
         viewHolder.statusIcon.setImageLevel(contact.getStatusMode().getStatusLevel());

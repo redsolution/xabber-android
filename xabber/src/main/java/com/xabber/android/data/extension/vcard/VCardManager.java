@@ -373,7 +373,7 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
                 LogManager.exception(this, e);
                 // http://stackoverflow.com/questions/31498721/error-loading-vcard-information-using-smack-emptyresultiq-cannot-be-cast-to-or
                 LogManager.w(this, "ClassCastException: " + e.getMessage());
-                vCard = new VCard();
+                //vCard = new VCard();
             } catch (InterruptedException e) {
                 LogManager.exception(this, e);
             }

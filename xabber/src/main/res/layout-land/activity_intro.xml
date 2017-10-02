@@ -1,60 +1,82 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/intro_background"
+    android:paddingLeft="@dimen/intro_horizontal_margin"
+    android:paddingRight="@dimen/intro_horizontal_margin"
+    android:paddingTop="@dimen/intro_vertical_margin"
+    android:paddingBottom="@dimen/intro_vertical_margin">
 
-    <include layout="@layout/include_intro_background_image" />
-
-    <RelativeLayout
+    <ImageView
+        android:id="@+id/ivImage"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fitsSystemWindows="true"
-
-        android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
-        >
+        android:src="@drawable/art_welcome"
+        android:layout_weight="1"
+        />
 
-        <include layout="@layout/include_intro_faq"
-            android:id="@+id/intro_faq_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            />
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_weight="1">
 
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal"
-            android:id="@+id/intro_root_layout"
-            android:fitsSystemWindows="true"
-            >
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_gravity="center_horizontal">
 
-            <RelativeLayout
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:layout_marginRight="8dp"
-                android:gravity="center_vertical"
-                >
+            <TextView
+                android:id="@+id/tvTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_marginBottom="10dp"
+                android:textSize="22sp"
+                android:textColor="@color/black_text"
+                android:text="@string/intro_welcome"
+                />
 
-                <include layout="@layout/include_intro_header"/>
+            <TextView
+                android:id="@+id/tvDescription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:gravity="center"
+                android:textColor="@color/black_text_secondary"
+                android:text="@string/intro_xabber_description"
+                android:layout_marginBottom="32dp"
+                />
 
-            </RelativeLayout>
+            <Button
+                android:id="@+id/btnLoginXabber"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
 
-            <RelativeLayout
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:layout_marginLeft="8dp"
-                android:gravity="center_vertical"
-                >
+                android:text="@string/intro_create_xabber_account"
+                android:textColor="@color/white"
+                style="@style/Widget.AppCompat.Button.Colored"
+                android:theme="@style/BlueButton"
+                android:layout_gravity="center_horizontal"
+                />
 
-                <include layout="@layout/include_intro_buttons"/>
+            <Button
+                android:id="@+id/btnBasicXmpp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:theme="@style/BlueButton"
+                android:textColor="@color/account_register_blue"
+                android:text="@string/login_without_xabber_account"
+                android:layout_gravity="center_horizontal"
+                />
 
-            </RelativeLayout>
         </LinearLayout>
-    </RelativeLayout>
-</FrameLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

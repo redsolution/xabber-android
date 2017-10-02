@@ -52,6 +52,8 @@ import com.xabber.android.data.roster.GroupManager;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.data.roster.ShowOfflineMode;
+import com.xabber.android.data.xaccount.XMPPAccountSettings;
+import com.xabber.android.data.xaccount.XabberAccountManager;
 import com.xabber.android.ui.activity.AccountActivity;
 import com.xabber.android.ui.activity.ManagedActivity;
 import com.xabber.android.ui.adapter.ComparatorByChat;

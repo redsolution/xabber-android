@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <CheckBoxPreference
+        android:title="@string/connection_load_images"
+        android:key="@string/connection_load_images_key"
+        android:defaultValue="@bool/connection_load_images_default"
+        />
+
+    <CheckBoxPreference
+        android:defaultValue="@bool/chats_state_notification_default"
+        android:key="@string/chats_state_notification_key"
+        android:title="@string/chats_state_notification"
+        />
+
+</PreferenceScreen>

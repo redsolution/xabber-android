@@ -78,7 +78,7 @@ public abstract class ConnectionItem {
 
     public ConnectionItem(boolean custom,
                           String host, int port, DomainBareJid serverName, Localpart userName,
-                          Resourcepart resource, boolean storePassword, String password,
+                          Resourcepart resource, boolean storePassword, String password, String token,
                           boolean saslEnabled, TLSMode tlsMode, boolean compression,
                           ProxyType proxyType, String proxyHost, int proxyPort,
                           String proxyUser, String proxyPassword) {
@@ -88,7 +88,7 @@ public abstract class ConnectionItem {
         connectionListener = new com.xabber.android.data.connection.ConnectionListener(this);
 
         connectionSettings = new ConnectionSettings(userName,
-                serverName, resource, custom, host, port, password,
+                serverName, resource, custom, host, port, password, token,
                 saslEnabled, tlsMode, compression, proxyType, proxyHost,
                 proxyPort, proxyUser, proxyPassword);
         connection = createConnection();
@@ -216,6 +216,31 @@ public abstract class ConnectionItem {
                     @Override
                     public void run() {
                         createNewConnection();
+                    }
+                });
+
+            }
+
+        };
+        thread.setPriority(Thread.MIN_PRIORITY);
+        thread.setDaemon(true);
+        thread.start();
+    }
+
+    public void recreateConnectionWithEnable(final AccountJid account) {
+        LogManager.i(logTag, "recreateConnection");
+
+        Thread thread = new Thread("Disconnection thread for " + connection) {
+            @Override
+            public void run() {
+                updateState(ConnectionState.disconnecting);
+                connection.disconnect();
+
+                Application.getInstance().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        createNewConnection();
+                        AccountManager.getInstance().setEnabled(account, true);
                     }
                 });
 

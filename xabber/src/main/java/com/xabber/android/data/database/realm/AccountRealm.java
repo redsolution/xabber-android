@@ -53,8 +53,13 @@ public class AccountRealm extends RealmObject {
     private int port;
     private boolean storePassword;
     private String password;
+    private String token;
 
     private int colorIndex;
+    private int timestamp;
+    private int order;
+    private boolean syncNotAllowed;
+
     private int priority;
     private String statusMode;
     private String statusText;
@@ -163,12 +168,44 @@ public class AccountRealm extends RealmObject {
         this.password = password;
     }
 
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
     public int getColorIndex() {
         return colorIndex;
     }
 
     public void setColorIndex(int colorIndex) {
         this.colorIndex = colorIndex;
+    }
+
+    public int getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(int timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public int getOrder() {
+        return order;
+    }
+
+    public void setOrder(int order) {
+        this.order = order;
+    }
+
+    public boolean isSyncNotAllowed() {
+        return syncNotAllowed;
+    }
+
+    public void setSyncNotAllowed(boolean syncNotAllowed) {
+        this.syncNotAllowed = syncNotAllowed;
     }
 
     public int getPriority() {

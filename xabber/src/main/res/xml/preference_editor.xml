@@ -11,36 +11,69 @@
 -->
 <PreferenceScreen
     xmlns:android="http://schemas.android.com/apk/res/android">
-    <Preference
-        android:key="@string/preference_accounts_key"
-        android:title="@string/preference_accounts">
-        <intent
-            android:targetClass="com.xabber.android.ui.activity.AccountListActivity"
-            android:targetPackage="@string/application_package" />
-    </Preference>
 
-    <Preference
-        android:title="@string/preference_interface"
-        android:key="@string/preference_interface">
-        <intent
-            android:targetPackage="@string/application_package"
-            android:targetClass="com.xabber.android.ui.preferences.ThemeSettings"/>
-    </Preference>
+    <PreferenceCategory
+        android:title="@string/category_xabber_account">
 
-    <Preference
-        android:key="@string/preference_contacts"
-        android:title="@string/preference_contacts">
-        <intent
-            android:targetClass="com.xabber.android.ui.preferences.ContactListSettings"
-            android:targetPackage="@string/application_package" />
-    </Preference>
-    <Preference
-        android:key="@string/preference_chats"
-        android:title="@string/preference_chats">
-        <intent
-            android:targetClass="com.xabber.android.ui.preferences.ChatGlobalSettings"
-            android:targetPackage="@string/application_package" />
-    </Preference>
+    <com.xabber.android.ui.widget.AccountPreference
+        android:key="preference_xabber_account"
+        android:title="@string/title_xabber_account"/>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/category_xmpp_accounts">
+
+    <com.xabber.android.ui.widget.XMPPListPreference
+        android:key="preference_accounts_key"
+        android:title="@string/preference_accounts"/>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/category_interface">
+
+        <ListPreference
+            android:title="@string/interface_theme"
+            android:key="@string/interface_theme_key"
+            android:entries="@array/interface_theme_entries"
+            android:entryValues="@array/interface_theme_entryvalues"
+            android:defaultValue="@string/interface_theme_default"
+            android:summary="%s"
+            />
+        <Preference
+            android:key="@string/preference_chats"
+            android:title="@string/preference_chats">
+            <intent
+                android:targetClass="com.xabber.android.ui.preferences.ChatGlobalSettings"
+                android:targetPackage="@string/application_package" />
+        </Preference>
+        <Preference
+            android:key="@string/preference_contacts"
+            android:title="@string/preference_contacts">
+            <intent
+                android:targetClass="com.xabber.android.ui.preferences.ContactListSettings"
+                android:targetPackage="@string/application_package" />
+        </Preference>
+        <ListPreference
+            android:title="@string/interface_smiles"
+            android:key="@string/interface_smiles_key"
+            android:entries="@array/interface_smiles_entries"
+            android:entryValues="@array/interface_smiles_entryvalues"
+            android:defaultValue="@string/interface_smiles_default"
+            android:summary="%s"
+            />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/category_settings">
+
+    <CheckBoxPreference
+        android:title="@string/connection_start_at_boot"
+        android:key="@string/connection_start_at_boot_key"
+        android:defaultValue="@bool/connection_start_at_boot_default"
+        />
     <Preference
         android:key="@string/preference_events"
         android:title="@string/preference_events">
@@ -56,12 +89,34 @@
             android:targetPackage="@string/application_package" />
     </Preference>
     <Preference
+        android:key="@string/preference_presence"
+        android:title="@string/preference_presence">
+        <intent
+            android:targetClass="com.xabber.android.ui.preferences.PresenceSettings"
+            android:targetPackage="@string/application_package" />
+    </Preference>
+    <Preference
+        android:key="@string/preference_privacy"
+        android:title="@string/preference_privacy">
+        <intent
+            android:targetClass="com.xabber.android.ui.preferences.PrivacySettings"
+            android:targetPackage="@string/application_package" />
+    </Preference>
+    <Preference
         android:key="@string/preference_security"
         android:title="@string/preference_security">
         <intent
             android:targetClass="com.xabber.android.ui.preferences.SecuritySettings"
             android:targetPackage="@string/application_package" />
     </Preference>
+    <ListPreference
+        android:title="@string/preference_spam_filter"
+        android:key="@string/spam_filter_key"
+        android:entries="@array/spam_filter_entries"
+        android:entryValues="@array/spam_filter_entryvalues"
+        android:defaultValue="@string/spam_filter_default"
+        android:summary="%s"
+        />
     <Preference
         android:key="@string/preference_debug"
         android:title="@string/preference_debug">
@@ -69,6 +124,9 @@
             android:targetClass="com.xabber.android.ui.preferences.DebugSettings"
             android:targetPackage="@string/application_package" />
     </Preference>
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:title="@string/category_about">
     <Preference
         android:key="@string/preference_about_key"
         android:title="@string/preference_about">
@@ -76,4 +134,5 @@
             android:targetClass="com.xabber.android.ui.activity.AboutActivity"
             android:targetPackage="@string/application_package" />
     </Preference>
+    </PreferenceCategory>
 </PreferenceScreen>

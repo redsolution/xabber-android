@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/ripple_background"
+    android:clickable="true"
+    >
+
+    <ImageView
+        android:id="@+id/ivBookmarkIcon"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="16dp"
+        android:layout_marginStart="16dp"
+        android:src="@drawable/ic_conference"
+        />
+
+    <CheckBox
+        android:id="@+id/chbBookmark"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginRight="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_centerVertical="true"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        />
+
+
+
+        <TextView
+            android:id="@+id/tvConferenceName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/ivBookmarkIcon"
+            android:layout_toEndOf="@id/ivBookmarkIcon"
+            android:layout_marginTop="8dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginRight="4dp"
+            android:layout_marginEnd="4dp"
+            android:textColor="?android:attr/textColorPrimary"
+            android:maxLines="1"
+            android:maxLength="22"
+            android:textStyle="bold"
+            android:text="Conference Name"
+            />
+
+        <TextView
+            android:id="@+id/tvAs"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_toRightOf="@+id/tvConferenceName"
+            android:layout_toEndOf="@+id/tvConferenceName"
+            android:text="as"
+            />
+
+        <TextView
+            android:id="@+id/tvNickname"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginLeft="4dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_toRightOf="@id/tvAs"
+            android:layout_toEndOf="@id/tvAs"
+            android:layout_toLeftOf="@+id/chbBookmark"
+            android:layout_toStartOf="@+id/chbBookmark"
+            android:textColor="?android:attr/textColorPrimary"
+            android:maxLines="1"
+            android:textStyle="bold"
+            android:text="Nickname"
+            />
+
+    <TextView
+        android:id="@+id/tvJid"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="8dp"
+        android:layout_below="@id/tvConferenceName"
+        android:layout_toRightOf="@+id/ivBookmarkIcon"
+        android:layout_toEndOf="@+id/ivBookmarkIcon"
+        android:layout_toLeftOf="@id/chbBookmark"
+        android:layout_toStartOf="@id/chbBookmark"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:text="Jid"
+        />
+
+</RelativeLayout>

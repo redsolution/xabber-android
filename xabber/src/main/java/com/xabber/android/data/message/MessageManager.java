@@ -29,6 +29,7 @@ import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.account.listeners.OnAccountDisabledListener;
 import com.xabber.android.data.account.listeners.OnAccountRemovedListener;
 import com.xabber.android.data.connection.ConnectionItem;
+import com.xabber.android.data.connection.StanzaSender;
 import com.xabber.android.data.connection.listeners.OnDisconnectListener;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.database.MessageDatabaseManager;
@@ -37,6 +38,9 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.NestedMap;
 import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.extension.captcha.Captcha;
+import com.xabber.android.data.extension.captcha.CaptchaManager;
+import com.xabber.android.data.extension.carbons.CarbonManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.muc.RoomChat;
 import com.xabber.android.data.log.LogManager;
@@ -45,6 +49,7 @@ import com.xabber.android.data.notification.EntityNotificationProvider;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.OnRosterReceivedListener;
 import com.xabber.android.data.roster.OnStatusChangeListener;
+import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.utils.StringUtils;
 
@@ -55,6 +60,7 @@ import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smackx.carbons.packet.CarbonExtension;
 import org.jivesoftware.smackx.muc.packet.MUCUser;
 import org.jxmpp.jid.FullJid;
+import org.jxmpp.jid.Jid;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -160,6 +166,12 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
         return chats;
     }
 
+    public Collection<AbstractChat> getChats(AccountJid account) {
+        List<AbstractChat> chats = new ArrayList<>();
+        chats.addAll(this.chats.getNested(account.toString()).values());
+        return chats;
+    }
+
     /**
      * Creates and adds new regular chat to be managed.
      *
@@ -223,7 +235,8 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
                 realm.copyToRealm(newMessageItem);
             }
         });
-        chat.sendMessages();
+        if (chat.canSendMessage())
+            chat.sendMessages();
     }
 
     public String createFileMessage(AccountJid account, UserJid user, File file) {
@@ -260,7 +273,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
         chat.sendMessages();
     }
 
-    public void updateMessageWithError(final String messageId) {
+    public void updateMessageWithError(final String messageId, final String errorDescription) {
         Realm realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
 
         realm.executeTransaction(new Realm.Transaction() {
@@ -272,6 +285,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
 
                 if (messageItem != null) {
                     messageItem.setError(true);
+                    messageItem.setErrorDescription(errorDescription);
                     messageItem.setInProgress(false);
                 }
             }
@@ -473,7 +487,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
         }
         boolean processed = false;
         for (AbstractChat chat : chats.getNested(account.toString()).values()) {
-            if (chat.onPacket(user, stanza)) {
+            if (chat.onPacket(user, stanza, false)) {
                 processed = true;
                 break;
             }
@@ -498,9 +512,70 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
                 return;
             }
 
+            //check for spam
+            if (SettingsManager.spamFilterMode() != SettingsManager.SpamFilterMode.disabled
+                    && RosterManager.getInstance().getRosterContact(account, user) == null ) {
+
+                String thread = ((Message) stanza).getThread();
+
+                if (SettingsManager.spamFilterMode() == SettingsManager.SpamFilterMode.authCaptcha) {
+                    // check if this message is captcha-answer
+                    Captcha captcha = CaptchaManager.getInstance().getCaptcha(account, user);
+                    if (captcha != null) {
+                        // attempt limit overhead
+                        if (captcha.getAttemptCount() > CaptchaManager.CAPTCHA_MAX_ATTEMPT_COUNT) {
+                            // remove this captcha
+                            CaptchaManager.getInstance().removeCaptcha(account, user);
+                            // discard subscription
+                            try {
+                                PresenceManager.getInstance().discardSubscription(account, user);
+                            } catch (NetworkException e) {
+                                e.printStackTrace();
+                            }
+                            sendMessageWithoutChat(user.getJid(), thread, account,
+                                    Application.getInstance().getResources().getString(R.string.spam_filter_captcha_many_attempts));
+                            return;
+                        }
+                        if (body.equals(captcha.getAnswer())) {
+                            // captcha solved successfully
+                            // remove this captcha
+                            CaptchaManager.getInstance().removeCaptcha(account, user);
+
+                            // show auth
+                            PresenceManager.getInstance().handleSubscriptionRequest(account, user);
+                            sendMessageWithoutChat(user.getJid(), thread, account,
+                                    Application.getInstance().getResources().getString(R.string.spam_filter_captcha_correct));
+                            return;
+                        } else {
+                            // captcha solved unsuccessfully
+                            // increment attempt count
+                            captcha.setAttemptCount(captcha.getAttemptCount() + 1);
+                            // send warning-message
+                            sendMessageWithoutChat(user.getJid(), thread, account,
+                                    Application.getInstance().getResources().getString(R.string.spam_filter_captcha_incorrect));
+                            return;
+                        }
+                    } else {
+                        // no captcha exist and user not from roster
+                        sendMessageWithoutChat(user.getJid(), thread, account,
+                                Application.getInstance().getResources().getString(R.string.spam_filter_limit_message));
+                        // and skip received message as spam
+                        return;
+                    }
+
+                } else {
+                    // if message from not-roster user
+                    // send a warning message to sender
+                    sendMessageWithoutChat(user.getJid(), thread, account,
+                            Application.getInstance().getResources().getString(R.string.spam_filter_limit_message));
+                    // and skip received message as spam
+                    return;
+                }
+            }
+
             if (message.getType() == Message.Type.chat && MUCManager.getInstance().hasRoom(account, user.getJid().asEntityBareJidIfPossible())) {
                 try {
-                    createPrivateMucChat(account, user.getJid().asFullJidIfPossible()).onPacket(user, stanza);
+                    createPrivateMucChat(account, user.getJid().asFullJidIfPossible()).onPacket(user, stanza, false);
                 } catch (UserJid.UserJidCreateException e) {
                     LogManager.exception(this, e);
                 }
@@ -514,7 +589,24 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
                 }
             }
 
-            createChat(account, user).onPacket(user, stanza);
+            createChat(account, user).onPacket(user, stanza, false);
+        }
+    }
+
+    // send messages without creating chat and adding to roster
+    // used for service auto-generated messages
+    public void sendMessageWithoutChat(Jid to, String threadId, AccountJid account, String text) {
+        Message message = new Message();
+        message.setTo(to);
+        message.setType(Message.Type.chat);
+        message.setBody(text);
+        message.setThread(threadId);
+        // send auto-generated messages without carbons
+        CarbonManager.getInstance().setMessageToIgnoreCarbons(message);
+        try {
+            StanzaSender.sendStanza(account, message);
+        } catch (NetworkException e) {
+            e.printStackTrace();
         }
     }
 
@@ -556,9 +648,17 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
         } catch (UserJid.UserJidCreateException e) {
             return;
         }
+
+        //check for spam
+        if (SettingsManager.spamFilterMode() != SettingsManager.SpamFilterMode.disabled
+                && RosterManager.getInstance().getRosterContact(account, companion) == null ) {
+            // just ignore carbons from not-authorized user
+            return;
+        }
+
         boolean processed = false;
         for (AbstractChat chat : chats.getNested(account.toString()).values()) {
-            if (chat.onPacket(companion, message)) {
+            if (chat.onPacket(companion, message, true)) {
                 processed = true;
                 break;
             }
@@ -573,7 +673,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
         if (body == null) {
             return;
         }
-        createChat(account, companion).onPacket(companion, message);
+        createChat(account, companion).onPacket(companion, message, true);
 
     }
     @Override
@@ -666,28 +766,54 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
             return false;
         }
         AbstractChat abstractChat = getChat(account, user);
-        return abstractChat != null && abstractChat instanceof RegularChat && abstractChat.isStatusTrackingEnabled();
+        return abstractChat != null && abstractChat instanceof RegularChat && (isVisibleChat(abstractChat) || abstractChat.isActive());
     }
 
     @Override
-    public void onStatusChanged(AccountJid account, UserJid user, String statusText) {
-        if (isStatusTrackingEnabled(account, user)) {
-            AbstractChat chat = getChat(account, user);
-            if (chat != null) {
-                chat.newAction(user.getJid().getResourceOrNull(), statusText, ChatAction.status);
-            }
-        }
+    public void onStatusChanged(AccountJid account, final UserJid user, final String statusText) {
+        // temporary disabled
+//        if (isStatusTrackingEnabled(account, user)) {
+//            final AbstractChat chat = getChat(account, user);
+//            if (chat != null) {
+//                Application.getInstance().runOnUiThread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        // fix for saving to realm
+//                        String text;
+//                        if (statusText != null) {
+//                            if (!statusText.isEmpty() && statusText.length() > 0) text = statusText;
+//                            else text = " ";
+//                        } else text = " ";
+//                        // create new action
+//                        chat.newAction(user.getJid().getResourceOrNull(), text, ChatAction.status);
+//                    }
+//                });
+//            }
+//        }
     }
 
     @Override
-    public void onStatusChanged(AccountJid account, UserJid user, StatusMode statusMode, String statusText) {
-        if (isStatusTrackingEnabled(account, user)) {
-            AbstractChat chat = getChat(account, user);
-            if (chat != null) {
-                chat.newAction(user.getJid().getResourceOrNull(),
-                        statusText, ChatAction.getChatAction(statusMode));
-            }
-        }
+    public void onStatusChanged(AccountJid account, final UserJid user, final StatusMode statusMode, final String statusText) {
+        // temporary disabled
+//        if (isStatusTrackingEnabled(account, user)) {
+//            final AbstractChat chat = getChat(account, user);
+//            if (chat != null) {
+//                Application.getInstance().runOnUiThread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        // fix for saving to realm
+//                        String text;
+//                        if (statusText != null) {
+//                            if (!statusText.isEmpty() && statusText.length() > 0) text = statusText;
+//                            else text = " ";
+//                        } else text = " ";
+//                        // create new action
+//                        chat.newAction(user.getJid().getResourceOrNull(),
+//                                text, ChatAction.getChatAction(statusMode));
+//                    }
+//                });
+//            }
+//        }
     }
 
     public void acceptMucPrivateChat(AccountJid account, UserJid user) throws UserJid.UserJidCreateException {

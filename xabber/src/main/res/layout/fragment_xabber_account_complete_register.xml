@@ -1,0 +1,383 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingTop="16dp"
+    android:paddingBottom="16dp"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:background="@color/cardview_light_background"
+    >
+
+
+    <LinearLayout
+        android:id="@+id/stepOne"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="8dp"
+            android:paddingTop="2dp"
+            android:paddingBottom="2dp"
+            android:paddingRight="7dp"
+            android:paddingLeft="7dp"
+            android:background="@drawable/rounded_background"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:text="1"
+            />
+
+        <TextView
+            android:id="@+id/tvSignType"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:text="@string/signed_up_email"
+            />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tvAccountName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/stepOne"
+        android:textColor="@color/black_text_secondary"
+        android:text="@string/no_email"
+        android:layout_toRightOf="@+id/lineOne"
+        android:layout_marginLeft="18dp"
+        />
+
+    <LinearLayout
+        android:id="@+id/lineOne"
+        android:orientation="vertical"
+        android:layout_width="1dp"
+        android:layout_height="20dp"
+        android:layout_marginLeft="11dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:layout_below="@+id/stepOne"
+        android:background="#50616161"
+        />
+
+    <LinearLayout
+        android:id="@+id/stepTwo"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/lineOne"
+        >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="8dp"
+            android:paddingTop="2dp"
+            android:paddingBottom="2dp"
+            android:paddingRight="7dp"
+            android:paddingLeft="7dp"
+            android:background="@drawable/rounded_background"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:text="2"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:text="@string/title_email_confirmed"
+            />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/lineTwo"
+        android:orientation="vertical"
+        android:layout_width="1dp"
+        android:layout_height="20dp"
+        android:layout_marginLeft="11dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:layout_below="@+id/stepTwo"
+        android:background="#50616161"
+        />
+
+    <LinearLayout
+        android:id="@+id/stepThree"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/lineTwo"
+        >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="8dp"
+            android:paddingTop="2dp"
+            android:paddingBottom="2dp"
+            android:paddingRight="7dp"
+            android:paddingLeft="7dp"
+            android:background="@drawable/rounded_background"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:text="3"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:text="@string/title_complete_register"
+            />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/rlContent"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/stepThree"
+        android:layout_toRightOf="@+id/lineThree"
+        android:layout_marginLeft="18dp"
+        android:layout_marginBottom="16dp"
+        >
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:paddingLeft="4dp"
+            android:textColor="@color/black_text_secondary"
+            android:text="@string/label_username"
+            />
+
+        <LinearLayout
+            android:id="@+id/llUsername"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            >
+
+            <EditText
+                android:id="@+id/edtUsername"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:imeOptions="actionNext"
+                android:nextFocusForward="@+id/edtPass"
+                android:singleLine="true"
+                android:hint="@string/hint_username"
+                android:textSize="16sp"
+                android:theme="@style/Theme"
+                android:layout_weight="1"
+
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/default_host"
+                android:textColor="@color/black_text"
+                android:textSize="16sp"
+                />
+
+        </LinearLayout>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="4dp"
+            android:textSize="12sp"
+            android:textColor="@color/black_text_secondary"
+            android:text="@string/summary_username"
+            />
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            >
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="4dp"
+                    android:textColor="@color/black_text_secondary"
+                    android:text="@string/label_pass"
+                    />
+
+                <EditText
+                    android:id="@+id/edtPass"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:imeOptions="actionNext"
+                    android:nextFocusForward="@+id/edtPass2"
+                    android:singleLine="true"
+                    android:textSize="16sp"
+                    android:theme="@style/Theme"
+                    android:inputType="textPassword"
+                    />
+
+            </LinearLayout>
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_weight="1">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="4dp"
+                    android:textColor="@color/black_text_secondary"
+                    android:lines="1"
+                    android:text="@string/label_conf_pass"
+                    />
+
+                <EditText
+                    android:id="@+id/edtPass2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:imeOptions="actionNext"
+                    android:nextFocusForward="@+id/edtFirstName"
+                    android:singleLine="true"
+                    android:textSize="16sp"
+                    android:theme="@style/Theme"
+                    android:inputType="textPassword"
+                    />
+
+            </LinearLayout>
+        </LinearLayout>
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp">
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="4dp"
+                    android:textColor="@color/black_text_secondary"
+                    android:text="@string/label_first_name"
+                    />
+
+                <EditText
+                    android:id="@+id/edtFirstName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:imeOptions="actionNext"
+                    android:singleLine="true"
+                    android:textSize="16sp"
+                    android:theme="@style/Theme"
+                    android:hint="@string/hint_first_name"
+                    />
+
+            </LinearLayout>
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_weight="1">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="4dp"
+                    android:textColor="@color/black_text_secondary"
+                    android:text="@string/label_last_name"
+                    />
+
+                <EditText
+                    android:id="@+id/edtLastName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:imeOptions="actionDone"
+                    android:singleLine="true"
+                    android:textSize="16sp"
+                    android:theme="@style/Theme"
+                    android:hint="@string/hint_last_name"
+                    />
+
+            </LinearLayout>
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btnRegister"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:theme="@style/BlueButton"
+            android:paddingRight="18dp"
+            android:paddingLeft="18dp"
+            android:textColor="@color/white"
+            android:text="@string/button_complete_registration"
+            />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/lineThree"
+        android:orientation="vertical"
+        android:layout_width="1dp"
+        android:layout_height="20dp"
+        android:layout_marginLeft="11dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:layout_below="@+id/stepThree"
+        android:layout_above="@+id/stepFour"
+        android:background="#50616161"
+        />
+
+    <LinearLayout
+        android:id="@+id/stepFour"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/rlContent"
+        >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="8dp"
+            android:paddingTop="2dp"
+            android:paddingBottom="2dp"
+            android:paddingRight="7dp"
+            android:paddingLeft="7dp"
+            android:background="@drawable/rounded_background_grey"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:text="4"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:text="@string/title_start_messaging"
+            />
+
+    </LinearLayout>
+
+</RelativeLayout>

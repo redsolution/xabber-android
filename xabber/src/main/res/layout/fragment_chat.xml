@@ -39,19 +39,65 @@
 
     </android.support.v7.widget.Toolbar>
 
+    <android.support.v4.widget.SwipeRefreshLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/swipeContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/notifyLayout"
+        android:layout_below="@+id/toolbar_default"
+        >
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/chat_messages_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/input_layout"
-
-        android:layout_below="@+id/toolbar_default"
         android:divider="@null"
         android:dividerHeight="0dp"
         android:listSelector="@android:color/transparent"
         android:scrollbars="vertical"
         tools:listitem="@layout/item_outgoing_message"
         />
+
+    </android.support.v4.widget.SwipeRefreshLayout>
+
+    <RelativeLayout
+        android:id="@+id/notifyLayout"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="?attr/message_status_item_background_color"
+        android:layout_above="@+id/input_layout"
+        android:visibility="gone"
+        android:elevation="8dp"
+        >
+
+        <TextView
+            android:id="@+id/tvNotifyTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_centerVertical="true"
+            android:text="@string/otr_verification_notify_title"
+            android:textSize="16sp"
+            />
+
+        <TextView
+            android:id="@+id/tvNotifyAction"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_centerVertical="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:textSize="16sp"
+            android:text="@string/otr_verification_notify_button"
+            />
+
+    </RelativeLayout>
 
     <LinearLayout
         android:id="@+id/input_layout"
@@ -123,7 +169,7 @@
             android:background="?android:selectableItemBackground"
             android:contentDescription="@string/chat_send"
             android:padding="8dp"
-            android:src="@drawable/ic_send_black_24dp"
+            android:src="@drawable/ic_send"
             android:tint="?attr/chat_input_button_color"
             />
     </LinearLayout>

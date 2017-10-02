@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/ripple_background"
+    android:clickable="true"
+    >
+
+    <ImageView
+        android:id="@+id/ivBookmarkIcon"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="16dp"
+        android:layout_marginStart="16dp"
+        android:src="@drawable/ic_web"
+        />
+
+    <CheckBox
+        android:id="@+id/chbBookmark"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginRight="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_centerVertical="true"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        />
+
+    <TextView
+        android:id="@+id/tvUrlName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_toRightOf="@+id/ivBookmarkIcon"
+        android:layout_toEndOf="@+id/ivBookmarkIcon"
+        android:layout_toLeftOf="@id/chbBookmark"
+        android:layout_toStartOf="@id/chbBookmark"
+        android:textStyle="bold"
+        android:textColor="?android:attr/textColorPrimary"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:text="Url Name"
+        />
+
+    <TextView
+        android:id="@+id/tvUrl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="8dp"
+        android:layout_below="@id/tvUrlName"
+        android:layout_toRightOf="@+id/ivBookmarkIcon"
+        android:layout_toEndOf="@+id/ivBookmarkIcon"
+        android:layout_toLeftOf="@id/chbBookmark"
+        android:layout_toStartOf="@id/chbBookmark"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:text="Url"
+        />
+
+</RelativeLayout>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <string name="SOCIAL_AUTH_GOOGLE_KEY">temp</string>
+    <string name="SOCIAL_AUTH_GOOGLE_SECRET">temp</string>
+
+    <string name="SOCIAL_AUTH_FACEBOOK_KEY">temp</string>
+    <string name="SOCIAL_AUTH_FACEBOOK_SCHEME">temp</string>
+    <string name="SOCIAL_AUTH_FACEBOOK_SECRET">temp</string>
+
+    <string name="SOCIAL_AUTH_TWITTER_KEY">temp</string>
+    <string name="SOCIAL_AUTH_TWITTER_SECRET">temp</string>
+
+    <string name="SOCIAL_AUTH_GITHUB_KEY">temp</string>
+    <string name="SOCIAL_AUTH_GITHUB_SECRET">temp</string>
+</resources>

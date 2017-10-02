@@ -15,4 +15,11 @@
     <string name="auto">Automatically</string>
 
     <string name="save">Save</string>
+
+    <string name="cancel">Cancel</string>
+    <string name="skip">Skip</string>
+    <string name="settings">Settings</string>
+    <string name="ok">OK</string>
+    <string name="login">Login</string>
+    <string name="resume">Resume</string>
 </resources>

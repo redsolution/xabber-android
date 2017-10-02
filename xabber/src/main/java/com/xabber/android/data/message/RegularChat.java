@@ -14,9 +14,13 @@
  */
 package com.xabber.android.data.message;
 
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
+import com.xabber.android.data.NetworkException;
+import com.xabber.android.data.SettingsManager;
+import com.xabber.android.data.extension.otr.SecurityLevel;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
@@ -52,11 +56,29 @@ public class RegularChat extends AbstractChat {
      * Resource used for contact.
      */
     private Resourcepart resource;
+    private Resourcepart OTRresource;
+    private Intent intent;
 
 
     RegularChat(AccountJid account, UserJid user, boolean isPrivateMucChat) {
         super(account, user, isPrivateMucChat);
         resource = null;
+    }
+
+    public Intent getIntent() {
+        return intent;
+    }
+
+    public void setIntent(Intent intent) {
+        this.intent = intent;
+    }
+
+    public Resourcepart getOTRresource() {
+        return OTRresource;
+    }
+
+    public void setOTRresource(Resourcepart OTRresource) {
+        this.OTRresource = OTRresource;
     }
 
     public Resourcepart getResource() {
@@ -66,11 +88,15 @@ public class RegularChat extends AbstractChat {
     @NonNull
     @Override
     public Jid getTo() {
-        if (resource == null
-                || (MUCManager.getInstance().hasRoom(account, user.getJid().asEntityBareJidIfPossible()) && getType() != Message.Type.groupchat )) {
-            return user.getJid();
+        if (OTRresource != null) {
+            return JidCreate.fullFrom(user.getJid().asEntityBareJidIfPossible(), OTRresource);
         } else {
-            return JidCreate.fullFrom(user.getJid().asEntityBareJidIfPossible(), resource);
+            if (resource == null
+                    || (MUCManager.getInstance().hasRoom(account, user.getJid().asEntityBareJidIfPossible()) && getType() != Message.Type.groupchat)) {
+                return user.getJid();
+            } else {
+                return JidCreate.fullFrom(user.getJid().asEntityBareJidIfPossible(), resource);
+            }
         }
     }
 
@@ -79,22 +105,22 @@ public class RegularChat extends AbstractChat {
         return Type.chat;
     }
 
-//    @Override
-//    protected boolean canSendMessage() {
-//        if (super.canSendMessage()) {
-//            if (SettingsManager.securityOtrMode() != SecurityOtrMode.required)
-//                return true;
-//            SecurityLevel securityLevel = OTRManager.getInstance()
-//                    .getSecurityLevel(account, user);
-//            if (securityLevel != SecurityLevel.plain)
-//                return true;
-//            try {
-//                OTRManager.getInstance().startSession(account, user);
-//            } catch (NetworkException e) {
-//            }
-//        }
-//        return false;
-//    }
+    @Override
+    protected boolean canSendMessage() {
+        if (super.canSendMessage()) {
+            if (SettingsManager.securityOtrMode() != SettingsManager.SecurityOtrMode.required)
+                return true;
+            SecurityLevel securityLevel = OTRManager.getInstance()
+                    .getSecurityLevel(account, user);
+            if (securityLevel != SecurityLevel.plain)
+                return true;
+            try {
+                OTRManager.getInstance().startSession(account, user);
+            } catch (NetworkException e) {
+            }
+        }
+        return false;
+    }
 
     @Override
     protected String prepareText(String text) {
@@ -122,8 +148,8 @@ public class RegularChat extends AbstractChat {
     }
 
     @Override
-    protected boolean onPacket(UserJid bareAddress, Stanza packet) {
-        if (!super.onPacket(bareAddress, packet))
+    protected boolean onPacket(UserJid bareAddress, Stanza packet, boolean isCarbons) {
+        if (!super.onPacket(bareAddress, packet, isCarbons))
             return false;
         final Resourcepart resource = packet.getFrom().getResourceOrNull();
         if (packet instanceof Presence) {
@@ -134,9 +160,9 @@ public class RegularChat extends AbstractChat {
                 this.resource = null;
             }
 
-            if (presence.getType() == Presence.Type.unavailable) {
-                OTRManager.getInstance().onContactUnAvailable(account, user);
-            }
+//            if (presence.getType() == Presence.Type.unavailable) {
+//                OTRManager.getInstance().onContactUnAvailable(account, user);
+//            }
         } else if (packet instanceof Message) {
             final Message message = (Message) packet;
             if (message.getType() == Message.Type.error)
@@ -152,25 +178,32 @@ public class RegularChat extends AbstractChat {
 
             String thread = message.getThread();
             updateThreadId(thread);
-            boolean unencrypted = false;
-            try {
-                text = OTRManager.getInstance().transformReceiving(account, user, text);
-            } catch (OtrException e) {
-                if (e.getCause() instanceof OTRUnencryptedException) {
-                    text = ((OTRUnencryptedException) e.getCause()).getText();
-                    unencrypted = true;
-                } else {
-                    LogManager.exception(this, e);
-                    // Invalid message received.
-                    return true;
-                }
-            }
-            // System message received.
-            if (text == null || text.trim().equals(""))
-                return true;
+
             if (resource != null && !resource.equals(Resourcepart.EMPTY)) {
                 this.resource = resource;
             }
+
+            boolean encrypted = OTRManager.getInstance().isEncrypted(text);
+
+            if (!isCarbons) {
+                try {
+                    text = OTRManager.getInstance().transformReceiving(account, user, text);
+                } catch (OtrException e) {
+                    if (e.getCause() instanceof OTRUnencryptedException) {
+                        text = ((OTRUnencryptedException) e.getCause()).getText();
+                        encrypted = false;
+                    } else {
+                        LogManager.exception(this, e);
+                        // Invalid message received.
+                        return true;
+                    }
+                }
+            }
+
+            // System message received.
+            if (text == null || text.trim().equals(""))
+                return true;
+
             createAndSaveNewMessage(
                     resource,
                     text,
@@ -178,7 +211,7 @@ public class RegularChat extends AbstractChat {
                     getDelayStamp(message),
                     true,
                     true,
-                    unencrypted,
+                    encrypted,
                     isOfflineMessage(account.getFullJid().getDomain(), packet),
                     packet.getStanzaId());
             EventBus.getDefault().post(new NewIncomingMessageEvent(account, user));

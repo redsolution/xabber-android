@@ -15,8 +15,10 @@
 package com.xabber.android.data;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.multidex.MultiDex;
 
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.core.CrashlyticsCore;
@@ -52,6 +54,7 @@ import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.GroupManager;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterManager;
+import com.xabber.android.data.xaccount.XabberAccountManager;
 import com.xabber.android.service.XabberService;
 
 import io.fabric.sdk.android.Fabric;
@@ -159,6 +162,12 @@ public class Application extends android.app.Application {
                 return thread;
             }
         });
+    }
+
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+        MultiDex.install(this);
     }
 
     @NonNull
@@ -326,6 +335,7 @@ public class Application extends android.app.Application {
         addManager(ConnectionManager.getInstance());
         addManager(ScreenManager.getInstance());
         addManager(AccountManager.getInstance());
+        addManager(XabberAccountManager.getInstance());
         addManager(MUCManager.getInstance());
         addManager(MessageManager.getInstance());
         addManager(ChatManager.getInstance());

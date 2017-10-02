@@ -19,7 +19,7 @@
 
     <style name="ChatHeader.Delay">
         <item name="android:textColor">?android:attr/textColorSecondary</item>
-        <item name="android:textSize">11sp</item>
+        <item name="android:textSize">12sp</item>
     </style>
 
     <style name="ChatText" parent="@android:style/TextAppearance">
@@ -62,16 +62,41 @@
         <item name="android:textColor">?android:attr/textColorSecondary</item>
     </style>
 
+    <style name="RedCheckBox" parent="Theme.AppCompat.Light">
+        <item name="colorControlActivated">@color/red_700</item>
+    </style>
+
+    <style name="BlueCheckBox" parent="Theme.AppCompat.Light">
+        <item name="colorControlActivated">@color/account_register_blue</item>
+        <item name="colorControlNormal">@color/grey_700</item>
+    </style>
+
     <style name="WhiteSwitchStyle">
         <item name="colorControlActivated">@color/white</item>
+    </style>
+
+    <style name="RedSwitchStyle">
+        <item name="colorControlActivated">@color/red_700</item>
     </style>
 
     <style name="RedButton" parent="ThemeOverlay.AppCompat">
         <item name="colorAccent">@color/red_700</item>
     </style>
 
+    <style name="BlueButton" parent="ThemeOverlay.AppCompat">
+        <item name="colorAccent">@color/account_register_blue</item>
+    </style>
+
     <style name="WhiteButton" parent="ThemeOverlay.AppCompat">
         <item name="colorAccent">@color/white</item>
+    </style>
+
+    <style name="TextAppearence.App.TextInputLayout" parent="Widget.Design.TextInputLayout">
+        <item name="android:textColorHint">@color/red_700</item>
+        <item name="colorControlNormal">@color/white</item>
+
+        <item name="colorControlActivated">@color/red_700</item>
+        <item name="colorControlHighlight">@color/red_700</item>
     </style>
 
 </resources>

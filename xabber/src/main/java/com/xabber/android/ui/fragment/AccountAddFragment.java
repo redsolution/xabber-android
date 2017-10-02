@@ -18,6 +18,8 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.xaccount.XabberAccount;
+import com.xabber.android.data.xaccount.XabberAccountManager;
 import com.xabber.android.ui.activity.AccountAddActivity;
 import com.xabber.android.ui.activity.AccountActivity;
 import com.xabber.android.ui.dialog.OrbotInstallerDialog;
@@ -26,6 +28,7 @@ import com.xabber.android.ui.helper.OrbotHelper;
 public class AccountAddFragment extends Fragment implements View.OnClickListener {
 
     private CheckBox storePasswordView;
+    private CheckBox chkSync;
     private CheckBox useOrbotView;
     private CheckBox createAccountCheckBox;
     private LinearLayout passwordConfirmView;
@@ -42,6 +45,12 @@ public class AccountAddFragment extends Fragment implements View.OnClickListener
         View view = inflater.inflate(R.layout.fragment_account_add, container, false);
 
         storePasswordView = (CheckBox) view.findViewById(R.id.store_password);
+        chkSync = (CheckBox) view.findViewById(R.id.chkSync);
+        if (XabberAccountManager.getInstance().getAccount() == null) {
+            chkSync.setVisibility(View.GONE);
+            chkSync.setChecked(false);
+        }
+
         useOrbotView = (CheckBox) view.findViewById(R.id.use_orbot);
         createAccountCheckBox = (CheckBox) view.findViewById(R.id.register_account);
         createAccountCheckBox.setOnClickListener(this);
@@ -89,14 +98,19 @@ public class AccountAddFragment extends Fragment implements View.OnClickListener
             account = AccountManager.getInstance().addAccount(
                     userView.getText().toString(),
                     passwordView.getText().toString(),
+                    "",
                     false,
                     storePasswordView.isChecked(),
+                    chkSync.isChecked(),
                     useOrbotView.isChecked(),
-                    createAccountCheckBox.isChecked());
+                    createAccountCheckBox.isChecked(), true);
         } catch (NetworkException e) {
             Application.getInstance().onError(e);
             return;
         }
+
+        // update remote settings
+        if (chkSync.isChecked()) XabberAccountManager.getInstance().updateSettingsWithSaveLastAccount(account);
 
         getActivity().setResult(Activity.RESULT_OK, AccountAddActivity.createAuthenticatorResult(account));
         startActivity(AccountActivity.createIntent(getActivity(), account));

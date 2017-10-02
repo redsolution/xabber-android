@@ -29,7 +29,7 @@ import io.realm.annotations.RealmModule;
 
 public class MessageDatabaseManager {
     private static final String REALM_MESSAGE_DATABASE_NAME = "xabber.realm";
-    static final int REALM_MESSAGE_DATABASE_VERSION = 13;
+    static final int REALM_MESSAGE_DATABASE_VERSION = 15;
     private final RealmConfiguration realmConfiguration;
 
     private static MessageDatabaseManager instance;
@@ -244,6 +244,19 @@ public class MessageDatabaseManager {
                             schema.get(MessageItem.class.getSimpleName())
                                     .addField(MessageItem.Fields.IMAGE_WIDTH, Integer.class)
                                     .addField(MessageItem.Fields.IMAGE_HEIGHT, Integer.class);
+                            oldVersion++;
+                        }
+
+                        if (oldVersion == 13) {
+                            schema.get(MessageItem.class.getSimpleName())
+                                    .removeField(MessageItem.Fields.UNENCRYPTED)
+                                    .addField(MessageItem.Fields.ENCRYPTED, boolean.class);
+                            oldVersion++;
+                        }
+
+                        if (oldVersion == 14) {
+                            schema.get(MessageItem.class.getSimpleName())
+                                    .addField(MessageItem.Fields.ERROR_DESCR, String.class);
                             oldVersion++;
                         }
 

@@ -23,7 +23,7 @@ import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.notification.EntityNotificationItem;
 import com.xabber.android.data.roster.RosterManager;
-import com.xabber.android.ui.activity.QuestionActivity;
+import com.xabber.android.ui.activity.ChatActivity;
 
 public class SMRequest extends BaseEntity implements EntityNotificationItem {
 
@@ -36,8 +36,12 @@ public class SMRequest extends BaseEntity implements EntityNotificationItem {
 
     @Override
     public Intent getIntent() {
-        return QuestionActivity.createIntent(
-                Application.getInstance(), account, user, question != null, true, question);
+        Intent intent = ChatActivity.createClearTopIntent(Application.getInstance(), account, user);
+        intent.putExtra(ChatActivity.EXTRA_OTR_REQUEST, true);
+        intent.putExtra(ChatActivity.KEY_ACCOUNT, account.toString());
+        intent.putExtra(ChatActivity.KEY_USER, user.toString());
+        intent.putExtra(ChatActivity.KEY_QUESTION, question);
+        return intent;
     }
 
     @Override

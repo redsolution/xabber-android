@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="battery_optimization">Battery optimization</string>
+    <string name="battery_optimization_disabled">Battery optimization disabled. To enable it go to device settings</string>
+    <string name="battery_optimization_enabled">Battery optimization enabled (default)</string>
+
     <string name="cache_clear">Clear cache\nClear all local data. This can free up some space.</string>
     <string name="cache_clear_warning">Do you really want to remove chat history and other local data?\nAccount and roster data are not affected. The app will close.</string>
     <string name="chats_send_by_enter">Send on Enter\nMessage can be sent by pressing the Enter button</string>
     <string name="connection_go_away">Auto-away\nAutomatically set away status on screen lock</string>
 
-    <string name="contacts_order">Sort contacts\nSet the order in which contacts are displayed</string>
+    <string name="contacts_order">Sort contacts</string>
     <string name="contacts_order_alphabet">Alphabetic</string>
     <string name="contacts_order_status">By status</string>
     <string name="contacts_show_accounts">Group by account\nGroup contacts in contact list by account</string>
@@ -29,15 +33,16 @@
     <string name="debug_crash_reports_dialog_settings_button">Settings</string>
 
     <string name="events_lightning">Light indication\nBlink LED on notification</string>
+    <string name="events_lightning_muc">Light indication\nBlink LED on notification from conferences</string>
     <string name="events_persistent">Taskbar icon\nShow persistent notification. This option prevents Android from unloading the app from memory</string>
-    <string name="events_sound">Audio alert\nChoose notification sound</string>
-    <string name="events_vibro">Vibrate\nVibrate on notification</string>
+    <string name="events_sound">Sound\nChoose notification sound</string>
+    <string name="events_vibro">Vibrate</string>
 
-    <string name="interface_theme">Theme\nTheme settings</string>
+    <string name="interface_theme">Theme</string>
     <string name="interface_theme_dark">Dark</string>
     <string name="interface_theme_light">Light</string>
     <string name="interface_theme_normal">Default</string>
-    <string name="interface_smiles">Emoticons\nEmoticons (previously known as smiles) settings</string>
+    <string name="interface_smiles">Emoticons</string>
     <string name="interface_smiles_android">Android emoticons</string>
     <string name="interface_smiles_none">No graphical emoticons</string>
 
@@ -47,20 +52,28 @@
     <string name="preference_editor">Settings</string>
     <string name="preference_events">Notifications\nNotification settings</string>
     <string name="preference_interface">Theme settings\nAppearance settings</string>
+    <string name="preference_spam_filter">Spam filter settings</string>
+    <string name="preference_presence">Presence\nPresence settings</string>
+    <string name="preference_privacy">Privacy\nPrivacy settings</string>
+
+    <string name="spam_filter_1">No spam filter</string>
+    <string name="spam_filter_2">Messages only from roster</string>
+    <string name="spam_filter_3">Messages only from roster. Auth requests only with captcha</string>
+    <string name="spam_filter_4">Messages only from roster. No auth requests</string>
 
     <string name="about_viewer">About</string>
 
     <string name="chats_show_background">Show background\nDisabling may increase performance</string>
-    <string name="chats_font_size">Font size\nSize of message text</string>
+    <string name="chats_font_size">Font size</string>
     <string name="chats_font_size_large">Large</string>
     <string name="chats_font_size_normal">Normal</string>
     <string name="chats_font_size_small">Small</string>
     <string name="chats_font_size_xlarge">Extra large</string>
-    <string name="chats_hide_keyboard">Hide keyboard\nHide software keyboard after sending message</string>
+    <string name="chats_hide_keyboard">Hide keyboard</string>
     <string name="chats_hide_keyboard_landscape">In landscape mode</string>
     <string name="chats_receipt">Message delivery receipts\nSend and receive message delivery receipts</string>
     <string name="chats_show_avatars">Avatars in messages\nShow avatars in each message</string>
-    <string name="chats_show_status_change">Show status changes\nShow messages about status changes</string>
+    <string name="chats_show_status_change">Show status changes</string>
     <string name="chats_show_status_change_muc">In conferences</string>
     <string name="chats_state_notification">Send typing notifications\nNotify the other user that you are typing a message to them</string>
 
@@ -81,7 +94,8 @@
     <string name="events_message_chat">Chats only</string>
     <string name="events_message_chat_and_muc">Chats and conferences</string>
     <string name="events_message_none">Don\'t notify</string>
-    <string name="events_show_text">Show message in notification\nShow message text in notification area</string>
+    <string name="events_show_text">Message preview\nShow message text from chats in notification area</string>
+    <string name="events_show_text_muc">Message preview\nShow message text from conferences in notification area</string>
     <string name="events_visible_chat">Notify in current chat\nNotify on incoming messages in current chat</string>
     <string name="events_suppress_100">Suppress some status messages\nDon\'t get \'This room is not anonymous\' messages</string>
     <string name="negative_priotiry_summary">%s (you won\'t receive messages from any chat)</string>
@@ -108,5 +122,46 @@
 
     <string name="account_error_settings">Settings</string>
 
+    <string name="category_xabber_account">Xabber Account</string>
+    <string name="category_xmpp_accounts">XMPP Accounts</string>
+    <string name="category_interface">Interface</string>
+    <string name="category_settings">Settings</string>
+    <string name="category_about">About</string>
 
+    <string name="category_appearance">Appearance</string>
+    <string name="category_behavior">Behavior</string>
+    <string name="category_contact_list">Contact list</string>
+    <string name="category_offline_contacts">Offline contacts</string>
+    <string name="category_reset">Reset notifications</string>
+    <string name="category_connection_settings">Connection settings</string>
+    <string name="category_advanced">Advanced</string>
+    <string name="category_availability">Availability</string>
+    <string name="category_message_notifications">Message notifications</string>
+    <string name="category_group_notifications">Group notification</string>
+    <string name="category_inapp_notifications">In-app notification</string>
+    <string name="category_key_phrase">Key phrases</string>
+
+    <string name="events_on_chat_title">Alert</string>
+    <string name="events_on_chat_summary">Alert about new messages in chats</string>
+    <string name="events_on_muc_title">Alert</string>
+    <string name="events_on_muc_summary">Alert about new messages in conferences</string>
+
+    <string name="vibro_default">Default</string>
+    <string name="vibro_short">Short vibration</string>
+    <string name="vibro_long">Long vibration</string>
+    <string name="vibro_if_silent">Only in silent mode</string>
+
+    <string name="events_in_app_sounds_title">In-app sounds</string>
+    <string name="events_in_app_sounds_summary">Play sounds on message in another chat</string>
+    <string name="events_in_app_vibrate_title">In-app vibrate</string>
+    <string name="events_in_app_vibrate_summary">Vibrate on message in another chat</string>
+    <string name="events_in_app_preview_title">In-app preview</string>
+    <string name="events_in_app_preview_summary">Show preview on message in another chat</string>
+    <string name="events_in_chat_sounds_title">In-chat sounds</string>
+    <string name="events_in_chat_sounds_summary">Play sound on message in current chat</string>
+
+    <string name="events_reset_title">Reset</string>
+    <string name="events_reset_summary">All notification settings would be set to default values</string>
+    <string name="events_reset_alert">Reset notification settings?</string>
+    <string name="events_reset_toast">Settings were reset</string>
 </resources>

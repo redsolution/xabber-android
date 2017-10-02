@@ -14,8 +14,10 @@
  */
 package com.xabber.android.data.notification;
 
+import android.app.ActivityManager;
 import android.app.Notification;
 import android.app.PendingIntent;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -156,18 +158,38 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
         persistentNotificationColor = application.getResources().getColor(R.color.persistent_notification_color);
     }
 
-    public static void addEffects(NotificationCompat.Builder notificationBuilder, MessageItem messageItem) {
+    public static void addEffects(NotificationCompat.Builder notificationBuilder,
+                                  MessageItem messageItem, boolean isMUC, boolean isPhoneInVibrateMode, boolean isAppInForeground) {
         if (messageItem == null) {
             return;
         }
         if (MessageManager.getInstance().getChat(messageItem.getAccount(), messageItem.getUser()).getFirstNotification() || !SettingsManager.eventsFirstOnly()) {
             Uri sound = PhraseManager.getInstance().getSound(messageItem.getAccount(),
-                    messageItem.getUser(), messageItem.getText());
+                    messageItem.getUser(), messageItem.getText(), isMUC);
             boolean makeVibration = ChatManager.getInstance().isMakeVibro(messageItem.getAccount(),
                     messageItem.getUser());
 
-            NotificationManager.getInstance().setNotificationDefaults(notificationBuilder,
-                    makeVibration, sound, AudioManager.STREAM_NOTIFICATION);
+            boolean led;
+            if (isMUC) led = SettingsManager.eventsLightningForMuc();
+            else led = SettingsManager.eventsLightning();
+
+            NotificationManager.getInstance().setNotificationDefaults(notificationBuilder, led, sound, AudioManager.STREAM_NOTIFICATION);
+
+            // vibration
+            if (makeVibration)
+                setVibration(isMUC, isPhoneInVibrateMode, notificationBuilder);
+
+            // in-app notifications
+            if (isAppInForeground) {
+                // disable vibrate
+                if (!SettingsManager.eventsInAppVibrate()) {
+                    notificationBuilder.setVibrate(new long[] {0, 0});
+                }
+                // disable sounds
+                if (!SettingsManager.eventsInAppSounds()) {
+                    notificationBuilder.setSound(null);
+                }
+            }
         }
     }
 
@@ -289,7 +311,7 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
         notificationBuilder.setContentIntent(taskStackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT));
 
         if (ticker != null) {
-            setNotificationDefaults(notificationBuilder, SettingsManager.eventsVibro(), provider.getSound(), provider.getStreamType());
+            setNotificationDefaults(notificationBuilder, SettingsManager.eventsLightning(), provider.getSound(), provider.getStreamType());
         }
 
         notificationBuilder.setDeleteIntent(clearNotifications);
@@ -305,22 +327,13 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
      * @param notificationBuilder
      * @param streamType
      */
-    public void setNotificationDefaults(NotificationCompat.Builder notificationBuilder, boolean vibration, Uri sound, int streamType) {
+    public void setNotificationDefaults(NotificationCompat.Builder notificationBuilder, boolean led, Uri sound, int streamType) {
         notificationBuilder.setSound(sound, streamType);
         notificationBuilder.setDefaults(0);
 
         int defaults = 0;
 
-        if (vibration) {
-            if (SettingsManager.eventsIgnoreSystemVibro()) {
-                startVibration();
-            } else {
-                defaults |= Notification.DEFAULT_VIBRATE;
-
-            }
-        }
-
-        if (SettingsManager.eventsLightning()) {
+        if (led) {
             defaults |= Notification.DEFAULT_LIGHTS;
         }
 
@@ -614,5 +627,33 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
     @Override
     public void onClose() {
         notificationManager.cancelAll();
+    }
+
+    private static void setVibration(boolean isMUC, boolean isPhoneInVibrateMode, NotificationCompat.Builder notificationBuilder) {
+        SettingsManager.VibroMode vibroMode;
+        if (isMUC) vibroMode = SettingsManager.eventsVibroMuc();
+        else vibroMode = SettingsManager.eventsVibroChat();
+
+        switch (vibroMode) {
+            case disabled:
+                notificationBuilder.setVibrate(new long[] {0, 0});
+                break;
+            case defaultvibro:
+                notificationBuilder.setVibrate(new long[] {0, 500});
+                break;
+            case shortvibro:
+                notificationBuilder.setVibrate(new long[] {0, 250});
+                break;
+            case longvibro:
+                notificationBuilder.setVibrate(new long[] {0, 1000});
+                break;
+            case onlyifsilent:
+                if (isPhoneInVibrateMode)
+                    notificationBuilder.setVibrate(new long[] {0, 500});
+                break;
+            default:
+                notificationBuilder.setVibrate(new long[] {0, 500});
+                break;
+        }
     }
 }

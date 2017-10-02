@@ -377,6 +377,24 @@
                 android:value="com.xabber.android.ui.preferences.PreferenceEditor" />
         </activity>
         <activity
+            android:name=".ui.preferences.PresenceSettings"
+            android:parentActivityName=".ui.preferences.PreferenceEditor">
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.xabber.android.ui.preferences.PreferenceEditor" />
+        </activity>
+        <activity
+            android:name=".ui.preferences.PrivacySettings"
+            android:parentActivityName=".ui.preferences.PreferenceEditor">
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.xabber.android.ui.preferences.PreferenceEditor" />
+        </activity>
+        <activity
             android:name=".ui.activity.ConferenceSelectActivity"
             android:parentActivityName=".ui.activity.ContactListActivity">
 
@@ -446,6 +464,24 @@
                 android:value="com.xabber.android.ui.activity.AccountActivity" />
         </activity>
         <activity
+            android:name=".ui.activity.BookmarksActivity"
+            android:parentActivityName=".ui.activity.AccountActivity">
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.xabber.android.ui.activity.AccountActivity" />
+        </activity>
+        <activity
+            android:name=".ui.activity.AccountSyncActivity"
+            android:parentActivityName=".ui.activity.AccountActivity">
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.xabber.android.ui.activity.AccountActivity" />
+        </activity>
+        <activity
             android:name=".ui.activity.AccountSettingsActivity"
             android:parentActivityName=".ui.activity.AccountActivity">
 
@@ -464,6 +500,39 @@
         </activity>
         <activity android:name=".ui.activity.IntroActivity"
             android:theme="@style/ThemeDark"/>
+        <activity android:name=".ui.activity.TutorialActivity"
+            android:theme="@style/ThemeDark"/>
+        <activity android:name=".ui.activity.XabberLoginActivity"
+            android:theme="@style/ThemeDark"/>
+        <activity android:name=".ui.activity.XabberAccountInfoActivity"
+            android:theme="@style/ThemeDark">
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" />
+                <data android:host="www.xabber.com" />
+                <data android:pathPrefix="/account/emails/confirmation" />
+            </intent-filter>
+
+        </activity>
+        <meta-data android:name="com.facebook.sdk.ApplicationId"
+            android:value="@string/SOCIAL_AUTH_FACEBOOK_KEY"/>
+        <activity android:name="com.facebook.FacebookActivity"
+            android:configChanges=
+                "keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+            android:label="@string/app_name" />
+        <activity
+            android:name="com.facebook.CustomTabActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="@string/SOCIAL_AUTH_FACEBOOK_SCHEME" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

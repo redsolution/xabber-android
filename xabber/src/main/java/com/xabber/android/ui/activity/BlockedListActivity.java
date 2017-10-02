@@ -104,8 +104,8 @@ public class BlockedListActivity extends ManagedActivity implements BlockedListA
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        menu.findItem(R.id.action_unblock_all).setVisible(adapter.getItemCount() > 0);
         final boolean checkContactsIsEmpty = adapter.getCheckedContacts().isEmpty();
+        menu.findItem(R.id.action_unblock_all).setVisible(adapter.getItemCount() > 0 && checkContactsIsEmpty);
         menu.findItem(R.id.action_unblock_selected).setVisible(!checkContactsIsEmpty);
         return true;
     }
@@ -175,6 +175,7 @@ public class BlockedListActivity extends ManagedActivity implements BlockedListA
 
         if (currentSize == 0) {
             toolbar.setTitle(getString(R.string.block_list));
+            toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
             LogManager.i(this, "toolbar.setTitle " + toolbar.getTitle());
             barPainter.updateWithAccountName(account);
 
@@ -187,6 +188,7 @@ public class BlockedListActivity extends ManagedActivity implements BlockedListA
 
         } else {
             toolbar.setTitle(String.valueOf(currentSize));
+            toolbar.setNavigationIcon(R.drawable.ic_clear_white_24dp);
             LogManager.i(this, "toolbar.setTitle " + toolbar.getTitle());
 
             barPainter.setGrey();

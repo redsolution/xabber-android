@@ -71,8 +71,17 @@
     <string name="account_color_name_blue">Blue</string>
     <string name="account_color_name_indigo">Indigo</string>
     <string name="account_color_name_teal">Teal</string>
-    <string name="account_color_name_blue_grey">Blue grey</string>
+    <string name="account_color_name_blue_grey">Blue-grey</string>
     <string name="account_color_name_cyan">Cyan</string>
+    <string name="account_color_name_deep_purple">Deep-purple</string>
+    <string name="account_color_name_lime">Lime</string>
+    <string name="account_color_name_pink">Pink</string>
+    <string name="account_color_name_purple">Purple</string>
+    <string name="account_color_name_light_blue">Light-blue</string>
+    <string name="account_color_name_light_green">Light-green</string>
+    <string name="account_color_name_amber">Amber</string>
+    <string name="account_color_name_deep_orange">Deep-orange</string>
+    <string name="account_color_name_brown">Brown</string>
 
     <string name="account_connection_settings">Connection settings</string>
 
@@ -105,4 +114,11 @@
     <string name="account_clear_history_on_exit_title">Clear history on exit</string>
     <string name="account_clear_history_on_exit_summary">Delete all chat messages from device before exiting Xabber.</string>
 
+    <string name="account_bookmarks">Bookmarks</string>
+    <string name="account_bookmarks_summary">List of bookmarks for this account</string>
+
+    <string name="account_sync">Synchronization</string>
+    <string name="account_sync_summary">Synchronization with Xabber Account</string>
+
+    <string name="bookmark_not_supported">Server does not support bookmarks</string>
 </resources>

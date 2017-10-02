@@ -1,61 +1,175 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <RingtonePreference
-        android:title="@string/events_sound"
-        android:key="@string/events_sound_key"
-        android:defaultValue="@string/events_sound_default"
-        android:ringtoneType="notification"
-        android:showSilent="true"
-        android:showDefault="true"
-        />
-    <CheckBoxPreference
-        android:title="@string/events_vibro"
-        android:key="@string/events_vibro_key"
-        android:defaultValue="@bool/events_vibro_default"
-        />
-    <CheckBoxPreference
-        android:title="@string/events_ignore_system_vibro"
-        android:key="@string/events_ignore_system_vibro_key"
-        android:defaultValue="@bool/events_ignore_system_vibro_default"
-        android:dependency="@string/events_vibro_key"
-        />
-    <CheckBoxPreference
-        android:title="@string/events_lightning"
-        android:key="@string/events_lightning_key"
-        android:defaultValue="@bool/events_lightning_default"
-        />
-    <CheckBoxPreference
-        android:title="@string/events_persistent"
-        android:key="@string/events_persistent_key"
-        android:defaultValue="@bool/events_persistent_default"
-        />
-    <CheckBoxPreference
-        android:title="@string/events_show_text"
-        android:key="@string/events_show_text_key"
-        android:defaultValue="@bool/events_show_text_default"
-        />
-    <ListPreference
-        android:title="@string/events_message"
-        android:key="@string/events_message_key"
-        android:entries="@array/events_message_entries"
-        android:entryValues="@array/events_message_entryvalues"
-        android:defaultValue="@string/events_message_default"
-        />
-    <CheckBoxPreference
-        android:title="@string/events_visible_chat"
-        android:key="@string/events_visible_chat_key"
-        android:defaultValue="@bool/events_visible_chat_default"
-        />
-    <CheckBoxPreference
-        android:title="@string/events_first_only"
-        android:key="@string/events_first_only_key"
-        android:defaultValue="@bool/events_first_only_default"
-        />
-    <Preference
-        android:title="@string/events_phrases"
-        android:key="@string/events_phrases">
-        <intent
-            android:targetPackage="@string/application_package"
-            android:targetClass="com.xabber.android.ui.preferences.PhraseList"/>
-    </Preference>
+
+    <PreferenceCategory
+        android:title="@string/category_message_notifications">
+
+        <CheckBoxPreference
+            android:title="@string/events_on_chat_title"
+            android:key="@string/events_on_chat_key"
+            android:defaultValue="@bool/events_on_chat_default"
+            android:summary="@string/events_on_chat_summary"
+            />
+
+        <CheckBoxPreference
+            android:title="@string/events_show_text"
+            android:key="@string/events_show_text_key"
+            android:defaultValue="@bool/events_show_text_default"
+            android:dependency="@string/events_on_chat_key"
+            />
+
+        <CheckBoxPreference
+            android:title="@string/events_lightning"
+            android:key="@string/events_lightning_key"
+            android:defaultValue="@bool/events_lightning_default"
+            android:dependency="@string/events_on_chat_key"
+            />
+
+        <ListPreference
+            android:defaultValue="@string/events_vibro_bydefault"
+            android:entries="@array/events_vibro_entries"
+            android:entryValues="@array/events_vibro_entryvalues"
+            android:key="@string/events_vibro_chat_key"
+            android:title="@string/events_vibro"
+            android:summary="%s"
+            android:dependency="@string/events_on_chat_key"
+            />
+
+        <RingtonePreference
+            android:title="@string/events_sound"
+            android:key="@string/events_sound_key"
+            android:defaultValue="@string/events_sound_default"
+            android:ringtoneType="notification"
+            android:showSilent="true"
+            android:showDefault="true"
+            android:dependency="@string/events_on_chat_key"
+            />
+
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:title="@string/category_group_notifications">
+
+        <CheckBoxPreference
+            android:title="@string/events_on_muc_title"
+            android:key="@string/events_on_muc_key"
+            android:defaultValue="@bool/events_on_muc_default"
+            android:summary="@string/events_on_muc_summary"
+            />
+
+        <CheckBoxPreference
+            android:title="@string/events_show_text_muc"
+            android:key="@string/events_show_text_muc_key"
+            android:defaultValue="@bool/events_show_text_default"
+            android:dependency="@string/events_on_muc_key"
+            />
+
+        <CheckBoxPreference
+            android:title="@string/events_lightning_muc"
+            android:key="@string/events_lightning_muc_key"
+            android:defaultValue="@bool/events_lightning_default"
+            android:dependency="@string/events_on_muc_key"
+            />
+
+        <ListPreference
+            android:defaultValue="@string/events_vibro_bydefault"
+            android:entries="@array/events_vibro_entries"
+            android:entryValues="@array/events_vibro_entryvalues"
+            android:key="@string/events_vibro_muc_key"
+            android:title="@string/events_vibro"
+            android:summary="%s"
+            android:dependency="@string/events_on_muc_key"
+            />
+
+        <RingtonePreference
+            android:title="@string/events_sound"
+            android:key="@string/events_sound_muc_key"
+            android:defaultValue="@string/events_sound_default"
+            android:ringtoneType="notification"
+            android:showSilent="true"
+            android:showDefault="true"
+            android:dependency="@string/events_on_muc_key"
+            />
+
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:title="@string/category_inapp_notifications">
+
+        <CheckBoxPreference
+            android:title="@string/events_in_app_sounds_title"
+            android:key="@string/events_in_app_sounds_key"
+            android:defaultValue="@bool/events_in_app_sounds_default"
+            android:summary="@string/events_in_app_sounds_summary"
+            />
+        <CheckBoxPreference
+            android:title="@string/events_in_app_vibrate_title"
+            android:key="@string/events_in_app_vibrate_key"
+            android:defaultValue="@bool/events_in_app_vibrate_default"
+            android:summary="@string/events_in_app_vibrate_summary"
+            />
+        <CheckBoxPreference
+            android:title="@string/events_in_app_preview_title"
+            android:key="@string/events_in_app_preview_key"
+            android:defaultValue="@bool/events_in_app_preview_default"
+            android:summary="@string/events_in_app_preview_summary"
+            />
+        <CheckBoxPreference
+            android:title="@string/events_in_chat_sounds_title"
+            android:key="@string/events_in_chat_sounds_key"
+            android:defaultValue="@bool/events_in_chat_sounds_default"
+            android:summary="@string/events_in_chat_sounds_summary"
+            />
+        <CheckBoxPreference
+            android:title="@string/events_first_only"
+            android:key="@string/events_first_only_key"
+            android:defaultValue="@bool/events_first_only_default"
+            />
+        <!--<CheckBoxPreference-->
+            <!--android:title="@string/events_ignore_system_vibro"-->
+            <!--android:key="@string/events_ignore_system_vibro_key"-->
+            <!--android:defaultValue="@bool/events_ignore_system_vibro_default"-->
+            <!--android:dependency="@string/events_vibro_key"-->
+            <!--/>-->
+
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:title="@string/call_attention">
+
+        <CheckBoxPreference
+            android:defaultValue="@bool/chats_attention_default"
+            android:key="@string/chats_attention_key"
+            android:title="@string/chats_attention"
+            />
+        <RingtonePreference
+            android:defaultValue="@string/chats_attention_sound_default"
+            android:dependency="@string/chats_attention_key"
+            android:key="@string/chats_attention_sound_key"
+            android:ringtoneType="ringtone"
+            android:showDefault="true"
+            android:showSilent="true"
+            android:title="@string/chats_attention_sound"
+            />
+
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:title="@string/category_key_phrase">
+
+        <Preference
+            android:title="@string/events_phrases"
+            android:key="@string/events_phrases">
+            <intent
+                android:targetPackage="@string/application_package"
+                android:targetClass="com.xabber.android.ui.preferences.PhraseList"/>
+        </Preference>
+
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:title="@string/category_reset">
+
+        <Preference
+            android:key="@string/events_reset_key"
+            android:title="@string/events_reset_title"
+            android:summary="@string/events_reset_summary"/>
+
+    </PreferenceCategory>
+
 </PreferenceScreen>

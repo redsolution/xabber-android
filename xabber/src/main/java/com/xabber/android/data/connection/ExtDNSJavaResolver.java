@@ -8,11 +8,13 @@ import org.jivesoftware.smack.util.dns.HostAddress;
 import org.jivesoftware.smack.util.dns.SRVRecord;
 
 import org.xbill.DNS.ExtLookup;
+import org.xbill.DNS.ExtendedResolver;
 import org.xbill.DNS.Record;
 import org.xbill.DNS.TextParseException;
 import org.xbill.DNS.Type;
 
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,13 +37,16 @@ public class ExtDNSJavaResolver extends DNSResolver implements SmackInitializer 
     @Override
     protected List<SRVRecord> lookupSRVRecords0(String name, List<HostAddress> failedAddresses, ConnectionConfiguration.DnssecMode dnssecMode) {
         List<SRVRecord> res = new ArrayList<SRVRecord>();
+        org.xbill.DNS.ResolverConfig.refresh();
 
         ExtLookup lookup;
         try {
             lookup = new ExtLookup(name, Type.SRV);
-        }
-        catch (TextParseException e) {
+            lookup.setResolver(new ExtendedResolver());
+        } catch (TextParseException e) {
             throw new IllegalStateException(e);
+        } catch (UnknownHostException e) {
+            throw new RuntimeException("Failed to initialize resolver");
         }
 
         Record[] recs = lookup.run();

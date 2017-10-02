@@ -7,20 +7,26 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.xabber.android.R;
+import com.xabber.android.data.SettingsManager;
+import com.xabber.android.data.account.AccountItem;
+import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.xaccount.XabberAccountManager;
 
 public class AccountOptionsAdapter extends RecyclerView.Adapter<AccountOptionViewHolder>
         implements AccountOptionClickListener {
 
     private final AccountOption[] options;
     private final Listener listener;
+    private final AccountItem accountItem;
 
     public interface Listener {
         void onAccountOptionClick(AccountOption option);
     }
 
-    public AccountOptionsAdapter(AccountOption[] options, Listener listener) {
+    public AccountOptionsAdapter(AccountOption[] options, Listener listener, AccountItem accountItem) {
         this.options = options;
         this.listener = listener;
+        this.accountItem = accountItem;
     }
 
     @Override
@@ -43,6 +49,23 @@ public class AccountOptionsAdapter extends RecyclerView.Adapter<AccountOptionVie
             holder.separator.setVisibility(View.GONE);
         } else {
             holder.separator.setVisibility(View.VISIBLE);
+        }
+
+        if (position == 1) {
+            if (XabberAccountManager.getInstance().isAccountSynchronize(
+                    accountItem.getAccount().getFullJid().asBareJid().toString())
+                    || SettingsManager.isSyncAllAccounts()) {
+                holder.description.setText(R.string.sync_status_enabled);
+            } else holder.description.setText(R.string.sync_status_disabled);
+
+            if (XabberAccountManager.getInstance().getAccount() == null || accountItem.isSyncNotAllowed()) {
+                holder.title.setEnabled(false);
+                holder.description.setEnabled(false);
+                holder.description.setText(R.string.sync_status_not_allowed);
+            } else {
+                holder.title.setEnabled(true);
+                holder.description.setEnabled(true);
+            }
         }
     }
 

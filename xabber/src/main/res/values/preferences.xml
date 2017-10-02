@@ -26,6 +26,33 @@
 
     <string name="default_sound">com.xabber.android.DEFAULT_SOUND</string>
 
+    <string name="sync_all_key">sync_all_key</string>
+    <string name="order_last_timestamp_key">order_last_timestamp_key</string>
+
+    <string name="last_sync_date_key">last_sync_date_key</string>
+    <string name="last_sync_date_default">@string/last_sync_date_never</string>
+
+    <!-- preference_spam -->
+    <string name="spam_filter_key">spam_key</string>
+    <string-array name="spam_filter_entries">
+        <item>@string/spam_filter_1</item>
+        <item>@string/spam_filter_2</item>
+        <item>@string/spam_filter_3</item>
+        <item>@string/spam_filter_4</item>
+    </string-array>
+    <string-array name="spam_filter_entryvalues">
+        <item>@string/spam_filter_1_value</item>
+        <item>@string/spam_filter_2_value</item>
+        <item>@string/spam_filter_3_value</item>
+        <item>@string/spam_filter_4_value</item>
+    </string-array>
+    <string name="spam_filter_default">@string/spam_filter_1_value</string>
+
+    <string name="spam_filter_1_value">spam_filter_1</string>
+    <string name="spam_filter_2_value">spam_filter_2</string>
+    <string name="spam_filter_3_value">spam_filter_3</string>
+    <string name="spam_filter_4_value">spam_filter_4</string>
+
 <!-- preference_interface -->
     <string name="interface_theme_key">interface_theme</string>
     <string name="interface_theme_normal_value">normal</string>
@@ -99,38 +126,46 @@
 
 <!-- preference_events -->
     <string name="events_sound_key">events_sound_uri</string>
+    <string name="events_sound_muc_key">events_sound_muc_uri</string>
     <string name="events_sound_default">@string/default_sound</string>
 
-    <string name="events_vibro_key">events_vibro</string>
-    <bool name="events_vibro_default">true</bool>
-
-    <string name="events_ignore_system_vibro_key">events_ignore_system_vibro</string>
-    <bool name="events_ignore_system_vibro_default">false</bool>
+    <string name="events_vibro_chat_key">events_vibro_chat_key</string>
+    <string name="events_vibro_muc_key">events_vibro_muc_key</string>
+    <string name="events_vibro_disable">disable</string>
+    <string name="events_vibro_bydefault">default</string>
+    <string name="events_vibro_short">short</string>
+    <string name="events_vibro_long">long</string>
+    <string name="events_vibro_if_silent">if silent</string>
+    <string-array name="events_vibro_entries">
+        <item>@string/disabled</item>
+        <item>@string/vibro_default</item>
+        <item>@string/vibro_short</item>
+        <item>@string/vibro_long</item>
+        <item>@string/vibro_if_silent</item>
+    </string-array>
+    <string-array name="events_vibro_entryvalues">
+        <item>@string/events_vibro_disable</item>
+        <item>@string/events_vibro_bydefault</item>
+        <item>@string/events_vibro_short</item>
+        <item>@string/events_vibro_long</item>
+        <item>@string/events_vibro_if_silent</item>
+    </string-array>
 
     <string name="events_lightning_key">events_lightning</string>
+    <string name="events_lightning_muc_key">events_lightning_muc</string>
     <bool name="events_lightning_default">true</bool>
 
     <string name="events_persistent_key">events_persistent</string>
     <bool name="events_persistent_default">true</bool>
 
     <string name="events_show_text_key">events_show_text</string>
+    <string name="events_show_text_muc_key">events_show_text_muc</string>
     <bool name="events_show_text_default">true</bool>
 
-    <string name="events_message_key">events_message</string>
-    <string name="events_message_none_value">none</string>
-    <string name="events_message_chat_value">chat</string>
-    <string name="events_message_chat_and_muc_value">chat_and_muc</string>
-    <string-array name="events_message_entries">
-        <item>@string/events_message_none</item>
-        <item>@string/events_message_chat</item>
-        <item>@string/events_message_chat_and_muc</item>
-    </string-array>
-    <string-array name="events_message_entryvalues">
-        <item>@string/events_message_none_value</item>
-        <item>@string/events_message_chat_value</item>
-        <item>@string/events_message_chat_and_muc_value</item>
-    </string-array>
-    <string name="events_message_default">@string/events_message_chat_value</string>
+    <string name="events_on_chat_key">events_on_chat</string>
+    <bool name="events_on_chat_default">true</bool>
+    <string name="events_on_muc_key">events_on_muc</string>
+    <bool name="events_on_muc_default">true</bool>
 
     <string name="events_visible_chat_key">events_visible_chat</string>
     <bool name="events_visible_chat_default">false</bool>
@@ -138,6 +173,19 @@
     <string name="events_first_only_key">events_first_only</string>
     <bool name="events_first_only_default">false</bool>
 
+    <string name="events_in_app_sounds_key">events_in_app_sounds</string>
+    <bool name="events_in_app_sounds_default">true</bool>
+
+    <string name="events_in_app_vibrate_key">events_in_app_vibrate</string>
+    <bool name="events_in_app_vibrate_default">true</bool>
+
+    <string name="events_in_app_preview_key">events_in_app_preview</string>
+    <bool name="events_in_app_preview_default">true</bool>
+
+    <string name="events_in_chat_sounds_key">events_in_chat_sound</string>
+    <bool name="events_in_chat_sounds_default">true</bool>
+
+    <string name="events_reset_key">events_reset</string>
 <!-- preference_chats -->
 	<string name="preference_chats">@string/chat_viewer</string>
 
@@ -215,6 +263,8 @@
 <!-- preference_connection -->
     <string name="connection_start_at_boot_key">connection_start_at_boot</string>
     <bool name="connection_start_at_boot_default">false</bool>
+
+    <string name="battery_optimization_disable_key">battery_optimization_disable</string>
 
     <string name="connection_go_away_key">connection_go_away</string>
     <string-array name="connection_go_away_entries">

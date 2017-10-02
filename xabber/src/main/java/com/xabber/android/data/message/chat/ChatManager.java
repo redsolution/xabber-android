@@ -372,6 +372,18 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
         }
     }
 
+    public boolean isShowTextOnMuc(AccountJid account, UserJid user) {
+        switch (getShowText(account, user)) {
+            case show:
+                return true;
+            case hide:
+                return false;
+            case default_settings:
+            default:
+                return SettingsManager.eventsShowTextOnMuc();
+        }
+    }
+
     public ShowMessageTextInNotification getShowText(AccountJid account, UserJid user) {
         ShowMessageTextInNotification showMessageTextInNotification = showText.get(account.toString(), user.toString());
         if (showMessageTextInNotification == null) {
@@ -400,7 +412,7 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
     public boolean isMakeVibro(AccountJid account, UserJid user) {
         Boolean value = makeVibro.get(account.toString(), user.toString());
         if (value == null) {
-            return SettingsManager.eventsVibro();
+            return true;
         }
         return value;
     }
@@ -421,9 +433,10 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
      * @return Sound for notification. Common value if there is no user specific
      * value.
      */
-    public Uri getSound(AccountJid account, UserJid user) {
+    public Uri getSound(AccountJid account, UserJid user, boolean isMUC) {
         Uri value = sounds.get(account.toString(), user.toString());
         if (value == null) {
+            if (isMUC) return SettingsManager.eventsSoundMuc();
             return SettingsManager.eventsSound();
         }
         if (EMPTY_SOUND.equals(value)) {

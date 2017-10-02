@@ -16,9 +16,11 @@
   <string name="ENTRY_IS_NOT_AVAILABLE">Контакт не доступен</string>
   <string name="FILE_NOT_FOUND">Файл не найден</string>
   <string name="message_copy">Копировать</string>
+  <string name="message_appeal">Упомянуть</string>
   <string name="message_quote">Цитировать</string>
   <string name="message_remove">Удалить из истории</string>
   <string name="message_repeat">Повторить отправку</string>
+  <string name="message_otr_show_original">Показать сообщение</string>
   <string name="message_open_file">Открыть</string>
   <string name="message_save_file">Сохранить</string>
   <string name="save_history">Сохранять локальную историю сообщений\nХранить историю переписки на устройстве</string>
@@ -74,10 +76,18 @@
   <string name="otr_start">Начать шифрование</string>
   <string name="otr_unencrypted_message">Это сообщние не было зашифровано.</string>
   <string name="otr_unreadable_message">Зашифрованное сообщение, отправленное Вами, невозможно прочитать</string>
+  <string name="otr_not_decrypted_message">Сообщение не может быть расшифровано</string>
   <string name="otr_verification">Проверка личности OTR</string>
   <string name="otr_verify_fingerprint">Проверка отпечатком пальца</string>
   <string name="otr_verify_question">Проверка вопросом</string>
   <string name="otr_verify_secret">Проверка секретным ключом</string>
+  <string name="otr_select_resource">Выберите устройство для установки сеанса OTR:</string>
+  <string name="otr_select_toast_error">Сеанс OTR не установлен.</string>
+  <string name="otr_select_toast_resources_not_found">Сеанс OTR не установлен. Собеседник не в сети.</string>
+  <string name="otr_verification_notify_title">Запрос на подтверждение подлинности сеанса OTR</string>
+  <string name="otr_verification_progress_title">Идёт подтверждение подлинности сеанса OTR</string>
+  <string name="otr_verification_notify_button">ОТКРЫТЬ</string>
+  <string name="otr_verification_notify_button_cancel">ОТМЕНИТЬ</string>
   <string name="recent_chats">Недавние чаты</string>
   <string name="under_construction">В разработке</string>
   <string name="under_construction_message">Этот экран находится в разработке</string>
@@ -95,4 +105,12 @@
   <string name="http_file_upload_slot_error">Не удалось загрузить файл. Слишком большой?</string>
   <string name="no_permission_to_read_files">Нет разрешения на чтение файлов</string>
   <string name="no_permission_to_write_files">Нет разрешения на сохранение файлов</string>
+  <string name="error_description_title">Сообщение об ошибке:</string>
+  <string name="message_status_sent">Отправлено</string>
+  <string name="message_status_delivered">Доставлено</string>
+  <string name="message_status_synced">Загружено из архива сообщений</string>
+  <string name="message_status_error">Ошибка</string>
+  <string name="message_status_forwarded">Отправлено с другого устройства</string>
+  <string name="message_status_not_sent">Отправляется</string>
+  <string name="toast_no_history">В истории больше нет сообщений</string>
 </resources>

@@ -60,26 +60,27 @@ import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
+import com.xabber.android.data.xaccount.XMPPAccountSettings;
+import com.xabber.android.data.xaccount.XabberAccount;
+import com.xabber.android.data.xaccount.XabberAccountManager;
 import com.xabber.android.ui.color.BarPainter;
+import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.dialog.AccountChooseDialogFragment;
 import com.xabber.android.ui.dialog.AccountChooseDialogFragment.OnChooseListener;
-import com.xabber.android.ui.dialog.BatteryOptimizationDisableDialog;
 import com.xabber.android.ui.dialog.ContactSubscriptionDialog;
-import com.xabber.android.ui.dialog.CrashReportDialog;
-import com.xabber.android.ui.dialog.DarkThemeIntroduceDialog;
+import com.xabber.android.ui.dialog.EnterPassDialog;
 import com.xabber.android.ui.dialog.MucInviteDialog;
 import com.xabber.android.ui.dialog.MucPrivateChatInvitationDialog;
-import com.xabber.android.ui.dialog.StartAtBootDialogFragment;
 import com.xabber.android.ui.dialog.TranslationDialog;
 import com.xabber.android.ui.fragment.ContactListDrawerFragment;
 import com.xabber.android.ui.fragment.ContactListFragment;
 import com.xabber.android.ui.fragment.ContactListFragment.ContactListFragmentListener;
-import com.xabber.android.ui.helper.BatteryHelper;
 import com.xabber.android.ui.preferences.PreferenceEditor;
 import com.xabber.xmpp.uri.XMPPUri;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -183,6 +184,11 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
         super.onCreate(savedInstanceState);
 
         if (isFinishing()) {
+            return;
+        }
+
+        if (!isTaskRoot()) {
+            finish();
             return;
         }
 
@@ -303,7 +309,7 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
     protected void onResume() {
         super.onResume();
 
-        if (!AccountManager.getInstance().hasAccounts()) {
+        if (!AccountManager.getInstance().hasAccounts() && XabberAccountManager.getInstance().getAccount() == null) {
             startActivity(IntroActivity.createIntent(this));
             finish();
             return;
@@ -390,11 +396,13 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
         }
 
         if (Application.getInstance().doNotify()) {
-            if (BatteryHelper.isOptimizingBattery()
-                    && !SettingsManager.isBatteryOptimizationDisableSuggested()) {
-                BatteryOptimizationDisableDialog.newInstance().show(getFragmentManager(),
-                        BatteryOptimizationDisableDialog.class.getSimpleName());
-            }
+            // не ограничивать расход батареи (системное)
+
+//            if (BatteryHelper.isOptimizingBattery()
+//                    && !SettingsManager.isBatteryOptimizationDisableSuggested()) {
+//                BatteryOptimizationDisableDialog.newInstance().show(getFragmentManager(),
+//                        BatteryOptimizationDisableDialog.class.getSimpleName());
+//            }
 
             if (!SettingsManager.isTranslationSuggested()) {
                 Locale currentLocale = getResources().getConfiguration().locale;
@@ -403,23 +411,59 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
                 }
             }
 
-            if (SettingsManager.isCrashReportsSupported()
-                    && !SettingsManager.isCrashReportsDialogShown()) {
-                CrashReportDialog.newInstance().show(getFragmentManager(), CrashReportDialog.class.getSimpleName());
-            }
+            // сбор диагностич. информации
 
-            if (SettingsManager.interfaceTheme() != SettingsManager.InterfaceTheme.dark) {
-                if (!SettingsManager.isDarkThemeSuggested() && SettingsManager.bootCount() > 1) {
-                    new DarkThemeIntroduceDialog().show(getFragmentManager(), DarkThemeIntroduceDialog.class.getSimpleName());
+//            if (SettingsManager.isCrashReportsSupported()
+//                    && !SettingsManager.isCrashReportsDialogShown()) {
+//                CrashReportDialog.newInstance().show(getFragmentManager(), CrashReportDialog.class.getSimpleName());
+//            }
+
+            // представление темной темы
+
+//            if (SettingsManager.interfaceTheme() != SettingsManager.InterfaceTheme.dark) {
+//                if (!SettingsManager.isDarkThemeSuggested() && SettingsManager.bootCount() > 1) {
+//                    new DarkThemeIntroduceDialog().show(getFragmentManager(), DarkThemeIntroduceDialog.class.getSimpleName());
+//                }
+//            } else {
+//                SettingsManager.setDarkThemeSuggested();
+//            }
+
+            // запускать Xabber при старте устройства
+
+//            if (SettingsManager.bootCount() > 2 && !SettingsManager.connectionStartAtBoot()
+//                    && !SettingsManager.startAtBootSuggested()) {
+//                StartAtBootDialogFragment.newInstance().show(getFragmentManager(), "START_AT_BOOT");
+//            }
+        }
+
+        //XabberAccountManager.getInstance().createLocalAccountIfNotExist();
+        showPassDialogs();
+    }
+
+    public void showPassDialogs() {
+        List<XMPPAccountSettings> items = XabberAccountManager.getInstance().getXmppAccountsForCreate();
+        if (items != null && items.size() > 0) {
+            for (XMPPAccountSettings item : items) {
+                if (XabberAccountManager.getInstance().isAccountSynchronize(item.getJid()) || SettingsManager.isSyncAllAccounts()) {
+                    if (!item.isDeleted() && XabberAccountManager.getInstance().getExistingAccount(item.getJid()) == null) {
+                        if (item.getToken() != null && !item.getToken().isEmpty()) {
+                            // create account if exist token
+                            try {
+                                AccountJid accountJid = AccountManager.getInstance().addAccount(item.getJid(),
+                                        "", item.getToken(), false, true, true, false, false, true);
+                                AccountManager.getInstance().setColor(accountJid, ColorManager.getInstance().convertColorNameToIndex(item.getColor()));
+                                AccountManager.getInstance().setOrder(accountJid, item.getOrder());
+                                AccountManager.getInstance().setTimestamp(accountJid, item.getTimestamp());
+                                AccountManager.getInstance().onAccountChanged(accountJid);
+                            } catch (NetworkException e) {
+                                Application.getInstance().onError(e);
+                            }
+                            // require pass if token not exist
+                        } else EnterPassDialog.newInstance(item).show(getFragmentManager(), EnterPassDialog.class.getName());
+                    }
                 }
-            } else {
-                SettingsManager.setDarkThemeSuggested();
             }
-
-            if (SettingsManager.bootCount() > 2 && !SettingsManager.connectionStartAtBoot()
-                    && !SettingsManager.startAtBootSuggested()) {
-                StartAtBootDialogFragment.newInstance().show(getFragmentManager(), "START_AT_BOOT");
-            }
+            XabberAccountManager.getInstance().clearXmppAccountsForCreate();
         }
     }
 
@@ -714,6 +758,7 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
     public void onAccountsChanged(Collection<AccountJid> accounts) {
         ((ContactListFragment)getFragmentManager().findFragmentById(R.id.container)).onAccountsChanged();
         barPainter.setDefaultColor();
+        rebuildAccountToggle();
     }
 
     @Override
@@ -739,7 +784,13 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
                 exit();
                 break;
             case R.id.drawer_header_action_xmpp_accounts:
-                startActivity(AccountListActivity.createIntent(this));
+                startActivity(PreferenceEditor.createIntent(this));
+                break;
+            case R.id.drawer_header_action_xabber_account:
+                XabberAccount account = XabberAccountManager.getInstance().getAccount();
+                if (account != null)
+                    startActivity(XabberAccountInfoActivity.createIntent(this));
+                else startActivity(TutorialActivity.createIntent(this));
                 break;
         }
     }

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginTop="8dp">
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/account_list_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:nestedScrollingEnabled="false"
+        tools:listitem="@layout/item_account_for_preference" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"
+        >
+
+        <Button
+            android:id="@+id/btnAddAccount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:text="@string/account_add"
+            android:textColor="@color/teal_500"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            />
+
+        <RelativeLayout
+            android:id="@+id/rlReorder"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:background="?android:attr/selectableItemBackground"
+            android:clickable="true"
+            >
+
+            <ImageView
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:padding="12dp"
+                android:src="@drawable/ic_swap"
+                android:layout_centerVertical="true"
+                android:tint="@color/grey_500"
+                />
+
+        </RelativeLayout>
+    </RelativeLayout>
+
+</LinearLayout>

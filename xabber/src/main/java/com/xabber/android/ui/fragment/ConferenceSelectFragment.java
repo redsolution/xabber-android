@@ -179,7 +179,8 @@ public class ConferenceSelectFragment extends ListFragment implements AdapterVie
 
         nextButton.setTextColor(ColorManager.getInstance().getAccountPainter().getAccountTextColor(account));
 
-
+        serverView.setText(getString(R.string.domen_part, account.getFullJid().getDomain().toString()));
+        onRequestHostedRoomsClick();
     }
 
     @Override

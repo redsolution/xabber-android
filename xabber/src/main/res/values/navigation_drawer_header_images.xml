@@ -9,5 +9,14 @@
         <item>@drawable/drawer_blue_grey</item>
         <item>@drawable/drawer_cyan</item>
         <item>@drawable/drawer_teal</item>
+        <item>@drawable/drawer_indigo</item>
+        <item>@drawable/drawer_indigo</item>
+        <item>@drawable/drawer_green</item>
+        <item>@drawable/drawer_red</item>
+        <item>@drawable/drawer_blue</item>
+        <item>@drawable/drawer_green</item>
+        <item>@drawable/drawer_orange</item>
+        <item>@drawable/drawer_teal</item>
+        <item>@drawable/drawer_green</item>
     </array>
 </resources>

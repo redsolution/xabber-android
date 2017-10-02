@@ -26,6 +26,7 @@
     <string name="xep_0357_push">XEP-0357: Push Notifications</string>
     <string name="xep_0363_file_upload">XEP-0363: HTTP File Upload</string>
     <string name="xep_xxxx_muc_light">XEP-xxxx: Multi-User Chat Light</string>
+    <string name="xep_0048_bookmarks">XEP-0048: Bookmarks</string>
 
     <string name="check_mark">✓</string>
     <string name="cross_mark">✗</string>
@@ -33,4 +34,11 @@
     <string name="identities">Identities:</string>
     <string name="features">Features:</string>
     <string name="items">Items:</string>
+
+    <string name="spam_filter_limit_message">This user has limited receiving messages from not-authorized users</string>
+    <string name="spam_filter_limit_subscription">This user has limited subscriptions. To request a subscription, solve captcha:</string>
+    <string name="spam_filter_ban_subscription">This user does not accept subscriptions. You can only chat with him if he adds you himself.</string>
+    <string name="spam_filter_captcha_correct">Correct answer. Subscription request showed to user.</string>
+    <string name="spam_filter_captcha_incorrect">Incorrect answer. You aren\'t a spambot, are you?</string>
+    <string name="spam_filter_captcha_many_attempts">To many attempts. Try request subscription again to generate new captcha</string>
 </resources>

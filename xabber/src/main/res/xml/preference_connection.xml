@@ -1,105 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <CheckBoxPreference
-        android:title="@string/connection_start_at_boot"
-        android:key="@string/connection_start_at_boot_key"
-        android:defaultValue="@bool/connection_start_at_boot_default"
-        />
-    <ListPreference
-        android:title="@string/connection_go_away"
-        android:key="@string/connection_go_away_key"
-        android:entries="@array/connection_go_away_entries"
-        android:entryValues="@array/connection_go_away_entryvalues"
-        android:defaultValue="@string/connection_go_away_default"
-        />
-    <ListPreference
-        android:title="@string/connection_go_xa"
-        android:key="@string/connection_go_xa_key"
-        android:entries="@array/connection_go_xa_entries"
-        android:entryValues="@array/connection_go_xa_entryvalues"
-        android:defaultValue="@string/connection_go_xa_default"
-        />
-    <CheckBoxPreference
-        android:title="@string/connection_wifi_lock"
-        android:key="@string/connection_wifi_lock_key"
-        android:defaultValue="@bool/connection_wifi_lock_default"
-        />
-    <CheckBoxPreference
-        android:title="@string/connection_wake_lock"
-        android:key="@string/connection_wake_lock_key"
-        android:defaultValue="@bool/connection_wake_lock_default"
-        />
-    <CheckBoxPreference
-        android:title="@string/connection_load_vcard"
-        android:key="@string/connection_load_vcard_key"
-        android:defaultValue="@bool/connection_load_vcard_default"
-        />
-    <CheckBoxPreference
-        android:title="@string/connection_load_images"
-        android:key="@string/connection_load_images_key"
-        android:defaultValue="@bool/connection_load_images_default"
-        />
-    <CheckBoxPreference
-        android:title="@string/connection_use_carbons"
-        android:key="@string/connection_use_carbons_key"
-        android:defaultValue="@bool/connection_use_carbons_default"
-        />
-
-    <ListPreference
-        android:title="@string/connection_dns_resolver_type"
-        android:key="@string/connection_dns_resolver_type_key"
-        android:entries="@array/connection_dns_resolver_type_entries"
-        android:entryValues="@array/connection_dns_resolver_type_entry_values"
-        android:defaultValue="@string/connection_dns_resolver_type_default"
-        />
 
     <PreferenceCategory
-        android:title="@string/connection_priority"
-        >
+        android:title="@string/category_connection_settings">
+
         <CheckBoxPreference
-            android:title="@string/connection_adjust_priority"
-            android:key="@string/connection_adjust_priority_key"
-            android:defaultValue="@bool/connection_adjust_priority_default"
+            android:title="@string/events_persistent"
+            android:key="@string/events_persistent_key"
+            android:defaultValue="@bool/events_persistent_default"
             />
-        <com.xabber.android.ui.widget.PriorityPreference
-            android:key="@string/connection_priority_chat_key"
-            android:defaultValue="@string/connection_priority_chat_default"
-            android:dependency="@string/connection_adjust_priority_key"
-            android:title="@string/chat"
-            android:inputType="numberSigned"
-            android:singleLine="true"
+
+        <Preference
+            android:title="@string/battery_optimization"
+            android:key="@string/battery_optimization_disable_key"
+            android:summary="@string/battery_optimization_enabled"
             />
-        <com.xabber.android.ui.widget.PriorityPreference
-            android:key="@string/connection_priority_available_key"
-            android:defaultValue="@string/connection_priority_available_default"
-            android:dependency="@string/connection_adjust_priority_key"
-            android:title="@string/available"
-            android:inputType="numberSigned"
-            android:singleLine="true"
+
+        <CheckBoxPreference
+            android:title="@string/connection_wifi_lock"
+            android:key="@string/connection_wifi_lock_key"
+            android:defaultValue="@bool/connection_wifi_lock_default"
             />
-        <com.xabber.android.ui.widget.PriorityPreference
-            android:key="@string/connection_priority_away_key"
-            android:defaultValue="@string/connection_priority_away_default"
-            android:dependency="@string/connection_adjust_priority_key"
-            android:title="@string/away"
-            android:inputType="numberSigned"
-            android:singleLine="true"
+
+        <CheckBoxPreference
+            android:title="@string/connection_wake_lock"
+            android:key="@string/connection_wake_lock_key"
+            android:defaultValue="@bool/connection_wake_lock_default"
             />
-        <com.xabber.android.ui.widget.PriorityPreference
-            android:key="@string/connection_priority_xa_key"
-            android:defaultValue="@string/connection_priority_xa_default"
-            android:dependency="@string/connection_adjust_priority_key"
-            android:title="@string/xa"
-            android:inputType="numberSigned"
-            android:singleLine="true"
-            />
-        <com.xabber.android.ui.widget.PriorityPreference
-            android:key="@string/connection_priority_dnd_key"
-            android:defaultValue="@string/connection_priority_dnd_default"
-            android:dependency="@string/connection_adjust_priority_key"
-            android:title="@string/dnd"
-            android:inputType="numberSigned"
-            android:singleLine="true"
-            />
+
     </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/category_advanced">
+
+        <CheckBoxPreference
+            android:title="@string/connection_load_vcard"
+            android:key="@string/connection_load_vcard_key"
+            android:defaultValue="@bool/connection_load_vcard_default"
+            />
+
+        <CheckBoxPreference
+            android:title="@string/connection_use_carbons"
+            android:key="@string/connection_use_carbons_key"
+            android:defaultValue="@bool/connection_use_carbons_default"
+            />
+
+    </PreferenceCategory>
+
+    <!--<ListPreference-->
+        <!--android:title="@string/connection_dns_resolver_type"-->
+        <!--android:key="@string/connection_dns_resolver_type_key"-->
+        <!--android:entries="@array/connection_dns_resolver_type_entries"-->
+        <!--android:entryValues="@array/connection_dns_resolver_type_entry_values"-->
+        <!--android:defaultValue="@string/connection_dns_resolver_type_default"-->
+        <!--/>-->
+
 </PreferenceScreen>
