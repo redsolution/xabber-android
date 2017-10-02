@@ -5,6 +5,7 @@ import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
+import com.xabber.android.data.connection.CertificateManager;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
@@ -24,12 +25,19 @@ import org.jxmpp.jid.Jid;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.X509TrustManager;
+
+import de.duenndns.ssl.MemorizingTrustManager;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.MediaType;
@@ -92,7 +100,21 @@ public class HttpFileUploadManager {
                 }
 
                 private void uploadFileToSlot(final AccountJid account, final Slot slot) {
+                    SSLSocketFactory sslSocketFactory = null;
+                    MemorizingTrustManager mtm = CertificateManager.getInstance().getNewFileUploadManager(account);
+
+                    final SSLContext sslContext;
+                    try {
+                        sslContext = SSLContext.getInstance("SSL");
+                        sslContext.init(null, new X509TrustManager[]{mtm}, new java.security.SecureRandom());
+                        sslSocketFactory = sslContext.getSocketFactory();
+                    } catch (NoSuchAlgorithmException | KeyManagementException e) {
+                        return;
+                    }
+
                     OkHttpClient client = new OkHttpClient().newBuilder()
+                            .sslSocketFactory(sslSocketFactory)
+                            .hostnameVerifier(mtm.wrapHostnameVerifier(new org.apache.http.conn.ssl.StrictHostnameVerifier()))
                             .writeTimeout(5, TimeUnit.MINUTES)
                             .connectTimeout(5, TimeUnit.MINUTES)
                             .readTimeout(5, TimeUnit.MINUTES)

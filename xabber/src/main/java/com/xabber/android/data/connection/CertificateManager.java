@@ -27,9 +27,11 @@ public class CertificateManager implements OnAccountRemovedListener {
     }
 
     private Map<AccountJid, MemorizingTrustManager> memorizingTrustManagerMap;
+    private Map<AccountJid, MemorizingTrustManager> fileUploadMap;
 
     private CertificateManager() {
         this.memorizingTrustManagerMap = new ConcurrentHashMap<>();
+        this.fileUploadMap = new ConcurrentHashMap<>();
     }
 
     @NonNull
@@ -39,8 +41,19 @@ public class CertificateManager implements OnAccountRemovedListener {
         return mtm;
     }
 
+    @NonNull
+    public MemorizingTrustManager getNewFileUploadManager(@NonNull final AccountJid accountJid) {
+        MemorizingTrustManager mtm = new MemorizingTrustManager(Application.getInstance());
+        fileUploadMap.put(accountJid, mtm);
+        return mtm;
+    }
+
     public void registerActivity(Activity activity) {
         for (MemorizingTrustManager memorizingTrustManager : memorizingTrustManagerMap.values()) {
+            memorizingTrustManager.bindDisplayActivity(activity);
+        }
+
+        for (MemorizingTrustManager memorizingTrustManager : fileUploadMap.values()) {
             memorizingTrustManager.bindDisplayActivity(activity);
         }
     }
@@ -49,10 +62,15 @@ public class CertificateManager implements OnAccountRemovedListener {
         for (MemorizingTrustManager memorizingTrustManager : memorizingTrustManagerMap.values()) {
             memorizingTrustManager.unbindDisplayActivity(activity);
         }
+
+        for (MemorizingTrustManager memorizingTrustManager : fileUploadMap.values()) {
+            memorizingTrustManager.unbindDisplayActivity(activity);
+        }
     }
 
     @Override
     public void onAccountRemoved(AccountItem accountItem) {
         memorizingTrustManagerMap.remove(accountItem.getAccount());
+        fileUploadMap.remove(accountItem.getAccount());
     }
 }
