@@ -792,6 +792,9 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
                     startActivity(XabberAccountInfoActivity.createIntent(this));
                 else startActivity(TutorialActivity.createIntent(this));
                 break;
+            case R.id.drawer_action_patreon:
+                startActivity(PatreonAppealActivity.createIntent(this));
+                break;
         }
     }
 

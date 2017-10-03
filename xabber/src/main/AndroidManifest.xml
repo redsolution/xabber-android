@@ -517,6 +517,12 @@
             </intent-filter>
 
         </activity>
+        <activity android:name=".ui.activity.PatreonAppealActivity"
+            android:theme="@style/ThemeDark">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.xabber.android.ui.activity.ContactListActivity" />
+        </activity>
         <meta-data android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/SOCIAL_AUTH_FACEBOOK_KEY"/>
         <activity android:name="com.facebook.FacebookActivity"

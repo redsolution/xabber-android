@@ -9,6 +9,8 @@ import rx.Single;
 
 public interface IXabberCom {
 
+    String APPEAL_URL = "https://www.xabber.com/appeal.html";
+
     @GET("patreon.json")
     Single<XabberComClient.Patreon> getPatreon();
 

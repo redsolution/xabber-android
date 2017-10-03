@@ -124,6 +124,7 @@ public class ContactListDrawerFragment extends Fragment implements View.OnClickL
 
         tvPatreonTitle = (TextView) view.findViewById(R.id.tvPatreonTitle);
         pbPatreon = (ProgressBar) view.findViewById(R.id.pbPatreon);
+        view.findViewById(R.id.drawer_action_patreon).setOnClickListener(this);
 
         return view;
     }

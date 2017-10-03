@@ -98,7 +98,8 @@
 
     </FrameLayout>
 
-    <include layout="@layout/item_patreon_campaign" />
+    <include layout="@layout/item_patreon_campaign"
+        android:id="@+id/drawer_action_patreon"/>
 
     <View
         android:layout_width="match_parent"
