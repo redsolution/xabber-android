@@ -98,7 +98,7 @@
 
     </FrameLayout>
 
-    <include layout="@layout/item_patreon_capaign" />
+    <include layout="@layout/item_patreon_campaign" />
 
     <View
         android:layout_width="match_parent"

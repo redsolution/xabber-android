@@ -10,8 +10,10 @@
     <ImageView
         android:layout_width="40dp"
         android:layout_height="40dp"
+        android:padding="8dp"
+        android:layout_marginRight="16dp"
         android:src="@drawable/ic_patreon"
-        android:layout_marginRight="16dp" />
+        android:background="@color/patreon_coral"/>
 
     <LinearLayout
         android:orientation="vertical"
@@ -19,24 +21,14 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical">
 
-        <LinearLayout
+        <TextView
+            android:id="@+id/tvPatreonTitle"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textStyle="bold"
-                android:text="$454 of 1500 "
-                />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="per month pledged"
-                />
-
-        </LinearLayout>
+            android:layout_height="wrap_content"
+            android:ellipsize="marquee"
+            android:singleLine="true"
+            android:text="@string/patreon_title"
+            />
 
         <ProgressBar
             android:id="@+id/pbPatreon"
@@ -45,7 +37,7 @@
             android:layout_marginTop="4dp"
             style="?android:attr/progressBarStyleHorizontal"
             android:progressDrawable="@xml/progress_bar_patreon_style"
-            android:progress="45"
+            android:progress="1"
             android:max="100"
             />
 

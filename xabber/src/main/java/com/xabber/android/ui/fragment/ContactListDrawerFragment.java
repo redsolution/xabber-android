@@ -8,7 +8,6 @@ import android.content.pm.PackageManager;
 import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,19 +15,23 @@ import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
-import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.http.PatreonManager;
+import com.xabber.android.data.http.XabberComClient;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.xaccount.XabberAccount;
 import com.xabber.android.data.xaccount.XabberAccountManager;
 import com.xabber.android.ui.adapter.NavigationDrawerAccountAdapter;
 import com.xabber.android.ui.color.AccountPainter;
 import com.xabber.android.ui.color.ColorManager;
+import com.xabber.android.ui.widget.TextViewFadeAnimator;
 
 import java.util.Collection;
 
@@ -46,6 +49,9 @@ public class ContactListDrawerFragment extends Fragment implements View.OnClickL
     private LinearLayout llNoAccount;
     private TextView tvAccountName;
     private TextView tvAccountEmail;
+
+    private TextView tvPatreonTitle;
+    private ProgressBar pbPatreon;
 
     @Override
     public void onAttach(Activity activity) {
@@ -116,6 +122,9 @@ public class ContactListDrawerFragment extends Fragment implements View.OnClickL
         tvAccountName = (TextView) view.findViewById(R.id.tvAccountName);
         tvAccountEmail = (TextView) view.findViewById(R.id.tvAccountEmail);
 
+        tvPatreonTitle = (TextView) view.findViewById(R.id.tvPatreonTitle);
+        pbPatreon = (ProgressBar) view.findViewById(R.id.pbPatreon);
+
         return view;
     }
 
@@ -165,6 +174,7 @@ public class ContactListDrawerFragment extends Fragment implements View.OnClickL
             divider.setVisibility(View.VISIBLE);
         }
         setupXabberAccountView();
+        setupPatreonView();
     }
 
     @Override
@@ -205,6 +215,33 @@ public class ContactListDrawerFragment extends Fragment implements View.OnClickL
         } else {
             llAccountInfo.setVisibility(View.GONE);
             llNoAccount.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void setupPatreonView() {
+        XabberComClient.Patreon patreon = PatreonManager.getInstance().getPatreon();
+        if (patreon != null) {
+            XabberComClient.PatreonGoal currentGoal = null;
+            for (XabberComClient.PatreonGoal goal: patreon.getGoals()) {
+                if (goal.getGoal() > patreon.getPledged()) {
+                    currentGoal = goal;
+                    break;
+                }
+            }
+
+            if (currentGoal != null) {
+                String[] patreonTexts = new String[3];
+                patreonTexts[0] = patreon.getString();
+                patreonTexts[1] = getString(R.string.patreon_pledged, patreon.getPledged(), currentGoal.getGoal());
+                patreonTexts[2] = getString(R.string.patreon_current_goal, currentGoal.getTitle());
+
+                tvPatreonTitle.setSelected(true);
+                pbPatreon.setMax(currentGoal.getGoal());
+                pbPatreon.setProgress(patreon.getPledged());
+
+                TextViewFadeAnimator animator = new TextViewFadeAnimator(tvPatreonTitle, patreonTexts);
+                animator.startAnimation();
+            }
         }
     }
 }
