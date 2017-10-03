@@ -10,6 +10,7 @@ import android.webkit.WebView;
 
 import com.xabber.android.R;
 import com.xabber.android.data.http.IXabberCom;
+import com.xabber.android.data.http.PatreonManager;
 import com.xabber.android.ui.color.BarPainter;
 
 /**
@@ -19,6 +20,7 @@ import com.xabber.android.ui.color.BarPainter;
 public class PatreonAppealActivity extends ManagedActivity {
 
     public static Intent createIntent(Context context) {
+        PatreonManager.getInstance().loadFromNet();
         return new Intent(context, PatreonAppealActivity.class);
     }
 

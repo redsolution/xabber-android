@@ -18,7 +18,9 @@ import io.realm.RealmList;
 import io.realm.RealmResults;
 import rx.Single;
 import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
+import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -53,6 +55,8 @@ public class PatreonManager implements OnLoadListener {
 
     public void loadFromNet() {
         Subscription subscription = XabberComClient.getPatreon()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<XabberComClient.Patreon>() {
                     @Override
                     public void call(XabberComClient.Patreon patreon) {
