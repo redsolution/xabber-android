@@ -763,6 +763,14 @@ public class SettingsManager implements OnInitializedListener,
         return getInteger(R.string.order_last_timestamp_key, 1);
     }
 
+    public static void setLastPatreonLoadTimestamp(int timestamp) {
+        setInt(R.string.patreon_last_load_timestamp_key, timestamp);
+    }
+
+    public static int getLastPatreonLoadTimestamp() {
+        return getInteger(R.string.patreon_last_load_timestamp_key, 1);
+    }
+
     @Override
     public void onInitialized() {
         incrementBootCount();

@@ -7,6 +7,8 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.database.realm.AccountRealm;
 import com.xabber.android.data.database.realm.DiscoveryInfoCache;
 import com.xabber.android.data.database.realm.EmailRealm;
+import com.xabber.android.data.database.realm.PatreonGoalRealm;
+import com.xabber.android.data.database.realm.PatreonRealm;
 import com.xabber.android.data.database.realm.SocialBindingRealm;
 import com.xabber.android.data.database.realm.SyncStateRealm;
 import com.xabber.android.data.database.realm.XMPPAccountSettignsRealm;
@@ -25,7 +27,7 @@ import io.realm.annotations.RealmModule;
 
 public class RealmManager {
     private static final String REALM_DATABASE_NAME = "realm_database.realm";
-    private static final int REALM_DATABASE_VERSION = 7;
+    private static final int REALM_DATABASE_VERSION = 8;
     private static final String LOG_TAG = RealmManager.class.getSimpleName();
     private final RealmConfiguration realmConfiguration;
 
@@ -57,7 +59,8 @@ public class RealmManager {
     }
 
     @RealmModule(classes = {DiscoveryInfoCache.class, AccountRealm.class, XabberAccountRealm.class,
-            XMPPUserRealm.class, EmailRealm.class, SocialBindingRealm.class, SyncStateRealm.class})
+            XMPPUserRealm.class, EmailRealm.class, SocialBindingRealm.class, SyncStateRealm.class,
+            PatreonGoalRealm.class, PatreonRealm.class})
     static class RealmDatabaseModule {
     }
 
@@ -142,6 +145,21 @@ public class RealmManager {
                                     .addField("id", String.class, FieldAttribute.PRIMARY_KEY, FieldAttribute.REQUIRED)
                                     .addField("jid", String.class)
                                     .addField("sync", boolean.class);
+
+                            oldVersion++;
+                        }
+
+                        if (oldVersion == 7) {
+                            schema.create(PatreonGoalRealm.class.getSimpleName())
+                                    .addField("id", String.class, FieldAttribute.PRIMARY_KEY, FieldAttribute.REQUIRED)
+                                    .addField("title", String.class)
+                                    .addField("goal", int.class);
+
+                            schema.create(PatreonRealm.class.getSimpleName())
+                                    .addField("id", String.class, FieldAttribute.PRIMARY_KEY, FieldAttribute.REQUIRED)
+                                    .addField("string", String.class)
+                                    .addField("pledged", int.class)
+                                    .addRealmListField("goals", schema.get(PatreonGoalRealm.class.getSimpleName()));
 
                             oldVersion++;
                         }
