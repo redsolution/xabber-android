@@ -53,6 +53,10 @@ public class PatreonManager implements OnLoadListener {
         if (patreon == null || isCacheExpired()) loadFromNet();
     }
 
+    public void updatePatreonIfNeed() {
+        if (isCacheExpired()) loadFromNet();
+    }
+
     public void loadFromNet() {
         Subscription subscription = XabberComClient.getPatreon()
                 .subscribeOn(Schedulers.io())

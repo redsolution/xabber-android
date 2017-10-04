@@ -53,6 +53,7 @@ import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.muc.MUCManager;
+import com.xabber.android.data.http.PatreonManager;
 import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
@@ -204,6 +205,7 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
                 ContactListDrawerFragment navigationFragment =
                         (ContactListDrawerFragment) getFragmentManager().findFragmentByTag("navigation");
                 navigationFragment.startPatreonAnim();
+                PatreonManager.getInstance().updatePatreonIfNeed();
             }
 
             @Override
