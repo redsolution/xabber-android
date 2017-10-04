@@ -13,7 +13,6 @@ import android.webkit.WebView;
 import com.xabber.android.R;
 import com.xabber.android.data.http.IXabberCom;
 import com.xabber.android.data.http.PatreonManager;
-import com.xabber.android.ui.color.BarPainter;
 
 /**
  * Created by valery.miller on 03.10.17.
@@ -44,8 +43,6 @@ public class PatreonAppealActivity extends ManagedActivity implements Toolbar.On
                 NavUtils.navigateUpFromSameTask(PatreonAppealActivity.this);
             }
         });
-        BarPainter barPainter = new BarPainter(this, toolbar);
-        barPainter.setDefaultColor();
 
         WebView webView = (WebView) findViewById(R.id.webView);
         webView.loadUrl(IXabberCom.APPEAL_URL);
