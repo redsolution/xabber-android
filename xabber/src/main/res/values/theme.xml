@@ -69,6 +69,7 @@
 
         <item name="conference_filter_input_background">@color/white</item>
         <item name="message_status_item_background_color">@color/grey_200</item>
+        <item name="patreon_progress_background_color">#FFD8D8D8</item>
         <item name="settings_background_color">@color/grey_200</item>
         <item name="settings_separator_background_color">@color/grey_300</item>
     </style>
@@ -133,6 +134,7 @@
 
         <item name="conference_filter_input_background">@color/black</item>
         <item name="message_status_item_background_color">@color/grey_800</item>
+        <item name="patreon_progress_background_color">@color/grey_800</item>
         <item name="settings_background_color">@color/grey_900</item>
         <item name="settings_separator_background_color">@color/grey_600</item>
     </style>

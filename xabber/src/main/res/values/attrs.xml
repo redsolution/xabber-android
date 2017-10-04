@@ -50,6 +50,7 @@
         <attr name="message_status_item_background_color" format="reference|color" />
         <attr name="settings_background_color" format="reference|color" />
         <attr name="settings_separator_background_color" format="reference|color" />
+        <attr name="patreon_progress_background_color" format="reference|color" />
 
     </declare-styleable>
 </resources>
