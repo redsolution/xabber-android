@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -18,7 +19,7 @@ import com.xabber.android.ui.color.BarPainter;
  * Created by valery.miller on 03.10.17.
  */
 
-public class PatreonAppealActivity extends ManagedActivity {
+public class PatreonAppealActivity extends ManagedActivity implements Toolbar.OnMenuItemClickListener {
 
     public static Intent createIntent(Context context) {
         PatreonManager.getInstance().loadFromNet();
@@ -32,6 +33,10 @@ public class PatreonAppealActivity extends ManagedActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_default);
         toolbar.setTitle(R.string.patreon_title);
+
+        toolbar.inflateMenu(R.menu.toolbar_patreon_activity);
+        toolbar.setOnMenuItemClickListener(this);
+
         toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -46,5 +51,24 @@ public class PatreonAppealActivity extends ManagedActivity {
         webView.loadUrl(IXabberCom.APPEAL_URL);
         WebSettings webSettings = webView.getSettings();
         webSettings.setJavaScriptEnabled(true);
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_share:
+                startActivity(Intent.createChooser(createShareIntent(), getString(R.string.send_to)));
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private Intent createShareIntent() {
+        Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+        sharingIntent.setType("text/plain");
+        String shareBody = IXabberCom.SHARE_URL;
+        sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
+        return sharingIntent;
     }
 }

@@ -22,4 +22,7 @@
     <string name="ok">OK</string>
     <string name="login">Login</string>
     <string name="resume">Resume</string>
+
+    <string name="share">share</string>
+    <string name="send_to">Send to:</string>
 </resources>
