@@ -10,9 +10,9 @@ import android.widget.TextView;
 
 public class TextViewFadeAnimator {
 
-    private static final int FADE_EFFECT_DURATION = 700;
+    private static final int FADE_EFFECT_DURATION = 500;
     private static final int DELAY_DURATION = 0;
-    private static final int DISPLAY_LENGTH = 3000;
+    private static final int DISPLAY_LENGTH = 2000;
 
     private TextView blobText;
     private String[] text = new String[] { "" };
@@ -39,7 +39,11 @@ public class TextViewFadeAnimator {
     }
 
     public void startAnimation() {
-        blobText.startAnimation(fadeOutAnimationObject);
+        blobText.startAnimation(textDisplayAnimationObject);
+    }
+
+    public void stopAnimation() {
+        blobText.clearAnimation();
     }
 
     private void InnitializeAnimation() {

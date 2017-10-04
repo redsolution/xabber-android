@@ -197,7 +197,23 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
         toolbar.setOnClickListener(this);
 
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.application_title_short, R.string.application_title_short);
+        drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.application_title_short, R.string.application_title_short) {
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+                ContactListDrawerFragment navigationFragment =
+                        (ContactListDrawerFragment) getFragmentManager().findFragmentByTag("navigation");
+                navigationFragment.startPatreonAnim();
+            }
+
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                super.onDrawerClosed(drawerView);
+                ContactListDrawerFragment navigationFragment =
+                        (ContactListDrawerFragment) getFragmentManager().findFragmentByTag("navigation");
+                navigationFragment.stopPatreonAnim();
+            }
+        };
         drawerLayout.setDrawerListener(drawerToggle);
 
         toolbar.inflateMenu(R.menu.toolbar_contact_list);

@@ -46,6 +46,7 @@
     <fragment
         android:id="@+id/fragment_drawer"
         android:name="com.xabber.android.ui.fragment.ContactListDrawerFragment"
+        android:tag="navigation"
         android:layout_width="304dp"
         android:layout_height="match_parent"
         android:layout_gravity="left|start" />

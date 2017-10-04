@@ -52,6 +52,8 @@ public class ContactListDrawerFragment extends Fragment implements View.OnClickL
 
     private TextView tvPatreonTitle;
     private ProgressBar pbPatreon;
+    private TextViewFadeAnimator animator;
+    private String[] patreonTexts;
 
     @Override
     public void onAttach(Activity activity) {
@@ -231,7 +233,7 @@ public class ContactListDrawerFragment extends Fragment implements View.OnClickL
             }
 
             if (currentGoal != null) {
-                String[] patreonTexts = new String[3];
+                patreonTexts = new String[3];
                 patreonTexts[0] = patreon.getString();
                 patreonTexts[1] = getString(R.string.patreon_pledged, patreon.getPledged(), currentGoal.getGoal());
                 patreonTexts[2] = getString(R.string.patreon_current_goal, currentGoal.getTitle());
@@ -240,9 +242,20 @@ public class ContactListDrawerFragment extends Fragment implements View.OnClickL
                 pbPatreon.setMax(currentGoal.getGoal());
                 pbPatreon.setProgress(patreon.getPledged());
 
-                TextViewFadeAnimator animator = new TextViewFadeAnimator(tvPatreonTitle, patreonTexts);
-                animator.startAnimation();
+                animator = new TextViewFadeAnimator(tvPatreonTitle, patreonTexts);
+                startPatreonAnim();
             }
         }
+    }
+
+    public void startPatreonAnim() {
+        animator = new TextViewFadeAnimator(tvPatreonTitle, patreonTexts);
+        animator.startAnimation();
+    }
+
+    public void stopPatreonAnim() {
+        if (animator != null)
+            animator.stopAnimation();
+        tvPatreonTitle.setText(patreonTexts[0]);
     }
 }
