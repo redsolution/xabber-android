@@ -96,7 +96,7 @@ public class PatreonManager implements OnLoadListener {
             patreonGoals.add(patreonGoalRealm);
         }
 
-        PatreonRealm patreonRealm = new PatreonRealm();
+        PatreonRealm patreonRealm = new PatreonRealm("1");
         patreonRealm.setPledged(patreon.getPledged());
         patreonRealm.setString(patreon.getString());
         patreonRealm.setGoals(patreonGoals);
