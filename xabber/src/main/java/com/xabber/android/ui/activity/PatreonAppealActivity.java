@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 
 import com.xabber.android.R;
@@ -43,5 +44,7 @@ public class PatreonAppealActivity extends ManagedActivity {
 
         WebView webView = (WebView) findViewById(R.id.webView);
         webView.loadUrl(IXabberCom.APPEAL_URL);
+        WebSettings webSettings = webView.getSettings();
+        webSettings.setJavaScriptEnabled(true);
     }
 }
