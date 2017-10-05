@@ -4,7 +4,7 @@
     <item android:id="@android:id/background">
         <shape>
             <corners android:radius="2dip" />
-            <solid android:color="#FFD8D8D8" />
+            <solid android:color="?attr/patreon_progress_background_color" />
         </shape>
     </item>
 
