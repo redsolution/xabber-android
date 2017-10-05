@@ -45,7 +45,7 @@ public class PatreonAppealActivity extends ManagedActivity implements Toolbar.On
         });
 
         WebView webView = (WebView) findViewById(R.id.webView);
-        webView.loadUrl(IXabberCom.APPEAL_URL);
+        webView.loadUrl(getString(R.string.patreon_appeal_url));
         WebSettings webSettings = webView.getSettings();
         webSettings.setJavaScriptEnabled(true);
     }
