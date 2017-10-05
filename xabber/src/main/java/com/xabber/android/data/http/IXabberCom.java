@@ -9,7 +9,7 @@ import rx.Single;
 
 public interface IXabberCom {
 
-    String APPEAL_URL = "https://www.xabber.com/appeal/appeal.html";
+    String APPEAL_URL = "https://www.xabber.com/appeal/";
     String SHARE_URL = "https://www.patreon.com/xabber";
 
     @GET("patreon.json")
