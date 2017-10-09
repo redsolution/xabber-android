@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="64dp"
+    android:background="@color/white"
+    android:elevation="1dp">
+
+    <include layout="@layout/account_color_indicator"/>
+
+    <include layout="@layout/avatar_view"/>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/avatarView"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="10dp"
+        >
+
+        <TextView
+            android:id="@+id/tvAccountName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:textColor="#212121"
+            android:textStyle="bold"
+            android:text="Erik Walton"
+            />
+
+        <TextView
+            android:id="@+id/tvStatus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:textColor="#616161"
+            android:layout_marginTop="4dp"
+            android:text="Status"
+            />
+
+    </LinearLayout>
+
+    <ImageView
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:src="@drawable/ic_show_offline_small"
+        android:alpha="0.5"
+        android:tint="?attr/contact_list_account_group_small_right_icon_color"
+        android:layout_toLeftOf="@+id/tvContactCount"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="12dp"/>
+
+    <TextView
+        android:id="@+id/tvContactCount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:lines="1"
+        android:ellipsize="marquee"
+        android:textColor="?attr/contact_list_account_group_small_right_text_color"
+        android:alpha="0.5"
+        android:textSize="12sp"
+        android:text="10 / 30"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="12dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="10dp"
+        />
+
+    <include layout="@layout/offline_shadow" />
+
+</RelativeLayout>
