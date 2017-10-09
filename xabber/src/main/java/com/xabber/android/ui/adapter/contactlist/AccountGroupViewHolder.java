@@ -14,13 +14,15 @@ class AccountGroupViewHolder extends RecyclerView.ViewHolder
         implements View.OnClickListener, View.OnCreateContextMenuListener {
 
     private static final String LOG_TAG = AccountGroupViewHolder.class.getSimpleName();
-    final ImageView avatar;
-    final TextView name;
-    final TextView secondLineMessage;
-    final TextView smallRightText;
+    final ImageView ivAvatar;
+    final TextView tvAccountName;
+    final TextView tvStatus;
+    final TextView tvContactCount;
     final ImageView smallRightIcon;
-    final ImageView statusIcon;
+    final ImageView ivStatus;
     final ImageView offlineShadow;
+    final View accountColorIndicator;
+    final View accountColorIndicatorBack;
 
     private final AccountGroupClickListener listener;
 
@@ -38,15 +40,17 @@ class AccountGroupViewHolder extends RecyclerView.ViewHolder
         itemView.setOnClickListener(this);
         itemView.setOnCreateContextMenuListener(this);
 
-        avatar = (ImageView) view.findViewById(R.id.avatar);
-        avatar.setOnClickListener(this);
-        name = (TextView) view.findViewById(R.id.contact_list_item_name);
-        secondLineMessage = (TextView) view.findViewById(R.id.second_line_message);
+        ivAvatar = (ImageView) view.findViewById(R.id.ivAvatar);
+        ivAvatar.setOnClickListener(this);
+        tvAccountName = (TextView) view.findViewById(R.id.tvAccountName);
+        tvStatus = (TextView) view.findViewById(R.id.tvStatus);
         smallRightIcon = (ImageView) view.findViewById(R.id.small_right_icon);
-        smallRightText = (TextView) view.findViewById(R.id.small_right_text);
-        statusIcon = (ImageView) view.findViewById(R.id.contact_list_item_status_icon);
-        statusIcon.setOnClickListener(this);
+        tvContactCount = (TextView) view.findViewById(R.id.tvContactCount);
+        ivStatus = (ImageView) view.findViewById(R.id.ivStatus);
+        ivStatus.setOnClickListener(this);
         offlineShadow = (ImageView) view.findViewById(R.id.offline_shadow);
+        accountColorIndicator = view.findViewById(R.id.accountColorIndicator);
+        accountColorIndicatorBack = view.findViewById(R.id.accountColorIndicatorBack);
     }
 
     @Override
@@ -57,7 +61,7 @@ class AccountGroupViewHolder extends RecyclerView.ViewHolder
             return;
         }
 
-        if (view.getId() == R.id.avatar) {
+        if (view.getId() == R.id.ivAvatar) {
             listener.onAccountAvatarClick(adapterPosition);
         } else if (view.getId() == R.id.contact_list_item_status_icon) {
             listener.onAccountMenuClick(adapterPosition, view);

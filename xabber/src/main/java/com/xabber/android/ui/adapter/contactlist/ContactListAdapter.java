@@ -58,6 +58,7 @@ import com.xabber.android.ui.activity.AccountActivity;
 import com.xabber.android.ui.activity.ManagedActivity;
 import com.xabber.android.ui.adapter.ComparatorByChat;
 import com.xabber.android.ui.adapter.UpdatableAdapter;
+import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.helper.ContextMenuHelper;
 
 import java.util.ArrayList;
@@ -557,7 +558,7 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                         .inflate(R.layout.item_base_group, parent, false), this);
             case TYPE_ACCOUNT:
                 return new AccountGroupViewHolder(layoutInflater
-                        .inflate(R.layout.contact_list_account_group_item, parent, false), this);
+                        .inflate(R.layout.item_account_in_contact_list, parent, false), this);
             case TYPE_ACCOUNT_TOP_SEPARATOR:
                 return new TopSeparatorHolder(layoutInflater
                         .inflate(R.layout.account_group_item_top_separator, parent, false));
@@ -625,17 +626,14 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     private void bindAccount(AccountGroupViewHolder viewHolder, AccountConfiguration configuration) {
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            viewHolder.itemView.setElevation(accountElevation);
-        }
-
         final AccountJid account = configuration.getAccount();
 
-        final int level = AccountManager.getInstance().getColorLevel(account);
-        viewHolder.itemView.setBackgroundColor(accountGroupColors[level]);
+        viewHolder.accountColorIndicator.setBackgroundColor(ColorManager.getInstance().getAccountPainter().getAccountMainColor(account));
+        viewHolder.accountColorIndicatorBack.setBackgroundColor(ColorManager.getInstance().getAccountPainter().getAccountMainColor(account));
 
-        viewHolder.name.setText(GroupManager.getInstance().getGroupName(account, configuration.getGroup()));
-        viewHolder.smallRightText.setText(configuration.getOnline() + "/" + configuration.getTotal());
+        viewHolder.tvAccountName.setText(GroupManager.getInstance().getGroupName(account, configuration.getGroup()));
+        viewHolder.tvAccountName.setTextColor(ColorManager.getInstance().getAccountPainter().getAccountTextColor(account));
+        viewHolder.tvContactCount.setText(configuration.getOnline() + "/" + configuration.getTotal());
 
         AccountItem accountItem = AccountManager.getInstance().getAccount(account);
         if (accountItem == null) {
@@ -649,16 +647,17 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             statusText = activity.getString(accountItem.getDisplayStatusMode().getStringID());
         }
 
-        viewHolder.secondLineMessage.setText(statusText);
+        viewHolder.tvStatus.setText(statusText);
+        viewHolder.tvStatus.setTextColor(ColorManager.getInstance().getAccountPainter().getAccountMainColor(account));
 
         if (SettingsManager.contactsShowAvatars()) {
-            viewHolder.avatar.setVisibility(View.VISIBLE);
-            viewHolder.avatar.setImageDrawable(AvatarManager.getInstance().getAccountAvatar(account));
+            viewHolder.ivAvatar.setVisibility(View.VISIBLE);
+            viewHolder.ivAvatar.setImageDrawable(AvatarManager.getInstance().getAccountAvatar(account));
         } else {
-            viewHolder.avatar.setVisibility(View.GONE);
+            viewHolder.ivAvatar.setVisibility(View.GONE);
         }
 
-        viewHolder.statusIcon.setImageLevel(accountItem.getDisplayStatusMode().getStatusLevel());
+        viewHolder.ivStatus.setImageLevel(accountItem.getDisplayStatusMode().getStatusLevel());
 
         ShowOfflineMode showOfflineMode = configuration.getShowOfflineMode();
         if (showOfflineMode == ShowOfflineMode.normal) {
