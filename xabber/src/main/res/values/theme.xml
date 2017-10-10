@@ -32,7 +32,7 @@
         <item name="chat_incoming_balloon">@array/account_50</item>
         <item name="chat_incoming_balloon_pressed">@array/account_100</item>
 
-        <item name="contact_list_background">@color/grey_400</item>
+        <item name="contact_list_background">@color/contact_list_background</item>
 
         <item name="contact_list_account_group_background">@array/account_200</item>
         <item name="contact_list_account_group_separator">@color/grey_400</item>
