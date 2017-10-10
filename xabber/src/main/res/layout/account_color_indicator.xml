@@ -13,7 +13,7 @@
         android:layout_width="2dp"
         android:layout_height="1dp"
         android:background="@color/white"
-        android:alpha="0.8"
+        android:alpha="0.5"
         android:layout_alignParentTop="true"
         />
 

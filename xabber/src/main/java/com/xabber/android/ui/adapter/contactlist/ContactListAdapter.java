@@ -564,7 +564,7 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                         .inflate(R.layout.account_group_item_top_separator, parent, false));
             case TYPE_ACCOUNT_BOTTOM_SEPARATOR:
                 return new BottomSeparatorHolder(layoutInflater
-                        .inflate(R.layout.account_group_item_bottom_separator, parent, false));
+                        .inflate(R.layout.item_account_bottom_in_contact_list, parent, false));
 
             default:
                 throw new IllegalStateException();
@@ -604,10 +604,11 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     }
 
     private void bindBottomSeparator(BottomSeparatorHolder holder, AccountBottomSeparator accountBottomSeparator) {
-        final int level = AccountManager.getInstance().getColorLevel(accountBottomSeparator.getAccount());
+        //final int level = AccountManager.getInstance().getColorLevel(accountBottomSeparator.getAccount());
 
-        holder.bottomLayer.setBackgroundDrawable(new ColorDrawable(accountSubgroupColors[level]));
-        holder.topLayer.setBackgroundDrawable(new ColorDrawable(accountSubgroupColors[level]));
+        //holder.bottomLayer.setBackgroundDrawable(new ColorDrawable(accountSubgroupColors[level]));
+        //holder.topLayer.setBackgroundDrawable(new ColorDrawable(accountSubgroupColors[level]));
+        holder.accountColorIndicator.setBackgroundColor(ColorManager.getInstance().getAccountPainter().getAccountMainColor(accountBottomSeparator.getAccount()));
 
         AccountItem accountItem = AccountManager.getInstance().getAccount(accountBottomSeparator.getAccount());
         StatusMode statusMode = null;

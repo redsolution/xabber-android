@@ -6,15 +6,13 @@ import android.view.View;
 import com.xabber.android.R;
 
 class BottomSeparatorHolder extends RecyclerView.ViewHolder {
-    View bottomLayer;
-    View topLayer;
+    View accountColorIndicator;
     View offlineShadowBottom;
     View offlineShadowTop;
 
     BottomSeparatorHolder(View itemView) {
         super(itemView);
-        bottomLayer = itemView.findViewById(R.id.bottom_layer);
-        topLayer = itemView.findViewById(R.id.top_layer);
+        accountColorIndicator = itemView.findViewById(R.id.accountColorIndicator);
         offlineShadowBottom = itemView.findViewById(R.id.offline_shadow_top);
         offlineShadowTop = itemView.findViewById(R.id.offline_shadow_bottom);
     }
