@@ -17,10 +17,9 @@ package com.xabber.android.ui.adapter.contactlist;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
-import android.graphics.drawable.ColorDrawable;
-import android.os.Build;
 import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -35,6 +34,7 @@ import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.CommonState;
 import com.xabber.android.data.account.StatusMode;
+import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.UserJid;
@@ -52,10 +52,9 @@ import com.xabber.android.data.roster.GroupManager;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.data.roster.ShowOfflineMode;
-import com.xabber.android.data.xaccount.XMPPAccountSettings;
-import com.xabber.android.data.xaccount.XabberAccountManager;
 import com.xabber.android.ui.activity.AccountActivity;
 import com.xabber.android.ui.activity.ManagedActivity;
+import com.xabber.android.ui.adapter.ChatComparator;
 import com.xabber.android.ui.adapter.ComparatorByChat;
 import com.xabber.android.ui.adapter.UpdatableAdapter;
 import com.xabber.android.ui.color.ColorManager;
@@ -235,8 +234,8 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         final boolean showOffline = SettingsManager.contactsShowOffline();
         final boolean showGroups = SettingsManager.contactsShowGroups();
         final boolean showEmptyGroups = SettingsManager.contactsShowEmptyGroups();
-        final boolean showActiveChats = SettingsManager.contactsShowActiveChats();
-        final boolean stayActiveChats = SettingsManager.contactsStayActiveChats();
+        final boolean showActiveChats = false;
+        final boolean stayActiveChats = true;
         final boolean showAccounts = SettingsManager.contactsShowAccounts();
         final Comparator<AbstractContact> comparator = SettingsManager.contactsOrder();
         final CommonState commonState = AccountManager.getInstance().getCommonState();
@@ -257,6 +256,7 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
          * List of active chats.
          */
         final GroupConfiguration activeChats;
+        final GroupConfiguration recentChatsGroup;
 
         /**
          * Whether there is at least one contact.
@@ -315,6 +315,41 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                         GroupManager.ACTIVE_CHATS, GroupManager.getInstance());
             } else {
                 activeChats = null;
+            }
+
+            // recent chats
+            recentChatsGroup = new GroupConfiguration(GroupManager.NO_ACCOUNT,
+                    "Recent chats", GroupManager.getInstance());
+            Collection<AbstractChat> chats = MessageManager.getInstance().getChats();
+
+            List<AbstractChat> recentChats = new ArrayList<>();
+
+            for (AbstractChat abstractChat : chats) {
+                MessageItem lastMessage = abstractChat.getLastMessage();
+
+                if (lastMessage != null && !TextUtils.isEmpty(lastMessage.getText())) {
+                    AccountItem accountItem = AccountManager.getInstance().getAccount(abstractChat.getAccount());
+                    if (accountItem != null && accountItem.isEnabled()) {
+                        recentChats.add(abstractChat);
+                    }
+                }
+            }
+
+            Collections.sort(recentChats, ChatComparator.CHAT_COMPARATOR);
+
+            recentChatsGroup.setNotEmpty();
+
+            int itemsCount = 0;
+            int maxItems = 8;
+            for (AbstractChat chat : recentChats) {
+                if (itemsCount < maxItems) {
+                    if (recentChatsGroup.isExpanded()) {
+                        recentChatsGroup.addAbstractContact(RosterManager.getInstance()
+                                .getBestContact(chat.getAccount(), chat.getUser()));
+                    }
+                    recentChatsGroup.increment(true);
+                    itemsCount++;
+                } else break;
             }
 
             // Build structure.
@@ -395,6 +430,11 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             // Remove empty groups, sort and apply structure.
             baseEntities.clear();
             if (hasVisibleContacts) {
+
+                // add recent chats
+                baseEntities.add(recentChatsGroup);
+                baseEntities.addAll(recentChatsGroup.getAbstractContacts());
+
                 if (showActiveChats) {
                     if (!activeChats.isEmpty()) {
                         if (showAccounts || showGroups) {
@@ -684,7 +724,10 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
         final String name = GroupManager.getInstance().getGroupName(configuration.getAccount(), configuration.getGroup());
 
-        viewHolder.accountColorIndicator.setBackgroundColor(ColorManager.getInstance().getAccountPainter().getAccountMainColor(configuration.getAccount()));
+        AccountJid account = configuration.getAccount();
+        if (account == null || account == GroupManager.NO_ACCOUNT)
+            viewHolder.accountColorIndicator.setBackgroundColor(ColorManager.getInstance().getAccountPainter().getDefaultMainColor());
+        else viewHolder.accountColorIndicator.setBackgroundColor(ColorManager.getInstance().getAccountPainter().getAccountMainColor(account));
         viewHolder.indicator.setImageLevel(configuration.isExpanded() ? 1 : 0);
         viewHolder.groupOfflineIndicator.setImageLevel(configuration.getShowOfflineMode().ordinal());
 
