@@ -555,7 +555,7 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                         .inflate(R.layout.item_contact, parent, false), this);
             case TYPE_GROUP:
                 return new GroupViewHolder(layoutInflater
-                        .inflate(R.layout.item_base_group, parent, false), this);
+                        .inflate(R.layout.item_group_in_contact_list, parent, false), this);
             case TYPE_ACCOUNT:
                 return new AccountGroupViewHolder(layoutInflater
                         .inflate(R.layout.item_account_in_contact_list, parent, false), this);
@@ -629,7 +629,6 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         final AccountJid account = configuration.getAccount();
 
         viewHolder.accountColorIndicator.setBackgroundColor(ColorManager.getInstance().getAccountPainter().getAccountMainColor(account));
-        viewHolder.accountColorIndicatorBack.setBackgroundColor(ColorManager.getInstance().getAccountPainter().getAccountMainColor(account));
 
         viewHolder.tvAccountName.setText(GroupManager.getInstance().getGroupName(account, configuration.getGroup()));
         viewHolder.tvAccountName.setTextColor(ColorManager.getInstance().getAccountPainter().getAccountTextColor(account));
@@ -681,26 +680,21 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     }
 
     private void bindGroup(GroupViewHolder viewHolder, GroupConfiguration configuration) {
-        final int level = AccountManager.getInstance().getColorLevel(configuration.getAccount());
 
         final String name = GroupManager.getInstance().getGroupName(configuration.getAccount(), configuration.getGroup());
 
-
+        viewHolder.accountColorIndicator.setBackgroundColor(ColorManager.getInstance().getAccountPainter().getAccountMainColor(configuration.getAccount()));
         viewHolder.indicator.setImageLevel(configuration.isExpanded() ? 1 : 0);
         viewHolder.groupOfflineIndicator.setImageLevel(configuration.getShowOfflineMode().ordinal());
-
-        int color;
 
         viewHolder.groupOfflineIndicator.setVisibility(View.GONE);
         viewHolder.offlineShadow.setVisibility(View.GONE);
 
         if (configuration.getGroup().equals(GroupManager.ACTIVE_CHATS)) {
-            color = activeChatsColor;
             viewHolder.name.setText(name);
         } else {
             viewHolder.name.setText(String.format("%s (%d/%d)", name, configuration.getOnline(), configuration.getTotal()));
 
-            color = accountSubgroupColors[level];
             viewHolder.groupOfflineIndicator.setVisibility(View.VISIBLE);
 
             AccountItem accountItem = AccountManager.getInstance().getAccount(configuration.getAccount());
@@ -712,8 +706,6 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 }
             }
         }
-
-        viewHolder.itemView.setBackgroundDrawable(new ColorDrawable(color));
     }
 
     @Override

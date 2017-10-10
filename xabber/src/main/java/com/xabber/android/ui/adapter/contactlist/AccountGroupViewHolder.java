@@ -22,7 +22,6 @@ class AccountGroupViewHolder extends RecyclerView.ViewHolder
     final ImageView ivStatus;
     final ImageView offlineShadow;
     final View accountColorIndicator;
-    final View accountColorIndicatorBack;
 
     private final AccountGroupClickListener listener;
 
@@ -50,7 +49,6 @@ class AccountGroupViewHolder extends RecyclerView.ViewHolder
         ivStatus.setOnClickListener(this);
         offlineShadow = (ImageView) view.findViewById(R.id.offline_shadow);
         accountColorIndicator = view.findViewById(R.id.accountColorIndicator);
-        accountColorIndicatorBack = view.findViewById(R.id.accountColorIndicatorBack);
     }
 
     @Override

@@ -6,16 +6,15 @@
         android:id="@+id/accountColorIndicator"
         android:layout_width="2dp"
         android:layout_height="match_parent"
-        android:layout_marginBottom="1dp"
         android:background="@color/amber_700"
         />
 
     <View
-        android:id="@+id/accountColorIndicatorBack"
         android:layout_width="2dp"
-        android:layout_height="match_parent"
-        android:background="@color/amber_700"
-        android:alpha="0.4"
+        android:layout_height="1dp"
+        android:background="@color/white"
+        android:alpha="0.8"
+        android:layout_alignParentTop="true"
         />
 
 </RelativeLayout>

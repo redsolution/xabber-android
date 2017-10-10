@@ -20,6 +20,8 @@
     android:background="@color/white"
     >
 
+    <include layout="@layout/account_color_indicator" />
+
     <ImageView
         android:id="@+id/indicator"
         android:layout_width="wrap_content"
@@ -30,6 +32,7 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:alpha="0.75"
+        android:layout_marginLeft="4dp"
         />
 
     <ImageView
@@ -67,6 +70,7 @@
         android:layout_width="match_parent"
         android:layout_height="1px"
         android:background="?attr/contact_list_subgroup_separator"
+        android:layout_marginLeft="2dp"
         android:alpha="0.75"
         />
 
