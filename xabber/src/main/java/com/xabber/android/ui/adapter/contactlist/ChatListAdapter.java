@@ -36,7 +36,7 @@ public class ChatListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new ContactListItemViewHolder(LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_contact, parent, false), this);
+                .inflate(R.layout.item_contact_in_contact_list, parent, false), this);
     }
 
     @Override
