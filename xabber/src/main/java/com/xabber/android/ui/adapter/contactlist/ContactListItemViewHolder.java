@@ -12,18 +12,18 @@ import com.xabber.android.data.log.LogManager;
 class ContactListItemViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnCreateContextMenuListener {
 
     private static final String LOG_TAG = ContactListItemViewHolder.class.getSimpleName();
-    final ImageView color;
-    final ImageView avatar;
-    final TextView name;
-    final TextView outgoingMessageIndicator;
-    final TextView secondLineMessage;
-    final TextView smallRightText;
-    final ImageView smallRightIcon;
-    final ImageView largeClientIcon;
-    final ImageView statusIcon;
+    final View accountColorIndicator;
+    final ImageView ivAvatar;
+    final TextView tvContactName;
+    //final TextView outgoingMessageIndicator;
+    final TextView tvStatus;
+    //final TextView smallRightText;
+    //final ImageView smallRightIcon;
+    //final ImageView largeClientIcon;
+    final ImageView ivStatus;
     final ImageView offlineShadow;
-    final ImageView mucIndicator;
-    final View separator;
+    final ImageView ivMucIndicator;
+    //final View separator;
     private final ContactClickListener listener;
 
 
@@ -40,19 +40,19 @@ class ContactListItemViewHolder extends RecyclerView.ViewHolder implements View.
         itemView.setOnClickListener(this);
         itemView.setOnCreateContextMenuListener(this);
 
-        color = (ImageView) view.findViewById(R.id.account_color_indicator);
-        avatar = (ImageView) view.findViewById(R.id.avatar);
-        avatar.setOnClickListener(this);
-        name = (TextView) view.findViewById(R.id.contact_list_item_name);
-        outgoingMessageIndicator = (TextView) view.findViewById(R.id.outgoing_message_indicator);
-        secondLineMessage = (TextView) view.findViewById(R.id.second_line_message);
-        smallRightIcon = (ImageView) view.findViewById(R.id.small_right_icon);
-        smallRightText = (TextView) view.findViewById(R.id.small_right_text);
-        largeClientIcon = (ImageView) view.findViewById(R.id.client_icon_large);
-        statusIcon = (ImageView) view.findViewById(R.id.contact_list_item_status_icon);
+        accountColorIndicator = view.findViewById(R.id.accountColorIndicator);
+        ivAvatar = (ImageView) view.findViewById(R.id.ivAvatar);
+        ivAvatar.setOnClickListener(this);
+        tvContactName = (TextView) view.findViewById(R.id.tvContactName);
+        //outgoingMessageIndicator = (TextView) view.findViewById(R.id.outgoing_message_indicator);
+        tvStatus = (TextView) view.findViewById(R.id.tvStatus);
+        //smallRightIcon = (ImageView) view.findViewById(R.id.small_right_icon);
+        //smallRightText = (TextView) view.findViewById(R.id.small_right_text);
+        //largeClientIcon = (ImageView) view.findViewById(R.id.client_icon_large);
+        ivStatus = (ImageView) view.findViewById(R.id.ivStatus);
         offlineShadow = (ImageView) view.findViewById(R.id.offline_shadow);
-        mucIndicator = (ImageView) view.findViewById(R.id.contact_list_item_muc_indicator);
-        separator = view.findViewById(R.id.contact_list_item_separator);
+        ivMucIndicator = (ImageView) view.findViewById(R.id.ivMucIndicator);
+        //separator = view.findViewById(R.id.contact_list_item_separator);
     }
 
     @Override

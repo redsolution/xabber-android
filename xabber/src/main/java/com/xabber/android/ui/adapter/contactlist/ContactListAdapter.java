@@ -552,7 +552,7 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         switch (viewType) {
             case TYPE_CONTACT:
                 return new ContactListItemViewHolder(layoutInflater
-                        .inflate(R.layout.item_contact, parent, false), this);
+                        .inflate(R.layout.item_contact_in_contact_list, parent, false), this);
             case TYPE_GROUP:
                 return new GroupViewHolder(layoutInflater
                         .inflate(R.layout.item_group_in_contact_list, parent, false), this);

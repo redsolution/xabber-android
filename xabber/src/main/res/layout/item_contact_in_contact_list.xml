@@ -4,7 +4,8 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="64dp"
-    android:paddingRight="10dp"
+    android:elevation="1dp"
+    android:background="@color/white"
     >
 
     <include layout="@layout/account_color_indicator"/>
@@ -16,29 +17,50 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@+id/avatarView"
-        android:layout_toLeftOf="@+id/timeView"
+        android:layout_marginRight="10dp"
         android:layout_centerVertical="true"
         >
 
-        <TextView
-            android:id="@+id/tvContactName"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="14sp"
-            android:textColor="#212121"
-            android:text="Erik Walton"
-            />
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/ivMucIndicator"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginRight="8dp"
+                android:src="@drawable/ic_muc_indicator_black_16dp"
+                android:tint="#212121"
+                />
+
+            <TextView
+                android:id="@+id/tvContactName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:textSize="14sp"
+                android:textColor="#212121"
+                android:text="Erik Walton"
+                />
+
+        </LinearLayout>
 
         <TextView
             android:id="@+id/tvStatus"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
+            android:maxLines="1"
+            android:ellipsize="marquee"
             android:textSize="14sp"
             android:textColor="#616161"
             android:text="Online"
             />
 
     </LinearLayout>
+
+    <include layout="@layout/offline_shadow" />
 
 </RelativeLayout>
