@@ -19,14 +19,33 @@
         android:layout_centerVertical="true"
         >
 
-        <TextView
-            android:id="@+id/tvContactName"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="14sp"
-            android:textColor="#212121"
-            android:text="Erik Walton"
-            />
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/ivMucIndicator"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginRight="8dp"
+                android:src="@drawable/ic_muc_indicator_black_16dp"
+                android:tint="#212121"
+                />
+
+            <TextView
+                android:id="@+id/tvContactName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:lines="1"
+                android:ellipsize="marquee"
+                android:textSize="14sp"
+                android:textColor="#212121"
+                android:text="Erik Walton"
+                />
+
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -35,11 +54,9 @@
             >
 
             <TextView
-                android:id="@+id/outgoing_message_indicator"
+                android:id="@+id/tvOutgoingMessage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:singleLine="true"
-                android:ellipsize="marquee"
                 android:text="@string/sender_is_you"
                 android:visibility="visible"
                 android:textColor="@color/green_500" />
@@ -47,9 +64,8 @@
             <github.ankushsachdeva.emojicon.EmojiconTextView
                 android:id="@+id/tvMessageText"
                 android:layout_width="match_parent"
-                android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:singleLine="true"
+                android:lines="1"
                 android:ellipsize="marquee"
                 android:gravity="center_vertical"
                 android:layout_gravity="center_vertical"
@@ -87,7 +103,7 @@
             android:layout_marginTop="4dp">
 
             <ImageView
-                android:id="@+id/ivStatus"
+                android:id="@+id/ivMessageStatus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"

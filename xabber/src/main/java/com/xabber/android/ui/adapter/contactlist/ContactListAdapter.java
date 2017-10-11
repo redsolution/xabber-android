@@ -97,6 +97,7 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private static final int TYPE_ACCOUNT = 2;
     private static final int TYPE_ACCOUNT_TOP_SEPARATOR = 3;
     private static final int TYPE_ACCOUNT_BOTTOM_SEPARATOR = 4;
+    private static final int TYPE_CHAT = 5;
     private final ArrayList<Object> baseEntities = new ArrayList<>();
 
     /**
@@ -116,6 +117,7 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private final int[] accountSubgroupColors;
     private final int activeChatsColor;
     private final ContactItemInflater contactItemInflater;
+    private final ContactItemChatInflater contactItemChatInflater;
     private final int accountElevation;
     protected Locale locale = Locale.getDefault();
     private AccountGroupViewHolder.AccountGroupClickListener accountGroupClickListener;
@@ -167,6 +169,7 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         a.recycle();
 
         contactItemInflater = new ContactItemInflater(activity);
+        contactItemChatInflater = new ContactItemChatInflater(activity);
 
         accountElevation = activity.getResources().getDimensionPixelSize(R.dimen.account_group_elevation);
 
@@ -593,6 +596,9 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             case TYPE_CONTACT:
                 return new ContactListItemViewHolder(layoutInflater
                         .inflate(R.layout.item_contact_in_contact_list, parent, false), this);
+            case TYPE_CHAT:
+                return new RosterChatViewHolder(layoutInflater
+                        .inflate(R.layout.item_chat_in_contact_list, parent, false), this);
             case TYPE_GROUP:
                 return new GroupViewHolder(layoutInflater
                         .inflate(R.layout.item_group_in_contact_list, parent, false), this);
@@ -620,6 +626,10 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         switch (viewType) {
             case TYPE_CONTACT:
                 contactItemInflater.bindViewHolder((ContactListItemViewHolder) holder, (AbstractContact) item);
+                break;
+
+            case TYPE_CHAT:
+                contactItemChatInflater.bindViewHolder((RosterChatViewHolder) holder, (AbstractContact) item);
                 break;
 
             case TYPE_ACCOUNT:
