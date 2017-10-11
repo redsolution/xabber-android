@@ -7,22 +7,13 @@ import android.view.View;
 
 import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
-import com.xabber.android.data.account.AccountItem;
-import com.xabber.android.data.account.AccountManager;
-import com.xabber.android.data.connection.ConnectionState;
-import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.otr.OTRManager;
-import com.xabber.android.data.message.MessageManager;
-import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.ui.activity.ContactActivity;
 import com.xabber.android.ui.activity.ContactEditActivity;
-import com.xabber.android.ui.color.ColorManager;
+import com.xabber.android.ui.adapter.contactlist.viewobjects.ChatVO;
 import com.xabber.android.utils.StringUtils;
-
-import java.io.File;
-import java.util.Date;
 
 /**
  * Created by valery.miller on 10.10.17.
@@ -38,78 +29,56 @@ public class ContactItemChatInflater {
         outgoingMessageIndicatorText = context.getString(R.string.sender_is_you) + ": ";
     }
 
-    void bindViewHolder(RosterChatViewHolder viewHolder, final AbstractContact contact) {
-        AccountItem accountItem = AccountManager.getInstance().getAccount(contact.getAccount());
-        if (accountItem != null && accountItem.getState() == ConnectionState.connected) {
-            viewHolder.offlineShadow.setVisibility(View.GONE);
-        } else {
-            viewHolder.offlineShadow.setVisibility(View.VISIBLE);
-        }
+    void bindViewHolder(RosterChatViewHolder viewHolder, final ChatVO viewObject) {
 
-        viewHolder.accountColorIndicator.setBackgroundColor(ColorManager.getInstance().getAccountPainter().getAccountMainColor(contact.getAccount()));
+        if (viewObject.isShowOfflineShadow())
+            viewHolder.offlineShadow.setVisibility(View.VISIBLE);
+        else viewHolder.offlineShadow.setVisibility(View.GONE);
+
+        viewHolder.accountColorIndicator.setBackgroundColor(viewObject.getAccountColorIndicator());
 
         if (SettingsManager.contactsShowAvatars()) {
             viewHolder.ivAvatar.setVisibility(View.VISIBLE);
-            viewHolder.ivAvatar.setImageDrawable(contact.getAvatarForContactList());
-        } else {
-            viewHolder.ivAvatar.setVisibility(View.GONE);
-        }
+            viewHolder.ivAvatar.setImageDrawable(viewObject.getAvatar());
+        } else viewHolder.ivAvatar.setVisibility(View.GONE);
 
-        viewHolder.tvContactName.setText(contact.getName());
+        viewHolder.tvContactName.setText(viewObject.getName());
 
-        MessageManager messageManager = MessageManager.getInstance();
-
-        if (MUCManager.getInstance().hasRoom(contact.getAccount(), contact.getUser())) {
-            viewHolder.ivMucIndicator.setVisibility(View.VISIBLE);
-            viewHolder.ivMucIndicator.setImageResource(R.drawable.ic_muc_indicator_black_16dp);
-        } else if (MUCManager.getInstance().isMucPrivateChat(contact.getAccount(), contact.getUser())) {
-            viewHolder.ivMucIndicator.setVisibility(View.VISIBLE);
-            viewHolder.ivMucIndicator.setImageResource(R.drawable.ic_muc_private_chat_indicator_black_16dp);
-        } else {
+        if (viewObject.getMucIndicatorLevel() == 0)
             viewHolder.ivMucIndicator.setVisibility(View.GONE);
+        else {
+            viewHolder.ivMucIndicator.setVisibility(View.VISIBLE);
+            viewHolder.ivMucIndicator.setImageLevel(viewObject.getMucIndicatorLevel());
         }
 
-        String statusText;
+        viewHolder.ivStatus.setImageLevel(viewObject.getStatusLevel());
 
         viewHolder.tvOutgoingMessage.setVisibility(View.GONE);
 
-        MessageItem lastMessage = messageManager.getOrCreateChat(contact.getAccount(), contact.getUser()).getLastMessage();
+        viewHolder.tvTime.setText(StringUtils
+                .getSmartTimeText(context, viewObject.getTime()));
+        viewHolder.tvTime.setVisibility(View.VISIBLE);
 
-        if (lastMessage == null) {
-            statusText = contact.getStatusText().trim();
-        } else {
-            if (lastMessage.getFilePath() != null) {
-                statusText = new File(lastMessage.getFilePath()).getName();
-            } else {
-                statusText = lastMessage.getText().trim();
-            }
-
-            viewHolder.tvTime.setText(StringUtils
-                    .getSmartTimeText(context, new Date(lastMessage.getTimestamp())));
-            viewHolder.tvTime.setVisibility(View.VISIBLE);
-
-            if (!lastMessage.isIncoming()) {
-                viewHolder.tvOutgoingMessage.setText(outgoingMessageIndicatorText);
-                viewHolder.tvOutgoingMessage.setVisibility(View.VISIBLE);
-                viewHolder.tvOutgoingMessage.setTextColor(ColorManager.getInstance().getAccountPainter().getAccountMainColor(contact.getAccount()));
-            }
+        if (viewObject.isOutgoing()) {
+            viewHolder.tvOutgoingMessage.setText(outgoingMessageIndicatorText);
+            viewHolder.tvOutgoingMessage.setVisibility(View.VISIBLE);
+            viewHolder.tvOutgoingMessage.setTextColor(viewObject.getAccountColorIndicator());
         }
 
-        if (statusText.isEmpty()) {
+        String text = viewObject.getMessageText();
+        if (text.isEmpty()) {
             viewHolder.tvMessageText.setVisibility(View.GONE);
         } else {
             viewHolder.tvMessageText.setVisibility(View.VISIBLE);
-            if (OTRManager.getInstance().isEncrypted(statusText)) {
+            if (OTRManager.getInstance().isEncrypted(text)) {
                 viewHolder.tvMessageText.setText(R.string.otr_not_decrypted_message);
                 viewHolder.tvMessageText.
                         setTypeface(viewHolder.tvMessageText.getTypeface(), Typeface.ITALIC);
             } else {
-                viewHolder.tvMessageText.setText(statusText);
+                viewHolder.tvMessageText.setText(text);
                 viewHolder.tvMessageText.setTypeface(Typeface.DEFAULT);
             }
         }
-
-        viewHolder.ivStatus.setImageLevel(contact.getStatusMode().getStatusLevel());
     }
 
     void onAvatarClick(BaseEntity contact) {

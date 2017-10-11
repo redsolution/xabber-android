@@ -55,6 +55,7 @@ import com.xabber.android.ui.adapter.UpdatableAdapter;
 import com.xabber.android.ui.adapter.contactlist.viewobjects.AccountVO;
 import com.xabber.android.ui.adapter.contactlist.viewobjects.BaseRosterItemVO;
 import com.xabber.android.ui.adapter.contactlist.viewobjects.BottomAccountSeparatorVO;
+import com.xabber.android.ui.adapter.contactlist.viewobjects.ChatVO;
 import com.xabber.android.ui.adapter.contactlist.viewobjects.ContactVO;
 import com.xabber.android.ui.adapter.contactlist.viewobjects.GroupVO;
 import com.xabber.android.ui.adapter.contactlist.viewobjects.TopAccountSeparatorVO;
@@ -436,17 +437,8 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
                 // add recent chats
                 rosterItemVOs.add(GroupVO.convert(recentChatsGroup));
-                rosterItemVOs.addAll(ContactVO.convert(recentChatsGroup.getAbstractContacts()));
+                rosterItemVOs.addAll(ChatVO.convert(recentChatsGroup.getAbstractContacts()));
 
-                if (showActiveChats) {
-                    if (!activeChats.isEmpty()) {
-                        if (showAccounts || showGroups) {
-                            rosterItemVOs.add(GroupVO.convert(activeChats));
-                        }
-                        activeChats.sortAbstractContacts(ComparatorByChat.COMPARATOR_BY_CHAT);
-                        rosterItemVOs.addAll(ContactVO.convert(activeChats.getAbstractContacts()));
-                    }
-                }
                 if (showAccounts) {
                     boolean isFirst = rosterItemVOs.isEmpty();
                     for (AccountConfiguration rosterAccount : accounts.values()) {
@@ -576,6 +568,8 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     public int getItemViewType(int position) {
         Object object = getItem(position);
         if (object instanceof ContactVO) {
+            if (object instanceof ChatVO)
+                return TYPE_CHAT;
             return TYPE_CONTACT;
         } else if (object instanceof AccountVO) {
             return TYPE_ACCOUNT;
@@ -629,7 +623,7 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 break;
 
             case TYPE_CHAT:
-                contactItemChatInflater.bindViewHolder((RosterChatViewHolder) holder, (AbstractContact) item);
+                contactItemChatInflater.bindViewHolder((RosterChatViewHolder) holder, (ChatVO) item);
                 break;
 
             case TYPE_ACCOUNT:

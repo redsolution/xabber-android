@@ -28,8 +28,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:layout_marginRight="8dp"
-                android:src="@drawable/ic_muc_indicator_black_16dp"
+                android:layout_marginRight="4dp"
+                android:src="@drawable/muc_indicator_view"
                 android:tint="#212121"
                 />
 

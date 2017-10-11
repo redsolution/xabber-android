@@ -2,29 +2,14 @@ package com.xabber.android.ui.adapter.contactlist;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Typeface;
 import android.view.View;
 
 import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
-import com.xabber.android.data.account.AccountItem;
-import com.xabber.android.data.account.AccountManager;
-import com.xabber.android.data.connection.ConnectionState;
-import com.xabber.android.data.database.messagerealm.MessageItem;
-import com.xabber.android.data.entity.BaseEntity;
-import com.xabber.android.data.extension.capability.ClientSoftware;
 import com.xabber.android.data.extension.muc.MUCManager;
-import com.xabber.android.data.extension.otr.OTRManager;
-import com.xabber.android.data.message.MessageManager;
-import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.ui.activity.ContactActivity;
 import com.xabber.android.ui.activity.ContactEditActivity;
 import com.xabber.android.ui.adapter.contactlist.viewobjects.ContactVO;
-import com.xabber.android.ui.color.ColorManager;
-import com.xabber.android.utils.StringUtils;
-
-import java.io.File;
-import java.util.Date;
 
 class ContactItemInflater {
 
@@ -51,7 +36,12 @@ class ContactItemInflater {
 
         viewHolder.tvContactName.setText(viewObject.getName());
 
-        viewHolder.ivMucIndicator.setImageLevel(viewObject.getMucIndicatorLevel());
+        if (viewObject.getMucIndicatorLevel() == 0)
+            viewHolder.ivMucIndicator.setVisibility(View.GONE);
+        else {
+            viewHolder.ivMucIndicator.setVisibility(View.VISIBLE);
+            viewHolder.ivMucIndicator.setImageLevel(viewObject.getMucIndicatorLevel());
+        }
 
         viewHolder.ivStatus.setImageLevel(viewObject.getStatusLevel());
 
