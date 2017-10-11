@@ -33,17 +33,13 @@ import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.CommonState;
-import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.UserJid;
-import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.muc.RoomChat;
 import com.xabber.android.data.extension.muc.RoomContact;
-import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.ChatContact;
 import com.xabber.android.data.message.MessageManager;
@@ -51,13 +47,17 @@ import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.GroupManager;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
-import com.xabber.android.data.roster.ShowOfflineMode;
 import com.xabber.android.ui.activity.AccountActivity;
 import com.xabber.android.ui.activity.ManagedActivity;
 import com.xabber.android.ui.adapter.ChatComparator;
 import com.xabber.android.ui.adapter.ComparatorByChat;
 import com.xabber.android.ui.adapter.UpdatableAdapter;
-import com.xabber.android.ui.color.ColorManager;
+import com.xabber.android.ui.adapter.contactlist.viewobjects.AccountVO;
+import com.xabber.android.ui.adapter.contactlist.viewobjects.BaseRosterItemVO;
+import com.xabber.android.ui.adapter.contactlist.viewobjects.BottomAccountSeparatorVO;
+import com.xabber.android.ui.adapter.contactlist.viewobjects.ContactVO;
+import com.xabber.android.ui.adapter.contactlist.viewobjects.GroupVO;
+import com.xabber.android.ui.adapter.contactlist.viewobjects.TopAccountSeparatorVO;
 import com.xabber.android.ui.helper.ContextMenuHelper;
 
 import java.util.ArrayList;
@@ -98,7 +98,7 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private static final int TYPE_ACCOUNT_TOP_SEPARATOR = 3;
     private static final int TYPE_ACCOUNT_BOTTOM_SEPARATOR = 4;
     private static final int TYPE_CHAT = 5;
-    private final ArrayList<Object> baseEntities = new ArrayList<>();
+    private final ArrayList<BaseRosterItemVO> rosterItemVOs = new ArrayList<>();
 
     /**
      * Handler for deferred refresh.
@@ -431,72 +431,72 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             hasActiveChats = activeChats != null && activeChats.getTotal() > 0;
 
             // Remove empty groups, sort and apply structure.
-            baseEntities.clear();
+            rosterItemVOs.clear();
             if (hasVisibleContacts) {
 
                 // add recent chats
-                baseEntities.add(recentChatsGroup);
-                baseEntities.addAll(recentChatsGroup.getAbstractContacts());
+                rosterItemVOs.add(GroupVO.convert(recentChatsGroup));
+                rosterItemVOs.addAll(ContactVO.convert(recentChatsGroup.getAbstractContacts()));
 
                 if (showActiveChats) {
                     if (!activeChats.isEmpty()) {
                         if (showAccounts || showGroups) {
-                            baseEntities.add(activeChats);
+                            rosterItemVOs.add(GroupVO.convert(activeChats));
                         }
                         activeChats.sortAbstractContacts(ComparatorByChat.COMPARATOR_BY_CHAT);
-                        baseEntities.addAll(activeChats.getAbstractContacts());
+                        rosterItemVOs.addAll(ContactVO.convert(activeChats.getAbstractContacts()));
                     }
                 }
                 if (showAccounts) {
-                    boolean isFirst = baseEntities.isEmpty();
+                    boolean isFirst = rosterItemVOs.isEmpty();
                     for (AccountConfiguration rosterAccount : accounts.values()) {
                         if (isFirst) {
                             isFirst = false;
                         } else {
-                            baseEntities.add(new AccountTopSeparator(null, null));
+                            rosterItemVOs.add(new TopAccountSeparatorVO());
                         }
 
-                        baseEntities.add(rosterAccount);
+                        rosterItemVOs.add(AccountVO.convert(rosterAccount));
 
                         if (showGroups) {
                             if (rosterAccount.isExpanded()) {
                                 for (GroupConfiguration rosterConfiguration : rosterAccount
                                         .getSortedGroupConfigurations()) {
                                     if (showEmptyGroups || !rosterConfiguration.isEmpty()) {
-                                        baseEntities.add(rosterConfiguration);
+                                        rosterItemVOs.add(GroupVO.convert(rosterConfiguration));
                                         rosterConfiguration.sortAbstractContacts(comparator);
-                                        baseEntities.addAll(rosterConfiguration.getAbstractContacts());
+                                        rosterItemVOs.addAll(ContactVO.convert(rosterConfiguration.getAbstractContacts()));
                                     }
                                 }
                             }
                         } else {
                             rosterAccount.sortAbstractContacts(comparator);
-                            baseEntities.addAll(rosterAccount.getAbstractContacts());
+                            rosterItemVOs.addAll(ContactVO.convert(rosterAccount.getAbstractContacts()));
                         }
 
                         if (rosterAccount.getTotal() > 0 && !rosterAccount.isExpanded()) {
-                            baseEntities.add(new AccountBottomSeparator(rosterAccount.getAccount(), null));
+                            rosterItemVOs.add(BottomAccountSeparatorVO.convert(rosterAccount.getAccount()));
                         }
                     }
                 } else {
                     if (showGroups) {
                         for (GroupConfiguration rosterConfiguration : groups.values()) {
                             if (showEmptyGroups || !rosterConfiguration.isEmpty()) {
-                                baseEntities.add(rosterConfiguration);
+                                rosterItemVOs.add(GroupVO.convert(rosterConfiguration));
                                 rosterConfiguration.sortAbstractContacts(comparator);
-                                baseEntities.addAll(rosterConfiguration.getAbstractContacts());
+                                rosterItemVOs.addAll(ContactVO.convert(rosterConfiguration.getAbstractContacts()));
                             }
                         }
                     } else {
                         Collections.sort(contacts, comparator);
-                        baseEntities.addAll(contacts);
+                        rosterItemVOs.addAll(ContactVO.convert(contacts));
                     }
                 }
             }
         } else { // Search
             final ArrayList<AbstractContact> baseEntities = getSearchResults(rosterContacts, comparator, abstractChats);
-            this.baseEntities.clear();
-            this.baseEntities.addAll(baseEntities);
+            this.rosterItemVOs.clear();
+            this.rosterItemVOs.addAll(ContactVO.convert(baseEntities));
             hasVisibleContacts = baseEntities.size() > 0;
         }
 
@@ -565,25 +565,25 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     @Override
     public int getItemCount() {
-        return baseEntities.size();
+        return rosterItemVOs.size();
     }
 
     public Object getItem(int position) {
-        return baseEntities.get(position);
+        return rosterItemVOs.get(position);
     }
 
     @Override
     public int getItemViewType(int position) {
         Object object = getItem(position);
-        if (object instanceof AbstractContact) {
+        if (object instanceof ContactVO) {
             return TYPE_CONTACT;
-        } else if (object instanceof AccountConfiguration) {
+        } else if (object instanceof AccountVO) {
             return TYPE_ACCOUNT;
-        } else if (object instanceof GroupConfiguration) {
+        } else if (object instanceof GroupVO) {
             return TYPE_GROUP;
-        } else if (object instanceof AccountTopSeparator) {
+        } else if (object instanceof TopAccountSeparatorVO) {
             return TYPE_ACCOUNT_TOP_SEPARATOR;
-        } else if (object instanceof AccountBottomSeparator) {
+        } else if (object instanceof BottomAccountSeparatorVO) {
             return TYPE_ACCOUNT_BOTTOM_SEPARATOR;
         } else {
             throw new IllegalStateException();
@@ -625,7 +625,7 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
         switch (viewType) {
             case TYPE_CONTACT:
-                contactItemInflater.bindViewHolder((ContactListItemViewHolder) holder, (AbstractContact) item);
+                contactItemInflater.bindViewHolder((ContactListItemViewHolder) holder, (ContactVO) item);
                 break;
 
             case TYPE_CHAT:
@@ -633,11 +633,11 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 break;
 
             case TYPE_ACCOUNT:
-                bindAccount((AccountGroupViewHolder)holder, (AccountConfiguration) item);
+                bindAccount((AccountGroupViewHolder)holder, (AccountVO) item);
                 break;
 
             case TYPE_GROUP:
-                bindGroup((GroupViewHolder) holder, (GroupConfiguration) item);
+                bindGroup((GroupViewHolder) holder, (GroupVO) item);
                 break;
 
             case TYPE_ACCOUNT_TOP_SEPARATOR:
@@ -645,7 +645,7 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
             case TYPE_ACCOUNT_BOTTOM_SEPARATOR:
                 bindBottomSeparator((BottomSeparatorHolder) holder,
-                        (AccountBottomSeparator) item);
+                        (BottomAccountSeparatorVO) item);
                 break;
 
             default:
@@ -653,20 +653,10 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         }
     }
 
-    private void bindBottomSeparator(BottomSeparatorHolder holder, AccountBottomSeparator accountBottomSeparator) {
-        //final int level = AccountManager.getInstance().getColorLevel(accountBottomSeparator.getAccount());
+    private void bindBottomSeparator(BottomSeparatorHolder holder, BottomAccountSeparatorVO viewObject) {
+        holder.accountColorIndicator.setBackgroundColor(viewObject.getAccountColorIndicator());
 
-        //holder.bottomLayer.setBackgroundDrawable(new ColorDrawable(accountSubgroupColors[level]));
-        //holder.topLayer.setBackgroundDrawable(new ColorDrawable(accountSubgroupColors[level]));
-        holder.accountColorIndicator.setBackgroundColor(ColorManager.getInstance().getAccountPainter().getAccountMainColor(accountBottomSeparator.getAccount()));
-
-        AccountItem accountItem = AccountManager.getInstance().getAccount(accountBottomSeparator.getAccount());
-        StatusMode statusMode = null;
-        if (accountItem != null) {
-            statusMode = accountItem.getDisplayStatusMode();
-        }
-
-        if (statusMode == StatusMode.unavailable || statusMode == StatusMode.connection) {
+        if (viewObject.isShowOfflineShadow()) {
             holder.offlineShadowBottom.setVisibility(View.VISIBLE);
             holder.offlineShadowTop.setVisibility(View.VISIBLE);
         } else {
@@ -675,121 +665,85 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         }
     }
 
-    private void bindAccount(AccountGroupViewHolder viewHolder, AccountConfiguration configuration) {
+    private void bindAccount(AccountGroupViewHolder viewHolder, AccountVO viewObject) {
 
-        final AccountJid account = configuration.getAccount();
+        viewHolder.accountColorIndicator.setBackgroundColor(viewObject.getAccountColorIndicator());
 
-        viewHolder.accountColorIndicator.setBackgroundColor(ColorManager.getInstance().getAccountPainter().getAccountMainColor(account));
+        viewHolder.tvAccountName.setText(viewObject.getJid());
+        viewHolder.tvAccountName.setTextColor(viewObject.getAccountColorIndicator());
+        viewHolder.tvContactCount.setText(viewObject.getContactCount());
 
-        viewHolder.tvAccountName.setText(GroupManager.getInstance().getGroupName(account, configuration.getGroup()));
-        viewHolder.tvAccountName.setTextColor(ColorManager.getInstance().getAccountPainter().getAccountTextColor(account));
-        viewHolder.tvContactCount.setText(configuration.getOnline() + "/" + configuration.getTotal());
-
-        AccountItem accountItem = AccountManager.getInstance().getAccount(account);
-        if (accountItem == null) {
-            LogManager.e(LOG_TAG, "accountItem is null " + account);
-            return;
-        }
-
-        String statusText = accountItem.getStatusText().trim();
-
-        if (statusText.isEmpty()) {
-            statusText = activity.getString(accountItem.getDisplayStatusMode().getStringID());
-        }
+        String statusText = viewObject.getStatus();
+        if (statusText.isEmpty()) statusText = activity.getString(viewObject.getStatusId());
 
         viewHolder.tvStatus.setText(statusText);
-        viewHolder.tvStatus.setTextColor(ColorManager.getInstance().getAccountPainter().getAccountMainColor(account));
+        viewHolder.tvStatus.setTextColor(viewObject.getAccountColorIndicator());
 
         if (SettingsManager.contactsShowAvatars()) {
             viewHolder.ivAvatar.setVisibility(View.VISIBLE);
-            viewHolder.ivAvatar.setImageDrawable(AvatarManager.getInstance().getAccountAvatar(account));
-        } else {
-            viewHolder.ivAvatar.setVisibility(View.GONE);
-        }
+            viewHolder.ivAvatar.setImageDrawable(viewObject.getAvatar());
+        } else viewHolder.ivAvatar.setVisibility(View.GONE);
 
-        viewHolder.ivStatus.setImageLevel(accountItem.getDisplayStatusMode().getStatusLevel());
+        viewHolder.ivStatus.setImageLevel(viewObject.getStatusLevel());
 
-        ShowOfflineMode showOfflineMode = configuration.getShowOfflineMode();
-        if (showOfflineMode == ShowOfflineMode.normal) {
-            if (SettingsManager.contactsShowOffline()) {
-                showOfflineMode = ShowOfflineMode.always;
-            } else {
-                showOfflineMode = ShowOfflineMode.never;
-            }
-        }
+        viewHolder.smallRightIcon.setImageLevel(viewObject.getOfflineModeLevel());
 
-        viewHolder.smallRightIcon.setImageLevel(showOfflineMode.ordinal());
-
-
-        StatusMode statusMode = accountItem.getDisplayStatusMode();
-
-        if (statusMode == StatusMode.unavailable || statusMode == StatusMode.connection) {
+        if (viewObject.isShowOfflineShadow())
             viewHolder.offlineShadow.setVisibility(View.VISIBLE);
-        } else {
-            viewHolder.offlineShadow.setVisibility(View.GONE);
-        }
+        else viewHolder.offlineShadow.setVisibility(View.GONE);
     }
 
-    private void bindGroup(GroupViewHolder viewHolder, GroupConfiguration configuration) {
+    private void bindGroup(GroupViewHolder viewHolder, GroupVO viewObject) {
 
-        final String name = GroupManager.getInstance().getGroupName(configuration.getAccount(), configuration.getGroup());
+        viewHolder.accountColorIndicator.setBackgroundColor(viewObject.getAccountColorIndicator());
 
-        AccountJid account = configuration.getAccount();
-        if (account == null || account == GroupManager.NO_ACCOUNT)
-            viewHolder.accountColorIndicator.setBackgroundColor(ColorManager.getInstance().getAccountPainter().getDefaultMainColor());
-        else viewHolder.accountColorIndicator.setBackgroundColor(ColorManager.getInstance().getAccountPainter().getAccountMainColor(account));
-        viewHolder.indicator.setImageLevel(configuration.isExpanded() ? 1 : 0);
-        viewHolder.groupOfflineIndicator.setImageLevel(configuration.getShowOfflineMode().ordinal());
+        viewHolder.indicator.setImageLevel(viewObject.getExpandIndicatorLevel());
+        viewHolder.groupOfflineIndicator.setImageLevel(viewObject.getOfflineIndicatorLevel());
 
         viewHolder.groupOfflineIndicator.setVisibility(View.GONE);
         viewHolder.offlineShadow.setVisibility(View.GONE);
 
-        if (configuration.getGroup().equals(GroupManager.ACTIVE_CHATS)) {
-            viewHolder.name.setText(name);
-        } else {
-            viewHolder.name.setText(String.format("%s (%d/%d)", name, configuration.getOnline(), configuration.getTotal()));
+        viewHolder.name.setText(viewObject.getTitle());
 
-            viewHolder.groupOfflineIndicator.setVisibility(View.VISIBLE);
+        viewHolder.groupOfflineIndicator.setVisibility(View.VISIBLE);
 
-            AccountItem accountItem = AccountManager.getInstance().getAccount(configuration.getAccount());
-
-            if (accountItem != null) {
-                StatusMode statusMode = accountItem.getDisplayStatusMode();
-                if (statusMode == StatusMode.unavailable || statusMode == StatusMode.connection) {
-                    viewHolder.offlineShadow.setVisibility(View.VISIBLE);
-                }
-            }
-        }
+        if (viewObject.isShowOfflineShadow())
+            viewHolder.offlineShadow.setVisibility(View.VISIBLE);
+        else viewHolder.offlineShadow.setVisibility(View.GONE);
     }
 
     @Override
     public void onContactClick(int adapterPosition) {
-        if (adapterPosition >= 0 && adapterPosition < baseEntities.size()) {
-            listener.onContactClick((AbstractContact) baseEntities.get(adapterPosition));
+        if (adapterPosition >= 0 && adapterPosition < rosterItemVOs.size()) {
+            AccountJid accountJid = ((ContactVO) rosterItemVOs.get(adapterPosition)).getAccountJid();
+            UserJid userJid = ((ContactVO) rosterItemVOs.get(adapterPosition)).getUserJid();
+            listener.onContactClick(RosterManager.getInstance().getAbstractContact(accountJid, userJid));
         }
     }
 
     @Override
     public void onContactAvatarClick(int adapterPosition) {
-        contactItemInflater.onAvatarClick((BaseEntity) getItem(adapterPosition));
+        contactItemInflater.onAvatarClick((ContactVO) getItem(adapterPosition));
     }
 
     @Override
     public void onContactCreateContextMenu(int adapterPosition, ContextMenu menu) {
-        AbstractContact abstractContact = (AbstractContact) getItem(adapterPosition);
+        AccountJid accountJid = ((ContactVO) rosterItemVOs.get(adapterPosition)).getAccountJid();
+        UserJid userJid = ((ContactVO) rosterItemVOs.get(adapterPosition)).getUserJid();
+        AbstractContact abstractContact = RosterManager.getInstance().getAbstractContact(accountJid, userJid);
         ContextMenuHelper.createContactContextMenu(activity, this, abstractContact, menu);
     }
 
     @Override
     public void onAccountAvatarClick(int adapterPosition) {
         activity.startActivity(AccountActivity.createIntent(activity,
-                ((AccountConfiguration)getItem(adapterPosition)).getAccount()));
+                ((AccountVO)getItem(adapterPosition)).getAccountJid()));
     }
 
     @Override
     public void onAccountMenuClick(int adapterPosition, View view) {
         listener.onAccountMenuClick(
-                ((AccountConfiguration)baseEntities.get(adapterPosition)).getAccount(), view);
+                ((AccountVO)rosterItemVOs.get(adapterPosition)).getAccountJid(), view);
     }
 
     @Override
@@ -799,8 +753,8 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     @Override
     public void onAccountGroupCreateContextMenu(int adapterPosition, ContextMenu menu) {
-        AccountConfiguration accountConfiguration = (AccountConfiguration) getItem(adapterPosition);
-        ContextMenuHelper.createAccountContextMenu(activity, this, accountConfiguration.getAccount(), menu);
+        AccountVO accountVO = (AccountVO) getItem(adapterPosition);
+        ContextMenuHelper.createAccountContextMenu(activity, this, accountVO.getAccountJid(), menu);
     }
 
     @Override
@@ -810,17 +764,32 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     @Override
     public void onGroupCreateContextMenu(int adapterPosition, ContextMenu menu) {
-        GroupConfiguration groupConfiguration = (GroupConfiguration) getItem(adapterPosition);
+        GroupVO groupVO = (GroupVO) getItem(adapterPosition);
 
         ContextMenuHelper.createGroupContextMenu(activity, this,
-                groupConfiguration.getAccount(), groupConfiguration.getGroup(), menu);
+                groupVO.getAccountJid(), groupVO.getGroupName(), menu);
     }
 
     private void toggleGroupExpand(int adapterPosition) {
-        GroupConfiguration groupConfiguration = (GroupConfiguration) getItem(adapterPosition);
-        GroupManager.getInstance().setExpanded(groupConfiguration.getAccount(), groupConfiguration.getGroup(),
-                !groupConfiguration.isExpanded());
-        onChange();
+        BaseRosterItemVO viewObject = (BaseRosterItemVO) getItem(adapterPosition);
+        if (viewObject instanceof GroupVO) {
+            GroupVO groupVO = (GroupVO) getItem(adapterPosition);
+
+            boolean expanded;
+            expanded = groupVO.getExpandIndicatorLevel() == 1;
+
+            GroupManager.getInstance().setExpanded(groupVO.getAccountJid(),
+                    groupVO.getGroupName(), !expanded);
+
+            onChange();
+
+        } else {
+            AccountVO accountVO = (AccountVO) getItem(adapterPosition);
+            GroupManager.getInstance().setExpanded(accountVO.getAccountJid(),
+                    accountVO.getGroupName(), !accountVO.isExpand());
+
+            onChange();
+        }
     }
 
     /**

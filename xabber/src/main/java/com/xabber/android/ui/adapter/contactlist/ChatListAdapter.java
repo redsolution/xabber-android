@@ -7,14 +7,18 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import com.xabber.android.R;
+import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.roster.AbstractContact;
+import com.xabber.android.data.roster.RosterManager;
+import com.xabber.android.ui.adapter.contactlist.viewobjects.ContactVO;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ChatListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements ContactListItemViewHolder.ContactClickListener {
 
-    private List<AbstractContact> contacts;
+    private List<ContactVO> contacts;
     private final ContactItemInflater contactItemInflater;
     private final Listener listener;
 
@@ -29,7 +33,7 @@ public class ChatListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
     public void updateContacts(List<AbstractContact> contacts) {
-        this.contacts = contacts;
+        this.contacts = ContactVO.convert(contacts);
         notifyDataSetChanged();
     }
 
@@ -56,7 +60,9 @@ public class ChatListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     @Override
     public void onContactClick(int adapterPosition) {
-        listener.onRecentChatClick(contacts.get(adapterPosition));
+        AccountJid accountJid = (contacts.get(adapterPosition)).getAccountJid();
+        UserJid userJid = (contacts.get(adapterPosition)).getUserJid();
+        listener.onRecentChatClick(RosterManager.getInstance().getAbstractContact(accountJid, userJid));
     }
 
     @Override
