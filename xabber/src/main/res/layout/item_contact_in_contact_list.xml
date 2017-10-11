@@ -8,6 +8,11 @@
     android:background="@color/white"
     >
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="?android:attr/selectableItemBackground">
+
     <include layout="@layout/account_color_indicator"/>
 
     <include layout="@layout/avatar_view"/>
@@ -62,5 +67,7 @@
     </LinearLayout>
 
     <include layout="@layout/offline_shadow" />
+
+    </RelativeLayout>
 
 </RelativeLayout>
