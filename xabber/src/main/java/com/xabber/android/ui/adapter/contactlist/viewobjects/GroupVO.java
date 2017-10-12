@@ -14,6 +14,8 @@ import com.xabber.android.ui.color.ColorManager;
 
 public class GroupVO extends BaseRosterItemVO {
 
+    public static final String RECENT_CHATS_TITLE = "Recent chats";
+
     private String title;
     private int expandIndicatorLevel;
     private int offlineIndicatorLevel;
@@ -48,8 +50,8 @@ public class GroupVO extends BaseRosterItemVO {
         expandIndicatorLevel = configuration.isExpanded() ? 1 : 0;
         offlineIndicatorLevel = configuration.getShowOfflineMode().ordinal();
 
-
-        name = String.format("%s (%d/%d)", name, configuration.getOnline(), configuration.getTotal());
+        if (!name.equals(RECENT_CHATS_TITLE))
+            name = String.format("%s (%d/%d)", name, configuration.getOnline(), configuration.getTotal());
 
         AccountItem accountItem = AccountManager.getInstance().getAccount(configuration.getAccount());
 

@@ -323,7 +323,7 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
             // recent chats
             recentChatsGroup = new GroupConfiguration(GroupManager.NO_ACCOUNT,
-                    "Recent chats", GroupManager.getInstance());
+                    GroupVO.RECENT_CHATS_TITLE, GroupManager.getInstance());
             Collection<AbstractChat> chats = MessageManager.getInstance().getChats();
 
             List<AbstractChat> recentChats = new ArrayList<>();
@@ -692,6 +692,11 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         viewHolder.accountColorIndicator.setBackgroundColor(viewObject.getAccountColorIndicator());
 
         viewHolder.indicator.setImageLevel(viewObject.getExpandIndicatorLevel());
+
+        if (viewObject.getTitle().equals(GroupVO.RECENT_CHATS_TITLE))
+            viewHolder.indicator.setVisibility(View.GONE);
+        else viewHolder.indicator.setVisibility(View.VISIBLE);
+
         viewHolder.groupOfflineIndicator.setImageLevel(viewObject.getOfflineIndicatorLevel());
 
         viewHolder.groupOfflineIndicator.setVisibility(View.GONE);
@@ -769,14 +774,16 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         if (viewObject instanceof GroupVO) {
             GroupVO groupVO = (GroupVO) getItem(adapterPosition);
 
-            boolean expanded;
-            expanded = groupVO.getExpandIndicatorLevel() == 1;
+            // recent chats not roll up or expand
+            if (!groupVO.getGroupName().equals(GroupVO.RECENT_CHATS_TITLE)) {
+                boolean expanded;
+                expanded = groupVO.getExpandIndicatorLevel() == 1;
 
-            GroupManager.getInstance().setExpanded(groupVO.getAccountJid(),
-                    groupVO.getGroupName(), !expanded);
+                GroupManager.getInstance().setExpanded(groupVO.getAccountJid(),
+                        groupVO.getGroupName(), !expanded);
 
-            onChange();
-
+                onChange();
+            }
         } else {
             AccountVO accountVO = (AccountVO) getItem(adapterPosition);
             GroupManager.getInstance().setExpanded(accountVO.getAccountJid(),
