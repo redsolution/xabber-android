@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout android:id="@+id/viewBottomNavigation"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="56dp"
+    android:paddingTop="6dp"
+    android:paddingBottom="6dp"
+    android:background="#eeeeee"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/btnRecent"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="4dp"
+            android:padding="10dp"
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_message"
+            android:tint="@color/grey_600"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            />
+
+        <LinearLayout
+            android:id="@+id/controlView"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_toRightOf="@+id/btnRecent"
+            android:layout_toLeftOf="@+id/btnMenu"
+            >
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/accountList"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:overScrollMode="never"
+                tools:listitem="@layout/avatar_view_xsmall"
+                android:layout_weight="1"
+                />
+
+            <RelativeLayout
+                android:id="@+id/searchView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="visible"
+                android:layout_weight="0.3"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                >
+
+                <ImageView
+                    android:id="@+id/ivSearch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:padding="10dp"
+                    android:src="@drawable/ic_search"
+                    android:tint="@color/grey_600"
+                    />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@+id/ivSearch"
+                    android:textSize="18sp"
+                    android:textColor="#61000000"
+                    android:text="Search"
+                    />
+
+            </RelativeLayout>
+
+            <ImageView
+                android:id="@+id/btnSearch"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="10dp"
+                android:src="@drawable/ic_search"
+                android:tint="@color/grey_600"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:layout_weight="1"
+                android:visibility="gone"
+                android:clickable="true"
+                />
+
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/btnMenu"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginRight="4dp"
+            android:layout_alignParentRight="true"
+            android:padding="10dp"
+            android:src="@drawable/ic_menu"
+            android:tint="@color/grey_600"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            />
+
+        <RelativeLayout
+            android:id="@+id/expandSearchView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_toRightOf="@+id/btnRecent"
+            android:layout_toLeftOf="@+id/btnMenu"
+            android:visibility="gone">
+
+            <ImageView
+                android:id="@+id/ivSearch2"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:padding="10dp"
+                android:src="@drawable/ic_search"
+                android:tint="@color/grey_600"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                />
+
+            <EditText
+                android:id="@+id/edtSearch2"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_toRightOf="@+id/ivSearch2"
+                android:layout_toLeftOf="@+id/btnSearchClose"
+                android:textSize="18sp"
+                android:textColorHint="#61000000"
+                android:background="@android:color/transparent"
+                android:hint="Search"
+                />
+
+            <ImageView
+                android:id="@+id/btnSearchClose"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:padding="10dp"
+                android:src="@drawable/ic_close"
+                android:tint="@color/grey_600"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                />
+
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+</FrameLayout>
+
