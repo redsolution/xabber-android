@@ -1,7 +1,9 @@
 package com.xabber.android.ui.adapter.contactlist.viewobjects;
 
 import android.graphics.drawable.Drawable;
+import android.view.View;
 
+import com.xabber.android.R;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionState;
@@ -27,11 +29,12 @@ public class ChatVO extends ContactVO {
     private String messageText;
     private boolean isOutgoing;
     private Date time;
+    private int messageStatus;
 
     public ChatVO(int accountColorIndicator, boolean showOfflineShadow, String name, String status,
                   int statusId, int statusLevel, Drawable avatar, int mucIndicatorLevel,
                   UserJid userJid, AccountJid accountJid, String messageText, boolean isOutgoing,
-                  Date time) {
+                  Date time, int messageStatus) {
 
         super(accountColorIndicator, showOfflineShadow, name, status, statusId, statusLevel,
                 avatar, mucIndicatorLevel, userJid, accountJid);
@@ -39,6 +42,7 @@ public class ChatVO extends ContactVO {
         this.messageText = messageText;
         this.isOutgoing = isOutgoing;
         this.time = time;
+        this.messageStatus = messageStatus;
     }
 
     public static ChatVO convert(AbstractContact contact) {
@@ -50,6 +54,7 @@ public class ChatVO extends ContactVO {
         int mucIndicatorLevel;
         boolean isOutgoing = false;
         Date time = null;
+        int messageStatus = 0;
 
         AccountItem accountItem = AccountManager.getInstance().getAccount(contact.getAccount());
         if (accountItem != null && accountItem.getState() == ConnectionState.connected) {
@@ -93,10 +98,26 @@ public class ChatVO extends ContactVO {
             time = new Date(lastMessage.getTimestamp());
 
             isOutgoing = !lastMessage.isIncoming();
+
+            // message status
+            if (lastMessage.isForwarded()) {
+                messageStatus = 1;
+            } else if (lastMessage.isReceivedFromMessageArchive()) {
+                messageStatus = 2;
+            } else if (lastMessage.isError()) {
+                messageStatus = 3;
+            } else if (!lastMessage.isDelivered()) {
+                if (lastMessage.isAcknowledged()) {
+                    messageStatus = 4;
+                } else {
+                    messageStatus = 5;
+                }
+            }
         }
 
         return new ChatVO(accountColorIndicator, showOfflineShadow, name, statusText, statusId,
-                statusLevel, avatar, mucIndicatorLevel, contact.getUser(), contact.getAccount(), messageText, isOutgoing, time);
+                statusLevel, avatar, mucIndicatorLevel, contact.getUser(), contact.getAccount(),
+                messageText, isOutgoing, time, messageStatus);
     }
 
     public static ArrayList<ContactVO> convert(Collection<AbstractContact> contacts) {
@@ -119,4 +140,7 @@ public class ChatVO extends ContactVO {
         return time;
     }
 
+    public int getMessageStatus() {
+        return messageStatus;
+    }
 }

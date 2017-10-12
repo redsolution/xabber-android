@@ -79,6 +79,30 @@ public class ContactItemChatInflater {
                 viewHolder.tvMessageText.setTypeface(Typeface.DEFAULT);
             }
         }
+
+        // message status
+        viewHolder.ivMessageStatus.setVisibility(View.VISIBLE);
+
+        switch (viewObject.getMessageStatus()) {
+            case 0:
+                viewHolder.ivMessageStatus.setImageResource(R.drawable.ic_message_delivered_14dp);
+                break;
+            case 1:
+                viewHolder.ivMessageStatus.setImageResource(R.drawable.ic_message_forwarded_14dp);
+                break;
+            case 2:
+                viewHolder.ivMessageStatus.setImageResource(R.drawable.ic_message_synced_14dp);
+                break;
+            case 3:
+                viewHolder.ivMessageStatus.setImageResource(R.drawable.ic_message_has_error_14dp);
+                break;
+            case 4:
+                viewHolder.ivMessageStatus.setImageResource(R.drawable.ic_message_acknowledged_14dp);
+                break;
+            default:
+                viewHolder.ivMessageStatus.setVisibility(View.INVISIBLE);
+                break;
+        }
     }
 
     void onAvatarClick(BaseEntity contact) {
