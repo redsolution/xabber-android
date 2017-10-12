@@ -51,6 +51,9 @@ public class ContactItemChatInflater {
             viewHolder.ivMucIndicator.setImageLevel(viewObject.getMucIndicatorLevel());
         }
 
+        if (viewObject.getStatusLevel() == 6)
+            viewHolder.ivStatus.setVisibility(View.INVISIBLE);
+        else viewHolder.ivStatus.setVisibility(View.VISIBLE);
         viewHolder.ivStatus.setImageLevel(viewObject.getStatusLevel());
 
         viewHolder.tvOutgoingMessage.setVisibility(View.GONE);
@@ -89,9 +92,6 @@ public class ContactItemChatInflater {
                 break;
             case 1:
                 viewHolder.ivMessageStatus.setImageResource(R.drawable.ic_message_forwarded_14dp);
-                break;
-            case 2:
-                viewHolder.ivMessageStatus.setImageResource(R.drawable.ic_message_synced_14dp);
                 break;
             case 3:
                 viewHolder.ivMessageStatus.setImageResource(R.drawable.ic_message_has_error_14dp);

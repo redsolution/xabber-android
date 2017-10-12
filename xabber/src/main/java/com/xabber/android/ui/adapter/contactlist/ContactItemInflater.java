@@ -43,6 +43,9 @@ class ContactItemInflater {
             viewHolder.ivMucIndicator.setImageLevel(viewObject.getMucIndicatorLevel());
         }
 
+        if (viewObject.getStatusLevel() == 6)
+            viewHolder.ivStatus.setVisibility(View.INVISIBLE);
+        else viewHolder.ivStatus.setVisibility(View.VISIBLE);
         viewHolder.ivStatus.setImageLevel(viewObject.getStatusLevel());
 
         String statusText = viewObject.getStatus();
