@@ -77,6 +77,7 @@ import com.xabber.android.ui.fragment.ContactListDrawerFragment;
 import com.xabber.android.ui.fragment.ContactListFragment;
 import com.xabber.android.ui.fragment.ContactListFragment.ContactListFragmentListener;
 import com.xabber.android.ui.preferences.PreferenceEditor;
+import com.xabber.android.ui.widget.bottomnavigation.BottomMenu;
 import com.xabber.xmpp.uri.XMPPUri;
 
 import java.util.ArrayList;
@@ -90,7 +91,9 @@ import java.util.Locale;
  * @author alexander.ivanov
  */
 public class ContactListActivity extends ManagedActivity implements OnAccountChangedListener,
-        View.OnClickListener, OnChooseListener, ContactListFragmentListener, ContactListDrawerFragment.ContactListDrawerListener, Toolbar.OnMenuItemClickListener {
+        View.OnClickListener, OnChooseListener, ContactListFragmentListener,
+        ContactListDrawerFragment.ContactListDrawerListener, Toolbar.OnMenuItemClickListener,
+        BottomMenu.OnClickListener {
 
     /**
      * Select contact to be invited to the room was requested.
@@ -820,5 +823,10 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
     public void onAccountSelected(AccountJid account) {
         drawerLayout.closeDrawers();
         startActivity(AccountActivity.createIntent(this, account));
+    }
+
+    @Override
+    public void onBottomMenuItemClick(int position) {
+
     }
 }

@@ -2,6 +2,7 @@ package com.xabber.android.ui.fragment;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -12,11 +13,9 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.Filterable;
-import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
-import com.melnykov.fab.FloatingActionButton;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
@@ -43,6 +42,7 @@ import com.xabber.android.ui.color.AccountPainter;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.helper.ContextMenuHelper;
 import com.xabber.android.ui.preferences.PreferenceEditor;
+import com.xabber.android.ui.widget.bottomnavigation.BottomMenu;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -51,7 +51,7 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.util.Collection;
 
 public class ContactListFragment extends Fragment implements OnAccountChangedListener,
-        OnContactChangedListener, ContactListAdapterListener, View.OnClickListener {
+        OnContactChangedListener, ContactListAdapterListener, View.OnClickListener, BottomMenu.OnClickListener {
 
     private ContactListAdapter adapter;
 
@@ -86,10 +86,11 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
      * Animation for disconnected view.
      */
     private Animation animation;
-    private AccountActionButtonsAdapter accountActionButtonsAdapter;
-    private View scrollToChatsActionButtonContainer;
-    private View actionButtonsContainer;
-    private FloatingActionButton scrollToChatsActionButton;
+    //private AccountActionButtonsAdapter accountActionButtonsAdapter;
+    //private View scrollToChatsActionButtonContainer;
+    //private View actionButtonsContainer;
+    //private FloatingActionButton scrollToChatsActionButton;
+    private BottomMenu bottomMenu;
     private AccountPainter accountPainter;
 
     private ContactListFragmentListener contactListFragmentListener;
@@ -122,21 +123,21 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
         buttonView = (Button) infoView.findViewById(R.id.button);
         animation = AnimationUtils.loadAnimation(getActivity(), R.anim.connection);
 
-        accountActionButtonsAdapter = new AccountActionButtonsAdapter(getActivity(),
-                this, (LinearLayout) view.findViewById(R.id.account_action_buttons));
-        accountActionButtonsAdapter.onChange();
+//        accountActionButtonsAdapter = new AccountActionButtonsAdapter(getActivity(),
+//                this, (LinearLayout) view.findViewById(R.id.account_action_buttons));
+//        accountActionButtonsAdapter.onChange();
 
-        actionButtonsContainer = view.findViewById(R.id.account_action_buttons_container);
+//        actionButtonsContainer = view.findViewById(R.id.account_action_buttons_container);
 
-        scrollToChatsActionButtonContainer = view.findViewById(R.id.fab_up_container);
-        scrollToChatsActionButtonContainer.setOnClickListener(this);
-        scrollToChatsActionButtonContainer.setVisibility(View.GONE);
+//        scrollToChatsActionButtonContainer = view.findViewById(R.id.fab_up_container);
+//        scrollToChatsActionButtonContainer.setOnClickListener(this);
+//        scrollToChatsActionButtonContainer.setVisibility(View.GONE);
 
-        scrollToChatsActionButton = (FloatingActionButton) view.findViewById(R.id.fab_up);
+        //scrollToChatsActionButton = (FloatingActionButton) view.findViewById(R.id.fab_up);
 
         accountPainter = ColorManager.getInstance().getAccountPainter();
-        scrollToChatsActionButton.setColorNormal(accountPainter.getDefaultMainColor());
-        scrollToChatsActionButton.setColorPressed(accountPainter.getDefaultDarkColor());
+//        scrollToChatsActionButton.setColorNormal(accountPainter.getDefaultMainColor());
+//        scrollToChatsActionButton.setColorPressed(accountPainter.getDefaultDarkColor());
 
         return view;
     }
@@ -148,14 +149,16 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
         Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
         Application.getInstance().addUIListener(OnContactChangedListener.class, this);
         adapter.onChange();
-        scrollToChatsActionButton.setColorNormal(accountPainter.getDefaultMainColor());
-        scrollToChatsActionButton.setColorPressed(accountPainter.getDefaultDarkColor());
 
-        if (SettingsManager.contactsShowPanel()) {
-            actionButtonsContainer.setVisibility(View.VISIBLE);
-        } else {
-            actionButtonsContainer.setVisibility(View.GONE);
-        }
+        showBottomNavigation();
+//        scrollToChatsActionButton.setColorNormal(accountPainter.getDefaultMainColor());
+//        scrollToChatsActionButton.setColorPressed(accountPainter.getDefaultDarkColor());
+
+//        if (SettingsManager.contactsShowPanel()) {
+//            actionButtonsContainer.setVisibility(View.VISIBLE);
+//        } else {
+//            actionButtonsContainer.setVisibility(View.GONE);
+//        }
     }
 
     @Override
@@ -173,8 +176,8 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
     @Override
     public void onAccountsChanged(Collection<AccountJid> accounts) {
         adapter.refreshRequest();
-        scrollToChatsActionButton.setColorNormal(accountPainter.getDefaultMainColor());
-        scrollToChatsActionButton.setColorPressed(accountPainter.getDefaultDarkColor());
+//        scrollToChatsActionButton.setColorNormal(accountPainter.getDefaultMainColor());
+//        scrollToChatsActionButton.setColorPressed(accountPainter.getDefaultDarkColor());
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -185,11 +188,11 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
     @Override
     public void onContactListChanged(CommonState commonState, boolean hasContacts,
                                      boolean hasVisibleContacts, boolean isFilterEnabled) {
-        if (adapter.isHasActiveChats()) {
-            scrollToChatsActionButtonContainer.setVisibility(View.VISIBLE);
-        } else {
-            scrollToChatsActionButtonContainer.setVisibility(View.GONE);
-        }
+//        if (adapter.isHasActiveChats()) {
+//            scrollToChatsActionButtonContainer.setVisibility(View.VISIBLE);
+//        } else {
+//            scrollToChatsActionButtonContainer.setVisibility(View.GONE);
+//        }
 
         contactListFragmentListener.onContactListChange(commonState);
 
@@ -373,34 +376,38 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
 
     @Override
     public void onClick(View view) {
-        if (view.getId() == R.id.fab_up_container) {
-            scrollUp();
-            return;
-        }
+//        if (view.getId() == R.id.fab_up_container) {
+//            scrollUp();
+//            return;
+//        }
 
 
-        AccountJid account = accountActionButtonsAdapter.getItemForView(view);
-        if (account == null) { // Check for tap on account in the title
-            return;
-        }
-        if (!SettingsManager.contactsShowAccounts()) {
-            if (AccountManager.getInstance().getEnabledAccounts().size() < 2) {
-                scrollUp();
-            } else {
-                setSelectedAccount(account);
-                rebuild();
-            }
-        } else {
-            scrollTo(account);
-        }
+//        AccountJid account = accountActionButtonsAdapter.getItemForView(view);
+//        if (account == null) { // Check for tap on account in the title
+//            return;
+//        }
+//        if (!SettingsManager.contactsShowAccounts()) {
+//            if (AccountManager.getInstance().getEnabledAccounts().size() < 2) {
+//                scrollUp();
+//            } else {
+//                setSelectedAccount(account);
+//                rebuild();
+//            }
+//        } else {
+//            scrollTo(account);
+//        }
     }
 
     public void onAccountsChanged() {
-        accountActionButtonsAdapter.onChange();
+        rebuild();
+        //accountActionButtonsAdapter.onChange();
     }
 
     public void rebuild() {
-        accountActionButtonsAdapter.rebuild();
+        BottomMenu bottomMenu = ((BottomMenu)getFragmentManager().findFragmentById(R.id.containerBottomNavigation));
+        if (bottomMenu != null)
+            bottomMenu.update();
+        //accountActionButtonsAdapter.rebuild();
     }
 
     public interface ContactListFragmentListener {
@@ -426,7 +433,16 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
         adapter.refreshRequest();
     }
 
+    private void showBottomNavigation() {
+        bottomMenu = BottomMenu.newInstance();
 
+        FragmentTransaction fTrans = getFragmentManager().beginTransaction();
+        fTrans.replace(R.id.containerBottomNavigation, bottomMenu);
+        fTrans.commit();
+    }
 
+    @Override
+    public void onBottomMenuItemClick(int position) {
 
+    }
 }
