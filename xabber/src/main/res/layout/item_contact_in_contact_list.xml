@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="64dp"
+    android:layout_height="56dp"
     android:elevation="1dp"
     android:background="@color/white"
     >
@@ -15,7 +15,7 @@
 
     <include layout="@layout/account_color_indicator"/>
 
-    <include layout="@layout/avatar_view"/>
+    <include layout="@layout/avatar_view_small"/>
 
     <LinearLayout
         android:orientation="vertical"
@@ -56,7 +56,7 @@
             android:id="@+id/tvStatus"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
+            android:layout_marginTop="2dp"
             android:maxLines="1"
             android:ellipsize="marquee"
             android:textSize="14sp"
