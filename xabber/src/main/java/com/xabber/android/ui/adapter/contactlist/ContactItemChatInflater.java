@@ -56,7 +56,7 @@ public class ContactItemChatInflater {
         viewHolder.tvOutgoingMessage.setVisibility(View.GONE);
 
         viewHolder.tvTime.setText(StringUtils
-                .getSmartTimeText(context, viewObject.getTime()));
+                .getSmartTimeTextForRoster(context, viewObject.getTime()));
         viewHolder.tvTime.setVisibility(View.VISIBLE);
 
         if (viewObject.isOutgoing()) {
