@@ -249,13 +249,16 @@ public class ContactListDrawerFragment extends Fragment implements View.OnClickL
     }
 
     public void startPatreonAnim() {
-        animator = new TextViewFadeAnimator(tvPatreonTitle, patreonTexts);
-        animator.startAnimation();
+        if (patreonTexts != null && patreonTexts.length > 0) {
+            animator = new TextViewFadeAnimator(tvPatreonTitle, patreonTexts);
+            animator.startAnimation();
+        }
     }
 
     public void stopPatreonAnim() {
         if (animator != null)
             animator.stopAnimation();
-        tvPatreonTitle.setText(patreonTexts[0]);
+        if (patreonTexts != null && patreonTexts.length > 0)
+            tvPatreonTitle.setText(patreonTexts[0]);
     }
 }
