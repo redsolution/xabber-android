@@ -47,6 +47,7 @@
                 android:layout_gravity="center_vertical"
                 android:textSize="14sp"
                 android:textColor="#212121"
+                android:fontFamily="sans-serif-medium"
                 android:text="Erik Walton"
                 />
 
@@ -61,6 +62,7 @@
             android:ellipsize="marquee"
             android:textSize="14sp"
             android:textColor="#616161"
+            android:alpha="0.6"
             android:text="Online"
             />
 

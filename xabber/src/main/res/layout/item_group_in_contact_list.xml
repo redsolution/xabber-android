@@ -59,6 +59,7 @@
         android:singleLine="true"
         android:ellipsize="marquee"
         android:textColor="#FF9E9E9E"
+        android:fontFamily="sans-serif-medium"
         android:alpha="0.75"
         android:text="name (0/0)"
         android:layout_toRightOf="@id/indicator"
