@@ -11,6 +11,8 @@ import com.xabber.android.R;
 
 import java.util.ArrayList;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 /**
  * Created by valery.miller on 06.10.17.
  */
@@ -30,12 +32,12 @@ public class AccountShortcutAdapter extends RecyclerView.Adapter<AccountShortcut
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
-        public ImageView ivAvatar;
+        public CircleImageView ivAvatar;
         public ImageView ivStatus;
 
         public ViewHolder(View v) {
             super(v);
-            ivAvatar = (ImageView) v.findViewById(R.id.ivAvatar);
+            ivAvatar = (CircleImageView) v.findViewById(R.id.ivAvatar);
             ivStatus = (ImageView) v.findViewById(R.id.ivStatus);
         }
     }
@@ -65,6 +67,7 @@ public class AccountShortcutAdapter extends RecyclerView.Adapter<AccountShortcut
 
         AccountShortcutVO account = items.get(position);
         holder.ivAvatar.setImageDrawable(account.getAvatar());
+        holder.ivAvatar.setBorderColor(account.getAccountColorIndicator());
         holder.ivStatus.setImageLevel(account.getStatusLevel());
     }
 

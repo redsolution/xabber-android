@@ -6,6 +6,7 @@ import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
+import com.xabber.android.ui.color.ColorManager;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -19,11 +20,13 @@ public class AccountShortcutVO {
     private Drawable avatar;
     private int statusLevel;
     private AccountJid accountJid;
+    private int accountColorIndicator;
 
-    public AccountShortcutVO(Drawable avatar, int statusLevel, AccountJid accountJid) {
+    public AccountShortcutVO(Drawable avatar, int statusLevel, AccountJid accountJid, int accountColorIndicator) {
         this.avatar = avatar;
         this.statusLevel = statusLevel;
         this.accountJid = accountJid;
+        this.accountColorIndicator = accountColorIndicator;
     }
 
     public static AccountShortcutVO convert(AccountJid accountJid) {
@@ -34,7 +37,9 @@ public class AccountShortcutVO {
         if (accountItem != null) {
             statusLevel = accountItem.getDisplayStatusMode().getStatusLevel();
         }
-        return new AccountShortcutVO(avatar, statusLevel, accountJid);
+
+        int accountColorIndicator = ColorManager.getInstance().getAccountPainter().getAccountMainColor(accountJid);
+        return new AccountShortcutVO(avatar, statusLevel, accountJid, accountColorIndicator);
     }
 
     public static ArrayList<AccountShortcutVO> convert(Collection<AccountJid> accounts) {
@@ -55,5 +60,9 @@ public class AccountShortcutVO {
 
     public AccountJid getAccountJid() {
         return accountJid;
+    }
+
+    public int getAccountColorIndicator() {
+        return accountColorIndicator;
     }
 }
