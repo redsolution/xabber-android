@@ -16,6 +16,7 @@ package com.xabber.android.ui.activity;
 
 import android.app.Dialog;
 import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -125,6 +126,7 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
     private ActionBarDrawerToggle drawerToggle;
     private DrawerLayout drawerLayout;
     private Menu optionsMenu;
+    private BottomMenu bottomMenu;
 
     public static Intent createPersistentIntent(Context context) {
         Intent intent = new Intent(context, ContactListActivity.class);
@@ -216,6 +218,7 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
                 navigationFragment.stopPatreonAnim();
             }
         };
+        drawerToggle.setDrawerIndicatorEnabled(false);
         drawerLayout.setDrawerListener(drawerToggle);
 
         toolbar.inflateMenu(R.menu.toolbar_contact_list);
@@ -455,6 +458,7 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
         }
 
         //XabberAccountManager.getInstance().createLocalAccountIfNotExist();
+        showBottomNavigation();
         showPassDialogs();
     }
 
@@ -726,7 +730,6 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
 
     @Override
     public void onAccountsChanged(Collection<AccountJid> accounts) {
-        ((ContactListFragment)getFragmentManager().findFragmentById(R.id.container)).onAccountsChanged();
         barPainter.setDefaultColor();
         rebuildAccountToggle();
     }
@@ -737,7 +740,9 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
     }
 
     private void rebuildAccountToggle() {
-        ((ContactListFragment)getFragmentManager().findFragmentById(R.id.container)).rebuild();
+        BottomMenu bottomMenu = ((BottomMenu)getFragmentManager().findFragmentById(R.id.containerBottomNavigation));
+        if (bottomMenu != null)
+            bottomMenu.update();
     }
 
     @Override
@@ -781,7 +786,7 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
 
     @Override
     public void onMenuClick() {
-
+        drawerLayout.openDrawer(Gravity.START);
     }
 
     @Override
@@ -793,5 +798,13 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
     public void onSearch(String filter) {
         Fragment fragmentById = getFragmentManager().findFragmentById(R.id.container);
         ((ContactListFragment) fragmentById).getFilterableAdapter().getFilter().filter(filter);
+    }
+
+    private void showBottomNavigation() {
+        bottomMenu = BottomMenu.newInstance();
+
+        FragmentTransaction fTrans = getFragmentManager().beginTransaction();
+        fTrans.replace(R.id.containerBottomNavigation, bottomMenu);
+        fTrans.commit();
     }
 }

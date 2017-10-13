@@ -2,7 +2,6 @@ package com.xabber.android.ui.fragment;
 
 import android.app.Activity;
 import android.app.Fragment;
-import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.LinearSmoothScroller;
@@ -42,7 +41,6 @@ import com.xabber.android.ui.color.AccountPainter;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.helper.ContextMenuHelper;
 import com.xabber.android.ui.preferences.PreferenceEditor;
-import com.xabber.android.ui.widget.bottomnavigation.BottomMenu;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -87,7 +85,7 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
      * Animation for disconnected view.
      */
     private Animation animation;
-    private BottomMenu bottomMenu;
+    //private BottomMenu bottomMenu;
     private AccountPainter accountPainter;
 
     private ContactListFragmentListener contactListFragmentListener;
@@ -138,8 +136,6 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
         Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
         Application.getInstance().addUIListener(OnContactChangedListener.class, this);
         adapter.onChange();
-
-        showBottomNavigation();
     }
 
     @Override
@@ -373,18 +369,6 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
 //        }
     }
 
-    public void onAccountsChanged() {
-        rebuild();
-        //accountActionButtonsAdapter.onChange();
-    }
-
-    public void rebuild() {
-        BottomMenu bottomMenu = ((BottomMenu)getFragmentManager().findFragmentById(R.id.containerBottomNavigation));
-        if (bottomMenu != null)
-            bottomMenu.update();
-        //accountActionButtonsAdapter.rebuild();
-    }
-
     public interface ContactListFragmentListener {
         void onContactClick(AbstractContact contact);
         void onContactListChange(CommonState commonState);
@@ -406,13 +390,5 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
     @Override
     public void onContactsChanged(Collection<RosterContact> addresses) {
         adapter.refreshRequest();
-    }
-
-    private void showBottomNavigation() {
-        bottomMenu = BottomMenu.newInstance();
-
-        FragmentTransaction fTrans = getFragmentManager().beginTransaction();
-        fTrans.replace(R.id.containerBottomNavigation, bottomMenu);
-        fTrans.commit();
     }
 }
