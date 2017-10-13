@@ -34,7 +34,6 @@ import com.xabber.android.ui.activity.AccountAddActivity;
 import com.xabber.android.ui.activity.ContactAddActivity;
 import com.xabber.android.ui.activity.ManagedActivity;
 import com.xabber.android.ui.adapter.UpdatableAdapter;
-import com.xabber.android.ui.adapter.contactlist.AccountConfiguration;
 import com.xabber.android.ui.adapter.contactlist.ContactListAdapter;
 import com.xabber.android.ui.adapter.contactlist.ContactListAdapter.ContactListAdapterListener;
 import com.xabber.android.ui.adapter.contactlist.ContactListState;
@@ -88,10 +87,6 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
      * Animation for disconnected view.
      */
     private Animation animation;
-    //private AccountActionButtonsAdapter accountActionButtonsAdapter;
-    //private View scrollToChatsActionButtonContainer;
-    //private View actionButtonsContainer;
-    //private FloatingActionButton scrollToChatsActionButton;
     private BottomMenu bottomMenu;
     private AccountPainter accountPainter;
 
@@ -125,21 +120,7 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
         buttonView = (Button) infoView.findViewById(R.id.button);
         animation = AnimationUtils.loadAnimation(getActivity(), R.anim.connection);
 
-//        accountActionButtonsAdapter = new AccountActionButtonsAdapter(getActivity(),
-//                this, (LinearLayout) view.findViewById(R.id.account_action_buttons));
-//        accountActionButtonsAdapter.onChange();
-
-//        actionButtonsContainer = view.findViewById(R.id.account_action_buttons_container);
-
-//        scrollToChatsActionButtonContainer = view.findViewById(R.id.fab_up_container);
-//        scrollToChatsActionButtonContainer.setOnClickListener(this);
-//        scrollToChatsActionButtonContainer.setVisibility(View.GONE);
-
-        //scrollToChatsActionButton = (FloatingActionButton) view.findViewById(R.id.fab_up);
-
         accountPainter = ColorManager.getInstance().getAccountPainter();
-//        scrollToChatsActionButton.setColorNormal(accountPainter.getDefaultMainColor());
-//        scrollToChatsActionButton.setColorPressed(accountPainter.getDefaultDarkColor());
 
         smoothScroller = new LinearSmoothScroller(getActivity()) {
             @Override protected int getVerticalSnapPreference() {
@@ -159,14 +140,6 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
         adapter.onChange();
 
         showBottomNavigation();
-//        scrollToChatsActionButton.setColorNormal(accountPainter.getDefaultMainColor());
-//        scrollToChatsActionButton.setColorPressed(accountPainter.getDefaultDarkColor());
-
-//        if (SettingsManager.contactsShowPanel()) {
-//            actionButtonsContainer.setVisibility(View.VISIBLE);
-//        } else {
-//            actionButtonsContainer.setVisibility(View.GONE);
-//        }
     }
 
     @Override
@@ -184,8 +157,6 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
     @Override
     public void onAccountsChanged(Collection<AccountJid> accounts) {
         adapter.refreshRequest();
-//        scrollToChatsActionButton.setColorNormal(accountPainter.getDefaultMainColor());
-//        scrollToChatsActionButton.setColorPressed(accountPainter.getDefaultDarkColor());
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -196,11 +167,6 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
     @Override
     public void onContactListChanged(CommonState commonState, boolean hasContacts,
                                      boolean hasVisibleContacts, boolean isFilterEnabled) {
-//        if (adapter.isHasActiveChats()) {
-//            scrollToChatsActionButtonContainer.setVisibility(View.VISIBLE);
-//        } else {
-//            scrollToChatsActionButtonContainer.setVisibility(View.GONE);
-//        }
 
         contactListFragmentListener.onContactListChange(commonState);
 
@@ -360,19 +326,19 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
         }
     }
 
-    /**
-     * Filter out contact list for selected account.
-     *
-     * @param account
-     */
-    void setSelectedAccount(AccountJid account) {
-        if (account.equals(AccountManager.getInstance().getSelectedAccount())) {
-            SettingsManager.setContactsSelectedAccount(null);
-        } else {
-            SettingsManager.setContactsSelectedAccount(account);
-        }
-        adapter.onChange();
-    }
+//    /**
+//     * Filter out contact list for selected account.
+//     *
+//     * @param account
+//     */
+//    void setSelectedAccount(AccountJid account) {
+//        if (account.equals(AccountManager.getInstance().getSelectedAccount())) {
+//            SettingsManager.setContactsSelectedAccount(null);
+//        } else {
+//            SettingsManager.setContactsSelectedAccount(account);
+//        }
+//        adapter.onChange();
+//    }
 
     /**
      * Scroll to the top of contact list.
