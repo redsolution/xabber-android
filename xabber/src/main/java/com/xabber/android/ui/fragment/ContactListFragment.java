@@ -85,11 +85,14 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
      * Animation for disconnected view.
      */
     private Animation animation;
-    //private BottomMenu bottomMenu;
     private AccountPainter accountPainter;
 
     private ContactListFragmentListener contactListFragmentListener;
     private LinearLayoutManager linearLayoutManager;
+
+    public static ContactListFragment newInstance() {
+        return new ContactListFragment();
+    }
 
     @Override
     public void onAttach(Activity activity) {

@@ -33,6 +33,7 @@ public class BottomMenu extends Fragment implements View.OnClickListener {
         void onRecentClick();
         void onMenuClick();
         void onAccountShortcutClick(AccountJid jid);
+        void onSearchClick();
         void onSearch(String filter);
     }
 
@@ -128,6 +129,7 @@ public class BottomMenu extends Fragment implements View.OnClickListener {
                 listener.onMenuClick();
                 break;
             case R.id.searchLayout:
+                listener.onSearchClick();
                 openSearch();
                 break;
             case R.id.avatarView:

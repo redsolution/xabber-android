@@ -55,6 +55,10 @@ public class ContactListDrawerFragment extends Fragment implements View.OnClickL
     private TextViewFadeAnimator animator;
     private String[] patreonTexts;
 
+    public static ContactListDrawerFragment newInstance() {
+        return new ContactListDrawerFragment();
+    }
+
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
