@@ -19,10 +19,13 @@ public class AccountShortcutAdapter extends RecyclerView.Adapter<AccountShortcut
 
     private ArrayList<AccountShortcutVO> items;
     private Context context;
+    private View.OnClickListener listener;
 
-    public AccountShortcutAdapter(ArrayList<AccountShortcutVO> items, Context context) {
+    public AccountShortcutAdapter(ArrayList<AccountShortcutVO> items, Context context,
+                                  View.OnClickListener listener) {
         this.items = items;
         this.context = context;
+        this.listener = listener;
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -53,6 +56,7 @@ public class AccountShortcutAdapter extends RecyclerView.Adapter<AccountShortcut
             view.setLayoutParams(new RecyclerView.LayoutParams(width, pixelsHeight));
         }
 
+        view.setOnClickListener(listener);
         return new AccountShortcutAdapter.ViewHolder(view);
     }
 

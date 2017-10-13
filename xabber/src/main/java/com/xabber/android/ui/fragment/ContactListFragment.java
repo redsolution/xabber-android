@@ -5,6 +5,7 @@ import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.LinearSmoothScroller;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,12 +33,12 @@ import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.ui.activity.AccountAddActivity;
 import com.xabber.android.ui.activity.ContactAddActivity;
 import com.xabber.android.ui.activity.ManagedActivity;
-import com.xabber.android.ui.adapter.AccountActionButtonsAdapter;
 import com.xabber.android.ui.adapter.UpdatableAdapter;
 import com.xabber.android.ui.adapter.contactlist.AccountConfiguration;
 import com.xabber.android.ui.adapter.contactlist.ContactListAdapter;
 import com.xabber.android.ui.adapter.contactlist.ContactListAdapter.ContactListAdapterListener;
 import com.xabber.android.ui.adapter.contactlist.ContactListState;
+import com.xabber.android.ui.adapter.contactlist.viewobjects.AccountVO;
 import com.xabber.android.ui.color.AccountPainter;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.helper.ContextMenuHelper;
@@ -51,11 +52,12 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.util.Collection;
 
 public class ContactListFragment extends Fragment implements OnAccountChangedListener,
-        OnContactChangedListener, ContactListAdapterListener, View.OnClickListener, BottomMenu.OnClickListener {
+        OnContactChangedListener, ContactListAdapterListener, View.OnClickListener {
 
     private ContactListAdapter adapter;
 
     private RecyclerView recyclerView;
+    private RecyclerView.SmoothScroller smoothScroller;
 
     /**
      * View with information shown on empty contact list.
@@ -138,6 +140,12 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
         accountPainter = ColorManager.getInstance().getAccountPainter();
 //        scrollToChatsActionButton.setColorNormal(accountPainter.getDefaultMainColor());
 //        scrollToChatsActionButton.setColorPressed(accountPainter.getDefaultDarkColor());
+
+        smoothScroller = new LinearSmoothScroller(getActivity()) {
+            @Override protected int getVerticalSnapPreference() {
+                return LinearSmoothScroller.SNAP_TO_START;
+            }
+        };
 
         return view;
     }
@@ -340,13 +348,13 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
      *
      * @param account
      */
-    void scrollTo(AccountJid account) {
+    public void scrollToAccount(AccountJid account) {
         long count = adapter.getItemCount();
         for (int position = 0; position < (int) count; position++) {
             Object itemAtPosition = adapter.getItem(position);
-            if (itemAtPosition != null && itemAtPosition instanceof AccountConfiguration
-                    && ((AccountConfiguration)itemAtPosition).getAccount().equals(account)) {
-                linearLayoutManager.scrollToPositionWithOffset(position, 0);
+            if (itemAtPosition != null && itemAtPosition instanceof AccountVO
+                    && ((AccountVO)itemAtPosition).getAccountJid().equals(account)) {
+                scrollTo(position);
                 break;
             }
         }
@@ -369,15 +377,16 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
     /**
      * Scroll to the top of contact list.
      */
-    public void scrollUp() {
-        recyclerView.scrollToPosition(0);
+    public void scrollTo(int position) {
+        smoothScroller.setTargetPosition(position);
+        recyclerView.getLayoutManager().startSmoothScroll(smoothScroller);
     }
 
 
     @Override
     public void onClick(View view) {
 //        if (view.getId() == R.id.fab_up_container) {
-//            scrollUp();
+//            scrollTo();
 //            return;
 //        }
 
@@ -388,13 +397,13 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
 //        }
 //        if (!SettingsManager.contactsShowAccounts()) {
 //            if (AccountManager.getInstance().getEnabledAccounts().size() < 2) {
-//                scrollUp();
+//                scrollTo();
 //            } else {
 //                setSelectedAccount(account);
 //                rebuild();
 //            }
 //        } else {
-//            scrollTo(account);
+//            scrollToAccount(account);
 //        }
     }
 
@@ -439,10 +448,5 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
         FragmentTransaction fTrans = getFragmentManager().beginTransaction();
         fTrans.replace(R.id.containerBottomNavigation, bottomMenu);
         fTrans.commit();
-    }
-
-    @Override
-    public void onBottomMenuItemClick(int position) {
-
     }
 }

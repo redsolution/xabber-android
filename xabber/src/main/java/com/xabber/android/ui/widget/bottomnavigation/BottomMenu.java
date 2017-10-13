@@ -29,7 +29,9 @@ import java.util.Collections;
 public class BottomMenu extends Fragment implements View.OnClickListener {
 
     public interface OnClickListener {
-        void onBottomMenuItemClick(int position);
+        void onRecentClick();
+        void onMenuClick();
+        void onAccountShortcutClick(AccountJid jid);
     }
 
     private OnClickListener listener;
@@ -79,7 +81,7 @@ public class BottomMenu extends Fragment implements View.OnClickListener {
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false);
         accountList.setLayoutManager(layoutManager);
 
-        adapter = new AccountShortcutAdapter(items, getActivity());
+        adapter = new AccountShortcutAdapter(items, getActivity(), this);
         accountList.setAdapter(adapter);
 
         edtSearch = (EditText) view.findViewById(R.id.edtSearch2);
@@ -98,7 +100,7 @@ public class BottomMenu extends Fragment implements View.OnClickListener {
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btnRecent:
-                listener.onBottomMenuItemClick(0);
+                listener.onRecentClick();
                 break;
             case R.id.btnSearch:
                 openSearch();
@@ -107,10 +109,15 @@ public class BottomMenu extends Fragment implements View.OnClickListener {
                 closeSearch();
                 break;
             case R.id.btnMenu:
-                listener.onBottomMenuItemClick(8);
+                listener.onMenuClick();
                 break;
             case R.id.searchView:
                 openSearch();
+                break;
+            case R.id.avatarView:
+                int position = accountList.getChildLayoutPosition(view);
+                AccountJid accountJid = items.get(position).getAccountJid();
+                listener.onAccountShortcutClick(accountJid);
                 break;
         }
     }
@@ -122,7 +129,7 @@ public class BottomMenu extends Fragment implements View.OnClickListener {
 
         this.items.clear();
         this.items.addAll(AccountShortcutVO.convert(list));
-        adapter = new AccountShortcutAdapter(items, getActivity());
+        adapter = new AccountShortcutAdapter(items, getActivity(), this);
         accountList.setAdapter(adapter);
         setLayoutParamToRecyclerView();
     }

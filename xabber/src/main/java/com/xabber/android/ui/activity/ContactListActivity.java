@@ -688,7 +688,7 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.toolbar_default:
-                getContactListFragment().scrollUp();
+                getContactListFragment().scrollTo(0);
                 break;
         }
     }
@@ -826,7 +826,17 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
     }
 
     @Override
-    public void onBottomMenuItemClick(int position) {
+    public void onRecentClick() {
+        ((ContactListFragment)getFragmentManager().findFragmentById(R.id.container)).scrollTo(0);
+    }
 
+    @Override
+    public void onMenuClick() {
+
+    }
+
+    @Override
+    public void onAccountShortcutClick(AccountJid jid) {
+        ((ContactListFragment)getFragmentManager().findFragmentById(R.id.container)).scrollToAccount(jid);
     }
 }
