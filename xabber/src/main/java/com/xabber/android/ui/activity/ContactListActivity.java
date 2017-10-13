@@ -26,7 +26,6 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
@@ -37,7 +36,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.SearchView;
 import android.widget.Toast;
 
 import com.xabber.android.R;
@@ -123,7 +121,6 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
      */
     private String sendText;
 
-    private SearchView searchView;
     private BarPainter barPainter;
     private ActionBarDrawerToggle drawerToggle;
     private DrawerLayout drawerLayout;
@@ -223,7 +220,7 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
 
         toolbar.inflateMenu(R.menu.toolbar_contact_list);
         optionsMenu = toolbar.getMenu();
-        setUpSearchView(optionsMenu);
+        //setUpSearchView(optionsMenu);
         toolbar.setOnMenuItemClickListener(this);
         toolbar.setOverflowIcon(getResources().getDrawable(R.drawable.ic_overflow_menu_white_24dp));
 
@@ -533,52 +530,7 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.toolbar_contact_list, menu);
-        menu.findItem(R.id.action_search).setVisible(false);
         return true;
-    }
-
-    private void setUpSearchView(final Menu menu) {
-        searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
-        searchView.setQueryHint(getString(R.string.contact_search_hint));
-
-        searchView.setOnCloseListener(new SearchView.OnCloseListener() {
-            @Override
-            public boolean onClose() {
-                menu.findItem(R.id.action_search).collapseActionView();
-                return true;
-            }
-        });
-
-        MenuItemCompat.setOnActionExpandListener(menu.findItem(R.id.action_search), new MenuItemCompat.OnActionExpandListener() {
-            @Override
-            public boolean onMenuItemActionExpand(MenuItem item) {
-                searchView.requestFocus();
-                ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE)).
-                        toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
-                return true;
-            }
-
-            @Override
-            public boolean onMenuItemActionCollapse(MenuItem item) {
-                searchView.setQuery("", true);
-                searchView.clearFocus();
-                return true;
-            }
-        });
-
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                Fragment fragmentById = getFragmentManager().findFragmentById(R.id.container);
-                ((ContactListFragment) fragmentById).getFilterableAdapter().getFilter().filter(newText);
-                return true;
-            }
-        });
     }
 
     @Override
@@ -593,9 +545,6 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
         }
 
         switch (item.getItemId()) {
-            case R.id.action_search:
-                searchView.setIconified(false);
-                return true;
             case R.id.action_change_status:
                 startActivity(StatusEditActivity.createIntent(this));
                 return true;
