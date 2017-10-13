@@ -839,4 +839,10 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
     public void onAccountShortcutClick(AccountJid jid) {
         ((ContactListFragment)getFragmentManager().findFragmentById(R.id.container)).scrollToAccount(jid);
     }
+
+    @Override
+    public void onSearch(String filter) {
+        Fragment fragmentById = getFragmentManager().findFragmentById(R.id.container);
+        ((ContactListFragment) fragmentById).getFilterableAdapter().getFilter().filter(filter);
+    }
 }

@@ -6,14 +6,15 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.SearchView;
 
 import com.xabber.android.R;
 import com.xabber.android.data.account.AccountManager;
@@ -32,16 +33,16 @@ public class BottomMenu extends Fragment implements View.OnClickListener {
         void onRecentClick();
         void onMenuClick();
         void onAccountShortcutClick(AccountJid jid);
+        void onSearch(String filter);
     }
 
     private OnClickListener listener;
     private RecyclerView accountList;
-    private RelativeLayout searchView;
+    private RelativeLayout searchLayout;
     private LinearLayout controlView;
-    private RelativeLayout expandSearchView;
-    private ImageView btnSarch;
-    private ImageView btnSearchClose;
-    private EditText edtSearch;
+    private RelativeLayout expandSearchLayout;
+    private ImageView btnSearch;
+    private SearchView searchView;
     private AccountShortcutAdapter adapter;
 
     private ArrayList<AccountShortcutVO> items = new ArrayList<>();
@@ -67,15 +68,13 @@ public class BottomMenu extends Fragment implements View.OnClickListener {
         View view = inflater.inflate(R.layout.view_bottom_navigation, container, false);
         view.findViewById(R.id.btnRecent).setOnClickListener(this);
         view.findViewById(R.id.btnMenu).setOnClickListener(this);
-        btnSarch = (ImageView) view.findViewById(R.id.btnSearch);
-        btnSarch.setOnClickListener(this);
-        btnSearchClose = (ImageView) view.findViewById(R.id.btnSearchClose);
-        btnSearchClose.setOnClickListener(this);
+        btnSearch = (ImageView) view.findViewById(R.id.btnSearch);
+        btnSearch.setOnClickListener(this);
 
-        searchView = (RelativeLayout) view.findViewById(R.id.searchView);
-        searchView.setOnClickListener(this);
+        searchLayout = (RelativeLayout) view.findViewById(R.id.searchLayout);
+        searchLayout.setOnClickListener(this);
         controlView = (LinearLayout) view.findViewById(R.id.controlView);
-        expandSearchView = (RelativeLayout) view.findViewById(R.id.expandSearchView);
+        expandSearchLayout = (RelativeLayout) view.findViewById(R.id.expandSearchLayout);
 
         accountList = (RecyclerView) view.findViewById(R.id.accountList);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false);
@@ -84,9 +83,29 @@ public class BottomMenu extends Fragment implements View.OnClickListener {
         adapter = new AccountShortcutAdapter(items, getActivity(), this);
         accountList.setAdapter(adapter);
 
-        edtSearch = (EditText) view.findViewById(R.id.edtSearch2);
-        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.showSoftInput(edtSearch, InputMethodManager.SHOW_IMPLICIT);
+        searchView = (SearchView) view.findViewById(R.id.searchView);
+        searchView.setQueryHint(getString(R.string.contact_search_hint));
+
+        searchView.setOnQueryTextListener(new android.widget.SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                listener.onSearch(newText);
+                return true;
+            }
+        });
+
+        searchView.setOnCloseListener(new SearchView.OnCloseListener() {
+            @Override
+            public boolean onClose() {
+                closeSearch();
+                return true;
+            }
+        });
         return view;
     }
 
@@ -105,13 +124,10 @@ public class BottomMenu extends Fragment implements View.OnClickListener {
             case R.id.btnSearch:
                 openSearch();
                 break;
-            case R.id.btnSearchClose:
-                closeSearch();
-                break;
             case R.id.btnMenu:
                 listener.onMenuClick();
                 break;
-            case R.id.searchView:
+            case R.id.searchLayout:
                 openSearch();
                 break;
             case R.id.avatarView:
@@ -142,32 +158,32 @@ public class BottomMenu extends Fragment implements View.OnClickListener {
             case 1:
                 weightList = 1.0f;
                 weightSearch = 0.3f;
-                searchView.setVisibility(View.VISIBLE);
-                btnSarch.setVisibility(View.GONE);
+                searchLayout.setVisibility(View.VISIBLE);
+                btnSearch.setVisibility(View.GONE);
                 break;
             case 2:
                 weightList = 1.0f;
                 weightSearch = 0.7f;
-                searchView.setVisibility(View.VISIBLE);
-                btnSarch.setVisibility(View.GONE);
+                searchLayout.setVisibility(View.VISIBLE);
+                btnSearch.setVisibility(View.GONE);
                 break;
             case 3:
                 weightList = 0.33f;
                 weightSearch = 1.0f;
-                searchView.setVisibility(View.GONE);
-                btnSarch.setVisibility(View.VISIBLE);
+                searchLayout.setVisibility(View.GONE);
+                btnSearch.setVisibility(View.VISIBLE);
                 break;
             case 4:
                 weightList = 0.25f;
                 weightSearch = 1.0f;
-                searchView.setVisibility(View.GONE);
-                btnSarch.setVisibility(View.VISIBLE);
+                searchLayout.setVisibility(View.GONE);
+                btnSearch.setVisibility(View.VISIBLE);
                 break;
             default:
                 weightList = 0.2f;
                 weightSearch = 1.0f;
-                searchView.setVisibility(View.GONE);
-                btnSarch.setVisibility(View.VISIBLE);
+                searchLayout.setVisibility(View.GONE);
+                btnSearch.setVisibility(View.VISIBLE);
                 break;
         }
 
@@ -181,22 +197,22 @@ public class BottomMenu extends Fragment implements View.OnClickListener {
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 weightSearch);
-        searchView.setLayoutParams(searchParam);
+        searchLayout.setLayoutParams(searchParam);
     }
 
     private void openSearch() {
-        expandSearchView.setVisibility(View.VISIBLE);
+        expandSearchLayout.setVisibility(View.VISIBLE);
         controlView.setVisibility(View.GONE);
-        edtSearch.requestFocus();
-        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.showSoftInput(edtSearch, 0);
+        searchView.setIconified(false);
+        searchView.requestFocus();
+        ((InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE)).
+                toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
     }
 
     private void closeSearch() {
-        expandSearchView.setVisibility(View.GONE);
+        expandSearchLayout.setVisibility(View.GONE);
         controlView.setVisibility(View.VISIBLE);
-        edtSearch.clearFocus();
-        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(edtSearch.getWindowToken(), 0);
+        searchView.setQuery("", true);
+        searchView.clearFocus();
     }
 }
