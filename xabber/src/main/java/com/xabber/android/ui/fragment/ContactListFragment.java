@@ -54,7 +54,6 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
     private ContactListAdapter adapter;
 
     private RecyclerView recyclerView;
-    private RecyclerView.SmoothScroller smoothScroller;
 
     /**
      * View with information shown on empty contact list.
@@ -122,12 +121,6 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
         animation = AnimationUtils.loadAnimation(getActivity(), R.anim.connection);
 
         accountPainter = ColorManager.getInstance().getAccountPainter();
-
-        smoothScroller = new LinearSmoothScroller(getActivity()) {
-            @Override protected int getVerticalSnapPreference() {
-                return LinearSmoothScroller.SNAP_TO_START;
-            }
-        };
 
         return view;
     }
@@ -343,8 +336,7 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
      * Scroll to the top of contact list.
      */
     public void scrollTo(int position) {
-        smoothScroller.setTargetPosition(position);
-        recyclerView.getLayoutManager().startSmoothScroll(smoothScroller);
+        linearLayoutManager.scrollToPositionWithOffset(position, 0);
     }
 
 
