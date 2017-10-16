@@ -562,7 +562,7 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
     private void exit() {
         Application.getInstance().requestToClose();
         showDialog(DIALOG_CLOSE_APPLICATION_ID);
-        getContactListFragment().unregisterListeners();
+        //getContactListFragment().unregisterListeners();
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
