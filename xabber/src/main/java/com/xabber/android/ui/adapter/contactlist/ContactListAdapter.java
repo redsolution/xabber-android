@@ -50,11 +50,11 @@ import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.activity.AccountActivity;
 import com.xabber.android.ui.activity.ManagedActivity;
 import com.xabber.android.ui.adapter.ChatComparator;
-import com.xabber.android.ui.adapter.ComparatorByChat;
 import com.xabber.android.ui.adapter.UpdatableAdapter;
 import com.xabber.android.ui.adapter.contactlist.viewobjects.AccountVO;
 import com.xabber.android.ui.adapter.contactlist.viewobjects.BaseRosterItemVO;
 import com.xabber.android.ui.adapter.contactlist.viewobjects.BottomAccountSeparatorVO;
+import com.xabber.android.ui.adapter.contactlist.viewobjects.ButtonVO;
 import com.xabber.android.ui.adapter.contactlist.viewobjects.ChatVO;
 import com.xabber.android.ui.adapter.contactlist.viewobjects.ContactVO;
 import com.xabber.android.ui.adapter.contactlist.viewobjects.GroupVO;
@@ -79,7 +79,7 @@ import java.util.TreeMap;
  */
 public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         implements Runnable, Filterable, UpdatableAdapter, ContactListItemViewHolder.ContactClickListener,
-        AccountGroupViewHolder.AccountGroupClickListener, GroupViewHolder.GroupClickListener {
+        AccountGroupViewHolder.AccountGroupClickListener, GroupViewHolder.GroupClickListener, ButtonViewHolder.ButtonClickListener {
 
     private static final String LOG_TAG = ContactListAdapter.class.getSimpleName();
 
@@ -99,6 +99,7 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private static final int TYPE_ACCOUNT_TOP_SEPARATOR = 3;
     private static final int TYPE_ACCOUNT_BOTTOM_SEPARATOR = 4;
     private static final int TYPE_CHAT = 5;
+    private static final int TYPE_BUTTON = 6;
     private final ArrayList<BaseRosterItemVO> rosterItemVOs = new ArrayList<>();
 
     /**
@@ -151,6 +152,8 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private final ContactListAdapterListener listener;
     private boolean hasActiveChats = false;
     private int[] accountGroupColors;
+
+    private boolean showAllChats = false;
 
     public ContactListAdapter(ManagedActivity activity, ContactListAdapterListener listener) {
         this.activity = activity;
@@ -346,7 +349,7 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             int itemsCount = 0;
             int maxItems = 8;
             for (AbstractChat chat : recentChats) {
-                if (itemsCount < maxItems) {
+                if (showAllChats || itemsCount < maxItems) {
                     if (recentChatsGroup.isExpanded()) {
                         recentChatsGroup.addAbstractContact(RosterManager.getInstance()
                                 .getBestContact(chat.getAccount(), chat.getUser()));
@@ -438,6 +441,8 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 // add recent chats
                 rosterItemVOs.add(GroupVO.convert(recentChatsGroup));
                 rosterItemVOs.addAll(ChatVO.convert(recentChatsGroup.getAbstractContacts()));
+                if (!showAllChats)
+                    rosterItemVOs.add(ButtonVO.convert(null, ButtonVO.ACTION_SHOW_ALL_CHATS, ButtonVO.ACTION_SHOW_ALL_CHATS));
 
                 if (showAccounts) {
                     boolean isFirst = rosterItemVOs.isEmpty();
@@ -579,6 +584,8 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             return TYPE_ACCOUNT_TOP_SEPARATOR;
         } else if (object instanceof BottomAccountSeparatorVO) {
             return TYPE_ACCOUNT_BOTTOM_SEPARATOR;
+        } else if (object instanceof ButtonVO) {
+            return TYPE_BUTTON;
         } else {
             throw new IllegalStateException();
         }
@@ -605,6 +612,9 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             case TYPE_ACCOUNT_BOTTOM_SEPARATOR:
                 return new BottomSeparatorHolder(layoutInflater
                         .inflate(R.layout.item_account_bottom_in_contact_list, parent, false));
+            case TYPE_BUTTON:
+                return new ButtonViewHolder(layoutInflater
+                        .inflate(R.layout.item_button_in_contact_list, parent, false), this);
 
             default:
                 throw new IllegalStateException();
@@ -642,9 +652,18 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                         (BottomAccountSeparatorVO) item);
                 break;
 
+            case TYPE_BUTTON:
+                bindButtonItem((ButtonViewHolder) holder, (ButtonVO) item);
+                break;
+
             default:
                 throw new IllegalStateException();
         }
+    }
+
+    private void bindButtonItem(ButtonViewHolder holder, ButtonVO viewObject) {
+        holder.btnListAction.setText(viewObject.getTitle());
+        holder.btnListAction.setTextColor(viewObject.getAccountColorIndicator());
     }
 
     private void bindBottomSeparator(BottomSeparatorHolder holder, BottomAccountSeparatorVO viewObject) {
@@ -767,6 +786,19 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
         ContextMenuHelper.createGroupContextMenu(activity, this,
                 groupVO.getAccountJid(), groupVO.getGroupName(), menu);
+    }
+
+    @Override
+    public void onButtonClick(int position) {
+        if (rosterItemVOs.size() > position) {
+            if (rosterItemVOs.get(position) instanceof ButtonVO) {
+                ButtonVO viewObject = (ButtonVO) rosterItemVOs.get(position);
+                if (viewObject.getAction().equals(ButtonVO.ACTION_SHOW_ALL_CHATS)) {
+                    showAllChats = true;
+                    onChange();
+                }
+            }
+        }
     }
 
     private void toggleGroupExpand(int adapterPosition) {
