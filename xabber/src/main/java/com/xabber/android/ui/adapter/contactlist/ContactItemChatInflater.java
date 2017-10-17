@@ -103,6 +103,11 @@ public class ContactItemChatInflater {
                 viewHolder.ivMessageStatus.setVisibility(View.INVISIBLE);
                 break;
         }
+
+        if (viewObject.getUnreadCount() > 0) {
+            viewHolder.tvUnreadCount.setText(String.valueOf(viewObject.getUnreadCount()));
+            viewHolder.tvUnreadCount.setVisibility(View.VISIBLE);
+        } else viewHolder.tvUnreadCount.setVisibility(View.GONE);
     }
 
     void onAvatarClick(BaseEntity contact) {

@@ -117,6 +117,23 @@
                 android:src="@drawable/ic_message_delivered_14dp"
                 />
 
+            <TextView
+                android:id="@+id/tvUnreadCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="0dp"
+                android:paddingBottom="1dp"
+                android:paddingRight="5dp"
+                android:paddingLeft="5dp"
+                android:background="@drawable/rounded_background_green"
+                android:textColor="@color/white"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:text="1"
+                android:layout_alignParentRight="true"
+                android:visibility="visible"
+                />
+
         </RelativeLayout>
 
     </LinearLayout>

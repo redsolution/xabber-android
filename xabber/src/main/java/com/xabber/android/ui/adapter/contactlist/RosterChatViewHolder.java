@@ -27,6 +27,7 @@ public class RosterChatViewHolder extends RecyclerView.ViewHolder implements Vie
     final ImageView ivMessageStatus;
     final ImageView offlineShadow;
     final ImageView ivMucIndicator;
+    final TextView tvUnreadCount;
 
     private final ContactListItemViewHolder.ContactClickListener listener;
 
@@ -49,6 +50,7 @@ public class RosterChatViewHolder extends RecyclerView.ViewHolder implements Vie
         ivMessageStatus = (ImageView) view.findViewById(R.id.ivMessageStatus);
         offlineShadow = (ImageView) view.findViewById(R.id.offline_shadow);
         ivMucIndicator = (ImageView) view.findViewById(R.id.ivMucIndicator);
+        tvUnreadCount = (TextView) view.findViewById(R.id.tvUnreadCount);
     }
 
     @Override

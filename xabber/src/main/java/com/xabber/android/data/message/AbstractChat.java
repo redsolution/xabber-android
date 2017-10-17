@@ -86,6 +86,8 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
      */
     private String threadId;
 
+    private int unreadMessageCount;
+
     private boolean isPrivateMucChat;
     private boolean isPrivateMucChatAccepted;
 
@@ -570,5 +572,13 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     @Override
     public void onChange(RealmResults<MessageItem> messageItems) {
         updateLastMessage();
+    }
+
+    public int getUnreadMessageCount() {
+        return unreadMessageCount;
+    }
+
+    public void increaseUnreadMessageCount() {
+        this.unreadMessageCount++;
     }
 }

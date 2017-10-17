@@ -11,6 +11,7 @@ import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.muc.MUCManager;
+import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.ui.color.ColorManager;
@@ -30,11 +31,12 @@ public class ChatVO extends ContactVO {
     private boolean isOutgoing;
     private Date time;
     private int messageStatus;
+    private int unreadCount;
 
     public ChatVO(int accountColorIndicator, boolean showOfflineShadow, String name, String status,
                   int statusId, int statusLevel, Drawable avatar, int mucIndicatorLevel,
                   UserJid userJid, AccountJid accountJid, String messageText, boolean isOutgoing,
-                  Date time, int messageStatus) {
+                  Date time, int messageStatus, int unreadCount) {
 
         super(accountColorIndicator, showOfflineShadow, name, status, statusId, statusLevel,
                 avatar, mucIndicatorLevel, userJid, accountJid);
@@ -43,6 +45,7 @@ public class ChatVO extends ContactVO {
         this.isOutgoing = isOutgoing;
         this.time = time;
         this.messageStatus = messageStatus;
+        this.unreadCount = unreadCount;
     }
 
     public static ChatVO convert(AbstractContact contact) {
@@ -55,6 +58,7 @@ public class ChatVO extends ContactVO {
         boolean isOutgoing = false;
         Date time = null;
         int messageStatus = 0;
+        int unreadCount = 0;
 
         AccountItem accountItem = AccountManager.getInstance().getAccount(contact.getAccount());
         if (accountItem != null && accountItem.getState() == ConnectionState.connected) {
@@ -84,7 +88,8 @@ public class ChatVO extends ContactVO {
         int statusId = contact.getStatusMode().getStringID();
 
         MessageManager messageManager = MessageManager.getInstance();
-        MessageItem lastMessage = messageManager.getOrCreateChat(contact.getAccount(), contact.getUser()).getLastMessage();
+        AbstractChat chat = messageManager.getOrCreateChat(contact.getAccount(), contact.getUser());
+        MessageItem lastMessage = chat.getLastMessage();
 
         if (lastMessage == null) {
             messageText = statusText;
@@ -115,9 +120,11 @@ public class ChatVO extends ContactVO {
             }
         }
 
+        if (!isOutgoing) unreadCount = chat.getUnreadMessageCount();
+
         return new ChatVO(accountColorIndicator, showOfflineShadow, name, statusText, statusId,
                 statusLevel, avatar, mucIndicatorLevel, contact.getUser(), contact.getAccount(),
-                messageText, isOutgoing, time, messageStatus);
+                messageText, isOutgoing, time, messageStatus, unreadCount);
     }
 
     public static ArrayList<ContactVO> convert(Collection<AbstractContact> contacts) {
@@ -142,5 +149,9 @@ public class ChatVO extends ContactVO {
 
     public int getMessageStatus() {
         return messageStatus;
+    }
+
+    public int getUnreadCount() {
+        return unreadCount;
     }
 }
