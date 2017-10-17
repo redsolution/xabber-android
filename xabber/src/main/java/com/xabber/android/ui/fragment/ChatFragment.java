@@ -390,6 +390,9 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         restoreScrollState();
 
         showHideNotifyIfNeed();
+
+        AbstractChat chat = getChat();
+        if (chat != null) chat.resetUnreadMessageCount();
     }
 
     @Override

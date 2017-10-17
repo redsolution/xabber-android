@@ -328,6 +328,8 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
             NotificationManager.getInstance().onMessageNotification(messageItem);
         }
 
+        if (!visible) increaseUnreadMessageCount();
+
         return messageItem;
     }
 
@@ -580,5 +582,9 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
 
     public void increaseUnreadMessageCount() {
         this.unreadMessageCount++;
+    }
+
+    public void resetUnreadMessageCount() {
+        this.unreadMessageCount = 0;
     }
 }
