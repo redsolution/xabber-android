@@ -794,11 +794,15 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             if (rosterItemVOs.get(position) instanceof ButtonVO) {
                 ButtonVO viewObject = (ButtonVO) rosterItemVOs.get(position);
                 if (viewObject.getAction().equals(ButtonVO.ACTION_SHOW_ALL_CHATS)) {
-                    showAllChats = true;
-                    onChange();
+                    setShowAllChats(true);
                 }
             }
         }
+    }
+
+    public void setShowAllChats(boolean showAllChats) {
+        this.showAllChats = showAllChats;
+        onChange();
     }
 
     private void toggleGroupExpand(int adapterPosition) {

@@ -318,6 +318,10 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
         }
     }
 
+    public void setShowAllChats(boolean showAllChats) {
+        adapter.setShowAllChats(showAllChats);
+    }
+
 //    /**
 //     * Filter out contact list for selected account.
 //     *

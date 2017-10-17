@@ -748,9 +748,10 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
 
     @Override
     public void onRecentClick() {
-        if (contentFragment instanceof ContactListFragment)
-            ((ContactListFragment)getFragmentManager().findFragmentById(R.id.container)).scrollTo(0);
-        else showContactListFragment();
+        if (contentFragment instanceof ContactListFragment) {
+            ((ContactListFragment) getFragmentManager().findFragmentById(R.id.container)).scrollTo(0);
+            ((ContactListFragment) getFragmentManager().findFragmentById(R.id.container)).setShowAllChats(false);
+        } else showContactListFragment();
     }
 
     @Override
