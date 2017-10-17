@@ -582,9 +582,15 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
 
     public void increaseUnreadMessageCount() {
         this.unreadMessageCount++;
+        ChatManager.getInstance().saveOrUpdateChatDataToRealm(this);
     }
 
     public void resetUnreadMessageCount() {
         this.unreadMessageCount = 0;
+        ChatManager.getInstance().saveOrUpdateChatDataToRealm(this);
+    }
+
+    public void setUnreadMessageCount(int unreadMessageCount) {
+        this.unreadMessageCount = unreadMessageCount;
     }
 }

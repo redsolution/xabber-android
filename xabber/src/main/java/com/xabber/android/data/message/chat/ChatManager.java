@@ -17,8 +17,11 @@ package com.xabber.android.data.message.chat;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Parcelable;
+import android.support.annotation.Nullable;
 
 import com.xabber.android.data.Application;
+import com.xabber.android.data.database.RealmManager;
+import com.xabber.android.data.database.realm.ChatDataRealm;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.SettingsManager;
@@ -34,12 +37,18 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.NestedMap;
 import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.message.AbstractChat;
+import com.xabber.android.data.message.ChatData;
 import com.xabber.android.data.roster.RosterManager;
 
 import org.jxmpp.stringprep.XmppStringprepException;
 
 import java.util.HashSet;
 import java.util.Set;
+
+import io.realm.Realm;
+import io.realm.RealmObject;
+import io.realm.RealmResults;
 
 /**
  * Manage chat specific options.
@@ -489,5 +498,43 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
 
     public void clearScrollStates() {
         scrollStates.clear();
+    }
+
+    public void saveOrUpdateChatDataToRealm(AbstractChat chat) {
+        String accountJid = chat.getAccount().toString();
+        String userJid = chat.getUser().toString();
+
+        ChatDataRealm chatRealm = new ChatDataRealm(accountJid, userJid);
+        chatRealm.setUnreadCount(chat.getUnreadMessageCount());
+
+        Realm realm = RealmManager.getInstance().getNewRealm();
+        realm.beginTransaction();
+        RealmObject realmObject = realm.copyToRealmOrUpdate(chatRealm);
+        realm.commitTransaction();
+        realm.close();
+    }
+
+    @Nullable
+    public ChatData loadChatDataFromRealm(AbstractChat chat) {
+        String accountJid = chat.getAccount().toString();
+        String userJid = chat.getUser().toString();
+        ChatData chatData = null;
+
+        Realm realm = RealmManager.getInstance().getNewRealm();
+        ChatDataRealm realmChat = realm.where(ChatDataRealm.class)
+                .equalTo("accountJid", accountJid)
+                .equalTo("userJid", userJid)
+                .findFirst();
+
+        if (realmChat != null) {
+            chatData = new ChatData(
+                    realmChat.getSubject(),
+                    realmChat.getAccountJid(),
+                    realmChat.getUserJid(),
+                    realmChat.getUnreadCount());
+        }
+
+        realm.close();
+        return chatData;
     }
 }
