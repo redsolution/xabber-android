@@ -83,6 +83,8 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     private static final String LOG_TAG = ContactListAdapter.class.getSimpleName();
 
+    private static final int MAX_RECENT_ITEMS = 8;
+
     /**
      * Number of milliseconds between lazy refreshes.
      */
@@ -347,9 +349,8 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             recentChatsGroup.setNotEmpty();
 
             int itemsCount = 0;
-            int maxItems = 8;
             for (AbstractChat chat : recentChats) {
-                if (showAllChats || itemsCount < maxItems) {
+                if (showAllChats || itemsCount < MAX_RECENT_ITEMS) {
                     if (recentChatsGroup.isExpanded()) {
                         recentChatsGroup.addAbstractContact(RosterManager.getInstance()
                                 .getBestContact(chat.getAccount(), chat.getUser()));
@@ -441,7 +442,7 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 // add recent chats
                 rosterItemVOs.add(GroupVO.convert(recentChatsGroup));
                 rosterItemVOs.addAll(ChatVO.convert(recentChatsGroup.getAbstractContacts()));
-                if (!showAllChats)
+                if (!showAllChats && chats.size() > MAX_RECENT_ITEMS)
                     rosterItemVOs.add(ButtonVO.convert(null, ButtonVO.ACTION_SHOW_ALL_CHATS, ButtonVO.ACTION_SHOW_ALL_CHATS));
 
                 if (showAccounts) {
