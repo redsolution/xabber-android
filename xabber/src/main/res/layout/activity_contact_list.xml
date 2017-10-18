@@ -18,30 +18,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
+    <!-- Main layout -->
+    <RelativeLayout
+        android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
         android:layout_above="@+id/containerBottomNavigation"
-        >
-
-        <android.support.v7.widget.Toolbar xmlns:app="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/toolbar_default"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-
-            android:background="?attr/colorPrimary"
-            android:elevation="4dp"
-            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-            app:popupTheme="?attr/toolbar_popup_theme"
-            app:titleTextAppearance="@style/ToolbarTitle" />
-
-        <!-- Main layout -->
-        <RelativeLayout
-            android:id="@+id/container"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-    </LinearLayout>
+        />
 
     <FrameLayout
         android:id="@+id/containerBottomNavigation"

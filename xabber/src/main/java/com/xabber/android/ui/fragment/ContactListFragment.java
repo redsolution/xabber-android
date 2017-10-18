@@ -4,9 +4,11 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.LinearSmoothScroller;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -25,19 +27,25 @@ import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.connection.ConnectionManager;
 import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.NewMessageEvent;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.ui.activity.AccountAddActivity;
+import com.xabber.android.ui.activity.ChatActivity;
+import com.xabber.android.ui.activity.ConferenceSelectActivity;
 import com.xabber.android.ui.activity.ContactAddActivity;
+import com.xabber.android.ui.activity.ContactListActivity;
 import com.xabber.android.ui.activity.ManagedActivity;
+import com.xabber.android.ui.activity.StatusEditActivity;
 import com.xabber.android.ui.adapter.UpdatableAdapter;
 import com.xabber.android.ui.adapter.contactlist.ContactListAdapter;
 import com.xabber.android.ui.adapter.contactlist.ContactListAdapter.ContactListAdapterListener;
 import com.xabber.android.ui.adapter.contactlist.ContactListState;
 import com.xabber.android.ui.adapter.contactlist.viewobjects.AccountVO;
 import com.xabber.android.ui.color.AccountPainter;
+import com.xabber.android.ui.color.BarPainter;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.helper.ContextMenuHelper;
 import com.xabber.android.ui.preferences.PreferenceEditor;
@@ -49,7 +57,7 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.util.Collection;
 
 public class ContactListFragment extends Fragment implements OnAccountChangedListener,
-        OnContactChangedListener, ContactListAdapterListener, View.OnClickListener {
+        OnContactChangedListener, ContactListAdapterListener, View.OnClickListener, Toolbar.OnMenuItemClickListener {
 
     private ContactListAdapter adapter;
 
@@ -89,6 +97,9 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
     private ContactListFragmentListener contactListFragmentListener;
     private LinearLayoutManager linearLayoutManager;
 
+    private BarPainter barPainter;
+    private Menu optionsMenu;
+
     public static ContactListFragment newInstance() {
         return new ContactListFragment();
     }
@@ -103,6 +114,18 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_contact_list, container, false);
+
+        Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar_default);
+        toolbar.setOnClickListener(this);
+        toolbar.inflateMenu(R.menu.toolbar_contact_list);
+        optionsMenu = toolbar.getMenu();
+        toolbar.setOnMenuItemClickListener(this);
+        toolbar.setOverflowIcon(getResources().getDrawable(R.drawable.ic_overflow_menu_white_24dp));
+
+        barPainter = new BarPainter((ContactListActivity)getActivity(), toolbar);
+        barPainter.setDefaultColor();
+
+        toolbar.setTitle(R.string.application_title_full);
 
         // to avoid strange bug on some 4.x androids
         view.setBackgroundColor(ColorManager.getInstance().getContactListBackgroundColor());
@@ -132,6 +155,7 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
         Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
         Application.getInstance().addUIListener(OnContactChangedListener.class, this);
         adapter.onChange();
+        barPainter.setDefaultColor();
     }
 
     @Override
@@ -148,6 +172,7 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
 
     @Override
     public void onAccountsChanged(Collection<AccountJid> accounts) {
+        barPainter.setDefaultColor();
         adapter.refreshRequest();
     }
 
@@ -204,6 +229,9 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
                     startActivity(ContactAddActivity.createIntent(getActivity()));
                 }
             };
+            for (int i = 0; i < optionsMenu.size(); i++) {
+                optionsMenu.getItem(i).setVisible(true);
+            }
         } else if (commonState == CommonState.roster) {
             state = ContactListState.connecting;
             text = R.string.application_state_roster;
@@ -245,6 +273,9 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
                     startActivity(PreferenceEditor.createIntent(getActivity()));
                 }
             };
+            for (int i = 0; i < optionsMenu.size(); i++) {
+                optionsMenu.getItem(i).setVisible(false);
+            }
         } else if (commonState == CommonState.empty) {
             state = ContactListState.offline;
             text = R.string.application_state_empty;
@@ -389,5 +420,34 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
     @Override
     public void onContactsChanged(Collection<RosterContact> addresses) {
         adapter.refreshRequest();
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+
+        switch (item.getItemId()) {
+            case R.id.action_change_status:
+                startActivity(StatusEditActivity.createIntent(getActivity()));
+                return true;
+            case R.id.action_add_contact:
+                startActivity(ContactAddActivity.createIntent(getActivity()));
+                return true;
+            case R.id.action_close_chats:
+                closeAllChats();
+                return true;
+            case R.id.action_join_conference:
+                startActivity(ConferenceSelectActivity.createIntent(getActivity()));
+                return true;
+            case R.id.action_chat_list:
+                startActivity(ChatActivity.createRecentChatsIntent(getActivity()));
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void closeAllChats() {
+        MessageManager.closeActiveChats();
+        getAdapter().onChange();
     }
 }

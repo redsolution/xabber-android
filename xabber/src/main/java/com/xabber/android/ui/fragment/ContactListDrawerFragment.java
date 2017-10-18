@@ -146,6 +146,7 @@ public class ContactListDrawerFragment extends Fragment implements View.OnClickL
     public void onPause() {
         super.onPause();
         Application.getInstance().removeUIListener(OnAccountChangedListener.class, this);
+        stopPatreonAnim();
     }
 
     @Override

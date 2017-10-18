@@ -27,11 +27,9 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v7.widget.Toolbar;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
@@ -59,7 +57,6 @@ import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.data.xaccount.XMPPAccountSettings;
 import com.xabber.android.data.xaccount.XabberAccount;
 import com.xabber.android.data.xaccount.XabberAccountManager;
-import com.xabber.android.ui.color.BarPainter;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.dialog.AccountChooseDialogFragment;
 import com.xabber.android.ui.dialog.AccountChooseDialogFragment.OnChooseListener;
@@ -87,7 +84,7 @@ import java.util.Locale;
  */
 public class ContactListActivity extends ManagedActivity implements OnAccountChangedListener,
         View.OnClickListener, OnChooseListener, ContactListFragmentListener,
-        ContactListDrawerFragment.ContactListDrawerListener, Toolbar.OnMenuItemClickListener,
+        ContactListDrawerFragment.ContactListDrawerListener,
         BottomMenu.OnClickListener {
 
     /**
@@ -118,8 +115,6 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
      */
     private String sendText;
 
-    private BarPainter barPainter;
-    private Menu optionsMenu;
     private BottomMenu bottomMenu;
     private Fragment contentFragment;
 
@@ -191,25 +186,6 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
         }
 
         setContentView(R.layout.activity_contact_list);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_default);
-        toolbar.setOnClickListener(this);
-
-// !!!!!!!
-//                navigationFragment.startPatreonAnim();
-//                PatreonManager.getInstance().updatePatreonIfNeed();
-
-// !!!!!!!
-//                navigationFragment.stopPatreonAnim();
-
-        toolbar.inflateMenu(R.menu.toolbar_contact_list);
-        optionsMenu = toolbar.getMenu();
-        toolbar.setOnMenuItemClickListener(this);
-        toolbar.setOverflowIcon(getResources().getDrawable(R.drawable.ic_overflow_menu_white_24dp));
-
-        barPainter = new BarPainter(this, toolbar);
-        barPainter.setDefaultColor();
-
-        toolbar.setTitle(R.string.application_title_full);
 
         if (savedInstanceState != null) {
             sendText = savedInstanceState.getString(SAVED_SEND_TEXT);
@@ -314,7 +290,6 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
             return;
         }
 
-        barPainter.setDefaultColor();
         rebuildAccountToggle();
         Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
 
@@ -516,35 +491,6 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
     }
 
     @Override
-    public boolean onMenuItemClick(MenuItem item) {
-        return onOptionsItemSelected(item);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-
-        switch (item.getItemId()) {
-            case R.id.action_change_status:
-                startActivity(StatusEditActivity.createIntent(this));
-                return true;
-            case R.id.action_add_contact:
-                startActivity(ContactAddActivity.createIntent(this));
-                return true;
-            case R.id.action_close_chats:
-                closeAllChats();
-                return true;
-            case R.id.action_join_conference:
-                startActivity(ConferenceSelectActivity.createIntent(this));
-                return true;
-            case R.id.action_chat_list:
-                startActivity(ChatActivity.createRecentChatsIntent(this));
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
-    @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
     }
@@ -570,11 +516,6 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
                 finish();
             }
         }, CLOSE_ACTIVITY_AFTER_DELAY);
-    }
-
-    private void closeAllChats() {
-        MessageManager.closeActiveChats();
-        getContactListFragment().getAdapter().onChange();
     }
 
     private ContactListFragment getContactListFragment() {
@@ -657,28 +598,7 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
     }
 
     @Override
-    public void onContactListChange(CommonState commonState) {
-
-        switch (commonState) {
-
-            case empty:
-            case disabled:
-                for (int i = 0; i < optionsMenu.size(); i++) {
-                    optionsMenu.getItem(i).setVisible(false);
-                }
-                break;
-            case offline:
-            case waiting:
-            case connecting:
-            case roster:
-            case online:
-                for (int i = 0; i < optionsMenu.size(); i++) {
-                    optionsMenu.getItem(i).setVisible(true);
-                }
-
-                break;
-        }
-    }
+    public void onContactListChange(CommonState commonState) {}
 
     private void createShortcut(AbstractContact abstractContact) {
         Intent intent = new Intent();
@@ -699,7 +619,6 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
 
     @Override
     public void onAccountsChanged(Collection<AccountJid> accounts) {
-        barPainter.setDefaultColor();
         rebuildAccountToggle();
     }
 
