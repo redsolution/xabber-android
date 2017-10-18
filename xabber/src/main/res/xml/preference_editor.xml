@@ -13,24 +13,6 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <PreferenceCategory
-        android:title="@string/category_xabber_account">
-
-    <com.xabber.android.ui.widget.AccountPreference
-        android:key="preference_xabber_account"
-        android:title="@string/title_xabber_account"/>
-
-    </PreferenceCategory>
-
-    <PreferenceCategory
-        android:title="@string/category_xmpp_accounts">
-
-    <com.xabber.android.ui.widget.XMPPListPreference
-        android:key="preference_accounts_key"
-        android:title="@string/preference_accounts"/>
-
-    </PreferenceCategory>
-
-    <PreferenceCategory
         android:title="@string/category_interface">
 
         <ListPreference
