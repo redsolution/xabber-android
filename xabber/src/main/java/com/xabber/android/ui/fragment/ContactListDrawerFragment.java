@@ -38,9 +38,9 @@ import java.util.Collection;
 public class ContactListDrawerFragment extends Fragment implements View.OnClickListener, OnAccountChangedListener, AdapterView.OnItemClickListener {
 
     ContactListDrawerListener listener;
-    private NavigationDrawerAccountAdapter adapter;
-    private ListView listView;
-    private View divider;
+    //private NavigationDrawerAccountAdapter adapter;
+    //private ListView listView;
+    //private View divider;
     private View headerTitle;
     private ImageView drawerHeaderImage;
     private int[] headerImageResources;
@@ -87,50 +87,50 @@ public class ContactListDrawerFragment extends Fragment implements View.OnClickL
         // to avoid strange bug on some 4.x androids
         view.setBackgroundColor(ColorManager.getInstance().getNavigationDrawerBackgroundColor());
 
-        listView = (ListView) view.findViewById(R.id.drawer_account_list);
+//        listView = (ListView) view.findViewById(R.id.drawer_account_list);
 
-        View footerView = ((LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE))
-                .inflate(R.layout.contact_list_drawer_footer, listView, false);
-        listView.addFooterView(footerView);
+//        View footerView = ((LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE))
+//                .inflate(R.layout.contact_list_drawer_footer, listView, false);
+//        listView.addFooterView(footerView);
 
-        View headerView = ((LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE))
-                .inflate(R.layout.contact_list_drawer_header, listView, false);
-        headerTitle = headerView.findViewById(R.id.drawer_header_action_xmpp_accounts);
+//        View headerView = ((LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE))
+//                .inflate(R.layout.contact_list_drawer_header, listView, false);
+        headerTitle = view.findViewById(R.id.drawer_header_action_xmpp_accounts);
         headerTitle.setOnClickListener(this);
 
         try {
-            ((TextView)headerView.findViewById(R.id.version))
+            ((TextView)view.findViewById(R.id.version))
                     .setText(getActivity().getPackageManager().getPackageInfo(getActivity().getPackageName(), 0)
                             .versionName);
         } catch (PackageManager.NameNotFoundException e) {
             LogManager.exception(this, e);
         }
 
-        View drawerHeader = headerView.findViewById(R.id.drawer_header);
+        View drawerHeader = view.findViewById(R.id.drawer_header);
         drawerHeaderImage = (ImageView) drawerHeader.findViewById(R.id.drawer_header_image);
 
-        headerView.findViewById(R.id.drawer_header_action_xabber_account).setOnClickListener(this);
+        view.findViewById(R.id.drawer_header_action_xabber_account).setOnClickListener(this);
 
-        llAccountInfo = (LinearLayout) headerView.findViewById(R.id.accountInfo);
-        llNoAccount = (LinearLayout) headerView.findViewById(R.id.noAccount);
-        tvAccountName = (TextView) headerView.findViewById(R.id.tvAccountName);
-        tvAccountEmail = (TextView) headerView.findViewById(R.id.tvAccountEmail);
+        llAccountInfo = (LinearLayout) view.findViewById(R.id.accountInfo);
+        llNoAccount = (LinearLayout) view.findViewById(R.id.noAccount);
+        tvAccountName = (TextView) view.findViewById(R.id.tvAccountName);
+        tvAccountEmail = (TextView) view.findViewById(R.id.tvAccountEmail);
 
-        tvPatreonTitle = (TextView) headerView.findViewById(R.id.tvPatreonTitle);
-        pbPatreon = (ProgressBar) headerView.findViewById(R.id.pbPatreon);
-        headerView.findViewById(R.id.drawer_action_patreon).setOnClickListener(this);
+        tvPatreonTitle = (TextView) view.findViewById(R.id.tvPatreonTitle);
+        pbPatreon = (ProgressBar) view.findViewById(R.id.pbPatreon);
+        view.findViewById(R.id.drawer_action_patreon).setOnClickListener(this);
 
-        listView.addHeaderView(headerView);
+//        listView.addHeaderView(headerView);
+//
+//        adapter = new NavigationDrawerAccountAdapter(getActivity());
+//        listView.setAdapter(adapter);
+//        listView.setOnItemClickListener(this);
 
-        adapter = new NavigationDrawerAccountAdapter(getActivity());
-        listView.setAdapter(adapter);
-        listView.setOnItemClickListener(this);
+        view.findViewById(R.id.drawer_action_settings).setOnClickListener(this);
+        view.findViewById(R.id.drawer_action_about).setOnClickListener(this);
+        view.findViewById(R.id.drawer_action_exit).setOnClickListener(this);
 
-        footerView.findViewById(R.id.drawer_action_settings).setOnClickListener(this);
-        footerView.findViewById(R.id.drawer_action_about).setOnClickListener(this);
-        footerView.findViewById(R.id.drawer_action_exit).setOnClickListener(this);
-
-        divider = footerView.findViewById(R.id.drawer_divider);
+        //divider = view.findViewById(R.id.drawer_divider);
 
         return view;
     }
@@ -166,7 +166,7 @@ public class ContactListDrawerFragment extends Fragment implements View.OnClickL
     }
 
     private void update() {
-        adapter.onChange();
+        //adapter.onChange();
 
         Glide.with(this)
                 .fromResource()
@@ -174,20 +174,20 @@ public class ContactListDrawerFragment extends Fragment implements View.OnClickL
                 .fitCenter()
                 .into(drawerHeaderImage);
 
-        if (adapter.getCount() == 0) {
-            headerTitle.setVisibility(View.GONE);
-            divider.setVisibility(View.GONE);
-        } else {
-            headerTitle.setVisibility(View.VISIBLE);
-            divider.setVisibility(View.VISIBLE);
-        }
+//        if (adapter.getCount() == 0) {
+//            headerTitle.setVisibility(View.GONE);
+//            //divider.setVisibility(View.GONE);
+//        } else {
+//            headerTitle.setVisibility(View.VISIBLE);
+//            //divider.setVisibility(View.VISIBLE);
+//        }
         setupXabberAccountView();
         setupPatreonView();
     }
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        listener.onAccountSelected((AccountJid) listView.getItemAtPosition(position));
+        //listener.onAccountSelected((AccountJid) listView.getItemAtPosition(position));
     }
 
     public interface ContactListDrawerListener {
