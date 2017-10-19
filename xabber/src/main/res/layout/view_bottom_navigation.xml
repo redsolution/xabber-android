@@ -10,26 +10,52 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <ImageView
-            android:id="@+id/btnRecent"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_marginLeft="4dp"
-            android:padding="10dp"
-            android:layout_centerVertical="true"
-            android:src="@drawable/ic_message"
-            android:tint="@color/grey_600"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:layout_marginTop="6dp"
-            android:layout_marginBottom="6dp"
-            />
+        <RelativeLayout
+            android:id="@+id/recentButtonView"
+            android:layout_width="48dp"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/btnRecent"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="4dp"
+                android:padding="10dp"
+                android:layout_centerVertical="true"
+                android:src="@drawable/ic_message"
+                android:tint="@color/grey_600"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="6dp"
+                />
+
+            <TextView
+                android:id="@+id/tvUnreadCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="4dp"
+                android:paddingTop="0dp"
+                android:paddingBottom="1dp"
+                android:paddingRight="5dp"
+                android:paddingLeft="5dp"
+                android:background="@drawable/rounded_background_green"
+                android:textColor="@color/white"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:text="1"
+                android:visibility="gone"
+                />
+
+        </RelativeLayout>
 
         <LinearLayout
             android:id="@+id/controlView"
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_toRightOf="@+id/btnRecent"
+            android:layout_toRightOf="@+id/recentButtonView"
             android:layout_toLeftOf="@+id/btnMenu"
             android:paddingTop="6dp"
             android:paddingBottom="6dp"
@@ -107,7 +133,7 @@
             android:id="@+id/expandSearchLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_toRightOf="@+id/btnRecent"
+            android:layout_toRightOf="@+id/recentButtonView"
             android:layout_toLeftOf="@+id/btnMenu"
             android:visibility="gone">
 

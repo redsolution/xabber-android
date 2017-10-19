@@ -57,6 +57,7 @@ import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.data.xaccount.XMPPAccountSettings;
 import com.xabber.android.data.xaccount.XabberAccount;
 import com.xabber.android.data.xaccount.XabberAccountManager;
+import com.xabber.android.ui.adapter.contactlist.ContactListAdapter;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.dialog.AccountChooseDialogFragment;
 import com.xabber.android.ui.dialog.AccountChooseDialogFragment.OnChooseListener;
@@ -71,6 +72,9 @@ import com.xabber.android.ui.fragment.ContactListFragment.ContactListFragmentLis
 import com.xabber.android.ui.preferences.PreferenceEditor;
 import com.xabber.android.ui.widget.bottomnavigation.BottomMenu;
 import com.xabber.xmpp.uri.XMPPUri;
+
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -723,5 +727,11 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
         FragmentTransaction fTrans = getFragmentManager().beginTransaction();
         fTrans.replace(R.id.container, contentFragment, CONTACT_LIST_TAG);
         fTrans.commit();
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onUnreadMessagesCountChanged(ContactListAdapter.UpdateUnreadCountEvent event) {
+        if (bottomMenu != null)
+            bottomMenu.setUnreadMessages(event.getCount());
     }
 }

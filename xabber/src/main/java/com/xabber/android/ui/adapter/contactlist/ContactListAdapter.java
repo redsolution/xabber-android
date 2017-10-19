@@ -61,6 +61,8 @@ import com.xabber.android.ui.adapter.contactlist.viewobjects.GroupVO;
 import com.xabber.android.ui.adapter.contactlist.viewobjects.TopAccountSeparatorVO;
 import com.xabber.android.ui.helper.ContextMenuHelper;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -333,6 +335,7 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
             List<AbstractChat> recentChats = new ArrayList<>();
 
+            int unreadMessageCount = 0;
             for (AbstractChat abstractChat : chats) {
                 MessageItem lastMessage = abstractChat.getLastMessage();
 
@@ -340,9 +343,11 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                     AccountItem accountItem = AccountManager.getInstance().getAccount(abstractChat.getAccount());
                     if (accountItem != null && accountItem.isEnabled()) {
                         recentChats.add(abstractChat);
+                        unreadMessageCount = unreadMessageCount + abstractChat.getUnreadMessageCount();
                     }
                 }
             }
+            EventBus.getDefault().post(new UpdateUnreadCountEvent(unreadMessageCount));
 
             Collections.sort(recentChats, ChatComparator.CHAT_COMPARATOR);
 
@@ -874,5 +879,17 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     public boolean isHasActiveChats() {
         return hasActiveChats;
+    }
+
+    public static class UpdateUnreadCountEvent {
+        private int count;
+
+        public UpdateUnreadCountEvent(int count) {
+            this.count = count;
+        }
+
+        public int getCount() {
+            return count;
+        }
     }
 }
