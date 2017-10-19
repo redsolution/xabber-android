@@ -669,7 +669,7 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     private void bindButtonItem(ButtonViewHolder holder, ButtonVO viewObject) {
         holder.btnListAction.setText(viewObject.getTitle());
-        holder.btnListAction.setTextColor(viewObject.getAccountColorIndicator());
+        //holder.btnListAction.setTextColor(viewObject.getAccountColorIndicator());
     }
 
     private void bindBottomSeparator(BottomSeparatorHolder holder, BottomAccountSeparatorVO viewObject) {
