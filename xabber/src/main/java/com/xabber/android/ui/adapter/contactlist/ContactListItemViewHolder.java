@@ -24,6 +24,7 @@ class ContactListItemViewHolder extends RecyclerView.ViewHolder implements View.
     final ImageView offlineShadow;
     final ImageView ivMucIndicator;
     //final View separator;
+    final TextView tvUnreadCount;
     private final ContactClickListener listener;
 
 
@@ -53,6 +54,7 @@ class ContactListItemViewHolder extends RecyclerView.ViewHolder implements View.
         offlineShadow = (ImageView) view.findViewById(R.id.offline_shadow);
         ivMucIndicator = (ImageView) view.findViewById(R.id.ivMucIndicator);
         //separator = view.findViewById(R.id.contact_list_item_separator);
+        tvUnreadCount = (TextView) view.findViewById(R.id.tvUnreadCount);
     }
 
     @Override

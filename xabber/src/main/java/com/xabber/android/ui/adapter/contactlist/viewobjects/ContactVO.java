@@ -5,9 +5,12 @@ import android.graphics.drawable.Drawable;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionState;
+import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.muc.MUCManager;
+import com.xabber.android.data.message.AbstractChat;
+import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.ui.color.ColorManager;
 
@@ -28,10 +31,11 @@ public class ContactVO extends BaseRosterItemVO {
     private int mucIndicatorLevel;
     private UserJid userJid;
     private AccountJid accountJid;
+    private int unreadCount;
 
     public ContactVO(int accountColorIndicator, boolean showOfflineShadow, String name, String status,
                      int statusId, int statusLevel, Drawable avatar, int mucIndicatorLevel,
-                     UserJid userJid, AccountJid accountJid) {
+                     UserJid userJid, AccountJid accountJid, int unreadCount) {
         super(accountColorIndicator, showOfflineShadow);
         this.name = name;
         this.status = status;
@@ -41,6 +45,7 @@ public class ContactVO extends BaseRosterItemVO {
         this.mucIndicatorLevel = mucIndicatorLevel;
         this.userJid = userJid;
         this.accountJid = accountJid;
+        this.unreadCount = unreadCount;
     }
 
     public static ContactVO convert(AbstractContact contact) {
@@ -50,6 +55,7 @@ public class ContactVO extends BaseRosterItemVO {
         Drawable avatar;
         int statusLevel;
         int mucIndicatorLevel;
+        int unreadCount = 0;
 
         AccountItem accountItem = AccountManager.getInstance().getAccount(contact.getAccount());
         if (accountItem != null && accountItem.getState() == ConnectionState.connected) {
@@ -77,8 +83,11 @@ public class ContactVO extends BaseRosterItemVO {
         String statusText = contact.getStatusText().trim();
         int statusId = contact.getStatusMode().getStringID();
 
+        AbstractChat chat = MessageManager.getInstance().getOrCreateChat(contact.getAccount(), contact.getUser());
+        unreadCount = chat.getUnreadMessageCount();
+
         return new ContactVO(accountColorIndicator, showOfflineShadow, name, statusText, statusId,
-                statusLevel, avatar, mucIndicatorLevel, contact.getUser(), contact.getAccount());
+                statusLevel, avatar, mucIndicatorLevel, contact.getUser(), contact.getAccount(), unreadCount);
     }
 
     public static ArrayList<ContactVO> convert(Collection<AbstractContact> contacts) {
@@ -119,5 +128,9 @@ public class ContactVO extends BaseRosterItemVO {
 
     public AccountJid getAccountJid() {
         return accountJid;
+    }
+
+    public int getUnreadCount() {
+        return unreadCount;
     }
 }

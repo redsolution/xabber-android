@@ -31,7 +31,6 @@ public class ChatVO extends ContactVO {
     private boolean isOutgoing;
     private Date time;
     private int messageStatus;
-    private int unreadCount;
 
     public ChatVO(int accountColorIndicator, boolean showOfflineShadow, String name, String status,
                   int statusId, int statusLevel, Drawable avatar, int mucIndicatorLevel,
@@ -39,13 +38,12 @@ public class ChatVO extends ContactVO {
                   Date time, int messageStatus, int unreadCount) {
 
         super(accountColorIndicator, showOfflineShadow, name, status, statusId, statusLevel,
-                avatar, mucIndicatorLevel, userJid, accountJid);
+                avatar, mucIndicatorLevel, userJid, accountJid, unreadCount);
 
         this.messageText = messageText;
         this.isOutgoing = isOutgoing;
         this.time = time;
         this.messageStatus = messageStatus;
-        this.unreadCount = unreadCount;
     }
 
     public static ChatVO convert(AbstractContact contact) {
@@ -149,9 +147,5 @@ public class ChatVO extends ContactVO {
 
     public int getMessageStatus() {
         return messageStatus;
-    }
-
-    public int getUnreadCount() {
-        return unreadCount;
     }
 }

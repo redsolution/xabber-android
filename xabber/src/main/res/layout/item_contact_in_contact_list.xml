@@ -24,6 +24,7 @@
         android:layout_toRightOf="@+id/avatarView"
         android:layout_marginRight="10dp"
         android:layout_centerVertical="true"
+        android:layout_toLeftOf="@+id/tvUnreadCount"
         >
 
         <LinearLayout
@@ -67,6 +68,25 @@
             />
 
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/tvUnreadCount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingTop="0dp"
+        android:paddingBottom="1dp"
+        android:paddingRight="5dp"
+        android:paddingLeft="5dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/rounded_background_green"
+        android:textColor="@color/white"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:text="1"
+        android:layout_alignParentRight="true"
+        android:visibility="visible"
+        />
 
     <include layout="@layout/offline_shadow" />
 

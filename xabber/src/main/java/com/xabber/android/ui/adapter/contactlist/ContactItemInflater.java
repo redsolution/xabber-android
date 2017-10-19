@@ -52,6 +52,11 @@ class ContactItemInflater {
         if (statusText.isEmpty()) statusText = context.getString(viewObject.getStatusId());
 
         viewHolder.tvStatus.setText(statusText);
+
+        if (viewObject.getUnreadCount() > 0) {
+            viewHolder.tvUnreadCount.setText(String.valueOf(viewObject.getUnreadCount()));
+            viewHolder.tvUnreadCount.setVisibility(View.VISIBLE);
+        } else viewHolder.tvUnreadCount.setVisibility(View.GONE);
     }
 
     void onAvatarClick(ContactVO contact) {
