@@ -156,10 +156,13 @@ public class BottomMenu extends Fragment implements View.OnClickListener {
     }
 
     public void setUnreadMessages(int count) {
-        if (count > 0) {
-            tvUnreadCount.setText(String.valueOf(count));
-            tvUnreadCount.setVisibility(View.VISIBLE);
-        } else tvUnreadCount.setVisibility(View.GONE);
+        if (tvUnreadCount != null) {
+            if (count > 0) {
+                if (count > 99) count = 99;
+                tvUnreadCount.setText(String.valueOf(count));
+                tvUnreadCount.setVisibility(View.VISIBLE);
+            } else tvUnreadCount.setVisibility(View.GONE);
+        }
     }
 
     private void setLayoutParamToRecyclerView() {

@@ -391,6 +391,8 @@
 
     <color name="patreon_coral">#F96854</color>
 
+    <color name="bottom_navigation_background">#eeeeee</color>
+
     <item name="contact_list_contact_small_right_icon_alpha_light" format="float" type="dimen">0.2</item>
     <item name="contact_list_contact_small_right_icon_alpha_dark" format="float" type="dimen">0.2</item>
 

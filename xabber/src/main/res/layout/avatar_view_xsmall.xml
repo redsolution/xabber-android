@@ -26,7 +26,7 @@
             android:id="@+id/ivStatus"
             android:layout_width="12dp"
             android:layout_height="12dp"
-            android:src="@drawable/ic_status_new"
+            android:src="@drawable/ic_status_new_grey_border"
             android:layout_alignBaseline="@+id/imageView"
             android:layout_alignParentBottom="true"
             android:layout_alignParentRight="true"
