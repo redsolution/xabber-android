@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:id="@+id/action_add_contact"
+        android:icon="@drawable/ic_person_add_white_24dp"
+        android:orderInCategory="110"
+        android:title="@string/contact_add"
+        />
+
+    <item android:id="@+id/action_join_conference"
+        android:icon="@drawable/ic_group_add_white_24dp"
+        android:orderInCategory="120"
+        android:title="@string/muc_add"
+        />
+</menu>

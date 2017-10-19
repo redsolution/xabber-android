@@ -57,7 +57,8 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.util.Collection;
 
 public class ContactListFragment extends Fragment implements OnAccountChangedListener,
-        OnContactChangedListener, ContactListAdapterListener, View.OnClickListener, Toolbar.OnMenuItemClickListener {
+        OnContactChangedListener, ContactListAdapterListener, View.OnClickListener,
+        Toolbar.OnMenuItemClickListener, android.widget.PopupMenu.OnMenuItemClickListener {
 
     private ContactListAdapter adapter;
 
@@ -99,6 +100,7 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
 
     private BarPainter barPainter;
     private Menu optionsMenu;
+    private View addMenuOption;
 
     public static ContactListFragment newInstance() {
         return new ContactListFragment();
@@ -144,6 +146,8 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
         animation = AnimationUtils.loadAnimation(getActivity(), R.anim.connection);
 
         accountPainter = ColorManager.getInstance().getAccountPainter();
+
+        addMenuOption = view.findViewById(R.id.action_add);
 
         return view;
     }
@@ -441,6 +445,9 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
             case R.id.action_chat_list:
                 startActivity(ChatActivity.createRecentChatsIntent(getActivity()));
                 return true;
+            case R.id.action_add:
+                showToolbarPopup(addMenuOption);
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -450,4 +457,13 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
         MessageManager.closeActiveChats();
         getAdapter().onChange();
     }
+
+    private void showToolbarPopup(View v) {
+        PopupMenu popupMenu = new PopupMenu(getActivity(), v);
+        popupMenu.setOnMenuItemClickListener(this);
+        popupMenu.inflate(R.menu.menu_add_in_contact_list);
+        popupMenu.show();
+    }
+
+
 }
