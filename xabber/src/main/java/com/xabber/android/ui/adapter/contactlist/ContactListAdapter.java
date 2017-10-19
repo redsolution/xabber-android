@@ -48,6 +48,7 @@ import com.xabber.android.data.roster.GroupManager;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.activity.AccountActivity;
+import com.xabber.android.ui.activity.ContactAddActivity;
 import com.xabber.android.ui.activity.ManagedActivity;
 import com.xabber.android.ui.adapter.ChatComparator;
 import com.xabber.android.ui.adapter.UpdatableAdapter;
@@ -480,6 +481,9 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                         if (rosterAccount.getTotal() > 0 && !rosterAccount.isExpanded()) {
                             rosterItemVOs.add(BottomAccountSeparatorVO.convert(rosterAccount.getAccount()));
                         }
+
+                        if (rosterAccount.getTotal() == 0)
+                            rosterItemVOs.add(ButtonVO.convert(null, ButtonVO.ACTION_ADD_CONTACT, ButtonVO.ACTION_ADD_CONTACT));
                     }
                 } else {
                     if (showGroups) {
@@ -801,6 +805,10 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 ButtonVO viewObject = (ButtonVO) rosterItemVOs.get(position);
                 if (viewObject.getAction().equals(ButtonVO.ACTION_SHOW_ALL_CHATS)) {
                     setShowAllChats(true);
+                }
+                if (viewObject.getAction().equals(ButtonVO.ACTION_ADD_CONTACT)) {
+                    if (activity != null)
+                        activity.startActivity(ContactAddActivity.createIntent(activity));
                 }
             }
         }

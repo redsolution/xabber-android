@@ -16,6 +16,7 @@ import com.xabber.android.ui.color.ColorManager;
 public class ButtonVO extends BaseRosterItemVO {
 
     public final static String ACTION_SHOW_ALL_CHATS = "Show all chats";
+    public final static String ACTION_ADD_CONTACT = "Add contact";
 
     private String title;
     private String action;
