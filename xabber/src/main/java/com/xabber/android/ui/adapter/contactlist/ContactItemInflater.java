@@ -43,9 +43,13 @@ class ContactItemInflater {
             viewHolder.ivMucIndicator.setImageLevel(viewObject.getMucIndicatorLevel());
         }
 
-        if (viewObject.getStatusLevel() == 6)
+        if (viewObject.getStatusLevel() == 6) {
             viewHolder.ivStatus.setVisibility(View.INVISIBLE);
-        else viewHolder.ivStatus.setVisibility(View.VISIBLE);
+            viewHolder.tvStatus.setTextColor(context.getResources().getColor(R.color.grey_700));
+        } else {
+            viewHolder.ivStatus.setVisibility(View.VISIBLE);
+            viewHolder.tvStatus.setTextColor(viewObject.getAccountColorIndicator());
+        }
         viewHolder.ivStatus.setImageLevel(viewObject.getStatusLevel());
 
         String statusText = viewObject.getStatus();
