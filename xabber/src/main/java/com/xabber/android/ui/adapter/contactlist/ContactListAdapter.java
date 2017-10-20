@@ -95,15 +95,15 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     /**
      * View type used for contact items.
      */
-    private static final int TYPE_CONTACT = 0;
+    public static final int TYPE_CONTACT = 0;
     /**
      * View type used for groups and accounts expanders.
      */
     private static final int TYPE_GROUP = 1;
-    private static final int TYPE_ACCOUNT = 2;
+    public static final int TYPE_ACCOUNT = 2;
     private static final int TYPE_ACCOUNT_TOP_SEPARATOR = 3;
     private static final int TYPE_ACCOUNT_BOTTOM_SEPARATOR = 4;
-    private static final int TYPE_CHAT = 5;
+    public static final int TYPE_CHAT = 5;
     private static final int TYPE_BUTTON = 6;
     private final ArrayList<BaseRosterItemVO> rosterItemVOs = new ArrayList<>();
 
@@ -446,7 +446,7 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             if (hasVisibleContacts) {
 
                 // add recent chats
-                rosterItemVOs.add(GroupVO.convert(recentChatsGroup));
+                //rosterItemVOs.add(GroupVO.convert(recentChatsGroup));
                 rosterItemVOs.addAll(ChatVO.convert(recentChatsGroup.getAbstractContacts()));
                 if (!showAllChats && chats.size() > MAX_RECENT_ITEMS)
                     rosterItemVOs.add(ButtonVO.convert(null, ButtonVO.ACTION_SHOW_ALL_CHATS, ButtonVO.ACTION_SHOW_ALL_CHATS));

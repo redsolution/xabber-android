@@ -97,4 +97,7 @@
     <string name="remove_selected_bookmarks">Remove selected</string>
     <string name="remove_all_bookmarks_confirm">Do you really want to remove all bookmarks from account %1$s?</string>
     <string name="remove_selected_bookmarks_confirm">Do you really want to remove selected bookmarks from account %1$s?</string>
+
+    <string name="title_recent_chats">Recent chats</string>
+    <string name="title_contacts">Contacts</string>
 </resources>
