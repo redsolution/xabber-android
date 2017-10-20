@@ -24,18 +24,29 @@
         android:id="@+id/appbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_scrollFlags="scroll|enterAlways">
+        android:background="@color/bottom_navigation_background"
+        app:layout_scrollFlags="scroll|enterAlways"
+        >
 
-        <android.support.v7.widget.Toolbar xmlns:app="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/toolbar_default"
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            android:elevation="4dp"
-            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-            app:popupTheme="?attr/toolbar_popup_theme"
-            app:titleTextAppearance="@style/ToolbarTitle"
-            app:layout_scrollFlags="scroll|enterAlways" />
+            app:layout_scrollFlags="scroll|enterAlways"
+            >
+
+            <include layout="@layout/account_color_indicator" />
+
+            <android.support.v7.widget.Toolbar xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/toolbar_default"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="#00000000"
+                android:elevation="4dp"
+                app:titleTextAppearance="@style/ToolbarTitle"
+                app:layout_scrollFlags="scroll|enterAlways"
+                />
+
+        </RelativeLayout>
 
     </android.support.design.widget.AppBarLayout>
 

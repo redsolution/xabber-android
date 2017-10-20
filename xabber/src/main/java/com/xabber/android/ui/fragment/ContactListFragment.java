@@ -2,6 +2,7 @@ package com.xabber.android.ui.fragment;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -98,7 +99,8 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
     private ContactListFragmentListener contactListFragmentListener;
     private LinearLayoutManager linearLayoutManager;
 
-    private BarPainter barPainter;
+    //private BarPainter barPainter;
+    private View accountColorIndicator;
     private Menu optionsMenu;
     private View addMenuOption;
     private Toolbar toolbar;
@@ -124,9 +126,12 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
         optionsMenu = toolbar.getMenu();
         toolbar.setOnMenuItemClickListener(this);
         toolbar.setOverflowIcon(getResources().getDrawable(R.drawable.ic_overflow_menu_white_24dp));
+        toolbar.setTitleTextColor(getResources().getColor(R.color.grey_600));
 
-        barPainter = new BarPainter((ContactListActivity)getActivity(), toolbar);
-        barPainter.setDefaultColor();
+//        barPainter = new BarPainter((ContactListActivity)getActivity(), toolbar);
+//        barPainter.setDefaultColor();
+        accountColorIndicator = view.findViewById(R.id.accountColorIndicator);
+        accountColorIndicator.setBackgroundColor(ColorManager.getInstance().getAccountPainter().getDefaultMainColor());
 
         toolbar.setTitle(R.string.application_title_full);
 
@@ -162,7 +167,11 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
         Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
         Application.getInstance().addUIListener(OnContactChangedListener.class, this);
         adapter.onChange();
-        barPainter.setDefaultColor();
+        //barPainter.setDefaultColor();
+        accountColorIndicator.setBackgroundColor(ColorManager.getInstance().getAccountPainter().getDefaultMainColor());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getActivity().getWindow().setStatusBarColor(ColorManager.getInstance().getAccountPainter().getDefaultMainColor());
+        }
     }
 
     @Override
@@ -179,7 +188,11 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
 
     @Override
     public void onAccountsChanged(Collection<AccountJid> accounts) {
-        barPainter.setDefaultColor();
+        //barPainter.setDefaultColor();
+        accountColorIndicator.setBackgroundColor(ColorManager.getInstance().getAccountPainter().getDefaultMainColor());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getActivity().getWindow().setStatusBarColor(ColorManager.getInstance().getAccountPainter().getDefaultMainColor());
+        }
         adapter.refreshRequest();
     }
 
