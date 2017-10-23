@@ -90,9 +90,6 @@ public class ContactItemChatInflater {
             case 0:
                 viewHolder.ivMessageStatus.setImageResource(R.drawable.ic_message_delivered_14dp);
                 break;
-            case 1:
-                viewHolder.ivMessageStatus.setImageResource(R.drawable.ic_message_forwarded_14dp);
-                break;
             case 3:
                 viewHolder.ivMessageStatus.setImageResource(R.drawable.ic_message_has_error_14dp);
                 break;
