@@ -30,12 +30,22 @@
             />
 
         <TextView
+            android:id="@+id/tvJid"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="-2dp"
+            android:ellipsize="marquee"
+            android:lines="1"
+            android:text="example@example.com"
+            android:textColor="@color/grey_500"
+            android:textSize="12sp" />
+
+        <TextView
             android:id="@+id/tvStatus"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="14sp"
             android:textColor="#616161"
-            android:layout_marginTop="4dp"
             android:text="Status"
             />
 
@@ -50,7 +60,7 @@
         android:tint="?attr/contact_list_account_group_small_right_icon_color"
         android:layout_toLeftOf="@+id/tvContactCount"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="12dp"/>
+        android:layout_marginBottom="10dp"/>
 
     <TextView
         android:id="@+id/tvContactCount"
@@ -64,7 +74,7 @@
         android:text="10 / 30"
         android:layout_alignParentRight="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="12dp"
+        android:layout_marginBottom="10dp"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="10dp"
         />

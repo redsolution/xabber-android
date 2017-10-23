@@ -16,6 +16,7 @@ class AccountGroupViewHolder extends RecyclerView.ViewHolder
     private static final String LOG_TAG = AccountGroupViewHolder.class.getSimpleName();
     final ImageView ivAvatar;
     final TextView tvAccountName;
+    final TextView tvJid;
     final TextView tvStatus;
     final TextView tvContactCount;
     final ImageView smallRightIcon;
@@ -42,6 +43,7 @@ class AccountGroupViewHolder extends RecyclerView.ViewHolder
         ivAvatar = (ImageView) view.findViewById(R.id.ivAvatar);
         ivAvatar.setOnClickListener(this);
         tvAccountName = (TextView) view.findViewById(R.id.tvAccountName);
+        tvJid = (TextView) view.findViewById(R.id.tvJid);
         tvStatus = (TextView) view.findViewById(R.id.tvStatus);
         smallRightIcon = (ImageView) view.findViewById(R.id.small_right_icon);
         tvContactCount = (TextView) view.findViewById(R.id.tvContactCount);

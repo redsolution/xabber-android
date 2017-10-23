@@ -20,6 +20,7 @@ import com.xabber.android.ui.color.ColorManager;
 
 public class AccountVO extends BaseRosterItemVO implements StickyHeader {
 
+    private String name;
     private String jid;
     private String status;
     private int statusLevel;
@@ -31,11 +32,12 @@ public class AccountVO extends BaseRosterItemVO implements StickyHeader {
     private boolean isExpand;
     private String groupName;
 
-    public AccountVO(int accountColorIndicator, boolean showOfflineShadow, String jid,
+    public AccountVO(int accountColorIndicator, boolean showOfflineShadow, String name, String jid,
                      String status, int statusLevel, int statusId, Drawable avatar,
                      int offlineModeLevel, String contactCount, AccountJid accountJid,
                      boolean isExpand, String groupName) {
         super(accountColorIndicator, showOfflineShadow);
+        this.name = name;
         this.jid = jid;
         this.status = status;
         this.statusLevel = statusLevel;
@@ -50,6 +52,7 @@ public class AccountVO extends BaseRosterItemVO implements StickyHeader {
 
     public static AccountVO convert(AccountConfiguration configuration) {
         String jid;
+        String name;
         String status;
         int statusLevel;
         int statusId;
@@ -64,6 +67,7 @@ public class AccountVO extends BaseRosterItemVO implements StickyHeader {
         accountColorIndicator = ColorManager.getInstance().getAccountPainter().getAccountMainColor(account);
 
         jid = GroupManager.getInstance().getGroupName(account, configuration.getGroup());
+        name = AccountManager.getInstance().getNickName(account);
 
         contactCount = configuration.getOnline() + "/" + configuration.getTotal();
 
@@ -98,7 +102,7 @@ public class AccountVO extends BaseRosterItemVO implements StickyHeader {
             showOfflineShadow = false;
         }
 
-        return new AccountVO(accountColorIndicator, showOfflineShadow, jid, status, statusLevel,
+        return new AccountVO(accountColorIndicator, showOfflineShadow, name, jid, status, statusLevel,
                 statusId, avatar, offlineModeLevel, contactCount, configuration.getAccount(),
                 configuration.isExpanded(), configuration.getGroup());
     }
@@ -141,5 +145,9 @@ public class AccountVO extends BaseRosterItemVO implements StickyHeader {
 
     public String getGroupName() {
         return groupName;
+    }
+
+    public String getName() {
+        return name;
     }
 }

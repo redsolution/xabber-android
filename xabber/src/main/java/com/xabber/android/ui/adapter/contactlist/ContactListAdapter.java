@@ -712,9 +712,10 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
         viewHolder.accountColorIndicator.setBackgroundColor(viewObject.getAccountColorIndicator());
 
-        viewHolder.tvAccountName.setText(viewObject.getJid());
+        viewHolder.tvAccountName.setText(viewObject.getName());
         viewHolder.tvAccountName.setTextColor(viewObject.getAccountColorIndicator());
         viewHolder.tvContactCount.setText(viewObject.getContactCount());
+        viewHolder.tvJid.setText(viewObject.getJid());
 
         String statusText = viewObject.getStatus();
         if (statusText.isEmpty()) statusText = activity.getString(viewObject.getStatusId());
