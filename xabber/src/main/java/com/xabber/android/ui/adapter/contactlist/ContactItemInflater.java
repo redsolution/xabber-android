@@ -45,10 +45,10 @@ class ContactItemInflater {
 
         if (viewObject.getStatusLevel() == 6) {
             viewHolder.ivStatus.setVisibility(View.INVISIBLE);
-            viewHolder.tvStatus.setTextColor(context.getResources().getColor(R.color.grey_700));
+            viewHolder.tvStatus.setTextColor(context.getResources().getColor(R.color.status_color_in_contact_list));
         } else {
             viewHolder.ivStatus.setVisibility(View.VISIBLE);
-            viewHolder.tvStatus.setTextColor(context.getResources().getColor(R.color.color_online));
+            viewHolder.tvStatus.setTextColor(context.getResources().getColor(R.color.status_color_in_contact_list_online));
         }
         viewHolder.ivStatus.setImageLevel(viewObject.getStatusLevel());
 

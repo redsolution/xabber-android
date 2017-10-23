@@ -62,8 +62,7 @@
             android:maxLines="1"
             android:ellipsize="marquee"
             android:textSize="14sp"
-            android:textColor="#616161"
-            android:alpha="0.6"
+            android:textColor="@color/status_color_in_contact_list"
             android:text="Online"
             />
 
