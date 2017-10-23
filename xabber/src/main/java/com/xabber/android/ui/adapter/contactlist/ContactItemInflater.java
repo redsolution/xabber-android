@@ -48,7 +48,7 @@ class ContactItemInflater {
             viewHolder.tvStatus.setTextColor(context.getResources().getColor(R.color.grey_700));
         } else {
             viewHolder.ivStatus.setVisibility(View.VISIBLE);
-            viewHolder.tvStatus.setTextColor(viewObject.getAccountColorIndicator());
+            viewHolder.tvStatus.setTextColor(context.getResources().getColor(R.color.color_online));
         }
         viewHolder.ivStatus.setImageLevel(viewObject.getStatusLevel());
 
