@@ -11,22 +11,19 @@
         android:layout_height="match_parent"
         android:background="?android:attr/selectableItemBackground">
 
-    <include layout="@layout/account_color_indicator"/>
+        <include layout="@layout/account_color_indicator"/>
 
-    <include layout="@layout/avatar_view"/>
-
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_toRightOf="@+id/avatarView"
-        android:layout_toLeftOf="@+id/timeView"
-        android:layout_centerVertical="true"
-        >
+        <include layout="@layout/avatar_view"/>
 
         <LinearLayout
+            android:id="@+id/topText"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/avatarView"
+            android:layout_toLeftOf="@+id/tvTime"
+            android:layout_marginTop="14dp"
+            android:layout_marginRight="8dp"
+            >
 
             <ImageView
                 android:id="@+id/ivMucIndicator"
@@ -57,6 +54,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
+            android:layout_marginRight="8dp"
+            android:layout_toRightOf="@+id/avatarView"
+            android:layout_toLeftOf="@+id/tvUnreadCount"
+            android:layout_below="@+id/topText"
             >
 
             <TextView
@@ -83,62 +84,49 @@
 
         </LinearLayout>
 
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/timeView"
-        android:orientation="vertical"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_alignParentRight="true"
-        android:layout_centerVertical="true"
-        >
-
         <TextView
             android:id="@+id/tvTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="16dp"
+            android:layout_marginTop="16dp"
             android:textSize="10sp"
             android:text="12:30"
             />
 
-        <RelativeLayout
-            android:layout_width="match_parent"
+        <ImageView
+            android:id="@+id/ivMessageStatus"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp">
+            android:layout_alignParentRight="true"
+            android:layout_below="@id/tvTime"
+            android:layout_marginRight="16dp"
+            android:layout_marginTop="7dp"
+            android:src="@drawable/ic_message_delivered_14dp"
+            />
 
-            <ImageView
-                android:id="@+id/ivMessageStatus"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:src="@drawable/ic_message_delivered_14dp"
-                />
+        <TextView
+            android:id="@+id/tvUnreadCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_below="@id/tvTime"
+            android:layout_marginRight="16dp"
+            android:layout_marginTop="7dp"
+            android:paddingTop="0dp"
+            android:paddingBottom="1dp"
+            android:paddingRight="5dp"
+            android:paddingLeft="5dp"
+            android:background="@drawable/rounded_background_green"
+            android:textColor="@color/white"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:text="1"
+            android:visibility="visible"
+            />
 
-            <TextView
-                android:id="@+id/tvUnreadCount"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingTop="0dp"
-                android:paddingBottom="1dp"
-                android:paddingRight="5dp"
-                android:paddingLeft="5dp"
-                android:background="@drawable/rounded_background_green"
-                android:textColor="@color/white"
-                android:textSize="12sp"
-                android:textStyle="bold"
-                android:text="1"
-                android:layout_alignParentRight="true"
-                android:visibility="visible"
-                />
-
-        </RelativeLayout>
-
-    </LinearLayout>
-
-    <include layout="@layout/offline_shadow" />
+        <include layout="@layout/offline_shadow" />
 
     </RelativeLayout>
 

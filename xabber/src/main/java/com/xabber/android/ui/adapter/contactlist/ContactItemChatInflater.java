@@ -107,7 +107,7 @@ public class ContactItemChatInflater {
         if (viewObject.getUnreadCount() > 0) {
             viewHolder.tvUnreadCount.setText(String.valueOf(viewObject.getUnreadCount()));
             viewHolder.tvUnreadCount.setVisibility(View.VISIBLE);
-        } else viewHolder.tvUnreadCount.setVisibility(View.GONE);
+        } else viewHolder.tvUnreadCount.setVisibility(View.INVISIBLE);
     }
 
     void onAvatarClick(BaseEntity contact) {
