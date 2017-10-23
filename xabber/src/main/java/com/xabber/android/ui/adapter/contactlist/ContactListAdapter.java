@@ -635,7 +635,7 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                         .inflate(R.layout.item_button_in_contact_list, parent, false), this);
             case TYPE_MAIN_TITLE:
                 return new MainTitleViewHolder(layoutInflater
-                        .inflate(R.layout.item_main_title_in_contact_list, parent, false));
+                        .inflate(R.layout.item_main_title_in_contact_list, parent, false), activity);
 
             default:
                 throw new IllegalStateException();

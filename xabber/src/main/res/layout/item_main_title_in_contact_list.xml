@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="40dp"
+    android:layout_height="56dp"
     android:background="@color/white"
     android:clickable="true"
     >
@@ -16,19 +16,21 @@
         android:layout_marginLeft="12dp"
         android:layout_centerVertical="true"
         android:fontFamily="sans-serif-medium"
-        android:textSize="16sp"
-        android:text="Recent chats"
+        android:textSize="18sp"
+        android:text="@string/recent_chats"
         android:textColor="#FF9E9E9E"
         />
 
     <ImageView
+        android:id="@+id/ivAdd"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
+        android:layout_toLeftOf="@+id/ivSetStatus"
+        android:layout_marginRight="8dp"
+        android:padding="10dp"
         android:src="@drawable/ic_add_contact"
         android:tint="#FF9E9E9E"
-        android:layout_toLeftOf="@+id/ivSetStatus"
-        android:layout_marginRight="20dp"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:clickable="true"
         />
@@ -38,10 +40,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="4dp"
+        android:padding="10dp"
         android:src="@drawable/ic_volume"
         android:tint="#FF9E9E9E"
-        android:layout_alignParentRight="true"
-        android:layout_marginRight="16dp"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:clickable="true"
         />
