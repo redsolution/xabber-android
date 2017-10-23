@@ -159,6 +159,14 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
         }
     }
 
+    public Collection<AbstractChat> getChatsOfEnabledAccount() {
+        List<AbstractChat> chats = new ArrayList<>();
+        for (AccountJid accountJid : AccountManager.getInstance().getEnabledAccounts()) {
+            chats.addAll(this.chats.getNested(accountJid.toString()).values());
+        }
+        return chats;
+    }
+
     public Collection<AbstractChat> getChats() {
         List<AbstractChat> chats = new ArrayList<>();
         for (AccountJid accountJid : AccountManager.getInstance().getAllAccounts()) {

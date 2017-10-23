@@ -332,7 +332,7 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             // recent chats
             recentChatsGroup = new GroupConfiguration(GroupManager.NO_ACCOUNT,
                     GroupVO.RECENT_CHATS_TITLE, GroupManager.getInstance());
-            Collection<AbstractChat> chats = MessageManager.getInstance().getChats();
+            Collection<AbstractChat> chats = MessageManager.getInstance().getChatsOfEnabledAccount();
 
             List<AbstractChat> recentChats = new ArrayList<>();
 
