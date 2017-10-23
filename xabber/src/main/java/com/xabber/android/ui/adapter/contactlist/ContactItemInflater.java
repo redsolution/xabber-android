@@ -45,9 +45,11 @@ class ContactItemInflater {
 
         if (viewObject.getStatusLevel() == 6) {
             viewHolder.ivStatus.setVisibility(View.INVISIBLE);
+            viewHolder.ivDevice.setVisibility(View.INVISIBLE);
             viewHolder.tvStatus.setTextColor(context.getResources().getColor(R.color.status_color_in_contact_list));
         } else {
             viewHolder.ivStatus.setVisibility(View.VISIBLE);
+            viewHolder.ivDevice.setVisibility(View.VISIBLE);
             viewHolder.tvStatus.setTextColor(context.getResources().getColor(R.color.status_color_in_contact_list_online));
         }
         viewHolder.ivStatus.setImageLevel(viewObject.getStatusLevel());

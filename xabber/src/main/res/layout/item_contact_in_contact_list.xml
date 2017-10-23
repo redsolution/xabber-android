@@ -54,17 +54,32 @@
 
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/tvStatus"
-            android:layout_width="match_parent"
+        <LinearLayout
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
-            android:maxLines="1"
-            android:ellipsize="marquee"
-            android:textSize="14sp"
-            android:textColor="@color/status_color_in_contact_list"
-            android:text="Online"
-            />
+            >
+
+            <TextView
+                android:id="@+id/tvStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:ellipsize="marquee"
+                android:textSize="14sp"
+                android:textColor="@color/status_color_in_contact_list"
+                android:text="Online"
+                />
+
+            <ImageView
+                android:id="@+id/ivDevice"
+                android:layout_width="12dp"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="4dp"
+                android:src="@drawable/ic_cellphone"
+                />
+
+        </LinearLayout>
 
     </LinearLayout>
 
