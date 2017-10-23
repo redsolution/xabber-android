@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="40dp"
+    android:background="@color/white"
+    android:clickable="true"
+    >
+
+    <include layout="@layout/account_color_indicator" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="12dp"
+        android:layout_centerVertical="true"
+        android:fontFamily="sans-serif-medium"
+        android:textSize="16sp"
+        android:text="Recent chats"
+        android:textColor="#FF9E9E9E"
+        />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:src="@drawable/ic_add_contact"
+        android:tint="#FF9E9E9E"
+        android:layout_toLeftOf="@+id/ivSetStatus"
+        android:layout_marginRight="20dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:clickable="true"
+        />
+
+    <ImageView
+        android:id="@+id/ivSetStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:src="@drawable/ic_volume"
+        android:tint="#FF9E9E9E"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="16dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:clickable="true"
+        />
+
+</RelativeLayout>

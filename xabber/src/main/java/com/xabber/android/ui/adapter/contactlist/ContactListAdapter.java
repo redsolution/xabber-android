@@ -60,7 +60,9 @@ import com.xabber.android.ui.adapter.contactlist.viewobjects.ButtonVO;
 import com.xabber.android.ui.adapter.contactlist.viewobjects.ChatVO;
 import com.xabber.android.ui.adapter.contactlist.viewobjects.ContactVO;
 import com.xabber.android.ui.adapter.contactlist.viewobjects.GroupVO;
+import com.xabber.android.ui.adapter.contactlist.viewobjects.MainTitleVO;
 import com.xabber.android.ui.adapter.contactlist.viewobjects.TopAccountSeparatorVO;
+import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.helper.ContextMenuHelper;
 
 import org.greenrobot.eventbus.EventBus;
@@ -107,6 +109,7 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private static final int TYPE_ACCOUNT_BOTTOM_SEPARATOR = 4;
     public static final int TYPE_CHAT = 5;
     private static final int TYPE_BUTTON = 6;
+    private static final int TYPE_MAIN_TITLE = 7;
     private final ArrayList<BaseRosterItemVO> rosterItemVOs = new ArrayList<>();
 
     /**
@@ -445,6 +448,7 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
             // Remove empty groups, sort and apply structure.
             rosterItemVOs.clear();
+            rosterItemVOs.add(new MainTitleVO(1, false));
             if (hasVisibleContacts) {
 
                 // add recent chats
@@ -598,6 +602,8 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             return TYPE_ACCOUNT_BOTTOM_SEPARATOR;
         } else if (object instanceof ButtonVO) {
             return TYPE_BUTTON;
+        } else if (object instanceof MainTitleVO) {
+            return TYPE_MAIN_TITLE;
         } else {
             throw new IllegalStateException();
         }
@@ -627,6 +633,9 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             case TYPE_BUTTON:
                 return new ButtonViewHolder(layoutInflater
                         .inflate(R.layout.item_button_in_contact_list, parent, false), this);
+            case TYPE_MAIN_TITLE:
+                return new MainTitleViewHolder(layoutInflater
+                        .inflate(R.layout.item_main_title_in_contact_list, parent, false));
 
             default:
                 throw new IllegalStateException();
@@ -668,6 +677,10 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 bindButtonItem((ButtonViewHolder) holder, (ButtonVO) item);
                 break;
 
+            case TYPE_MAIN_TITLE:
+                bindMainTitleItem((MainTitleViewHolder) holder);
+                break;
+
             default:
                 throw new IllegalStateException();
         }
@@ -676,6 +689,11 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private void bindButtonItem(ButtonViewHolder holder, ButtonVO viewObject) {
         holder.btnListAction.setText(viewObject.getTitle());
         //holder.btnListAction.setTextColor(viewObject.getAccountColorIndicator());
+    }
+
+    private void bindMainTitleItem(MainTitleViewHolder holder) {
+        holder.accountColorIndicator.setBackgroundColor(
+                ColorManager.getInstance().getAccountPainter().getDefaultMainColor());
     }
 
     private void bindBottomSeparator(BottomSeparatorHolder holder, BottomAccountSeparatorVO viewObject) {
