@@ -28,6 +28,7 @@ import android.view.ViewGroup;
 import android.widget.Filter;
 import android.widget.Filterable;
 
+import com.brandongogetap.stickyheaders.exposed.StickyHeaderHandler;
 import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
@@ -82,7 +83,8 @@ import java.util.TreeMap;
  */
 public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         implements Runnable, Filterable, UpdatableAdapter, ContactListItemViewHolder.ContactClickListener,
-        AccountGroupViewHolder.AccountGroupClickListener, GroupViewHolder.GroupClickListener, ButtonViewHolder.ButtonClickListener {
+        AccountGroupViewHolder.AccountGroupClickListener, GroupViewHolder.GroupClickListener,
+        ButtonViewHolder.ButtonClickListener, StickyHeaderHandler {
 
     private static final String LOG_TAG = ContactListAdapter.class.getSimpleName();
 
@@ -899,5 +901,10 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         public int getCount() {
             return count;
         }
+    }
+
+    @Override
+    public List<?> getAdapterData() {
+        return rosterItemVOs;
     }
 }

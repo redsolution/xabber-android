@@ -2,6 +2,7 @@ package com.xabber.android.ui.adapter.contactlist.viewobjects;
 
 import android.graphics.drawable.Drawable;
 
+import com.brandongogetap.stickyheaders.exposed.StickyHeader;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
@@ -17,7 +18,7 @@ import com.xabber.android.ui.color.ColorManager;
  * Created by valery.miller on 11.10.17.
  */
 
-public class AccountVO extends BaseRosterItemVO {
+public class AccountVO extends BaseRosterItemVO implements StickyHeader {
 
     private String jid;
     private String status;

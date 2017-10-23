@@ -25,13 +25,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/bottom_navigation_background"
-        app:layout_scrollFlags="scroll|enterAlways"
+        android:visibility="gone"
         >
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            app:layout_scrollFlags="scroll|enterAlways"
             >
 
             <include layout="@layout/account_color_indicator" />
@@ -43,7 +42,6 @@
                 android:background="#00000000"
                 android:elevation="4dp"
                 app:titleTextAppearance="@style/ToolbarTitle"
-                app:layout_scrollFlags="scroll|enterAlways"
                 />
 
         </RelativeLayout>

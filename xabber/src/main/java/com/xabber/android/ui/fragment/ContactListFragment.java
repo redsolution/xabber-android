@@ -19,6 +19,8 @@ import android.widget.Filterable;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
+import com.brandongogetap.stickyheaders.StickyLayoutManager;
+import com.brandongogetap.stickyheaders.exposed.StickyHeader;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
@@ -141,7 +143,8 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
         recyclerView = (RecyclerView) view.findViewById(R.id.contact_list_recycler_view);
         registerForContextMenu(recyclerView);
         adapter = new ContactListAdapter((ManagedActivity) getActivity(), this);
-        linearLayoutManager = new LinearLayoutManager(getActivity());
+        linearLayoutManager = new StickyLayoutManager(getActivity(), adapter);
+        ((StickyLayoutManager)linearLayoutManager).elevateHeaders(true);
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setAdapter(adapter);
         infoView = view.findViewById(R.id.info);
