@@ -144,7 +144,6 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
         registerForContextMenu(recyclerView);
         adapter = new ContactListAdapter((ManagedActivity) getActivity(), this);
         linearLayoutManager = new StickyLayoutManager(getActivity(), adapter);
-        ((StickyLayoutManager)linearLayoutManager).elevateHeaders(true);
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setAdapter(adapter);
         infoView = view.findViewById(R.id.info);

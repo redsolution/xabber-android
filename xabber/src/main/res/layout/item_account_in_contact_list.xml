@@ -3,8 +3,9 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="64dp"
-    android:background="@color/white"
     android:elevation="1dp">
+
+    <include layout="@layout/item_half_transparent_background" />
 
     <include layout="@layout/account_color_indicator"/>
 
