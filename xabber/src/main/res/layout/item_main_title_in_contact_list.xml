@@ -43,7 +43,7 @@
         android:layout_alignParentRight="true"
         android:layout_marginRight="4dp"
         android:padding="10dp"
-        android:src="@drawable/ic_volume"
+        android:src="@drawable/ic_bullhorn"
         android:tint="#FF9E9E9E"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:clickable="true"
