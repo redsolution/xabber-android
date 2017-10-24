@@ -77,6 +77,7 @@
                 android:layout_height="match_parent"
                 android:layout_marginLeft="4dp"
                 android:src="@drawable/ic_cellphone"
+                android:visibility="gone"
                 />
 
         </LinearLayout>
@@ -91,14 +92,15 @@
         android:paddingBottom="1dp"
         android:paddingRight="5dp"
         android:paddingLeft="5dp"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
         android:layout_marginRight="10dp"
-        android:layout_marginTop="10dp"
         android:background="@drawable/rounded_background_green"
         android:textColor="@color/white"
         android:textSize="12sp"
         android:textStyle="bold"
         android:text="1"
-        android:layout_alignParentRight="true"
+
         android:visibility="visible"
         />
 
