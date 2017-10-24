@@ -15,115 +15,129 @@
 
         <include layout="@layout/avatar_view"/>
 
-        <LinearLayout
-            android:id="@+id/topText"
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_toRightOf="@+id/avatarView"
-            android:layout_toLeftOf="@+id/tvTime"
-            android:layout_marginTop="14dp"
-            android:layout_marginRight="8dp"
+            android:layout_centerVertical="true"
             >
+
+            <LinearLayout
+                android:id="@+id/topText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_toLeftOf="@+id/tvTime"
+                android:layout_marginRight="8dp"
+                >
+
+                <ImageView
+                    android:id="@+id/ivMucIndicator"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginRight="4dp"
+                    android:src="@drawable/muc_indicator_view"
+                    android:tint="#212121"
+                    />
+
+                <TextView
+                    android:id="@+id/tvContactName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:lines="1"
+                    android:ellipsize="marquee"
+                    android:textSize="14sp"
+                    android:textColor="#212121"
+                    android:fontFamily="sans-serif-medium"
+                    android:text="Erik Walton"
+                    />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:layout_marginRight="8dp"
+                android:layout_toLeftOf="@+id/tvUnreadCount"
+                android:layout_below="@+id/topText"
+                >
+
+                <TextView
+                    android:id="@+id/tvOutgoingMessage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/sender_is_you"
+                    android:visibility="visible"
+                    android:textColor="@color/green_500" />
+
+                <github.ankushsachdeva.emojicon.EmojiconTextView
+                    android:id="@+id/tvMessageText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:lines="1"
+                    android:ellipsize="marquee"
+                    android:gravity="center_vertical"
+                    android:layout_gravity="center_vertical"
+                    android:textSize="14sp"
+                    android:textColor="#616161"
+                    android:alpha="0.6"
+                    android:text="Hello. How are you?"
+                    />
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="16dp"
+                android:textSize="10sp"
+                android:text="12:30"
+                />
 
             <ImageView
-                android:id="@+id/ivMucIndicator"
+                android:id="@+id/ivMessageStatus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_marginRight="4dp"
-                android:src="@drawable/muc_indicator_view"
-                android:tint="#212121"
+                android:layout_alignParentRight="true"
+                android:layout_below="@id/tvTime"
+                android:layout_marginRight="16dp"
+                android:layout_marginTop="7dp"
+                android:src="@drawable/ic_message_delivered_14dp"
                 />
 
             <TextView
-                android:id="@+id/tvContactName"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:lines="1"
-                android:ellipsize="marquee"
-                android:textSize="14sp"
-                android:textColor="#212121"
-                android:fontFamily="sans-serif-medium"
-                android:text="Erik Walton"
-                />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:layout_marginRight="8dp"
-            android:layout_toRightOf="@+id/avatarView"
-            android:layout_toLeftOf="@+id/tvUnreadCount"
-            android:layout_below="@+id/topText"
-            >
-
-            <TextView
-                android:id="@+id/tvOutgoingMessage"
+                android:id="@+id/tvUnreadCount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/sender_is_you"
+                android:layout_alignParentRight="true"
+                android:layout_below="@id/tvTime"
+                android:layout_marginRight="16dp"
+                android:layout_marginTop="7dp"
+                android:paddingTop="0dp"
+                android:paddingBottom="1dp"
+                android:paddingRight="5dp"
+                android:paddingLeft="5dp"
+                android:background="@drawable/rounded_background_green"
+                android:textColor="@color/white"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:text="1"
                 android:visibility="visible"
-                android:textColor="@color/green_500" />
-
-            <github.ankushsachdeva.emojicon.EmojiconTextView
-                android:id="@+id/tvMessageText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:lines="1"
-                android:ellipsize="marquee"
-                android:gravity="center_vertical"
-                android:layout_gravity="center_vertical"
-                android:textSize="14sp"
-                android:textColor="#616161"
-                android:alpha="0.6"
-                android:text="Hello. How are you?"
                 />
 
-        </LinearLayout>
+        </RelativeLayout>
 
-        <TextView
-            android:id="@+id/tvTime"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_marginRight="16dp"
-            android:layout_marginTop="16dp"
-            android:textSize="10sp"
-            android:text="12:30"
-            />
-
-        <ImageView
-            android:id="@+id/ivMessageStatus"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_below="@id/tvTime"
-            android:layout_marginRight="16dp"
-            android:layout_marginTop="7dp"
-            android:src="@drawable/ic_message_delivered_14dp"
-            />
-
-        <TextView
-            android:id="@+id/tvUnreadCount"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_below="@id/tvTime"
-            android:layout_marginRight="16dp"
-            android:layout_marginTop="7dp"
-            android:paddingTop="0dp"
-            android:paddingBottom="1dp"
-            android:paddingRight="5dp"
-            android:paddingLeft="5dp"
-            android:background="@drawable/rounded_background_green"
-            android:textColor="@color/white"
-            android:textSize="12sp"
-            android:textStyle="bold"
-            android:text="1"
-            android:visibility="visible"
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:layout_alignParentBottom="true"
+            android:layout_toRightOf="@+id/avatarView"
+            android:background="?attr/contact_list_subgroup_separator"
+            android:alpha="0.75"
             />
 
         <include layout="@layout/offline_shadow" />
