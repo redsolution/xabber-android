@@ -21,6 +21,7 @@ class AccountGroupViewHolder extends RecyclerView.ViewHolder
     final TextView tvContactCount;
     final ImageView smallRightIcon;
     final ImageView ivStatus;
+    final ImageView ivMenu;
     final ImageView offlineShadow;
     final View accountColorIndicator;
 
@@ -51,6 +52,8 @@ class AccountGroupViewHolder extends RecyclerView.ViewHolder
         ivStatus.setOnClickListener(this);
         offlineShadow = (ImageView) view.findViewById(R.id.offline_shadow);
         accountColorIndicator = view.findViewById(R.id.accountColorIndicator);
+        ivMenu = (ImageView) view.findViewById(R.id.ivMenu);
+        ivMenu.setOnClickListener(this);
     }
 
     @Override
@@ -63,7 +66,7 @@ class AccountGroupViewHolder extends RecyclerView.ViewHolder
 
         if (view.getId() == R.id.ivAvatar) {
             listener.onAccountAvatarClick(adapterPosition);
-        } else if (view.getId() == R.id.contact_list_item_status_icon) {
+        } else if (view.getId() == R.id.ivMenu) {
             listener.onAccountMenuClick(adapterPosition, view);
         } else {
             listener.onAccountGroupClick(adapterPosition);

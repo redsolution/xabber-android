@@ -80,6 +80,18 @@
         android:layout_marginRight="10dp"
         />
 
+    <ImageView
+        android:id="@+id/ivMenu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:padding="8dp"
+        android:src="@drawable/ic_overflow_menu_white_24dp"
+        android:tint="?attr/contact_list_account_group_small_right_icon_color"
+        android:alpha="0.5"
+        android:clickable="true"
+        />
+
     <include layout="@layout/offline_shadow" />
 
 </RelativeLayout>
