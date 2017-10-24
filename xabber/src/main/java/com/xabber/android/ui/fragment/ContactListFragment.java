@@ -18,9 +18,11 @@ import android.widget.Button;
 import android.widget.Filterable;
 import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.brandongogetap.stickyheaders.StickyLayoutManager;
 import com.brandongogetap.stickyheaders.exposed.StickyHeader;
+import com.brandongogetap.stickyheaders.exposed.StickyHeaderListener;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
@@ -144,6 +146,7 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
         registerForContextMenu(recyclerView);
         adapter = new ContactListAdapter((ManagedActivity) getActivity(), this);
         linearLayoutManager = new StickyLayoutManager(getActivity(), adapter);
+        ((StickyLayoutManager)linearLayoutManager).setStickyHeaderListener(adapter);
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setAdapter(adapter);
         infoView = view.findViewById(R.id.info);
@@ -437,6 +440,11 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
         popup.inflate(R.menu.item_account_group);
         ContextMenuHelper.setUpAccountMenu((ManagedActivity) getActivity(), adapter, accountJid, popup.getMenu());
         popup.show();
+    }
+
+    @Override
+    public void onScrollToPosition(int position) {
+        scrollTo(position);
     }
 
     @Override

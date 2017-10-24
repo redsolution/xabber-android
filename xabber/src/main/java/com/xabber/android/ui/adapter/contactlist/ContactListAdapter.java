@@ -29,6 +29,7 @@ import android.widget.Filter;
 import android.widget.Filterable;
 
 import com.brandongogetap.stickyheaders.exposed.StickyHeaderHandler;
+import com.brandongogetap.stickyheaders.exposed.StickyHeaderListener;
 import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
@@ -86,7 +87,7 @@ import java.util.TreeMap;
 public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         implements Runnable, Filterable, UpdatableAdapter, ContactListItemViewHolder.ContactClickListener,
         AccountGroupViewHolder.AccountGroupClickListener, GroupViewHolder.GroupClickListener,
-        ButtonViewHolder.ButtonClickListener, StickyHeaderHandler {
+        ButtonViewHolder.ButtonClickListener, StickyHeaderHandler, StickyHeaderListener {
 
     private static final String LOG_TAG = ContactListAdapter.class.getSimpleName();
 
@@ -164,6 +165,8 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private int[] accountGroupColors;
 
     private boolean showAllChats = false;
+
+    private int currentHeaderPosition = 0;
 
     public ContactListAdapter(ManagedActivity activity, ContactListAdapterListener listener) {
         this.activity = activity;
@@ -785,23 +788,30 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     @Override
     public void onAccountAvatarClick(int adapterPosition) {
+        if (adapterPosition == -1) adapterPosition = currentHeaderPosition;
         activity.startActivity(AccountActivity.createIntent(activity,
                 ((AccountVO)getItem(adapterPosition)).getAccountJid()));
     }
 
     @Override
     public void onAccountMenuClick(int adapterPosition, View view) {
+        if (adapterPosition == -1) adapterPosition = currentHeaderPosition;
         listener.onAccountMenuClick(
                 ((AccountVO)rosterItemVOs.get(adapterPosition)).getAccountJid(), view);
     }
 
     @Override
     public void onAccountGroupClick(int adapterPosition) {
-        toggleGroupExpand(adapterPosition);
+        if (adapterPosition == -1) {
+            adapterPosition = currentHeaderPosition;
+            toggleGroupExpand(adapterPosition);
+            listener.onScrollToPosition(adapterPosition);
+        } else toggleGroupExpand(adapterPosition);
     }
 
     @Override
     public void onAccountGroupCreateContextMenu(int adapterPosition, ContextMenu menu) {
+        if (adapterPosition == -1) adapterPosition = currentHeaderPosition;
         AccountVO accountVO = (AccountVO) getItem(adapterPosition);
         ContextMenuHelper.createAccountContextMenu(activity, this, accountVO.getAccountJid(), menu);
     }
@@ -875,6 +885,7 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                                   boolean hasVisibleContacts, boolean isFilterEnabled);
         void onContactClick(AbstractContact contact);
         void onAccountMenuClick(AccountJid accountJid, View view);
+        void onScrollToPosition(int position);
 
     }
 
@@ -926,4 +937,12 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     public List<?> getAdapterData() {
         return rosterItemVOs;
     }
+
+    @Override
+    public void headerAttached(View headerView, int adapterPosition) {
+        this.currentHeaderPosition = adapterPosition;
+    }
+
+    @Override
+    public void headerDetached(View headerView, int adapterPosition) {}
 }

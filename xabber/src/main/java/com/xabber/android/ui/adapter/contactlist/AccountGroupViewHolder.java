@@ -56,10 +56,10 @@ class AccountGroupViewHolder extends RecyclerView.ViewHolder
     @Override
     public void onClick(View view) {
         int adapterPosition = getAdapterPosition();
-        if (adapterPosition == RecyclerView.NO_POSITION) {
-            LogManager.w(LOG_TAG, "onClick: no position");
-            return;
-        }
+//        if (adapterPosition == RecyclerView.NO_POSITION) {
+//            LogManager.w(LOG_TAG, "onClick: no position");
+//            return;
+//        }
 
         if (view.getId() == R.id.ivAvatar) {
             listener.onAccountAvatarClick(adapterPosition);
@@ -73,10 +73,10 @@ class AccountGroupViewHolder extends RecyclerView.ViewHolder
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         int adapterPosition = getAdapterPosition();
-        if (adapterPosition == RecyclerView.NO_POSITION) {
-            LogManager.w(LOG_TAG, "onCreateContextMenu: no position");
-            return;
-        }
+//        if (adapterPosition == RecyclerView.NO_POSITION) {
+//            LogManager.w(LOG_TAG, "onCreateContextMenu: no position");
+//            return;
+//        }
 
         listener.onAccountGroupCreateContextMenu(adapterPosition, menu);
     }
