@@ -175,7 +175,7 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
 
         addMenuOption = view.findViewById(R.id.action_add);
 
-        recyclerView.addOnScrollListener(new ScrollListener());
+        //recyclerView.addOnScrollListener(new ScrollListener());
 
         return view;
     }
@@ -508,17 +508,17 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
         popupMenu.show();
     }
 
-    private class ScrollListener extends RecyclerView.OnScrollListener {
-        @Override
-        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-            super.onScrolled(recyclerView, dx, dy);
-            int currentPosition = linearLayoutManager.findFirstVisibleItemPosition();
-            if (adapter.getItemViewType(currentPosition) == ContactListAdapter.TYPE_CONTACT
-                    || adapter.getItemViewType(currentPosition) == ContactListAdapter.TYPE_ACCOUNT)
-                toolbar.setTitle(R.string.title_contacts);
-
-            if (adapter.getItemViewType(currentPosition) == ContactListAdapter.TYPE_CHAT)
-                toolbar.setTitle(R.string.title_recent_chats);
-        }
-    }
+//    private class ScrollListener extends RecyclerView.OnScrollListener {
+//        @Override
+//        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+//            super.onScrolled(recyclerView, dx, dy);
+//            int currentPosition = linearLayoutManager.findFirstVisibleItemPosition();
+//            if (adapter.getItemViewType(currentPosition) == ContactListAdapter.TYPE_CONTACT
+//                    || adapter.getItemViewType(currentPosition) == ContactListAdapter.TYPE_ACCOUNT)
+//                toolbar.setTitle(R.string.title_contacts);
+//
+//            if (adapter.getItemViewType(currentPosition) == ContactListAdapter.TYPE_CHAT)
+//                toolbar.setTitle(R.string.title_recent_chats);
+//        }
+//    }
 }
