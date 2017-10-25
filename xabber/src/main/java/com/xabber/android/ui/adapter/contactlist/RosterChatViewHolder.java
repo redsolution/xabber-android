@@ -61,7 +61,7 @@ public class RosterChatViewHolder extends RecyclerView.ViewHolder implements Vie
             return;
         }
 
-        if (v.getId() == R.id.avatar) {
+        if (v.getId() == R.id.ivAvatar) {
             listener.onContactAvatarClick(adapterPosition);
         } else {
             listener.onContactClick(adapterPosition);

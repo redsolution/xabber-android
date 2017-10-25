@@ -67,7 +67,7 @@ class ContactListItemViewHolder extends RecyclerView.ViewHolder implements View.
             return;
         }
 
-        if (v.getId() == R.id.avatar) {
+        if (v.getId() == R.id.ivAvatar) {
             listener.onContactAvatarClick(adapterPosition);
         } else {
             listener.onContactClick(adapterPosition);
