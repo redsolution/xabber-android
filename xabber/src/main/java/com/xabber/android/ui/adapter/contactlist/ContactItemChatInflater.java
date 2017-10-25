@@ -13,6 +13,7 @@ import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.ui.activity.ContactActivity;
 import com.xabber.android.ui.activity.ContactEditActivity;
 import com.xabber.android.ui.adapter.contactlist.viewobjects.ChatVO;
+import com.xabber.android.ui.adapter.contactlist.viewobjects.ContactVO;
 import com.xabber.android.utils.StringUtils;
 
 /**
@@ -107,12 +108,12 @@ public class ContactItemChatInflater {
         } else viewHolder.tvUnreadCount.setVisibility(View.INVISIBLE);
     }
 
-    void onAvatarClick(BaseEntity contact) {
+    void onAvatarClick(ContactVO contact) {
         Intent intent;
-        if (MUCManager.getInstance().hasRoom(contact.getAccount(), contact.getUser())) {
-            intent = ContactActivity.createIntent(context, contact.getAccount(), contact.getUser());
+        if (MUCManager.getInstance().hasRoom(contact.getAccountJid(), contact.getUserJid())) {
+            intent = ContactActivity.createIntent(context, contact.getAccountJid(), contact.getUserJid());
         } else {
-            intent = ContactEditActivity.createIntent(context, contact.getAccount(), contact.getUser());
+            intent = ContactEditActivity.createIntent(context, contact.getAccountJid(), contact.getUserJid());
         }
         context.startActivity(intent);
     }

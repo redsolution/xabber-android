@@ -11,6 +11,7 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.RosterManager;
+import com.xabber.android.ui.adapter.contactlist.viewobjects.ChatVO;
 import com.xabber.android.ui.adapter.contactlist.viewobjects.ContactVO;
 
 import java.util.ArrayList;
@@ -19,7 +20,7 @@ import java.util.List;
 public class ChatListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements ContactListItemViewHolder.ContactClickListener {
 
     private List<ContactVO> contacts;
-    private final ContactItemInflater contactItemInflater;
+    private final ContactItemChatInflater inflater;
     private final Listener listener;
 
     public interface Listener {
@@ -29,23 +30,23 @@ public class ChatListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     public ChatListAdapter(Context context, Listener listener) {
         this.listener = listener;
         contacts = new ArrayList<>();
-        contactItemInflater = new ContactItemInflater(context);
+        inflater = new ContactItemChatInflater(context);
     }
 
     public void updateContacts(List<AbstractContact> contacts) {
-        this.contacts = ContactVO.convert(contacts);
+        this.contacts = ChatVO.convert(contacts);
         notifyDataSetChanged();
     }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new ContactListItemViewHolder(LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_contact_in_contact_list, parent, false), this);
+        return new RosterChatViewHolder(LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.item_chat_in_contact_list, parent, false), this);
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        contactItemInflater.bindViewHolder((ContactListItemViewHolder) holder, contacts.get(position));
+        inflater.bindViewHolder((RosterChatViewHolder) holder, (ChatVO) contacts.get(position));
     }
 
     @Override
@@ -67,7 +68,7 @@ public class ChatListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     @Override
     public void onContactAvatarClick(int adapterPosition) {
-        contactItemInflater.onAvatarClick(contacts.get(adapterPosition));
+        inflater.onAvatarClick(contacts.get(adapterPosition));
     }
 
     @Override
