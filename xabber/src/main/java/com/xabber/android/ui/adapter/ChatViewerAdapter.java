@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.ui.fragment.ChatFragment;
+import com.xabber.android.ui.fragment.ContactVcardViewerFragment;
 import com.xabber.android.ui.fragment.RecentChatFragment;
 
 public class ChatViewerAdapter extends FragmentPagerAdapter {
@@ -55,7 +56,7 @@ public class ChatViewerAdapter extends FragmentPagerAdapter {
     }
 
     private void setChat(@NonNull AccountJid accountJid, @NonNull UserJid userJid) {
-        itemCount = 2;
+        itemCount = 3;
         this.accountJid = accountJid;
         this.userJid = userJid;
     }
@@ -66,6 +67,8 @@ public class ChatViewerAdapter extends FragmentPagerAdapter {
             return RecentChatFragment.newInstance();
         } else if (position == PAGE_POSITION_CHAT) {
             return ChatFragment.newInstance(accountJid, userJid);
+        } else if (position == 2) {
+            return ContactVcardViewerFragment.newInstance(accountJid, userJid);
         } else {
             return null;
         }
@@ -84,4 +87,9 @@ public class ChatViewerAdapter extends FragmentPagerAdapter {
         finishUpdateListener.onChatViewAdapterFinishUpdate();
     }
 
+    @Override
+    public float getPageWidth(int position) {
+        if (position == 0 || position == 2) return 0.85f;
+        else return 1;
+    }
 }

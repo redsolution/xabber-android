@@ -28,7 +28,6 @@ import android.view.inputmethod.InputMethodManager;
 import com.xabber.android.R;
 import com.xabber.android.data.ActivityManager;
 import com.xabber.android.data.Application;
-import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
@@ -47,9 +46,9 @@ import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.ui.adapter.ChatViewerAdapter;
-import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.color.StatusBarPainter;
 import com.xabber.android.ui.fragment.ChatFragment;
+import com.xabber.android.ui.fragment.ContactVcardViewerFragment;
 import com.xabber.android.ui.fragment.RecentChatFragment;
 
 import org.greenrobot.eventbus.Subscribe;
@@ -68,7 +67,7 @@ import java.util.Collection;
 public class ChatActivity extends ManagedActivity implements OnContactChangedListener,
         OnAccountChangedListener, ViewPager.OnPageChangeListener,
         ChatFragment.ChatViewerFragmentListener, OnBlockedListChangedListener,
-        RecentChatFragment.Listener, ChatViewerAdapter.FinishUpdateListener {
+        RecentChatFragment.Listener, ChatViewerAdapter.FinishUpdateListener, ContactVcardViewerFragment.Listener {
 
     private static final String LOG_TAG = ChatActivity.class.getSimpleName();
 
@@ -313,16 +312,6 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         viewPager.setAdapter(chatViewerAdapter);
         viewPager.addOnPageChangeListener(this);
 
-        if (SettingsManager.chatsShowBackground()) {
-            if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.dark) {
-                viewPager.setBackgroundDrawable(getResources().getDrawable(R.drawable.chat_background_repeat_dark));
-            } else {
-                viewPager.setBackgroundDrawable(getResources().getDrawable(R.drawable.chat_background_repeat));
-            }
-        } else {
-            viewPager.setBackgroundColor(ColorManager.getInstance().getChatBackgroundColor());
-        }
-
     }
 
     private void getInitialChatFromIntent() {
@@ -553,4 +542,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
             close();
         }
     }
+
+    @Override
+    public void onVCardReceived() {}
 }

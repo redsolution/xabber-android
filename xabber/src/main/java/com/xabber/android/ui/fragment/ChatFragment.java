@@ -16,7 +16,6 @@ import android.support.v4.app.NavUtils;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
-
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
@@ -337,6 +336,16 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         });
 
         setChat(account, user);
+
+        if (SettingsManager.chatsShowBackground()) {
+            if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.dark) {
+                view.setBackgroundDrawable(getResources().getDrawable(R.drawable.chat_background_repeat_dark));
+            } else {
+                view.setBackgroundDrawable(getResources().getDrawable(R.drawable.chat_background_repeat));
+            }
+        } else {
+            view.setBackgroundColor(ColorManager.getInstance().getChatBackgroundColor());
+        }
 
         return view;
     }
