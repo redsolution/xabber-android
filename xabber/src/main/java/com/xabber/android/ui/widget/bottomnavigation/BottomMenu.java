@@ -126,6 +126,7 @@ public class BottomMenu extends Fragment implements View.OnClickListener {
                 listener.onRecentClick();
                 break;
             case R.id.btnSearch:
+                listener.onSearchClick();
                 openSearch();
                 break;
             case R.id.btnMenu:

@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -109,8 +110,22 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
     private View addMenuOption;
     private Toolbar toolbar;
 
-    public static ContactListFragment newInstance() {
-        return new ContactListFragment();
+    public static final String ACCOUNT_JID = "account_jid";
+    private AccountJid scrollToAccountJid;
+
+    public static ContactListFragment newInstance(@Nullable AccountJid account) {
+        ContactListFragment fragment = new ContactListFragment();
+        Bundle args = new Bundle();
+        if (account != null)
+            args.putSerializable(ACCOUNT_JID, account);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        this.scrollToAccountJid = (AccountJid) getArguments().getSerializable(ACCOUNT_JID);
     }
 
     @Override
@@ -177,6 +192,8 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             getActivity().getWindow().setStatusBarColor(ColorManager.getInstance().getAccountPainter().getDefaultMainColor());
         }
+        if (scrollToAccountJid != null)
+            scrollToAccount(scrollToAccountJid);
     }
 
     @Override

@@ -27,6 +27,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.Nullable;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
@@ -195,7 +196,7 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
             sendText = savedInstanceState.getString(SAVED_SEND_TEXT);
             action = savedInstanceState.getString(SAVED_ACTION);
         } else {
-            showContactListFragment();
+            showContactListFragment(null);
 
             sendText = null;
             action = getIntent().getAction();
@@ -674,7 +675,7 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
         if (contentFragment instanceof ContactListFragment) {
             ((ContactListFragment) getFragmentManager().findFragmentById(R.id.container)).scrollTo(0);
             ((ContactListFragment) getFragmentManager().findFragmentById(R.id.container)).setShowAllChats(false);
-        } else showContactListFragment();
+        } else showContactListFragment(null);
     }
 
     @Override
@@ -688,21 +689,21 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
         if (contentFragment instanceof ContactListFragment) {
             ((ContactListFragment) getFragmentManager().findFragmentById(R.id.container)).setShowAllChats(false);
             ((ContactListFragment) getFragmentManager().findFragmentById(R.id.container)).scrollToAccount(jid);
-        } else showContactListFragment();
+        } else showContactListFragment(jid);
     }
 
     @Override
     public void onSearch(String filter) {
         if (contentFragment instanceof ContactListFragment)
             ((ContactListFragment) contentFragment).getFilterableAdapter().getFilter().filter(filter);
-        else showContactListFragment();
+        else showContactListFragment(null);
     }
 
     @Override
     public void onSearchClick() {
         if (contentFragment instanceof ContactListFragment) {
             ((ContactListFragment) getFragmentManager().findFragmentById(R.id.container)).setShowAllChats(false);
-        } else showContactListFragment();
+        } else showContactListFragment(null);
     }
 
     private void showBottomNavigation() {
@@ -721,8 +722,8 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
         fTrans.commit();
     }
 
-    private void showContactListFragment() {
-        contentFragment = ContactListFragment.newInstance();
+    private void showContactListFragment(@Nullable AccountJid account) {
+        contentFragment = ContactListFragment.newInstance(account);
 
         FragmentTransaction fTrans = getFragmentManager().beginTransaction();
         fTrans.replace(R.id.container, contentFragment, CONTACT_LIST_TAG);
