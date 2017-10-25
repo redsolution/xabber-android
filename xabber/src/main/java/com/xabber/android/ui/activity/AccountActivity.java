@@ -303,6 +303,9 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
         updateTitle();
     }
 
+    @Override
+    public void registerVCardFragment(ContactVcardViewerFragment fragment) {}
+
     @Subscribe(sticky = true)
     @Override
     public void onAuthErrorEvent(AccountErrorEvent accountErrorEvent) {

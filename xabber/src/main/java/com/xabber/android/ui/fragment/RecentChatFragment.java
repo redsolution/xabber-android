@@ -78,19 +78,19 @@ public class RecentChatFragment extends Fragment implements ChatListAdapter.List
 
         updateChats();
 
-        Toolbar toolbar = (Toolbar) rootView.findViewById(R.id.toolbar_default);
-        toolbar.setTitle(R.string.recent_chats);
-        toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                NavUtils.navigateUpFromSameTask(getActivity());
-            }
-        });
-        toolbar.inflateMenu(R.menu.toolbar_recent_chats);
-        toolbar.setOnMenuItemClickListener(this);
-
-        toolbar.setBackgroundColor(ColorManager.getInstance().getAccountPainter().getDefaultMainColor());
+//        Toolbar toolbar = (Toolbar) rootView.findViewById(R.id.toolbar_default);
+//        toolbar.setTitle(R.string.recent_chats);
+//        toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
+//        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                NavUtils.navigateUpFromSameTask(getActivity());
+//            }
+//        });
+//        toolbar.inflateMenu(R.menu.toolbar_recent_chats);
+//        toolbar.setOnMenuItemClickListener(this);
+//
+//        toolbar.setBackgroundColor(ColorManager.getInstance().getAccountPainter().getDefaultMainColor());
 
         return rootView;
     }

@@ -211,4 +211,7 @@ public class ContactActivity extends ManagedActivity implements
     public void onVCardReceived() {
         ContactTitleInflater.updateTitle(contactTitleView, this, bestContact);
     }
+
+    @Override
+    public void registerVCardFragment(ContactVcardViewerFragment fragment) {}
 }

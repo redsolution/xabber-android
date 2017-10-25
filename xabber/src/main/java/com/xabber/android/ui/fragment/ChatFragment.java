@@ -144,8 +144,8 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
     private AccountJid account;
     private UserJid user;
 
-    private Toolbar toolbar;
-    private View contactTitleView;
+    //private Toolbar toolbar;
+//    private View contactTitleView;
     private EditText inputView;
     private ImageButton sendButton;
     private ImageButton securityButton;
@@ -230,22 +230,22 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
 
         View view = inflater.inflate(R.layout.fragment_chat, container, false);
 
-        contactTitleView = view.findViewById(R.id.contact_title);
-        contactTitleView.findViewById(R.id.avatar).setOnClickListener(this);
+//        contactTitleView = view.findViewById(R.id.contact_title);
+//        contactTitleView.findViewById(R.id.avatar).setOnClickListener(this);
 
-        toolbar = (Toolbar) view.findViewById(R.id.toolbar_default);
-        toolbar.inflateMenu(R.menu.toolbar_chat);
-        toolbar.setOverflowIcon(getResources().getDrawable(R.drawable.ic_overflow_menu_white_24dp));
-        toolbar.setOnMenuItemClickListener(this);
-        toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                NavUtils.navigateUpFromSameTask(getActivity());
-            }
-        });
-
-        setHasOptionsMenu(true);
+//        toolbar = (Toolbar) view.findViewById(R.id.toolbar_default);
+//        toolbar.inflateMenu(R.menu.toolbar_chat);
+//        toolbar.setOverflowIcon(getResources().getDrawable(R.drawable.ic_overflow_menu_white_24dp));
+//        toolbar.setOnMenuItemClickListener(this);
+//        toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
+//        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                NavUtils.navigateUpFromSameTask(getActivity());
+//            }
+//        });
+//
+//        setHasOptionsMenu(true);
 
         sendButton = (ImageButton) view.findViewById(R.id.button_send_message);
         sendButton.setColorFilter(ColorManager.getInstance().getAccountPainter().getGreyMain());
@@ -893,71 +893,71 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         scrollDown();
     }
 
-    /**
-     * This method used for hardware menu button
-     */
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.toolbar_chat, menu);
-        setUpOptionsMenu(menu);
-    }
+//    /**
+//     * This method used for hardware menu button
+//     */
+//    @Override
+//    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+//        inflater.inflate(R.menu.toolbar_chat, menu);
+//        setUpOptionsMenu(menu);
+//    }
 
-    /**
-     * This method used for hardware menu button
-     */
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        return onMenuItemClick(item);
-    }
-
-    private void setUpOptionsMenu(Menu menu) {
-        AbstractChat abstractChat = MessageManager.getInstance().getChat(account, user);
-
-        if (abstractChat instanceof RoomChat) {
-            RoomState chatState = ((RoomChat) abstractChat).getState();
-
-            if (chatState == RoomState.available) {
-                menu.findItem(R.id.action_list_of_occupants).setVisible(true);
-            }
-
-            if (chatState == RoomState.unavailable) {
-                menu.findItem(R.id.action_join_conference).setVisible(true);
-
-            } else {
-                menu.findItem(R.id.action_invite_to_chat).setVisible(true);
-
-                if (chatState == RoomState.error) {
-                    menu.findItem(R.id.action_authorization_settings).setVisible(true);
-                } else {
-                    menu.findItem(R.id.action_leave_conference).setVisible(true);
-                }
-            }
-
-            // hide regular chat menu items
-            menu.findItem(R.id.action_view_contact).setVisible(false);
-            menu.findItem(R.id.action_close_chat).setVisible(false);
-            menu.findItem(R.id.action_block_contact).setVisible(false);
-        }
-
-        if (abstractChat instanceof RegularChat) {
-            menu.findItem(R.id.action_view_contact).setVisible(true);
-            menu.findItem(R.id.action_close_chat).setVisible(true);
-            menu.findItem(R.id.action_block_contact).setVisible(true);
-
-            // hide room chat menu items
-            menu.findItem(R.id.action_list_of_occupants).setVisible(false);
-            menu.findItem(R.id.action_join_conference).setVisible(false);
-            menu.findItem(R.id.action_invite_to_chat).setVisible(false);
-            menu.findItem(R.id.action_authorization_settings).setVisible(false);
-            menu.findItem(R.id.action_leave_conference).setVisible(false);
-        }
-    }
+//    /**
+//     * This method used for hardware menu button
+//     */
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        return onMenuItemClick(item);
+//    }
+//
+//    private void setUpOptionsMenu(Menu menu) {
+//        AbstractChat abstractChat = MessageManager.getInstance().getChat(account, user);
+//
+//        if (abstractChat instanceof RoomChat) {
+//            RoomState chatState = ((RoomChat) abstractChat).getState();
+//
+//            if (chatState == RoomState.available) {
+//                menu.findItem(R.id.action_list_of_occupants).setVisible(true);
+//            }
+//
+//            if (chatState == RoomState.unavailable) {
+//                menu.findItem(R.id.action_join_conference).setVisible(true);
+//
+//            } else {
+//                menu.findItem(R.id.action_invite_to_chat).setVisible(true);
+//
+//                if (chatState == RoomState.error) {
+//                    menu.findItem(R.id.action_authorization_settings).setVisible(true);
+//                } else {
+//                    menu.findItem(R.id.action_leave_conference).setVisible(true);
+//                }
+//            }
+//
+//            // hide regular chat menu items
+//            menu.findItem(R.id.action_view_contact).setVisible(false);
+//            menu.findItem(R.id.action_close_chat).setVisible(false);
+//            menu.findItem(R.id.action_block_contact).setVisible(false);
+//        }
+//
+//        if (abstractChat instanceof RegularChat) {
+//            menu.findItem(R.id.action_view_contact).setVisible(true);
+//            menu.findItem(R.id.action_close_chat).setVisible(true);
+//            menu.findItem(R.id.action_block_contact).setVisible(true);
+//
+//            // hide room chat menu items
+//            menu.findItem(R.id.action_list_of_occupants).setVisible(false);
+//            menu.findItem(R.id.action_join_conference).setVisible(false);
+//            menu.findItem(R.id.action_invite_to_chat).setVisible(false);
+//            menu.findItem(R.id.action_authorization_settings).setVisible(false);
+//            menu.findItem(R.id.action_leave_conference).setVisible(false);
+//        }
+//    }
 
     public void updateContact() {
-        ContactTitleInflater.updateTitle(contactTitleView, getActivity(),
-                RosterManager.getInstance().getBestContact(account, user));
-        toolbar.setBackgroundColor(ColorManager.getInstance().getAccountPainter().getAccountMainColor(account));
-        setUpOptionsMenu(toolbar.getMenu());
+//        ContactTitleInflater.updateTitle(contactTitleView, getActivity(),
+//                RosterManager.getInstance().getBestContact(account, user));
+//        toolbar.setBackgroundColor(ColorManager.getInstance().getAccountPainter().getAccountMainColor(account));
+//        setUpOptionsMenu(toolbar.getMenu());
         updateSecurityButton();
         updateSendButtonSecurityLevel();
     }
@@ -1410,10 +1410,10 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
     }
 
     public void playIncomingAnimation() {
-        if (shakeAnimation == null) {
-            shakeAnimation = AnimationUtils.loadAnimation(getActivity(), R.anim.shake);
-        }
-        toolbar.findViewById(R.id.name_holder).startAnimation(shakeAnimation);
+//        if (shakeAnimation == null) {
+//            shakeAnimation = AnimationUtils.loadAnimation(getActivity(), R.anim.shake);
+//        }
+//        toolbar.findViewById(R.id.name_holder).startAnimation(shakeAnimation);
     }
 
     public void playIncomingSound() {

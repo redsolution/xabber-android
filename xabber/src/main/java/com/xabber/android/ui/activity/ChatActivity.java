@@ -21,6 +21,10 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NavUtils;
 import android.support.v4.view.ViewPager;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
@@ -35,6 +39,8 @@ import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.attention.AttentionManager;
 import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.blocking.OnBlockedListChangedListener;
+import com.xabber.android.data.extension.muc.RoomChat;
+import com.xabber.android.data.extension.muc.RoomState;
 import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
@@ -45,11 +51,14 @@ import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.RosterContact;
+import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.adapter.ChatViewerAdapter;
+import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.color.StatusBarPainter;
 import com.xabber.android.ui.fragment.ChatFragment;
 import com.xabber.android.ui.fragment.ContactVcardViewerFragment;
 import com.xabber.android.ui.fragment.RecentChatFragment;
+import com.xabber.android.ui.helper.ContactTitleInflater;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -67,7 +76,8 @@ import java.util.Collection;
 public class ChatActivity extends ManagedActivity implements OnContactChangedListener,
         OnAccountChangedListener, ViewPager.OnPageChangeListener,
         ChatFragment.ChatViewerFragmentListener, OnBlockedListChangedListener,
-        RecentChatFragment.Listener, ChatViewerAdapter.FinishUpdateListener, ContactVcardViewerFragment.Listener {
+        RecentChatFragment.Listener, ChatViewerAdapter.FinishUpdateListener,
+        ContactVcardViewerFragment.Listener, Toolbar.OnMenuItemClickListener {
 
     private static final String LOG_TAG = ChatActivity.class.getSimpleName();
 
@@ -103,10 +113,14 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     private boolean exitOnSend;
 
     @Nullable
+    private ContactVcardViewerFragment contactVcardViewerFragment;
+    @Nullable
     private ChatFragment chatFragment;
     @Nullable
     private RecentChatFragment recentChatFragment;
 
+    private Toolbar toolbar;
+    private View contactTitleView;
 
     public static void hideKeyboard(Activity activity) {
         // Check if no view has focus:
@@ -205,6 +219,20 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         LogManager.i(LOG_TAG, "onCreate " + savedInstanceState);
 
         setContentView(R.layout.activity_chat);
+
+        contactTitleView = findViewById(R.id.contact_title);
+        toolbar = (Toolbar) findViewById(R.id.toolbar_default);
+        toolbar.inflateMenu(R.menu.toolbar_chat);
+        toolbar.setOverflowIcon(getResources().getDrawable(R.drawable.ic_overflow_menu_white_24dp));
+        toolbar.setOnMenuItemClickListener(this);
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                NavUtils.navigateUpFromSameTask(ChatActivity.this);
+            }
+        });
+
         statusBarPainter = new StatusBarPainter(this);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
@@ -236,6 +264,8 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     protected void onResume() {
         super.onResume();
         LogManager.i(LOG_TAG, "onResume");
+
+        updateToolbar();
 
         isVisible = true;
 
@@ -395,6 +425,9 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
             chatFragment.setChat(chat.getAccount(), chat.getUser());
         }
         selectPage(ChatViewerAdapter.PAGE_POSITION_CHAT, smoothScroll);
+
+        if (contactVcardViewerFragment != null)
+            contactVcardViewerFragment.updateContact(account, user);
     }
 
     private void selectPage(int position, boolean smoothScroll) {
@@ -409,12 +442,14 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
 
     @Override
     public void onContactsChanged(Collection<RosterContact> entities) {
+        updateToolbar();
         updateChat();
         updateRecentChats();
     }
 
     @Override
     public void onAccountsChanged(Collection<AccountJid> accounts) {
+        updateToolbar();
         updateChat();
         updateRecentChats();
         updateStatusBar();
@@ -439,15 +474,24 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
             }
         }
 
+        updateToolbar();
         updateStatusBar();
     }
 
+    private void updateToolbar() {
+        ContactTitleInflater.updateTitle(contactTitleView, this,
+                RosterManager.getInstance().getBestContact(account, user));
+        toolbar.setBackgroundColor(ColorManager.getInstance().getAccountPainter().getAccountMainColor(account));
+        setUpOptionsMenu(toolbar.getMenu());
+    }
+
     private void updateStatusBar() {
-        if (selectedPagePosition == ChatViewerAdapter.PAGE_POSITION_RECENT_CHATS || account == null) {
-            statusBarPainter.updateWithDefaultColor();
-        } else {
-            statusBarPainter.updateWithAccountName(account);
-        }
+//        if (selectedPagePosition == ChatViewerAdapter.PAGE_POSITION_RECENT_CHATS || account == null) {
+//            statusBarPainter.updateWithDefaultColor();
+//        } else {
+//            statusBarPainter.updateWithAccountName(account);
+//        }
+        statusBarPainter.updateWithAccountName(account);
     }
 
     private void updateChat() {
@@ -545,4 +589,70 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
 
     @Override
     public void onVCardReceived() {}
+
+    @Override
+    public void registerVCardFragment(ContactVcardViewerFragment fragment) {
+        this.contactVcardViewerFragment = fragment;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.toolbar_chat, menu);
+        setUpOptionsMenu(menu);
+        return true;
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        return false;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        return onMenuItemClick(item);
+    }
+
+    private void setUpOptionsMenu(Menu menu) {
+        AbstractChat abstractChat = MessageManager.getInstance().getChat(account, user);
+
+        if (abstractChat instanceof RoomChat) {
+            RoomState chatState = ((RoomChat) abstractChat).getState();
+
+            if (chatState == RoomState.available) {
+                menu.findItem(R.id.action_list_of_occupants).setVisible(true);
+            }
+
+            if (chatState == RoomState.unavailable) {
+                menu.findItem(R.id.action_join_conference).setVisible(true);
+
+            } else {
+                menu.findItem(R.id.action_invite_to_chat).setVisible(true);
+
+                if (chatState == RoomState.error) {
+                    menu.findItem(R.id.action_authorization_settings).setVisible(true);
+                } else {
+                    menu.findItem(R.id.action_leave_conference).setVisible(true);
+                }
+            }
+
+            // hide regular chat menu items
+            menu.findItem(R.id.action_view_contact).setVisible(false);
+            menu.findItem(R.id.action_close_chat).setVisible(false);
+            menu.findItem(R.id.action_block_contact).setVisible(false);
+        }
+
+        if (abstractChat instanceof RegularChat) {
+            menu.findItem(R.id.action_view_contact).setVisible(true);
+            menu.findItem(R.id.action_close_chat).setVisible(true);
+            menu.findItem(R.id.action_block_contact).setVisible(true);
+
+            // hide room chat menu items
+            menu.findItem(R.id.action_list_of_occupants).setVisible(false);
+            menu.findItem(R.id.action_join_conference).setVisible(false);
+            menu.findItem(R.id.action_invite_to_chat).setVisible(false);
+            menu.findItem(R.id.action_authorization_settings).setVisible(false);
+            menu.findItem(R.id.action_leave_conference).setVisible(false);
+        }
+    }
 }
