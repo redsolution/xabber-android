@@ -7,7 +7,7 @@
     android:gravity="center_vertical"
     >
 
-    <include layout="@layout/avatar" />
+    <include layout="@layout/avatar_view" />
 
     <LinearLayout
         android:id="@+id/name_holder"
@@ -41,12 +41,12 @@
             />
     </LinearLayout>
 
-    <ImageView
-        android:id="@+id/status_icon"
-        android:src="@drawable/ic_status"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginRight="8dp"
-        />
+    <!--<ImageView-->
+        <!--android:id="@+id/status_icon"-->
+        <!--android:src="@drawable/ic_status"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginRight="8dp"-->
+        <!--/>-->
 
 </LinearLayout>
