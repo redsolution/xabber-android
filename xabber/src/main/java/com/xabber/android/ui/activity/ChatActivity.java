@@ -27,6 +27,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 
 import com.xabber.android.R;
@@ -114,6 +116,8 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     private UserJid user;
     private int selectedPagePosition;
     private boolean exitOnSend;
+
+    private Animation shakeAnimation = null;
 
     @Nullable
     private ContactVcardViewerFragment contactVcardViewerFragment;
@@ -489,11 +493,6 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     }
 
     private void updateStatusBar() {
-//        if (selectedPagePosition == ChatViewerAdapter.PAGE_POSITION_RECENT_CHATS || account == null) {
-//            statusBarPainter.updateWithDefaultColor();
-//        } else {
-//            statusBarPainter.updateWithAccountName(account);
-//        }
         statusBarPainter.updateWithAccountName(account);
     }
 
@@ -748,5 +747,13 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
             default:
                 return false;
         }
+    }
+
+    @Override
+    public void playIncomingAnimation() {
+        if (shakeAnimation == null) {
+            shakeAnimation = AnimationUtils.loadAnimation(this, R.anim.shake);
+        }
+        toolbar.findViewById(R.id.name_holder).startAnimation(shakeAnimation);
     }
 }

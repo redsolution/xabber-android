@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.NavUtils;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -26,7 +25,6 @@ import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.adapter.ChatComparator;
 import com.xabber.android.ui.adapter.contactlist.ChatListAdapter;
-import com.xabber.android.ui.color.ColorManager;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -77,20 +75,6 @@ public class RecentChatFragment extends Fragment implements ChatListAdapter.List
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         updateChats();
-
-//        Toolbar toolbar = (Toolbar) rootView.findViewById(R.id.toolbar_default);
-//        toolbar.setTitle(R.string.recent_chats);
-//        toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
-//        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                NavUtils.navigateUpFromSameTask(getActivity());
-//            }
-//        });
-//        toolbar.inflateMenu(R.menu.toolbar_recent_chats);
-//        toolbar.setOnMenuItemClickListener(this);
-//
-//        toolbar.setBackgroundColor(ColorManager.getInstance().getAccountPainter().getDefaultMainColor());
 
         return rootView;
     }
