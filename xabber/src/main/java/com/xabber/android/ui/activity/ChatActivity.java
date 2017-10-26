@@ -63,6 +63,7 @@ import com.xabber.android.ui.fragment.ChatFragment;
 import com.xabber.android.ui.fragment.ContactVcardViewerFragment;
 import com.xabber.android.ui.fragment.RecentChatFragment;
 import com.xabber.android.ui.helper.ContactTitleInflater;
+import com.xabber.android.ui.helper.NewContactTitleInflater;
 import com.xabber.android.ui.preferences.ChatContactSettings;
 
 import org.greenrobot.eventbus.Subscribe;
@@ -489,7 +490,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     }
 
     private void updateToolbar() {
-        ContactTitleInflater.updateTitle(contactTitleView, this,
+        NewContactTitleInflater.updateTitle(contactTitleView, this,
                 RosterManager.getInstance().getBestContact(account, user));
         toolbar.setBackgroundColor(ColorManager.getInstance().getAccountPainter().getAccountMainColor(account));
         setUpOptionsMenu(toolbar.getMenu());
