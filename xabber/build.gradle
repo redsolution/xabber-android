@@ -1,12 +1,11 @@
 apply plugin: 'com.android.application'
-apply plugin: 'com.neenbedankt.android-apt'
 apply plugin: 'realm-android'
 apply plugin: 'com.frogermcs.androiddevmetrics'
 apply plugin: 'io.fabric'
 
 android {
     compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    buildToolsVersion '26.0.2'
 
     defaultConfig {
         minSdkVersion 15
@@ -36,27 +35,32 @@ android {
         }
     }
 
+    flavorDimensions "build"
     productFlavors {
 
         dev {
+            dimension "build"
             applicationId "com.xabber.androiddev"
             resValue 'string', 'application_package', applicationId
             multiDexEnabled true
         }
 
         beta {
+            dimension "build"
             applicationId "com.xabber.android.beta"
             resValue 'string', 'application_package', applicationId
             multiDexEnabled true
         }
 
         prod {
+            dimension "build"
             applicationId "com.xabber.android"
             resValue 'string', 'application_package', applicationId
             multiDexEnabled true
         }
 
         vip {
+            dimension "build"
             applicationId "com.xabber.androidvip"
             resValue 'string', 'application_package', applicationId
             multiDexEnabled true
@@ -139,8 +143,8 @@ ext {
 }
 
 dependencies {
-    compile project('MemorizingTrustManager')
-    compile project('emojicon')
+    compile project(path: 'MemorizingTrustManager', configuration: 'default')
+    compile project(path: 'emojicon', configuration: 'default')
 
     compile 'com.github.str4tocaster.smack:smack-android-extensions:ffb99cc'
     compile 'com.github.str4tocaster.smack:smack-experimental:ffb99cc'
