@@ -425,16 +425,14 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         account = chat.getAccount();
         user = chat.getUser();
 
-        if (chatFragment == null) {
-            chatViewerAdapter.selectChat(chat.getAccount(), chat.getUser());
-        } else {
-            chatFragment.saveInputState();
-            chatFragment.setChat(chat.getAccount(), chat.getUser());
-        }
+        chatViewerAdapter.selectChat(account, user);
+
         selectPage(ChatViewerAdapter.PAGE_POSITION_CHAT, smoothScroll);
 
-        if (contactVcardViewerFragment != null)
+        if (contactVcardViewerFragment != null) {
             contactVcardViewerFragment.updateContact(account, user);
+            contactVcardViewerFragment.requestVCard();
+        }
     }
 
     private void selectPage(int position, boolean smoothScroll) {

@@ -4,7 +4,8 @@ package com.xabber.android.ui.adapter;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.support.annotation.NonNull;
-import android.support.v13.app.FragmentPagerAdapter;
+import android.support.v13.app.FragmentStatePagerAdapter;
+import android.support.v4.view.PagerAdapter;
 import android.view.ViewGroup;
 
 import com.xabber.android.data.entity.AccountJid;
@@ -15,7 +16,7 @@ import com.xabber.android.ui.fragment.ConferenceInfoFragment;
 import com.xabber.android.ui.fragment.ContactVcardViewerFragment;
 import com.xabber.android.ui.fragment.RecentChatFragment;
 
-public class ChatViewerAdapter extends FragmentPagerAdapter {
+public class ChatViewerAdapter extends FragmentStatePagerAdapter {
 
     private static final String LOG_TAG = ChatViewerAdapter.class.getSimpleName();
     public static final int PAGE_POSITION_RECENT_CHATS = 0;
@@ -95,5 +96,11 @@ public class ChatViewerAdapter extends FragmentPagerAdapter {
     public float getPageWidth(int position) {
         if (position == 0 || position == 2) return 0.85f;
         else return 1;
+    }
+
+    @Override
+    public int getItemPosition(Object object) {
+        // refresh all fragments when data set changed
+        return PagerAdapter.POSITION_NONE;
     }
 }
