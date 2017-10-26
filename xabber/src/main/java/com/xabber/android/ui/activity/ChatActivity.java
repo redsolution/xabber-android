@@ -39,6 +39,7 @@ import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.attention.AttentionManager;
 import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.blocking.OnBlockedListChangedListener;
+import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.muc.RoomChat;
 import com.xabber.android.data.extension.muc.RoomState;
 import com.xabber.android.data.intent.EntityIntentBuilder;
@@ -55,10 +56,12 @@ import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.adapter.ChatViewerAdapter;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.color.StatusBarPainter;
+import com.xabber.android.ui.dialog.BlockContactDialog;
 import com.xabber.android.ui.fragment.ChatFragment;
 import com.xabber.android.ui.fragment.ContactVcardViewerFragment;
 import com.xabber.android.ui.fragment.RecentChatFragment;
 import com.xabber.android.ui.helper.ContactTitleInflater;
+import com.xabber.android.ui.preferences.ChatContactSettings;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -604,11 +607,6 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     }
 
     @Override
-    public boolean onMenuItemClick(MenuItem item) {
-        return false;
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         return onMenuItemClick(item);
     }
@@ -653,6 +651,102 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
             menu.findItem(R.id.action_invite_to_chat).setVisible(false);
             menu.findItem(R.id.action_authorization_settings).setVisible(false);
             menu.findItem(R.id.action_leave_conference).setVisible(false);
+        }
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+
+        switch (item.getItemId()) {
+            /* security menu */
+
+            case R.id.action_start_encryption:
+                if (chatFragment != null)
+                    chatFragment.showResourceChoiceAlert(account, user, false);
+                return true;
+
+            case R.id.action_restart_encryption:
+                if (chatFragment != null)
+                    chatFragment.showResourceChoiceAlert(account, user, true);
+                return true;
+
+            case R.id.action_stop_encryption:
+                if (chatFragment != null)
+                    chatFragment.stopEncryption(account, user);
+                return true;
+
+            case R.id.action_verify_with_fingerprint:
+                startActivity(FingerprintActivity.createIntent(this, account, user));
+                return true;
+
+            case R.id.action_verify_with_question:
+                startActivity(QuestionActivity.createIntent(this, account, user, true, false, null));
+                return true;
+
+            case R.id.action_verify_with_shared_secret:
+                startActivity(QuestionActivity.createIntent(this, account, user, false, false, null));
+                return true;
+
+            /* regular chat options menu */
+
+            case R.id.action_view_contact:
+                if (chatFragment != null)
+                    chatFragment.showContactInfo();
+                return true;
+
+            case R.id.action_chat_settings:
+                startActivity(ChatContactSettings.createIntent(this, account, user));
+                return true;
+
+            case R.id.action_authorization_settings:
+                startActivity(ConferenceAddActivity.createIntent(this, account, user.getBareUserJid()));
+                return true;
+
+            case R.id.action_close_chat:
+                if (chatFragment != null)
+                chatFragment.closeChat(account, user);
+                return true;
+
+            case R.id.action_clear_history:
+                if (chatFragment != null)
+                    chatFragment.clearHistory(account, user);
+                return true;
+
+            case R.id.action_export_chat:
+                if (chatFragment != null)
+                    chatFragment.onExportChatClick();
+                return true;
+
+            case R.id.action_call_attention:
+                if (chatFragment != null)
+                    chatFragment.callAttention();
+                return true;
+
+            case R.id.action_block_contact:
+                BlockContactDialog.newInstance(account, user).show(getFragmentManager(), BlockContactDialog.class.getName());
+                return true;
+
+            /* conference specific options menu */
+
+            case R.id.action_join_conference:
+                MUCManager.getInstance().joinRoom(account, user.getJid().asEntityBareJidIfPossible(), true);
+                return true;
+
+            case R.id.action_invite_to_chat:
+                startActivity(ContactListActivity.createRoomInviteIntent(this, account, user.getBareUserJid()));
+                return true;
+
+            case R.id.action_leave_conference:
+                if (chatFragment != null)
+                    chatFragment.leaveConference(account, user);
+                return true;
+
+            case R.id.action_list_of_occupants:
+                startActivity(OccupantListActivity.createIntent(this, account, user));
+                return true;
+
+            default:
+                return false;
         }
     }
 }

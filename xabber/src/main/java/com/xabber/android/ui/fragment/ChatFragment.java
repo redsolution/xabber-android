@@ -1024,92 +1024,10 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
 
     @Override
     public boolean onMenuItemClick(MenuItem item) {
-
-        switch (item.getItemId()) {
-            /* security menu */
-
-            case R.id.action_start_encryption:
-                showResourceChoiceAlert(account, user, false);
-                return true;
-
-            case R.id.action_restart_encryption:
-                showResourceChoiceAlert(account, user, true);
-                return true;
-
-            case R.id.action_stop_encryption:
-                stopEncryption(account, user);
-                return true;
-
-            case R.id.action_verify_with_fingerprint:
-                startActivity(FingerprintActivity.createIntent(getActivity(), account, user));
-                return true;
-
-            case R.id.action_verify_with_question:
-                startActivity(QuestionActivity.createIntent(getActivity(), account, user, true, false, null));
-                return true;
-
-            case R.id.action_verify_with_shared_secret:
-                startActivity(QuestionActivity.createIntent(getActivity(), account, user, false, false, null));
-                return true;
-
-            /* regular chat options menu */
-
-            case R.id.action_view_contact:
-                showContactInfo();
-                return true;
-
-            case R.id.action_chat_settings:
-                startActivity(ChatContactSettings.createIntent(getActivity(), account, user));
-                return true;
-
-            case R.id.action_authorization_settings:
-                startActivity(ConferenceAddActivity.createIntent(getActivity(), account, user.getBareUserJid()));
-                return true;
-
-            case R.id.action_close_chat:
-                closeChat(account, user);
-                return true;
-
-            case R.id.action_clear_history:
-                clearHistory(account, user);
-                return true;
-
-            case R.id.action_export_chat:
-                onExportChatClick();
-                return true;
-
-            case R.id.action_call_attention:
-                callAttention();
-                return true;
-
-            case R.id.action_block_contact:
-                BlockContactDialog.newInstance(account, user).show(getFragmentManager(), BlockContactDialog.class.getName());
-                return true;
-
-            /* conference specific options menu */
-
-            case R.id.action_join_conference:
-                MUCManager.getInstance().joinRoom(account, user.getJid().asEntityBareJidIfPossible(), true);
-                return true;
-
-            case R.id.action_invite_to_chat:
-                startActivity(ContactListActivity.createRoomInviteIntent(getActivity(), account, user.getBareUserJid()));
-                return true;
-
-            case R.id.action_leave_conference:
-                leaveConference(account, user);
-                return true;
-
-            case R.id.action_list_of_occupants:
-                startActivity(OccupantListActivity.createIntent(getActivity(), account, user));
-                return true;
-
-            default:
-                return false;
-        }
+        return true;
     }
 
-    private void onExportChatClick() {
+    public void onExportChatClick() {
         if (PermissionsRequester.requestFileWritePermissionIfNeeded(this, PERMISSIONS_REQUEST_EXPORT_CHAT)) {
             showExportChatDialog();
         }
@@ -1120,7 +1038,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         ChatExportDialogFragment.newInstance(account, user).show(getFragmentManager(), "CHAT_EXPORT");
     }
 
-    private void stopEncryption(AccountJid account, UserJid user) {
+    public void stopEncryption(AccountJid account, UserJid user) {
         try {
             OTRManager.getInstance().endSession(account, user);
         } catch (NetworkException e) {
@@ -1144,7 +1062,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         }
     }
 
-    private void showResourceChoiceAlert(final AccountJid account, final UserJid user, final boolean restartSession) {
+    public void showResourceChoiceAlert(final AccountJid account, final UserJid user, final boolean restartSession) {
         final List<Presence> allPresences = RosterManager.getInstance().getPresences(account, user.getJid());
 
         final List<Map<String, String>> items = new ArrayList<>();
@@ -1230,7 +1148,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         }
     }
 
-    private void showContactInfo() {
+    public void showContactInfo() {
         Intent intent;
         if (MUCManager.getInstance().hasRoom(account, user)) {
             intent = ContactActivity.createIntent(getActivity(), account, user);
@@ -1240,22 +1158,22 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         startActivity(intent);
     }
 
-    private void closeChat(AccountJid account, UserJid user) {
+    public void closeChat(AccountJid account, UserJid user) {
         MessageManager.getInstance().closeChat(account, user);
         NotificationManager.getInstance().removeMessageNotification(account, user);
         listener.onCloseChat();
     }
 
-    private void clearHistory(AccountJid account, UserJid user) {
+    public void clearHistory(AccountJid account, UserJid user) {
         ChatHistoryClearDialog.newInstance(account, user).show(getFragmentManager(), ChatHistoryClearDialog.class.getSimpleName());
     }
 
-    private void leaveConference(AccountJid account, UserJid user) {
+    public void leaveConference(AccountJid account, UserJid user) {
         MUCManager.getInstance().leaveRoom(account, user.getJid().asEntityBareJidIfPossible());
         closeChat(account, user);
     }
 
-    private void callAttention() {
+    public void callAttention() {
         try {
             AttentionManager.getInstance().sendAttention(account, user);
         } catch (NetworkException e) {
