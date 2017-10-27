@@ -327,11 +327,14 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
             securityButton.setVisibility(View.GONE);
         }
 
-        messageItems = abstractChat.getMessages();
-        syncInfoResults = abstractChat.getSyncInfo();
+        if (abstractChat != null) {
+            messageItems = abstractChat.getMessages();
+            syncInfoResults = abstractChat.getSyncInfo();
+        }
 
         chatMessageAdapter = new ChatMessageAdapter(getActivity(), messageItems, abstractChat, this);
         realmRecyclerView.setAdapter(chatMessageAdapter);
+        layoutManager.scrollToPosition(chatMessageAdapter.getItemCount() - 1);
 
         restoreInputState();
 
