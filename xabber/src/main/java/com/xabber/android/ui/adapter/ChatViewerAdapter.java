@@ -12,8 +12,8 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.ui.fragment.ChatFragment;
-import com.xabber.android.ui.fragment.ConferenceInfoFragment;
 import com.xabber.android.ui.fragment.ContactVcardViewerFragment;
+import com.xabber.android.ui.fragment.OccupantListFragment;
 import com.xabber.android.ui.fragment.RecentChatFragment;
 
 public class ChatViewerAdapter extends FragmentStatePagerAdapter {
@@ -72,7 +72,7 @@ public class ChatViewerAdapter extends FragmentStatePagerAdapter {
             return ChatFragment.newInstance(accountJid, userJid);
         } else if (position == 2) {
             if (MUCManager.getInstance().hasRoom(accountJid, userJid))
-                return ConferenceInfoFragment.newInstance(accountJid, userJid.getJid().asEntityBareJidIfPossible());
+                return OccupantListFragment.newInstance(accountJid, userJid.getBareUserJid());
             else return ContactVcardViewerFragment.newInstance(accountJid, userJid);
         } else {
             return null;
