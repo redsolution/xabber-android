@@ -43,5 +43,6 @@
 
     <dimen name="account_status_border">2dp</dimen>
     <dimen name="account_status">12dp</dimen>
+    <dimen name="account_status_without_border">10dp</dimen>
 
 </resources>

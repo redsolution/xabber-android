@@ -9,6 +9,7 @@ import com.xabber.android.R;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.cs.ChatStateManager;
 import com.xabber.android.data.roster.AbstractContact;
+import com.xabber.android.ui.color.AccountPainter;
 
 import org.jivesoftware.smackx.chatstates.ChatState;
 
@@ -35,15 +36,19 @@ public class NewContactTitleInflater {
 
     private static void setStatus(Context context, View titleView, AbstractContact abstractContact) {
         final ImageView statusModeView = (ImageView) titleView.findViewById(R.id.ivStatus);
+        final ImageView ivStatusBackground = (ImageView) titleView.findViewById(R.id.ivStatusBackground);
 
-//        int statusLevel = abstractContact.getStatusMode().getStatusLevel();
+        int statusLevel = abstractContact.getStatusMode().getStatusLevel();
         statusModeView.setVisibility(View.GONE);
-//        if (isContactOffline(statusLevel)) {
-//            statusModeView.setVisibility(View.GONE);
-//        } else {
-//            statusModeView.setVisibility(View.VISIBLE);
-//            statusModeView.setImageLevel(statusLevel);
-//        }
+        if (isContactOffline(statusLevel)) {
+            statusModeView.setVisibility(View.GONE);
+            ivStatusBackground.setVisibility(View.GONE);
+        } else {
+            statusModeView.setVisibility(View.VISIBLE);
+            statusModeView.setImageLevel(statusLevel);
+            ivStatusBackground.setVisibility(View.VISIBLE);
+            ivStatusBackground.setImageLevel(AccountPainter.getAccountColorLevel(abstractContact.getAccount()));
+        }
 
         final TextView statusTextView = (TextView) titleView.findViewById(R.id.status_text);
 

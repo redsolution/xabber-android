@@ -7,7 +7,7 @@
     android:gravity="center_vertical"
     >
 
-    <include layout="@layout/avatar_view" />
+    <include layout="@layout/avatar_view_in_chat_screen" />
 
     <LinearLayout
         android:id="@+id/name_holder"

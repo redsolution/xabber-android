@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/avatarView"
+    android:layout_width="48dp"
+    android:layout_height="48dp"
+    android:layout_marginRight="10dp"
+    android:layout_marginLeft="10dp"
+    android:layout_centerVertical="true"
+    >
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/ivAvatar"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:src="#80CBC4"
+        />
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/imageView"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_margin="2dp"
+        >
+
+        <ImageView
+            android:id="@+id/ivStatusBackground"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:src="@drawable/ic_status_border"
+            />
+
+        <ImageView
+            android:id="@+id/ivStatus"
+            android:layout_width="8dp"
+            android:layout_height="8dp"
+            android:src="@drawable/ic_status_without_border"
+            android:layout_centerInParent="true"
+            />
+
+    </RelativeLayout>
+
+</RelativeLayout>
