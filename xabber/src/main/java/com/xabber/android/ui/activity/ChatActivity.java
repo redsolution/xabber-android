@@ -485,6 +485,12 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
             }
         }
 
+        if (chatFragment != null) {
+            if (selectedPagePosition == ChatViewerAdapter.PAGE_POSITION_CHAT)
+                chatFragment.showPlaceholder(false);
+            else chatFragment.showPlaceholder(true);
+        }
+
         updateToolbar();
         updateStatusBar();
     }

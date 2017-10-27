@@ -146,6 +146,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
     private ChatMessageAdapter chatMessageAdapter;
     private LinearLayoutManager layoutManager;
     private SwipeRefreshLayout swipeContainer;
+    private View placeholder;
 
     boolean isInputEmpty = true;
     private boolean skipOnTextChanges = false;
@@ -313,6 +314,8 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         } else {
             view.setBackgroundColor(ColorManager.getInstance().getChatBackgroundColor());
         }
+
+        placeholder = view.findViewById(R.id.placeholder);
 
         return view;
     }
@@ -1315,5 +1318,10 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
                 notifyLayout.setVisibility(View.VISIBLE);
             } else notifyLayout.setVisibility(View.GONE);
         }
+    }
+
+    public void showPlaceholder(boolean show) {
+        if (show) placeholder.setVisibility(View.VISIBLE);
+        else placeholder.setVisibility(View.GONE);
     }
 }

@@ -179,5 +179,15 @@
         android:visibility="gone"
         />
 
+    <LinearLayout
+        android:id="@+id/placeholder"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:focusable="true"
+        android:clickable="true"
+        android:elevation="8dp"
+        android:visibility="gone"
+        />
 
 </RelativeLayout>
