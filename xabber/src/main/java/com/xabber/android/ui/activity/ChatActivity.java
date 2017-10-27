@@ -620,9 +620,9 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         if (abstractChat instanceof RoomChat) {
             RoomState chatState = ((RoomChat) abstractChat).getState();
 
-            if (chatState == RoomState.available) {
-                menu.findItem(R.id.action_list_of_occupants).setVisible(true);
-            }
+//            if (chatState == RoomState.available) {
+//                menu.findItem(R.id.action_list_of_occupants).setVisible(true);
+//            }
 
             if (chatState == RoomState.unavailable) {
                 menu.findItem(R.id.action_join_conference).setVisible(true);
