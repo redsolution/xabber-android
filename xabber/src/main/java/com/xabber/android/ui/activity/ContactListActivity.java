@@ -563,6 +563,9 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
 
     @Override
     public void onContactClick(AbstractContact abstractContact) {
+        if (contentFragment != null)
+            ((ContactListFragment) contentFragment).getFilterableAdapter().getFilter().filter("");
+
         if (action == null) {
             startActivity(ChatActivity.createSpecificChatIntent(this,
                     abstractContact.getAccount(), abstractContact.getUser()));

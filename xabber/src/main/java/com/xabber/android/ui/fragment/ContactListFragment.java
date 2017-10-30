@@ -147,8 +147,6 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
         toolbar.setOverflowIcon(getResources().getDrawable(R.drawable.ic_overflow_menu_white_24dp));
         toolbar.setTitleTextColor(getResources().getColor(R.color.grey_600));
 
-//        barPainter = new BarPainter((ContactListActivity)getActivity(), toolbar);
-//        barPainter.setDefaultColor();
         accountColorIndicator = view.findViewById(R.id.accountColorIndicator);
         accountColorIndicator.setBackgroundColor(ColorManager.getInstance().getAccountPainter().getDefaultMainColor());
 
@@ -174,8 +172,6 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
         accountPainter = ColorManager.getInstance().getAccountPainter();
 
         addMenuOption = view.findViewById(R.id.action_add);
-
-        //recyclerView.addOnScrollListener(new ScrollListener());
 
         return view;
     }
@@ -395,20 +391,6 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
         adapter.setShowAllChats(showAllChats);
     }
 
-//    /**
-//     * Filter out contact list for selected account.
-//     *
-//     * @param account
-//     */
-//    void setSelectedAccount(AccountJid account) {
-//        if (account.equals(AccountManager.getInstance().getSelectedAccount())) {
-//            SettingsManager.setContactsSelectedAccount(null);
-//        } else {
-//            SettingsManager.setContactsSelectedAccount(account);
-//        }
-//        adapter.onChange();
-//    }
-
     /**
      * Scroll to the top of contact list.
      */
@@ -418,28 +400,7 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
 
 
     @Override
-    public void onClick(View view) {
-//        if (view.getId() == R.id.fab_up_container) {
-//            scrollTo();
-//            return;
-//        }
-
-
-//        AccountJid account = accountActionButtonsAdapter.getItemForView(view);
-//        if (account == null) { // Check for tap on account in the title
-//            return;
-//        }
-//        if (!SettingsManager.contactsShowAccounts()) {
-//            if (AccountManager.getInstance().getEnabledAccounts().size() < 2) {
-//                scrollTo();
-//            } else {
-//                setSelectedAccount(account);
-//                rebuild();
-//            }
-//        } else {
-//            scrollToAccount(account);
-//        }
-    }
+    public void onClick(View view) {}
 
     public interface ContactListFragmentListener {
         void onContactClick(AbstractContact contact);
@@ -508,17 +469,4 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
         popupMenu.show();
     }
 
-//    private class ScrollListener extends RecyclerView.OnScrollListener {
-//        @Override
-//        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-//            super.onScrolled(recyclerView, dx, dy);
-//            int currentPosition = linearLayoutManager.findFirstVisibleItemPosition();
-//            if (adapter.getItemViewType(currentPosition) == ContactListAdapter.TYPE_CONTACT
-//                    || adapter.getItemViewType(currentPosition) == ContactListAdapter.TYPE_ACCOUNT)
-//                toolbar.setTitle(R.string.title_contacts);
-//
-//            if (adapter.getItemViewType(currentPosition) == ContactListAdapter.TYPE_CHAT)
-//                toolbar.setTitle(R.string.title_recent_chats);
-//        }
-//    }
 }
