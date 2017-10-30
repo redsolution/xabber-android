@@ -94,7 +94,7 @@ public class OccupantListAdapter extends BaseAdapter implements
             view = convertView;
         }
         final Occupant occupant = (Occupant) getItem(position);
-        final ImageView avatarView = (ImageView) view.findViewById(R.id.avatar);
+        final ImageView avatarView = (ImageView) view.findViewById(R.id.ivAvatar);
         avatarView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -117,7 +117,7 @@ public class OccupantListAdapter extends BaseAdapter implements
         final TextView statusTextView = (TextView) view
                 .findViewById(R.id.status);
         final ImageView statusModeView = (ImageView) view
-                .findViewById(R.id.status_icon);
+                .findViewById(R.id.ivStatus);
         if (MUCManager.getInstance().getNickname(account, room).equals(occupant.getNickname())) {
             avatarView.setImageDrawable(AvatarManager.getInstance() .getAccountAvatar(account));
         } else {

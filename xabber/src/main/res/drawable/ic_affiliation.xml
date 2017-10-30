@@ -13,22 +13,27 @@
      along with this program. If not, see http://www.gnu.org/licenses/.
 -->
 <level-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!--owner-->
     <item
-        android:drawable="@android:color/transparent"
+        android:drawable="@drawable/ic_muc_owner"
         android:minLevel="0"
         android:maxLevel="0" />
+    <!--admin-->
     <item
-        android:drawable="@color/green_A400"
+        android:drawable="@drawable/ic_muc_admin"
         android:minLevel="1"
         android:maxLevel="1" />
+    <!--member-->
     <item
-        android:drawable="@color/amber_A100"
+        android:drawable="@drawable/ic_muc_member"
         android:minLevel="2"
         android:maxLevel="2" />
+    <!--outcast-->
     <item
-        android:drawable="@color/deep_orange_A100"
+        android:drawable="@drawable/ic_muc_banned"
         android:minLevel="3"
         android:maxLevel="3" />
+    <!--none-->
     <item
         android:drawable="@android:color/transparent"
         android:minLevel="4"

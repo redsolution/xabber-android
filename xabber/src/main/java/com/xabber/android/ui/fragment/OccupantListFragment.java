@@ -73,6 +73,7 @@ public class OccupantListFragment extends Fragment implements AdapterView.OnItem
         listAdapter = new OccupantListAdapter(getActivity(), account, room);
         listView.setAdapter(listAdapter);
         listView.setOnItemClickListener(this);
+        listView.setDividerHeight(0);
 
         return view;
     }
