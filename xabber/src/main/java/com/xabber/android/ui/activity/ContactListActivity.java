@@ -565,6 +565,7 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
     public void onContactClick(AbstractContact abstractContact) {
         if (contentFragment != null)
             ((ContactListFragment) contentFragment).getFilterableAdapter().getFilter().filter("");
+        if (bottomMenu != null) bottomMenu.closeSearch();
 
         if (action == null) {
             startActivity(ChatActivity.createSpecificChatIntent(this,
@@ -710,7 +711,8 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
     }
 
     private void showBottomNavigation() {
-        bottomMenu = BottomMenu.newInstance();
+        if (bottomMenu == null)
+            bottomMenu = BottomMenu.newInstance();
 
         FragmentTransaction fTrans = getFragmentManager().beginTransaction();
         fTrans.replace(R.id.containerBottomNavigation, bottomMenu);

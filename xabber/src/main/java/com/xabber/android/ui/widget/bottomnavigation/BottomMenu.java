@@ -225,7 +225,7 @@ public class BottomMenu extends Fragment implements View.OnClickListener {
                 toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
     }
 
-    private void closeSearch() {
+    public void closeSearch() {
         expandSearchLayout.setVisibility(View.GONE);
         controlView.setVisibility(View.VISIBLE);
         searchView.setQuery("", true);
