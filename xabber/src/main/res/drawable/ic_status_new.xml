@@ -103,6 +103,5 @@
                 android:height="@dimen/account_status"/>
         </shape>
     </item>
-    <item android:drawable="@drawable/ic_status_connection_18dp" android:minLevel="7" android:maxLevel="7" />
     <item android:drawable="@drawable/ic_status_unsubscribed_18dp" android:minLevel="8" android:maxLevel="8" />
 </level-list>
