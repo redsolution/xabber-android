@@ -133,15 +133,18 @@ public class OccupantListAdapter extends BaseAdapter implements
         }
         affilationView.setImageLevel(occupant.getAffiliation().ordinal());
         nameView.setText(occupant.getNickname());
-        int textStyle;
+
+        String status;
         if (occupant.getRole() == MUCRole.moderator)
-            textStyle = R.style.OccupantList_Moderator;
+            status = activity.getString(R.string.muc_role_moderator);
         else if (occupant.getRole() == MUCRole.participant)
-            textStyle = R.style.OccupantList_Participant;
-        else
-            textStyle = R.style.OccupantList_Visitor;
-        nameView.setTextAppearance(activity, textStyle);
-        statusTextView.setText(occupant.getStatusText());
+            status = activity.getString(R.string.muc_role_participant);
+        else status = activity.getString(R.string.muc_role_visitor);
+
+        String statusText = occupant.getStatusText();
+        if (statusText != null && !statusText.isEmpty()) status = status + " • " + statusText;
+
+        statusTextView.setText(status);
         statusModeView.setImageLevel(occupant.getStatusMode().getStatusLevel());
         return view;
     }
