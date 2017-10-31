@@ -69,6 +69,12 @@ public class ContactItemChatInflater {
             viewHolder.tvOutgoingMessage.setTextColor(viewObject.getAccountColorIndicator());
         }
 
+        if (viewObject.getMessageOwner() != null) {
+            viewHolder.tvOutgoingMessage.setText(viewObject.getMessageOwner() + ": ");
+            viewHolder.tvOutgoingMessage.setVisibility(View.VISIBLE);
+            viewHolder.tvOutgoingMessage.setTextColor(viewObject.getAccountColorIndicator());
+        }
+
         String text = viewObject.getMessageText();
         if (text.isEmpty()) {
             viewHolder.tvMessageText.setVisibility(View.GONE);

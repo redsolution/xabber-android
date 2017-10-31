@@ -31,11 +31,12 @@ public class ChatVO extends ContactVO {
     private boolean isOutgoing;
     private Date time;
     private int messageStatus;
+    private String messageOwner;
 
     public ChatVO(int accountColorIndicator, boolean showOfflineShadow, String name, String status,
                   int statusId, int statusLevel, Drawable avatar, int mucIndicatorLevel,
                   UserJid userJid, AccountJid accountJid, String messageText, boolean isOutgoing,
-                  Date time, int messageStatus, int unreadCount) {
+                  Date time, int messageStatus, int unreadCount, String messageOwner) {
 
         super(accountColorIndicator, showOfflineShadow, name, status, statusId, statusLevel,
                 avatar, mucIndicatorLevel, userJid, accountJid, unreadCount);
@@ -44,6 +45,7 @@ public class ChatVO extends ContactVO {
         this.isOutgoing = isOutgoing;
         this.time = time;
         this.messageStatus = messageStatus;
+        this.messageOwner = messageOwner;
     }
 
     public static ChatVO convert(AbstractContact contact) {
@@ -57,6 +59,7 @@ public class ChatVO extends ContactVO {
         Date time = null;
         int messageStatus = 0;
         int unreadCount = 0;
+        String messageOwner = null;
 
         AccountItem accountItem = AccountManager.getInstance().getAccount(contact.getAccount());
         if (accountItem != null && accountItem.getState() == ConnectionState.connected) {
@@ -102,6 +105,10 @@ public class ChatVO extends ContactVO {
 
             isOutgoing = !lastMessage.isIncoming();
 
+            if ((mucIndicatorLevel == 1 || mucIndicatorLevel == 2) && lastMessage.isIncoming()
+                    && lastMessage.getText() != null && !lastMessage.getText().trim().isEmpty())
+                messageOwner = lastMessage.getResource().toString();
+
             // message status
             if (lastMessage.isForwarded()) {
                 messageStatus = 1;
@@ -122,7 +129,7 @@ public class ChatVO extends ContactVO {
 
         return new ChatVO(accountColorIndicator, showOfflineShadow, name, statusText, statusId,
                 statusLevel, avatar, mucIndicatorLevel, contact.getUser(), contact.getAccount(),
-                messageText, isOutgoing, time, messageStatus, unreadCount);
+                messageText, isOutgoing, time, messageStatus, unreadCount, messageOwner);
     }
 
     public static ArrayList<ContactVO> convert(Collection<AbstractContact> contacts) {
@@ -147,5 +154,9 @@ public class ChatVO extends ContactVO {
 
     public int getMessageStatus() {
         return messageStatus;
+    }
+
+    public String getMessageOwner() {
+        return messageOwner;
     }
 }
