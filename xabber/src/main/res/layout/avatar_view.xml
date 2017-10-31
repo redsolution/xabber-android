@@ -9,6 +9,12 @@
     >
 
     <de.hdodenhof.circleimageview.CircleImageView
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:src="@color/white"
+        />
+
+    <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/ivAvatar"
         android:layout_width="48dp"
         android:layout_height="48dp"
