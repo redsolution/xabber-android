@@ -188,8 +188,10 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             getActivity().getWindow().setStatusBarColor(ColorManager.getInstance().getAccountPainter().getDefaultMainColor());
         }
-        if (scrollToAccountJid != null)
+        if (scrollToAccountJid != null) {
             scrollToAccount(scrollToAccountJid);
+            scrollToAccountJid = null;
+        }
     }
 
     @Override
