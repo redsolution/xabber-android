@@ -188,6 +188,8 @@ dependencies {
     compile('com.crashlytics.sdk.android:crashlytics:2.6.8@aar') {
         transitive = true;
     }
+
+    compile group: 'org.bouncycastle', name: 'bcpkix-jdk15on', version: '1.58'
 }
 apply plugin: 'com.google.gms.google-services'
 
