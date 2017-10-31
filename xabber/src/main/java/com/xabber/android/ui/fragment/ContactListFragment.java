@@ -160,6 +160,7 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
         adapter = new ContactListAdapter((ManagedActivity) getActivity(), this);
         linearLayoutManager = new StickyLayoutManager(getActivity(), adapter);
         ((StickyLayoutManager)linearLayoutManager).setStickyHeaderListener(adapter);
+        ((StickyLayoutManager)linearLayoutManager).elevateHeaders(2);
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setAdapter(adapter);
         infoView = view.findViewById(R.id.info);

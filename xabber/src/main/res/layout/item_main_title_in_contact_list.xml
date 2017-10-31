@@ -5,9 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="56dp"
     android:clickable="true"
+    android:background="@color/white"
     >
-
-    <include layout="@layout/item_half_transparent_background" />
 
     <include layout="@layout/account_color_indicator" />
 

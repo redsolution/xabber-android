@@ -2,22 +2,22 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="64dp"
-    android:elevation="1dp">
-
-    <include layout="@layout/item_half_transparent_background" />
+    android:layout_height="56dp"
+    android:elevation="1dp"
+    android:background="@color/white"
+    >
 
     <include layout="@layout/account_color_indicator"/>
 
-    <include layout="@layout/avatar_view"/>
+    <include layout="@layout/avatar_view_small"/>
 
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@+id/avatarView"
+        android:layout_toLeftOf="@+id/ivMenu"
         android:layout_centerVertical="true"
-        android:layout_marginRight="10dp"
         >
 
         <TextView
@@ -30,61 +30,67 @@
             android:text="Erik Walton"
             />
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            >
+
+            <ImageView
+                android:id="@+id/small_right_icon"
+                android:layout_width="16dp"
+                android:layout_height="match_parent"
+                android:paddingTop="2dp"
+                android:layout_marginRight="4dp"
+                android:src="@drawable/ic_show_offline_small"
+                android:alpha="0.5"
+                android:tint="?attr/contact_list_account_group_small_right_icon_color"
+                />
+
+            <TextView
+                android:id="@+id/tvContactCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="12dp"
+                android:singleLine="true"
+                android:textColor="?attr/contact_list_account_group_small_right_text_color"
+                android:alpha="0.5"
+                android:textSize="12sp"
+                android:text="10 / 30"
+                />
+
+            <TextView
+                android:id="@+id/tvStatus"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:singleLine="true"
+                android:textSize="14sp"
+                android:textColor="#616161"
+                android:text="Status"
+                />
+
+        </LinearLayout>
+
         <TextView
             android:id="@+id/tvJid"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="-2dp"
             android:ellipsize="marquee"
-            android:lines="1"
+            android:singleLine="true"
             android:text="example@example.com"
             android:textColor="@color/grey_500"
-            android:textSize="12sp" />
-
-        <TextView
-            android:id="@+id/tvStatus"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="14sp"
-            android:textColor="#616161"
-            android:text="Status"
+            android:textSize="12sp"
+            android:visibility="gone"
             />
 
     </LinearLayout>
-
-    <ImageView
-        android:id="@+id/small_right_icon"
-        android:layout_width="16dp"
-        android:layout_height="16dp"
-        android:src="@drawable/ic_show_offline_small"
-        android:alpha="0.5"
-        android:tint="?attr/contact_list_account_group_small_right_icon_color"
-        android:layout_toLeftOf="@+id/tvContactCount"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="10dp"/>
-
-    <TextView
-        android:id="@+id/tvContactCount"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:lines="1"
-        android:ellipsize="marquee"
-        android:textColor="?attr/contact_list_account_group_small_right_text_color"
-        android:alpha="0.5"
-        android:textSize="12sp"
-        android:text="10 / 30"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="10dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="10dp"
-        />
 
     <ImageView
         android:id="@+id/ivMenu"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
         android:padding="8dp"
         android:src="@drawable/ic_overflow_menu_white_24dp"
         android:tint="?attr/contact_list_account_group_small_right_icon_color"
