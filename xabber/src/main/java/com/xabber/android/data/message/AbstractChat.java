@@ -48,6 +48,7 @@ import org.jxmpp.jid.parts.Resourcepart;
 
 import java.io.File;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 import io.realm.Realm;
@@ -380,7 +381,14 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
 
     private void updateLastMessage() {
         if (messages.isValid() && messages.isLoaded() && !messages.isEmpty()) {
-            lastMessage = MessageDatabaseManager.getInstance()
+            List<MessageItem> textMessages = MessageDatabaseManager.getInstance()
+                    .getRealmUiThread()
+                    .copyFromRealm(messages.where().isNull(MessageItem.Fields.ACTION).findAll());
+
+            if (!textMessages.isEmpty())
+                lastMessage = textMessages.get(textMessages.size() - 1);
+            else
+                lastMessage = MessageDatabaseManager.getInstance()
                     .getRealmUiThread()
                     .copyFromRealm(messages.last());
         } else {
