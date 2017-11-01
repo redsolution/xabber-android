@@ -2,8 +2,15 @@ package com.xabber.android.ui.adapter.contactlist;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
+import android.text.style.ImageSpan;
 import android.view.View;
+import android.widget.TextView;
 
 import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
@@ -113,6 +120,12 @@ public class ContactItemChatInflater {
             viewHolder.tvUnreadCount.setText(String.valueOf(viewObject.getUnreadCount()));
             viewHolder.tvUnreadCount.setVisibility(View.VISIBLE);
         } else viewHolder.tvUnreadCount.setVisibility(View.INVISIBLE);
+
+        // notification mute
+        if (viewObject.isMute()) viewHolder.tvContactName.setCompoundDrawablesWithIntrinsicBounds(null, null,
+                    context.getResources().getDrawable(R.drawable.ic_mute), null);
+        else viewHolder.tvContactName.setCompoundDrawablesWithIntrinsicBounds(null, null,
+                null, null);
     }
 
     void onAvatarClick(ContactVO contact) {
