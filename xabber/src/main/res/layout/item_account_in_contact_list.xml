@@ -94,6 +94,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
+        android:layout_marginRight="6dp"
         android:padding="8dp"
         android:src="@drawable/ic_overflow_menu_white_24dp"
         android:tint="?attr/contact_list_account_group_small_right_icon_color"
