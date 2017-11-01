@@ -713,10 +713,13 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     private void bindAccount(AccountGroupViewHolder viewHolder, AccountVO viewObject) {
 
+        final int level = AccountManager.getInstance().getColorLevel(viewObject.getAccountJid());
+        viewHolder.itemView.setBackgroundColor(accountGroupColors[level]);
+
         viewHolder.accountColorIndicator.setBackgroundColor(viewObject.getAccountColorIndicator());
 
         viewHolder.tvAccountName.setText(viewObject.getName());
-        viewHolder.tvAccountName.setTextColor(viewObject.getAccountColorIndicator());
+        //viewHolder.tvAccountName.setTextColor(viewObject.getAccountColorIndicator());
         viewHolder.tvContactCount.setText(viewObject.getContactCount());
         viewHolder.tvJid.setText(viewObject.getJid());
 
@@ -724,7 +727,7 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         if (statusText.isEmpty()) statusText = activity.getString(viewObject.getStatusId());
 
         viewHolder.tvStatus.setText(statusText);
-        viewHolder.tvStatus.setTextColor(viewObject.getAccountColorIndicator());
+        //viewHolder.tvStatus.setTextColor(viewObject.getAccountColorIndicator());
 
         if (SettingsManager.contactsShowAvatars()) {
             viewHolder.ivAvatar.setVisibility(View.VISIBLE);

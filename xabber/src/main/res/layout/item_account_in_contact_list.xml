@@ -30,7 +30,7 @@
             android:text="Erik Walton"
             />
 
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             >
@@ -38,7 +38,8 @@
             <ImageView
                 android:id="@+id/small_right_icon"
                 android:layout_width="16dp"
-                android:layout_height="match_parent"
+                android:layout_height="16dp"
+                android:layout_toLeftOf="@+id/tvContactCount"
                 android:paddingTop="2dp"
                 android:layout_marginRight="4dp"
                 android:src="@drawable/ic_show_offline_small"
@@ -50,7 +51,7 @@
                 android:id="@+id/tvContactCount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="12dp"
+                android:layout_alignParentRight="true"
                 android:singleLine="true"
                 android:textColor="?attr/contact_list_account_group_small_right_text_color"
                 android:alpha="0.5"
@@ -62,13 +63,15 @@
                 android:id="@+id/tvStatus"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_toLeftOf="@+id/small_right_icon"
+                android:layout_marginRight="8dp"
                 android:singleLine="true"
                 android:textSize="14sp"
                 android:textColor="#616161"
                 android:text="Status"
                 />
 
-        </LinearLayout>
+        </RelativeLayout>
 
         <TextView
             android:id="@+id/tvJid"
