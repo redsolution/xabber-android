@@ -52,7 +52,8 @@ public class ContactItemChatInflater {
             viewHolder.ivMucIndicator.setImageLevel(viewObject.getMucIndicatorLevel());
         }
 
-        if (viewObject.getStatusLevel() == 6)
+        if (viewObject.getStatusLevel() == 6 ||
+                (viewObject.getMucIndicatorLevel() != 0 && viewObject.getStatusLevel() != 1))
             viewHolder.ivStatus.setVisibility(View.INVISIBLE);
         else viewHolder.ivStatus.setVisibility(View.VISIBLE);
         viewHolder.ivStatus.setImageLevel(viewObject.getStatusLevel());
