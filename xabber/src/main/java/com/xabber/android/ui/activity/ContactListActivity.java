@@ -25,6 +25,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
@@ -739,5 +740,17 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
     public void onUnreadMessagesCountChanged(ContactListAdapter.UpdateUnreadCountEvent event) {
         if (bottomMenu != null)
             bottomMenu.setUnreadMessages(event.getCount());
+    }
+
+    public void setStatusBarColor(AccountJid account) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().setStatusBarColor(ColorManager.getInstance().getAccountPainter().getAccountMainColor(account));
+        }
+    }
+
+    public void setStatusBarColor() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().setStatusBarColor(ColorManager.getInstance().getAccountPainter().getDefaultMainColor());
+        }
     }
 }

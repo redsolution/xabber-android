@@ -51,6 +51,7 @@ import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.activity.AccountActivity;
 import com.xabber.android.ui.activity.ContactAddActivity;
+import com.xabber.android.ui.activity.ContactListActivity;
 import com.xabber.android.ui.activity.ManagedActivity;
 import com.xabber.android.ui.adapter.ChatComparator;
 import com.xabber.android.ui.adapter.UpdatableAdapter;
@@ -944,6 +945,10 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     @Override
     public void headerAttached(View headerView, int adapterPosition) {
         this.currentHeaderPosition = adapterPosition;
+        if (rosterItemVOs.get(adapterPosition) instanceof AccountVO)
+            ((ContactListActivity)activity).setStatusBarColor(((AccountVO)
+                    rosterItemVOs.get(adapterPosition)).getAccountJid());
+        else ((ContactListActivity)activity).setStatusBarColor();
     }
 
     @Override
