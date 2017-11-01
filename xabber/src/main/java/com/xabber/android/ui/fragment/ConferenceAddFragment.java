@@ -113,7 +113,7 @@ public class ConferenceAddFragment extends Fragment {
     public void addConference() {
         Resourcepart nick;
         try {
-            nick = Resourcepart.from(nickView.getText().toString());
+            nick = Resourcepart.from(nickView.getText().toString().trim());
         } catch (XmppStringprepException e) {
             LogManager.exception(this, e);
             Toast.makeText(getActivity(), getString(R.string.EMPTY_NICK_NAME), Toast.LENGTH_LONG).show();
