@@ -34,7 +34,7 @@
 
         <item name="contact_list_background">@color/contact_list_background</item>
 
-        <item name="contact_list_account_group_background">@array/account_200</item>
+        <item name="contact_list_account_group_background">@array/account_100</item>
         <item name="contact_list_account_group_separator">@color/grey_400</item>
         <item name="contact_list_account_group_second_line_text_color">@color/grey_700</item>
         <item name="contact_list_account_group_small_right_icon_color">@color/black</item>

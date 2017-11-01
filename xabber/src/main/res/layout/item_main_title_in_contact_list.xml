@@ -18,7 +18,7 @@
         android:fontFamily="sans-serif-medium"
         android:textSize="18sp"
         android:text="@string/recent_chats"
-        android:textColor="#FF9E9E9E"
+        android:textColor="#212121"
         />
 
     <ImageView
@@ -30,7 +30,8 @@
         android:layout_marginRight="8dp"
         android:padding="10dp"
         android:src="@drawable/ic_add_contact"
-        android:tint="#FF9E9E9E"
+        android:tint="?attr/contact_list_account_group_small_right_icon_color"
+        android:alpha="0.5"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:clickable="true"
         />
@@ -44,7 +45,8 @@
         android:layout_marginRight="4dp"
         android:padding="10dp"
         android:src="@drawable/ic_bullhorn"
-        android:tint="#FF9E9E9E"
+        android:tint="?attr/contact_list_account_group_small_right_icon_color"
+        android:alpha="0.5"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:clickable="true"
         />

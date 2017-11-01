@@ -64,6 +64,7 @@ import com.xabber.android.ui.adapter.contactlist.viewobjects.ContactVO;
 import com.xabber.android.ui.adapter.contactlist.viewobjects.GroupVO;
 import com.xabber.android.ui.adapter.contactlist.viewobjects.MainTitleVO;
 import com.xabber.android.ui.adapter.contactlist.viewobjects.TopAccountSeparatorVO;
+import com.xabber.android.ui.color.AccountPainter;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.helper.ContextMenuHelper;
 
@@ -698,6 +699,9 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private void bindMainTitleItem(MainTitleViewHolder holder) {
         holder.accountColorIndicator.setBackgroundColor(
                 ColorManager.getInstance().getAccountPainter().getDefaultMainColor());
+
+        final int level = AccountManager.getInstance().getColorLevel(AccountPainter.getFirstAccount());
+        holder.itemView.setBackgroundColor(accountGroupColors[level]);
     }
 
     private void bindBottomSeparator(BottomSeparatorHolder holder, BottomAccountSeparatorVO viewObject) {
