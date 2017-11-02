@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
@@ -122,10 +123,19 @@ public class ContactItemChatInflater {
         } else viewHolder.tvUnreadCount.setVisibility(View.INVISIBLE);
 
         // notification mute
-        if (viewObject.isMute()) viewHolder.tvContactName.setCompoundDrawablesWithIntrinsicBounds(null, null,
+        if (viewObject.isMute()) {
+            viewHolder.tvContactName.setCompoundDrawablesWithIntrinsicBounds(null, null,
                     context.getResources().getDrawable(R.drawable.ic_mute), null);
-        else viewHolder.tvContactName.setCompoundDrawablesWithIntrinsicBounds(null, null,
-                null, null);
+
+            viewHolder.tvUnreadCount.getBackground().mutate().setColorFilter(
+                    context.getResources().getColor(R.color.grey_500),
+                    PorterDuff.Mode.SRC_IN);
+        } else {
+            viewHolder.tvContactName.setCompoundDrawablesWithIntrinsicBounds(null, null,
+                    null, null);
+
+            viewHolder.tvUnreadCount.getBackground().mutate().clearColorFilter();
+        }
     }
 
     void onAvatarClick(ContactVO contact) {
