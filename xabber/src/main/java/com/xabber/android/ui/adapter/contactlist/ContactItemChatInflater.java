@@ -78,8 +78,11 @@ public class ContactItemChatInflater {
 
         String text = viewObject.getMessageText();
         if (text.isEmpty()) {
-            viewHolder.tvMessageText.setVisibility(View.GONE);
+            viewHolder.tvMessageText.setText(R.string.no_messages);
+            viewHolder.tvMessageText.
+                    setTypeface(viewHolder.tvMessageText.getTypeface(), Typeface.ITALIC);
         } else {
+            viewHolder.tvMessageText.setTypeface(Typeface.DEFAULT);
             viewHolder.tvMessageText.setVisibility(View.VISIBLE);
             if (OTRManager.getInstance().isEncrypted(text)) {
                 viewHolder.tvMessageText.setText(R.string.otr_not_decrypted_message);
