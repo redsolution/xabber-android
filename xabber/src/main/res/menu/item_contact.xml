@@ -38,4 +38,10 @@
 
     <item android:id="@+id/action_discard_subscription"
         android:title="@string/discard_subscription" />
+
+    <item android:id="@+id/action_archive_chat"
+        android:title="@string/archive_chat" />
+
+    <item android:id="@+id/action_unarchive_chat"
+        android:title="@string/unarchive_chat" />
 </menu>

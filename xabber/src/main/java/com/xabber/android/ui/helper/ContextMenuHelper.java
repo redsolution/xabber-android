@@ -33,6 +33,7 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.muc.MUCManager;
+import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.AbstractContact;
@@ -216,6 +217,28 @@ public class ContextMenuHelper {
                         return true;
                     }
                 });
+
+        menu.findItem(R.id.action_archive_chat).setOnMenuItemClickListener(
+                new MenuItem.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        AbstractChat chat = MessageManager.getInstance().getChat(account, user);
+                        if (chat != null) chat.setArchived(true);
+                        adapter.onChange();
+                        return true;
+                    }
+                });
+
+        menu.findItem(R.id.action_unarchive_chat).setOnMenuItemClickListener(
+                new MenuItem.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        AbstractChat chat = MessageManager.getInstance().getChat(account, user);
+                        if (chat != null) chat.setArchived(false);
+                        adapter.onChange();
+                        return true;
+                    }
+                });
     }
 
     private static void setContactContextMenuItemsVisibilty(AbstractContact abstractContact,
@@ -273,6 +296,13 @@ public class ContextMenuHelper {
         if (!PresenceManager.getInstance().hasSubscriptionRequest(account, user)) {
             menu.findItem(R.id.action_accept_subscription).setVisible(false);
             menu.findItem(R.id.action_discard_subscription).setVisible(false);
+        }
+
+        // archive/unarchive chat
+        AbstractChat chat = MessageManager.getInstance().getChat(account, user);
+        if (chat != null) {
+            menu.findItem(R.id.action_archive_chat).setVisible(!chat.isArchived());
+            menu.findItem(R.id.action_unarchive_chat).setVisible(chat.isArchived());
         }
     }
 

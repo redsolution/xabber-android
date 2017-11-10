@@ -1,9 +1,7 @@
 package com.xabber.android.ui.adapter.contactlist.viewobjects;
 
 import android.graphics.drawable.Drawable;
-import android.view.View;
 
-import com.xabber.android.R;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionState;
@@ -33,11 +31,12 @@ public class ChatVO extends ContactVO {
     private int messageStatus;
     private String messageOwner;
     private boolean mute;
+    private boolean archived;
 
     public ChatVO(int accountColorIndicator, boolean showOfflineShadow, String name, String status,
                   int statusId, int statusLevel, Drawable avatar, int mucIndicatorLevel,
                   UserJid userJid, AccountJid accountJid, String messageText, boolean isOutgoing,
-                  Date time, int messageStatus, int unreadCount, String messageOwner, boolean mute) {
+                  Date time, int messageStatus, int unreadCount, String messageOwner, boolean mute, boolean archived) {
 
         super(accountColorIndicator, showOfflineShadow, name, status, statusId, statusLevel,
                 avatar, mucIndicatorLevel, userJid, accountJid, unreadCount);
@@ -48,6 +47,7 @@ public class ChatVO extends ContactVO {
         this.messageStatus = messageStatus;
         this.messageOwner = messageOwner;
         this.mute = mute;
+        this.archived = archived;
     }
 
     public static ChatVO convert(AbstractContact contact) {
@@ -133,7 +133,7 @@ public class ChatVO extends ContactVO {
 
         return new ChatVO(accountColorIndicator, showOfflineShadow, name, statusText, statusId,
                 statusLevel, avatar, mucIndicatorLevel, contact.getUser(), contact.getAccount(),
-                messageText, isOutgoing, time, messageStatus, unreadCount, messageOwner, mute);
+                messageText, isOutgoing, time, messageStatus, unreadCount, messageOwner, mute, chat.isArchived());
     }
 
     public static ArrayList<ContactVO> convert(Collection<AbstractContact> contacts) {
@@ -166,5 +166,9 @@ public class ChatVO extends ContactVO {
 
     public boolean isMute() {
         return mute;
+    }
+
+    public boolean isArchived() {
+        return archived;
     }
 }

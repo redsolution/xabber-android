@@ -28,6 +28,8 @@
     <string name="contact_delete_confirm">Do you really want to delete contact %1$s from account %2$s?</string>
     <string name="contact_list">Contact list</string>
     <string name="discard_subscription">Decline contact</string>
+    <string name="archive_chat">Archive</string>
+    <string name="unarchive_chat">Unarchive</string>
     <string name="exit">Exit</string>
     <string name="group_active_chat">Active chats</string>
     <string name="group_none">No groups</string>

@@ -2,20 +2,12 @@ package com.xabber.android.ui.adapter.contactlist;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
-import android.text.Spannable;
-import android.text.SpannableStringBuilder;
-import android.text.style.ImageSpan;
 import android.view.View;
-import android.widget.TextView;
 
 import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
-import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.ui.activity.ContactActivity;
@@ -135,6 +127,11 @@ public class ContactItemChatInflater {
                     null, null);
 
             viewHolder.tvUnreadCount.getBackground().mutate().clearColorFilter();
+        }
+
+        if (viewObject.isArchived()) {
+            viewHolder.tvContactName.setCompoundDrawablesWithIntrinsicBounds(null, null,
+                    context.getResources().getDrawable(R.drawable.ic_delete), null);
         }
     }
 

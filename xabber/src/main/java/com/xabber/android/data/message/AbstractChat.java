@@ -43,7 +43,6 @@ import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.util.StringUtils;
 import org.jivesoftware.smackx.delay.packet.DelayInformation;
 import org.jxmpp.jid.Jid;
-import org.jxmpp.jid.impl.JidCreate;
 import org.jxmpp.jid.parts.Resourcepart;
 
 import java.io.File;
@@ -53,7 +52,6 @@ import java.util.UUID;
 
 import io.realm.Realm;
 import io.realm.RealmChangeListener;
-import io.realm.RealmModel;
 import io.realm.RealmResults;
 import io.realm.Sort;
 
@@ -88,6 +86,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     private String threadId;
 
     private int unreadMessageCount;
+    private boolean archived;
 
     private boolean isPrivateMucChat;
     private boolean isPrivateMucChatAccepted;
@@ -603,5 +602,13 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
 
     public void setUnreadMessageCount(int unreadMessageCount) {
         this.unreadMessageCount = unreadMessageCount;
+    }
+
+    public boolean isArchived() {
+        return archived;
+    }
+
+    public void setArchived(boolean archived) {
+        this.archived = archived;
     }
 }
