@@ -427,7 +427,8 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
                 // add recent chats
                 rosterItemVOs.addAll(ChatVO.convert(chatsGroup.getAbstractContacts()));
-                if (!showAllChats && chats.size() > MAX_RECENT_ITEMS)
+                if (!showAllChats && chats.size() > MAX_RECENT_ITEMS
+                        && currentChatsState == ChatListState.recent)
                     rosterItemVOs.add(ButtonVO.convert(null, ButtonVO.ACTION_SHOW_ALL_CHATS, ButtonVO.ACTION_SHOW_ALL_CHATS));
 
                 if (showAccounts) {
@@ -993,11 +994,10 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
         int itemsCount = 0;
         for (AbstractChat chat : newChats) {
-            if (showAllChats || itemsCount < MAX_RECENT_ITEMS) {
-                if (chatsGroup.isExpanded()) {
-                    chatsGroup.addAbstractContact(RosterManager.getInstance()
-                            .getBestContact(chat.getAccount(), chat.getUser()));
-                }
+            if (showAllChats || itemsCount < MAX_RECENT_ITEMS
+                    || state == ChatListState.unread || state == ChatListState.archived) {
+                chatsGroup.addAbstractContact(RosterManager.getInstance()
+                        .getBestContact(chat.getAccount(), chat.getUser()));
                 chatsGroup.increment(true);
                 itemsCount++;
             } else break;
