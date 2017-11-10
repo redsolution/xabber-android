@@ -280,7 +280,7 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
          * List of active chats.
          */
         final GroupConfiguration activeChats;
-        final GroupConfiguration recentChatsGroup;
+        final GroupConfiguration chatsGroup;
 
         /**
          * Whether there is at least one contact.
@@ -341,42 +341,9 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 activeChats = null;
             }
 
-            // recent chats
-            recentChatsGroup = new GroupConfiguration(GroupManager.NO_ACCOUNT,
-                    GroupVO.RECENT_CHATS_TITLE, GroupManager.getInstance());
+            // chats on top
             Collection<AbstractChat> chats = MessageManager.getInstance().getChatsOfEnabledAccount();
-
-            List<AbstractChat> recentChats = new ArrayList<>();
-
-            int unreadMessageCount = 0;
-            for (AbstractChat abstractChat : chats) {
-                MessageItem lastMessage = abstractChat.getLastMessage();
-
-                if (lastMessage != null && !TextUtils.isEmpty(lastMessage.getText())) {
-                    AccountItem accountItem = AccountManager.getInstance().getAccount(abstractChat.getAccount());
-                    if (accountItem != null && accountItem.isEnabled()) {
-                        recentChats.add(abstractChat);
-                        unreadMessageCount = unreadMessageCount + abstractChat.getUnreadMessageCount();
-                    }
-                }
-            }
-            EventBus.getDefault().post(new UpdateUnreadCountEvent(unreadMessageCount));
-
-            Collections.sort(recentChats, ChatComparator.CHAT_COMPARATOR);
-
-            recentChatsGroup.setNotEmpty();
-
-            int itemsCount = 0;
-            for (AbstractChat chat : recentChats) {
-                if (showAllChats || itemsCount < MAX_RECENT_ITEMS) {
-                    if (recentChatsGroup.isExpanded()) {
-                        recentChatsGroup.addAbstractContact(RosterManager.getInstance()
-                                .getBestContact(chat.getAccount(), chat.getUser()));
-                    }
-                    recentChatsGroup.increment(true);
-                    itemsCount++;
-                } else break;
-            }
+            chatsGroup = getChatsGroup(chats, currentChatsState);
 
             // Build structure.
             for (RosterContact rosterContact : rosterContacts) {
@@ -459,8 +426,7 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             if (hasVisibleContacts) {
 
                 // add recent chats
-                //rosterItemVOs.add(GroupVO.convert(recentChatsGroup));
-                rosterItemVOs.addAll(ChatVO.convert(recentChatsGroup.getAbstractContacts()));
+                rosterItemVOs.addAll(ChatVO.convert(chatsGroup.getAbstractContacts()));
                 if (!showAllChats && chats.size() > MAX_RECENT_ITEMS)
                     rosterItemVOs.add(ButtonVO.convert(null, ButtonVO.ACTION_SHOW_ALL_CHATS, ButtonVO.ACTION_SHOW_ALL_CHATS));
 
@@ -986,5 +952,53 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         recent,
         unread,
         archived
+    }
+
+    private GroupConfiguration getChatsGroup(Collection<AbstractChat> chats, ChatListState state) {
+        GroupConfiguration chatsGroup = new GroupConfiguration(GroupManager.NO_ACCOUNT,
+                GroupVO.RECENT_CHATS_TITLE, GroupManager.getInstance());
+
+        List<AbstractChat> newChats = new ArrayList<>();
+
+        int unreadMessageCount = 0;
+        for (AbstractChat abstractChat : chats) {
+            MessageItem lastMessage = abstractChat.getLastMessage();
+
+            if (lastMessage != null && !TextUtils.isEmpty(lastMessage.getText())) {
+                AccountItem accountItem = AccountManager.getInstance().getAccount(abstractChat.getAccount());
+                if (accountItem != null && accountItem.isEnabled()) {
+                    int unread = abstractChat.getUnreadMessageCount();
+                    unreadMessageCount = unreadMessageCount + unread;
+
+                    switch (state) {
+                        case unread:
+                            if (unread > 0) newChats.add(abstractChat);
+                            break;
+                        default:
+                            newChats.add(abstractChat);
+                            break;
+                    }
+                }
+            }
+        }
+        EventBus.getDefault().post(new UpdateUnreadCountEvent(unreadMessageCount));
+
+        Collections.sort(newChats, ChatComparator.CHAT_COMPARATOR);
+
+        chatsGroup.setNotEmpty();
+
+        int itemsCount = 0;
+        for (AbstractChat chat : newChats) {
+            if (showAllChats || itemsCount < MAX_RECENT_ITEMS) {
+                if (chatsGroup.isExpanded()) {
+                    chatsGroup.addAbstractContact(RosterManager.getInstance()
+                            .getBestContact(chat.getAccount(), chat.getUser()));
+                }
+                chatsGroup.increment(true);
+                itemsCount++;
+            } else break;
+        }
+
+        return chatsGroup;
     }
 }
