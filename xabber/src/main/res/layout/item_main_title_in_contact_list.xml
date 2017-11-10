@@ -21,7 +21,7 @@
         android:text="@string/recent_chats"
         android:textColor="#212121"
         android:clickable="true"
-        android:drawableRight="@drawable/ic_expander_indicator_down_black_24dp"
+        android:drawableRight="@drawable/ic_chevron_down"
         />
 
     <ImageView
