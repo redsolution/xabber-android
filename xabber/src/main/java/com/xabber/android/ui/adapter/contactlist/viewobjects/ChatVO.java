@@ -30,7 +30,6 @@ public class ChatVO extends ContactVO {
     private Date time;
     private int messageStatus;
     private String messageOwner;
-    private boolean mute;
     private boolean archived;
 
     public ChatVO(int accountColorIndicator, boolean showOfflineShadow, String name, String status,
@@ -39,14 +38,13 @@ public class ChatVO extends ContactVO {
                   Date time, int messageStatus, int unreadCount, String messageOwner, boolean mute, boolean archived) {
 
         super(accountColorIndicator, showOfflineShadow, name, status, statusId, statusLevel,
-                avatar, mucIndicatorLevel, userJid, accountJid, unreadCount);
+                avatar, mucIndicatorLevel, userJid, accountJid, unreadCount, mute);
 
         this.messageText = messageText;
         this.isOutgoing = isOutgoing;
         this.time = time;
         this.messageStatus = messageStatus;
         this.messageOwner = messageOwner;
-        this.mute = mute;
         this.archived = archived;
     }
 
@@ -62,7 +60,6 @@ public class ChatVO extends ContactVO {
         int messageStatus = 0;
         int unreadCount = 0;
         String messageOwner = null;
-        boolean mute;
 
         AccountItem accountItem = AccountManager.getInstance().getAccount(contact.getAccount());
         if (accountItem != null && accountItem.getState() == ConnectionState.connected) {
@@ -94,7 +91,6 @@ public class ChatVO extends ContactVO {
         MessageManager messageManager = MessageManager.getInstance();
         AbstractChat chat = messageManager.getOrCreateChat(contact.getAccount(), contact.getUser());
         MessageItem lastMessage = chat.getLastMessage();
-        mute = !chat.notifyAboutMessage();
 
         if (lastMessage == null) {
             messageText = statusText;
@@ -133,7 +129,8 @@ public class ChatVO extends ContactVO {
 
         return new ChatVO(accountColorIndicator, showOfflineShadow, name, statusText, statusId,
                 statusLevel, avatar, mucIndicatorLevel, contact.getUser(), contact.getAccount(),
-                messageText, isOutgoing, time, messageStatus, unreadCount, messageOwner, mute, chat.isArchived());
+                messageText, isOutgoing, time, messageStatus, unreadCount, messageOwner,
+                !chat.notifyAboutMessage(), chat.isArchived());
     }
 
     public static ArrayList<ContactVO> convert(Collection<AbstractContact> contacts) {
@@ -162,10 +159,6 @@ public class ChatVO extends ContactVO {
 
     public String getMessageOwner() {
         return messageOwner;
-    }
-
-    public boolean isMute() {
-        return mute;
     }
 
     public boolean isArchived() {

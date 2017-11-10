@@ -2,6 +2,7 @@ package com.xabber.android.ui.adapter.contactlist;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.PorterDuff;
 import android.view.View;
 
 import com.xabber.android.R;
@@ -63,6 +64,21 @@ class ContactItemInflater {
             viewHolder.tvUnreadCount.setText(String.valueOf(viewObject.getUnreadCount()));
             viewHolder.tvUnreadCount.setVisibility(View.VISIBLE);
         } else viewHolder.tvUnreadCount.setVisibility(View.GONE);
+
+        // notification mute
+        if (viewObject.isMute()) {
+            viewHolder.tvContactName.setCompoundDrawablesWithIntrinsicBounds(null, null,
+                    context.getResources().getDrawable(R.drawable.ic_mute), null);
+
+            viewHolder.tvUnreadCount.getBackground().mutate().setColorFilter(
+                    context.getResources().getColor(R.color.grey_500),
+                    PorterDuff.Mode.SRC_IN);
+        } else {
+            viewHolder.tvContactName.setCompoundDrawablesWithIntrinsicBounds(null, null,
+                    null, null);
+
+            viewHolder.tvUnreadCount.getBackground().mutate().clearColorFilter();
+        }
     }
 
     void onAvatarClick(ContactVO contact) {

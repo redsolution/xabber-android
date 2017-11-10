@@ -5,7 +5,6 @@ import android.graphics.drawable.Drawable;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionState;
-import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.muc.MUCManager;
@@ -32,10 +31,11 @@ public class ContactVO extends BaseRosterItemVO {
     private UserJid userJid;
     private AccountJid accountJid;
     private int unreadCount;
+    private boolean mute;
 
     public ContactVO(int accountColorIndicator, boolean showOfflineShadow, String name, String status,
                      int statusId, int statusLevel, Drawable avatar, int mucIndicatorLevel,
-                     UserJid userJid, AccountJid accountJid, int unreadCount) {
+                     UserJid userJid, AccountJid accountJid, int unreadCount, boolean mute) {
         super(accountColorIndicator, showOfflineShadow);
         this.name = name;
         this.status = status;
@@ -46,6 +46,7 @@ public class ContactVO extends BaseRosterItemVO {
         this.userJid = userJid;
         this.accountJid = accountJid;
         this.unreadCount = unreadCount;
+        this.mute = mute;
     }
 
     public static ContactVO convert(AbstractContact contact) {
@@ -87,7 +88,7 @@ public class ContactVO extends BaseRosterItemVO {
         unreadCount = chat.getUnreadMessageCount();
 
         return new ContactVO(accountColorIndicator, showOfflineShadow, name, statusText, statusId,
-                statusLevel, avatar, mucIndicatorLevel, contact.getUser(), contact.getAccount(), unreadCount);
+                statusLevel, avatar, mucIndicatorLevel, contact.getUser(), contact.getAccount(), unreadCount, !chat.notifyAboutMessage());
     }
 
     public static ArrayList<ContactVO> convert(Collection<AbstractContact> contacts) {
@@ -128,6 +129,10 @@ public class ContactVO extends BaseRosterItemVO {
 
     public AccountJid getAccountJid() {
         return accountJid;
+    }
+
+    public boolean isMute() {
+        return mute;
     }
 
     public int getUnreadCount() {
