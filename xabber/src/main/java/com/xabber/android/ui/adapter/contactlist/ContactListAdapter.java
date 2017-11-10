@@ -89,7 +89,7 @@ import java.util.TreeMap;
 public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         implements Runnable, Filterable, UpdatableAdapter, ContactListItemViewHolder.ContactClickListener,
         AccountGroupViewHolder.AccountGroupClickListener, GroupViewHolder.GroupClickListener,
-        ButtonViewHolder.ButtonClickListener, StickyHeaderHandler, StickyHeaderListener {
+        ButtonViewHolder.ButtonClickListener, StickyHeaderHandler, StickyHeaderListener, MainTitleViewHolder.Listener {
 
     private static final String LOG_TAG = ContactListAdapter.class.getSimpleName();
 
@@ -169,6 +169,8 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private boolean showAllChats = false;
 
     private int currentHeaderPosition = 0;
+
+    private ChatListState currentChatsState = ChatListState.recent;
 
     public ContactListAdapter(ManagedActivity activity, ContactListAdapterListener listener) {
         this.activity = activity;
@@ -640,7 +642,7 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                         .inflate(R.layout.item_button_in_contact_list, parent, false), this);
             case TYPE_MAIN_TITLE:
                 return new MainTitleViewHolder(layoutInflater
-                        .inflate(R.layout.item_main_title_in_contact_list, parent, false), activity);
+                        .inflate(R.layout.item_main_title_in_contact_list, parent, false), activity, this);
 
             default:
                 throw new IllegalStateException();
@@ -702,6 +704,18 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
         final int level = AccountManager.getInstance().getColorLevel(AccountPainter.getFirstAccount());
         holder.itemView.setBackgroundColor(accountGroupColors[level]);
+
+        switch (currentChatsState) {
+            case unread:
+                holder.tvTitle.setText(R.string.unread_chats);
+                break;
+            case archived:
+                holder.tvTitle.setText(R.string.archived_chats);
+                break;
+            default:
+                holder.tvTitle.setText(R.string.recent_chats);
+                break;
+        }
     }
 
     private void bindBottomSeparator(BottomSeparatorHolder holder, BottomAccountSeparatorVO viewObject) {
@@ -957,4 +971,20 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     @Override
     public void headerDetached(View headerView, int adapterPosition) {}
+
+    @Override
+    public void onStateChanged(ChatListState state) {
+        this.currentChatsState = state;
+        onChange();
+    }
+
+    public void setState(ChatListState state) {
+        this.currentChatsState = state;
+    }
+
+    public enum ChatListState {
+        recent,
+        unread,
+        archived
+    }
 }

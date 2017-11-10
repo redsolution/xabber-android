@@ -89,6 +89,8 @@
     <string name="otr_verification_notify_button_cancel">CANCEL</string>
 
     <string name="recent_chats">Recent chats</string>
+    <string name="unread_chats">Unread chats</string>
+    <string name="archived_chats">Archived chats</string>
 
     <string name="under_construction">Under construction</string>
     <string name="under_construction_message">This screen is under construction</string>

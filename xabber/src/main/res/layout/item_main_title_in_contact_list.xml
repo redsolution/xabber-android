@@ -11,6 +11,7 @@
     <include layout="@layout/account_color_indicator" />
 
     <TextView
+        android:id="@+id/tvTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="12dp"
@@ -19,6 +20,8 @@
         android:textSize="18sp"
         android:text="@string/recent_chats"
         android:textColor="#212121"
+        android:clickable="true"
+        android:drawableRight="@drawable/ic_expander_indicator_down_black_24dp"
         />
 
     <ImageView

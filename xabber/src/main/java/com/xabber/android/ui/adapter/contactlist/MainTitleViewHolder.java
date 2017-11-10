@@ -6,6 +6,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
+import android.widget.TextView;
 
 import com.xabber.android.R;
 import com.xabber.android.ui.activity.ConferenceSelectActivity;
@@ -22,17 +23,27 @@ public class MainTitleViewHolder extends RecyclerView.ViewHolder implements View
     final View accountColorIndicator;
     final ImageView ivAdd;
     final ImageView ivSetStatus;
+    final TextView tvTitle;
     private final Context context;
+    private Listener listener;
 
-    public MainTitleViewHolder(View itemView, Context context) {
+    interface Listener {
+        void onStateChanged(ContactListAdapter.ChatListState state);
+    }
+
+    public MainTitleViewHolder(View itemView, Context context, Listener listener) {
         super(itemView);
 
         this.context = context;
+        this.listener = listener;
+
         accountColorIndicator = itemView.findViewById(R.id.accountColorIndicator);
         ivAdd = (ImageView) itemView.findViewById(R.id.ivAdd);
         ivAdd.setOnClickListener(this);
         ivSetStatus = (ImageView) itemView.findViewById(R.id.ivSetStatus);
         ivSetStatus.setOnClickListener(this);
+        tvTitle = (TextView) itemView.findViewById(R.id.tvTitle);
+        tvTitle.setOnClickListener(this);
     }
 
     @Override
@@ -43,6 +54,9 @@ public class MainTitleViewHolder extends RecyclerView.ViewHolder implements View
                 break;
             case R.id.ivSetStatus:
                 context.startActivity(StatusEditActivity.createIntent(context));
+                break;
+            case R.id.tvTitle:
+                showTitlePopup(tvTitle);
                 break;
         }
     }
@@ -56,6 +70,15 @@ public class MainTitleViewHolder extends RecyclerView.ViewHolder implements View
             case R.id.action_join_conference:
                 context.startActivity(ConferenceSelectActivity.createIntent(context));
                 return true;
+            case R.id.action_recent_chats:
+                listener.onStateChanged(ContactListAdapter.ChatListState.recent);
+                return true;
+            case R.id.action_unread_chats:
+                listener.onStateChanged(ContactListAdapter.ChatListState.unread);
+                return true;
+            case R.id.action_archived_chats:
+                listener.onStateChanged(ContactListAdapter.ChatListState.archived);
+                return true;
             default:
                 return false;
         }
@@ -65,6 +88,13 @@ public class MainTitleViewHolder extends RecyclerView.ViewHolder implements View
         PopupMenu popupMenu = new PopupMenu(context, v);
         popupMenu.setOnMenuItemClickListener(this);
         popupMenu.inflate(R.menu.menu_add_in_contact_list);
+        popupMenu.show();
+    }
+
+    private void showTitlePopup(View v) {
+        PopupMenu popupMenu = new PopupMenu(context, v);
+        popupMenu.setOnMenuItemClickListener(this);
+        popupMenu.inflate(R.menu.menu_chat_list);
         popupMenu.show();
     }
 }
