@@ -972,10 +972,14 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
                     switch (state) {
                         case unread:
-                            if (unread > 0) newChats.add(abstractChat);
+                            if (!abstractChat.isArchived() && unread > 0) newChats.add(abstractChat);
+                            break;
+                        case archived:
+                            if (abstractChat.isArchived()) newChats.add(abstractChat);
                             break;
                         default:
-                            newChats.add(abstractChat);
+                            // recent
+                            if (!abstractChat.isArchived()) newChats.add(abstractChat);
                             break;
                     }
                 }
