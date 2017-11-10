@@ -12,7 +12,6 @@ import com.xabber.android.data.database.realm.PatreonGoalRealm;
 import com.xabber.android.data.database.realm.PatreonRealm;
 import com.xabber.android.data.database.realm.SocialBindingRealm;
 import com.xabber.android.data.database.realm.SyncStateRealm;
-import com.xabber.android.data.database.realm.XMPPAccountSettignsRealm;
 import com.xabber.android.data.database.realm.XMPPUserRealm;
 import com.xabber.android.data.database.realm.XabberAccountRealm;
 import com.xabber.android.data.database.sqlite.AccountTable;
@@ -28,7 +27,7 @@ import io.realm.annotations.RealmModule;
 
 public class RealmManager {
     private static final String REALM_DATABASE_NAME = "realm_database.realm";
-    private static final int REALM_DATABASE_VERSION = 9;
+    private static final int REALM_DATABASE_VERSION = 10;
     private static final String LOG_TAG = RealmManager.class.getSimpleName();
     private final RealmConfiguration realmConfiguration;
 
@@ -174,6 +173,11 @@ public class RealmManager {
                                     .addField("unreadCount", int.class);
 
                             oldVersion++;
+                        }
+
+                        if (oldVersion == 9) {
+                            schema.get(ChatDataRealm.class.getSimpleName())
+                                    .addField("archived", boolean.class);
                         }
                     }
                 })

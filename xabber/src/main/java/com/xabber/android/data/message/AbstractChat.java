@@ -608,7 +608,8 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         return archived;
     }
 
-    public void setArchived(boolean archived) {
+    public void setArchived(boolean archived, boolean needSaveToRealm) {
         this.archived = archived;
+        if (needSaveToRealm) ChatManager.getInstance().saveOrUpdateChatDataToRealm(this);
     }
 }

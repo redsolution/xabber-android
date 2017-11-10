@@ -223,7 +223,7 @@ public class ContextMenuHelper {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
                         AbstractChat chat = MessageManager.getInstance().getChat(account, user);
-                        if (chat != null) chat.setArchived(true);
+                        if (chat != null) chat.setArchived(true, true);
                         adapter.onChange();
                         return true;
                     }
@@ -234,7 +234,7 @@ public class ContextMenuHelper {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
                         AbstractChat chat = MessageManager.getInstance().getChat(account, user);
-                        if (chat != null) chat.setArchived(false);
+                        if (chat != null) chat.setArchived(false, true);
                         adapter.onChange();
                         return true;
                     }

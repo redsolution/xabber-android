@@ -10,12 +10,14 @@ public class ChatData {
     private String accountJid;
     private String userJid;
     private int unreadCount;
+    private boolean archived;
 
-    public ChatData(String subject, String accountJid, String userJid, int unreadCount) {
+    public ChatData(String subject, String accountJid, String userJid, int unreadCount, boolean archived) {
         this.subject = subject;
         this.accountJid = accountJid;
         this.userJid = userJid;
         this.unreadCount = unreadCount;
+        this.archived = archived;
     }
 
     public String getSubject() {
@@ -48,5 +50,13 @@ public class ChatData {
 
     public void setUnreadCount(int unreadCount) {
         this.unreadCount = unreadCount;
+    }
+
+    public boolean isArchived() {
+        return archived;
+    }
+
+    public void setArchived(boolean archived) {
+        this.archived = archived;
     }
 }

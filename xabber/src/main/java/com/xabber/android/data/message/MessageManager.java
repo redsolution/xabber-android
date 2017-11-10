@@ -191,8 +191,10 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
     private RegularChat createChat(AccountJid account, UserJid user) {
         RegularChat chat = new RegularChat(account, user, false);
         ChatData chatData = ChatManager.getInstance().loadChatDataFromRealm(chat);
-        if (chatData != null)
+        if (chatData != null) {
             chat.setUnreadMessageCount(chatData.getUnreadCount());
+            chat.setArchived(chatData.isArchived(), false);
+        }
         addChat(chat);
         return chat;
     }
@@ -200,8 +202,10 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
     private RegularChat createPrivateMucChat(AccountJid account, FullJid fullJid) throws UserJid.UserJidCreateException {
         RegularChat chat = new RegularChat(account, UserJid.from(fullJid), true);
         ChatData chatData = ChatManager.getInstance().loadChatDataFromRealm(chat);
-        if (chatData != null)
+        if (chatData != null) {
             chat.setUnreadMessageCount(chatData.getUnreadCount());
+            chat.setArchived(chatData.isArchived(), false);
+        }
         addChat(chat);
         return chat;
     }
