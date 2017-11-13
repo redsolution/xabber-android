@@ -969,7 +969,7 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 AccountItem accountItem = AccountManager.getInstance().getAccount(abstractChat.getAccount());
                 if (accountItem != null && accountItem.isEnabled()) {
                     int unread = abstractChat.getUnreadMessageCount();
-                    unreadMessageCount = unreadMessageCount + unread;
+                    if (abstractChat.notifyAboutMessage()) unreadMessageCount = unreadMessageCount + unread;
 
                     switch (state) {
                         case unread:
