@@ -194,6 +194,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
         if (chatData != null) {
             chat.setUnreadMessageCount(chatData.getUnreadCount());
             chat.setArchived(chatData.isArchived(), false);
+            chat.setMuted(chatData.isMuted(), false);
         }
         addChat(chat);
         return chat;
@@ -205,6 +206,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
         if (chatData != null) {
             chat.setUnreadMessageCount(chatData.getUnreadCount());
             chat.setArchived(chatData.isArchived(), false);
+            chat.setMuted(chatData.isMuted(), false);
         }
         addChat(chat);
         return chat;

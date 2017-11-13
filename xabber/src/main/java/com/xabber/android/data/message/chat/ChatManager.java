@@ -506,6 +506,7 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
         ChatDataRealm chatRealm = new ChatDataRealm(accountJid, userJid);
         chatRealm.setUnreadCount(chat.getUnreadMessageCount());
         chatRealm.setArchived(chat.isArchived());
+        chatRealm.setMuted(chat.isMuted());
 
         Realm realm = RealmManager.getInstance().getNewRealm();
         realm.beginTransaction();
@@ -532,7 +533,8 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
                     realmChat.getAccountJid(),
                     realmChat.getUserJid(),
                     realmChat.getUnreadCount(),
-                    realmChat.isArchived());
+                    realmChat.isArchived(),
+                    realmChat.isMuted());
         }
 
         realm.close();

@@ -116,6 +116,7 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
                                 if (chatData != null) {
                                     roomChat.setUnreadMessageCount(chatData.getUnreadCount());
                                     roomChat.setArchived(chatData.isArchived(), false);
+                                    roomChat.setMuted(chatData.isMuted(), false);
                                 }
 
                                 roomChats.add(roomChat);

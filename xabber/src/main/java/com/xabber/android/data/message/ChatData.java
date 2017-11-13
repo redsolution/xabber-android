@@ -11,13 +11,15 @@ public class ChatData {
     private String userJid;
     private int unreadCount;
     private boolean archived;
+    private boolean muted;
 
-    public ChatData(String subject, String accountJid, String userJid, int unreadCount, boolean archived) {
+    public ChatData(String subject, String accountJid, String userJid, int unreadCount, boolean archived, boolean muted) {
         this.subject = subject;
         this.accountJid = accountJid;
         this.userJid = userJid;
         this.unreadCount = unreadCount;
         this.archived = archived;
+        this.muted = muted;
     }
 
     public String getSubject() {
@@ -58,5 +60,13 @@ public class ChatData {
 
     public void setArchived(boolean archived) {
         this.archived = archived;
+    }
+
+    public boolean isMuted() {
+        return muted;
+    }
+
+    public void setMuted(boolean muted) {
+        this.muted = muted;
     }
 }
