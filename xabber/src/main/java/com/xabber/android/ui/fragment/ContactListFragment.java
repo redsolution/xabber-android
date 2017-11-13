@@ -484,4 +484,9 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
         tvPlaceholderMessage.setText(message);
         placeholderView.setVisibility(View.VISIBLE);
     }
+
+    public void showRecent() {
+        if (adapter != null)
+            adapter.onStateChanged(ContactListAdapter.ChatListState.recent);
+    }
 }

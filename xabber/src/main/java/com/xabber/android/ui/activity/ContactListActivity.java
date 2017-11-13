@@ -678,6 +678,7 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
     @Override
     public void onRecentClick() {
         if (contentFragment instanceof ContactListFragment) {
+            ((ContactListFragment) getFragmentManager().findFragmentById(R.id.container)).showRecent();
             ((ContactListFragment) getFragmentManager().findFragmentById(R.id.container)).scrollTo(0);
             ((ContactListFragment) getFragmentManager().findFragmentById(R.id.container)).setShowAllChats(false);
         } else showContactListFragment(null);
@@ -692,6 +693,7 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
     @Override
     public void onAccountShortcutClick(AccountJid jid) {
         if (contentFragment instanceof ContactListFragment) {
+            ((ContactListFragment) getFragmentManager().findFragmentById(R.id.container)).showRecent();
             ((ContactListFragment) getFragmentManager().findFragmentById(R.id.container)).setShowAllChats(false);
             ((ContactListFragment) getFragmentManager().findFragmentById(R.id.container)).scrollToAccount(jid);
         } else showContactListFragment(jid);
