@@ -441,7 +441,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         }
     }
 
-    private void selectPage(int position, boolean smoothScroll) {
+    public void selectPage(int position, boolean smoothScroll) {
         onPageSelected(position);
         viewPager.setCurrentItem(position, smoothScroll);
     }

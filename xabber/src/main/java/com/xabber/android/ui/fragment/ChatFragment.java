@@ -316,6 +316,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         }
 
         placeholder = view.findViewById(R.id.placeholder);
+        placeholder.setOnClickListener(this);
 
         return view;
     }
@@ -1055,6 +1056,9 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
     public void onClick(View v) {
         if (v.getId() == R.id.avatar) {
             showContactInfo();
+        }
+        if (v.getId() == R.id.placeholder) {
+            ((ChatActivity)getActivity()).selectPage(1, true);
         }
     }
 
