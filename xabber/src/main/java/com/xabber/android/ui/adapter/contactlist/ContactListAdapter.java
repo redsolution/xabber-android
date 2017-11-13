@@ -239,6 +239,8 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             handler.removeCallbacks(this);
         }
 
+        listener.hidePlaceholder();
+
         final Collection<RosterContact> allRosterContacts = RosterManager.getInstance().getAllContacts();
 
         Map<AccountJid, Collection<UserJid>> blockedContacts = new TreeMap<>();
@@ -431,52 +433,62 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                         && currentChatsState == ChatListState.recent)
                     rosterItemVOs.add(ButtonVO.convert(null, ButtonVO.ACTION_SHOW_ALL_CHATS, ButtonVO.ACTION_SHOW_ALL_CHATS));
 
-                if (showAccounts) {
-                    boolean isFirst = rosterItemVOs.isEmpty();
-                    for (AccountConfiguration rosterAccount : accounts.values()) {
-                        if (isFirst) {
-                            isFirst = false;
-                        } else {
-                            rosterItemVOs.add(new TopAccountSeparatorVO());
-                        }
+                if (currentChatsState == ChatListState.recent) {
 
-                        rosterItemVOs.add(AccountVO.convert(rosterAccount));
+                    if (showAccounts) {
+                        boolean isFirst = rosterItemVOs.isEmpty();
+                        for (AccountConfiguration rosterAccount : accounts.values()) {
+                            if (isFirst) {
+                                isFirst = false;
+                            } else {
+                                rosterItemVOs.add(new TopAccountSeparatorVO());
+                            }
 
-                        if (showGroups) {
-                            if (rosterAccount.isExpanded()) {
-                                for (GroupConfiguration rosterConfiguration : rosterAccount
-                                        .getSortedGroupConfigurations()) {
-                                    if (showEmptyGroups || !rosterConfiguration.isEmpty()) {
-                                        rosterItemVOs.add(GroupVO.convert(rosterConfiguration));
-                                        rosterConfiguration.sortAbstractContacts(comparator);
-                                        rosterItemVOs.addAll(ContactVO.convert(rosterConfiguration.getAbstractContacts()));
+                            rosterItemVOs.add(AccountVO.convert(rosterAccount));
+
+                            if (showGroups) {
+                                if (rosterAccount.isExpanded()) {
+                                    for (GroupConfiguration rosterConfiguration : rosterAccount
+                                            .getSortedGroupConfigurations()) {
+                                        if (showEmptyGroups || !rosterConfiguration.isEmpty()) {
+                                            rosterItemVOs.add(GroupVO.convert(rosterConfiguration));
+                                            rosterConfiguration.sortAbstractContacts(comparator);
+                                            rosterItemVOs.addAll(ContactVO.convert(rosterConfiguration.getAbstractContacts()));
+                                        }
                                     }
+                                }
+                            } else {
+                                rosterAccount.sortAbstractContacts(comparator);
+                                rosterItemVOs.addAll(ContactVO.convert(rosterAccount.getAbstractContacts()));
+                            }
+
+                            if (rosterAccount.getTotal() > 0 && !rosterAccount.isExpanded()) {
+                                rosterItemVOs.add(BottomAccountSeparatorVO.convert(rosterAccount.getAccount()));
+                            }
+
+                            if (rosterAccount.getTotal() == 0)
+                                rosterItemVOs.add(ButtonVO.convert(null, ButtonVO.ACTION_ADD_CONTACT, ButtonVO.ACTION_ADD_CONTACT));
+                        }
+                    } else {
+                        if (showGroups) {
+                            for (GroupConfiguration rosterConfiguration : groups.values()) {
+                                if (showEmptyGroups || !rosterConfiguration.isEmpty()) {
+                                    rosterItemVOs.add(GroupVO.convert(rosterConfiguration));
+                                    rosterConfiguration.sortAbstractContacts(comparator);
+                                    rosterItemVOs.addAll(ContactVO.convert(rosterConfiguration.getAbstractContacts()));
                                 }
                             }
                         } else {
-                            rosterAccount.sortAbstractContacts(comparator);
-                            rosterItemVOs.addAll(ContactVO.convert(rosterAccount.getAbstractContacts()));
+                            Collections.sort(contacts, comparator);
+                            rosterItemVOs.addAll(ContactVO.convert(contacts));
                         }
-
-                        if (rosterAccount.getTotal() > 0 && !rosterAccount.isExpanded()) {
-                            rosterItemVOs.add(BottomAccountSeparatorVO.convert(rosterAccount.getAccount()));
-                        }
-
-                        if (rosterAccount.getTotal() == 0)
-                            rosterItemVOs.add(ButtonVO.convert(null, ButtonVO.ACTION_ADD_CONTACT, ButtonVO.ACTION_ADD_CONTACT));
                     }
                 } else {
-                    if (showGroups) {
-                        for (GroupConfiguration rosterConfiguration : groups.values()) {
-                            if (showEmptyGroups || !rosterConfiguration.isEmpty()) {
-                                rosterItemVOs.add(GroupVO.convert(rosterConfiguration));
-                                rosterConfiguration.sortAbstractContacts(comparator);
-                                rosterItemVOs.addAll(ContactVO.convert(rosterConfiguration.getAbstractContacts()));
-                            }
-                        }
-                    } else {
-                        Collections.sort(contacts, comparator);
-                        rosterItemVOs.addAll(ContactVO.convert(contacts));
+                    if (chatsGroup.getAbstractContacts().size() == 0) {
+                        if (currentChatsState == ChatListState.unread)
+                            listener.showPlaceholder(activity.getString(R.string.placeholder_no_unread));
+                        if (currentChatsState == ChatListState.archived)
+                            listener.showPlaceholder(activity.getString(R.string.placeholder_no_archived));
                     }
                 }
             }
@@ -875,6 +887,8 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         void onContactClick(AbstractContact contact);
         void onAccountMenuClick(AccountJid accountJid, View view);
         void onScrollToPosition(int position);
+        void hidePlaceholder();
+        void showPlaceholder(String message);
 
     }
 

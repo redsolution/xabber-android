@@ -104,4 +104,7 @@
 
     <string name="title_recent_chats">Recent chats</string>
     <string name="title_contacts">Contacts</string>
+
+    <string name="placeholder_no_archived">Archive has no chats</string>
+    <string name="placeholder_no_unread">You are haven\'t unread chats</string>
 </resources>

@@ -17,13 +17,11 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.Filterable;
+import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.brandongogetap.stickyheaders.StickyLayoutManager;
-import com.brandongogetap.stickyheaders.exposed.StickyHeader;
-import com.brandongogetap.stickyheaders.exposed.StickyHeaderListener;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
@@ -42,7 +40,6 @@ import com.xabber.android.ui.activity.AccountAddActivity;
 import com.xabber.android.ui.activity.ChatActivity;
 import com.xabber.android.ui.activity.ConferenceSelectActivity;
 import com.xabber.android.ui.activity.ContactAddActivity;
-import com.xabber.android.ui.activity.ContactListActivity;
 import com.xabber.android.ui.activity.ManagedActivity;
 import com.xabber.android.ui.activity.StatusEditActivity;
 import com.xabber.android.ui.adapter.UpdatableAdapter;
@@ -51,7 +48,6 @@ import com.xabber.android.ui.adapter.contactlist.ContactListAdapter.ContactListA
 import com.xabber.android.ui.adapter.contactlist.ContactListState;
 import com.xabber.android.ui.adapter.contactlist.viewobjects.AccountVO;
 import com.xabber.android.ui.color.AccountPainter;
-import com.xabber.android.ui.color.BarPainter;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.helper.ContextMenuHelper;
 import com.xabber.android.ui.preferences.PreferenceEditor;
@@ -109,6 +105,8 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
     private Menu optionsMenu;
     private View addMenuOption;
     private Toolbar toolbar;
+    private LinearLayout placeholderView;
+    private TextView tvPlaceholderMessage;
 
     public static final String ACCOUNT_JID = "account_jid";
     private AccountJid scrollToAccountJid;
@@ -173,6 +171,10 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
         accountPainter = ColorManager.getInstance().getAccountPainter();
 
         addMenuOption = view.findViewById(R.id.action_add);
+
+        // placeholder
+        placeholderView = (LinearLayout) view.findViewById(R.id.placeholderView);
+        tvPlaceholderMessage = (TextView) view.findViewById(R.id.tvPlaceholderMessage);
 
         return view;
     }
@@ -472,4 +474,14 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
         popupMenu.show();
     }
 
+    @Override
+    public void hidePlaceholder() {
+        placeholderView.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void showPlaceholder(String message) {
+        tvPlaceholderMessage.setText(message);
+        placeholderView.setVisibility(View.VISIBLE);
+    }
 }
