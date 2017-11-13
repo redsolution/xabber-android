@@ -134,7 +134,7 @@ public class ContactItemChatInflater {
 
         if (viewObject.isArchived()) {
             viewHolder.tvContactName.setCompoundDrawablesWithIntrinsicBounds(null, null,
-                    context.getResources().getDrawable(R.drawable.ic_delete), null);
+                    context.getResources().getDrawable(R.drawable.ic_arcived), null);
         }
     }
 
