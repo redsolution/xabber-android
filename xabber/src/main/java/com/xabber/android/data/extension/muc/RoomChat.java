@@ -184,7 +184,7 @@ public class RoomChat extends AbstractChat {
 
     @Override
     public boolean notifyAboutMessage() {
-        return SettingsManager.eventsOnMuc();
+        return !isMuted() && SettingsManager.eventsOnMuc();
     }
 
     @Override

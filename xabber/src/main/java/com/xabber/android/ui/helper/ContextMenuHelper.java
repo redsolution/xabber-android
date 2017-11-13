@@ -239,6 +239,28 @@ public class ContextMenuHelper {
                         return true;
                     }
                 });
+
+        menu.findItem(R.id.action_mute_chat).setOnMenuItemClickListener(
+                new MenuItem.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        AbstractChat chat = MessageManager.getInstance().getChat(account, user);
+                        if (chat != null) chat.setMuted(true, true);
+                        adapter.onChange();
+                        return true;
+                    }
+                });
+
+        menu.findItem(R.id.action_unmute_chat).setOnMenuItemClickListener(
+                new MenuItem.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        AbstractChat chat = MessageManager.getInstance().getChat(account, user);
+                        if (chat != null) chat.setMuted(false, true);
+                        adapter.onChange();
+                        return true;
+                    }
+                });
     }
 
     private static void setContactContextMenuItemsVisibilty(AbstractContact abstractContact,
@@ -303,6 +325,12 @@ public class ContextMenuHelper {
         if (chat != null) {
             menu.findItem(R.id.action_archive_chat).setVisible(!chat.isArchived());
             menu.findItem(R.id.action_unarchive_chat).setVisible(chat.isArchived());
+        }
+
+        // mute/unmute chat
+        if (chat != null) {
+            menu.findItem(R.id.action_mute_chat).setVisible(!chat.isMuted());
+            menu.findItem(R.id.action_unmute_chat).setVisible(chat.isMuted());
         }
     }
 
