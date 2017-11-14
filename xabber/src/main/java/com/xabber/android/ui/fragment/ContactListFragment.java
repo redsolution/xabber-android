@@ -35,6 +35,7 @@ import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.connection.ConnectionManager;
 import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.NewMessageEvent;
 import com.xabber.android.data.roster.AbstractContact;
@@ -536,6 +537,18 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
             }
         });
         snackbar.setActionTextColor(Color.YELLOW);
+        snackbar.addCallback(new Snackbar.Callback() {
+            @Override
+            public void onDismissed(Snackbar transientBottomBar, int event) {
+                super.onDismissed(transientBottomBar, event);
+                if (event != DISMISS_EVENT_ACTION) archiveChat((ChatVO) deletedItem);
+            }
+        });
         snackbar.show();
+    }
+
+    public void archiveChat(ChatVO chatVO) {
+        AbstractChat chat = MessageManager.getInstance().getChat(chatVO.getAccountJid(), chatVO.getUserJid());
+        if (chat != null) chat.setArchived(true, true);
     }
 }
