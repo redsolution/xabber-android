@@ -645,13 +645,13 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
 
             // hide regular chat menu items
             menu.findItem(R.id.action_view_contact).setVisible(false);
-            menu.findItem(R.id.action_close_chat).setVisible(false);
+            //menu.findItem(R.id.action_close_chat).setVisible(false);
             menu.findItem(R.id.action_block_contact).setVisible(false);
         }
 
         if (abstractChat instanceof RegularChat) {
             menu.findItem(R.id.action_view_contact).setVisible(true);
-            menu.findItem(R.id.action_close_chat).setVisible(true);
+            //menu.findItem(R.id.action_close_chat).setVisible(true);
             menu.findItem(R.id.action_block_contact).setVisible(true);
 
             // hide room chat menu items
@@ -661,10 +661,23 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
             menu.findItem(R.id.action_authorization_settings).setVisible(false);
             menu.findItem(R.id.action_leave_conference).setVisible(false);
         }
+
+        // archive/unarchive chat
+        if (abstractChat != null) {
+            menu.findItem(R.id.action_archive_chat).setVisible(!abstractChat.isArchived());
+            menu.findItem(R.id.action_unarchive_chat).setVisible(abstractChat.isArchived());
+        }
+
+        // mute/unmute chat
+        if (abstractChat != null) {
+            menu.findItem(R.id.action_mute_chat).setVisible(!abstractChat.isMuted());
+            menu.findItem(R.id.action_unmute_chat).setVisible(abstractChat.isMuted());
+        }
     }
 
     @Override
     public boolean onMenuItemClick(MenuItem item) {
+        AbstractChat abstractChat = MessageManager.getInstance().getChat(account, user);
 
         switch (item.getItemId()) {
             /* security menu */
@@ -733,6 +746,22 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
 
             case R.id.action_block_contact:
                 BlockContactDialog.newInstance(account, user).show(getFragmentManager(), BlockContactDialog.class.getName());
+                return true;
+
+            case R.id.action_archive_chat:
+                if (abstractChat != null) abstractChat.setArchived(true, true);
+                return true;
+
+            case R.id.action_unarchive_chat:
+                if (abstractChat != null) abstractChat.setArchived(false, true);
+                return true;
+
+            case R.id.action_mute_chat:
+                if (abstractChat != null) abstractChat.setMuted(true, true);
+                return true;
+
+            case R.id.action_unmute_chat:
+                if (abstractChat != null) abstractChat.setMuted(false, true);
                 return true;
 
             /* conference specific options menu */

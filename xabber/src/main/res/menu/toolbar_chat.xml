@@ -94,4 +94,20 @@
         android:visible="false"
         app:showAsAction="never" />
 
+    <item android:id="@+id/action_archive_chat"
+        android:orderInCategory="215"
+        android:title="@string/archive_chat" />
+
+    <item android:id="@+id/action_unarchive_chat"
+        android:orderInCategory="220"
+        android:title="@string/unarchive_chat" />
+
+    <item android:id="@+id/action_mute_chat"
+        android:orderInCategory="225"
+        android:title="@string/mute_chat" />
+
+    <item android:id="@+id/action_unmute_chat"
+        android:orderInCategory="230"
+        android:title="@string/unmute_chat" />
+
 </menu>
