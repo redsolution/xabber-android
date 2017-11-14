@@ -131,11 +131,6 @@ public class ContactItemChatInflater {
 
             viewHolder.tvUnreadCount.getBackground().mutate().clearColorFilter();
         }
-
-        if (viewObject.isArchived()) {
-            viewHolder.tvContactName.setCompoundDrawablesWithIntrinsicBounds(null, null,
-                    context.getResources().getDrawable(R.drawable.ic_arcived), null);
-        }
     }
 
     void onAvatarClick(ContactVO contact) {
