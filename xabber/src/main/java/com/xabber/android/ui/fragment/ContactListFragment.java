@@ -541,14 +541,18 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
             @Override
             public void onDismissed(Snackbar transientBottomBar, int event) {
                 super.onDismissed(transientBottomBar, event);
-                if (event != DISMISS_EVENT_ACTION) archiveChat((ChatVO) deletedItem);
+                if (event != DISMISS_EVENT_ACTION) {
+                    if (adapter.getCurrentChatsState() == ContactListAdapter.ChatListState.archived)
+                        setChatArchived((ChatVO) deletedItem, false);
+                    else setChatArchived((ChatVO) deletedItem, true);
+                }
             }
         });
         snackbar.show();
     }
 
-    public void archiveChat(ChatVO chatVO) {
+    public void setChatArchived(ChatVO chatVO, boolean archived) {
         AbstractChat chat = MessageManager.getInstance().getChat(chatVO.getAccountJid(), chatVO.getUserJid());
-        if (chat != null) chat.setArchived(true, true);
+        if (chat != null) chat.setArchived(archived, true);
     }
 }

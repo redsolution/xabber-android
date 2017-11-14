@@ -131,6 +131,17 @@ public class ContactItemChatInflater {
 
             viewHolder.tvUnreadCount.getBackground().mutate().clearColorFilter();
         }
+
+        // swipe background
+        if (ContactListAdapter.ChatListState.archived == viewObject.getChatListState()) {
+            viewHolder.tvAction.setText(R.string.unarchive_chat);
+            viewHolder.ivActionIcon.setImageResource(R.drawable.ic_arrow_left_white_24dp);
+            viewHolder.backgroundView.setBackgroundColor(context.getResources().getColor(R.color.green_400));
+        } else {
+            viewHolder.tvAction.setText(R.string.archive_chat);
+            viewHolder.ivActionIcon.setImageResource(R.drawable.ic_arcived);
+            viewHolder.backgroundView.setBackgroundColor(context.getResources().getColor(R.color.red_400));
+        }
     }
 
     void onAvatarClick(ContactVO contact) {

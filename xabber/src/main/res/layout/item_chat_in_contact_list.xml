@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/backgroundView"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="64dp"
@@ -15,6 +16,7 @@
         >
 
         <TextView
+            android:id="@+id/tvAction"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
@@ -26,6 +28,7 @@
             />
 
         <ImageView
+            android:id="@+id/ivActionIcon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_arcived"

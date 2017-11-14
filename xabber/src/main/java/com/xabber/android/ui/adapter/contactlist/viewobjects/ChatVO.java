@@ -12,6 +12,7 @@ import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.roster.AbstractContact;
+import com.xabber.android.ui.adapter.contactlist.ContactListAdapter;
 import com.xabber.android.ui.color.ColorManager;
 
 import java.io.File;
@@ -31,6 +32,7 @@ public class ChatVO extends ContactVO {
     private int messageStatus;
     private String messageOwner;
     private boolean archived;
+    private ContactListAdapter.ChatListState chatListState = ContactListAdapter.ChatListState.recent;
 
     public ChatVO(int accountColorIndicator, boolean showOfflineShadow, String name, String status,
                   int statusId, int statusLevel, Drawable avatar, int mucIndicatorLevel,
@@ -133,6 +135,15 @@ public class ChatVO extends ContactVO {
                 !chat.notifyAboutMessage(), chat.isArchived());
     }
 
+    public static ArrayList<ContactVO> convert(Collection<AbstractContact> contacts,
+                                               ContactListAdapter.ChatListState chatListState) {
+        ArrayList<ContactVO> items = new ArrayList<>();
+        for (AbstractContact contact : contacts) {
+            items.add(convert(contact).setChatListState(chatListState));
+        }
+        return items;
+    }
+
     public static ArrayList<ContactVO> convert(Collection<AbstractContact> contacts) {
         ArrayList<ContactVO> items = new ArrayList<>();
         for (AbstractContact contact : contacts) {
@@ -163,5 +174,14 @@ public class ChatVO extends ContactVO {
 
     public boolean isArchived() {
         return archived;
+    }
+
+    public ContactListAdapter.ChatListState getChatListState() {
+        return chatListState;
+    }
+
+    public ChatVO setChatListState(ContactListAdapter.ChatListState chatListState) {
+        this.chatListState = chatListState;
+        return this;
     }
 }

@@ -428,7 +428,7 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             if (hasVisibleContacts) {
 
                 // add recent chats
-                rosterItemVOs.addAll(ChatVO.convert(chatsGroup.getAbstractContacts()));
+                rosterItemVOs.addAll(ChatVO.convert(chatsGroup.getAbstractContacts(), currentChatsState));
                 if (!showAllChats && chats.size() > MAX_RECENT_ITEMS
                         && currentChatsState == ChatListState.recent)
                     rosterItemVOs.add(ButtonVO.convert(null, ButtonVO.ACTION_SHOW_ALL_CHATS, ButtonVO.ACTION_SHOW_ALL_CHATS));
@@ -961,6 +961,10 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     public void setState(ChatListState state) {
         this.currentChatsState = state;
+    }
+
+    public ChatListState getCurrentChatsState() {
+        return currentChatsState;
     }
 
     public enum ChatListState {
