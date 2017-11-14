@@ -107,4 +107,7 @@
 
     <string name="placeholder_no_archived">Archive has no chats</string>
     <string name="placeholder_no_unread">You are haven\'t unread chats</string>
+
+    <string name="chat_was_archived">Chat was replaced archive</string>
+    <string name="undo">UNDO</string>
 </resources>

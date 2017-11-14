@@ -4,6 +4,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.ContextMenu;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.xabber.android.R;
@@ -28,6 +29,7 @@ public class RosterChatViewHolder extends RecyclerView.ViewHolder implements Vie
     final ImageView offlineShadow;
     final ImageView ivMucIndicator;
     final TextView tvUnreadCount;
+    public final RelativeLayout foregroundView;
 
     private final ContactListItemViewHolder.ContactClickListener listener;
 
@@ -51,6 +53,7 @@ public class RosterChatViewHolder extends RecyclerView.ViewHolder implements Vie
         offlineShadow = (ImageView) view.findViewById(R.id.offline_shadow);
         ivMucIndicator = (ImageView) view.findViewById(R.id.ivMucIndicator);
         tvUnreadCount = (TextView) view.findViewById(R.id.tvUnreadCount);
+        foregroundView = (RelativeLayout) view.findViewById(R.id.foregroundView);
     }
 
     @Override

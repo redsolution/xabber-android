@@ -1019,4 +1019,18 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
         return chatsGroup;
     }
+
+    public void removeItem(int position) {
+        rosterItemVOs.remove(position);
+        // notify the item removed by position
+        // to perform recycler view delete animations
+        // NOTE: don't call notifyDataSetChanged()
+        notifyItemRemoved(position);
+    }
+
+    public void restoreItem(BaseRosterItemVO item, int position) {
+        rosterItemVOs.add(position, item);
+        // notify item added by position
+        notifyItemInserted(position);
+    }
 }

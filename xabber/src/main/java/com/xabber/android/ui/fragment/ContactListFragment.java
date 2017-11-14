@@ -2,12 +2,16 @@ package com.xabber.android.ui.fragment;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -46,10 +50,14 @@ import com.xabber.android.ui.adapter.UpdatableAdapter;
 import com.xabber.android.ui.adapter.contactlist.ContactListAdapter;
 import com.xabber.android.ui.adapter.contactlist.ContactListAdapter.ContactListAdapterListener;
 import com.xabber.android.ui.adapter.contactlist.ContactListState;
+import com.xabber.android.ui.adapter.contactlist.RosterChatViewHolder;
 import com.xabber.android.ui.adapter.contactlist.viewobjects.AccountVO;
+import com.xabber.android.ui.adapter.contactlist.viewobjects.BaseRosterItemVO;
+import com.xabber.android.ui.adapter.contactlist.viewobjects.ChatVO;
 import com.xabber.android.ui.color.AccountPainter;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.helper.ContextMenuHelper;
+import com.xabber.android.ui.helper.RecyclerItemTouchHelper;
 import com.xabber.android.ui.preferences.PreferenceEditor;
 
 import org.greenrobot.eventbus.EventBus;
@@ -60,7 +68,8 @@ import java.util.Collection;
 
 public class ContactListFragment extends Fragment implements OnAccountChangedListener,
         OnContactChangedListener, ContactListAdapterListener, View.OnClickListener,
-        Toolbar.OnMenuItemClickListener, android.widget.PopupMenu.OnMenuItemClickListener {
+        Toolbar.OnMenuItemClickListener, android.widget.PopupMenu.OnMenuItemClickListener,
+        RecyclerItemTouchHelper.RecyclerItemTouchHelperListener {
 
     private ContactListAdapter adapter;
 
@@ -107,6 +116,7 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
     private Toolbar toolbar;
     private LinearLayout placeholderView;
     private TextView tvPlaceholderMessage;
+    private CoordinatorLayout coordinatorLayout;
 
     public static final String ACCOUNT_JID = "account_jid";
     private AccountJid scrollToAccountJid;
@@ -137,6 +147,8 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_contact_list, container, false);
 
+        coordinatorLayout = (CoordinatorLayout) view.findViewById(R.id.coordinatorLayout);
+
         toolbar = (Toolbar) view.findViewById(R.id.toolbar_default);
         toolbar.setOnClickListener(this);
         toolbar.inflateMenu(R.menu.toolbar_contact_list);
@@ -161,6 +173,9 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
         ((StickyLayoutManager)linearLayoutManager).elevateHeaders(2);
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setAdapter(adapter);
+        ItemTouchHelper.SimpleCallback itemTouchHelperCallback =
+                new RecyclerItemTouchHelper(0, ItemTouchHelper.LEFT, this);
+        new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(recyclerView);
         infoView = view.findViewById(R.id.info);
         connectedView = infoView.findViewById(R.id.connected);
         disconnectedView = infoView.findViewById(R.id.disconnected);
@@ -488,5 +503,39 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
     public void showRecent() {
         if (adapter != null)
             adapter.onStateChanged(ContactListAdapter.ChatListState.recent);
+    }
+
+    @Override
+    public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction, int position) {
+        if (viewHolder instanceof RosterChatViewHolder) {
+
+            Object itemAtPosition = adapter.getItem(position);
+            if (itemAtPosition != null && itemAtPosition instanceof ChatVO) {
+
+                // backup of removed item for undo purpose
+                final BaseRosterItemVO deletedItem = (BaseRosterItemVO) itemAtPosition;
+                final int deletedIndex = viewHolder.getAdapterPosition();
+
+                // remove the item from recycler view
+                adapter.removeItem(viewHolder.getAdapterPosition());
+
+                // showing snackbar with Undo option
+                showSnackbar(deletedItem, deletedIndex);
+            }
+        }
+    }
+
+    public void showSnackbar(final BaseRosterItemVO deletedItem, final int deletedIndex) {
+        Snackbar snackbar =
+                Snackbar.make(coordinatorLayout, R.string.chat_was_archived, Snackbar.LENGTH_LONG);
+        snackbar.setAction(R.string.undo, new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // undo is selected, restore the deleted item
+                adapter.restoreItem(deletedItem, deletedIndex);
+            }
+        });
+        snackbar.setActionTextColor(Color.YELLOW);
+        snackbar.show();
     }
 }
