@@ -62,7 +62,6 @@ import com.xabber.android.ui.dialog.BlockContactDialog;
 import com.xabber.android.ui.fragment.ChatFragment;
 import com.xabber.android.ui.fragment.ContactVcardViewerFragment;
 import com.xabber.android.ui.fragment.RecentChatFragment;
-import com.xabber.android.ui.helper.ContactTitleInflater;
 import com.xabber.android.ui.helper.NewContactTitleInflater;
 import com.xabber.android.ui.preferences.ChatContactSettings;
 
@@ -71,6 +70,8 @@ import org.greenrobot.eventbus.ThreadMode;
 import org.jxmpp.stringprep.XmppStringprepException;
 
 import java.util.Collection;
+
+import static com.xabber.android.ui.adapter.ChatViewerAdapter.PAGE_POSITION_RECENT_CHATS;
 
 
 /**
@@ -230,7 +231,6 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
 
         contactTitleView = findViewById(R.id.contact_title);
         toolbar = (Toolbar) findViewById(R.id.toolbar_default);
-        toolbar.inflateMenu(R.menu.toolbar_chat);
         toolbar.setOverflowIcon(getResources().getDrawable(R.drawable.ic_overflow_menu_white_24dp));
         toolbar.setOnMenuItemClickListener(this);
         toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
@@ -375,7 +375,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
 
         switch (intent.getAction()) {
             case ACTION_RECENT_CHATS:
-                selectedPagePosition = ChatViewerAdapter.PAGE_POSITION_RECENT_CHATS;
+                selectedPagePosition = PAGE_POSITION_RECENT_CHATS;
                 break;
 
             case ACTION_SPECIFIC_CHAT:
@@ -475,7 +475,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     public void onPageSelected(int position) {
         selectedPagePosition = position;
 
-        if (selectedPagePosition == ChatViewerAdapter.PAGE_POSITION_RECENT_CHATS) {
+        if (selectedPagePosition == PAGE_POSITION_RECENT_CHATS) {
             MessageManager.getInstance().removeVisibleChat();
         } else {
             if (isVisible) {
@@ -609,8 +609,6 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.toolbar_chat, menu);
         setUpOptionsMenu(menu);
         return true;
     }
@@ -620,20 +618,28 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         return onMenuItemClick(item);
     }
 
-    private void setUpOptionsMenu(Menu menu) {
-        AbstractChat abstractChat = MessageManager.getInstance().getChat(account, user);
+    private void setUpRecentChatsMenu(Menu menu, AbstractChat abstractChat) {
 
-        if (abstractChat instanceof RoomChat) {
+    }
+
+    private void setUpRegularChatMenu(Menu menu, AbstractChat abstractChat) {
+
+            // archive/unarchive chat
+            menu.findItem(R.id.action_archive_chat).setVisible(!abstractChat.isArchived());
+            menu.findItem(R.id.action_unarchive_chat).setVisible(abstractChat.isArchived());
+
+            // mute/unmute chat
+            menu.findItem(R.id.action_mute_chat).setVisible(!abstractChat.isMuted());
+            menu.findItem(R.id.action_unmute_chat).setVisible(abstractChat.isMuted());
+
+    }
+
+    private void setUpMUCMenu(Menu menu, AbstractChat abstractChat) {
+
             RoomState chatState = ((RoomChat) abstractChat).getState();
-
-//            if (chatState == RoomState.available) {
-//                menu.findItem(R.id.action_list_of_occupants).setVisible(true);
-//            }
-
-            if (chatState == RoomState.unavailable) {
+            if (chatState == RoomState.unavailable)
                 menu.findItem(R.id.action_join_conference).setVisible(true);
-
-            } else {
+            else {
                 menu.findItem(R.id.action_invite_to_chat).setVisible(true);
 
                 if (chatState == RoomState.error) {
@@ -643,35 +649,30 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
                 }
             }
 
-            // hide regular chat menu items
-            menu.findItem(R.id.action_view_contact).setVisible(false);
-            //menu.findItem(R.id.action_close_chat).setVisible(false);
-            menu.findItem(R.id.action_block_contact).setVisible(false);
-        }
+            setUpRegularChatMenu(menu, abstractChat);
+    }
 
-        if (abstractChat instanceof RegularChat) {
-            menu.findItem(R.id.action_view_contact).setVisible(true);
-            //menu.findItem(R.id.action_close_chat).setVisible(true);
-            menu.findItem(R.id.action_block_contact).setVisible(true);
+    private void setUpOptionsMenu(Menu menu) {
 
-            // hide room chat menu items
-            menu.findItem(R.id.action_list_of_occupants).setVisible(false);
-            menu.findItem(R.id.action_join_conference).setVisible(false);
-            menu.findItem(R.id.action_invite_to_chat).setVisible(false);
-            menu.findItem(R.id.action_authorization_settings).setVisible(false);
-            menu.findItem(R.id.action_leave_conference).setVisible(false);
-        }
-
-        // archive/unarchive chat
+        AbstractChat abstractChat = MessageManager.getInstance().getChat(account, user);
         if (abstractChat != null) {
-            menu.findItem(R.id.action_archive_chat).setVisible(!abstractChat.isArchived());
-            menu.findItem(R.id.action_unarchive_chat).setVisible(abstractChat.isArchived());
-        }
-
-        // mute/unmute chat
-        if (abstractChat != null) {
-            menu.findItem(R.id.action_mute_chat).setVisible(!abstractChat.isMuted());
-            menu.findItem(R.id.action_unmute_chat).setVisible(abstractChat.isMuted());
+            menu.clear();
+            MenuInflater inflater = getMenuInflater();
+            if (selectedPagePosition == PAGE_POSITION_RECENT_CHATS) {
+                inflater.inflate(R.menu.menu_chat_recent_list, menu);
+                setUpRecentChatsMenu(menu, abstractChat);
+                return;
+            }
+            if (abstractChat instanceof RoomChat) {
+                inflater.inflate(R.menu.menu_chat_muc, menu);
+                setUpMUCMenu(menu, abstractChat);
+                return;
+            }
+            if (abstractChat instanceof RegularChat) {
+                inflater.inflate(R.menu.menu_chat_regular, menu);
+                setUpRegularChatMenu(menu, abstractChat);
+                return;
+            }
         }
     }
 

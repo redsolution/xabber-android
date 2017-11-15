@@ -32,6 +32,7 @@
     <string name="unarchive_chat">Unarchive</string>
     <string name="mute_chat">Mute</string>
     <string name="unmute_chat">Unmute</string>
+    <string name="show_archived">Show archived</string>
     <string name="exit">Exit</string>
     <string name="group_active_chat">Active chats</string>
     <string name="group_none">No groups</string>
