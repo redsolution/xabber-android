@@ -135,15 +135,6 @@ public class ChatVO extends ContactVO {
                 !chat.notifyAboutMessage(), chat.isArchived());
     }
 
-    public static ArrayList<ContactVO> convert(Collection<AbstractContact> contacts,
-                                               ContactListAdapter.ChatListState chatListState) {
-        ArrayList<ContactVO> items = new ArrayList<>();
-        for (AbstractContact contact : contacts) {
-            items.add(convert(contact).setChatListState(chatListState));
-        }
-        return items;
-    }
-
     public static ArrayList<ContactVO> convert(Collection<AbstractContact> contacts) {
         ArrayList<ContactVO> items = new ArrayList<>();
         for (AbstractContact contact : contacts) {

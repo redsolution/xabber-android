@@ -542,7 +542,7 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
             public void onDismissed(Snackbar transientBottomBar, int event) {
                 super.onDismissed(transientBottomBar, event);
                 if (event != DISMISS_EVENT_ACTION) {
-                    if (adapter.getCurrentChatsState() == ContactListAdapter.ChatListState.archived)
+                    if (((ChatVO)deletedItem).isArchived())
                         setChatArchived((ChatVO) deletedItem, false);
                     else setChatArchived((ChatVO) deletedItem, true);
                 }

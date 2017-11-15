@@ -11,6 +11,7 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.RosterManager;
+import com.xabber.android.ui.adapter.contactlist.viewobjects.BaseRosterItemVO;
 import com.xabber.android.ui.adapter.contactlist.viewobjects.ChatVO;
 import com.xabber.android.ui.adapter.contactlist.viewobjects.ContactVO;
 
@@ -72,7 +73,23 @@ public class ChatListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
     @Override
-    public void onContactCreateContextMenu(int adapterPosition, ContextMenu menu) {
+    public void onContactCreateContextMenu(int adapterPosition, ContextMenu menu) {}
 
+    public Object getItem(int position) {
+        return contacts.get(position);
+    }
+
+    public void removeItem(int position) {
+        contacts.remove(position);
+        // notify the item removed by position
+        // to perform recycler view delete animations
+        // NOTE: don't call notifyDataSetChanged()
+        notifyItemRemoved(position);
+    }
+
+    public void restoreItem(BaseRosterItemVO item, int position) {
+        contacts.add(position, (ContactVO) item);
+        // notify item added by position
+        notifyItemInserted(position);
     }
 }

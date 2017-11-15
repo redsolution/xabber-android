@@ -133,7 +133,7 @@ public class ContactItemChatInflater {
         }
 
         // swipe background
-        if (ContactListAdapter.ChatListState.archived == viewObject.getChatListState()) {
+        if (viewObject.isArchived()) {
             viewHolder.tvAction.setText(R.string.unarchive_chat);
             viewHolder.ivActionIcon.setImageResource(R.drawable.ic_arrow_left_white_24dp);
             viewHolder.backgroundView.setBackgroundColor(context.getResources().getColor(R.color.green_400));
