@@ -137,10 +137,12 @@ public class ContactItemChatInflater {
             viewHolder.tvAction.setText(R.string.unarchive_chat);
             viewHolder.ivActionIcon.setImageResource(R.drawable.ic_arrow_left_white_24dp);
             viewHolder.backgroundView.setBackgroundColor(context.getResources().getColor(R.color.green_400));
+            viewHolder.foregroundView.setBackgroundColor(context.getResources().getColor(R.color.grey_200));
         } else {
             viewHolder.tvAction.setText(R.string.archive_chat);
             viewHolder.ivActionIcon.setImageResource(R.drawable.ic_arcived);
             viewHolder.backgroundView.setBackgroundColor(context.getResources().getColor(R.color.red_400));
+            viewHolder.foregroundView.setBackgroundColor(context.getResources().getColor(R.color.white));
         }
     }
 

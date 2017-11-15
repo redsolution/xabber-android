@@ -467,9 +467,9 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
             case R.id.action_join_conference:
                 startActivity(ConferenceSelectActivity.createIntent(getActivity()));
                 return true;
-            case R.id.action_chat_list:
-                startActivity(ChatActivity.createRecentChatsIntent(getActivity()));
-                return true;
+//            case R.id.action_chat_list:
+//                startActivity(ChatActivity.createRecentChatsIntent(getActivity()));
+//                return true;
             case R.id.action_add:
                 showToolbarPopup(addMenuOption);
                 return true;

@@ -780,8 +780,11 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
                     chatFragment.leaveConference(account, user);
                 return true;
 
-            case R.id.action_list_of_occupants:
-                startActivity(OccupantListActivity.createIntent(this, account, user));
+            case R.id.action_show_archived:
+                if (recentChatFragment != null) {
+                    recentChatFragment.setShowArchived(!recentChatFragment.isShowArchived());
+                    recentChatFragment.updateChats();
+                }
                 return true;
 
             default:

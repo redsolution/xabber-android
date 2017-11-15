@@ -44,6 +44,7 @@ public class RecentChatFragment extends Fragment implements ChatListAdapter.List
 
     ChatListAdapter adapter;
     CoordinatorLayout coordinatorLayout;
+    boolean showArchived = false;
 
     @Nullable
     private Listener listener;
@@ -139,8 +140,9 @@ public class RecentChatFragment extends Fragment implements ChatListAdapter.List
                 final List<AbstractContact> newContacts = new ArrayList<>();
 
                 for (AbstractChat chat : recentChats) {
-                    newContacts.add(RosterManager.getInstance()
-                            .getBestContact(chat.getAccount(), chat.getUser()));
+                    if (!chat.isArchived() || showArchived)
+                        newContacts.add(RosterManager.getInstance()
+                                .getBestContact(chat.getAccount(), chat.getUser()));
                 }
 
                 Application.getInstance().runOnUiThread(new Runnable() {
@@ -208,5 +210,13 @@ public class RecentChatFragment extends Fragment implements ChatListAdapter.List
     public void setChatArchived(ChatVO chatVO, boolean archived) {
         AbstractChat chat = MessageManager.getInstance().getChat(chatVO.getAccountJid(), chatVO.getUserJid());
         if (chat != null) chat.setArchived(archived, true);
+    }
+
+    public boolean isShowArchived() {
+        return showArchived;
+    }
+
+    public void setShowArchived(boolean showArchived) {
+        this.showArchived = showArchived;
     }
 }
