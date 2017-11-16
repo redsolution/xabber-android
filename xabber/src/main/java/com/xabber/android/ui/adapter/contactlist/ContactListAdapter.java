@@ -889,6 +889,7 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         void onScrollToPosition(int position);
         void hidePlaceholder();
         void showPlaceholder(String message);
+        void onChatListStateChanged();
 
     }
 
@@ -956,6 +957,7 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     @Override
     public void onStateChanged(ChatListState state) {
         this.currentChatsState = state;
+        listener.onChatListStateChanged();
         onChange();
     }
 

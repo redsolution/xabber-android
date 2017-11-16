@@ -118,6 +118,7 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
     private LinearLayout placeholderView;
     private TextView tvPlaceholderMessage;
     private CoordinatorLayout coordinatorLayout;
+    private Snackbar snackbar;
 
     public static final String ACCOUNT_JID = "account_jid";
     private AccountJid scrollToAccountJid;
@@ -501,6 +502,11 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
         placeholderView.setVisibility(View.VISIBLE);
     }
 
+    @Override
+    public void onChatListStateChanged() {
+        closeSnackbar();
+    }
+
     public void showRecent() {
         if (adapter != null)
             adapter.onStateChanged(ContactListAdapter.ChatListState.recent);
@@ -517,6 +523,9 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
                 final BaseRosterItemVO deletedItem = (BaseRosterItemVO) itemAtPosition;
                 final int deletedIndex = viewHolder.getAdapterPosition();
 
+                // update value
+                setChatArchived((ChatVO) deletedItem, !((ChatVO) deletedItem).isArchived());
+
                 // remove the item from recycler view
                 adapter.removeItem(viewHolder.getAdapterPosition());
 
@@ -527,32 +536,30 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
     }
 
     public void showSnackbar(final BaseRosterItemVO deletedItem, final int deletedIndex) {
-        Snackbar snackbar =
-                Snackbar.make(coordinatorLayout, R.string.chat_was_archived, Snackbar.LENGTH_LONG);
+        if (snackbar != null) snackbar.dismiss();
+        snackbar = Snackbar.make(coordinatorLayout, R.string.chat_was_archived, Snackbar.LENGTH_LONG);
         snackbar.setAction(R.string.undo, new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                boolean archived = ((ChatVO) deletedItem).isArchived();
+
+                // update value
+                setChatArchived((ChatVO) deletedItem, archived);
+
                 // undo is selected, restore the deleted item
                 adapter.restoreItem(deletedItem, deletedIndex);
             }
         });
         snackbar.setActionTextColor(Color.YELLOW);
-        snackbar.addCallback(new Snackbar.Callback() {
-            @Override
-            public void onDismissed(Snackbar transientBottomBar, int event) {
-                super.onDismissed(transientBottomBar, event);
-                if (event != DISMISS_EVENT_ACTION) {
-                    if (((ChatVO)deletedItem).isArchived())
-                        setChatArchived((ChatVO) deletedItem, false);
-                    else setChatArchived((ChatVO) deletedItem, true);
-                }
-            }
-        });
         snackbar.show();
     }
 
     public void setChatArchived(ChatVO chatVO, boolean archived) {
         AbstractChat chat = MessageManager.getInstance().getChat(chatVO.getAccountJid(), chatVO.getUserJid());
         if (chat != null) chat.setArchived(archived, true);
+    }
+
+    public void closeSnackbar() {
+        if (snackbar != null) snackbar.dismiss();
     }
 }

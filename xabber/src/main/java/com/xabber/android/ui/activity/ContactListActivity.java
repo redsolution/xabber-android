@@ -681,6 +681,7 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
             ((ContactListFragment) getFragmentManager().findFragmentById(R.id.container)).showRecent();
             ((ContactListFragment) getFragmentManager().findFragmentById(R.id.container)).scrollTo(0);
             ((ContactListFragment) getFragmentManager().findFragmentById(R.id.container)).setShowAllChats(false);
+            ((ContactListFragment) contentFragment).closeSnackbar();
         } else showContactListFragment(null);
     }
 
@@ -696,6 +697,7 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
             ((ContactListFragment) getFragmentManager().findFragmentById(R.id.container)).showRecent();
             ((ContactListFragment) getFragmentManager().findFragmentById(R.id.container)).setShowAllChats(false);
             ((ContactListFragment) getFragmentManager().findFragmentById(R.id.container)).scrollToAccount(jid);
+            ((ContactListFragment) contentFragment).closeSnackbar();
         } else showContactListFragment(jid);
     }
 
@@ -710,6 +712,7 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
     public void onSearchClick() {
         if (contentFragment instanceof ContactListFragment) {
             ((ContactListFragment) getFragmentManager().findFragmentById(R.id.container)).setShowAllChats(false);
+            ((ContactListFragment) contentFragment).closeSnackbar();
         } else showContactListFragment(null);
     }
 
