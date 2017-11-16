@@ -173,8 +173,14 @@ public class RecentChatFragment extends Fragment implements ChatListAdapter.List
                 final BaseRosterItemVO deletedItem = (BaseRosterItemVO) itemAtPosition;
                 final int deletedIndex = viewHolder.getAdapterPosition();
 
-                // remove the item from recycler view
+                // update value
+                boolean archived = ((ChatVO) deletedItem).isArchived();
+                setChatArchived((ChatVO) deletedItem, !archived);
+                ((ChatVO) deletedItem).setArchived(!archived);
+
+                // update item in recycler view
                 adapter.removeItem(viewHolder.getAdapterPosition());
+                if (showArchived) adapter.restoreItem(deletedItem, deletedIndex);
 
                 // showing snackbar with Undo option
                 showSnackbar(deletedItem, deletedIndex);
@@ -188,22 +194,17 @@ public class RecentChatFragment extends Fragment implements ChatListAdapter.List
         snackbar.setAction(R.string.undo, new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // undo is selected, restore the deleted item
+                // update value
+                boolean archived = ((ChatVO) deletedItem).isArchived();
+                setChatArchived((ChatVO) deletedItem, !archived);
+                ((ChatVO) deletedItem).setArchived(!archived);
+
+                // update item in recycler view
+                if (showArchived) adapter.removeItem(deletedIndex);
                 adapter.restoreItem(deletedItem, deletedIndex);
             }
         });
         snackbar.setActionTextColor(Color.YELLOW);
-        snackbar.addCallback(new Snackbar.Callback() {
-            @Override
-            public void onDismissed(Snackbar transientBottomBar, int event) {
-                super.onDismissed(transientBottomBar, event);
-                if (event != DISMISS_EVENT_ACTION) {
-                    if (((ChatVO)deletedItem).isArchived())
-                        setChatArchived((ChatVO) deletedItem, false);
-                    else setChatArchived((ChatVO) deletedItem, true);
-                }
-            }
-        });
         snackbar.show();
     }
 

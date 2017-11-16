@@ -167,6 +167,10 @@ public class ChatVO extends ContactVO {
         return archived;
     }
 
+    public void setArchived(boolean archived) {
+        this.archived = archived;
+    }
+
     public ContactListAdapter.ChatListState getChatListState() {
         return chatListState;
     }
