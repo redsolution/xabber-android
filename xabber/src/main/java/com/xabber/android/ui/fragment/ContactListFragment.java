@@ -42,7 +42,6 @@ import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.ui.activity.AccountAddActivity;
-import com.xabber.android.ui.activity.ChatActivity;
 import com.xabber.android.ui.activity.ConferenceSelectActivity;
 import com.xabber.android.ui.activity.ContactAddActivity;
 import com.xabber.android.ui.activity.ManagedActivity;
@@ -407,10 +406,6 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
                 break;
             }
         }
-    }
-
-    public void setShowAllChats(boolean showAllChats) {
-        adapter.setShowAllChats(showAllChats);
     }
 
     /**

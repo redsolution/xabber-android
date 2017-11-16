@@ -166,8 +166,6 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private boolean hasActiveChats = false;
     private int[] accountGroupColors;
 
-    private boolean showAllChats = false;
-
     private int currentHeaderPosition = 0;
 
     private ChatListState currentChatsState = ChatListState.recent;
@@ -429,8 +427,7 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
                 // add recent chats
                 rosterItemVOs.addAll(ChatVO.convert(chatsGroup.getAbstractContacts()));
-                if (!showAllChats && chats.size() > MAX_RECENT_ITEMS
-                        && currentChatsState == ChatListState.recent)
+                if (chats.size() > MAX_RECENT_ITEMS && currentChatsState == ChatListState.recent)
                     rosterItemVOs.add(ButtonVO.convert(null, ButtonVO.ACTION_SHOW_ALL_CHATS, ButtonVO.ACTION_SHOW_ALL_CHATS));
 
                 if (currentChatsState == ChatListState.recent) {
@@ -691,6 +688,9 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             case archived:
                 holder.tvTitle.setText(R.string.archived_chats);
                 break;
+            case all:
+                holder.tvTitle.setText(R.string.all_chats);
+                break;
             default:
                 holder.tvTitle.setText(R.string.recent_chats);
                 break;
@@ -836,7 +836,8 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             if (rosterItemVOs.get(position) instanceof ButtonVO) {
                 ButtonVO viewObject = (ButtonVO) rosterItemVOs.get(position);
                 if (viewObject.getAction().equals(ButtonVO.ACTION_SHOW_ALL_CHATS)) {
-                    setShowAllChats(true);
+                    setState(ChatListState.all);
+                    onChange();
                 }
                 if (viewObject.getAction().equals(ButtonVO.ACTION_ADD_CONTACT)) {
                     if (activity != null)
@@ -844,11 +845,6 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 }
             }
         }
-    }
-
-    public void setShowAllChats(boolean showAllChats) {
-        this.showAllChats = showAllChats;
-        onChange();
     }
 
     private void toggleGroupExpand(int adapterPosition) {
@@ -972,7 +968,8 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     public enum ChatListState {
         recent,
         unread,
-        archived
+        archived,
+        all
     }
 
     private GroupConfiguration getChatsGroup(Collection<AbstractChat> chats, ChatListState state) {
@@ -1014,8 +1011,7 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
         int itemsCount = 0;
         for (AbstractChat chat : newChats) {
-            if (showAllChats || itemsCount < MAX_RECENT_ITEMS
-                    || state == ChatListState.unread || state == ChatListState.archived) {
+            if (itemsCount < MAX_RECENT_ITEMS || state != ChatListState.recent) {
                 chatsGroup.addAbstractContact(RosterManager.getInstance()
                         .getBestContact(chat.getAccount(), chat.getUser()));
                 chatsGroup.increment(true);
