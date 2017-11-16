@@ -49,9 +49,26 @@ public class RecyclerItemTouchHelper extends ItemTouchHelper.SimpleCallback {
     public void onChildDrawOver(Canvas c, RecyclerView recyclerView,
                                 RecyclerView.ViewHolder viewHolder, float dX, float dY,
                                 int actionState, boolean isCurrentlyActive) {
-        final View foregroundView = ((RosterChatViewHolder) viewHolder).foregroundView;
-        getDefaultUIUtil().onDrawOver(c, recyclerView, foregroundView, dX, dY,
-                actionState, isCurrentlyActive);
+
+        if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
+            // left swipe
+            if (dX > 0) {
+                ((RosterChatViewHolder) viewHolder).viewActionRight.setVisibility(View.GONE);
+                ((RosterChatViewHolder) viewHolder).viewActionLeft.setVisibility(View.VISIBLE);
+
+            // right swipe
+            } else {
+                ((RosterChatViewHolder) viewHolder).viewActionRight.setVisibility(View.VISIBLE);
+                ((RosterChatViewHolder) viewHolder).viewActionLeft.setVisibility(View.GONE);
+            }
+
+            final View foregroundView = ((RosterChatViewHolder) viewHolder).foregroundView;
+            getDefaultUIUtil().onDrawOver(c, recyclerView, foregroundView, dX, dY,
+                    actionState, isCurrentlyActive);
+
+        } else {
+            super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+        }
     }
 
     @Override

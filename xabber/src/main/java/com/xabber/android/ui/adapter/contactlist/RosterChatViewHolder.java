@@ -4,6 +4,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.ContextMenu;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -31,8 +32,12 @@ public class RosterChatViewHolder extends RecyclerView.ViewHolder implements Vie
     final TextView tvUnreadCount;
     final TextView tvAction;
     final ImageView ivActionIcon;
+    final TextView tvActionLeft;
+    final ImageView ivActionIconLeft;
     public final RelativeLayout foregroundView;
     public final RelativeLayout backgroundView;
+    public LinearLayout viewActionRight;
+    public LinearLayout viewActionLeft;
 
     private final ContactListItemViewHolder.ContactClickListener listener;
 
@@ -58,8 +63,12 @@ public class RosterChatViewHolder extends RecyclerView.ViewHolder implements Vie
         tvUnreadCount = (TextView) view.findViewById(R.id.tvUnreadCount);
         foregroundView = (RelativeLayout) view.findViewById(R.id.foregroundView);
         backgroundView = (RelativeLayout) view.findViewById(R.id.backgroundView);
+        viewActionRight = (LinearLayout) view.findViewById(R.id.viewActionRight);
+        viewActionLeft = (LinearLayout) view.findViewById(R.id.viewActionLeft);
         tvAction = (TextView) view.findViewById(R.id.tvAction);
         ivActionIcon = (ImageView) view.findViewById(R.id.ivActionIcon);
+        tvActionLeft = (TextView) view.findViewById(R.id.tvActionLeft);
+        ivActionIconLeft = (ImageView) view.findViewById(R.id.ivActionIconLeft);
     }
 
     @Override

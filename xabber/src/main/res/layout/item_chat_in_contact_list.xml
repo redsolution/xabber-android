@@ -4,10 +4,11 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="64dp"
-    android:background="@color/red_400"
+    android:background="@color/grey_400"
     >
 
     <LinearLayout
+        android:id="@+id/viewActionRight"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
@@ -33,6 +34,36 @@
             android:layout_height="wrap_content"
             android:src="@drawable/ic_arcived"
             android:tint="@color/white"
+            />
+
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/viewActionLeft"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="12dp"
+        android:visibility="gone"
+        >
+
+        <ImageView
+            android:id="@+id/ivActionIconLeft"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="12dp"
+            android:src="@drawable/ic_arcived"
+            android:tint="@color/white"
+            />
+
+        <TextView
+            android:id="@+id/tvActionLeft"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:text="@string/archive_chat"
+            android:textAllCaps="true"
             />
 
     </LinearLayout>

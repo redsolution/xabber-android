@@ -2,6 +2,7 @@ package com.xabber.android.ui.adapter.contactlist;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.view.View;
@@ -118,32 +119,26 @@ public class ContactItemChatInflater {
         } else viewHolder.tvUnreadCount.setVisibility(View.INVISIBLE);
 
         // notification mute
-        if (viewObject.isMute()) {
-            viewHolder.tvContactName.setCompoundDrawablesWithIntrinsicBounds(null, null,
-                    context.getResources().getDrawable(R.drawable.ic_mute), null);
+        Resources resources = context.getResources();
+        boolean mute = viewObject.isMute();
 
+        viewHolder.tvContactName.setCompoundDrawablesWithIntrinsicBounds(null, null,
+                mute ? resources.getDrawable(R.drawable.ic_mute) : null, null);
+
+        if (viewObject.isMute())
             viewHolder.tvUnreadCount.getBackground().mutate().setColorFilter(
-                    context.getResources().getColor(R.color.grey_500),
+                    resources.getColor(R.color.grey_500),
                     PorterDuff.Mode.SRC_IN);
-        } else {
-            viewHolder.tvContactName.setCompoundDrawablesWithIntrinsicBounds(null, null,
-                    null, null);
-
-            viewHolder.tvUnreadCount.getBackground().mutate().clearColorFilter();
-        }
+        else viewHolder.tvUnreadCount.getBackground().mutate().clearColorFilter();
 
         // swipe background
-        if (viewObject.isArchived()) {
-            viewHolder.tvAction.setText(R.string.unarchive_chat);
-            viewHolder.ivActionIcon.setImageResource(R.drawable.ic_arrow_left_white_24dp);
-            viewHolder.backgroundView.setBackgroundColor(context.getResources().getColor(R.color.green_400));
-            viewHolder.foregroundView.setBackgroundColor(context.getResources().getColor(R.color.grey_200));
-        } else {
-            viewHolder.tvAction.setText(R.string.archive_chat);
-            viewHolder.ivActionIcon.setImageResource(R.drawable.ic_arcived);
-            viewHolder.backgroundView.setBackgroundColor(context.getResources().getColor(R.color.grey_500));
-            viewHolder.foregroundView.setBackgroundColor(context.getResources().getColor(R.color.white));
-        }
+        boolean archived = viewObject.isArchived();
+        viewHolder.tvAction.setText(archived ? R.string.unarchive_chat : R.string.archive_chat);
+        viewHolder.tvActionLeft.setText(archived ? R.string.unarchive_chat : R.string.archive_chat);
+        viewHolder.ivActionIcon.setImageResource(archived ? R.drawable.ic_arrow_left_white_24dp : R.drawable.ic_arcived);
+        viewHolder.ivActionIconLeft.setImageResource(archived ? R.drawable.ic_arrow_left_white_24dp : R.drawable.ic_arcived);
+        viewHolder.foregroundView.setBackgroundColor(archived ? resources.getColor(R.color.grey_200)
+                : resources.getColor(R.color.white));
     }
 
     void onAvatarClick(ContactVO contact) {
