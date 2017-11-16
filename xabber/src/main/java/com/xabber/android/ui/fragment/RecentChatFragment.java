@@ -45,6 +45,7 @@ public class RecentChatFragment extends Fragment implements ChatListAdapter.List
     ChatListAdapter adapter;
     CoordinatorLayout coordinatorLayout;
     boolean showArchived = false;
+    Snackbar snackbar;
 
     @Nullable
     private Listener listener;
@@ -189,8 +190,8 @@ public class RecentChatFragment extends Fragment implements ChatListAdapter.List
     }
 
     public void showSnackbar(final BaseRosterItemVO deletedItem, final int deletedIndex) {
-        Snackbar snackbar =
-                Snackbar.make(coordinatorLayout, R.string.chat_was_archived, Snackbar.LENGTH_LONG);
+        if (snackbar != null) snackbar.dismiss();
+        snackbar = Snackbar.make(coordinatorLayout, R.string.chat_was_archived, Snackbar.LENGTH_LONG);
         snackbar.setAction(R.string.undo, new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -208,6 +209,10 @@ public class RecentChatFragment extends Fragment implements ChatListAdapter.List
         snackbar.show();
     }
 
+    public void closeSnackbar() {
+        if (snackbar != null) snackbar.dismiss();
+    }
+
     public void setChatArchived(ChatVO chatVO, boolean archived) {
         AbstractChat chat = MessageManager.getInstance().getChat(chatVO.getAccountJid(), chatVO.getUserJid());
         if (chat != null) chat.setArchived(archived, true);
@@ -219,5 +224,6 @@ public class RecentChatFragment extends Fragment implements ChatListAdapter.List
 
     public void setShowArchived(boolean showArchived) {
         this.showArchived = showArchived;
+        closeSnackbar();
     }
 }
