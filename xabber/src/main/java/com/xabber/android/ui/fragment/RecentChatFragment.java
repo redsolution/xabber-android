@@ -42,6 +42,8 @@ import java.util.List;
 public class RecentChatFragment extends Fragment implements ChatListAdapter.Listener,
         Toolbar.OnMenuItemClickListener, RecyclerItemTouchHelper.RecyclerItemTouchHelperListener {
 
+    public final static String KEY_SHOW_ARCHIVED = "KEY_SHOW_ARCHIVED";
+
     ChatListAdapter adapter;
     CoordinatorLayout coordinatorLayout;
     boolean showArchived = false;
@@ -63,8 +65,12 @@ public class RecentChatFragment extends Fragment implements ChatListAdapter.List
     public RecentChatFragment() {
     }
 
-    public static RecentChatFragment newInstance() {
-        return  new RecentChatFragment();
+    public static RecentChatFragment newInstance(boolean showArchivedAtStart) {
+        RecentChatFragment fragment = new RecentChatFragment();
+        Bundle args = new Bundle();
+        args.putBoolean(KEY_SHOW_ARCHIVED, showArchivedAtStart);
+        fragment.setArguments(args);
+        return fragment;
     }
 
     @Override
@@ -79,6 +85,8 @@ public class RecentChatFragment extends Fragment implements ChatListAdapter.List
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         View rootView = inflater.inflate(R.layout.fragment_recent_chats, container, false);
+
+        showArchived = getArguments().getBoolean(KEY_SHOW_ARCHIVED);
 
         RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.recent_chats_recycler_view);
         coordinatorLayout = (CoordinatorLayout) rootView.findViewById(R.id.coordinatorLayout);

@@ -11,6 +11,8 @@ import android.view.ViewGroup;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.muc.MUCManager;
+import com.xabber.android.data.message.AbstractChat;
+import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.ui.fragment.ChatFragment;
 import com.xabber.android.ui.fragment.ContactVcardViewerFragment;
 import com.xabber.android.ui.fragment.OccupantListFragment;
@@ -67,7 +69,8 @@ public class ChatViewerAdapter extends FragmentStatePagerAdapter {
     @Override
     public Fragment getItem(int position) {
         if (position == PAGE_POSITION_RECENT_CHATS) {
-            return RecentChatFragment.newInstance();
+            AbstractChat chat = MessageManager.getInstance().getChat(accountJid, userJid);
+            return RecentChatFragment.newInstance(chat != null && chat.isArchived());
         } else if (position == PAGE_POSITION_CHAT) {
             return ChatFragment.newInstance(accountJid, userJid);
         } else if (position == 2) {
