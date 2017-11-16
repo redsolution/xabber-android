@@ -537,11 +537,12 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
 
     public void showSnackbar(final BaseRosterItemVO deletedItem, final int deletedIndex) {
         if (snackbar != null) snackbar.dismiss();
-        snackbar = Snackbar.make(coordinatorLayout, R.string.chat_was_archived, Snackbar.LENGTH_LONG);
+        final boolean archived = ((ChatVO) deletedItem).isArchived();
+        snackbar = Snackbar.make(coordinatorLayout, archived ? R.string.chat_was_unarchived
+                : R.string.chat_was_archived, Snackbar.LENGTH_LONG);
         snackbar.setAction(R.string.undo, new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                boolean archived = ((ChatVO) deletedItem).isArchived();
 
                 // update value
                 setChatArchived((ChatVO) deletedItem, archived);
