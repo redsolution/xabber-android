@@ -56,6 +56,7 @@ public class RecentChatFragment extends Fragment implements ChatListAdapter.List
         void onChatSelected(BaseEntity entity);
         void registerRecentChatFragment(RecentChatFragment recentChatFragment);
         void unregisterRecentChatFragment();
+        boolean isCurrentChat(String account, String user);
     }
 
     /**
@@ -169,6 +170,11 @@ public class RecentChatFragment extends Fragment implements ChatListAdapter.List
         if (listener != null) {
             listener.onChatSelected(contact);
         }
+    }
+
+    @Override
+    public boolean isCurrentChat(String account, String user) {
+        return listener != null && listener.isCurrentChat(account, user);
     }
 
     @Override

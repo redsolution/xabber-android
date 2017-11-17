@@ -544,6 +544,11 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         selectChat(chat.getAccount(), chat.getUser());
     }
 
+    @Override
+    public boolean isCurrentChat(String account, String user) {
+        return this.account.toString().equals(account) && this.user.toString().equals(user);
+    }
+
     private void selectChat(AccountJid accountJid, UserJid userJid) {
         AbstractChat chat = MessageManager.getInstance().getOrCreateChat(accountJid, userJid);
         selectChatPage(chat, true);

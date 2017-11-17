@@ -3,12 +3,15 @@ package com.xabber.android.ui.adapter.contactlist;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.content.res.TypedArray;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
+import android.util.TypedValue;
 import android.view.View;
 
 import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
+import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.ui.activity.ContactActivity;
@@ -141,6 +144,16 @@ public class ContactItemChatInflater {
                 : resources.getColor(R.color.white));
     }
 
+    void bindViewHolder(RosterChatViewHolder viewHolder, final ChatVO viewObject, boolean isCurrent) {
+        bindViewHolder(viewHolder, viewObject);
+
+        // current chat
+        int[] accountGroupColors = context.getResources().getIntArray(
+                getThemeResource(R.attr.contact_list_account_group_background));
+        final int level = AccountManager.getInstance().getColorLevel(viewObject.getAccountJid());
+        if (isCurrent) viewHolder.foregroundView.setBackgroundColor(accountGroupColors[level]);
+    }
+
     void onAvatarClick(ContactVO contact) {
         Intent intent;
         if (MUCManager.getInstance().hasRoom(contact.getAccountJid(), contact.getUserJid())) {
@@ -151,4 +164,11 @@ public class ContactItemChatInflater {
         context.startActivity(intent);
     }
 
+    private int getThemeResource(int themeResourceId) {
+        TypedValue typedValue = new TypedValue();
+        TypedArray a = context.obtainStyledAttributes(typedValue.data, new int[] {themeResourceId});
+        final int accountGroupColorsResourceId = a.getResourceId(0, 0);
+        a.recycle();
+        return accountGroupColorsResourceId;
+    }
 }

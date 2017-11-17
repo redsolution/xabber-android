@@ -26,6 +26,7 @@ public class ChatListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     public interface Listener {
         void onRecentChatClick(AbstractContact contact);
+        boolean isCurrentChat(String account, String user);
     }
 
     public ChatListAdapter(Context context, Listener listener) {
@@ -47,7 +48,9 @@ public class ChatListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        inflater.bindViewHolder((RosterChatViewHolder) holder, (ChatVO) contacts.get(position));
+        ChatVO chat = (ChatVO) contacts.get(position);
+        boolean isCurrent = listener.isCurrentChat(chat.getAccountJid().toString(), chat.getUserJid().toString());
+        inflater.bindViewHolder((RosterChatViewHolder) holder, chat, isCurrent);
     }
 
     @Override
