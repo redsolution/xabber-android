@@ -26,7 +26,8 @@ public class RecyclerItemTouchHelper extends ItemTouchHelper.SimpleCallback {
 
     @Override
     public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
-        if (viewHolder instanceof RosterChatViewHolder)
+        if (viewHolder instanceof RosterChatViewHolder
+                && ((RosterChatViewHolder) viewHolder).buttonView.getVisibility() == View.GONE)
             return super.getMovementFlags(recyclerView, viewHolder);
         else return 0;
     }

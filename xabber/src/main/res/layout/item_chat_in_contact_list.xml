@@ -74,7 +74,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/white"
-        android:elevation="1dp"
         >
 
         <RelativeLayout
@@ -214,6 +213,32 @@
             <include layout="@layout/offline_shadow" />
 
         </RelativeLayout>
+
+    </RelativeLayout>
+    <RelativeLayout
+        android:id="@+id/buttonView"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        android:clickable="true"
+        android:focusable="true"
+        >
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="64dp"
+            android:background="#bfffffff"
+            />
+
+        <Button
+            android:id="@+id/btnListAction"
+            android:layout_width="match_parent"
+            android:layout_height="64dp"
+            android:text="Show all chats"
+            android:textColor="@color/grey_600"
+            android:layout_centerHorizontal="true"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            />
 
     </RelativeLayout>
 

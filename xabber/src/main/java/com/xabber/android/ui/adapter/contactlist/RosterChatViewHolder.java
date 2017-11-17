@@ -3,6 +3,7 @@ package com.xabber.android.ui.adapter.contactlist;
 import android.support.v7.widget.RecyclerView;
 import android.view.ContextMenu;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -38,6 +39,8 @@ public class RosterChatViewHolder extends RecyclerView.ViewHolder implements Vie
     public final RelativeLayout backgroundView;
     public LinearLayout viewActionRight;
     public LinearLayout viewActionLeft;
+    public RelativeLayout buttonView;
+    public Button btnListAction;
 
     private final ContactListItemViewHolder.ContactClickListener listener;
 
@@ -69,6 +72,9 @@ public class RosterChatViewHolder extends RecyclerView.ViewHolder implements Vie
         ivActionIcon = (ImageView) view.findViewById(R.id.ivActionIcon);
         tvActionLeft = (TextView) view.findViewById(R.id.tvActionLeft);
         ivActionIconLeft = (ImageView) view.findViewById(R.id.ivActionIconLeft);
+        buttonView = (RelativeLayout) view.findViewById(R.id.buttonView);
+        btnListAction = (Button) view.findViewById(R.id.btnListAction);
+        btnListAction.setOnClickListener(this);
     }
 
     @Override
@@ -81,9 +87,12 @@ public class RosterChatViewHolder extends RecyclerView.ViewHolder implements Vie
 
         if (v.getId() == R.id.ivAvatar) {
             listener.onContactAvatarClick(adapterPosition);
+        } else if (v.getId() == R.id.btnListAction) {
+            listener.onContactButtonClick(adapterPosition);
         } else {
             listener.onContactClick(adapterPosition);
         }
+
     }
 
     @Override

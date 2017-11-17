@@ -76,6 +76,9 @@ public class ChatListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
     @Override
+    public void onContactButtonClick(int adapterPosition) {}
+
+    @Override
     public void onContactCreateContextMenu(int adapterPosition, ContextMenu menu) {}
 
     public Object getItem(int position) {

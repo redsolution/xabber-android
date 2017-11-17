@@ -427,8 +427,6 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
                 // add recent chats
                 rosterItemVOs.addAll(ChatVO.convert(chatsGroup.getAbstractContacts()));
-                if (chats.size() > MAX_RECENT_ITEMS && currentChatsState == ChatListState.recent)
-                    rosterItemVOs.add(ButtonVO.convert(null, ButtonVO.ACTION_SHOW_ALL_CHATS, ButtonVO.ACTION_SHOW_ALL_CHATS));
 
                 if (currentChatsState == ChatListState.recent) {
 
@@ -637,7 +635,9 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 break;
 
             case TYPE_CHAT:
-                contactItemChatInflater.bindViewHolder((RosterChatViewHolder) holder, (ChatVO) item);
+                contactItemChatInflater.bindViewHolderWithButton((RosterChatViewHolder) holder,
+                        (ChatVO) item, position == MAX_RECENT_ITEMS
+                                && currentChatsState == ChatListState.recent);
                 break;
 
             case TYPE_ACCOUNT:
@@ -788,6 +788,12 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     }
 
     @Override
+    public void onContactButtonClick(int adapterPosition) {
+        setState(ChatListState.all);
+        onChange();
+    }
+
+    @Override
     public void onAccountAvatarClick(int adapterPosition) {
         if (adapterPosition == -1) adapterPosition = currentHeaderPosition;
         activity.startActivity(AccountActivity.createIntent(activity,
@@ -835,10 +841,6 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         if (rosterItemVOs.size() > position) {
             if (rosterItemVOs.get(position) instanceof ButtonVO) {
                 ButtonVO viewObject = (ButtonVO) rosterItemVOs.get(position);
-                if (viewObject.getAction().equals(ButtonVO.ACTION_SHOW_ALL_CHATS)) {
-                    setState(ChatListState.all);
-                    onChange();
-                }
                 if (viewObject.getAction().equals(ButtonVO.ACTION_ADD_CONTACT)) {
                     if (activity != null)
                         activity.startActivity(ContactAddActivity.createIntent(activity));

@@ -32,6 +32,7 @@ class ContactListItemViewHolder extends RecyclerView.ViewHolder implements View.
     interface ContactClickListener {
         void onContactClick(int adapterPosition);
         void onContactAvatarClick(int adapterPosition);
+        void onContactButtonClick(int adapterPosition);
         void onContactCreateContextMenu(int adapterPosition, ContextMenu menu);
     }
 
