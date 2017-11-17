@@ -234,7 +234,7 @@
             android:id="@+id/btnListAction"
             android:layout_width="match_parent"
             android:layout_height="64dp"
-            android:text="Show all chats"
+            android:text="@string/show_all_chats"
             android:textColor="@color/grey_600"
             android:layout_centerHorizontal="true"
             style="@style/Widget.AppCompat.Button.Borderless"

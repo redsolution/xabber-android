@@ -93,4 +93,10 @@
   <string name="remove_selected_bookmarks">Удалить выбранные</string>
   <string name="remove_all_bookmarks_confirm">Вы действительно хотите удалить все закладки учётной записи %1$s?</string>
   <string name="remove_selected_bookmarks_confirm">Вы действительно хотите удалить выбранные закладки учётной записи %1$s?</string>
+  <string name="recent_chats">Недавние</string>
+  <string name="unread_chats">Непрочитанные</string>
+  <string name="archived_chats">Архивированные</string>
+  <string name="all_chats">Все чаты</string>
+  <string name="no_messages">Нет сообщений</string>
+  <string name="show_all_chats">Показать все чаты</string>
 </resources>

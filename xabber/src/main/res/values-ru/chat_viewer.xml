@@ -112,9 +112,6 @@
   <string name="message_status_forwarded">Отправлено с другого устройства</string>
   <string name="message_status_not_sent">Отправляется</string>
   <string name="toast_no_history">В истории больше нет сообщений</string>
-  <string name="recent_chats">Недавние</string>
-  <string name="unread_chats">Непрочитанные</string>
-  <string name="archived_chats">Архивированные</string>
-  <string name="all_chats">Все чаты</string>
-  <string name="no_messages">Нет сообщений</string>
+  <string name="toast_archived_show">Архивные чаты отображаются</string>
+  <string name="toast_archived_hide">Архивные чаты скрыты</string>
 </resources>

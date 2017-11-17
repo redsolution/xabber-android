@@ -88,12 +88,6 @@
     <string name="otr_verification_notify_button">OPEN</string>
     <string name="otr_verification_notify_button_cancel">CANCEL</string>
 
-    <string name="recent_chats">Recent chats</string>
-    <string name="unread_chats">Unread chats</string>
-    <string name="archived_chats">Archived chats</string>
-    <string name="all_chats">All chats</string>
-    <string name="no_messages">No messages</string>
-
     <string name="under_construction">Under construction</string>
     <string name="under_construction_message">This screen is under construction</string>
 
@@ -125,7 +119,6 @@
     <string name="muc_role_moderator">Moderator</string>
     <string name="muc_role_participant">Participant</string>
     <string name="muc_role_visitor">Visitor</string>
-
-    <string name="show_archived_chats">Show archived chats</string>
-    <string name="hide_archived_chats">Hide archived chats</string>
+    <string name="toast_archived_show">Archived chats shows</string>
+    <string name="toast_archived_hide">Archived chats hide</string>
 </resources>

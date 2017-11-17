@@ -791,8 +791,8 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
                     recentChatFragment.setShowArchived(!recentChatFragment.isShowArchived());
                     recentChatFragment.updateChats();
                     Toast.makeText(this,
-                            !recentChatFragment.isShowArchived() ? "archived hided" : "archived shows",
-                            Toast.LENGTH_SHORT).show();
+                            !recentChatFragment.isShowArchived() ? R.string.toast_archived_hide
+                                    : R.string.toast_archived_show, Toast.LENGTH_SHORT).show();
                 }
                 return true;
 
