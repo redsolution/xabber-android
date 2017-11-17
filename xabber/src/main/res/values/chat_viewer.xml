@@ -125,4 +125,7 @@
     <string name="muc_role_moderator">Moderator</string>
     <string name="muc_role_participant">Participant</string>
     <string name="muc_role_visitor">Visitor</string>
+
+    <string name="show_archived_chats">Show archived chats</string>
+    <string name="hide_archived_chats">Hide archived chats</string>
 </resources>

@@ -30,6 +30,7 @@ import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Toast;
 
 import com.xabber.android.R;
 import com.xabber.android.data.ActivityManager;
@@ -784,6 +785,9 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
                 if (recentChatFragment != null) {
                     recentChatFragment.setShowArchived(!recentChatFragment.isShowArchived());
                     recentChatFragment.updateChats();
+                    Toast.makeText(this,
+                            !recentChatFragment.isShowArchived() ? "archived hided" : "archived shows",
+                            Toast.LENGTH_SHORT).show();
                 }
                 return true;
 
