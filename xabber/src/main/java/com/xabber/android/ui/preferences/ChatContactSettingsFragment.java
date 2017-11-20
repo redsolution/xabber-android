@@ -9,6 +9,8 @@ import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.muc.MUCManager;
+import com.xabber.android.data.message.AbstractChat;
+import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.message.chat.ShowMessageTextInNotification;
 
@@ -43,6 +45,9 @@ public class ChatContactSettingsFragment extends BaseSettingsFragment {
             isMUC = true;
         }
 
+        AbstractChat chat = MessageManager.getInstance().getChat(account, user);
+        putValue(map, R.string.chat_mute_key, chat != null && chat.isMuted());
+
         putValue(map, R.string.chat_save_history_key, ChatManager.getInstance()
                 .isSaveMessages(account, user));
         putValue(map, R.string.chat_events_visible_chat_key, ChatManager
@@ -63,6 +68,11 @@ public class ChatContactSettingsFragment extends BaseSettingsFragment {
     protected boolean setValues(Map<String, Object> source, Map<String, Object> result) {
         AccountJid account = mListener.getAccount();
         UserJid user = mListener.getUser();
+
+        if (hasChanges(source, result, R.string.chat_mute_key)) {
+            AbstractChat chat = MessageManager.getInstance().getChat(account, user);
+            if (chat != null) chat.setMuted(getBoolean(result, R.string.chat_mute_key), true);
+        }
 
         if (hasChanges(source, result, R.string.chat_save_history_key))
             ChatManager.getInstance().setSaveMessages(account, user,
