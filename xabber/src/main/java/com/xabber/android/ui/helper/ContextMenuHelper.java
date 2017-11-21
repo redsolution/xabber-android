@@ -35,6 +35,7 @@ import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
+import com.xabber.android.data.message.NotificationState;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.GroupManager;
@@ -245,22 +246,24 @@ public class ContextMenuHelper {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
                         AbstractChat chat = MessageManager.getInstance().getChat(account, user);
-                        if (chat != null) chat.setNotificationEnabled(true, true);
+                        if (chat != null) chat.setNotificationState(
+                                new NotificationState(NotificationState.NotificationMode.disabled,
+                                        0), true);
                         adapter.onChange();
                         return true;
                     }
                 });
 
-        menu.findItem(R.id.action_unmute_chat).setOnMenuItemClickListener(
-                new MenuItem.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-                        AbstractChat chat = MessageManager.getInstance().getChat(account, user);
-                        if (chat != null) chat.setNotificationEnabled(null, true);
-                        adapter.onChange();
-                        return true;
-                    }
-                });
+//        menu.findItem(R.id.action_unmute_chat).setOnMenuItemClickListener(
+//                new MenuItem.OnMenuItemClickListener() {
+//                    @Override
+//                    public boolean onMenuItemClick(MenuItem item) {
+//                        AbstractChat chat = MessageManager.getInstance().getChat(account, user);
+//                        if (chat != null) chat.setNotificationEnabled(null, true);
+//                        adapter.onChange();
+//                        return true;
+//                    }
+//                });
     }
 
     private static void setContactContextMenuItemsVisibilty(AbstractContact abstractContact,
@@ -327,15 +330,8 @@ public class ContextMenuHelper {
             menu.findItem(R.id.action_unarchive_chat).setVisible(chat.isArchived());
         }
 
-        // mute/unmute chat
-        if (chat != null) {
-            if (chat.getNotificationEnabled() != null) {
-                menu.findItem(R.id.action_unmute_chat).setVisible(!chat.getNotificationEnabled());
-                menu.findItem(R.id.action_mute_chat).setVisible(chat.getNotificationEnabled());
-            } else {
-                menu.findItem(R.id.action_mute_chat).setVisible(true);
-            }
-        }
+        // mute chat
+        menu.findItem(R.id.action_mute_chat).setVisible(chat != null && chat.notifyAboutMessage());
     }
 
     public static void createGroupContextMenu(final ManagedActivity activity,

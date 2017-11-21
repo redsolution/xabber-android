@@ -50,6 +50,7 @@ import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.NewMessageEvent;
+import com.xabber.android.data.message.NotificationState;
 import com.xabber.android.data.message.RegularChat;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.notification.NotificationManager;
@@ -634,14 +635,8 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         menu.findItem(R.id.action_archive_chat).setVisible(!abstractChat.isArchived());
         menu.findItem(R.id.action_unarchive_chat).setVisible(abstractChat.isArchived());
 
-        // mute/unmute chat
-        if (abstractChat.getNotificationEnabled() != null) {
-            menu.findItem(R.id.action_unmute_chat).setVisible(!abstractChat.getNotificationEnabled());
-            menu.findItem(R.id.action_mute_chat).setVisible(abstractChat.getNotificationEnabled());
-        } else {
-            menu.findItem(R.id.action_mute_chat).setVisible(true);
-        }
-
+        // mute chat
+        menu.findItem(R.id.action_mute_chat).setVisible(abstractChat.notifyAboutMessage());
     }
 
     private void setUpMUCMenu(Menu menu, AbstractChat abstractChat) {
@@ -768,12 +763,14 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
                 return true;
 
             case R.id.action_mute_chat:
-                if (abstractChat != null) abstractChat.setNotificationEnabled(true, true);
+                if (abstractChat != null) abstractChat.setNotificationState(
+                        new NotificationState(NotificationState.NotificationMode.disabled,
+                                0), true);
                 return true;
 
-            case R.id.action_unmute_chat:
-                if (abstractChat != null) abstractChat.setNotificationEnabled(null, true);
-                return true;
+//            case R.id.action_unmute_chat:
+//                //if (abstractChat != null) abstractChat.setNotificationEnabled(null, true);
+//                return true;
 
             /* conference specific options menu */
 
