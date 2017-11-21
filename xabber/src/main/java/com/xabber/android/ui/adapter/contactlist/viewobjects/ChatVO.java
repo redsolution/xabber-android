@@ -11,6 +11,7 @@ import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
+import com.xabber.android.data.message.NotificationState;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.ui.adapter.contactlist.ContactListAdapter;
 import com.xabber.android.ui.color.ColorManager;
@@ -37,10 +38,11 @@ public class ChatVO extends ContactVO {
     public ChatVO(int accountColorIndicator, boolean showOfflineShadow, String name, String status,
                   int statusId, int statusLevel, Drawable avatar, int mucIndicatorLevel,
                   UserJid userJid, AccountJid accountJid, String messageText, boolean isOutgoing,
-                  Date time, int messageStatus, int unreadCount, String messageOwner, boolean mute, boolean archived) {
+                  Date time, int messageStatus, int unreadCount, String messageOwner, boolean mute,
+                  NotificationState.NotificationMode notificationMode, boolean archived) {
 
         super(accountColorIndicator, showOfflineShadow, name, status, statusId, statusLevel,
-                avatar, mucIndicatorLevel, userJid, accountJid, unreadCount, mute);
+                avatar, mucIndicatorLevel, userJid, accountJid, unreadCount, mute, notificationMode);
 
         this.messageText = messageText;
         this.isOutgoing = isOutgoing;
@@ -132,7 +134,7 @@ public class ChatVO extends ContactVO {
         return new ChatVO(accountColorIndicator, showOfflineShadow, name, statusText, statusId,
                 statusLevel, avatar, mucIndicatorLevel, contact.getUser(), contact.getAccount(),
                 messageText, isOutgoing, time, messageStatus, unreadCount, messageOwner,
-                !chat.notifyAboutMessage(), chat.isArchived());
+                !chat.notifyAboutMessage(), chat.getNotificationState().getMode(), chat.isArchived());
     }
 
     public static ArrayList<ContactVO> convert(Collection<AbstractContact> contacts) {

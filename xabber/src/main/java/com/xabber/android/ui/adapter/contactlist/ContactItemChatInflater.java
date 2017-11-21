@@ -14,6 +14,7 @@ import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.otr.OTRManager;
+import com.xabber.android.data.message.NotificationState;
 import com.xabber.android.ui.activity.ContactActivity;
 import com.xabber.android.ui.activity.ContactEditActivity;
 import com.xabber.android.ui.adapter.contactlist.viewobjects.ChatVO;
@@ -123,10 +124,17 @@ public class ContactItemChatInflater {
 
         // notification mute
         Resources resources = context.getResources();
-        boolean mute = viewObject.isMute();
 
-        viewHolder.tvContactName.setCompoundDrawablesWithIntrinsicBounds(null, null,
-                mute ? resources.getDrawable(R.drawable.ic_mute) : null, null);
+        if (viewObject.isMute() && viewObject.getNotificationMode() == NotificationState.NotificationMode.disabled) {
+            viewHolder.tvContactName.setCompoundDrawablesWithIntrinsicBounds(null, null,
+                    resources.getDrawable(R.drawable.ic_mute), null);
+        } else if (!viewObject.isMute() && viewObject.getNotificationMode() == NotificationState.NotificationMode.enabled) {
+            viewHolder.tvContactName.setCompoundDrawablesWithIntrinsicBounds(null, null,
+                    resources.getDrawable(R.drawable.ic_unmute), null);
+        } else {
+            viewHolder.tvContactName.setCompoundDrawablesWithIntrinsicBounds(
+                    null, null, null, null);
+        }
 
         if (viewObject.isMute())
             viewHolder.tvUnreadCount.getBackground().mutate().setColorFilter(

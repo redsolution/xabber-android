@@ -10,6 +10,7 @@ import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
+import com.xabber.android.data.message.NotificationState;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.ui.color.ColorManager;
 
@@ -32,10 +33,12 @@ public class ContactVO extends BaseRosterItemVO {
     private AccountJid accountJid;
     private int unreadCount;
     private boolean mute;
+    private NotificationState.NotificationMode notificationMode;
 
     public ContactVO(int accountColorIndicator, boolean showOfflineShadow, String name, String status,
                      int statusId, int statusLevel, Drawable avatar, int mucIndicatorLevel,
-                     UserJid userJid, AccountJid accountJid, int unreadCount, boolean mute) {
+                     UserJid userJid, AccountJid accountJid, int unreadCount, boolean mute,
+                     NotificationState.NotificationMode notificationMode) {
         super(accountColorIndicator, showOfflineShadow);
         this.name = name;
         this.status = status;
@@ -47,6 +50,7 @@ public class ContactVO extends BaseRosterItemVO {
         this.accountJid = accountJid;
         this.unreadCount = unreadCount;
         this.mute = mute;
+        this.notificationMode = notificationMode;
     }
 
     public static ContactVO convert(AbstractContact contact) {
@@ -88,7 +92,8 @@ public class ContactVO extends BaseRosterItemVO {
         unreadCount = chat.getUnreadMessageCount();
 
         return new ContactVO(accountColorIndicator, showOfflineShadow, name, statusText, statusId,
-                statusLevel, avatar, mucIndicatorLevel, contact.getUser(), contact.getAccount(), unreadCount, !chat.notifyAboutMessage());
+                statusLevel, avatar, mucIndicatorLevel, contact.getUser(), contact.getAccount(),
+                unreadCount, !chat.notifyAboutMessage(), chat.getNotificationState().getMode());
     }
 
     public static ArrayList<ContactVO> convert(Collection<AbstractContact> contacts) {
@@ -129,6 +134,10 @@ public class ContactVO extends BaseRosterItemVO {
 
     public AccountJid getAccountJid() {
         return accountJid;
+    }
+
+    public NotificationState.NotificationMode getNotificationMode() {
+        return notificationMode;
     }
 
     public boolean isMute() {
