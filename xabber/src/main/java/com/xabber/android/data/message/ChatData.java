@@ -11,16 +11,16 @@ public class ChatData {
     private String userJid;
     private int unreadCount;
     private boolean archived;
-    private Boolean notificationEnabled;
+    private NotificationState notificationState;
 
     public ChatData(String subject, String accountJid, String userJid, int unreadCount,
-                    boolean archived, Boolean notificationEnabled) {
+                    boolean archived, NotificationState notificationState) {
         this.subject = subject;
         this.accountJid = accountJid;
         this.userJid = userJid;
         this.unreadCount = unreadCount;
         this.archived = archived;
-        this.notificationEnabled = notificationEnabled;
+        this.notificationState = notificationState;
     }
 
     public String getSubject() {
@@ -63,11 +63,11 @@ public class ChatData {
         this.archived = archived;
     }
 
-    public Boolean getNotificationEnabled() {
-        return notificationEnabled;
+    public NotificationState getNotificationState() {
+        return notificationState;
     }
 
-    public void setNotificationEnabled(Boolean notificationEnabled) {
-        this.notificationEnabled = notificationEnabled;
+    public void setNotificationState(NotificationState notificationState) {
+        this.notificationState = notificationState;
     }
 }

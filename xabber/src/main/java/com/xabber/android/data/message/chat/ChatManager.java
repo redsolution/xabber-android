@@ -26,6 +26,7 @@ import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.listeners.OnAccountRemovedListener;
 import com.xabber.android.data.database.RealmManager;
 import com.xabber.android.data.database.realm.ChatDataRealm;
+import com.xabber.android.data.database.realm.NotificationStateRealm;
 import com.xabber.android.data.database.sqlite.NotifyVisibleTable;
 import com.xabber.android.data.database.sqlite.PrivateChatTable;
 import com.xabber.android.data.database.sqlite.ShowTextTable;
@@ -39,6 +40,7 @@ import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.ChatData;
+import com.xabber.android.data.message.NotificationState;
 import com.xabber.android.data.roster.RosterManager;
 
 import org.jxmpp.stringprep.XmppStringprepException;
@@ -506,7 +508,11 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
         ChatDataRealm chatRealm = new ChatDataRealm(accountJid, userJid);
         chatRealm.setUnreadCount(chat.getUnreadMessageCount());
         chatRealm.setArchived(chat.isArchived());
-        chatRealm.setNotificationEnabled(chat.getNotificationEnabled());
+
+        NotificationStateRealm notificationStateRealm = new NotificationStateRealm();
+        notificationStateRealm.setMode(chat.getNotificationState().getMode());
+        notificationStateRealm.setTimestamp(chat.getNotificationState().getTimestamp());
+        chatRealm.setNotificationState(notificationStateRealm);
 
         Realm realm = RealmManager.getInstance().getNewRealm();
         realm.beginTransaction();
@@ -528,13 +534,18 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
                 .findFirst();
 
         if (realmChat != null) {
+            NotificationState notificationState = new NotificationState(
+                    realmChat.getNotificationState().getMode(),
+                    realmChat.getNotificationState().getTimestamp()
+            );
+
             chatData = new ChatData(
                     realmChat.getSubject(),
                     realmChat.getAccountJid(),
                     realmChat.getUserJid(),
                     realmChat.getUnreadCount(),
                     realmChat.isArchived(),
-                    realmChat.getNotificationEnabled());
+                    notificationState);
         }
 
         realm.close();

@@ -11,6 +11,7 @@ import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
+import com.xabber.android.data.message.NotificationState;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.message.chat.ShowMessageTextInNotification;
 
@@ -45,13 +46,21 @@ public class ChatContactSettingsFragment extends BaseSettingsFragment {
             isMUC = true;
         }
 
+        // custom notification
         AbstractChat chat = MessageManager.getInstance().getChat(account, user);
-        putValue(map, R.string.chat_custom_notification_settings_key,
-                chat != null && chat.getNotificationEnabled() != null);
-
-        putValue(map, R.string.chat_notification_enabled_key,
-                chat != null && chat.getNotificationEnabled() != null
-                        && chat.getNotificationEnabled());
+        if (chat != null) {
+            switch (chat.getNotificationState().getMode()) {
+                case enabled:
+                    putValue(map, R.string.chat_notification_settings_key, 1);
+                    break;
+                case disabled:
+                    putValue(map, R.string.chat_notification_settings_key, 2);
+                    break;
+                case bydefault:
+                    putValue(map, R.string.chat_notification_settings_key, 0);
+                    break;
+            }
+        }
 
         putValue(map, R.string.chat_save_history_key, ChatManager.getInstance()
                 .isSaveMessages(account, user));
@@ -74,13 +83,23 @@ public class ChatContactSettingsFragment extends BaseSettingsFragment {
         AccountJid account = mListener.getAccount();
         UserJid user = mListener.getUser();
 
-        if (hasChanges(source, result, R.string.chat_custom_notification_settings_key)
-                || hasChanges(source, result, R.string.chat_notification_enabled_key)) {
+        // custom notification
+        if (hasChanges(source, result, R.string.chat_notification_settings_key)) {
             AbstractChat chat = MessageManager.getInstance().getChat(account, user);
             if (chat != null) {
-                if (getBoolean(result, R.string.chat_custom_notification_settings_key)) {
-                    chat.setNotificationEnabled(getBoolean(result, R.string.chat_notification_enabled_key), true);
-                } else chat.setNotificationEnabled(null, true);
+                NotificationState.NotificationMode mode;
+                switch (getInt(result, R.string.chat_notification_settings_key)) {
+                    default:
+                        mode = NotificationState.NotificationMode.bydefault;
+                        break;
+                    case 1:
+                        mode = NotificationState.NotificationMode.enabled;
+                        break;
+                    case 2:
+                        mode = NotificationState.NotificationMode.disabled;
+                        break;
+                }
+                chat.setNotificationState(new NotificationState(mode, 0), true);
             }
         }
 

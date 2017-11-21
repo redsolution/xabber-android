@@ -15,15 +15,13 @@
 <PreferenceScreen
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <CheckBoxPreference
-        android:key="@string/chat_custom_notification_settings_key"
-        android:title="@string/chat_custom_notification_settings_title"
-        />
-
-    <CheckBoxPreference
-        android:key="@string/chat_notification_enabled_key"
-        android:title="@string/chat_notification_enabled_title"
-        android:dependency="@string/chat_custom_notification_settings_key"
+    <ListPreference
+        android:key="@string/chat_notification_settings_key"
+        android:title="@string/chat_notification_settings_title"
+        android:entries="@array/chat_notification_settings_entries"
+        android:entryValues="@array/chat_notification_settings_entryvalues"
+        android:defaultValue="@string/chat_notification_settings_bydefault_value"
+        android:summary="%s"
         />
 
     <CheckBoxPreference

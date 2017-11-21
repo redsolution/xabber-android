@@ -87,7 +87,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
 
     private int unreadMessageCount;
     private boolean archived;
-    protected Boolean notificationEnabled;
+    protected NotificationState notificationState;
 
     private boolean isPrivateMucChat;
     private boolean isPrivateMucChatAccepted;
@@ -107,6 +107,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         firstNotification = true;
         this.isPrivateMucChat = isPrivateMucChat;
         isPrivateMucChatAccepted = false;
+        notificationState = new NotificationState(NotificationState.NotificationMode.bydefault, 0);
 
         Application.getInstance().runOnUiThread(new Runnable() {
             @Override
@@ -214,8 +215,11 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
      * @return Whether user should be notified about incoming messages in chat.
      */
     public boolean notifyAboutMessage() {
-        if (notificationEnabled != null) return notificationEnabled;
-        else return SettingsManager.eventsOnChat();
+        switch (notificationState.getMode()) {
+            case enabled: return true;
+            case disabled: return false;
+            default: return SettingsManager.eventsOnChat();
+        }
     }
 
     abstract protected MessageItem createNewMessageItem(String text);
@@ -617,12 +621,12 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         if (needSaveToRealm) ChatManager.getInstance().saveOrUpdateChatDataToRealm(this);
     }
 
-    public Boolean getNotificationEnabled() {
-        return notificationEnabled;
+    public NotificationState getNotificationState() {
+        return notificationState;
     }
 
-    public void setNotificationEnabled(Boolean notificationEnabled, boolean needSaveToRealm) {
-        this.notificationEnabled = notificationEnabled;
+    public void setNotificationState(NotificationState notificationState, boolean needSaveToRealm) {
+        this.notificationState = notificationState;
         if (needSaveToRealm) ChatManager.getInstance().saveOrUpdateChatDataToRealm(this);
     }
 }

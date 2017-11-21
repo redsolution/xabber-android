@@ -8,6 +8,7 @@ import com.xabber.android.data.database.realm.AccountRealm;
 import com.xabber.android.data.database.realm.ChatDataRealm;
 import com.xabber.android.data.database.realm.DiscoveryInfoCache;
 import com.xabber.android.data.database.realm.EmailRealm;
+import com.xabber.android.data.database.realm.NotificationStateRealm;
 import com.xabber.android.data.database.realm.PatreonGoalRealm;
 import com.xabber.android.data.database.realm.PatreonRealm;
 import com.xabber.android.data.database.realm.SocialBindingRealm;
@@ -60,7 +61,7 @@ public class RealmManager {
 
     @RealmModule(classes = {DiscoveryInfoCache.class, AccountRealm.class, XabberAccountRealm.class,
             XMPPUserRealm.class, EmailRealm.class, SocialBindingRealm.class, SyncStateRealm.class,
-            PatreonGoalRealm.class, PatreonRealm.class, ChatDataRealm.class})
+            PatreonGoalRealm.class, PatreonRealm.class, ChatDataRealm.class, NotificationStateRealm.class})
     static class RealmDatabaseModule {
     }
 
@@ -186,9 +187,15 @@ public class RealmManager {
                         }
 
                         if (oldVersion == 11) {
+                            schema.create(NotificationStateRealm.class.getSimpleName())
+                                    .addField("id", String.class, FieldAttribute.PRIMARY_KEY, FieldAttribute.REQUIRED)
+                                    .addField("mode", String.class)
+                                    .addField("timestamp", int.class);
+
                             schema.get(ChatDataRealm.class.getSimpleName())
                                     .removeField("muted")
-                                    .addField("notificationEnabled", Boolean.class);
+                                    .addRealmObjectField("notificationState",
+                                            schema.get(NotificationStateRealm.class.getSimpleName()));
                         }
                     }
                 })
