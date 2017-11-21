@@ -21,7 +21,7 @@ public class ChatDataRealm extends RealmObject {
     private String userJid;
     private int unreadCount;
     private boolean archived;
-    private boolean muted;
+    private Boolean notificationEnabled;
 
     public ChatDataRealm(String accountJid, String userJid) {
         this.id = accountJid + "-" + userJid;
@@ -73,11 +73,11 @@ public class ChatDataRealm extends RealmObject {
         this.archived = archived;
     }
 
-    public boolean isMuted() {
-        return muted;
+    public Boolean getNotificationEnabled() {
+        return notificationEnabled;
     }
 
-    public void setMuted(boolean muted) {
-        this.muted = muted;
+    public void setNotificationEnabled(Boolean notificationEnabled) {
+        this.notificationEnabled = notificationEnabled;
     }
 }

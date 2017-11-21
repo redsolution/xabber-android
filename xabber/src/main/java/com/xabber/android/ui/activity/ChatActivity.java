@@ -630,32 +630,36 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
 
     private void setUpRegularChatMenu(Menu menu, AbstractChat abstractChat) {
 
-            // archive/unarchive chat
-            menu.findItem(R.id.action_archive_chat).setVisible(!abstractChat.isArchived());
-            menu.findItem(R.id.action_unarchive_chat).setVisible(abstractChat.isArchived());
+        // archive/unarchive chat
+        menu.findItem(R.id.action_archive_chat).setVisible(!abstractChat.isArchived());
+        menu.findItem(R.id.action_unarchive_chat).setVisible(abstractChat.isArchived());
 
-            // mute/unmute chat
-            menu.findItem(R.id.action_mute_chat).setVisible(!abstractChat.isMuted());
-            menu.findItem(R.id.action_unmute_chat).setVisible(abstractChat.isMuted());
+        // mute/unmute chat
+        if (abstractChat.getNotificationEnabled() != null) {
+            menu.findItem(R.id.action_unmute_chat).setVisible(!abstractChat.getNotificationEnabled());
+            menu.findItem(R.id.action_mute_chat).setVisible(abstractChat.getNotificationEnabled());
+        } else {
+            menu.findItem(R.id.action_mute_chat).setVisible(true);
+        }
 
     }
 
     private void setUpMUCMenu(Menu menu, AbstractChat abstractChat) {
 
-            RoomState chatState = ((RoomChat) abstractChat).getState();
-            if (chatState == RoomState.unavailable)
-                menu.findItem(R.id.action_join_conference).setVisible(true);
-            else {
-                menu.findItem(R.id.action_invite_to_chat).setVisible(true);
+        RoomState chatState = ((RoomChat) abstractChat).getState();
+        if (chatState == RoomState.unavailable)
+            menu.findItem(R.id.action_join_conference).setVisible(true);
+        else {
+            menu.findItem(R.id.action_invite_to_chat).setVisible(true);
 
-                if (chatState == RoomState.error) {
-                    menu.findItem(R.id.action_authorization_settings).setVisible(true);
-                } else {
-                    menu.findItem(R.id.action_leave_conference).setVisible(true);
-                }
+            if (chatState == RoomState.error) {
+                menu.findItem(R.id.action_authorization_settings).setVisible(true);
+            } else {
+                menu.findItem(R.id.action_leave_conference).setVisible(true);
             }
+        }
 
-            setUpRegularChatMenu(menu, abstractChat);
+        setUpRegularChatMenu(menu, abstractChat);
     }
 
     private void setUpOptionsMenu(Menu menu) {
@@ -764,11 +768,11 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
                 return true;
 
             case R.id.action_mute_chat:
-                if (abstractChat != null) abstractChat.setMuted(true, true);
+                if (abstractChat != null) abstractChat.setNotificationEnabled(true, true);
                 return true;
 
             case R.id.action_unmute_chat:
-                if (abstractChat != null) abstractChat.setMuted(false, true);
+                if (abstractChat != null) abstractChat.setNotificationEnabled(null, true);
                 return true;
 
             /* conference specific options menu */

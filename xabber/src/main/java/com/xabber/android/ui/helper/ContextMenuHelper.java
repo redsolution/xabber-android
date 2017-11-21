@@ -245,7 +245,7 @@ public class ContextMenuHelper {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
                         AbstractChat chat = MessageManager.getInstance().getChat(account, user);
-                        if (chat != null) chat.setMuted(true, true);
+                        if (chat != null) chat.setNotificationEnabled(true, true);
                         adapter.onChange();
                         return true;
                     }
@@ -256,7 +256,7 @@ public class ContextMenuHelper {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
                         AbstractChat chat = MessageManager.getInstance().getChat(account, user);
-                        if (chat != null) chat.setMuted(false, true);
+                        if (chat != null) chat.setNotificationEnabled(null, true);
                         adapter.onChange();
                         return true;
                     }
@@ -329,8 +329,12 @@ public class ContextMenuHelper {
 
         // mute/unmute chat
         if (chat != null) {
-            menu.findItem(R.id.action_mute_chat).setVisible(!chat.isMuted());
-            menu.findItem(R.id.action_unmute_chat).setVisible(chat.isMuted());
+            if (chat.getNotificationEnabled() != null) {
+                menu.findItem(R.id.action_unmute_chat).setVisible(!chat.getNotificationEnabled());
+                menu.findItem(R.id.action_mute_chat).setVisible(chat.getNotificationEnabled());
+            } else {
+                menu.findItem(R.id.action_mute_chat).setVisible(true);
+            }
         }
     }
 

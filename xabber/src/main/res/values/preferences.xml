@@ -525,7 +525,8 @@
     <string name="phrase_sound_key">phrase_sound</string>
 
 <!-- preference_chat -->
-    <string name="chat_mute_key">chat_mute</string>
+    <string name="chat_custom_notification_settings_key">chat_custom_notification_settings_key</string>
+    <string name="chat_notification_enabled_key">chat_notification_enabled_key</string>
     <string name="chat_save_history_key">chat_save_history</string>
     <string name="chat_events_sound_key">chat_events_sound</string>
     <string name="chat_events_show_text_key">chat_events_show_message_text</string>

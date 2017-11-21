@@ -87,7 +87,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
 
     private int unreadMessageCount;
     private boolean archived;
-    protected boolean muted;
+    protected Boolean notificationEnabled;
 
     private boolean isPrivateMucChat;
     private boolean isPrivateMucChatAccepted;
@@ -214,7 +214,8 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
      * @return Whether user should be notified about incoming messages in chat.
      */
     public boolean notifyAboutMessage() {
-        return !isMuted() && SettingsManager.eventsOnChat();
+        if (notificationEnabled != null) return notificationEnabled;
+        else return SettingsManager.eventsOnChat();
     }
 
     abstract protected MessageItem createNewMessageItem(String text);
@@ -616,12 +617,12 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         if (needSaveToRealm) ChatManager.getInstance().saveOrUpdateChatDataToRealm(this);
     }
 
-    public boolean isMuted() {
-        return muted;
+    public Boolean getNotificationEnabled() {
+        return notificationEnabled;
     }
 
-    public void setMuted(boolean muted, boolean needSaveToRealm) {
-        this.muted = muted;
+    public void setNotificationEnabled(Boolean notificationEnabled, boolean needSaveToRealm) {
+        this.notificationEnabled = notificationEnabled;
         if (needSaveToRealm) ChatManager.getInstance().saveOrUpdateChatDataToRealm(this);
     }
 }

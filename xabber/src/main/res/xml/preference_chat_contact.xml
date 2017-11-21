@@ -16,9 +16,14 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <CheckBoxPreference
-        android:key="@string/chat_mute_key"
-        android:title="@string/chat_mute_title"
+        android:key="@string/chat_custom_notification_settings_key"
+        android:title="@string/chat_custom_notification_settings_title"
+        />
 
+    <CheckBoxPreference
+        android:key="@string/chat_notification_enabled_key"
+        android:title="@string/chat_notification_enabled_title"
+        android:dependency="@string/chat_custom_notification_settings_key"
         />
 
     <CheckBoxPreference

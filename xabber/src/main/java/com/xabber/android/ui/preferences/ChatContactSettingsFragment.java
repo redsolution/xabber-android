@@ -46,7 +46,12 @@ public class ChatContactSettingsFragment extends BaseSettingsFragment {
         }
 
         AbstractChat chat = MessageManager.getInstance().getChat(account, user);
-        putValue(map, R.string.chat_mute_key, chat != null && chat.isMuted());
+        putValue(map, R.string.chat_custom_notification_settings_key,
+                chat != null && chat.getNotificationEnabled() != null);
+
+        putValue(map, R.string.chat_notification_enabled_key,
+                chat != null && chat.getNotificationEnabled() != null
+                        && chat.getNotificationEnabled());
 
         putValue(map, R.string.chat_save_history_key, ChatManager.getInstance()
                 .isSaveMessages(account, user));
@@ -69,9 +74,14 @@ public class ChatContactSettingsFragment extends BaseSettingsFragment {
         AccountJid account = mListener.getAccount();
         UserJid user = mListener.getUser();
 
-        if (hasChanges(source, result, R.string.chat_mute_key)) {
+        if (hasChanges(source, result, R.string.chat_custom_notification_settings_key)
+                || hasChanges(source, result, R.string.chat_notification_enabled_key)) {
             AbstractChat chat = MessageManager.getInstance().getChat(account, user);
-            if (chat != null) chat.setMuted(getBoolean(result, R.string.chat_mute_key), true);
+            if (chat != null) {
+                if (getBoolean(result, R.string.chat_custom_notification_settings_key)) {
+                    chat.setNotificationEnabled(getBoolean(result, R.string.chat_notification_enabled_key), true);
+                } else chat.setNotificationEnabled(null, true);
+            }
         }
 
         if (hasChanges(source, result, R.string.chat_save_history_key))

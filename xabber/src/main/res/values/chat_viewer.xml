@@ -122,5 +122,6 @@
     <string name="toast_archived_show">Archived chats shows</string>
     <string name="toast_archived_hide">Archived chats hide</string>
 
-    <string name="chat_mute_title">Mute chat\nDon\'t show notification and unread counter for this chat</string>
+    <string name="chat_custom_notification_settings_title">Use custom notification settings</string>
+    <string name="chat_notification_enabled_title">Enable notification</string>
 </resources>
