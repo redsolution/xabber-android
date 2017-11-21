@@ -138,8 +138,8 @@ public class ContactItemChatInflater {
         boolean archived = viewObject.isArchived();
         viewHolder.tvAction.setText(archived ? R.string.unarchive_chat : R.string.archive_chat);
         viewHolder.tvActionLeft.setText(archived ? R.string.unarchive_chat : R.string.archive_chat);
-        viewHolder.ivActionIcon.setImageResource(archived ? R.drawable.ic_arrow_left_white_24dp : R.drawable.ic_arcived);
-        viewHolder.ivActionIconLeft.setImageResource(archived ? R.drawable.ic_arrow_left_white_24dp : R.drawable.ic_arcived);
+        viewHolder.ivActionIcon.setImageResource(archived ? R.drawable.ic_unarchived : R.drawable.ic_arcived);
+        viewHolder.ivActionIconLeft.setImageResource(archived ? R.drawable.ic_unarchived : R.drawable.ic_arcived);
         viewHolder.foregroundView.setBackgroundColor(archived ? resources.getColor(R.color.grey_200)
                 : resources.getColor(R.color.white));
     }
