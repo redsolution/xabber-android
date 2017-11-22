@@ -534,10 +534,14 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
                 .findFirst();
 
         if (realmChat != null) {
-            NotificationState notificationState = new NotificationState(
-                    realmChat.getNotificationState().getMode(),
-                    realmChat.getNotificationState().getTimestamp()
-            );
+            NotificationState notificationState;
+            if (realmChat.getNotificationState() != null) {
+                 notificationState = new NotificationState(
+                        realmChat.getNotificationState().getMode(),
+                        realmChat.getNotificationState().getTimestamp()
+                );
+            } else notificationState =
+                    new NotificationState(NotificationState.NotificationMode.bydefault, 0);
 
             chatData = new ChatData(
                     realmChat.getSubject(),
