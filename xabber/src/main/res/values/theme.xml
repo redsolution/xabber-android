@@ -72,6 +72,8 @@
         <item name="patreon_progress_background_color">#FFD8D8D8</item>
         <item name="settings_background_color">@color/grey_200</item>
         <item name="settings_separator_background_color">@color/grey_300</item>
+
+        <item name="bottom_navigation_background">@color/bottom_navigation_background</item>
     </style>
 
     <style name="ThemeDark" parent="Base.ThemeDark"></style>
@@ -97,7 +99,7 @@
         <item name="chat_incoming_balloon">@array/account_chat_incoming_balloon</item>
         <item name="chat_incoming_balloon_pressed">@array/account_contact_list_subgroup_background_dark</item>
 
-        <item name="contact_list_background">@color/grey_900</item>
+        <item name="contact_list_background">@color/grey_800</item>
 
         <item name="contact_list_account_group_background">@array/account_900</item>
         <item name="contact_list_account_group_separator">@color/contact_list_separator_dark</item>
@@ -137,6 +139,8 @@
         <item name="patreon_progress_background_color">@color/grey_800</item>
         <item name="settings_background_color">@color/grey_900</item>
         <item name="settings_separator_background_color">@color/grey_600</item>
+
+        <item name="bottom_navigation_background">@color/grey_800</item>
     </style>
 
     <style name="ToolbarTitle" parent="@style/TextAppearance.Widget.AppCompat.Toolbar.Title">
