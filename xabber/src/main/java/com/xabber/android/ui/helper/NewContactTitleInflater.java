@@ -1,6 +1,7 @@
 package com.xabber.android.ui.helper;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -8,8 +9,8 @@ import android.widget.TextView;
 import com.xabber.android.R;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.cs.ChatStateManager;
+import com.xabber.android.data.message.NotificationState;
 import com.xabber.android.data.roster.AbstractContact;
-import com.xabber.android.ui.color.AccountPainter;
 
 import org.jivesoftware.smackx.chatstates.ChatState;
 
@@ -19,11 +20,28 @@ import org.jivesoftware.smackx.chatstates.ChatState;
 
 public class NewContactTitleInflater {
 
-    public static void updateTitle(View titleView, final Context context, AbstractContact abstractContact) {
+    public static void updateTitle(View titleView, final Context context, AbstractContact abstractContact,
+                                   NotificationState.NotificationMode mode) {
         final TextView nameView = (TextView) titleView.findViewById(R.id.name);
         final ImageView avatarView = (ImageView) titleView.findViewById(R.id.ivAvatar);
 
         nameView.setText(abstractContact.getName());
+
+        // notification mute
+        Resources resources = context.getResources();
+        switch (mode) {
+            case enabled:
+                nameView.setCompoundDrawablesWithIntrinsicBounds(null, null,
+                        resources.getDrawable(R.drawable.ic_unmute_large), null);
+                break;
+            case disabled:
+                nameView.setCompoundDrawablesWithIntrinsicBounds(null, null,
+                        resources.getDrawable(R.drawable.ic_mute_large), null);
+                break;
+            default:
+                nameView.setCompoundDrawablesWithIntrinsicBounds(
+                        null, null, null, null);
+        }
 
         // if it is account, not simple user contact
         if (abstractContact.getUser().getJid().asBareJid().equals(abstractContact.getAccount().getFullJid().asBareJid())) {

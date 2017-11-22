@@ -35,6 +35,7 @@ import android.widget.Toast;
 import com.xabber.android.R;
 import com.xabber.android.data.ActivityManager;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
@@ -499,7 +500,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
 
     private void updateToolbar() {
         NewContactTitleInflater.updateTitle(contactTitleView, this,
-                RosterManager.getInstance().getBestContact(account, user));
+                RosterManager.getInstance().getBestContact(account, user), getNotifMode());
         toolbar.setBackgroundColor(ColorManager.getInstance().getAccountPainter().getAccountMainColor(account));
         setUpOptionsMenu(toolbar.getMenu());
     }
@@ -809,5 +810,18 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
             shakeAnimation = AnimationUtils.loadAnimation(this, R.anim.shake);
         }
         toolbar.findViewById(R.id.name_holder).startAnimation(shakeAnimation);
+    }
+
+    private NotificationState.NotificationMode getNotifMode() {
+        AbstractChat chat = MessageManager.getInstance().getOrCreateChat(account, user);
+        NotificationState.NotificationMode mode = NotificationState.NotificationMode.bydefault;
+        if (chat != null) {
+            boolean defaultValue = chat instanceof RegularChat ? SettingsManager.eventsOnChat() : SettingsManager.eventsOnMuc();
+            if (chat.getNotificationState().getMode() == NotificationState.NotificationMode.enabled && !defaultValue)
+                mode = NotificationState.NotificationMode.enabled;
+            if (chat.getNotificationState().getMode() == NotificationState.NotificationMode.disabled && defaultValue)
+                mode = NotificationState.NotificationMode.disabled;
+        }
+        return mode;
     }
 }

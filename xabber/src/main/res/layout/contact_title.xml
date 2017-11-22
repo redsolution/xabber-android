@@ -24,7 +24,8 @@
             android:singleLine="true"
             android:textColor="@color/primary_text_default_material_dark"
             android:text="Lorem Ipsum"
-
+            android:drawablePadding="4dp"
+            android:drawableTint="@color/white"
             android:layout_marginLeft="6dp"
             android:textSize="18sp"
             android:textStyle="bold"
