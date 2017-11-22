@@ -167,16 +167,6 @@ public class SettingsManager implements OnInitializedListener,
                 R.bool.contacts_show_empty_groups_default);
     }
 
-    public static boolean contactsShowActiveChats() {
-        return getBoolean(R.string.contacts_show_active_chats_key,
-                R.bool.contacts_show_active_chats_default);
-    }
-
-    public static boolean contactsStayActiveChats() {
-        return getBoolean(R.string.contacts_stay_active_chats_key,
-                R.bool.contacts_stay_active_chats_default);
-    }
-
     public static boolean contactsShowAccounts() {
         return getBoolean(R.string.contacts_show_accounts_key,
                 R.bool.contacts_show_accounts_default);
@@ -194,11 +184,6 @@ public class SettingsManager implements OnInitializedListener,
             return ComparatorByStatus.COMPARATOR_BY_STATUS;
         else
             throw new IllegalStateException();
-    }
-
-    public static boolean contactsShowPanel() {
-        return getBoolean(R.string.contacts_show_panel_key,
-                R.bool.contacts_show_panel_default);
     }
 
     public static boolean contactsEnableShowAccounts() {

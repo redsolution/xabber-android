@@ -2,7 +2,6 @@ package com.xabber.android.ui.preferences;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.CheckBoxPreference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 
@@ -46,9 +45,6 @@ public class ContactListSettingsFragment extends PreferenceFragment
     private void changeGrouping() {
         boolean grouped = SettingsManager.contactsShowAccounts()
                 || SettingsManager.contactsShowGroups();
-        ((CheckBoxPreference) getPreferenceScreen().findPreference(
-                getString(R.string.contacts_stay_active_chats_key)))
-                .setChecked(grouped);
         getPreferenceScreen().findPreference(getString(R.string.contacts_show_empty_groups_key))
                 .setEnabled(grouped);
     }
