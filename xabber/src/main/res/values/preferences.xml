@@ -527,12 +527,12 @@
 <!-- preference_chat -->
     <string name="chat_notification_settings_key">chat_notification_settings_key</string>
     <string-array name="chat_notification_settings_entries">
-        <item>@string/chat_notification_settings_bydefault</item>
         <item>@string/chat_notification_settings_enabled</item>
+        <item>@string/chat_notification_settings_bydefault</item>
         <item>@string/chat_notification_settings_disabled</item>
     </string-array>
-    <string name="chat_notification_settings_bydefault">By default</string>
     <string name="chat_notification_settings_enabled">Enabled</string>
+    <string name="chat_notification_settings_bydefault">Default</string>
     <string name="chat_notification_settings_disabled">Disabled</string>
     <string-array name="chat_notification_settings_entryvalues">
         <item>@string/chat_notification_settings_bydefault_value</item>

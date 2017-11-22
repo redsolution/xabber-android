@@ -51,13 +51,13 @@ public class ChatContactSettingsFragment extends BaseSettingsFragment {
         if (chat != null) {
             switch (chat.getNotificationState().getMode()) {
                 case enabled:
-                    putValue(map, R.string.chat_notification_settings_key, 1);
+                    putValue(map, R.string.chat_notification_settings_key, 0);
                     break;
                 case disabled:
                     putValue(map, R.string.chat_notification_settings_key, 2);
                     break;
                 case bydefault:
-                    putValue(map, R.string.chat_notification_settings_key, 0);
+                    putValue(map, R.string.chat_notification_settings_key, 1);
                     break;
             }
         }
@@ -92,7 +92,7 @@ public class ChatContactSettingsFragment extends BaseSettingsFragment {
                     default:
                         mode = NotificationState.NotificationMode.bydefault;
                         break;
-                    case 1:
+                    case 0:
                         mode = NotificationState.NotificationMode.enabled;
                         break;
                     case 2:
