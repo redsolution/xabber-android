@@ -124,16 +124,18 @@ public class ContactItemChatInflater {
 
         // notification mute
         Resources resources = context.getResources();
-
-        if (viewObject.isMute() && viewObject.getNotificationMode() == NotificationState.NotificationMode.disabled) {
-            viewHolder.tvContactName.setCompoundDrawablesWithIntrinsicBounds(null, null,
-                    resources.getDrawable(R.drawable.ic_mute), null);
-        } else if (!viewObject.isMute() && viewObject.getNotificationMode() == NotificationState.NotificationMode.enabled) {
-            viewHolder.tvContactName.setCompoundDrawablesWithIntrinsicBounds(null, null,
-                    resources.getDrawable(R.drawable.ic_unmute), null);
-        } else {
-            viewHolder.tvContactName.setCompoundDrawablesWithIntrinsicBounds(
-                    null, null, null, null);
+        switch (viewObject.getNotificationMode()) {
+            case enabled:
+                viewHolder.tvContactName.setCompoundDrawablesWithIntrinsicBounds(null, null,
+                        resources.getDrawable(R.drawable.ic_unmute), null);
+                break;
+            case disabled:
+                viewHolder.tvContactName.setCompoundDrawablesWithIntrinsicBounds(null, null,
+                        resources.getDrawable(R.drawable.ic_mute), null);
+                break;
+            default:
+                viewHolder.tvContactName.setCompoundDrawablesWithIntrinsicBounds(
+                        null, null, null, null);
         }
 
         if (viewObject.isMute())

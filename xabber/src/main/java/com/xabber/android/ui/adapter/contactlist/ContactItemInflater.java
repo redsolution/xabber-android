@@ -2,6 +2,7 @@ package com.xabber.android.ui.adapter.contactlist;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.PorterDuff;
 import android.view.View;
 
@@ -66,19 +67,26 @@ class ContactItemInflater {
         } else viewHolder.tvUnreadCount.setVisibility(View.GONE);
 
         // notification mute
-        if (viewObject.isMute()) {
-            viewHolder.tvContactName.setCompoundDrawablesWithIntrinsicBounds(null, null,
-                    context.getResources().getDrawable(R.drawable.ic_mute), null);
-
-            viewHolder.tvUnreadCount.getBackground().mutate().setColorFilter(
-                    context.getResources().getColor(R.color.grey_500),
-                    PorterDuff.Mode.SRC_IN);
-        } else {
-            viewHolder.tvContactName.setCompoundDrawablesWithIntrinsicBounds(null, null,
-                    null, null);
-
-            viewHolder.tvUnreadCount.getBackground().mutate().clearColorFilter();
+        Resources resources = context.getResources();
+        switch (viewObject.getNotificationMode()) {
+            case enabled:
+                viewHolder.tvContactName.setCompoundDrawablesWithIntrinsicBounds(null, null,
+                        resources.getDrawable(R.drawable.ic_unmute), null);
+                break;
+            case disabled:
+                viewHolder.tvContactName.setCompoundDrawablesWithIntrinsicBounds(null, null,
+                        resources.getDrawable(R.drawable.ic_mute), null);
+                break;
+            default:
+                viewHolder.tvContactName.setCompoundDrawablesWithIntrinsicBounds(
+                        null, null, null, null);
         }
+
+        if (viewObject.isMute())
+            viewHolder.tvUnreadCount.getBackground().mutate().setColorFilter(
+                    resources.getColor(R.color.grey_500),
+                    PorterDuff.Mode.SRC_IN);
+        else viewHolder.tvUnreadCount.getBackground().mutate().clearColorFilter();
     }
 
     void onAvatarClick(ContactVO contact) {

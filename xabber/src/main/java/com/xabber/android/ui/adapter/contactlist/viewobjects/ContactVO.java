@@ -2,6 +2,7 @@ package com.xabber.android.ui.adapter.contactlist.viewobjects;
 
 import android.graphics.drawable.Drawable;
 
+import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionState;
@@ -91,9 +92,17 @@ public class ContactVO extends BaseRosterItemVO {
         AbstractChat chat = MessageManager.getInstance().getOrCreateChat(contact.getAccount(), contact.getUser());
         unreadCount = chat.getUnreadMessageCount();
 
+        // notification icon
+        NotificationState.NotificationMode mode = NotificationState.NotificationMode.bydefault;
+        boolean defaultValue = mucIndicatorLevel == 0 ? SettingsManager.eventsOnChat() : SettingsManager.eventsOnMuc();
+        if (chat.getNotificationState().getMode() == NotificationState.NotificationMode.enabled && !defaultValue)
+            mode = NotificationState.NotificationMode.enabled;
+        if (chat.getNotificationState().getMode() == NotificationState.NotificationMode.disabled && defaultValue)
+            mode = NotificationState.NotificationMode.disabled;
+
         return new ContactVO(accountColorIndicator, showOfflineShadow, name, statusText, statusId,
                 statusLevel, avatar, mucIndicatorLevel, contact.getUser(), contact.getAccount(),
-                unreadCount, !chat.notifyAboutMessage(), chat.getNotificationState().getMode());
+                unreadCount, !chat.notifyAboutMessage(), mode);
     }
 
     public static ArrayList<ContactVO> convert(Collection<AbstractContact> contacts) {
