@@ -334,10 +334,15 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
             NotificationManager.getInstance().onMessageNotification(messageItem);
         }
 
+        // unread message count
         if (!visible && action == null) {
             if (incoming) increaseUnreadMessageCount();
             else resetUnreadMessageCount();
         }
+
+        // remove notifications if get outgoing message
+        if (!incoming)
+            NotificationManager.getInstance().removeMessageNotification(account, user);
 
         return messageItem;
     }
@@ -627,6 +632,8 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
 
     public void setNotificationState(NotificationState notificationState, boolean needSaveToRealm) {
         this.notificationState = notificationState;
+        if (notificationState.getMode() == NotificationState.NotificationMode.disabled && needSaveToRealm)
+            NotificationManager.getInstance().removeMessageNotification(account, user);
         if (needSaveToRealm) ChatManager.getInstance().saveOrUpdateChatDataToRealm(this);
     }
 }
