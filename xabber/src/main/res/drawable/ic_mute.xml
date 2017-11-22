@@ -1,8 +1,24 @@
-<!-- drawable/volume_mute.xml -->
+<?xml version="1.0" encoding="utf-8"?>
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:height="16dp"
     android:width="16dp"
+    android:height="16dp"
     android:viewportWidth="24"
     android:viewportHeight="24">
-    <path android:fillColor="#757575" android:pathData="M3,9H7L12,4V20L7,15H3V9M16.59,12L14,9.41L15.41,8L18,10.59L20.59,8L22,9.41L19.41,12L22,14.59L20.59,16L18,13.41L15.41,16L14,14.59L16.59,12Z" />
+
+    <group
+        android:translateX="7.000000"
+        android:translateY="4.000000">
+        <path
+            android:name="Path-2"
+            android:fillColor="#757575"
+            android:fillType="evenOdd"
+            android:strokeWidth="1"
+            android:pathData="M 0 5 L 0 11 L 4 11 L 9 16 L 9 12.5 L 1.5 5 Z" />
+        <path
+            android:name="Path-3"
+            android:fillColor="#757575"
+            android:fillType="evenOdd"
+            android:strokeWidth="1"
+            android:pathData="M 0 2 L 11.5 13.5 L 12.4964825 12.5 L 9 9 L 9 0 L 4.5 4.5 L 1 1 Z" />
+    </group>
 </vector>
