@@ -344,8 +344,9 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         if (!incoming)
             NotificationManager.getInstance().removeMessageNotification(account, user);
 
-        // when getting new message, unarchive chat
-        this.archived = false;
+        // when getting new message, unarchive chat if chat not muted
+        if (this.notifyAboutMessage())
+            this.archived = false;
 
         return messageItem;
     }
