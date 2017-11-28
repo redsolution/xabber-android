@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.os.Bundle;
 
 import com.xabber.android.R;
+import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
@@ -49,17 +50,7 @@ public class ChatContactSettingsFragment extends BaseSettingsFragment {
         // custom notification
         AbstractChat chat = MessageManager.getInstance().getChat(account, user);
         if (chat != null) {
-            switch (chat.getNotificationState().getMode()) {
-                case enabled:
-                    putValue(map, R.string.chat_notification_settings_key, 0);
-                    break;
-                case disabled:
-                    putValue(map, R.string.chat_notification_settings_key, 2);
-                    break;
-                case bydefault:
-                    putValue(map, R.string.chat_notification_settings_key, 1);
-                    break;
-            }
+            putValue(map, R.string.chat_notification_settings_key, chat.notifyAboutMessage());
         }
 
         putValue(map, R.string.chat_save_history_key, ChatManager.getInstance()
@@ -87,19 +78,33 @@ public class ChatContactSettingsFragment extends BaseSettingsFragment {
         if (hasChanges(source, result, R.string.chat_notification_settings_key)) {
             AbstractChat chat = MessageManager.getInstance().getChat(account, user);
             if (chat != null) {
-                NotificationState.NotificationMode mode;
-                switch (getInt(result, R.string.chat_notification_settings_key)) {
-                    default:
-                        mode = NotificationState.NotificationMode.bydefault;
-                        break;
-                    case 0:
-                        mode = NotificationState.NotificationMode.enabled;
-                        break;
-                    case 2:
-                        mode = NotificationState.NotificationMode.disabled;
-                        break;
+                boolean newValue = getBoolean(result, R.string.chat_notification_settings_key);
+                if (chat.getNotificationState().getMode().equals(NotificationState.NotificationMode.bydefault)) {
+
+                    NotificationState.NotificationMode mode = newValue
+                            ? NotificationState.NotificationMode.enabled
+                            : NotificationState.NotificationMode.disabled;
+
+                    chat.setNotificationState(new NotificationState(mode, 0), true);
+
+                } else {
+
+                    boolean defValue;
+                    if (MUCManager.getInstance().hasRoom(account, user.getJid().asEntityBareJidIfPossible()))
+                        defValue = SettingsManager.eventsOnMuc();
+                    else defValue = SettingsManager.eventsOnChat();
+
+                    if (!defValue && chat.getNotificationState().getMode()
+                            .equals(NotificationState.NotificationMode.disabled)) {
+                        chat.setNotificationState(new NotificationState(NotificationState.NotificationMode.enabled,
+                                0), true);
+                    } else if (defValue && chat.getNotificationState().getMode()
+                            .equals(NotificationState.NotificationMode.enabled)) {
+                        chat.setNotificationState(new NotificationState(NotificationState.NotificationMode.disabled,
+                                0), true);
+                    } else chat.setNotificationState(new NotificationState(NotificationState.NotificationMode.bydefault,
+                            0), true);
                 }
-                chat.setNotificationState(new NotificationState(mode, 0), true);
             }
         }
 
