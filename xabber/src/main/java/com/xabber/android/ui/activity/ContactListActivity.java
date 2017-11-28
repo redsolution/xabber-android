@@ -610,6 +610,11 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
     @Override
     public void onContactListChange(CommonState commonState) {}
 
+    @Override
+    public void onManageAccountsClick() {
+        showMenuFragment();
+    }
+
     private void createShortcut(AbstractContact abstractContact) {
         Intent intent = new Intent();
         intent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, ChatActivity.createClearTopIntent(this,

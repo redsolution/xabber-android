@@ -329,7 +329,7 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
             listener = new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    startActivity(PreferenceEditor.createIntent(getActivity()));
+                    contactListFragmentListener.onManageAccountsClick();
                 }
             };
             for (int i = 0; i < optionsMenu.size(); i++) {
@@ -422,6 +422,7 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
     public interface ContactListFragmentListener {
         void onContactClick(AbstractContact contact);
         void onContactListChange(CommonState commonState);
+        void onManageAccountsClick();
     }
 
     @Override
