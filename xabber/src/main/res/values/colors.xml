@@ -364,7 +364,8 @@
         <item>#964100</item>
     </array>
 
-
+    <color name="contact_item_text_second">#99616161</color>
+    <color name="contact_item_text_second_dark">#99bdbdbd</color>
 
     <color name="contact_list_active_chat_background_dark">#242424</color>
 

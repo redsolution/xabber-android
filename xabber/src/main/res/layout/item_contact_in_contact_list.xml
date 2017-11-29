@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="56dp"
     android:elevation="1dp"
-    android:background="@color/white"
+    android:background="?attr/contact_list_contact_background"
     >
 
     <RelativeLayout
@@ -38,7 +38,7 @@
                 android:layout_gravity="center_vertical"
                 android:layout_marginRight="4dp"
                 android:src="@drawable/muc_indicator_view"
-                android:tint="#212121"
+                android:tint="?attr/contact_list_contact_name_text_color"
                 />
 
             <TextView
@@ -47,7 +47,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:textSize="14sp"
-                android:textColor="#212121"
+                android:textColor="?attr/contact_list_contact_name_text_color"
                 android:fontFamily="sans-serif-medium"
                 android:text="Erik Walton"
                 android:ellipsize="marquee"
@@ -70,7 +70,7 @@
                 android:singleLine="true"
                 android:ellipsize="marquee"
                 android:textSize="14sp"
-                android:textColor="@color/status_color_in_contact_list"
+                android:textColor="?attr/contact_list_contact_second_line_text_color"
                 android:text="Online"
                 />
 

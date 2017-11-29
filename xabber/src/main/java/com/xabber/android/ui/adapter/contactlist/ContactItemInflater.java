@@ -12,6 +12,7 @@ import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.ui.activity.ContactActivity;
 import com.xabber.android.ui.activity.ContactEditActivity;
 import com.xabber.android.ui.adapter.contactlist.viewobjects.ContactVO;
+import com.xabber.android.ui.color.ColorManager;
 
 class ContactItemInflater {
 
@@ -48,7 +49,7 @@ class ContactItemInflater {
         if (viewObject.getStatusLevel() == 6) {
             viewHolder.ivStatus.setVisibility(View.INVISIBLE);
             //viewHolder.ivDevice.setVisibility(View.INVISIBLE);
-            viewHolder.tvStatus.setTextColor(context.getResources().getColor(R.color.status_color_in_contact_list));
+            viewHolder.tvStatus.setTextColor(ColorManager.getInstance().getColorContactSecondLine());
         } else {
             viewHolder.ivStatus.setVisibility(View.VISIBLE);
             //viewHolder.ivDevice.setVisibility(View.VISIBLE);

@@ -17,7 +17,7 @@
     android:layout_width="match_parent"
     android:layout_height="@dimen/expander_height"
     android:elevation="1dp"
-    android:background="@color/white"
+    android:background="?attr/contact_list_contact_background"
     >
 
     <include layout="@layout/account_color_indicator" />

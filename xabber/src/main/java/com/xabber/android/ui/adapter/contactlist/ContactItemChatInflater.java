@@ -14,11 +14,11 @@ import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.otr.OTRManager;
-import com.xabber.android.data.message.NotificationState;
 import com.xabber.android.ui.activity.ContactActivity;
 import com.xabber.android.ui.activity.ContactEditActivity;
 import com.xabber.android.ui.adapter.contactlist.viewobjects.ChatVO;
 import com.xabber.android.ui.adapter.contactlist.viewobjects.ContactVO;
+import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.utils.StringUtils;
 
 /**
@@ -151,7 +151,7 @@ public class ContactItemChatInflater {
         viewHolder.ivActionIcon.setImageResource(archived ? R.drawable.ic_unarchived : R.drawable.ic_arcived);
         viewHolder.ivActionIconLeft.setImageResource(archived ? R.drawable.ic_unarchived : R.drawable.ic_arcived);
         viewHolder.foregroundView.setBackgroundColor(archived ? resources.getColor(R.color.grey_200)
-                : resources.getColor(R.color.white));
+                : ColorManager.getInstance().getContactBackground());
     }
 
     void bindViewHolder(RosterChatViewHolder viewHolder, final ChatVO viewObject, boolean isCurrent) {

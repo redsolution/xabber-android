@@ -1,7 +1,6 @@
 package com.xabber.android.ui.color;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
@@ -22,6 +21,8 @@ public class ColorManager {
     private ColorStateList[] chatIncomingBalloonColorStateLists;
     private int themeId;
     private AccountPainter accountPainter;
+
+    private int colorContactSecondLine;
 
     private int colorMucPrivateChatText;
     private int colorMain;
@@ -88,6 +89,7 @@ public class ColorManager {
             );
         }
 
+        colorContactSecondLine = getThemeColor(context, R.attr.contact_list_contact_second_line_text_color);
         colorMucPrivateChatText = getThemeColor(context, R.attr.contact_list_contact_muc_private_chat_name_text_color);
         colorMain = getThemeColor(context, R.attr.contact_list_contact_name_text_color);
         activeChatTextColor = getThemeColor(context, R.attr.contact_list_active_chat_text_color);
@@ -183,6 +185,10 @@ public class ColorManager {
 
     public int getNavigationDrawerBackgroundColor() {
         return navigationDrawerBackgroundColor;
+    }
+
+    public int getColorContactSecondLine() {
+        return colorContactSecondLine;
     }
 
     public int convertColorNameToId(String colorName) {
