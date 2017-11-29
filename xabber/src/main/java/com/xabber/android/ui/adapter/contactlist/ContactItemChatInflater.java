@@ -159,7 +159,7 @@ public class ContactItemChatInflater {
 
         // current chat
         int[] accountGroupColors = context.getResources().getIntArray(
-                getThemeResource(R.attr.contact_list_account_group_background));
+                getThemeResource(R.attr.current_chat_background));
         final int level = AccountManager.getInstance().getColorLevel(viewObject.getAccountJid());
         if (isCurrent) viewHolder.foregroundView.setBackgroundColor(accountGroupColors[level]);
     }
