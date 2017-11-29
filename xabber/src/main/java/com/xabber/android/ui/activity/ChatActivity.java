@@ -15,13 +15,16 @@
 package com.xabber.android.ui.activity;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NavUtils;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
+import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -30,6 +33,7 @@ import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.xabber.android.R;
@@ -62,6 +66,7 @@ import com.xabber.android.ui.adapter.ChatViewerAdapter;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.color.StatusBarPainter;
 import com.xabber.android.ui.dialog.BlockContactDialog;
+import com.xabber.android.ui.dialog.ContactDeleteDialogFragment;
 import com.xabber.android.ui.fragment.ChatFragment;
 import com.xabber.android.ui.fragment.ContactVcardViewerFragment;
 import com.xabber.android.ui.fragment.RecentChatFragment;
@@ -74,6 +79,7 @@ import org.jxmpp.stringprep.XmppStringprepException;
 
 import java.util.Collection;
 
+import static com.xabber.android.ui.adapter.ChatViewerAdapter.PAGE_POSITION_CHAT_INFO;
 import static com.xabber.android.ui.adapter.ChatViewerAdapter.PAGE_POSITION_RECENT_CHATS;
 
 
@@ -669,6 +675,10 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
                 setUpRecentChatsMenu(menu, abstractChat);
                 return;
             }
+            if (selectedPagePosition == PAGE_POSITION_CHAT_INFO) {
+                inflater.inflate(R.menu.toolbar_contact, menu);
+                return;
+            }
             if (abstractChat instanceof RoomChat) {
                 inflater.inflate(R.menu.menu_chat_muc, menu);
                 setUpMUCMenu(menu, abstractChat);
@@ -799,6 +809,21 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
                 }
                 return true;
 
+            /* contact info menu */
+
+            case R.id.action_edit_alias:
+                editAlias();
+                return true;
+
+            case R.id.action_edit_groups:
+                startActivity(GroupEditActivity.createIntent(this, account, user));
+                return true;
+
+            case R.id.action_remove_contact:
+                ContactDeleteDialogFragment.newInstance(account, user)
+                        .show(getFragmentManager(), "CONTACT_DELETE");
+                return true;
+
             default:
                 return false;
         }
@@ -823,5 +848,34 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
                 mode = NotificationState.NotificationMode.disabled;
         }
         return mode;
+    }
+
+    private void editAlias() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.edit_alias);
+
+        final EditText input = new EditText(this);
+        input.setInputType(InputType.TYPE_TEXT_VARIATION_PERSON_NAME);
+
+        RosterContact rosterContact = RosterManager.getInstance().getRosterContact(account, user);
+        if (rosterContact != null)
+            input.setText(rosterContact.getName());
+        builder.setView(input);
+
+        builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                RosterManager.getInstance().setName(account, user, input.getText().toString());
+            }
+        });
+
+        builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        builder.show();
     }
 }

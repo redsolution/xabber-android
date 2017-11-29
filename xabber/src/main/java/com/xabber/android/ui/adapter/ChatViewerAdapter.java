@@ -23,6 +23,7 @@ public class ChatViewerAdapter extends FragmentStatePagerAdapter {
     private static final String LOG_TAG = ChatViewerAdapter.class.getSimpleName();
     public static final int PAGE_POSITION_RECENT_CHATS = 0;
     public static final int PAGE_POSITION_CHAT = 1;
+    public static final int PAGE_POSITION_CHAT_INFO = 2;
 
     public interface FinishUpdateListener {
         void onChatViewAdapterFinishUpdate();
