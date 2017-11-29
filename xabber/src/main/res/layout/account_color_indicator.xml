@@ -12,7 +12,7 @@
     <View
         android:layout_width="2dp"
         android:layout_height="1dp"
-        android:background="@color/white"
+        android:background="?attr/contact_list_contact_background"
         android:alpha="0.5"
         android:layout_alignParentTop="true"
         />

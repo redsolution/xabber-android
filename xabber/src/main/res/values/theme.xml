@@ -75,6 +75,8 @@
         <item name="settings_separator_background_color">@color/grey_300</item>
 
         <item name="bottom_navigation_background">@color/bottom_navigation_background</item>
+
+        <item name="half_transparent_background">@drawable/half_transparent_background</item>
     </style>
 
     <style name="ThemeDark" parent="Base.ThemeDark"></style>
@@ -114,7 +116,7 @@
         <item name="contact_list_subgroup_offline_indicator_color">@color/white</item>
         <item name="contact_list_subgroup_expander_color">@color/white</item>
 
-        <item name="contact_list_contact_background">@color/black</item>
+        <item name="contact_list_contact_background">@color/grey_900</item>
         <item name="contact_list_contact_separator">@color/contact_list_separator_dark</item>
         <item name="contact_list_contact_name_text_color">@color/grey_300</item>
         <item name="contact_list_contact_muc_private_chat_name_text_color">@color/grey_600</item>
@@ -142,6 +144,8 @@
         <item name="settings_separator_background_color">@color/grey_600</item>
 
         <item name="bottom_navigation_background">@color/grey_800</item>
+
+        <item name="half_transparent_background">@drawable/half_transparent_background_dark</item>
     </style>
 
     <style name="ToolbarTitle" parent="@style/TextAppearance.Widget.AppCompat.Toolbar.Title">

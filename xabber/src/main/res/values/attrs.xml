@@ -54,5 +54,6 @@
         <attr name="patreon_progress_background_color" format="reference|color" />
 
         <attr name="bottom_navigation_background" format="reference|color" />
+        <attr name="half_transparent_background" format="reference" />
     </declare-styleable>
 </resources>
