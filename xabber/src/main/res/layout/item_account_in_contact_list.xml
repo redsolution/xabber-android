@@ -26,6 +26,7 @@
             android:layout_height="wrap_content"
             android:textSize="16sp"
             android:textColor="#212121"
+            android:singleLine="true"
             android:fontFamily="sans-serif-medium"
             android:text="Erik Walton"
             />
