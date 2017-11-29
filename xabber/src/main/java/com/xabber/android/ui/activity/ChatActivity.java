@@ -239,6 +239,12 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         setContentView(R.layout.activity_chat);
 
         contactTitleView = findViewById(R.id.contact_title);
+        contactTitleView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                selectPage(2, true);
+            }
+        });
         toolbar = (Toolbar) findViewById(R.id.toolbar_default);
         toolbar.setOverflowIcon(getResources().getDrawable(R.drawable.ic_overflow_menu_white_24dp));
         toolbar.setOnMenuItemClickListener(this);
