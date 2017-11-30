@@ -55,5 +55,6 @@
 
         <attr name="bottom_navigation_background" format="reference|color" />
         <attr name="half_transparent_background" format="reference" />
+        <attr name="action_with_chat_background" format="reference|color" />
     </declare-styleable>
 </resources>

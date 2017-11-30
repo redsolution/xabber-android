@@ -4,7 +4,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="64dp"
-    android:background="@color/grey_400"
+    android:background="?attr/action_with_chat_background"
     android:elevation="1dp"
     >
 
