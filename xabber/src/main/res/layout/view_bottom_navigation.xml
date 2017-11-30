@@ -23,7 +23,7 @@
                 android:padding="10dp"
                 android:layout_centerVertical="true"
                 android:src="@drawable/ic_message"
-                android:tint="@color/grey_600"
+                android:tint="?attr/chat_input_button_color"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:layout_marginTop="6dp"
                 android:layout_marginBottom="6dp"
@@ -85,7 +85,7 @@
                     android:layout_height="match_parent"
                     android:padding="10dp"
                     android:src="@drawable/ic_search"
-                    android:tint="@color/grey_600"
+                    android:tint="?attr/chat_input_button_color"
                     />
 
                 <TextView
@@ -106,7 +106,7 @@
                 android:layout_height="match_parent"
                 android:padding="10dp"
                 android:src="@drawable/ic_search"
-                android:tint="@color/grey_600"
+                android:tint="?attr/chat_input_button_color"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:layout_weight="1"
                 android:visibility="gone"
@@ -123,7 +123,7 @@
             android:layout_alignParentRight="true"
             android:padding="10dp"
             android:src="@drawable/ic_menu"
-            android:tint="@color/grey_600"
+            android:tint="?attr/chat_input_button_color"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:layout_marginTop="6dp"
             android:layout_marginBottom="6dp"
