@@ -35,6 +35,7 @@ public class ColorManager {
     private int activeChatLargeClientIconColor;
 
     private int contactListBackgroundColor;
+    private int archivedContactBackgroundColor;
 
     private int chatBackgroundColor;
     private int chatInputBackgroundColor;
@@ -99,6 +100,7 @@ public class ColorManager {
         activeChatSeparatorColor = getThemeColor(context, R.attr.contact_list_active_chat_separator);
         contactLargeClientIconColor = getThemeColor(context, R.attr.contact_list_contact_client_large_icon_color);
         activeChatLargeClientIconColor = getThemeColor(context, R.attr.contact_list_active_chat_client_large_icon_color);
+        archivedContactBackgroundColor = getThemeColor(context, R.attr.contact_list_contact_archived_background);
 
         contactListBackgroundColor = getThemeColor(context, R.attr.contact_list_background);
 
@@ -189,6 +191,10 @@ public class ColorManager {
 
     public int getColorContactSecondLine() {
         return colorContactSecondLine;
+    }
+
+    public int getArchivedContactBackgroundColor() {
+        return archivedContactBackgroundColor;
     }
 
     public int convertColorNameToId(String colorName) {

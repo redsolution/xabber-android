@@ -35,6 +35,7 @@
         <item name="contact_list_background">@color/contact_list_background</item>
 
         <item name="current_chat_background">@array/account_50</item>
+        <item name="contact_list_contact_archived_background">@color/grey_200</item>
         <item name="contact_list_account_group_background">@array/account_100</item>
         <item name="contact_list_account_group_separator">@color/grey_400</item>
         <item name="contact_list_account_group_second_line_text_color">@color/grey_700</item>
@@ -104,6 +105,8 @@
 
         <item name="contact_list_background">@color/grey_800</item>
 
+        <item name="current_chat_background">@array/account_contact_list_subgroup_background_dark</item>
+        <item name="contact_list_contact_archived_background">@color/black</item>
         <item name="contact_list_account_group_background">@array/account_900</item>
         <item name="contact_list_account_group_separator">@color/contact_list_separator_dark</item>
         <item name="contact_list_account_group_second_line_text_color">@color/grey_400</item>

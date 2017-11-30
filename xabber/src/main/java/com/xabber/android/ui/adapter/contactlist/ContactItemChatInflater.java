@@ -150,7 +150,7 @@ public class ContactItemChatInflater {
         viewHolder.tvActionLeft.setText(archived ? R.string.unarchive_chat : R.string.archive_chat);
         viewHolder.ivActionIcon.setImageResource(archived ? R.drawable.ic_unarchived : R.drawable.ic_arcived);
         viewHolder.ivActionIconLeft.setImageResource(archived ? R.drawable.ic_unarchived : R.drawable.ic_arcived);
-        viewHolder.foregroundView.setBackgroundColor(archived ? resources.getColor(R.color.grey_200)
+        viewHolder.foregroundView.setBackgroundColor(archived ? ColorManager.getInstance().getArchivedContactBackgroundColor()
                 : ColorManager.getInstance().getContactBackground());
     }
 
