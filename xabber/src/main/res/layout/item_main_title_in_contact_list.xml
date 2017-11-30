@@ -19,7 +19,7 @@
         android:fontFamily="sans-serif-medium"
         android:textSize="18sp"
         android:text="@string/recent_chats"
-        android:textColor="#212121"
+        android:textColor="?attr/contact_list_contact_name_text_color"
         android:clickable="true"
         android:drawableRight="@drawable/ic_chevron_down"
         />

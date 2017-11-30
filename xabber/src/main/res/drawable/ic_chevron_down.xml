@@ -4,5 +4,6 @@
     android:width="20dp"
     android:viewportWidth="24"
     android:viewportHeight="24">
-    <path android:fillColor="#000" android:fillAlpha="0.5" android:pathData="M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z" />
+    <path android:fillColor="?attr/contact_list_account_group_small_right_icon_color"
+        android:fillAlpha="0.5" android:pathData="M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z" />
 </vector>

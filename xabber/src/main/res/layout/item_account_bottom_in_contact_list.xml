@@ -6,7 +6,7 @@
     android:clickable="true"
     android:elevation="1dp"
     android:id="@+id/bottom_layer"
-    android:background="@color/white"
+    android:background="?attr/contact_list_contact_background"
     >
     <RelativeLayout
         android:orientation="vertical"
@@ -35,7 +35,7 @@
     <View
         android:layout_width="2dp"
         android:layout_height="1dp"
-        android:background="@color/white"
+        android:background="?attr/contact_list_contact_background"
         android:alpha="0.5"
         android:layout_below="@+id/top_layer"
         />
