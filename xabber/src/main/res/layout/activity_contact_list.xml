@@ -23,17 +23,26 @@
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/containerBottomNavigation"
+        android:layout_above="@+id/bottom"
         />
 
-    <FrameLayout
-        android:id="@+id/containerBottomNavigation"
+    <LinearLayout
+        android:id="@+id/bottom"
         android:layout_width="match_parent"
-        android:layout_height="56dp"
+        android:layout_height="60dp"
         android:layout_alignParentBottom="true"
         android:elevation="4dp"
         android:outlineProvider="bounds"
         android:paddingTop="4dp"
-        android:layout_marginTop="-4dp"/>
+        android:layout_marginTop="-4dp"
+        android:background="@color/transparent">
+
+        <FrameLayout
+            android:id="@+id/containerBottomNavigation"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            />
+
+    </LinearLayout>
 
 </RelativeLayout>
