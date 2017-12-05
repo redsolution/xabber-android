@@ -90,6 +90,9 @@
     <string name="contacts_show_avatars_key">contacts_show_avatars</string>
     <bool name="contacts_show_avatars_default">true</bool>
 
+    <string name="contacts_show_messages_key">contacts_show_messages</string>
+    <bool name="contacts_show_messages_default">false</bool>
+
     <string name="contacts_show_offline_key">contacts_show_offline</string>
     <bool name="contacts_show_offline_default">true</bool>
 

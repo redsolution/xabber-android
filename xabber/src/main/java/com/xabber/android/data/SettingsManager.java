@@ -148,6 +148,11 @@ public class SettingsManager implements OnInitializedListener,
                 R.bool.contacts_show_avatars_default);
     }
 
+    public static boolean contactsShowMessages() {
+        return getBoolean(R.string.contacts_show_messages_key,
+                R.bool.contacts_show_messages_default);
+    }
+
     public static boolean contactsShowOffline() {
         return getBoolean(R.string.contacts_show_offline_key,
                 R.bool.contacts_show_offline_default);

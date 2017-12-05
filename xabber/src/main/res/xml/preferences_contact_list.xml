@@ -20,6 +20,12 @@
             />
 
         <CheckBoxPreference
+            android:title="@string/contacts_show_messages"
+            android:key="@string/contacts_show_messages_key"
+            android:defaultValue="@bool/contacts_show_messages_default"
+            />
+
+        <CheckBoxPreference
             android:title="@string/contacts_show_accounts"
             android:key="@string/contacts_show_accounts_key"
             android:defaultValue="@bool/contacts_show_accounts_default"
