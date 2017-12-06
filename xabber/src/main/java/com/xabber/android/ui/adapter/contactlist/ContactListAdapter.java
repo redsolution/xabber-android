@@ -61,6 +61,7 @@ import com.xabber.android.ui.adapter.contactlist.viewobjects.BottomAccountSepara
 import com.xabber.android.ui.adapter.contactlist.viewobjects.ButtonVO;
 import com.xabber.android.ui.adapter.contactlist.viewobjects.ChatVO;
 import com.xabber.android.ui.adapter.contactlist.viewobjects.ContactVO;
+import com.xabber.android.ui.adapter.contactlist.viewobjects.ExtContactVO;
 import com.xabber.android.ui.adapter.contactlist.viewobjects.GroupVO;
 import com.xabber.android.ui.adapter.contactlist.viewobjects.MainTitleVO;
 import com.xabber.android.ui.adapter.contactlist.viewobjects.TopAccountSeparatorVO;
@@ -113,6 +114,7 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     public static final int TYPE_CHAT = 5;
     private static final int TYPE_BUTTON = 6;
     private static final int TYPE_MAIN_TITLE = 7;
+    private static final int TYPE_EXT_CONTACT = 8;
     private final ArrayList<BaseRosterItemVO> rosterItemVOs = new ArrayList<>();
 
     /**
@@ -448,13 +450,17 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                                         if (showEmptyGroups || !rosterConfiguration.isEmpty()) {
                                             rosterItemVOs.add(GroupVO.convert(rosterConfiguration));
                                             rosterConfiguration.sortAbstractContacts(comparator);
-                                            rosterItemVOs.addAll(ContactVO.convert(rosterConfiguration.getAbstractContacts()));
+                                            rosterItemVOs.addAll(SettingsManager.contactsShowMessages()
+                                                    ? ExtContactVO.convert(rosterConfiguration.getAbstractContacts())
+                                            : ContactVO.convert(rosterConfiguration.getAbstractContacts()));
                                         }
                                     }
                                 }
                             } else {
                                 rosterAccount.sortAbstractContacts(comparator);
-                                rosterItemVOs.addAll(ContactVO.convert(rosterAccount.getAbstractContacts()));
+                                rosterItemVOs.addAll(SettingsManager.contactsShowMessages()
+                                        ? ExtContactVO.convert(rosterAccount.getAbstractContacts())
+                                        : ContactVO.convert(rosterAccount.getAbstractContacts()));
                             }
 
                             if (rosterAccount.getTotal() > 0 && !rosterAccount.isExpanded()) {
@@ -470,12 +476,16 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                                 if (showEmptyGroups || !rosterConfiguration.isEmpty()) {
                                     rosterItemVOs.add(GroupVO.convert(rosterConfiguration));
                                     rosterConfiguration.sortAbstractContacts(comparator);
-                                    rosterItemVOs.addAll(ContactVO.convert(rosterConfiguration.getAbstractContacts()));
+                                    rosterItemVOs.addAll(SettingsManager.contactsShowMessages()
+                                            ? ExtContactVO.convert(rosterConfiguration.getAbstractContacts())
+                                            : ContactVO.convert(rosterConfiguration.getAbstractContacts()));
                                 }
                             }
                         } else {
                             Collections.sort(contacts, comparator);
-                            rosterItemVOs.addAll(ContactVO.convert(contacts));
+                            rosterItemVOs.addAll(SettingsManager.contactsShowMessages()
+                                    ? ExtContactVO.convert(contacts)
+                                    : ContactVO.convert(contacts));
                         }
                     }
                 } else {
@@ -490,7 +500,9 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         } else { // Search
             final ArrayList<AbstractContact> baseEntities = getSearchResults(rosterContacts, comparator, abstractChats);
             this.rosterItemVOs.clear();
-            this.rosterItemVOs.addAll(ContactVO.convert(baseEntities));
+            this.rosterItemVOs.addAll(SettingsManager.contactsShowMessages()
+                    ? ExtContactVO.convert(baseEntities)
+                    : ContactVO.convert(baseEntities));
             hasVisibleContacts = baseEntities.size() > 0;
         }
 
@@ -570,9 +582,11 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     public int getItemViewType(int position) {
         Object object = getItem(position);
         if (object instanceof ContactVO) {
-            if (object instanceof ChatVO)
-                return TYPE_CHAT;
-            return TYPE_CONTACT;
+            if (object instanceof ChatVO) {
+                if (object instanceof ExtContactVO)
+                    return TYPE_EXT_CONTACT;
+                else return TYPE_CHAT;
+            } else return TYPE_CONTACT;
         } else if (object instanceof AccountVO) {
             return TYPE_ACCOUNT;
         } else if (object instanceof GroupVO) {
@@ -599,6 +613,9 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             case TYPE_CHAT:
                 return new RosterChatViewHolder(layoutInflater
                         .inflate(R.layout.item_chat_in_contact_list, parent, false), this);
+            case TYPE_EXT_CONTACT:
+                return new ExtContactViewHolder(layoutInflater
+                        .inflate(R.layout.item_ext_contact_in_contact_list, parent, false), this);
             case TYPE_GROUP:
                 return new GroupViewHolder(layoutInflater
                         .inflate(R.layout.item_group_in_contact_list, parent, false), this);
@@ -636,6 +653,12 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
             case TYPE_CHAT:
                 contactItemChatInflater.bindViewHolderWithButton((RosterChatViewHolder) holder,
+                        (ChatVO) item, position == MAX_RECENT_ITEMS
+                                && currentChatsState == ChatListState.recent);
+                break;
+
+            case TYPE_EXT_CONTACT:
+                contactItemChatInflater.bindViewHolderWithButton((ExtContactViewHolder) holder,
                         (ChatVO) item, position == MAX_RECENT_ITEMS
                                 && currentChatsState == ChatListState.recent);
                 break;

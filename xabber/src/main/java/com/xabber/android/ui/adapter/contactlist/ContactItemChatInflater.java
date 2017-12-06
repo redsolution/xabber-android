@@ -35,7 +35,7 @@ public class ContactItemChatInflater {
         outgoingMessageIndicatorText = context.getString(R.string.sender_is_you) + ": ";
     }
 
-    void bindViewHolder(RosterChatViewHolder viewHolder, final ChatVO viewObject) {
+    void bindViewHolder(ExtContactViewHolder viewHolder, final ChatVO viewObject) {
 
         if (viewObject.isShowOfflineShadow())
             viewHolder.offlineShadow.setVisibility(View.VISIBLE);
@@ -164,7 +164,7 @@ public class ContactItemChatInflater {
         if (isCurrent) viewHolder.foregroundView.setBackgroundColor(accountGroupColors[level]);
     }
 
-    void bindViewHolderWithButton(RosterChatViewHolder viewHolder, final ChatVO viewObject, boolean isButton) {
+    void bindViewHolderWithButton(ExtContactViewHolder viewHolder, final ChatVO viewObject, boolean isButton) {
         bindViewHolder(viewHolder, viewObject);
 
         // button
