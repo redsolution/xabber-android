@@ -7,7 +7,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.xabber.android.R;
-import com.xabber.android.data.log.LogManager;
 
 
 class AccountGroupViewHolder extends RecyclerView.ViewHolder
@@ -15,6 +14,7 @@ class AccountGroupViewHolder extends RecyclerView.ViewHolder
 
     private static final String LOG_TAG = AccountGroupViewHolder.class.getSimpleName();
     final ImageView ivAvatar;
+    final View avatarView;
     final TextView tvAccountName;
     final TextView tvJid;
     final TextView tvStatus;
@@ -42,6 +42,7 @@ class AccountGroupViewHolder extends RecyclerView.ViewHolder
         itemView.setOnCreateContextMenuListener(this);
 
         ivAvatar = (ImageView) view.findViewById(R.id.ivAvatar);
+        avatarView = view.findViewById(R.id.avatarView);
         ivAvatar.setOnClickListener(this);
         tvAccountName = (TextView) view.findViewById(R.id.tvAccountName);
         tvJid = (TextView) view.findViewById(R.id.tvJid);

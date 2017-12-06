@@ -13,6 +13,7 @@ class ContactListItemViewHolder extends RecyclerView.ViewHolder implements View.
 
     private static final String LOG_TAG = ContactListItemViewHolder.class.getSimpleName();
     final View accountColorIndicator;
+    final View avatarView;
     final ImageView ivAvatar;
     final TextView tvContactName;
     //final TextView outgoingMessageIndicator;
@@ -44,6 +45,7 @@ class ContactListItemViewHolder extends RecyclerView.ViewHolder implements View.
         itemView.setOnCreateContextMenuListener(this);
 
         accountColorIndicator = view.findViewById(R.id.accountColorIndicator);
+        avatarView = view.findViewById(R.id.avatarView);
         ivAvatar = (ImageView) view.findViewById(R.id.ivAvatar);
         ivAvatar.setOnClickListener(this);
         tvContactName = (TextView) view.findViewById(R.id.tvContactName);

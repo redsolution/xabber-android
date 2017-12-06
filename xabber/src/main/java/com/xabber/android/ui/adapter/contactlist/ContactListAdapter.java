@@ -751,9 +751,9 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         //viewHolder.tvStatus.setTextColor(viewObject.getAccountColorIndicator());
 
         if (SettingsManager.contactsShowAvatars()) {
-            viewHolder.ivAvatar.setVisibility(View.VISIBLE);
+            viewHolder.avatarView.setVisibility(View.VISIBLE);
             viewHolder.ivAvatar.setImageDrawable(viewObject.getAvatar());
-        } else viewHolder.ivAvatar.setVisibility(View.GONE);
+        } else viewHolder.avatarView.setVisibility(View.GONE);
 
         viewHolder.ivStatus.setImageLevel(viewObject.getStatusLevel());
 

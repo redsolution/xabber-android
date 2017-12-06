@@ -3,7 +3,6 @@
     android:id="@+id/avatarView"
     android:layout_width="48dp"
     android:layout_height="48dp"
-    android:layout_marginRight="10dp"
     android:layout_marginLeft="10dp"
     android:layout_centerVertical="true"
     >

@@ -21,6 +21,7 @@ public class ExtContactViewHolder extends RecyclerView.ViewHolder implements Vie
     private static final String LOG_TAG = ContactListItemViewHolder.class.getSimpleName();
 
     final View accountColorIndicator;
+    final View avatarView;
     final ImageView ivAvatar;
     final ImageView ivStatus;
     final TextView tvContactName;
@@ -53,6 +54,7 @@ public class ExtContactViewHolder extends RecyclerView.ViewHolder implements Vie
         itemView.setOnCreateContextMenuListener(this);
 
         accountColorIndicator = view.findViewById(R.id.accountColorIndicator);
+        avatarView = view.findViewById(R.id.avatarView);
         ivAvatar = (ImageView) view.findViewById(R.id.ivAvatar);
         ivAvatar.setOnClickListener(this);
         ivStatus = (ImageView) view.findViewById(R.id.ivStatus);

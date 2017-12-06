@@ -15,6 +15,7 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="14dp"
         android:layout_toRightOf="@+id/avatarView"
         android:layout_toLeftOf="@+id/ivMenu"
         android:layout_centerVertical="true"
