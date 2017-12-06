@@ -94,7 +94,7 @@
                     android:layout_centerVertical="true"
                     android:layout_toRightOf="@+id/ivSearch"
                     android:textSize="18sp"
-                    android:textColor="#61000000"
+                    android:textColor="?attr/contact_list_account_group_second_line_text_color"
                     android:text="Search"
                     />
 
