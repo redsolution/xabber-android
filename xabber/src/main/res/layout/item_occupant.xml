@@ -19,6 +19,7 @@
     android:paddingTop="@dimen/contact_list_item_padding_top"
     android:paddingBottom="@dimen/contact_list_item_padding_bottom"
     android:gravity="center_vertical"
+    android:background="?attr/contact_list_contact_background"
     >
 
     <include layout="@layout/avatar_view_small" />
@@ -38,7 +39,7 @@
             android:singleLine="true"
             android:ellipsize="marquee"
             android:text="name"
-            android:textColor="?android:attr/textColorPrimary"
+            android:textColor="?attr/contact_list_contact_name_text_color"
             android:layout_toLeftOf="@id/affilation"
             />
         <TextView
@@ -52,7 +53,7 @@
             android:text="status"
             android:visibility="visible"
             android:layout_below="@id/name"
-            android:textColor="?android:attr/textColorSecondary"
+            android:textColor="?attr/contact_list_contact_second_line_text_color"
             android:layout_toLeftOf="@id/affilation"
             />
         <ImageView
@@ -63,7 +64,7 @@
             android:layout_alignParentRight="true"
             android:layout_marginRight="10dp"
             android:src="@drawable/ic_affiliation"
-            android:tint="@color/grey_700"
+            android:tint="@color/grey_600"
             />
     </RelativeLayout>
 
