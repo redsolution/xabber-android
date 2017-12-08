@@ -49,7 +49,7 @@
         android:layout_height="wrap_content"
         android:background="?attr/message_status_item_background_color"
         android:layout_above="@+id/input_layout"
-        android:visibility="visible"
+        android:visibility="gone"
         android:elevation="8dp"
         >
 
