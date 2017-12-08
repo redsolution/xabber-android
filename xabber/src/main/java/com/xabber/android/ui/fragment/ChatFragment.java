@@ -935,7 +935,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
 
     @Override
     public boolean onMenuItemClick(MenuItem item) {
-        return true;
+        return ((ChatActivity)getActivity()).onMenuItemClick(item);
     }
 
     public void onExportChatClick() {
