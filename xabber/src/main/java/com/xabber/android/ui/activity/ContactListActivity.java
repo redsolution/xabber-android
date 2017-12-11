@@ -96,6 +96,8 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
     /**
      * Select contact to be invited to the room was requested.
      */
+    private static final int CODE_OPEN_CHAT = 301;
+
     private static final String ACTION_ROOM_INVITE = "com.xabber.android.ui.activity.ContactList.ACTION_ROOM_INVITE";
     private static final String ACTION_MUC_PRIVATE_CHAT_INVITE = "com.xabber.android.ui.activity.ContactList.ACTION_MUC_PRIVATE_CHAT_INVITE";
     private static final String ACTION_CONTACT_SUBSCRIPTION = "com.xabber.android.ui.activity.ContactList.ACTION_CONTACT_SUBSCRIPTION";
@@ -569,8 +571,8 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
         if (bottomMenu != null) bottomMenu.closeSearch();
 
         if (action == null) {
-            startActivity(ChatActivity.createSpecificChatIntent(this,
-                    abstractContact.getAccount(), abstractContact.getUser()));
+            startActivityForResult(ChatActivity.createSendIntent(this, abstractContact.getAccount(),
+                    abstractContact.getUser(), null), CODE_OPEN_CHAT);
             return;
         }
         switch (action) {
@@ -601,8 +603,8 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
                 break;
             }
             default:
-                startActivity(ChatActivity.createSpecificChatIntent(this,
-                        abstractContact.getAccount(), abstractContact.getUser()));
+                startActivityForResult(ChatActivity.createSpecificChatIntent(this, abstractContact.getAccount(),
+                        abstractContact.getUser()), CODE_OPEN_CHAT);
                 break;
         }
     }
@@ -758,6 +760,19 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
     public void setStatusBarColor() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             getWindow().setStatusBarColor(ColorManager.getInstance().getAccountPainter().getDefaultMainColor());
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (contentFragment instanceof ContactListFragment ) {
+            ContactListAdapter.ChatListState currentState = ((ContactListFragment) contentFragment).getListState();
+            if (requestCode == CODE_OPEN_CHAT &&
+                    (currentState == (ContactListAdapter.ChatListState.unread)
+                    || currentState == (ContactListAdapter.ChatListState.archived))) {
+                ((ContactListFragment) contentFragment).showRecent();
+            }
         }
     }
 }

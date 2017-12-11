@@ -559,4 +559,9 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
     public void closeSnackbar() {
         if (snackbar != null) snackbar.dismiss();
     }
+
+    public ContactListAdapter.ChatListState getListState() {
+        if (adapter != null) return adapter.getCurrentChatsState();
+        else return ContactListAdapter.ChatListState.recent;
+    }
 }
