@@ -592,10 +592,21 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
                 break;
             }
             case Intent.ACTION_SEND:
-                action = null;
-                startActivity(ChatActivity.createSendIntent(this,
-                        abstractContact.getAccount(), abstractContact.getUser(), sendText));
-                finish();
+                if (!isSharedText(getIntent().getType())) {
+                    // share file
+                    if (getIntent().getExtras() != null) {
+                        action = null;
+                        startActivity(ChatActivity.createSendUriIntent(this,
+                                abstractContact.getAccount(), abstractContact.getUser(),
+                                (Uri)getIntent().getParcelableExtra(Intent.EXTRA_STREAM)));
+                        finish();
+                    }
+                } else {
+                    action = null;
+                    startActivity(ChatActivity.createSendIntent(this,
+                            abstractContact.getAccount(), abstractContact.getUser(), sendText));
+                    finish();
+                }
                 break;
             case Intent.ACTION_CREATE_SHORTCUT: {
                 createShortcut(abstractContact);
@@ -774,5 +785,9 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
                 ((ContactListFragment) contentFragment).showRecent();
             }
         }
+    }
+
+    private boolean isSharedText(String type) {
+        return type.contains("text/plain");
     }
 }

@@ -19,6 +19,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NavUtils;
@@ -47,6 +48,8 @@ import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.attention.AttentionManager;
 import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.blocking.OnBlockedListChangedListener;
+import com.xabber.android.data.extension.file.FileUtils;
+import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.muc.RoomChat;
 import com.xabber.android.data.extension.muc.RoomState;
@@ -71,6 +74,7 @@ import com.xabber.android.ui.fragment.ChatFragment;
 import com.xabber.android.ui.fragment.ContactVcardViewerFragment;
 import com.xabber.android.ui.fragment.RecentChatFragment;
 import com.xabber.android.ui.helper.NewContactTitleInflater;
+import com.xabber.android.ui.helper.PermissionsRequester;
 import com.xabber.android.ui.preferences.ChatContactSettings;
 
 import org.greenrobot.eventbus.Subscribe;
@@ -105,6 +109,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     public static final String EXTRA_OTR_PROGRESS = "com.xabber.android.data.EXTRA_OTR_PROGRESS";
 //    public static final String ACTION_OTR_REQUEST = "com.xabber.android.data.ACTION_OTR_REQUEST";
 //    public static final String ACTION_OTR_PROGRESS = "com.xabber.android.data.ACTION_OTR_PROGRESS";
+    private static final int PERMISSIONS_REQUEST_ATTACH_FILE = 24;
     public final static String KEY_ACCOUNT = "KEY_ACCOUNT";
     public final static String KEY_USER = "KEY_USER";
     public final static String KEY_QUESTION = "KEY_QUESTION";
@@ -225,6 +230,14 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         return intent;
     }
 
+    public static Intent createSendUriIntent(Context context, AccountJid account,
+                                             UserJid user, Uri uri) {
+        Intent intent = ChatActivity.createSpecificChatIntent(context, account, user);
+        intent.setAction(Intent.ACTION_SEND);
+        intent.putExtra(Intent.EXTRA_STREAM, uri);
+        return intent;
+    }
+
     public static Intent createAttentionRequestIntent(Context context, AccountJid account, UserJid user) {
         Intent intent = ChatActivity.createClearTopIntent(context, account, user);
         intent.setAction(ACTION_ATTENTION);
@@ -304,7 +317,13 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
             AttentionManager.getInstance().removeAccountNotifications(account, user);
         }
 
-        if (Intent.ACTION_SEND.equals(intent.getAction())) {
+        if (Intent.ACTION_SEND.equals(intent.getAction())
+                && intent.getParcelableExtra(Intent.EXTRA_STREAM) != null) {
+
+            Uri receivedUri = getIntent().getParcelableExtra(Intent.EXTRA_STREAM);
+            handleShareFileUri(receivedUri);
+
+        } else if (Intent.ACTION_SEND.equals(intent.getAction())) {
             extraText = intent.getStringExtra(Intent.EXTRA_TEXT);
 
             if (extraText != null) {
@@ -316,6 +335,21 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         if (intent.getBooleanExtra(EXTRA_OTR_REQUEST, false) ||
                 intent.getBooleanExtra(EXTRA_OTR_PROGRESS, false)) {
             handleOtrIntent(intent);
+        }
+    }
+
+    public void handleShareFileUri(Uri fileUri) {
+        final String path = FileUtils.getPath(this, fileUri);
+
+        LogManager.i(this, String.format("File uri: %s, path: %s", fileUri, path));
+
+        if (path == null) {
+            Toast.makeText(this, R.string.could_not_get_path_to_file, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (PermissionsRequester.requestFileReadPermissionIfNeeded(this, PERMISSIONS_REQUEST_ATTACH_FILE)) {
+            HttpFileUploadManager.getInstance().uploadFile(account, user, path);
         }
     }
 
