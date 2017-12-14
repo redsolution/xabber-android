@@ -1047,17 +1047,45 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         return chatsGroup;
     }
 
+    public ArrayList<ChatVO> getTwoNextRecentChat() {
+        Collection<AbstractChat> chats = MessageManager.getInstance().getChatsOfEnabledAccount();
+        GroupConfiguration chatsGroup = getChatsGroup(chats, currentChatsState);
+
+        ArrayList<ChatVO> items = new ArrayList<>();
+        if (chatsGroup.getAbstractContacts() instanceof List) {
+            items.add(ChatVO.convert(((ArrayList<AbstractContact>)chatsGroup.getAbstractContacts()).get(MAX_RECENT_ITEMS - 2)));
+            items.add(ChatVO.convert(((ArrayList<AbstractContact>)chatsGroup.getAbstractContacts()).get(MAX_RECENT_ITEMS - 1)));
+        }
+        return items;
+    }
+
     public void removeItem(int position) {
+        // remove item
         rosterItemVOs.remove(position);
-        // notify the item removed by position
-        // to perform recycler view delete animations
-        // NOTE: don't call notifyDataSetChanged()
         notifyItemRemoved(position);
+
+        // update end of list
+        if (currentChatsState == ChatListState.recent) {
+            ArrayList<ChatVO> items = getTwoNextRecentChat();
+            rosterItemVOs.add(MAX_RECENT_ITEMS - 1, items.get(0));
+            notifyItemInserted(MAX_RECENT_ITEMS - 1);
+            rosterItemVOs.set(MAX_RECENT_ITEMS, items.get(1));
+            notifyItemChanged(MAX_RECENT_ITEMS);
+        }
     }
 
     public void restoreItem(BaseRosterItemVO item, int position) {
+        // update end of list
+        if (currentChatsState == ChatListState.recent) {
+            BaseRosterItemVO lastChat = rosterItemVOs.get(MAX_RECENT_ITEMS - 1);
+            rosterItemVOs.remove(MAX_RECENT_ITEMS - 1);
+            notifyItemRemoved(MAX_RECENT_ITEMS - 1);
+            rosterItemVOs.set(MAX_RECENT_ITEMS - 1, lastChat);
+            notifyItemChanged(MAX_RECENT_ITEMS - 1);
+        }
+
+        // restore item
         rosterItemVOs.add(position, item);
-        // notify item added by position
         notifyItemInserted(position);
     }
 }
