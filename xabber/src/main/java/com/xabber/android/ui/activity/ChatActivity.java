@@ -113,6 +113,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     public final static String KEY_ACCOUNT = "KEY_ACCOUNT";
     public final static String KEY_USER = "KEY_USER";
     public final static String KEY_QUESTION = "KEY_QUESTION";
+    public final static String KEY_SHOW_ARCHIVED = "KEY_SHOW_ARCHIVED";
 
     private static final String SAVE_SELECTED_PAGE = "com.xabber.android.ui.activity.ChatActivity.SAVE_SELECTED_PAGE";
     private static final String SAVE_SELECTED_ACCOUNT = "com.xabber.android.ui.activity.ChatActivity.SAVE_SELECTED_ACCOUNT";
@@ -144,6 +145,12 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
 
     private Toolbar toolbar;
     private View contactTitleView;
+
+    boolean showArchived = false;
+
+    public boolean isShowArchived() {
+        return showArchived;
+    }
 
     public static void hideKeyboard(Activity activity) {
         // Check if no view has focus:
@@ -201,6 +208,8 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     public static Intent createSpecificChatIntent(Context context, AccountJid account, UserJid user) {
         Intent intent = new EntityIntentBuilder(context, ChatActivity.class).setAccount(account).setUser(user).build();
         intent.setAction(ACTION_SPECIFIC_CHAT);
+        AbstractChat chat = MessageManager.getInstance().getChat(account, user);
+        intent.putExtra(KEY_SHOW_ARCHIVED, chat != null && chat.isArchived());
         return intent;
     }
 
@@ -227,6 +236,8 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         Intent intent = ChatActivity.createSpecificChatIntent(context, account, user);
         intent.setAction(Intent.ACTION_SEND);
         intent.putExtra(Intent.EXTRA_TEXT, text);
+        AbstractChat chat = MessageManager.getInstance().getChat(account, user);
+        intent.putExtra(KEY_SHOW_ARCHIVED, chat != null && chat.isArchived());
         return intent;
     }
 
@@ -308,6 +319,8 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         Application.getInstance().addUIListener(OnContactChangedListener.class, this);
         Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
         Application.getInstance().addUIListener(OnBlockedListChangedListener.class, this);
+
+        this.showArchived = getIntent().getBooleanExtra(KEY_SHOW_ARCHIVED, false);
 
         selectPage();
 
@@ -840,12 +853,12 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
                 return true;
 
             case R.id.action_show_archived:
+                this.showArchived = !this.showArchived;
                 if (recentChatFragment != null) {
-                    recentChatFragment.setShowArchived(!recentChatFragment.isShowArchived());
                     recentChatFragment.updateChats();
                     Toast.makeText(this,
-                            !recentChatFragment.isShowArchived() ? R.string.toast_archived_hide
-                                    : R.string.toast_archived_show, Toast.LENGTH_SHORT).show();
+                            this.showArchived ? R.string.toast_archived_show
+                                    : R.string.toast_archived_hide, Toast.LENGTH_SHORT).show();
                 }
                 return true;
 

@@ -27,6 +27,7 @@ import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.RosterManager;
+import com.xabber.android.ui.activity.ChatActivity;
 import com.xabber.android.ui.adapter.ChatComparator;
 import com.xabber.android.ui.adapter.contactlist.ChatListAdapter;
 import com.xabber.android.ui.adapter.contactlist.RosterChatViewHolder;
@@ -42,11 +43,8 @@ import java.util.List;
 public class RecentChatFragment extends Fragment implements ChatListAdapter.Listener,
         Toolbar.OnMenuItemClickListener, RecyclerItemTouchHelper.RecyclerItemTouchHelperListener {
 
-    public final static String KEY_SHOW_ARCHIVED = "KEY_SHOW_ARCHIVED";
-
     ChatListAdapter adapter;
     CoordinatorLayout coordinatorLayout;
-    boolean showArchived = false;
     Snackbar snackbar;
 
     @Nullable
@@ -66,11 +64,8 @@ public class RecentChatFragment extends Fragment implements ChatListAdapter.List
     public RecentChatFragment() {
     }
 
-    public static RecentChatFragment newInstance(boolean showArchivedAtStart) {
+    public static RecentChatFragment newInstance() {
         RecentChatFragment fragment = new RecentChatFragment();
-        Bundle args = new Bundle();
-        args.putBoolean(KEY_SHOW_ARCHIVED, showArchivedAtStart);
-        fragment.setArguments(args);
         return fragment;
     }
 
@@ -86,8 +81,6 @@ public class RecentChatFragment extends Fragment implements ChatListAdapter.List
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         View rootView = inflater.inflate(R.layout.fragment_recent_chats, container, false);
-
-        showArchived = getArguments().getBoolean(KEY_SHOW_ARCHIVED);
 
         RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.recent_chats_recycler_view);
         coordinatorLayout = (CoordinatorLayout) rootView.findViewById(R.id.coordinatorLayout);
@@ -150,7 +143,7 @@ public class RecentChatFragment extends Fragment implements ChatListAdapter.List
                 final List<AbstractContact> newContacts = new ArrayList<>();
 
                 for (AbstractChat chat : recentChats) {
-                    if (!chat.isArchived() || showArchived)
+                    if (!chat.isArchived() || ((ChatActivity)getActivity()).isShowArchived())
                         newContacts.add(RosterManager.getInstance()
                                 .getBestContact(chat.getAccount(), chat.getUser()));
                 }
@@ -195,7 +188,7 @@ public class RecentChatFragment extends Fragment implements ChatListAdapter.List
 
                 // update item in recycler view
                 adapter.removeItem(viewHolder.getAdapterPosition());
-                if (showArchived) adapter.restoreItem(deletedItem, deletedIndex);
+                if (((ChatActivity)getActivity()).isShowArchived()) adapter.restoreItem(deletedItem, deletedIndex);
 
                 // showing snackbar with Undo option
                 showSnackbar(deletedItem, deletedIndex);
@@ -216,7 +209,7 @@ public class RecentChatFragment extends Fragment implements ChatListAdapter.List
                 ((ChatVO) deletedItem).setArchived(!archived);
 
                 // update item in recycler view
-                if (showArchived) adapter.removeItem(deletedIndex);
+                if (((ChatActivity)getActivity()).isShowArchived()) adapter.removeItem(deletedIndex);
                 adapter.restoreItem(deletedItem, deletedIndex);
             }
         });
@@ -231,14 +224,5 @@ public class RecentChatFragment extends Fragment implements ChatListAdapter.List
     public void setChatArchived(ChatVO chatVO, boolean archived) {
         AbstractChat chat = MessageManager.getInstance().getChat(chatVO.getAccountJid(), chatVO.getUserJid());
         if (chat != null) chat.setArchived(archived, true);
-    }
-
-    public boolean isShowArchived() {
-        return showArchived;
-    }
-
-    public void setShowArchived(boolean showArchived) {
-        this.showArchived = showArchived;
-        closeSnackbar();
     }
 }
