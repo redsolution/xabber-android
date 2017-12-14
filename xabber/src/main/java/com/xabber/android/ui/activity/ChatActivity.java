@@ -855,6 +855,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
             case R.id.action_show_archived:
                 this.showArchived = !this.showArchived;
                 if (recentChatFragment != null) {
+                    recentChatFragment.closeSnackbar();
                     recentChatFragment.updateChats();
                     Toast.makeText(this,
                             this.showArchived ? R.string.toast_archived_show
