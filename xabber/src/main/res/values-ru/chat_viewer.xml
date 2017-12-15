@@ -114,4 +114,8 @@
   <string name="toast_no_history">В истории больше нет сообщений</string>
   <string name="toast_archived_show">Архивные чаты отображаются</string>
   <string name="toast_archived_hide">Архивные чаты скрыты</string>
+  <string name="muc_role_moderator">Модератор</string>
+  <string name="muc_role_participant">Участник</string>
+  <string name="muc_role_visitor">Посетитель</string>
+  <string name="chat_notification_settings_title">Уведомления для этого чата</string>
 </resources>
