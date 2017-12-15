@@ -28,7 +28,7 @@ import io.realm.annotations.RealmModule;
 
 public class RealmManager {
     private static final String REALM_DATABASE_NAME = "realm_database.realm";
-    private static final int REALM_DATABASE_VERSION = 12;
+    private static final int REALM_DATABASE_VERSION = 9;
     private static final String LOG_TAG = RealmManager.class.getSimpleName();
     private final RealmConfiguration realmConfiguration;
 
@@ -166,36 +166,22 @@ public class RealmManager {
                         }
 
                         if (oldVersion == 8) {
-                            schema.create(ChatDataRealm.class.getSimpleName())
-                                    .addField("id", String.class, FieldAttribute.PRIMARY_KEY, FieldAttribute.REQUIRED)
-                                    .addField("subject", String.class)
-                                    .addField("accountJid", String.class)
-                                    .addField("userJid", String.class)
-                                    .addField("unreadCount", int.class);
-
-                            oldVersion++;
-                        }
-
-                        if (oldVersion == 9) {
-                            schema.get(ChatDataRealm.class.getSimpleName())
-                                    .addField("archived", boolean.class);
-                        }
-
-                        if (oldVersion == 10) {
-                            schema.get(ChatDataRealm.class.getSimpleName())
-                                    .addField("muted", boolean.class);
-                        }
-
-                        if (oldVersion == 11) {
                             schema.create(NotificationStateRealm.class.getSimpleName())
                                     .addField("id", String.class, FieldAttribute.PRIMARY_KEY, FieldAttribute.REQUIRED)
                                     .addField("mode", String.class)
                                     .addField("timestamp", int.class);
 
-                            schema.get(ChatDataRealm.class.getSimpleName())
-                                    .removeField("muted")
+                            schema.create(ChatDataRealm.class.getSimpleName())
+                                    .addField("id", String.class, FieldAttribute.PRIMARY_KEY, FieldAttribute.REQUIRED)
+                                    .addField("subject", String.class)
+                                    .addField("accountJid", String.class)
+                                    .addField("userJid", String.class)
+                                    .addField("unreadCount", int.class)
+                                    .addField("archived", boolean.class)
                                     .addRealmObjectField("notificationState",
                                             schema.get(NotificationStateRealm.class.getSimpleName()));
+
+                            oldVersion++;
                         }
                     }
                 })
