@@ -699,10 +699,25 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
     }
 
     private void onAttachButtonPressed() {
+        if (!HttpFileUploadManager.getInstance().isFileUploadSupported(account)) {
+            // show notification
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setMessage(R.string.error_file_upload_not_support)
+                    .setTitle(getString(R.string.error_sending_file, ""))
+                    .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+            AlertDialog dialog = builder.create();
+            dialog.show();
+            return;
+        }
+
         if (PermissionsRequester.requestFileReadPermissionIfNeeded(this, PERMISSIONS_REQUEST_ATTACH_FILE)) {
             startFileSelection();
         }
-
     }
 
     private void startFileSelection() {
@@ -808,11 +823,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
             sendButton.setColorFilter(ColorManager.getInstance().getAccountPainter().getGreyMain());
             sendButton.setEnabled(false);
             securityButton.setVisibility(View.VISIBLE);
-            if (HttpFileUploadManager.getInstance().isFileUploadSupported(account)) {
-                attachButton.setVisibility(View.VISIBLE);
-            } else {
-                attachButton.setVisibility(View.GONE);
-            }
+            attachButton.setVisibility(View.VISIBLE);
         } else {
             sendButton.setEnabled(true);
             sendButton.setColorFilter(ColorManager.getInstance().getAccountPainter().getAccountSendButtonColor(account));

@@ -123,4 +123,5 @@
     <string name="toast_archived_hide">Archived chats hide</string>
 
     <string name="chat_notification_settings_title">Notification for this chat</string>
+    <string name="error_file_upload_not_support">The server you are using does not support file transfer. You can try the xabber.org server.</string>
 </resources>
