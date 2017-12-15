@@ -183,8 +183,12 @@ public class RoomChat extends AbstractChat {
     }
 
     @Override
-    protected boolean notifyAboutMessage() {
-        return SettingsManager.eventsOnMuc();
+    public boolean notifyAboutMessage() {
+        switch (notificationState.getMode()) {
+            case enabled: return true;
+            case disabled: return false;
+            default: return SettingsManager.eventsOnMuc();
+        }
     }
 
     @Override

@@ -4,27 +4,9 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
-
-    <LinearLayout
-        android:id="@+id/drawer_divider"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="8dp" />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1px"
-            android:background="@color/grey_300" />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="8dp" />
-    </LinearLayout>
+    android:orientation="vertical"
+    android:background="?attr/navigation_drawer_background"
+    android:elevation="4dp">
 
     <LinearLayout
         android:id="@+id/drawer_action_settings"

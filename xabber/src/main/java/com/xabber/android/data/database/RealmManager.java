@@ -5,13 +5,14 @@ import android.os.Looper;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.database.realm.AccountRealm;
+import com.xabber.android.data.database.realm.ChatDataRealm;
 import com.xabber.android.data.database.realm.DiscoveryInfoCache;
 import com.xabber.android.data.database.realm.EmailRealm;
+import com.xabber.android.data.database.realm.NotificationStateRealm;
 import com.xabber.android.data.database.realm.PatreonGoalRealm;
 import com.xabber.android.data.database.realm.PatreonRealm;
 import com.xabber.android.data.database.realm.SocialBindingRealm;
 import com.xabber.android.data.database.realm.SyncStateRealm;
-import com.xabber.android.data.database.realm.XMPPAccountSettignsRealm;
 import com.xabber.android.data.database.realm.XMPPUserRealm;
 import com.xabber.android.data.database.realm.XabberAccountRealm;
 import com.xabber.android.data.database.sqlite.AccountTable;
@@ -27,7 +28,7 @@ import io.realm.annotations.RealmModule;
 
 public class RealmManager {
     private static final String REALM_DATABASE_NAME = "realm_database.realm";
-    private static final int REALM_DATABASE_VERSION = 8;
+    private static final int REALM_DATABASE_VERSION = 9;
     private static final String LOG_TAG = RealmManager.class.getSimpleName();
     private final RealmConfiguration realmConfiguration;
 
@@ -60,7 +61,7 @@ public class RealmManager {
 
     @RealmModule(classes = {DiscoveryInfoCache.class, AccountRealm.class, XabberAccountRealm.class,
             XMPPUserRealm.class, EmailRealm.class, SocialBindingRealm.class, SyncStateRealm.class,
-            PatreonGoalRealm.class, PatreonRealm.class})
+            PatreonGoalRealm.class, PatreonRealm.class, ChatDataRealm.class, NotificationStateRealm.class})
     static class RealmDatabaseModule {
     }
 
@@ -160,6 +161,25 @@ public class RealmManager {
                                     .addField("string", String.class)
                                     .addField("pledged", int.class)
                                     .addRealmListField("goals", schema.get(PatreonGoalRealm.class.getSimpleName()));
+
+                            oldVersion++;
+                        }
+
+                        if (oldVersion == 8) {
+                            schema.create(NotificationStateRealm.class.getSimpleName())
+                                    .addField("id", String.class, FieldAttribute.PRIMARY_KEY, FieldAttribute.REQUIRED)
+                                    .addField("mode", String.class)
+                                    .addField("timestamp", int.class);
+
+                            schema.create(ChatDataRealm.class.getSimpleName())
+                                    .addField("id", String.class, FieldAttribute.PRIMARY_KEY, FieldAttribute.REQUIRED)
+                                    .addField("subject", String.class)
+                                    .addField("accountJid", String.class)
+                                    .addField("userJid", String.class)
+                                    .addField("unreadCount", int.class)
+                                    .addField("archived", boolean.class)
+                                    .addRealmObjectField("notificationState",
+                                            schema.get(NotificationStateRealm.class.getSimpleName()));
 
                             oldVersion++;
                         }

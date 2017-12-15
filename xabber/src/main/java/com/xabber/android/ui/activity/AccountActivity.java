@@ -141,7 +141,7 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
         bestContact = RosterManager.getInstance().getBestContact(account, fakeAccountUser);
 
         contactTitleView = findViewById(R.id.contact_title_expanded);
-        statusIcon = findViewById(R.id.status_icon);
+        statusIcon = findViewById(R.id.ivStatus);
         statusText = (TextView) findViewById(R.id.status_text);
 
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.account_options_recycler_view);
@@ -302,6 +302,9 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
     public void onVCardReceived() {
         updateTitle();
     }
+
+    @Override
+    public void registerVCardFragment(ContactVcardViewerFragment fragment) {}
 
     @Subscribe(sticky = true)
     @Override

@@ -16,6 +16,7 @@ class GroupViewHolder extends RecyclerView.ViewHolder implements View.OnClickLis
     final TextView name;
     final ImageView groupOfflineIndicator;
     final ImageView offlineShadow;
+    final View accountColorIndicator;
     private final GroupClickListener listener;
 
     interface GroupClickListener {
@@ -30,6 +31,7 @@ class GroupViewHolder extends RecyclerView.ViewHolder implements View.OnClickLis
         itemView.setOnClickListener(this);
         itemView.setOnCreateContextMenuListener(this);
 
+        accountColorIndicator = view.findViewById(R.id.accountColorIndicator);
         indicator = (ImageView) view.findViewById(R.id.indicator);
         name = (TextView) view.findViewById(R.id.name);
         groupOfflineIndicator = (ImageView) view.findViewById(R.id.group_offline_indicator);

@@ -18,26 +18,8 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    android:id="@+id/root_view">
-
-    <android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/toolbar_default"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-
-        android:background="?attr/colorPrimary"
-        android:elevation="8dp"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        app:popupTheme="?attr/toolbar_popup_theme"
-        >
-
-        <include
-            android:id="@+id/contact_title"
-            layout="@layout/contact_title"
-            />
-
-    </android.support.v7.widget.Toolbar>
+    android:id="@+id/root_view"
+    android:elevation="24dp">
 
     <android.support.v4.widget.SwipeRefreshLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
@@ -64,7 +46,7 @@
     <RelativeLayout
         android:id="@+id/notifyLayout"
         android:layout_width="match_parent"
-        android:layout_height="48dp"
+        android:layout_height="wrap_content"
         android:background="?attr/message_status_item_background_color"
         android:layout_above="@+id/input_layout"
         android:visibility="gone"
@@ -82,6 +64,7 @@
             android:layout_centerVertical="true"
             android:text="@string/otr_verification_notify_title"
             android:textSize="16sp"
+            android:layout_toLeftOf="@id/tvNotifyAction"
             />
 
         <TextView
@@ -197,5 +180,15 @@
         android:visibility="gone"
         />
 
+    <LinearLayout
+        android:id="@+id/placeholder"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:focusable="true"
+        android:clickable="true"
+        android:elevation="8dp"
+        android:visibility="gone"
+        />
 
 </RelativeLayout>

@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/backgroundView"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="56dp"
+    android:background="?attr/action_with_chat_background"
+    android:elevation="1dp"
+    >
+
+    <LinearLayout
+        android:id="@+id/viewActionRight"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="12dp"
+        >
+
+        <TextView
+            android:id="@+id/tvAction"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginRight="12dp"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:text="@string/archive_chat"
+            android:textAllCaps="true"
+            />
+
+        <ImageView
+            android:id="@+id/ivActionIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_arcived"
+            android:tint="@color/white"
+            />
+
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/viewActionLeft"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="12dp"
+        android:visibility="gone"
+        >
+
+        <ImageView
+            android:id="@+id/ivActionIconLeft"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="12dp"
+            android:src="@drawable/ic_arcived"
+            android:tint="@color/white"
+            />
+
+        <TextView
+            android:id="@+id/tvActionLeft"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:text="@string/archive_chat"
+            android:textAllCaps="true"
+            />
+
+    </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/foregroundView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="?attr/contact_list_contact_background"
+        >
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="?android:attr/selectableItemBackground">
+
+            <include layout="@layout/account_color_indicator"/>
+
+            <include layout="@layout/avatar_view_small"/>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/avatarView"
+                android:layout_marginLeft="14dp"
+                android:layout_centerVertical="true"
+                >
+
+                <LinearLayout
+                    android:id="@+id/topText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_toLeftOf="@+id/tvTime"
+                    android:layout_marginRight="8dp"
+                    >
+
+                    <ImageView
+                        android:id="@+id/ivMucIndicator"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginRight="4dp"
+                        android:layout_marginTop="2dp"
+                        android:src="@drawable/muc_indicator_view"
+                        android:tint="?attr/contact_list_contact_name_text_color"
+                        />
+
+                    <TextView
+                        android:id="@+id/tvContactName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:singleLine="true"
+                        android:drawablePadding="4dp"
+                        android:textSize="14sp"
+                        android:textColor="?attr/contact_list_contact_name_text_color"
+                        android:fontFamily="sans-serif-medium"
+                        android:text="Erik Walton"
+                        />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_toLeftOf="@+id/tvUnreadCount"
+                    android:layout_below="@+id/topText"
+                    >
+
+                    <TextView
+                        android:id="@+id/tvOutgoingMessage"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/sender_is_you"
+                        android:visibility="visible"
+                        android:textColor="@color/green_500" />
+
+                    <github.ankushsachdeva.emojicon.EmojiconTextView
+                        android:id="@+id/tvMessageText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:singleLine="true"
+                        android:gravity="center_vertical"
+                        android:layout_gravity="center_vertical"
+                        android:textSize="14sp"
+                        android:textColor="?attr/contact_list_contact_second_line_text_color"
+                        android:text="Hello. How are you?"
+                        />
+
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tvTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="16dp"
+                    android:textSize="10sp"
+                    android:text="12:30"
+                    />
+
+                <ImageView
+                    android:id="@+id/ivMessageStatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_below="@id/tvTime"
+                    android:layout_marginRight="16dp"
+                    android:layout_marginTop="7dp"
+                    android:src="@drawable/ic_message_delivered_14dp"
+                    />
+
+                <TextView
+                    android:id="@+id/tvUnreadCount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_below="@id/tvTime"
+                    android:layout_marginRight="16dp"
+                    android:layout_marginTop="7dp"
+                    android:paddingTop="0dp"
+                    android:paddingBottom="1dp"
+                    android:paddingRight="5dp"
+                    android:paddingLeft="5dp"
+                    android:background="@drawable/rounded_background_green"
+                    android:textColor="@color/white"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:text="1"
+                    android:visibility="visible"
+                    />
+
+            </RelativeLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_alignParentBottom="true"
+                android:layout_toRightOf="@+id/avatarView"
+                android:background="?attr/contact_list_subgroup_separator"
+                android:alpha="0.75"
+                />
+
+            <include layout="@layout/offline_shadow" />
+
+        </RelativeLayout>
+
+    </RelativeLayout>
+    <RelativeLayout
+        android:id="@+id/buttonView"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        android:clickable="true"
+        android:focusable="true"
+        >
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="64dp"
+            android:background="?attr/half_transparent_background"
+            />
+
+        <Button
+            android:id="@+id/btnListAction"
+            android:layout_width="match_parent"
+            android:layout_height="64dp"
+            android:text="@string/show_all_chats"
+            android:textColor="@color/grey_600"
+            android:layout_centerHorizontal="true"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            />
+
+    </RelativeLayout>
+
+</RelativeLayout>

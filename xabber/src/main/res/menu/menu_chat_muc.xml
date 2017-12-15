@@ -17,21 +17,6 @@
         app:showAsAction="never"
         />
 
-    <item android:id="@+id/action_view_contact"
-        android:orderInCategory="100"
-        android:title="@string/contact_viewer"
-        android:visible="false"
-        app:showAsAction="never"
-        />
-
-    <item android:id="@+id/action_chat_list"
-        android:icon="@drawable/ic_list_white_24dp"
-        android:orderInCategory="110"
-        android:title="@string/chat_list"
-        android:visible="false"
-        app:showAsAction="ifRoom"
-        />
-
     <item android:id="@+id/action_chat_settings"
         android:orderInCategory="120"
         android:title="@string/chat_settings"
@@ -71,27 +56,20 @@
         app:showAsAction="never"
         />
 
-    <item android:id="@+id/action_list_of_occupants"
-        android:orderInCategory="200"
-        android:title="@string/occupant_list"
-        android:visible="false"
-        app:showAsAction="always"
-        android:icon="@drawable/ic_account_multiple_white_24dp"
-        />
+    <item android:id="@+id/action_archive_chat"
+        android:orderInCategory="215"
+        android:title="@string/archive_chat" />
 
-    <item
-        android:id="@+id/action_block_contact"
-        android:orderInCategory="205"
-        android:title="@string/contact_block"
-        android:visible="false"
-        app:showAsAction="never" />
+    <item android:id="@+id/action_unarchive_chat"
+        android:orderInCategory="220"
+        android:title="@string/unarchive_chat" />
 
-    <item
-        android:id="@+id/action_close_chat"
-        android:icon="@drawable/ic_clear_white_24dp"
-        android:orderInCategory="210"
-        android:title="@string/close_chat"
-        android:visible="false"
-        app:showAsAction="never" />
+    <item android:id="@+id/action_mute_chat"
+        android:orderInCategory="225"
+        android:title="@string/mute_chat" />
+
+    <!--<item android:id="@+id/action_unmute_chat"-->
+        <!--android:orderInCategory="230"-->
+        <!--android:title="@string/unmute_chat" />-->
 
 </menu>

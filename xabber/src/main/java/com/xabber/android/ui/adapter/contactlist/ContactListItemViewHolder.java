@@ -12,24 +12,28 @@ import com.xabber.android.data.log.LogManager;
 class ContactListItemViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnCreateContextMenuListener {
 
     private static final String LOG_TAG = ContactListItemViewHolder.class.getSimpleName();
-    final ImageView color;
-    final ImageView avatar;
-    final TextView name;
-    final TextView outgoingMessageIndicator;
-    final TextView secondLineMessage;
-    final TextView smallRightText;
-    final ImageView smallRightIcon;
-    final ImageView largeClientIcon;
-    final ImageView statusIcon;
+    final View accountColorIndicator;
+    final View avatarView;
+    final ImageView ivAvatar;
+    final TextView tvContactName;
+    //final TextView outgoingMessageIndicator;
+    final TextView tvStatus;
+    final ImageView ivDevice;
+    //final TextView smallRightText;
+    //final ImageView smallRightIcon;
+    //final ImageView largeClientIcon;
+    final ImageView ivStatus;
     final ImageView offlineShadow;
-    final ImageView mucIndicator;
-    final View separator;
+    final ImageView ivMucIndicator;
+    //final View separator;
+    final TextView tvUnreadCount;
     private final ContactClickListener listener;
 
 
     interface ContactClickListener {
         void onContactClick(int adapterPosition);
         void onContactAvatarClick(int adapterPosition);
+        void onContactButtonClick(int adapterPosition);
         void onContactCreateContextMenu(int adapterPosition, ContextMenu menu);
     }
 
@@ -40,19 +44,22 @@ class ContactListItemViewHolder extends RecyclerView.ViewHolder implements View.
         itemView.setOnClickListener(this);
         itemView.setOnCreateContextMenuListener(this);
 
-        color = (ImageView) view.findViewById(R.id.account_color_indicator);
-        avatar = (ImageView) view.findViewById(R.id.avatar);
-        avatar.setOnClickListener(this);
-        name = (TextView) view.findViewById(R.id.contact_list_item_name);
-        outgoingMessageIndicator = (TextView) view.findViewById(R.id.outgoing_message_indicator);
-        secondLineMessage = (TextView) view.findViewById(R.id.second_line_message);
-        smallRightIcon = (ImageView) view.findViewById(R.id.small_right_icon);
-        smallRightText = (TextView) view.findViewById(R.id.small_right_text);
-        largeClientIcon = (ImageView) view.findViewById(R.id.client_icon_large);
-        statusIcon = (ImageView) view.findViewById(R.id.contact_list_item_status_icon);
+        accountColorIndicator = view.findViewById(R.id.accountColorIndicator);
+        avatarView = view.findViewById(R.id.avatarView);
+        ivAvatar = (ImageView) view.findViewById(R.id.ivAvatar);
+        ivAvatar.setOnClickListener(this);
+        tvContactName = (TextView) view.findViewById(R.id.tvContactName);
+        //outgoingMessageIndicator = (TextView) view.findViewById(R.id.outgoing_message_indicator);
+        tvStatus = (TextView) view.findViewById(R.id.tvStatus);
+        ivDevice = (ImageView) view.findViewById(R.id.ivDevice);
+        //smallRightIcon = (ImageView) view.findViewById(R.id.small_right_icon);
+        //smallRightText = (TextView) view.findViewById(R.id.small_right_text);
+        //largeClientIcon = (ImageView) view.findViewById(R.id.client_icon_large);
+        ivStatus = (ImageView) view.findViewById(R.id.ivStatus);
         offlineShadow = (ImageView) view.findViewById(R.id.offline_shadow);
-        mucIndicator = (ImageView) view.findViewById(R.id.contact_list_item_muc_indicator);
-        separator = view.findViewById(R.id.contact_list_item_separator);
+        ivMucIndicator = (ImageView) view.findViewById(R.id.ivMucIndicator);
+        //separator = view.findViewById(R.id.contact_list_item_separator);
+        tvUnreadCount = (TextView) view.findViewById(R.id.tvUnreadCount);
     }
 
     @Override
@@ -63,7 +70,7 @@ class ContactListItemViewHolder extends RecyclerView.ViewHolder implements View.
             return;
         }
 
-        if (v.getId() == R.id.avatar) {
+        if (v.getId() == R.id.ivAvatar) {
             listener.onContactAvatarClick(adapterPosition);
         } else {
             listener.onContactClick(adapterPosition);

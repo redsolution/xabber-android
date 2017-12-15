@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="56dp"
+    android:elevation="1dp"
+    android:background="@color/white"
+    >
+
+    <include layout="@layout/account_color_indicator"/>
+
+    <include layout="@layout/avatar_view_small"/>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="14dp"
+        android:layout_toRightOf="@+id/avatarView"
+        android:layout_toLeftOf="@+id/ivMenu"
+        android:layout_centerVertical="true"
+        >
+
+        <TextView
+            android:id="@+id/tvAccountName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:textColor="?attr/contact_list_contact_name_text_color"
+            android:singleLine="true"
+            android:fontFamily="sans-serif-medium"
+            android:text="Erik Walton"
+            />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            >
+
+            <ImageView
+                android:id="@+id/small_right_icon"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_toLeftOf="@+id/tvContactCount"
+                android:paddingTop="2dp"
+                android:layout_marginRight="4dp"
+                android:src="@drawable/ic_show_offline_small"
+                android:alpha="0.5"
+                android:tint="?attr/contact_list_account_group_small_right_icon_color"
+                />
+
+            <TextView
+                android:id="@+id/tvContactCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:singleLine="true"
+                android:textColor="?attr/contact_list_account_group_small_right_text_color"
+                android:alpha="0.5"
+                android:textSize="12sp"
+                android:text="10 / 30"
+                />
+
+            <TextView
+                android:id="@+id/tvStatus"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_toLeftOf="@+id/small_right_icon"
+                android:layout_marginRight="8dp"
+                android:singleLine="true"
+                android:textSize="14sp"
+                android:textColor="?attr/contact_list_account_group_second_line_text_color"
+                android:text="Status"
+                />
+
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/tvJid"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="-2dp"
+            android:ellipsize="marquee"
+            android:singleLine="true"
+            android:text="example@example.com"
+            android:textColor="?attr/contact_list_account_group_second_line_text_color"
+            android:textSize="12sp"
+            android:visibility="gone"
+            />
+
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/ivMenu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="6dp"
+        android:padding="8dp"
+        android:src="@drawable/ic_overflow_menu_white_24dp"
+        android:tint="?attr/contact_list_account_group_small_right_icon_color"
+        android:alpha="0.5"
+        android:clickable="true"
+        />
+
+    <include layout="@layout/offline_shadow" />
+
+</RelativeLayout>

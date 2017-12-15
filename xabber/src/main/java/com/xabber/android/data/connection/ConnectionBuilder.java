@@ -20,7 +20,9 @@ import java.net.UnknownHostException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 
+import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
 import javax.net.ssl.X509TrustManager;
 
 import de.duenndns.ssl.MemorizingTrustManager;
@@ -57,7 +59,7 @@ class ConnectionBuilder {
                 sslContext.init(null, new X509TrustManager[]{mtm}, new java.security.SecureRandom());
                 builder.setCustomSSLContext(sslContext);
                 builder.setHostnameVerifier(
-                        mtm.wrapHostnameVerifier(new org.apache.http.conn.ssl.StrictHostnameVerifier()));
+                        mtm.wrapHostnameVerifier(new CustomDomainVerifier()));
             } else {
                 TLSUtils.acceptAllCertificates(builder);
                 builder.setHostnameVerifier(new AllowAllHostnameVerifier());

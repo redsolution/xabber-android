@@ -90,6 +90,9 @@
     <string name="contacts_show_avatars_key">contacts_show_avatars</string>
     <bool name="contacts_show_avatars_default">true</bool>
 
+    <string name="contacts_show_messages_key">contacts_show_messages</string>
+    <bool name="contacts_show_messages_default">false</bool>
+
     <string name="contacts_show_offline_key">contacts_show_offline</string>
     <bool name="contacts_show_offline_default">true</bool>
 
@@ -525,6 +528,24 @@
     <string name="phrase_sound_key">phrase_sound</string>
 
 <!-- preference_chat -->
+    <string name="chat_notification_settings_key">chat_notification_settings_key</string>
+    <string-array name="chat_notification_settings_entries">
+        <item>@string/chat_notification_settings_enabled</item>
+        <item>@string/chat_notification_settings_bydefault</item>
+        <item>@string/chat_notification_settings_disabled</item>
+    </string-array>
+    <string name="chat_notification_settings_enabled">Enabled</string>
+    <string name="chat_notification_settings_bydefault">Default</string>
+    <string name="chat_notification_settings_disabled">Disabled</string>
+    <string-array name="chat_notification_settings_entryvalues">
+        <item>@string/chat_notification_settings_bydefault_value</item>
+        <item>@string/chat_notification_settings_enabled_value</item>
+        <item>@string/chat_notification_settings_disabled_value</item>
+    </string-array>
+    <string name="chat_notification_settings_bydefault_value">chat_notification_settings_bydefault_value</string>
+    <string name="chat_notification_settings_enabled_value">chat_notification_settings_enabled_value</string>
+    <string name="chat_notification_settings_disabled_value">chat_notification_settings_disabled_value</string>
+
     <string name="chat_save_history_key">chat_save_history</string>
     <string name="chat_events_sound_key">chat_events_sound</string>
     <string name="chat_events_show_text_key">chat_events_show_message_text</string>

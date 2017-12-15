@@ -6,7 +6,6 @@
     android:id="@+id/contact_title_expanded"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-
     android:layout_gravity="bottom"
     android:minHeight="?android:attr/actionBarSize"
     android:orientation="horizontal"
@@ -15,14 +14,7 @@
     android:paddingBottom="@dimen/contact_title_padding_bottom"
     tools:showIn="@layout/activity_contact">
 
-    <ImageView
-        android:id="@+id/avatar"
-        android:layout_width="@dimen/avatar_large_size"
-        android:layout_height="@dimen/avatar_large_size"
-        android:src="@drawable/ic_avatar_1"
-        android:layout_gravity="center_vertical"
-        android:scaleType="centerCrop"
-        />
+    <include layout="@layout/avatar_view_large"/>
 
     <LinearLayout
         android:id="@+id/name_holder"
@@ -41,7 +33,6 @@
             android:singleLine="true"
             android:textColor="@color/primary_text_default_material_dark"
             android:text="Lorem Ipsum"
-
             android:layout_marginLeft="6dp"
             android:textSize="18sp"
             android:textStyle="bold" />
@@ -58,10 +49,4 @@
             android:layout_marginLeft="6dp" />
     </LinearLayout>
 
-    <ImageView
-        android:id="@+id/status_icon"
-        android:src="@drawable/ic_status"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical" />
 </LinearLayout>

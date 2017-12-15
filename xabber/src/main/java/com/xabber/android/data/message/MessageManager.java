@@ -44,6 +44,7 @@ import com.xabber.android.data.extension.carbons.CarbonManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.muc.RoomChat;
 import com.xabber.android.data.log.LogManager;
+import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.message.chat.MucPrivateChatNotification;
 import com.xabber.android.data.notification.EntityNotificationProvider;
 import com.xabber.android.data.notification.NotificationManager;
@@ -158,6 +159,14 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
         }
     }
 
+    public Collection<AbstractChat> getChatsOfEnabledAccount() {
+        List<AbstractChat> chats = new ArrayList<>();
+        for (AccountJid accountJid : AccountManager.getInstance().getEnabledAccounts()) {
+            chats.addAll(this.chats.getNested(accountJid.toString()).values());
+        }
+        return chats;
+    }
+
     public Collection<AbstractChat> getChats() {
         List<AbstractChat> chats = new ArrayList<>();
         for (AccountJid accountJid : AccountManager.getInstance().getAllAccounts()) {
@@ -181,12 +190,24 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
      */
     private RegularChat createChat(AccountJid account, UserJid user) {
         RegularChat chat = new RegularChat(account, user, false);
+        ChatData chatData = ChatManager.getInstance().loadChatDataFromRealm(chat);
+        if (chatData != null) {
+            chat.setUnreadMessageCount(chatData.getUnreadCount());
+            chat.setArchived(chatData.isArchived(), false);
+            chat.setNotificationState(chatData.getNotificationState(), false);
+        }
         addChat(chat);
         return chat;
     }
 
     private RegularChat createPrivateMucChat(AccountJid account, FullJid fullJid) throws UserJid.UserJidCreateException {
         RegularChat chat = new RegularChat(account, UserJid.from(fullJid), true);
+        ChatData chatData = ChatManager.getInstance().loadChatDataFromRealm(chat);
+        if (chatData != null) {
+            chat.setUnreadMessageCount(chatData.getUnreadCount());
+            chat.setArchived(chatData.isArchived(), false);
+            chat.setNotificationState(chatData.getNotificationState(), false);
+        }
         addChat(chat);
         return chat;
     }

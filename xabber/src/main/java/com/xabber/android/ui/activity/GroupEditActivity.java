@@ -102,7 +102,7 @@ public class GroupEditActivity extends ManagedActivity implements OnContactChang
         AbstractContact abstractContact = RosterManager.getInstance().getBestContact(account, user);
         contactTitleActionBarInflater.update(abstractContact);
         contactTitleActionBarInflater.setStatusText(user.toString());
-        contactTitleActionBarInflater.hideStatusIcon();
+        //contactTitleActionBarInflater.hideStatusIcon();
     }
 
     @Override

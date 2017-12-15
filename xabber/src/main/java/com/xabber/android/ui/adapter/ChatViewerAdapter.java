@@ -4,19 +4,24 @@ package com.xabber.android.ui.adapter;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.support.annotation.NonNull;
-import android.support.v13.app.FragmentPagerAdapter;
+import android.support.v13.app.FragmentStatePagerAdapter;
+import android.support.v4.view.PagerAdapter;
 import android.view.ViewGroup;
 
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.ui.fragment.ChatFragment;
+import com.xabber.android.ui.fragment.ContactVcardViewerFragment;
+import com.xabber.android.ui.fragment.OccupantListFragment;
 import com.xabber.android.ui.fragment.RecentChatFragment;
 
-public class ChatViewerAdapter extends FragmentPagerAdapter {
+public class ChatViewerAdapter extends FragmentStatePagerAdapter {
 
     private static final String LOG_TAG = ChatViewerAdapter.class.getSimpleName();
     public static final int PAGE_POSITION_RECENT_CHATS = 0;
     public static final int PAGE_POSITION_CHAT = 1;
+    public static final int PAGE_POSITION_CHAT_INFO = 2;
 
     public interface FinishUpdateListener {
         void onChatViewAdapterFinishUpdate();
@@ -55,7 +60,7 @@ public class ChatViewerAdapter extends FragmentPagerAdapter {
     }
 
     private void setChat(@NonNull AccountJid accountJid, @NonNull UserJid userJid) {
-        itemCount = 2;
+        itemCount = 3;
         this.accountJid = accountJid;
         this.userJid = userJid;
     }
@@ -66,6 +71,10 @@ public class ChatViewerAdapter extends FragmentPagerAdapter {
             return RecentChatFragment.newInstance();
         } else if (position == PAGE_POSITION_CHAT) {
             return ChatFragment.newInstance(accountJid, userJid);
+        } else if (position == 2) {
+            if (MUCManager.getInstance().hasRoom(accountJid, userJid))
+                return OccupantListFragment.newInstance(accountJid, userJid.getBareUserJid());
+            else return ContactVcardViewerFragment.newInstance(accountJid, userJid);
         } else {
             return null;
         }
@@ -84,4 +93,15 @@ public class ChatViewerAdapter extends FragmentPagerAdapter {
         finishUpdateListener.onChatViewAdapterFinishUpdate();
     }
 
+    @Override
+    public float getPageWidth(int position) {
+        if (position == 0 || position == 2) return 0.85f;
+        else return 1;
+    }
+
+    @Override
+    public int getItemPosition(Object object) {
+        // refresh all fragments when data set changed
+        return PagerAdapter.POSITION_NONE;
+    }
 }

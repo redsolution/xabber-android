@@ -31,7 +31,7 @@ public class ContactTitleInflater {
 
     public static void updateTitle(View titleView, final Context context, AbstractContact abstractContact) {
         final TextView nameView = (TextView) titleView.findViewById(R.id.name);
-        final ImageView avatarView = (ImageView) titleView.findViewById(R.id.avatar);
+        final ImageView avatarView = (ImageView) titleView.findViewById(R.id.ivAvatar);
 
         nameView.setText(abstractContact.getName());
 
@@ -45,9 +45,10 @@ public class ContactTitleInflater {
     }
 
     private static void setStatus(Context context, View titleView, AbstractContact abstractContact) {
-        final ImageView statusModeView = (ImageView) titleView.findViewById(R.id.status_icon);
+        final ImageView statusModeView = (ImageView) titleView.findViewById(R.id.ivStatus);
 
         int statusLevel = abstractContact.getStatusMode().getStatusLevel();
+        statusModeView.setVisibility(View.GONE);
         if (isContactOffline(statusLevel)) {
             statusModeView.setVisibility(View.GONE);
         } else {

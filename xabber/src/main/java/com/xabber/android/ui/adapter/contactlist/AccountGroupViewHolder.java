@@ -7,20 +7,23 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.xabber.android.R;
-import com.xabber.android.data.log.LogManager;
 
 
 class AccountGroupViewHolder extends RecyclerView.ViewHolder
         implements View.OnClickListener, View.OnCreateContextMenuListener {
 
     private static final String LOG_TAG = AccountGroupViewHolder.class.getSimpleName();
-    final ImageView avatar;
-    final TextView name;
-    final TextView secondLineMessage;
-    final TextView smallRightText;
+    final ImageView ivAvatar;
+    final View avatarView;
+    final TextView tvAccountName;
+    final TextView tvJid;
+    final TextView tvStatus;
+    final TextView tvContactCount;
     final ImageView smallRightIcon;
-    final ImageView statusIcon;
+    final ImageView ivStatus;
+    final ImageView ivMenu;
     final ImageView offlineShadow;
+    final View accountColorIndicator;
 
     private final AccountGroupClickListener listener;
 
@@ -38,28 +41,33 @@ class AccountGroupViewHolder extends RecyclerView.ViewHolder
         itemView.setOnClickListener(this);
         itemView.setOnCreateContextMenuListener(this);
 
-        avatar = (ImageView) view.findViewById(R.id.avatar);
-        avatar.setOnClickListener(this);
-        name = (TextView) view.findViewById(R.id.contact_list_item_name);
-        secondLineMessage = (TextView) view.findViewById(R.id.second_line_message);
+        ivAvatar = (ImageView) view.findViewById(R.id.ivAvatar);
+        avatarView = view.findViewById(R.id.avatarView);
+        ivAvatar.setOnClickListener(this);
+        tvAccountName = (TextView) view.findViewById(R.id.tvAccountName);
+        tvJid = (TextView) view.findViewById(R.id.tvJid);
+        tvStatus = (TextView) view.findViewById(R.id.tvStatus);
         smallRightIcon = (ImageView) view.findViewById(R.id.small_right_icon);
-        smallRightText = (TextView) view.findViewById(R.id.small_right_text);
-        statusIcon = (ImageView) view.findViewById(R.id.contact_list_item_status_icon);
-        statusIcon.setOnClickListener(this);
+        tvContactCount = (TextView) view.findViewById(R.id.tvContactCount);
+        ivStatus = (ImageView) view.findViewById(R.id.ivStatus);
+        ivStatus.setOnClickListener(this);
         offlineShadow = (ImageView) view.findViewById(R.id.offline_shadow);
+        accountColorIndicator = view.findViewById(R.id.accountColorIndicator);
+        ivMenu = (ImageView) view.findViewById(R.id.ivMenu);
+        ivMenu.setOnClickListener(this);
     }
 
     @Override
     public void onClick(View view) {
         int adapterPosition = getAdapterPosition();
-        if (adapterPosition == RecyclerView.NO_POSITION) {
-            LogManager.w(LOG_TAG, "onClick: no position");
-            return;
-        }
+//        if (adapterPosition == RecyclerView.NO_POSITION) {
+//            LogManager.w(LOG_TAG, "onClick: no position");
+//            return;
+//        }
 
-        if (view.getId() == R.id.avatar) {
+        if (view.getId() == R.id.ivAvatar) {
             listener.onAccountAvatarClick(adapterPosition);
-        } else if (view.getId() == R.id.contact_list_item_status_icon) {
+        } else if (view.getId() == R.id.ivMenu) {
             listener.onAccountMenuClick(adapterPosition, view);
         } else {
             listener.onAccountGroupClick(adapterPosition);
@@ -69,10 +77,10 @@ class AccountGroupViewHolder extends RecyclerView.ViewHolder
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         int adapterPosition = getAdapterPosition();
-        if (adapterPosition == RecyclerView.NO_POSITION) {
-            LogManager.w(LOG_TAG, "onCreateContextMenu: no position");
-            return;
-        }
+//        if (adapterPosition == RecyclerView.NO_POSITION) {
+//            LogManager.w(LOG_TAG, "onCreateContextMenu: no position");
+//            return;
+//        }
 
         listener.onAccountGroupCreateContextMenu(adapterPosition, menu);
     }

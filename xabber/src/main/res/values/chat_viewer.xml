@@ -88,8 +88,6 @@
     <string name="otr_verification_notify_button">OPEN</string>
     <string name="otr_verification_notify_button_cancel">CANCEL</string>
 
-    <string name="recent_chats">Recent chats</string>
-
     <string name="under_construction">Under construction</string>
     <string name="under_construction_message">This screen is under construction</string>
 
@@ -117,4 +115,13 @@
     <string name="message_status_not_sent">Sending</string>
 
     <string name="toast_no_history">There are no more messages in the history</string>
+
+    <string name="muc_role_moderator">Moderator</string>
+    <string name="muc_role_participant">Participant</string>
+    <string name="muc_role_visitor">Visitor</string>
+    <string name="toast_archived_show">Archived chats shows</string>
+    <string name="toast_archived_hide">Archived chats hide</string>
+
+    <string name="chat_notification_settings_title">Notification for this chat</string>
+    <string name="error_file_upload_not_support">The server you are using does not support file transfer. You can try the xabber.org server.</string>
 </resources>

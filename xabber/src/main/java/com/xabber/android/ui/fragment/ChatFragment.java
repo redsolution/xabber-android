@@ -12,11 +12,9 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.NavUtils;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
-
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
@@ -25,12 +23,9 @@ import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.EditText;
@@ -67,8 +62,6 @@ import com.xabber.android.data.extension.mam.MamManager;
 import com.xabber.android.data.extension.mam.PreviousHistoryLoadFinishedEvent;
 import com.xabber.android.data.extension.mam.PreviousHistoryLoadStartedEvent;
 import com.xabber.android.data.extension.muc.MUCManager;
-import com.xabber.android.data.extension.muc.RoomChat;
-import com.xabber.android.data.extension.muc.RoomState;
 import com.xabber.android.data.extension.otr.AuthAskEvent;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.otr.SecurityLevel;
@@ -82,23 +75,16 @@ import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.activity.ChatActivity;
-import com.xabber.android.ui.activity.ConferenceAddActivity;
 import com.xabber.android.ui.activity.ContactActivity;
 import com.xabber.android.ui.activity.ContactEditActivity;
-import com.xabber.android.ui.activity.ContactListActivity;
-import com.xabber.android.ui.activity.FingerprintActivity;
-import com.xabber.android.ui.activity.OccupantListActivity;
 import com.xabber.android.ui.activity.QuestionActivity;
 import com.xabber.android.ui.adapter.ChatMessageAdapter;
 import com.xabber.android.ui.adapter.CustomMessageMenuAdapter;
 import com.xabber.android.ui.adapter.ResourceAdapter;
 import com.xabber.android.ui.color.ColorManager;
-import com.xabber.android.ui.dialog.BlockContactDialog;
 import com.xabber.android.ui.dialog.ChatExportDialogFragment;
 import com.xabber.android.ui.dialog.ChatHistoryClearDialog;
-import com.xabber.android.ui.helper.ContactTitleInflater;
 import com.xabber.android.ui.helper.PermissionsRequester;
-import com.xabber.android.ui.preferences.ChatContactSettings;
 import com.xabber.android.ui.widget.CustomMessageMenu;
 
 import org.greenrobot.eventbus.EventBus;
@@ -145,8 +131,6 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
     private AccountJid account;
     private UserJid user;
 
-    private Toolbar toolbar;
-    private View contactTitleView;
     private EditText inputView;
     private ImageButton sendButton;
     private ImageButton securityButton;
@@ -162,13 +146,13 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
     private ChatMessageAdapter chatMessageAdapter;
     private LinearLayoutManager layoutManager;
     private SwipeRefreshLayout swipeContainer;
+    private View placeholder;
 
     boolean isInputEmpty = true;
     private boolean skipOnTextChanges = false;
 
 
     private ChatViewerFragmentListener listener;
-    private Animation shakeAnimation = null;
 
     private MessageItem clickedMessageItem;
 
@@ -230,23 +214,6 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         super.onCreateView(inflater, container, savedInstanceState);
 
         View view = inflater.inflate(R.layout.fragment_chat, container, false);
-
-        contactTitleView = view.findViewById(R.id.contact_title);
-        contactTitleView.findViewById(R.id.avatar).setOnClickListener(this);
-
-        toolbar = (Toolbar) view.findViewById(R.id.toolbar_default);
-        toolbar.inflateMenu(R.menu.toolbar_chat);
-        toolbar.setOverflowIcon(getResources().getDrawable(R.drawable.ic_overflow_menu_white_24dp));
-        toolbar.setOnMenuItemClickListener(this);
-        toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                NavUtils.navigateUpFromSameTask(getActivity());
-            }
-        });
-
-        setHasOptionsMenu(true);
 
         sendButton = (ImageButton) view.findViewById(R.id.button_send_message);
         sendButton.setColorFilter(ColorManager.getInstance().getAccountPainter().getGreyMain());
@@ -338,6 +305,19 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
 
         setChat(account, user);
 
+        if (SettingsManager.chatsShowBackground()) {
+            if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.dark) {
+                view.setBackgroundDrawable(getResources().getDrawable(R.drawable.chat_background_repeat_dark));
+            } else {
+                view.setBackgroundDrawable(getResources().getDrawable(R.drawable.chat_background_repeat));
+            }
+        } else {
+            view.setBackgroundColor(ColorManager.getInstance().getChatBackgroundColor());
+        }
+
+        placeholder = view.findViewById(R.id.placeholder);
+        placeholder.setOnClickListener(this);
+
         return view;
     }
 
@@ -351,11 +331,14 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
             securityButton.setVisibility(View.GONE);
         }
 
-        messageItems = abstractChat.getMessages();
-        syncInfoResults = abstractChat.getSyncInfo();
+        if (abstractChat != null) {
+            messageItems = abstractChat.getMessages();
+            syncInfoResults = abstractChat.getSyncInfo();
+        }
 
         chatMessageAdapter = new ChatMessageAdapter(getActivity(), messageItems, abstractChat, this);
         realmRecyclerView.setAdapter(chatMessageAdapter);
+        layoutManager.scrollToPosition(chatMessageAdapter.getItemCount() - 1);
 
         restoreInputState();
 
@@ -390,6 +373,9 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         restoreScrollState();
 
         showHideNotifyIfNeed();
+
+        AbstractChat chat = getChat();
+        if (chat != null) chat.resetUnreadMessageCount();
     }
 
     @Override
@@ -700,7 +686,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(NewIncomingMessageEvent event) {
         if (event.getAccount().equals(account) && event.getUser().equals(user)) {
-            playIncomingAnimation();
+            listener.playIncomingAnimation();
             playIncomingSound();
         }
     }
@@ -713,10 +699,25 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
     }
 
     private void onAttachButtonPressed() {
+        if (!HttpFileUploadManager.getInstance().isFileUploadSupported(account)) {
+            // show notification
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setMessage(R.string.error_file_upload_not_support)
+                    .setTitle(getString(R.string.error_sending_file, ""))
+                    .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+            AlertDialog dialog = builder.create();
+            dialog.show();
+            return;
+        }
+
         if (PermissionsRequester.requestFileReadPermissionIfNeeded(this, PERMISSIONS_REQUEST_ATTACH_FILE)) {
             startFileSelection();
         }
-
     }
 
     private void startFileSelection() {
@@ -822,11 +823,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
             sendButton.setColorFilter(ColorManager.getInstance().getAccountPainter().getGreyMain());
             sendButton.setEnabled(false);
             securityButton.setVisibility(View.VISIBLE);
-            if (HttpFileUploadManager.getInstance().isFileUploadSupported(account)) {
-                attachButton.setVisibility(View.VISIBLE);
-            } else {
-                attachButton.setVisibility(View.GONE);
-            }
+            attachButton.setVisibility(View.VISIBLE);
         } else {
             sendButton.setEnabled(true);
             sendButton.setColorFilter(ColorManager.getInstance().getAccountPainter().getAccountSendButtonColor(account));
@@ -881,71 +878,8 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         scrollDown();
     }
 
-    /**
-     * This method used for hardware menu button
-     */
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.toolbar_chat, menu);
-        setUpOptionsMenu(menu);
-    }
-
-    /**
-     * This method used for hardware menu button
-     */
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        return onMenuItemClick(item);
-    }
-
-    private void setUpOptionsMenu(Menu menu) {
-        AbstractChat abstractChat = MessageManager.getInstance().getChat(account, user);
-
-        if (abstractChat instanceof RoomChat) {
-            RoomState chatState = ((RoomChat) abstractChat).getState();
-
-            if (chatState == RoomState.available) {
-                menu.findItem(R.id.action_list_of_occupants).setVisible(true);
-            }
-
-            if (chatState == RoomState.unavailable) {
-                menu.findItem(R.id.action_join_conference).setVisible(true);
-
-            } else {
-                menu.findItem(R.id.action_invite_to_chat).setVisible(true);
-
-                if (chatState == RoomState.error) {
-                    menu.findItem(R.id.action_authorization_settings).setVisible(true);
-                } else {
-                    menu.findItem(R.id.action_leave_conference).setVisible(true);
-                }
-            }
-
-            // hide regular chat menu items
-            menu.findItem(R.id.action_view_contact).setVisible(false);
-            menu.findItem(R.id.action_close_chat).setVisible(false);
-            menu.findItem(R.id.action_block_contact).setVisible(false);
-        }
-
-        if (abstractChat instanceof RegularChat) {
-            menu.findItem(R.id.action_view_contact).setVisible(true);
-            menu.findItem(R.id.action_close_chat).setVisible(true);
-            menu.findItem(R.id.action_block_contact).setVisible(true);
-
-            // hide room chat menu items
-            menu.findItem(R.id.action_list_of_occupants).setVisible(false);
-            menu.findItem(R.id.action_join_conference).setVisible(false);
-            menu.findItem(R.id.action_invite_to_chat).setVisible(false);
-            menu.findItem(R.id.action_authorization_settings).setVisible(false);
-            menu.findItem(R.id.action_leave_conference).setVisible(false);
-        }
-    }
 
     public void updateContact() {
-        ContactTitleInflater.updateTitle(contactTitleView, getActivity(),
-                RosterManager.getInstance().getBestContact(account, user));
-        toolbar.setBackgroundColor(ColorManager.getInstance().getAccountPainter().getAccountMainColor(account));
-        setUpOptionsMenu(toolbar.getMenu());
         updateSecurityButton();
         updateSendButtonSecurityLevel();
     }
@@ -1012,92 +946,10 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
 
     @Override
     public boolean onMenuItemClick(MenuItem item) {
-
-        switch (item.getItemId()) {
-            /* security menu */
-
-            case R.id.action_start_encryption:
-                showResourceChoiceAlert(account, user, false);
-                return true;
-
-            case R.id.action_restart_encryption:
-                showResourceChoiceAlert(account, user, true);
-                return true;
-
-            case R.id.action_stop_encryption:
-                stopEncryption(account, user);
-                return true;
-
-            case R.id.action_verify_with_fingerprint:
-                startActivity(FingerprintActivity.createIntent(getActivity(), account, user));
-                return true;
-
-            case R.id.action_verify_with_question:
-                startActivity(QuestionActivity.createIntent(getActivity(), account, user, true, false, null));
-                return true;
-
-            case R.id.action_verify_with_shared_secret:
-                startActivity(QuestionActivity.createIntent(getActivity(), account, user, false, false, null));
-                return true;
-
-            /* regular chat options menu */
-
-            case R.id.action_view_contact:
-                showContactInfo();
-                return true;
-
-            case R.id.action_chat_settings:
-                startActivity(ChatContactSettings.createIntent(getActivity(), account, user));
-                return true;
-
-            case R.id.action_authorization_settings:
-                startActivity(ConferenceAddActivity.createIntent(getActivity(), account, user.getBareUserJid()));
-                return true;
-
-            case R.id.action_close_chat:
-                closeChat(account, user);
-                return true;
-
-            case R.id.action_clear_history:
-                clearHistory(account, user);
-                return true;
-
-            case R.id.action_export_chat:
-                onExportChatClick();
-                return true;
-
-            case R.id.action_call_attention:
-                callAttention();
-                return true;
-
-            case R.id.action_block_contact:
-                BlockContactDialog.newInstance(account, user).show(getFragmentManager(), BlockContactDialog.class.getName());
-                return true;
-
-            /* conference specific options menu */
-
-            case R.id.action_join_conference:
-                MUCManager.getInstance().joinRoom(account, user.getJid().asEntityBareJidIfPossible(), true);
-                return true;
-
-            case R.id.action_invite_to_chat:
-                startActivity(ContactListActivity.createRoomInviteIntent(getActivity(), account, user.getBareUserJid()));
-                return true;
-
-            case R.id.action_leave_conference:
-                leaveConference(account, user);
-                return true;
-
-            case R.id.action_list_of_occupants:
-                startActivity(OccupantListActivity.createIntent(getActivity(), account, user));
-                return true;
-
-            default:
-                return false;
-        }
+        return ((ChatActivity)getActivity()).onMenuItemClick(item);
     }
 
-    private void onExportChatClick() {
+    public void onExportChatClick() {
         if (PermissionsRequester.requestFileWritePermissionIfNeeded(this, PERMISSIONS_REQUEST_EXPORT_CHAT)) {
             showExportChatDialog();
         }
@@ -1108,7 +960,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         ChatExportDialogFragment.newInstance(account, user).show(getFragmentManager(), "CHAT_EXPORT");
     }
 
-    private void stopEncryption(AccountJid account, UserJid user) {
+    public void stopEncryption(AccountJid account, UserJid user) {
         try {
             OTRManager.getInstance().endSession(account, user);
         } catch (NetworkException e) {
@@ -1132,7 +984,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         }
     }
 
-    private void showResourceChoiceAlert(final AccountJid account, final UserJid user, final boolean restartSession) {
+    public void showResourceChoiceAlert(final AccountJid account, final UserJid user, final boolean restartSession) {
         final List<Presence> allPresences = RosterManager.getInstance().getPresences(account, user.getJid());
 
         final List<Map<String, String>> items = new ArrayList<>();
@@ -1216,9 +1068,12 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         if (v.getId() == R.id.avatar) {
             showContactInfo();
         }
+        if (v.getId() == R.id.placeholder) {
+            ((ChatActivity)getActivity()).selectPage(1, true);
+        }
     }
 
-    private void showContactInfo() {
+    public void showContactInfo() {
         Intent intent;
         if (MUCManager.getInstance().hasRoom(account, user)) {
             intent = ContactActivity.createIntent(getActivity(), account, user);
@@ -1228,22 +1083,22 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         startActivity(intent);
     }
 
-    private void closeChat(AccountJid account, UserJid user) {
+    public void closeChat(AccountJid account, UserJid user) {
         MessageManager.getInstance().closeChat(account, user);
         NotificationManager.getInstance().removeMessageNotification(account, user);
         listener.onCloseChat();
     }
 
-    private void clearHistory(AccountJid account, UserJid user) {
+    public void clearHistory(AccountJid account, UserJid user) {
         ChatHistoryClearDialog.newInstance(account, user).show(getFragmentManager(), ChatHistoryClearDialog.class.getSimpleName());
     }
 
-    private void leaveConference(AccountJid account, UserJid user) {
+    public void leaveConference(AccountJid account, UserJid user) {
         MUCManager.getInstance().leaveRoom(account, user.getJid().asEntityBareJidIfPossible());
         closeChat(account, user);
     }
 
-    private void callAttention() {
+    public void callAttention() {
         try {
             AttentionManager.getInstance().sendAttention(account, user);
         } catch (NetworkException e) {
@@ -1397,13 +1252,6 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         }
     }
 
-    public void playIncomingAnimation() {
-        if (shakeAnimation == null) {
-            shakeAnimation = AnimationUtils.loadAnimation(getActivity(), R.anim.shake);
-        }
-        toolbar.findViewById(R.id.name_holder).startAnimation(shakeAnimation);
-    }
-
     public void playIncomingSound() {
         if (SettingsManager.eventsInChatSounds()) {
             MediaPlayer mp = MediaPlayer.create(getActivity(), SettingsManager.eventsSound());
@@ -1465,8 +1313,9 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         void onMessageSent();
 
         void registerChatFragment(ChatFragment chatFragment);
-
         void unregisterChatFragment();
+
+        void playIncomingAnimation();
     }
 
     public void showHideNotifyIfNeed() {
@@ -1484,5 +1333,10 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
                 notifyLayout.setVisibility(View.VISIBLE);
             } else notifyLayout.setVisibility(View.GONE);
         }
+    }
+
+    public void showPlaceholder(boolean show) {
+        if (show) placeholder.setVisibility(View.VISIBLE);
+        else placeholder.setVisibility(View.GONE);
     }
 }

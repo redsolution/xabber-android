@@ -2,12 +2,15 @@ package com.xabber.android.ui.fragment;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.NavUtils;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -24,18 +27,26 @@ import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.RosterManager;
+import com.xabber.android.ui.activity.ChatActivity;
 import com.xabber.android.ui.adapter.ChatComparator;
 import com.xabber.android.ui.adapter.contactlist.ChatListAdapter;
-import com.xabber.android.ui.color.ColorManager;
+import com.xabber.android.ui.adapter.contactlist.RosterChatViewHolder;
+import com.xabber.android.ui.adapter.contactlist.viewobjects.BaseRosterItemVO;
+import com.xabber.android.ui.adapter.contactlist.viewobjects.ChatVO;
+import com.xabber.android.ui.helper.RecyclerItemTouchHelper;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-public class RecentChatFragment extends Fragment implements ChatListAdapter.Listener, Toolbar.OnMenuItemClickListener {
+public class RecentChatFragment extends Fragment implements ChatListAdapter.Listener,
+        Toolbar.OnMenuItemClickListener, RecyclerItemTouchHelper.RecyclerItemTouchHelperListener {
 
     ChatListAdapter adapter;
+    CoordinatorLayout coordinatorLayout;
+    Snackbar snackbar;
+
     @Nullable
     private Listener listener;
 
@@ -43,6 +54,7 @@ public class RecentChatFragment extends Fragment implements ChatListAdapter.List
         void onChatSelected(BaseEntity entity);
         void registerRecentChatFragment(RecentChatFragment recentChatFragment);
         void unregisterRecentChatFragment();
+        boolean isCurrentChat(String account, String user);
     }
 
     /**
@@ -53,7 +65,8 @@ public class RecentChatFragment extends Fragment implements ChatListAdapter.List
     }
 
     public static RecentChatFragment newInstance() {
-        return  new RecentChatFragment();
+        RecentChatFragment fragment = new RecentChatFragment();
+        return fragment;
     }
 
     @Override
@@ -70,27 +83,17 @@ public class RecentChatFragment extends Fragment implements ChatListAdapter.List
         View rootView = inflater.inflate(R.layout.fragment_recent_chats, container, false);
 
         RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.recent_chats_recycler_view);
+        coordinatorLayout = (CoordinatorLayout) rootView.findViewById(R.id.coordinatorLayout);
 
         adapter = new ChatListAdapter(getActivity(), this);
 
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        ItemTouchHelper.SimpleCallback itemTouchHelperCallback =
+                new RecyclerItemTouchHelper(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT, this);
+        new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(recyclerView);
 
         updateChats();
-
-        Toolbar toolbar = (Toolbar) rootView.findViewById(R.id.toolbar_default);
-        toolbar.setTitle(R.string.recent_chats);
-        toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                NavUtils.navigateUpFromSameTask(getActivity());
-            }
-        });
-        toolbar.inflateMenu(R.menu.toolbar_recent_chats);
-        toolbar.setOnMenuItemClickListener(this);
-
-        toolbar.setBackgroundColor(ColorManager.getInstance().getAccountPainter().getDefaultMainColor());
 
         return rootView;
     }
@@ -140,8 +143,9 @@ public class RecentChatFragment extends Fragment implements ChatListAdapter.List
                 final List<AbstractContact> newContacts = new ArrayList<>();
 
                 for (AbstractChat chat : recentChats) {
-                    newContacts.add(RosterManager.getInstance()
-                            .getBestContact(chat.getAccount(), chat.getUser()));
+                    if (!chat.isArchived() || ((ChatActivity)getActivity()).isShowArchived())
+                        newContacts.add(RosterManager.getInstance()
+                                .getBestContact(chat.getAccount(), chat.getUser()));
                 }
 
                 Application.getInstance().runOnUiThread(new Runnable() {
@@ -159,5 +163,66 @@ public class RecentChatFragment extends Fragment implements ChatListAdapter.List
         if (listener != null) {
             listener.onChatSelected(contact);
         }
+    }
+
+    @Override
+    public boolean isCurrentChat(String account, String user) {
+        return listener != null && listener.isCurrentChat(account, user);
+    }
+
+    @Override
+    public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction, int position) {
+        if (viewHolder instanceof RosterChatViewHolder) {
+
+            Object itemAtPosition = adapter.getItem(position);
+            if (itemAtPosition != null && itemAtPosition instanceof ChatVO) {
+
+                // backup of removed item for undo purpose
+                final BaseRosterItemVO deletedItem = (BaseRosterItemVO) itemAtPosition;
+                final int deletedIndex = viewHolder.getAdapterPosition();
+
+                // update value
+                boolean archived = ((ChatVO) deletedItem).isArchived();
+                setChatArchived((ChatVO) deletedItem, !archived);
+                ((ChatVO) deletedItem).setArchived(!archived);
+
+                // update item in recycler view
+                adapter.removeItem(viewHolder.getAdapterPosition());
+                if (((ChatActivity)getActivity()).isShowArchived()) adapter.restoreItem(deletedItem, deletedIndex);
+
+                // showing snackbar with Undo option
+                showSnackbar(deletedItem, deletedIndex);
+            }
+        }
+    }
+
+    public void showSnackbar(final BaseRosterItemVO deletedItem, final int deletedIndex) {
+        if (snackbar != null) snackbar.dismiss();
+        final boolean archived = ((ChatVO) deletedItem).isArchived();
+        snackbar = Snackbar.make(coordinatorLayout, !archived ? R.string.chat_was_unarchived
+                : R.string.chat_was_archived, Snackbar.LENGTH_LONG);
+        snackbar.setAction(R.string.undo, new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // update value
+                setChatArchived((ChatVO) deletedItem, !archived);
+                ((ChatVO) deletedItem).setArchived(!archived);
+
+                // update item in recycler view
+                if (((ChatActivity)getActivity()).isShowArchived()) adapter.removeItem(deletedIndex);
+                adapter.restoreItem(deletedItem, deletedIndex);
+            }
+        });
+        snackbar.setActionTextColor(Color.YELLOW);
+        snackbar.show();
+    }
+
+    public void closeSnackbar() {
+        if (snackbar != null) snackbar.dismiss();
+    }
+
+    public void setChatArchived(ChatVO chatVO, boolean archived) {
+        AbstractChat chat = MessageManager.getInstance().getChat(chatVO.getAccountJid(), chatVO.getUserJid());
+        if (chat != null) chat.setArchived(archived, true);
     }
 }

@@ -41,4 +41,8 @@
     <dimen name="intro_horizontal_margin">0dp</dimen>
     <dimen name="intro_vertical_margin">0dp</dimen>
 
+    <dimen name="account_status_border">1dp</dimen>
+    <dimen name="account_status">12dp</dimen>
+    <dimen name="account_status_without_border">10dp</dimen>
+
 </resources>

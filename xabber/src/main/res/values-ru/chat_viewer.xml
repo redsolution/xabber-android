@@ -88,7 +88,6 @@
   <string name="otr_verification_progress_title">Идёт подтверждение подлинности сеанса OTR</string>
   <string name="otr_verification_notify_button">ОТКРЫТЬ</string>
   <string name="otr_verification_notify_button_cancel">ОТМЕНИТЬ</string>
-  <string name="recent_chats">Недавние чаты</string>
   <string name="under_construction">В разработке</string>
   <string name="under_construction_message">Этот экран находится в разработке</string>
   <string name="chat_events_show_text_global">Использовать глобальные настройки</string>
@@ -113,4 +112,11 @@
   <string name="message_status_forwarded">Отправлено с другого устройства</string>
   <string name="message_status_not_sent">Отправляется</string>
   <string name="toast_no_history">В истории больше нет сообщений</string>
+  <string name="toast_archived_show">Архивные чаты отображаются</string>
+  <string name="toast_archived_hide">Архивные чаты скрыты</string>
+  <string name="muc_role_moderator">Модератор</string>
+  <string name="muc_role_participant">Участник</string>
+  <string name="muc_role_visitor">Посетитель</string>
+  <string name="chat_notification_settings_title">Уведомления для этого чата</string>
+  <string name="error_file_upload_not_support">Используемый вами сервер не поддерживает передачу файлов. Вы можете попробовать сервер xabber.org.</string>
 </resources>

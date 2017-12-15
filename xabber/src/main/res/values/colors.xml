@@ -364,7 +364,8 @@
         <item>#964100</item>
     </array>
 
-
+    <color name="contact_item_text_second">#99616161</color>
+    <color name="contact_item_text_second_dark">#99bdbdbd</color>
 
     <color name="contact_list_active_chat_background_dark">#242424</color>
 
@@ -387,7 +388,13 @@
     <color name="account_register_blue">#FF2196F3</color>
     <color name="account_register_blue_dark">#1565c0</color>
 
+    <color name="contact_list_background">#FFE8EBEE</color>
+
     <color name="patreon_coral">#F96854</color>
+
+    <color name="bottom_navigation_background">#eeeeee</color>
+    <color name="status_color_in_contact_list_online">#FF388E3C</color>
+    <color name="status_color_in_contact_list">#96616161</color>
 
     <item name="contact_list_contact_small_right_icon_alpha_light" format="float" type="dimen">0.2</item>
     <item name="contact_list_contact_small_right_icon_alpha_dark" format="float" type="dimen">0.2</item>

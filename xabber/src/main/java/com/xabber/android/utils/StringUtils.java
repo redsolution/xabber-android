@@ -153,6 +153,28 @@ public class StringUtils {
         }
     }
 
+    public static String getSmartTimeTextForRoster(Context context, Date timeStamp) {
+        if (timeStamp == null) {
+            return "";
+        }
+
+        // today
+        Calendar midnight = new GregorianCalendar();
+        // reset hour, minutes, seconds and millis
+        midnight.set(Calendar.HOUR_OF_DAY, 0);
+        midnight.set(Calendar.MINUTE, 0);
+        midnight.set(Calendar.SECOND, 0);
+        midnight.set(Calendar.MILLISECOND, 0);
+
+        if (timeStamp.getTime() > midnight.getTimeInMillis()) {
+            return timeFormat.format(timeStamp);
+        } else {
+            SimpleDateFormat dateFormat = new SimpleDateFormat("d MMM",
+                    context.getResources().getConfiguration().locale);
+            return dateFormat.format(timeStamp);
+        }
+    }
+
     public static SimpleDateFormat getLogDateTimeFormat() {
         if (logDateTimeFormat == null) {
             logDateTimeFormat = new SimpleDateFormat(LOG_DATE_TIME_FORMAT, Locale.ENGLISH);

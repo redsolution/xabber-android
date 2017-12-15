@@ -17,10 +17,9 @@ package com.xabber.android.ui.adapter.contactlist;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
-import android.graphics.drawable.ColorDrawable;
-import android.os.Build;
 import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -29,21 +28,20 @@ import android.view.ViewGroup;
 import android.widget.Filter;
 import android.widget.Filterable;
 
+import com.brandongogetap.stickyheaders.exposed.StickyHeaderHandler;
+import com.brandongogetap.stickyheaders.exposed.StickyHeaderListener;
 import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.CommonState;
-import com.xabber.android.data.account.StatusMode;
+import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.UserJid;
-import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.muc.RoomChat;
 import com.xabber.android.data.extension.muc.RoomContact;
-import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.ChatContact;
 import com.xabber.android.data.message.MessageManager;
@@ -51,14 +49,27 @@ import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.GroupManager;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
-import com.xabber.android.data.roster.ShowOfflineMode;
-import com.xabber.android.data.xaccount.XMPPAccountSettings;
-import com.xabber.android.data.xaccount.XabberAccountManager;
 import com.xabber.android.ui.activity.AccountActivity;
+import com.xabber.android.ui.activity.ContactAddActivity;
+import com.xabber.android.ui.activity.ContactListActivity;
 import com.xabber.android.ui.activity.ManagedActivity;
-import com.xabber.android.ui.adapter.ComparatorByChat;
+import com.xabber.android.ui.adapter.ChatComparator;
 import com.xabber.android.ui.adapter.UpdatableAdapter;
+import com.xabber.android.ui.adapter.contactlist.viewobjects.AccountVO;
+import com.xabber.android.ui.adapter.contactlist.viewobjects.BaseRosterItemVO;
+import com.xabber.android.ui.adapter.contactlist.viewobjects.BottomAccountSeparatorVO;
+import com.xabber.android.ui.adapter.contactlist.viewobjects.ButtonVO;
+import com.xabber.android.ui.adapter.contactlist.viewobjects.ChatVO;
+import com.xabber.android.ui.adapter.contactlist.viewobjects.ContactVO;
+import com.xabber.android.ui.adapter.contactlist.viewobjects.ExtContactVO;
+import com.xabber.android.ui.adapter.contactlist.viewobjects.GroupVO;
+import com.xabber.android.ui.adapter.contactlist.viewobjects.MainTitleVO;
+import com.xabber.android.ui.adapter.contactlist.viewobjects.TopAccountSeparatorVO;
+import com.xabber.android.ui.color.AccountPainter;
+import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.helper.ContextMenuHelper;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -78,9 +89,12 @@ import java.util.TreeMap;
  */
 public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         implements Runnable, Filterable, UpdatableAdapter, ContactListItemViewHolder.ContactClickListener,
-        AccountGroupViewHolder.AccountGroupClickListener, GroupViewHolder.GroupClickListener {
+        AccountGroupViewHolder.AccountGroupClickListener, GroupViewHolder.GroupClickListener,
+        ButtonViewHolder.ButtonClickListener, StickyHeaderHandler, StickyHeaderListener, MainTitleViewHolder.Listener {
 
     private static final String LOG_TAG = ContactListAdapter.class.getSimpleName();
+
+    private static final int MAX_RECENT_ITEMS = 8;
 
     /**
      * Number of milliseconds between lazy refreshes.
@@ -89,15 +103,19 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     /**
      * View type used for contact items.
      */
-    private static final int TYPE_CONTACT = 0;
+    public static final int TYPE_CONTACT = 0;
     /**
      * View type used for groups and accounts expanders.
      */
     private static final int TYPE_GROUP = 1;
-    private static final int TYPE_ACCOUNT = 2;
+    public static final int TYPE_ACCOUNT = 2;
     private static final int TYPE_ACCOUNT_TOP_SEPARATOR = 3;
     private static final int TYPE_ACCOUNT_BOTTOM_SEPARATOR = 4;
-    private final ArrayList<Object> baseEntities = new ArrayList<>();
+    public static final int TYPE_CHAT = 5;
+    private static final int TYPE_BUTTON = 6;
+    private static final int TYPE_MAIN_TITLE = 7;
+    private static final int TYPE_EXT_CONTACT = 8;
+    private final ArrayList<BaseRosterItemVO> rosterItemVOs = new ArrayList<>();
 
     /**
      * Handler for deferred refresh.
@@ -116,6 +134,7 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private final int[] accountSubgroupColors;
     private final int activeChatsColor;
     private final ContactItemInflater contactItemInflater;
+    private final ContactItemChatInflater contactItemChatInflater;
     private final int accountElevation;
     protected Locale locale = Locale.getDefault();
     private AccountGroupViewHolder.AccountGroupClickListener accountGroupClickListener;
@@ -149,6 +168,10 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private boolean hasActiveChats = false;
     private int[] accountGroupColors;
 
+    private int currentHeaderPosition = 0;
+
+    private ChatListState currentChatsState = ChatListState.recent;
+
     public ContactListAdapter(ManagedActivity activity, ContactListAdapterListener listener) {
         this.activity = activity;
         this.accountGroupClickListener = null;
@@ -167,6 +190,7 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         a.recycle();
 
         contactItemInflater = new ContactItemInflater(activity);
+        contactItemChatInflater = new ContactItemChatInflater(activity);
 
         accountElevation = activity.getResources().getDimensionPixelSize(R.dimen.account_group_elevation);
 
@@ -215,6 +239,8 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             handler.removeCallbacks(this);
         }
 
+        listener.hidePlaceholder();
+
         final Collection<RosterContact> allRosterContacts = RosterManager.getInstance().getAllContacts();
 
         Map<AccountJid, Collection<UserJid>> blockedContacts = new TreeMap<>();
@@ -234,8 +260,8 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         final boolean showOffline = SettingsManager.contactsShowOffline();
         final boolean showGroups = SettingsManager.contactsShowGroups();
         final boolean showEmptyGroups = SettingsManager.contactsShowEmptyGroups();
-        final boolean showActiveChats = SettingsManager.contactsShowActiveChats();
-        final boolean stayActiveChats = SettingsManager.contactsStayActiveChats();
+        final boolean showActiveChats = false;
+        final boolean stayActiveChats = true;
         final boolean showAccounts = SettingsManager.contactsShowAccounts();
         final Comparator<AbstractContact> comparator = SettingsManager.contactsOrder();
         final CommonState commonState = AccountManager.getInstance().getCommonState();
@@ -256,6 +282,7 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
          * List of active chats.
          */
         final GroupConfiguration activeChats;
+        final GroupConfiguration chatsGroup;
 
         /**
          * Whether there is at least one contact.
@@ -315,6 +342,10 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             } else {
                 activeChats = null;
             }
+
+            // chats on top
+            Collection<AbstractChat> chats = MessageManager.getInstance().getChatsOfEnabledAccount();
+            chatsGroup = getChatsGroup(chats, currentChatsState);
 
             // Build structure.
             for (RosterContact rosterContact : rosterContacts) {
@@ -392,67 +423,86 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             hasActiveChats = activeChats != null && activeChats.getTotal() > 0;
 
             // Remove empty groups, sort and apply structure.
-            baseEntities.clear();
+            rosterItemVOs.clear();
+            rosterItemVOs.add(new MainTitleVO(1, false));
             if (hasVisibleContacts) {
-                if (showActiveChats) {
-                    if (!activeChats.isEmpty()) {
-                        if (showAccounts || showGroups) {
-                            baseEntities.add(activeChats);
-                        }
-                        activeChats.sortAbstractContacts(ComparatorByChat.COMPARATOR_BY_CHAT);
-                        baseEntities.addAll(activeChats.getAbstractContacts());
-                    }
-                }
-                if (showAccounts) {
-                    boolean isFirst = baseEntities.isEmpty();
-                    for (AccountConfiguration rosterAccount : accounts.values()) {
-                        if (isFirst) {
-                            isFirst = false;
-                        } else {
-                            baseEntities.add(new AccountTopSeparator(null, null));
-                        }
 
-                        baseEntities.add(rosterAccount);
+                // add recent chats
+                rosterItemVOs.addAll(ChatVO.convert(chatsGroup.getAbstractContacts()));
 
-                        if (showGroups) {
-                            if (rosterAccount.isExpanded()) {
-                                for (GroupConfiguration rosterConfiguration : rosterAccount
-                                        .getSortedGroupConfigurations()) {
-                                    if (showEmptyGroups || !rosterConfiguration.isEmpty()) {
-                                        baseEntities.add(rosterConfiguration);
-                                        rosterConfiguration.sortAbstractContacts(comparator);
-                                        baseEntities.addAll(rosterConfiguration.getAbstractContacts());
+                if (currentChatsState == ChatListState.recent) {
+
+                    if (showAccounts) {
+                        boolean isFirst = rosterItemVOs.isEmpty();
+                        for (AccountConfiguration rosterAccount : accounts.values()) {
+                            if (isFirst) {
+                                isFirst = false;
+                            } else {
+                                rosterItemVOs.add(new TopAccountSeparatorVO());
+                            }
+
+                            rosterItemVOs.add(AccountVO.convert(rosterAccount));
+
+                            if (showGroups) {
+                                if (rosterAccount.isExpanded()) {
+                                    for (GroupConfiguration rosterConfiguration : rosterAccount
+                                            .getSortedGroupConfigurations()) {
+                                        if (showEmptyGroups || !rosterConfiguration.isEmpty()) {
+                                            rosterItemVOs.add(GroupVO.convert(rosterConfiguration));
+                                            rosterConfiguration.sortAbstractContacts(comparator);
+                                            rosterItemVOs.addAll(SettingsManager.contactsShowMessages()
+                                                    ? ExtContactVO.convert(rosterConfiguration.getAbstractContacts())
+                                            : ContactVO.convert(rosterConfiguration.getAbstractContacts()));
+                                        }
                                     }
+                                }
+                            } else {
+                                rosterAccount.sortAbstractContacts(comparator);
+                                rosterItemVOs.addAll(SettingsManager.contactsShowMessages()
+                                        ? ExtContactVO.convert(rosterAccount.getAbstractContacts())
+                                        : ContactVO.convert(rosterAccount.getAbstractContacts()));
+                            }
+
+                            if (rosterAccount.getTotal() > 0 && !rosterAccount.isExpanded()) {
+                                rosterItemVOs.add(BottomAccountSeparatorVO.convert(rosterAccount.getAccount()));
+                            }
+
+                            if (rosterAccount.getTotal() == 0)
+                                rosterItemVOs.add(ButtonVO.convert(null, ButtonVO.ACTION_ADD_CONTACT, ButtonVO.ACTION_ADD_CONTACT));
+                        }
+                    } else {
+                        if (showGroups) {
+                            for (GroupConfiguration rosterConfiguration : groups.values()) {
+                                if (showEmptyGroups || !rosterConfiguration.isEmpty()) {
+                                    rosterItemVOs.add(GroupVO.convert(rosterConfiguration));
+                                    rosterConfiguration.sortAbstractContacts(comparator);
+                                    rosterItemVOs.addAll(SettingsManager.contactsShowMessages()
+                                            ? ExtContactVO.convert(rosterConfiguration.getAbstractContacts())
+                                            : ContactVO.convert(rosterConfiguration.getAbstractContacts()));
                                 }
                             }
                         } else {
-                            rosterAccount.sortAbstractContacts(comparator);
-                            baseEntities.addAll(rosterAccount.getAbstractContacts());
-                        }
-
-                        if (rosterAccount.getTotal() > 0 && !rosterAccount.isExpanded()) {
-                            baseEntities.add(new AccountBottomSeparator(rosterAccount.getAccount(), null));
+                            Collections.sort(contacts, comparator);
+                            rosterItemVOs.addAll(SettingsManager.contactsShowMessages()
+                                    ? ExtContactVO.convert(contacts)
+                                    : ContactVO.convert(contacts));
                         }
                     }
                 } else {
-                    if (showGroups) {
-                        for (GroupConfiguration rosterConfiguration : groups.values()) {
-                            if (showEmptyGroups || !rosterConfiguration.isEmpty()) {
-                                baseEntities.add(rosterConfiguration);
-                                rosterConfiguration.sortAbstractContacts(comparator);
-                                baseEntities.addAll(rosterConfiguration.getAbstractContacts());
-                            }
-                        }
-                    } else {
-                        Collections.sort(contacts, comparator);
-                        baseEntities.addAll(contacts);
+                    if (chatsGroup.getAbstractContacts().size() == 0) {
+                        if (currentChatsState == ChatListState.unread)
+                            listener.showPlaceholder(activity.getString(R.string.placeholder_no_unread));
+                        if (currentChatsState == ChatListState.archived)
+                            listener.showPlaceholder(activity.getString(R.string.placeholder_no_archived));
                     }
                 }
             }
         } else { // Search
             final ArrayList<AbstractContact> baseEntities = getSearchResults(rosterContacts, comparator, abstractChats);
-            this.baseEntities.clear();
-            this.baseEntities.addAll(baseEntities);
+            this.rosterItemVOs.clear();
+            this.rosterItemVOs.addAll(SettingsManager.contactsShowMessages()
+                    ? ExtContactVO.convert(baseEntities)
+                    : ContactVO.convert(baseEntities));
             hasVisibleContacts = baseEntities.size() > 0;
         }
 
@@ -521,26 +571,34 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     @Override
     public int getItemCount() {
-        return baseEntities.size();
+        return rosterItemVOs.size();
     }
 
     public Object getItem(int position) {
-        return baseEntities.get(position);
+        return rosterItemVOs.get(position);
     }
 
     @Override
     public int getItemViewType(int position) {
         Object object = getItem(position);
-        if (object instanceof AbstractContact) {
-            return TYPE_CONTACT;
-        } else if (object instanceof AccountConfiguration) {
+        if (object instanceof ContactVO) {
+            if (object instanceof ChatVO) {
+                if (object instanceof ExtContactVO)
+                    return TYPE_EXT_CONTACT;
+                else return TYPE_CHAT;
+            } else return TYPE_CONTACT;
+        } else if (object instanceof AccountVO) {
             return TYPE_ACCOUNT;
-        } else if (object instanceof GroupConfiguration) {
+        } else if (object instanceof GroupVO) {
             return TYPE_GROUP;
-        } else if (object instanceof AccountTopSeparator) {
+        } else if (object instanceof TopAccountSeparatorVO) {
             return TYPE_ACCOUNT_TOP_SEPARATOR;
-        } else if (object instanceof AccountBottomSeparator) {
+        } else if (object instanceof BottomAccountSeparatorVO) {
             return TYPE_ACCOUNT_BOTTOM_SEPARATOR;
+        } else if (object instanceof ButtonVO) {
+            return TYPE_BUTTON;
+        } else if (object instanceof MainTitleVO) {
+            return TYPE_MAIN_TITLE;
         } else {
             throw new IllegalStateException();
         }
@@ -551,19 +609,31 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         switch (viewType) {
             case TYPE_CONTACT:
                 return new ContactListItemViewHolder(layoutInflater
-                        .inflate(R.layout.item_contact, parent, false), this);
+                        .inflate(R.layout.item_contact_in_contact_list, parent, false), this);
+            case TYPE_CHAT:
+                return new RosterChatViewHolder(layoutInflater
+                        .inflate(R.layout.item_chat_in_contact_list, parent, false), this);
+            case TYPE_EXT_CONTACT:
+                return new ExtContactViewHolder(layoutInflater
+                        .inflate(R.layout.item_ext_contact_in_contact_list, parent, false), this);
             case TYPE_GROUP:
                 return new GroupViewHolder(layoutInflater
-                        .inflate(R.layout.item_base_group, parent, false), this);
+                        .inflate(R.layout.item_group_in_contact_list, parent, false), this);
             case TYPE_ACCOUNT:
                 return new AccountGroupViewHolder(layoutInflater
-                        .inflate(R.layout.contact_list_account_group_item, parent, false), this);
+                        .inflate(R.layout.item_account_in_contact_list, parent, false), this);
             case TYPE_ACCOUNT_TOP_SEPARATOR:
                 return new TopSeparatorHolder(layoutInflater
                         .inflate(R.layout.account_group_item_top_separator, parent, false));
             case TYPE_ACCOUNT_BOTTOM_SEPARATOR:
                 return new BottomSeparatorHolder(layoutInflater
-                        .inflate(R.layout.account_group_item_bottom_separator, parent, false));
+                        .inflate(R.layout.item_account_bottom_in_contact_list, parent, false));
+            case TYPE_BUTTON:
+                return new ButtonViewHolder(layoutInflater
+                        .inflate(R.layout.item_button_in_contact_list, parent, false), this);
+            case TYPE_MAIN_TITLE:
+                return new MainTitleViewHolder(layoutInflater
+                        .inflate(R.layout.item_main_title_in_contact_list, parent, false), activity, this);
 
             default:
                 throw new IllegalStateException();
@@ -578,15 +648,27 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
         switch (viewType) {
             case TYPE_CONTACT:
-                contactItemInflater.bindViewHolder((ContactListItemViewHolder) holder, (AbstractContact) item);
+                contactItemInflater.bindViewHolder((ContactListItemViewHolder) holder, (ContactVO) item);
+                break;
+
+            case TYPE_CHAT:
+                contactItemChatInflater.bindViewHolderWithButton((RosterChatViewHolder) holder,
+                        (ChatVO) item, position == MAX_RECENT_ITEMS
+                                && currentChatsState == ChatListState.recent);
+                break;
+
+            case TYPE_EXT_CONTACT:
+                contactItemChatInflater.bindViewHolderWithButton((ExtContactViewHolder) holder,
+                        (ChatVO) item, position == MAX_RECENT_ITEMS
+                                && currentChatsState == ChatListState.recent);
                 break;
 
             case TYPE_ACCOUNT:
-                bindAccount((AccountGroupViewHolder)holder, (AccountConfiguration) item);
+                bindAccount((AccountGroupViewHolder)holder, (AccountVO) item);
                 break;
 
             case TYPE_GROUP:
-                bindGroup((GroupViewHolder) holder, (GroupConfiguration) item);
+                bindGroup((GroupViewHolder) holder, (GroupVO) item);
                 break;
 
             case TYPE_ACCOUNT_TOP_SEPARATOR:
@@ -594,7 +676,15 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
             case TYPE_ACCOUNT_BOTTOM_SEPARATOR:
                 bindBottomSeparator((BottomSeparatorHolder) holder,
-                        (AccountBottomSeparator) item);
+                        (BottomAccountSeparatorVO) item);
+                break;
+
+            case TYPE_BUTTON:
+                bindButtonItem((ButtonViewHolder) holder, (ButtonVO) item);
+                break;
+
+            case TYPE_MAIN_TITLE:
+                bindMainTitleItem((MainTitleViewHolder) holder);
                 break;
 
             default:
@@ -602,19 +692,38 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         }
     }
 
-    private void bindBottomSeparator(BottomSeparatorHolder holder, AccountBottomSeparator accountBottomSeparator) {
-        final int level = AccountManager.getInstance().getColorLevel(accountBottomSeparator.getAccount());
+    private void bindButtonItem(ButtonViewHolder holder, ButtonVO viewObject) {
+        holder.btnListAction.setText(viewObject.getTitle());
+        //holder.btnListAction.setTextColor(viewObject.getAccountColorIndicator());
+    }
 
-        holder.bottomLayer.setBackgroundDrawable(new ColorDrawable(accountSubgroupColors[level]));
-        holder.topLayer.setBackgroundDrawable(new ColorDrawable(accountSubgroupColors[level]));
+    private void bindMainTitleItem(MainTitleViewHolder holder) {
+        holder.accountColorIndicator.setBackgroundColor(
+                ColorManager.getInstance().getAccountPainter().getDefaultMainColor());
 
-        AccountItem accountItem = AccountManager.getInstance().getAccount(accountBottomSeparator.getAccount());
-        StatusMode statusMode = null;
-        if (accountItem != null) {
-            statusMode = accountItem.getDisplayStatusMode();
+        final int level = AccountManager.getInstance().getColorLevel(AccountPainter.getFirstAccount());
+        holder.itemView.setBackgroundColor(accountGroupColors[level]);
+
+        switch (currentChatsState) {
+            case unread:
+                holder.tvTitle.setText(R.string.unread_chats);
+                break;
+            case archived:
+                holder.tvTitle.setText(R.string.archived_chats);
+                break;
+            case all:
+                holder.tvTitle.setText(R.string.all_chats);
+                break;
+            default:
+                holder.tvTitle.setText(R.string.recent_chats);
+                break;
         }
+    }
 
-        if (statusMode == StatusMode.unavailable || statusMode == StatusMode.connection) {
+    private void bindBottomSeparator(BottomSeparatorHolder holder, BottomAccountSeparatorVO viewObject) {
+        holder.accountColorIndicator.setBackgroundColor(viewObject.getAccountColorIndicator());
+
+        if (viewObject.isShowOfflineShadow()) {
             holder.offlineShadowBottom.setVisibility(View.VISIBLE);
             holder.offlineShadowTop.setVisibility(View.VISIBLE);
         } else {
@@ -623,139 +732,118 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         }
     }
 
-    private void bindAccount(AccountGroupViewHolder viewHolder, AccountConfiguration configuration) {
+    private void bindAccount(AccountGroupViewHolder viewHolder, AccountVO viewObject) {
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            viewHolder.itemView.setElevation(accountElevation);
-        }
-
-        final AccountJid account = configuration.getAccount();
-
-        final int level = AccountManager.getInstance().getColorLevel(account);
+        final int level = AccountManager.getInstance().getColorLevel(viewObject.getAccountJid());
         viewHolder.itemView.setBackgroundColor(accountGroupColors[level]);
 
-        viewHolder.name.setText(GroupManager.getInstance().getGroupName(account, configuration.getGroup()));
-        viewHolder.smallRightText.setText(configuration.getOnline() + "/" + configuration.getTotal());
+        viewHolder.accountColorIndicator.setBackgroundColor(viewObject.getAccountColorIndicator());
 
-        AccountItem accountItem = AccountManager.getInstance().getAccount(account);
-        if (accountItem == null) {
-            LogManager.e(LOG_TAG, "accountItem is null " + account);
-            return;
-        }
+        viewHolder.tvAccountName.setText(viewObject.getName());
+        //viewHolder.tvAccountName.setTextColor(viewObject.getAccountColorIndicator());
+        viewHolder.tvContactCount.setText(viewObject.getContactCount());
+        viewHolder.tvJid.setText(viewObject.getJid());
 
-        String statusText = accountItem.getStatusText().trim();
+        String statusText = viewObject.getStatus();
+        if (statusText.isEmpty()) statusText = activity.getString(viewObject.getStatusId());
 
-        if (statusText.isEmpty()) {
-            statusText = activity.getString(accountItem.getDisplayStatusMode().getStringID());
-        }
-
-        viewHolder.secondLineMessage.setText(statusText);
+        viewHolder.tvStatus.setText(statusText);
+        //viewHolder.tvStatus.setTextColor(viewObject.getAccountColorIndicator());
 
         if (SettingsManager.contactsShowAvatars()) {
-            viewHolder.avatar.setVisibility(View.VISIBLE);
-            viewHolder.avatar.setImageDrawable(AvatarManager.getInstance().getAccountAvatar(account));
-        } else {
-            viewHolder.avatar.setVisibility(View.GONE);
-        }
+            viewHolder.avatarView.setVisibility(View.VISIBLE);
+            viewHolder.ivAvatar.setImageDrawable(viewObject.getAvatar());
+        } else viewHolder.avatarView.setVisibility(View.GONE);
 
-        viewHolder.statusIcon.setImageLevel(accountItem.getDisplayStatusMode().getStatusLevel());
+        viewHolder.ivStatus.setImageLevel(viewObject.getStatusLevel());
 
-        ShowOfflineMode showOfflineMode = configuration.getShowOfflineMode();
-        if (showOfflineMode == ShowOfflineMode.normal) {
-            if (SettingsManager.contactsShowOffline()) {
-                showOfflineMode = ShowOfflineMode.always;
-            } else {
-                showOfflineMode = ShowOfflineMode.never;
-            }
-        }
+        viewHolder.smallRightIcon.setImageLevel(viewObject.getOfflineModeLevel());
 
-        viewHolder.smallRightIcon.setImageLevel(showOfflineMode.ordinal());
-
-
-        StatusMode statusMode = accountItem.getDisplayStatusMode();
-
-        if (statusMode == StatusMode.unavailable || statusMode == StatusMode.connection) {
+        if (viewObject.isShowOfflineShadow())
             viewHolder.offlineShadow.setVisibility(View.VISIBLE);
-        } else {
-            viewHolder.offlineShadow.setVisibility(View.GONE);
-        }
+        else viewHolder.offlineShadow.setVisibility(View.GONE);
     }
 
-    private void bindGroup(GroupViewHolder viewHolder, GroupConfiguration configuration) {
-        final int level = AccountManager.getInstance().getColorLevel(configuration.getAccount());
+    private void bindGroup(GroupViewHolder viewHolder, GroupVO viewObject) {
 
-        final String name = GroupManager.getInstance().getGroupName(configuration.getAccount(), configuration.getGroup());
+        viewHolder.accountColorIndicator.setBackgroundColor(viewObject.getAccountColorIndicator());
 
+        viewHolder.indicator.setImageLevel(viewObject.getExpandIndicatorLevel());
 
-        viewHolder.indicator.setImageLevel(configuration.isExpanded() ? 1 : 0);
-        viewHolder.groupOfflineIndicator.setImageLevel(configuration.getShowOfflineMode().ordinal());
+        if (viewObject.getTitle().equals(GroupVO.RECENT_CHATS_TITLE))
+            viewHolder.indicator.setVisibility(View.GONE);
+        else viewHolder.indicator.setVisibility(View.VISIBLE);
 
-        int color;
+        viewHolder.groupOfflineIndicator.setImageLevel(viewObject.getOfflineIndicatorLevel());
 
         viewHolder.groupOfflineIndicator.setVisibility(View.GONE);
         viewHolder.offlineShadow.setVisibility(View.GONE);
 
-        if (configuration.getGroup().equals(GroupManager.ACTIVE_CHATS)) {
-            color = activeChatsColor;
-            viewHolder.name.setText(name);
-        } else {
-            viewHolder.name.setText(String.format("%s (%d/%d)", name, configuration.getOnline(), configuration.getTotal()));
+        viewHolder.name.setText(viewObject.getTitle());
 
-            color = accountSubgroupColors[level];
-            viewHolder.groupOfflineIndicator.setVisibility(View.VISIBLE);
+        viewHolder.groupOfflineIndicator.setVisibility(View.VISIBLE);
 
-            AccountItem accountItem = AccountManager.getInstance().getAccount(configuration.getAccount());
-
-            if (accountItem != null) {
-                StatusMode statusMode = accountItem.getDisplayStatusMode();
-                if (statusMode == StatusMode.unavailable || statusMode == StatusMode.connection) {
-                    viewHolder.offlineShadow.setVisibility(View.VISIBLE);
-                }
-            }
-        }
-
-        viewHolder.itemView.setBackgroundDrawable(new ColorDrawable(color));
+        if (viewObject.isShowOfflineShadow())
+            viewHolder.offlineShadow.setVisibility(View.VISIBLE);
+        else viewHolder.offlineShadow.setVisibility(View.GONE);
     }
 
     @Override
     public void onContactClick(int adapterPosition) {
-        if (adapterPosition >= 0 && adapterPosition < baseEntities.size()) {
-            listener.onContactClick((AbstractContact) baseEntities.get(adapterPosition));
+        if (adapterPosition >= 0 && adapterPosition < rosterItemVOs.size()) {
+            AccountJid accountJid = ((ContactVO) rosterItemVOs.get(adapterPosition)).getAccountJid();
+            UserJid userJid = ((ContactVO) rosterItemVOs.get(adapterPosition)).getUserJid();
+            listener.onContactClick(RosterManager.getInstance().getAbstractContact(accountJid, userJid));
         }
     }
 
     @Override
     public void onContactAvatarClick(int adapterPosition) {
-        contactItemInflater.onAvatarClick((BaseEntity) getItem(adapterPosition));
+        contactItemInflater.onAvatarClick((ContactVO) getItem(adapterPosition));
     }
 
     @Override
     public void onContactCreateContextMenu(int adapterPosition, ContextMenu menu) {
-        AbstractContact abstractContact = (AbstractContact) getItem(adapterPosition);
+        AccountJid accountJid = ((ContactVO) rosterItemVOs.get(adapterPosition)).getAccountJid();
+        UserJid userJid = ((ContactVO) rosterItemVOs.get(adapterPosition)).getUserJid();
+        AbstractContact abstractContact = RosterManager.getInstance().getAbstractContact(accountJid, userJid);
         ContextMenuHelper.createContactContextMenu(activity, this, abstractContact, menu);
     }
 
     @Override
+    public void onContactButtonClick(int adapterPosition) {
+        setState(ChatListState.all);
+        onChange();
+    }
+
+    @Override
     public void onAccountAvatarClick(int adapterPosition) {
+        if (adapterPosition == -1) adapterPosition = currentHeaderPosition;
         activity.startActivity(AccountActivity.createIntent(activity,
-                ((AccountConfiguration)getItem(adapterPosition)).getAccount()));
+                ((AccountVO)getItem(adapterPosition)).getAccountJid()));
     }
 
     @Override
     public void onAccountMenuClick(int adapterPosition, View view) {
+        if (adapterPosition == -1) adapterPosition = currentHeaderPosition;
         listener.onAccountMenuClick(
-                ((AccountConfiguration)baseEntities.get(adapterPosition)).getAccount(), view);
+                ((AccountVO)rosterItemVOs.get(adapterPosition)).getAccountJid(), view);
     }
 
     @Override
     public void onAccountGroupClick(int adapterPosition) {
-        toggleGroupExpand(adapterPosition);
+        if (adapterPosition == -1) {
+            adapterPosition = currentHeaderPosition;
+            toggleGroupExpand(adapterPosition);
+            listener.onScrollToPosition(adapterPosition);
+        } else toggleGroupExpand(adapterPosition);
     }
 
     @Override
     public void onAccountGroupCreateContextMenu(int adapterPosition, ContextMenu menu) {
-        AccountConfiguration accountConfiguration = (AccountConfiguration) getItem(adapterPosition);
-        ContextMenuHelper.createAccountContextMenu(activity, this, accountConfiguration.getAccount(), menu);
+        if (adapterPosition == -1) adapterPosition = currentHeaderPosition;
+        AccountVO accountVO = (AccountVO) getItem(adapterPosition);
+        ContextMenuHelper.createAccountContextMenu(activity, this, accountVO.getAccountJid(), menu);
     }
 
     @Override
@@ -765,17 +853,47 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     @Override
     public void onGroupCreateContextMenu(int adapterPosition, ContextMenu menu) {
-        GroupConfiguration groupConfiguration = (GroupConfiguration) getItem(adapterPosition);
+        GroupVO groupVO = (GroupVO) getItem(adapterPosition);
 
         ContextMenuHelper.createGroupContextMenu(activity, this,
-                groupConfiguration.getAccount(), groupConfiguration.getGroup(), menu);
+                groupVO.getAccountJid(), groupVO.getGroupName(), menu);
+    }
+
+    @Override
+    public void onButtonClick(int position) {
+        if (rosterItemVOs.size() > position) {
+            if (rosterItemVOs.get(position) instanceof ButtonVO) {
+                ButtonVO viewObject = (ButtonVO) rosterItemVOs.get(position);
+                if (viewObject.getAction().equals(ButtonVO.ACTION_ADD_CONTACT)) {
+                    if (activity != null)
+                        activity.startActivity(ContactAddActivity.createIntent(activity));
+                }
+            }
+        }
     }
 
     private void toggleGroupExpand(int adapterPosition) {
-        GroupConfiguration groupConfiguration = (GroupConfiguration) getItem(adapterPosition);
-        GroupManager.getInstance().setExpanded(groupConfiguration.getAccount(), groupConfiguration.getGroup(),
-                !groupConfiguration.isExpanded());
-        onChange();
+        BaseRosterItemVO viewObject = (BaseRosterItemVO) getItem(adapterPosition);
+        if (viewObject instanceof GroupVO) {
+            GroupVO groupVO = (GroupVO) getItem(adapterPosition);
+
+            // recent chats not roll up or expand
+            if (!groupVO.getGroupName().equals(GroupVO.RECENT_CHATS_TITLE)) {
+                boolean expanded;
+                expanded = groupVO.getExpandIndicatorLevel() == 1;
+
+                GroupManager.getInstance().setExpanded(groupVO.getAccountJid(),
+                        groupVO.getGroupName(), !expanded);
+
+                onChange();
+            }
+        } else {
+            AccountVO accountVO = (AccountVO) getItem(adapterPosition);
+            GroupManager.getInstance().setExpanded(accountVO.getAccountJid(),
+                    accountVO.getGroupName(), !accountVO.isExpand());
+
+            onChange();
+        }
     }
 
     /**
@@ -789,6 +907,10 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                                   boolean hasVisibleContacts, boolean isFilterEnabled);
         void onContactClick(AbstractContact contact);
         void onAccountMenuClick(AccountJid accountJid, View view);
+        void onScrollToPosition(int position);
+        void hidePlaceholder();
+        void showPlaceholder(String message);
+        void onChatListStateChanged();
 
     }
 
@@ -822,5 +944,148 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     public boolean isHasActiveChats() {
         return hasActiveChats;
+    }
+
+    public static class UpdateUnreadCountEvent {
+        private int count;
+
+        public UpdateUnreadCountEvent(int count) {
+            this.count = count;
+        }
+
+        public int getCount() {
+            return count;
+        }
+    }
+
+    @Override
+    public List<?> getAdapterData() {
+        return rosterItemVOs;
+    }
+
+    @Override
+    public void headerAttached(View headerView, int adapterPosition) {
+        this.currentHeaderPosition = adapterPosition;
+        if (rosterItemVOs.get(adapterPosition) instanceof AccountVO)
+            ((ContactListActivity)activity).setStatusBarColor(((AccountVO)
+                    rosterItemVOs.get(adapterPosition)).getAccountJid());
+        else ((ContactListActivity)activity).setStatusBarColor();
+    }
+
+    @Override
+    public void headerDetached(View headerView, int adapterPosition) {}
+
+    @Override
+    public void onStateChanged(ChatListState state) {
+        this.currentChatsState = state;
+        listener.onChatListStateChanged();
+        onChange();
+    }
+
+    public void setState(ChatListState state) {
+        this.currentChatsState = state;
+    }
+
+    public ChatListState getCurrentChatsState() {
+        return currentChatsState;
+    }
+
+    public enum ChatListState {
+        recent,
+        unread,
+        archived,
+        all
+    }
+
+    private GroupConfiguration getChatsGroup(Collection<AbstractChat> chats, ChatListState state) {
+        GroupConfiguration chatsGroup = new GroupConfiguration(GroupManager.NO_ACCOUNT,
+                GroupVO.RECENT_CHATS_TITLE, GroupManager.getInstance());
+
+        List<AbstractChat> newChats = new ArrayList<>();
+
+        int unreadMessageCount = 0;
+        for (AbstractChat abstractChat : chats) {
+            MessageItem lastMessage = abstractChat.getLastMessage();
+
+            if (lastMessage != null && !TextUtils.isEmpty(lastMessage.getText())) {
+                AccountItem accountItem = AccountManager.getInstance().getAccount(abstractChat.getAccount());
+                if (accountItem != null && accountItem.isEnabled()) {
+                    int unread = abstractChat.getUnreadMessageCount();
+                    if (abstractChat.notifyAboutMessage()) unreadMessageCount = unreadMessageCount + unread;
+
+                    switch (state) {
+                        case unread:
+                            if (!abstractChat.isArchived() && unread > 0) newChats.add(abstractChat);
+                            break;
+                        case archived:
+                            if (abstractChat.isArchived()) newChats.add(abstractChat);
+                            break;
+                        default:
+                            // recent
+                            if (!abstractChat.isArchived()) newChats.add(abstractChat);
+                            break;
+                    }
+                }
+            }
+        }
+        EventBus.getDefault().post(new UpdateUnreadCountEvent(unreadMessageCount));
+
+        Collections.sort(newChats, ChatComparator.CHAT_COMPARATOR);
+
+        chatsGroup.setNotEmpty();
+
+        int itemsCount = 0;
+        for (AbstractChat chat : newChats) {
+            if (itemsCount < MAX_RECENT_ITEMS || state != ChatListState.recent) {
+                chatsGroup.addAbstractContact(RosterManager.getInstance()
+                        .getBestContact(chat.getAccount(), chat.getUser()));
+                chatsGroup.increment(true);
+                itemsCount++;
+            } else break;
+        }
+
+        return chatsGroup;
+    }
+
+    public ArrayList<ChatVO> getTwoNextRecentChat() {
+        Collection<AbstractChat> chats = MessageManager.getInstance().getChatsOfEnabledAccount();
+        GroupConfiguration chatsGroup = getChatsGroup(chats, currentChatsState);
+
+        ArrayList<ChatVO> items = new ArrayList<>();
+        if (chatsGroup.getAbstractContacts() instanceof List) {
+            items.add(ChatVO.convert(((ArrayList<AbstractContact>)chatsGroup.getAbstractContacts()).get(MAX_RECENT_ITEMS - 2)));
+            items.add(ChatVO.convert(((ArrayList<AbstractContact>)chatsGroup.getAbstractContacts()).get(MAX_RECENT_ITEMS - 1)));
+        }
+        return items;
+    }
+
+    public void removeItem(int position) {
+        // remove item
+        rosterItemVOs.remove(position);
+        notifyItemRemoved(position);
+
+        // update end of list
+        if (currentChatsState == ChatListState.recent) {
+            ArrayList<ChatVO> items = getTwoNextRecentChat();
+            rosterItemVOs.add(MAX_RECENT_ITEMS - 1, items.get(0));
+            notifyItemInserted(MAX_RECENT_ITEMS - 1);
+            rosterItemVOs.set(MAX_RECENT_ITEMS, items.get(1));
+            notifyItemChanged(MAX_RECENT_ITEMS);
+        }
+    }
+
+    public void restoreItem(BaseRosterItemVO item, int position) {
+        // update end of list
+        if (currentChatsState == ChatListState.recent) {
+            BaseRosterItemVO lastChat = rosterItemVOs.get(MAX_RECENT_ITEMS - 1);
+            rosterItemVOs.remove(MAX_RECENT_ITEMS - 1);
+            notifyItemRemoved(MAX_RECENT_ITEMS - 1);
+            rosterItemVOs.set(MAX_RECENT_ITEMS - 1, lastChat);
+            notifyItemChanged(MAX_RECENT_ITEMS - 1);
+        }
+
+        // restore item
+        rosterItemVOs.add(position, item);
+        notifyItemInserted(position);
     }
 }

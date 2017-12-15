@@ -15,15 +15,27 @@
 package com.xabber.android.ui.activity;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NavUtils;
 import android.support.v4.view.ViewPager;
+import android.support.v7.widget.Toolbar;
+import android.text.InputType;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
+import android.widget.Toast;
 
 import com.xabber.android.R;
 import com.xabber.android.data.ActivityManager;
@@ -36,27 +48,43 @@ import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.attention.AttentionManager;
 import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.blocking.OnBlockedListChangedListener;
+import com.xabber.android.data.extension.file.FileUtils;
+import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
+import com.xabber.android.data.extension.muc.MUCManager;
+import com.xabber.android.data.extension.muc.RoomChat;
+import com.xabber.android.data.extension.muc.RoomState;
 import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.NewMessageEvent;
+import com.xabber.android.data.message.NotificationState;
 import com.xabber.android.data.message.RegularChat;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.RosterContact;
+import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.adapter.ChatViewerAdapter;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.color.StatusBarPainter;
+import com.xabber.android.ui.dialog.BlockContactDialog;
+import com.xabber.android.ui.dialog.ContactDeleteDialogFragment;
 import com.xabber.android.ui.fragment.ChatFragment;
+import com.xabber.android.ui.fragment.ContactVcardViewerFragment;
 import com.xabber.android.ui.fragment.RecentChatFragment;
+import com.xabber.android.ui.helper.NewContactTitleInflater;
+import com.xabber.android.ui.helper.PermissionsRequester;
+import com.xabber.android.ui.preferences.ChatContactSettings;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.jxmpp.stringprep.XmppStringprepException;
 
 import java.util.Collection;
+
+import static com.xabber.android.ui.adapter.ChatViewerAdapter.PAGE_POSITION_CHAT_INFO;
+import static com.xabber.android.ui.adapter.ChatViewerAdapter.PAGE_POSITION_RECENT_CHATS;
 
 
 /**
@@ -68,7 +96,8 @@ import java.util.Collection;
 public class ChatActivity extends ManagedActivity implements OnContactChangedListener,
         OnAccountChangedListener, ViewPager.OnPageChangeListener,
         ChatFragment.ChatViewerFragmentListener, OnBlockedListChangedListener,
-        RecentChatFragment.Listener, ChatViewerAdapter.FinishUpdateListener {
+        RecentChatFragment.Listener, ChatViewerAdapter.FinishUpdateListener,
+        ContactVcardViewerFragment.Listener, Toolbar.OnMenuItemClickListener {
 
     private static final String LOG_TAG = ChatActivity.class.getSimpleName();
 
@@ -80,9 +109,11 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     public static final String EXTRA_OTR_PROGRESS = "com.xabber.android.data.EXTRA_OTR_PROGRESS";
 //    public static final String ACTION_OTR_REQUEST = "com.xabber.android.data.ACTION_OTR_REQUEST";
 //    public static final String ACTION_OTR_PROGRESS = "com.xabber.android.data.ACTION_OTR_PROGRESS";
+    private static final int PERMISSIONS_REQUEST_ATTACH_FILE = 24;
     public final static String KEY_ACCOUNT = "KEY_ACCOUNT";
     public final static String KEY_USER = "KEY_USER";
     public final static String KEY_QUESTION = "KEY_QUESTION";
+    public final static String KEY_SHOW_ARCHIVED = "KEY_SHOW_ARCHIVED";
 
     private static final String SAVE_SELECTED_PAGE = "com.xabber.android.ui.activity.ChatActivity.SAVE_SELECTED_PAGE";
     private static final String SAVE_SELECTED_ACCOUNT = "com.xabber.android.ui.activity.ChatActivity.SAVE_SELECTED_ACCOUNT";
@@ -103,11 +134,23 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     private int selectedPagePosition;
     private boolean exitOnSend;
 
+    private Animation shakeAnimation = null;
+
+    @Nullable
+    private ContactVcardViewerFragment contactVcardViewerFragment;
     @Nullable
     private ChatFragment chatFragment;
     @Nullable
     private RecentChatFragment recentChatFragment;
 
+    private Toolbar toolbar;
+    private View contactTitleView;
+
+    boolean showArchived = false;
+
+    public boolean isShowArchived() {
+        return showArchived;
+    }
 
     public static void hideKeyboard(Activity activity) {
         // Check if no view has focus:
@@ -165,6 +208,8 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     public static Intent createSpecificChatIntent(Context context, AccountJid account, UserJid user) {
         Intent intent = new EntityIntentBuilder(context, ChatActivity.class).setAccount(account).setUser(user).build();
         intent.setAction(ACTION_SPECIFIC_CHAT);
+        AbstractChat chat = MessageManager.getInstance().getChat(account, user);
+        intent.putExtra(KEY_SHOW_ARCHIVED, chat != null && chat.isArchived());
         return intent;
     }
 
@@ -191,6 +236,16 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         Intent intent = ChatActivity.createSpecificChatIntent(context, account, user);
         intent.setAction(Intent.ACTION_SEND);
         intent.putExtra(Intent.EXTRA_TEXT, text);
+        AbstractChat chat = MessageManager.getInstance().getChat(account, user);
+        intent.putExtra(KEY_SHOW_ARCHIVED, chat != null && chat.isArchived());
+        return intent;
+    }
+
+    public static Intent createSendUriIntent(Context context, AccountJid account,
+                                             UserJid user, Uri uri) {
+        Intent intent = ChatActivity.createSpecificChatIntent(context, account, user);
+        intent.setAction(Intent.ACTION_SEND);
+        intent.putExtra(Intent.EXTRA_STREAM, uri);
         return intent;
     }
 
@@ -206,6 +261,25 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         LogManager.i(LOG_TAG, "onCreate " + savedInstanceState);
 
         setContentView(R.layout.activity_chat);
+
+        contactTitleView = findViewById(R.id.contact_title);
+        contactTitleView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                selectPage(2, true);
+            }
+        });
+        toolbar = (Toolbar) findViewById(R.id.toolbar_default);
+        toolbar.setOverflowIcon(getResources().getDrawable(R.drawable.ic_overflow_menu_white_24dp));
+        toolbar.setOnMenuItemClickListener(this);
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                NavUtils.navigateUpFromSameTask(ChatActivity.this);
+            }
+        });
+
         statusBarPainter = new StatusBarPainter(this);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
@@ -238,11 +312,15 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         super.onResume();
         LogManager.i(LOG_TAG, "onResume");
 
+        updateToolbar();
+
         isVisible = true;
 
         Application.getInstance().addUIListener(OnContactChangedListener.class, this);
         Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
         Application.getInstance().addUIListener(OnBlockedListChangedListener.class, this);
+
+        this.showArchived = getIntent().getBooleanExtra(KEY_SHOW_ARCHIVED, false);
 
         selectPage();
 
@@ -252,7 +330,13 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
             AttentionManager.getInstance().removeAccountNotifications(account, user);
         }
 
-        if (Intent.ACTION_SEND.equals(intent.getAction())) {
+        if (Intent.ACTION_SEND.equals(intent.getAction())
+                && intent.getParcelableExtra(Intent.EXTRA_STREAM) != null) {
+
+            Uri receivedUri = getIntent().getParcelableExtra(Intent.EXTRA_STREAM);
+            handleShareFileUri(receivedUri);
+
+        } else if (Intent.ACTION_SEND.equals(intent.getAction())) {
             extraText = intent.getStringExtra(Intent.EXTRA_TEXT);
 
             if (extraText != null) {
@@ -264,6 +348,21 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         if (intent.getBooleanExtra(EXTRA_OTR_REQUEST, false) ||
                 intent.getBooleanExtra(EXTRA_OTR_PROGRESS, false)) {
             handleOtrIntent(intent);
+        }
+    }
+
+    public void handleShareFileUri(Uri fileUri) {
+        final String path = FileUtils.getPath(this, fileUri);
+
+        LogManager.i(this, String.format("File uri: %s, path: %s", fileUri, path));
+
+        if (path == null) {
+            Toast.makeText(this, R.string.could_not_get_path_to_file, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (PermissionsRequester.requestFileReadPermissionIfNeeded(this, PERMISSIONS_REQUEST_ATTACH_FILE)) {
+            HttpFileUploadManager.getInstance().uploadFile(account, user, path);
         }
     }
 
@@ -313,16 +412,6 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         viewPager.setAdapter(chatViewerAdapter);
         viewPager.addOnPageChangeListener(this);
 
-        if (SettingsManager.chatsShowBackground()) {
-            if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.dark) {
-                viewPager.setBackgroundDrawable(getResources().getDrawable(R.drawable.chat_background_repeat_dark));
-            } else {
-                viewPager.setBackgroundDrawable(getResources().getDrawable(R.drawable.chat_background_repeat));
-            }
-        } else {
-            viewPager.setBackgroundColor(ColorManager.getInstance().getChatBackgroundColor());
-        }
-
     }
 
     private void getInitialChatFromIntent() {
@@ -348,7 +437,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
 
         switch (intent.getAction()) {
             case ACTION_RECENT_CHATS:
-                selectedPagePosition = ChatViewerAdapter.PAGE_POSITION_RECENT_CHATS;
+                selectedPagePosition = PAGE_POSITION_RECENT_CHATS;
                 break;
 
             case ACTION_SPECIFIC_CHAT:
@@ -399,16 +488,22 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         account = chat.getAccount();
         user = chat.getUser();
 
-        if (chatFragment == null) {
-            chatViewerAdapter.selectChat(chat.getAccount(), chat.getUser());
-        } else {
+        chatViewerAdapter.selectChat(account, user);
+
+        if (chatFragment != null) {
             chatFragment.saveInputState();
             chatFragment.setChat(chat.getAccount(), chat.getUser());
         }
+
         selectPage(ChatViewerAdapter.PAGE_POSITION_CHAT, smoothScroll);
+
+        if (contactVcardViewerFragment != null) {
+            contactVcardViewerFragment.updateContact(account, user);
+            contactVcardViewerFragment.requestVCard();
+        }
     }
 
-    private void selectPage(int position, boolean smoothScroll) {
+    public void selectPage(int position, boolean smoothScroll) {
         onPageSelected(position);
         viewPager.setCurrentItem(position, smoothScroll);
     }
@@ -420,12 +515,14 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
 
     @Override
     public void onContactsChanged(Collection<RosterContact> entities) {
+        updateToolbar();
         updateChat();
         updateRecentChats();
     }
 
     @Override
     public void onAccountsChanged(Collection<AccountJid> accounts) {
+        updateToolbar();
         updateChat();
         updateRecentChats();
         updateStatusBar();
@@ -440,7 +537,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     public void onPageSelected(int position) {
         selectedPagePosition = position;
 
-        if (selectedPagePosition == ChatViewerAdapter.PAGE_POSITION_RECENT_CHATS) {
+        if (selectedPagePosition == PAGE_POSITION_RECENT_CHATS) {
             MessageManager.getInstance().removeVisibleChat();
         } else {
             if (isVisible) {
@@ -450,15 +547,25 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
             }
         }
 
+        if (chatFragment != null) {
+            if (selectedPagePosition == ChatViewerAdapter.PAGE_POSITION_CHAT)
+                chatFragment.showPlaceholder(false);
+            else chatFragment.showPlaceholder(true);
+        }
+
+        updateToolbar();
         updateStatusBar();
     }
 
+    private void updateToolbar() {
+        NewContactTitleInflater.updateTitle(contactTitleView, this,
+                RosterManager.getInstance().getBestContact(account, user), getNotifMode());
+        toolbar.setBackgroundColor(ColorManager.getInstance().getAccountPainter().getAccountMainColor(account));
+        setUpOptionsMenu(toolbar.getMenu());
+    }
+
     private void updateStatusBar() {
-        if (selectedPagePosition == ChatViewerAdapter.PAGE_POSITION_RECENT_CHATS || account == null) {
-            statusBarPainter.updateWithDefaultColor();
-        } else {
-            statusBarPainter.updateWithAccountName(account);
-        }
+        statusBarPainter.updateWithAccountName(account);
     }
 
     private void updateChat() {
@@ -496,6 +603,11 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     @Override
     public void onChatSelected(BaseEntity chat) {
         selectChat(chat.getAccount(), chat.getUser());
+    }
+
+    @Override
+    public boolean isCurrentChat(String account, String user) {
+        return this.account.toString().equals(account) && this.user.toString().equals(user);
     }
 
     private void selectChat(AccountJid accountJid, UserJid userJid) {
@@ -552,5 +664,272 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         if (blockedContacts.contains(user)) {
             close();
         }
+    }
+
+    @Override
+    public void onVCardReceived() {}
+
+    @Override
+    public void registerVCardFragment(ContactVcardViewerFragment fragment) {
+        this.contactVcardViewerFragment = fragment;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        setUpOptionsMenu(menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        return onMenuItemClick(item);
+    }
+
+    private void setUpRecentChatsMenu(Menu menu, AbstractChat abstractChat) {
+
+    }
+
+    private void setUpRegularChatMenu(Menu menu, AbstractChat abstractChat) {
+
+        // archive/unarchive chat
+        menu.findItem(R.id.action_archive_chat).setVisible(!abstractChat.isArchived());
+        menu.findItem(R.id.action_unarchive_chat).setVisible(abstractChat.isArchived());
+
+        // mute chat
+        menu.findItem(R.id.action_mute_chat).setVisible(abstractChat.notifyAboutMessage());
+    }
+
+    private void setUpMUCMenu(Menu menu, AbstractChat abstractChat) {
+
+        RoomState chatState = ((RoomChat) abstractChat).getState();
+        if (chatState == RoomState.unavailable)
+            menu.findItem(R.id.action_join_conference).setVisible(true);
+        else {
+            menu.findItem(R.id.action_invite_to_chat).setVisible(true);
+
+            if (chatState == RoomState.error) {
+                menu.findItem(R.id.action_authorization_settings).setVisible(true);
+            } else {
+                menu.findItem(R.id.action_leave_conference).setVisible(true);
+            }
+        }
+
+        setUpRegularChatMenu(menu, abstractChat);
+    }
+
+    private void setUpOptionsMenu(Menu menu) {
+
+        AbstractChat abstractChat = MessageManager.getInstance().getChat(account, user);
+        if (abstractChat != null) {
+            menu.clear();
+            MenuInflater inflater = getMenuInflater();
+            if (selectedPagePosition == PAGE_POSITION_RECENT_CHATS) {
+                inflater.inflate(R.menu.menu_chat_recent_list, menu);
+                setUpRecentChatsMenu(menu, abstractChat);
+                return;
+            }
+            if (selectedPagePosition == PAGE_POSITION_CHAT_INFO) {
+                inflater.inflate(R.menu.toolbar_contact, menu);
+                return;
+            }
+            if (abstractChat instanceof RoomChat) {
+                inflater.inflate(R.menu.menu_chat_muc, menu);
+                setUpMUCMenu(menu, abstractChat);
+                return;
+            }
+            if (abstractChat instanceof RegularChat) {
+                inflater.inflate(R.menu.menu_chat_regular, menu);
+                setUpRegularChatMenu(menu, abstractChat);
+                return;
+            }
+        }
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        AbstractChat abstractChat = MessageManager.getInstance().getChat(account, user);
+
+        switch (item.getItemId()) {
+            /* security menu */
+
+            case R.id.action_start_encryption:
+                if (chatFragment != null)
+                    chatFragment.showResourceChoiceAlert(account, user, false);
+                return true;
+
+            case R.id.action_restart_encryption:
+                if (chatFragment != null)
+                    chatFragment.showResourceChoiceAlert(account, user, true);
+                return true;
+
+            case R.id.action_stop_encryption:
+                if (chatFragment != null)
+                    chatFragment.stopEncryption(account, user);
+                return true;
+
+            case R.id.action_verify_with_fingerprint:
+                startActivity(FingerprintActivity.createIntent(this, account, user));
+                return true;
+
+            case R.id.action_verify_with_question:
+                startActivity(QuestionActivity.createIntent(this, account, user, true, false, null));
+                return true;
+
+            case R.id.action_verify_with_shared_secret:
+                startActivity(QuestionActivity.createIntent(this, account, user, false, false, null));
+                return true;
+
+            /* regular chat options menu */
+
+            case R.id.action_view_contact:
+                if (chatFragment != null)
+                    chatFragment.showContactInfo();
+                return true;
+
+            case R.id.action_chat_settings:
+                startActivity(ChatContactSettings.createIntent(this, account, user));
+                return true;
+
+            case R.id.action_authorization_settings:
+                startActivity(ConferenceAddActivity.createIntent(this, account, user.getBareUserJid()));
+                return true;
+
+            case R.id.action_close_chat:
+                if (chatFragment != null)
+                chatFragment.closeChat(account, user);
+                return true;
+
+            case R.id.action_clear_history:
+                if (chatFragment != null)
+                    chatFragment.clearHistory(account, user);
+                return true;
+
+            case R.id.action_export_chat:
+                if (chatFragment != null)
+                    chatFragment.onExportChatClick();
+                return true;
+
+            case R.id.action_call_attention:
+                if (chatFragment != null)
+                    chatFragment.callAttention();
+                return true;
+
+            case R.id.action_block_contact:
+                BlockContactDialog.newInstance(account, user).show(getFragmentManager(), BlockContactDialog.class.getName());
+                return true;
+
+            case R.id.action_archive_chat:
+                if (abstractChat != null) abstractChat.setArchived(true, true);
+                return true;
+
+            case R.id.action_unarchive_chat:
+                if (abstractChat != null) abstractChat.setArchived(false, true);
+                return true;
+
+            case R.id.action_mute_chat:
+                if (abstractChat != null) abstractChat.setNotificationState(
+                        new NotificationState(NotificationState.NotificationMode.disabled,
+                                0), true);
+                setUpOptionsMenu(toolbar.getMenu());
+                return true;
+
+//            case R.id.action_unmute_chat:
+//                //if (abstractChat != null) abstractChat.setNotificationEnabled(null, true);
+//                return true;
+
+            /* conference specific options menu */
+
+            case R.id.action_join_conference:
+                MUCManager.getInstance().joinRoom(account, user.getJid().asEntityBareJidIfPossible(), true);
+                return true;
+
+            case R.id.action_invite_to_chat:
+                startActivity(ContactListActivity.createRoomInviteIntent(this, account, user.getBareUserJid()));
+                return true;
+
+            case R.id.action_leave_conference:
+                if (chatFragment != null)
+                    chatFragment.leaveConference(account, user);
+                return true;
+
+            case R.id.action_show_archived:
+                this.showArchived = !this.showArchived;
+                if (recentChatFragment != null) {
+                    recentChatFragment.closeSnackbar();
+                    recentChatFragment.updateChats();
+                    Toast.makeText(this,
+                            this.showArchived ? R.string.toast_archived_show
+                                    : R.string.toast_archived_hide, Toast.LENGTH_SHORT).show();
+                }
+                return true;
+
+            /* contact info menu */
+
+            case R.id.action_edit_alias:
+                editAlias();
+                return true;
+
+            case R.id.action_edit_groups:
+                startActivity(GroupEditActivity.createIntent(this, account, user));
+                return true;
+
+            case R.id.action_remove_contact:
+                ContactDeleteDialogFragment.newInstance(account, user)
+                        .show(getFragmentManager(), "CONTACT_DELETE");
+                return true;
+
+            default:
+                return false;
+        }
+    }
+
+    @Override
+    public void playIncomingAnimation() {
+        if (shakeAnimation == null) {
+            shakeAnimation = AnimationUtils.loadAnimation(this, R.anim.shake);
+        }
+        toolbar.findViewById(R.id.name_holder).startAnimation(shakeAnimation);
+    }
+
+    private NotificationState.NotificationMode getNotifMode() {
+        AbstractChat chat = MessageManager.getInstance().getOrCreateChat(account, user);
+        NotificationState.NotificationMode mode = NotificationState.NotificationMode.bydefault;
+        if (chat != null) {
+            boolean defaultValue = chat instanceof RegularChat ? SettingsManager.eventsOnChat() : SettingsManager.eventsOnMuc();
+            if (chat.getNotificationState().getMode() == NotificationState.NotificationMode.enabled && !defaultValue)
+                mode = NotificationState.NotificationMode.enabled;
+            if (chat.getNotificationState().getMode() == NotificationState.NotificationMode.disabled && defaultValue)
+                mode = NotificationState.NotificationMode.disabled;
+        }
+        return mode;
+    }
+
+    private void editAlias() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.edit_alias);
+
+        final EditText input = new EditText(this);
+        input.setInputType(InputType.TYPE_TEXT_VARIATION_PERSON_NAME);
+
+        RosterContact rosterContact = RosterManager.getInstance().getRosterContact(account, user);
+        if (rosterContact != null)
+            input.setText(rosterContact.getName());
+        builder.setView(input);
+
+        builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                RosterManager.getInstance().setName(account, user, input.getText().toString());
+            }
+        });
+
+        builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        builder.show();
     }
 }

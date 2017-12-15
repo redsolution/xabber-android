@@ -14,41 +14,35 @@
      along with this program. If not, see http://www.gnu.org/licenses/.
 -->
 
-<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/drawer_layout"
-        android:layout_width="match_parent"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
+    <!-- Main layout -->
+    <RelativeLayout
+        android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_above="@+id/bottom"
+        />
 
-        <android.support.v7.widget.Toolbar xmlns:app="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/toolbar_default"
+    <LinearLayout
+        android:id="@+id/bottom"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_alignParentBottom="true"
+        android:elevation="4dp"
+        android:outlineProvider="bounds"
+        android:paddingTop="4dp"
+        android:layout_marginTop="-4dp"
+        android:background="@color/transparent">
+
+        <FrameLayout
+            android:id="@+id/containerBottomNavigation"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
+            android:layout_height="56dp"
+            />
 
-            android:background="?attr/colorPrimary"
-            android:elevation="4dp"
-            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-            app:popupTheme="?attr/toolbar_popup_theme"
-            app:titleTextAppearance="@style/ToolbarTitle" />
-
-        <!-- Main layout -->
-        <RelativeLayout
-            android:id="@+id/container"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
     </LinearLayout>
 
-    <!-- Nav drawer -->
-    <fragment
-        android:id="@+id/fragment_drawer"
-        android:name="com.xabber.android.ui.fragment.ContactListDrawerFragment"
-        android:tag="navigation"
-        android:layout_width="304dp"
-        android:layout_height="match_parent"
-        android:layout_gravity="left|start" />
-</android.support.v4.widget.DrawerLayout>
-
+</RelativeLayout>

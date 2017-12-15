@@ -143,7 +143,7 @@ public class GroupConfiguration implements Comparable<GroupConfiguration> {
     /**
      * @return Total number of contacts in group.
      */
-    int getTotal() {
+    public int getTotal() {
         return total;
     }
 
@@ -157,7 +157,7 @@ public class GroupConfiguration implements Comparable<GroupConfiguration> {
     /**
      * @return Mode of showing offline contacts.
      */
-    ShowOfflineMode getShowOfflineMode() {
+    public ShowOfflineMode getShowOfflineMode() {
         return showOfflineMode;
     }
 

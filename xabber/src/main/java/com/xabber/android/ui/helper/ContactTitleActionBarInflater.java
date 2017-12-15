@@ -47,6 +47,6 @@ public class ContactTitleActionBarInflater {
     }
 
     public void hideStatusIcon() {
-        contactView.findViewById(R.id.status_icon).setVisibility(View.GONE);
+        contactView.findViewById(R.id.ivStatus).setVisibility(View.GONE);
     }
 }

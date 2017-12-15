@@ -2,10 +2,19 @@ package com.xabber.android.ui.fragment;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -16,7 +25,7 @@ import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
-import com.melnykov.fab.FloatingActionButton;
+import com.brandongogetap.stickyheaders.StickyLayoutManager;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
@@ -26,22 +35,29 @@ import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.connection.ConnectionManager;
 import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.message.AbstractChat;
+import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.NewMessageEvent;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.ui.activity.AccountAddActivity;
+import com.xabber.android.ui.activity.ConferenceSelectActivity;
 import com.xabber.android.ui.activity.ContactAddActivity;
 import com.xabber.android.ui.activity.ManagedActivity;
-import com.xabber.android.ui.adapter.AccountActionButtonsAdapter;
+import com.xabber.android.ui.activity.StatusEditActivity;
 import com.xabber.android.ui.adapter.UpdatableAdapter;
-import com.xabber.android.ui.adapter.contactlist.AccountConfiguration;
 import com.xabber.android.ui.adapter.contactlist.ContactListAdapter;
 import com.xabber.android.ui.adapter.contactlist.ContactListAdapter.ContactListAdapterListener;
 import com.xabber.android.ui.adapter.contactlist.ContactListState;
+import com.xabber.android.ui.adapter.contactlist.RosterChatViewHolder;
+import com.xabber.android.ui.adapter.contactlist.viewobjects.AccountVO;
+import com.xabber.android.ui.adapter.contactlist.viewobjects.BaseRosterItemVO;
+import com.xabber.android.ui.adapter.contactlist.viewobjects.ChatVO;
 import com.xabber.android.ui.color.AccountPainter;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.helper.ContextMenuHelper;
+import com.xabber.android.ui.helper.RecyclerItemTouchHelper;
 import com.xabber.android.ui.preferences.PreferenceEditor;
 
 import org.greenrobot.eventbus.EventBus;
@@ -51,7 +67,9 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.util.Collection;
 
 public class ContactListFragment extends Fragment implements OnAccountChangedListener,
-        OnContactChangedListener, ContactListAdapterListener, View.OnClickListener {
+        OnContactChangedListener, ContactListAdapterListener, View.OnClickListener,
+        Toolbar.OnMenuItemClickListener, android.widget.PopupMenu.OnMenuItemClickListener,
+        RecyclerItemTouchHelper.RecyclerItemTouchHelperListener {
 
     private ContactListAdapter adapter;
 
@@ -86,14 +104,38 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
      * Animation for disconnected view.
      */
     private Animation animation;
-    private AccountActionButtonsAdapter accountActionButtonsAdapter;
-    private View scrollToChatsActionButtonContainer;
-    private View actionButtonsContainer;
-    private FloatingActionButton scrollToChatsActionButton;
     private AccountPainter accountPainter;
 
     private ContactListFragmentListener contactListFragmentListener;
     private LinearLayoutManager linearLayoutManager;
+
+    //private BarPainter barPainter;
+    private View accountColorIndicator;
+    private Menu optionsMenu;
+    private View addMenuOption;
+    private Toolbar toolbar;
+    private LinearLayout placeholderView;
+    private TextView tvPlaceholderMessage;
+    private CoordinatorLayout coordinatorLayout;
+    private Snackbar snackbar;
+
+    public static final String ACCOUNT_JID = "account_jid";
+    private AccountJid scrollToAccountJid;
+
+    public static ContactListFragment newInstance(@Nullable AccountJid account) {
+        ContactListFragment fragment = new ContactListFragment();
+        Bundle args = new Bundle();
+        if (account != null)
+            args.putSerializable(ACCOUNT_JID, account);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        this.scrollToAccountJid = (AccountJid) getArguments().getSerializable(ACCOUNT_JID);
+    }
 
     @Override
     public void onAttach(Activity activity) {
@@ -106,15 +148,35 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_contact_list, container, false);
 
+        coordinatorLayout = (CoordinatorLayout) view.findViewById(R.id.coordinatorLayout);
+
+        toolbar = (Toolbar) view.findViewById(R.id.toolbar_default);
+        toolbar.setOnClickListener(this);
+        toolbar.inflateMenu(R.menu.toolbar_contact_list);
+        optionsMenu = toolbar.getMenu();
+        toolbar.setOnMenuItemClickListener(this);
+        toolbar.setOverflowIcon(getResources().getDrawable(R.drawable.ic_overflow_menu_white_24dp));
+        toolbar.setTitleTextColor(getResources().getColor(R.color.grey_600));
+
+        accountColorIndicator = view.findViewById(R.id.accountColorIndicator);
+        accountColorIndicator.setBackgroundColor(ColorManager.getInstance().getAccountPainter().getDefaultMainColor());
+
+        toolbar.setTitle(R.string.application_title_full);
+
         // to avoid strange bug on some 4.x androids
         view.setBackgroundColor(ColorManager.getInstance().getContactListBackgroundColor());
 
         recyclerView = (RecyclerView) view.findViewById(R.id.contact_list_recycler_view);
         registerForContextMenu(recyclerView);
         adapter = new ContactListAdapter((ManagedActivity) getActivity(), this);
-        linearLayoutManager = new LinearLayoutManager(getActivity());
+        linearLayoutManager = new StickyLayoutManager(getActivity(), adapter);
+        ((StickyLayoutManager)linearLayoutManager).setStickyHeaderListener(adapter);
+        ((StickyLayoutManager)linearLayoutManager).elevateHeaders(2);
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setAdapter(adapter);
+        ItemTouchHelper.SimpleCallback itemTouchHelperCallback =
+                new RecyclerItemTouchHelper(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT, this);
+        new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(recyclerView);
         infoView = view.findViewById(R.id.info);
         connectedView = infoView.findViewById(R.id.connected);
         disconnectedView = infoView.findViewById(R.id.disconnected);
@@ -122,21 +184,13 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
         buttonView = (Button) infoView.findViewById(R.id.button);
         animation = AnimationUtils.loadAnimation(getActivity(), R.anim.connection);
 
-        accountActionButtonsAdapter = new AccountActionButtonsAdapter(getActivity(),
-                this, (LinearLayout) view.findViewById(R.id.account_action_buttons));
-        accountActionButtonsAdapter.onChange();
-
-        actionButtonsContainer = view.findViewById(R.id.account_action_buttons_container);
-
-        scrollToChatsActionButtonContainer = view.findViewById(R.id.fab_up_container);
-        scrollToChatsActionButtonContainer.setOnClickListener(this);
-        scrollToChatsActionButtonContainer.setVisibility(View.GONE);
-
-        scrollToChatsActionButton = (FloatingActionButton) view.findViewById(R.id.fab_up);
-
         accountPainter = ColorManager.getInstance().getAccountPainter();
-        scrollToChatsActionButton.setColorNormal(accountPainter.getDefaultMainColor());
-        scrollToChatsActionButton.setColorPressed(accountPainter.getDefaultDarkColor());
+
+        addMenuOption = view.findViewById(R.id.action_add);
+
+        // placeholder
+        placeholderView = (LinearLayout) view.findViewById(R.id.placeholderView);
+        tvPlaceholderMessage = (TextView) view.findViewById(R.id.tvPlaceholderMessage);
 
         return view;
     }
@@ -148,13 +202,14 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
         Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
         Application.getInstance().addUIListener(OnContactChangedListener.class, this);
         adapter.onChange();
-        scrollToChatsActionButton.setColorNormal(accountPainter.getDefaultMainColor());
-        scrollToChatsActionButton.setColorPressed(accountPainter.getDefaultDarkColor());
-
-        if (SettingsManager.contactsShowPanel()) {
-            actionButtonsContainer.setVisibility(View.VISIBLE);
-        } else {
-            actionButtonsContainer.setVisibility(View.GONE);
+        //barPainter.setDefaultColor();
+        accountColorIndicator.setBackgroundColor(ColorManager.getInstance().getAccountPainter().getDefaultMainColor());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getActivity().getWindow().setStatusBarColor(ColorManager.getInstance().getAccountPainter().getDefaultMainColor());
+        }
+        if (scrollToAccountJid != null) {
+            scrollToAccount(scrollToAccountJid);
+            scrollToAccountJid = null;
         }
     }
 
@@ -172,9 +227,12 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
 
     @Override
     public void onAccountsChanged(Collection<AccountJid> accounts) {
+        //barPainter.setDefaultColor();
+        accountColorIndicator.setBackgroundColor(ColorManager.getInstance().getAccountPainter().getDefaultMainColor());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getActivity().getWindow().setStatusBarColor(ColorManager.getInstance().getAccountPainter().getDefaultMainColor());
+        }
         adapter.refreshRequest();
-        scrollToChatsActionButton.setColorNormal(accountPainter.getDefaultMainColor());
-        scrollToChatsActionButton.setColorPressed(accountPainter.getDefaultDarkColor());
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -185,11 +243,6 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
     @Override
     public void onContactListChanged(CommonState commonState, boolean hasContacts,
                                      boolean hasVisibleContacts, boolean isFilterEnabled) {
-        if (adapter.isHasActiveChats()) {
-            scrollToChatsActionButtonContainer.setVisibility(View.VISIBLE);
-        } else {
-            scrollToChatsActionButtonContainer.setVisibility(View.GONE);
-        }
 
         contactListFragmentListener.onContactListChange(commonState);
 
@@ -235,6 +288,9 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
                     startActivity(ContactAddActivity.createIntent(getActivity()));
                 }
             };
+            for (int i = 0; i < optionsMenu.size(); i++) {
+                optionsMenu.getItem(i).setVisible(true);
+            }
         } else if (commonState == CommonState.roster) {
             state = ContactListState.connecting;
             text = R.string.application_state_roster;
@@ -273,9 +329,12 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
             listener = new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    startActivity(PreferenceEditor.createIntent(getActivity()));
+                    contactListFragmentListener.onManageAccountsClick();
                 }
             };
+            for (int i = 0; i < optionsMenu.size(); i++) {
+                optionsMenu.getItem(i).setVisible(false);
+            }
         } else if (commonState == CommonState.empty) {
             state = ContactListState.offline;
             text = R.string.application_state_empty;
@@ -337,75 +396,33 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
      *
      * @param account
      */
-    void scrollTo(AccountJid account) {
+    public void scrollToAccount(AccountJid account) {
         long count = adapter.getItemCount();
         for (int position = 0; position < (int) count; position++) {
             Object itemAtPosition = adapter.getItem(position);
-            if (itemAtPosition != null && itemAtPosition instanceof AccountConfiguration
-                    && ((AccountConfiguration)itemAtPosition).getAccount().equals(account)) {
-                linearLayoutManager.scrollToPositionWithOffset(position, 0);
+            if (itemAtPosition != null && itemAtPosition instanceof AccountVO
+                    && ((AccountVO)itemAtPosition).getAccountJid().equals(account)) {
+                scrollTo(position);
                 break;
             }
         }
     }
 
     /**
-     * Filter out contact list for selected account.
-     *
-     * @param account
-     */
-    void setSelectedAccount(AccountJid account) {
-        if (account.equals(AccountManager.getInstance().getSelectedAccount())) {
-            SettingsManager.setContactsSelectedAccount(null);
-        } else {
-            SettingsManager.setContactsSelectedAccount(account);
-        }
-        adapter.onChange();
-    }
-
-    /**
      * Scroll to the top of contact list.
      */
-    public void scrollUp() {
-        recyclerView.scrollToPosition(0);
+    public void scrollTo(int position) {
+        linearLayoutManager.scrollToPositionWithOffset(position, 0);
     }
 
 
     @Override
-    public void onClick(View view) {
-        if (view.getId() == R.id.fab_up_container) {
-            scrollUp();
-            return;
-        }
-
-
-        AccountJid account = accountActionButtonsAdapter.getItemForView(view);
-        if (account == null) { // Check for tap on account in the title
-            return;
-        }
-        if (!SettingsManager.contactsShowAccounts()) {
-            if (AccountManager.getInstance().getEnabledAccounts().size() < 2) {
-                scrollUp();
-            } else {
-                setSelectedAccount(account);
-                rebuild();
-            }
-        } else {
-            scrollTo(account);
-        }
-    }
-
-    public void onAccountsChanged() {
-        accountActionButtonsAdapter.onChange();
-    }
-
-    public void rebuild() {
-        accountActionButtonsAdapter.rebuild();
-    }
+    public void onClick(View view) {}
 
     public interface ContactListFragmentListener {
         void onContactClick(AbstractContact contact);
         void onContactListChange(CommonState commonState);
+        void onManageAccountsClick();
     }
 
     @Override
@@ -422,11 +439,129 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
     }
 
     @Override
+    public void onScrollToPosition(int position) {
+        scrollTo(position);
+    }
+
+    @Override
     public void onContactsChanged(Collection<RosterContact> addresses) {
         adapter.refreshRequest();
     }
 
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
 
+        switch (item.getItemId()) {
+            case R.id.action_change_status:
+                startActivity(StatusEditActivity.createIntent(getActivity()));
+                return true;
+            case R.id.action_add_contact:
+                startActivity(ContactAddActivity.createIntent(getActivity()));
+                return true;
+            case R.id.action_close_chats:
+                closeAllChats();
+                return true;
+            case R.id.action_join_conference:
+                startActivity(ConferenceSelectActivity.createIntent(getActivity()));
+                return true;
+//            case R.id.action_chat_list:
+//                startActivity(ChatActivity.createRecentChatsIntent(getActivity()));
+//                return true;
+            case R.id.action_add:
+                showToolbarPopup(addMenuOption);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
 
+    private void closeAllChats() {
+        MessageManager.closeActiveChats();
+        getAdapter().onChange();
+    }
 
+    private void showToolbarPopup(View v) {
+        PopupMenu popupMenu = new PopupMenu(getActivity(), v);
+        popupMenu.setOnMenuItemClickListener(this);
+        popupMenu.inflate(R.menu.menu_add_in_contact_list);
+        popupMenu.show();
+    }
+
+    @Override
+    public void hidePlaceholder() {
+        placeholderView.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void showPlaceholder(String message) {
+        tvPlaceholderMessage.setText(message);
+        placeholderView.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void onChatListStateChanged() {
+        closeSnackbar();
+    }
+
+    public void showRecent() {
+        if (adapter != null)
+            adapter.onStateChanged(ContactListAdapter.ChatListState.recent);
+    }
+
+    @Override
+    public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction, int position) {
+        if (viewHolder instanceof RosterChatViewHolder) {
+
+            Object itemAtPosition = adapter.getItem(position);
+            if (itemAtPosition != null && itemAtPosition instanceof ChatVO) {
+
+                // backup of removed item for undo purpose
+                final BaseRosterItemVO deletedItem = (BaseRosterItemVO) itemAtPosition;
+                final int deletedIndex = viewHolder.getAdapterPosition();
+
+                // update value
+                setChatArchived((ChatVO) deletedItem, !((ChatVO) deletedItem).isArchived());
+
+                // remove the item from recycler view
+                adapter.removeItem(viewHolder.getAdapterPosition());
+
+                // showing snackbar with Undo option
+                showSnackbar(deletedItem, deletedIndex);
+            }
+        }
+    }
+
+    public void showSnackbar(final BaseRosterItemVO deletedItem, final int deletedIndex) {
+        if (snackbar != null) snackbar.dismiss();
+        final boolean archived = ((ChatVO) deletedItem).isArchived();
+        snackbar = Snackbar.make(coordinatorLayout, archived ? R.string.chat_was_unarchived
+                : R.string.chat_was_archived, Snackbar.LENGTH_LONG);
+        snackbar.setAction(R.string.undo, new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                // update value
+                setChatArchived((ChatVO) deletedItem, archived);
+
+                // undo is selected, restore the deleted item
+                adapter.restoreItem(deletedItem, deletedIndex);
+            }
+        });
+        snackbar.setActionTextColor(Color.YELLOW);
+        snackbar.show();
+    }
+
+    public void setChatArchived(ChatVO chatVO, boolean archived) {
+        AbstractChat chat = MessageManager.getInstance().getChat(chatVO.getAccountJid(), chatVO.getUserJid());
+        if (chat != null) chat.setArchived(archived, true);
+    }
+
+    public void closeSnackbar() {
+        if (snackbar != null) snackbar.dismiss();
+    }
+
+    public ContactListAdapter.ChatListState getListState() {
+        if (adapter != null) return adapter.getCurrentChatsState();
+        else return ContactListAdapter.ChatListState.recent;
+    }
 }

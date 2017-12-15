@@ -14,6 +14,7 @@
   <string name="contacts_show_accounts">Группировать по учетным записям\nПозволяет группировать собеседников по учетным записям</string>
   <string name="contacts_show_active_chats">Активные чаты в начале\nОтображать активные чаты в начале списка контактов</string>
   <string name="contacts_show_avatars">Отображать аватары\nПозволяет видеть аватары собеседников в списке контактов</string>
+  <string name="contacts_show_messages">Отображать сообщения\nПозволяет видеть сообщения пользователей в списке контактов</string>
   <string name="contacts_show_empty_groups">Отображать пустые группы\nОтображать группы даже если в них нет контактов</string>
   <string name="contacts_show_groups">Отображать группы\nПозволяет группировать собеседников по группам</string>
   <string name="contacts_show_offline">Отображать оффлайн контакты\nОтображать собеседников не в сети</string>

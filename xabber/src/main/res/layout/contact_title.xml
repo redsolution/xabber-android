@@ -7,7 +7,7 @@
     android:gravity="center_vertical"
     >
 
-    <include layout="@layout/avatar" />
+    <include layout="@layout/avatar_view_in_chat_screen" />
 
     <LinearLayout
         android:id="@+id/name_holder"
@@ -24,7 +24,7 @@
             android:singleLine="true"
             android:textColor="@color/primary_text_default_material_dark"
             android:text="Lorem Ipsum"
-
+            android:drawablePadding="4dp"
             android:layout_marginLeft="6dp"
             android:textSize="18sp"
             android:textStyle="bold"
@@ -41,12 +41,12 @@
             />
     </LinearLayout>
 
-    <ImageView
-        android:id="@+id/status_icon"
-        android:src="@drawable/ic_status"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginRight="8dp"
-        />
+    <!--<ImageView-->
+        <!--android:id="@+id/status_icon"-->
+        <!--android:src="@drawable/ic_status"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginRight="8dp"-->
+        <!--/>-->
 
 </LinearLayout>

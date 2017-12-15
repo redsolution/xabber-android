@@ -16,6 +16,7 @@ package com.xabber.android.ui.activity;
 
 import android.app.Dialog;
 import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -24,20 +25,15 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.view.MenuItemCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.widget.Toolbar;
+import android.support.annotation.Nullable;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
-import android.view.Gravity;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.SearchView;
 import android.widget.Toast;
 
 import com.xabber.android.R;
@@ -53,7 +49,6 @@ import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.muc.MUCManager;
-import com.xabber.android.data.http.PatreonManager;
 import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
@@ -64,7 +59,7 @@ import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.data.xaccount.XMPPAccountSettings;
 import com.xabber.android.data.xaccount.XabberAccount;
 import com.xabber.android.data.xaccount.XabberAccountManager;
-import com.xabber.android.ui.color.BarPainter;
+import com.xabber.android.ui.adapter.contactlist.ContactListAdapter;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.dialog.AccountChooseDialogFragment;
 import com.xabber.android.ui.dialog.AccountChooseDialogFragment.OnChooseListener;
@@ -77,7 +72,11 @@ import com.xabber.android.ui.fragment.ContactListDrawerFragment;
 import com.xabber.android.ui.fragment.ContactListFragment;
 import com.xabber.android.ui.fragment.ContactListFragment.ContactListFragmentListener;
 import com.xabber.android.ui.preferences.PreferenceEditor;
+import com.xabber.android.ui.widget.bottomnavigation.BottomMenu;
 import com.xabber.xmpp.uri.XMPPUri;
+
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -90,11 +89,15 @@ import java.util.Locale;
  * @author alexander.ivanov
  */
 public class ContactListActivity extends ManagedActivity implements OnAccountChangedListener,
-        View.OnClickListener, OnChooseListener, ContactListFragmentListener, ContactListDrawerFragment.ContactListDrawerListener, Toolbar.OnMenuItemClickListener {
+        View.OnClickListener, OnChooseListener, ContactListFragmentListener,
+        ContactListDrawerFragment.ContactListDrawerListener,
+        BottomMenu.OnClickListener {
 
     /**
      * Select contact to be invited to the room was requested.
      */
+    private static final int CODE_OPEN_CHAT = 301;
+
     private static final String ACTION_ROOM_INVITE = "com.xabber.android.ui.activity.ContactList.ACTION_ROOM_INVITE";
     private static final String ACTION_MUC_PRIVATE_CHAT_INVITE = "com.xabber.android.ui.activity.ContactList.ACTION_MUC_PRIVATE_CHAT_INVITE";
     private static final String ACTION_CONTACT_SUBSCRIPTION = "com.xabber.android.ui.activity.ContactList.ACTION_CONTACT_SUBSCRIPTION";
@@ -120,11 +123,8 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
      */
     private String sendText;
 
-    private SearchView searchView;
-    private BarPainter barPainter;
-    private ActionBarDrawerToggle drawerToggle;
-    private DrawerLayout drawerLayout;
-    private Menu optionsMenu;
+    private BottomMenu bottomMenu;
+    private Fragment contentFragment;
 
     public static Intent createPersistentIntent(Context context) {
         Intent intent = new Intent(context, ContactListActivity.class);
@@ -194,47 +194,12 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
         }
 
         setContentView(R.layout.activity_contact_list);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_default);
-        toolbar.setOnClickListener(this);
-
-        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.application_title_short, R.string.application_title_short) {
-            @Override
-            public void onDrawerOpened(View drawerView) {
-                super.onDrawerOpened(drawerView);
-                ContactListDrawerFragment navigationFragment =
-                        (ContactListDrawerFragment) getFragmentManager().findFragmentByTag("navigation");
-                navigationFragment.startPatreonAnim();
-                PatreonManager.getInstance().updatePatreonIfNeed();
-            }
-
-            @Override
-            public void onDrawerClosed(View drawerView) {
-                super.onDrawerClosed(drawerView);
-                ContactListDrawerFragment navigationFragment =
-                        (ContactListDrawerFragment) getFragmentManager().findFragmentByTag("navigation");
-                navigationFragment.stopPatreonAnim();
-            }
-        };
-        drawerLayout.setDrawerListener(drawerToggle);
-
-        toolbar.inflateMenu(R.menu.toolbar_contact_list);
-        optionsMenu = toolbar.getMenu();
-        setUpSearchView(optionsMenu);
-        toolbar.setOnMenuItemClickListener(this);
-        toolbar.setOverflowIcon(getResources().getDrawable(R.drawable.ic_overflow_menu_white_24dp));
-
-        barPainter = new BarPainter(this, toolbar);
-        barPainter.setDefaultColor();
-
-        toolbar.setTitle(R.string.application_title_full);
 
         if (savedInstanceState != null) {
             sendText = savedInstanceState.getString(SAVED_SEND_TEXT);
             action = savedInstanceState.getString(SAVED_ACTION);
         } else {
-            getFragmentManager().beginTransaction().add(R.id.container,
-                    new ContactListFragment(), CONTACT_LIST_TAG).commit();
+            showContactListFragment(null);
 
             sendText = null;
             action = getIntent().getAction();
@@ -333,7 +298,6 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
             return;
         }
 
-        barPainter.setDefaultColor();
         rebuildAccountToggle();
         Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
 
@@ -455,6 +419,7 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
         }
 
         //XabberAccountManager.getInstance().createLocalAccountIfNotExist();
+        showBottomNavigation();
         showPassDialogs();
     }
 
@@ -530,114 +495,28 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.toolbar_contact_list, menu);
-        menu.findItem(R.id.action_search).setVisible(false);
         return true;
-    }
-
-    private void setUpSearchView(final Menu menu) {
-        searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
-        searchView.setQueryHint(getString(R.string.contact_search_hint));
-
-        searchView.setOnCloseListener(new SearchView.OnCloseListener() {
-            @Override
-            public boolean onClose() {
-                menu.findItem(R.id.action_search).collapseActionView();
-                return true;
-            }
-        });
-
-        MenuItemCompat.setOnActionExpandListener(menu.findItem(R.id.action_search), new MenuItemCompat.OnActionExpandListener() {
-            @Override
-            public boolean onMenuItemActionExpand(MenuItem item) {
-                searchView.requestFocus();
-                ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE)).
-                        toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
-                return true;
-            }
-
-            @Override
-            public boolean onMenuItemActionCollapse(MenuItem item) {
-                searchView.setQuery("", true);
-                searchView.clearFocus();
-                return true;
-            }
-        });
-
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                Fragment fragmentById = getFragmentManager().findFragmentById(R.id.container);
-                ((ContactListFragment) fragmentById).getFilterableAdapter().getFilter().filter(newText);
-                return true;
-            }
-        });
-    }
-
-    @Override
-    public boolean onMenuItemClick(MenuItem item) {
-        return onOptionsItemSelected(item);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (drawerToggle.onOptionsItemSelected(item)) {
-            return true;
-        }
-
-        switch (item.getItemId()) {
-            case R.id.action_search:
-                searchView.setIconified(false);
-                return true;
-            case R.id.action_change_status:
-                startActivity(StatusEditActivity.createIntent(this));
-                return true;
-            case R.id.action_add_contact:
-                startActivity(ContactAddActivity.createIntent(this));
-                return true;
-            case R.id.action_close_chats:
-                closeAllChats();
-                return true;
-            case R.id.action_join_conference:
-                startActivity(ConferenceSelectActivity.createIntent(this));
-                return true;
-            case R.id.action_chat_list:
-                startActivity(ChatActivity.createRecentChatsIntent(this));
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
     }
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        drawerToggle.syncState();
     }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        drawerToggle.onConfigurationChanged(newConfig);
     }
 
     @Override
     public void onBackPressed() {
-        if (drawerLayout.isDrawerOpen(Gravity.START | Gravity.LEFT)) {
-            drawerLayout.closeDrawers();
-            return;
-        }
         super.onBackPressed();
     }
 
     private void exit() {
         Application.getInstance().requestToClose();
         showDialog(DIALOG_CLOSE_APPLICATION_ID);
-        getContactListFragment().unregisterListeners();
+        //getContactListFragment().unregisterListeners();
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -645,11 +524,6 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
                 finish();
             }
         }, CLOSE_ACTIVITY_AFTER_DELAY);
-    }
-
-    private void closeAllChats() {
-        MessageManager.closeActiveChats();
-        getContactListFragment().getAdapter().onChange();
     }
 
     private ContactListFragment getContactListFragment() {
@@ -685,16 +559,20 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.toolbar_default:
-                getContactListFragment().scrollUp();
+                getContactListFragment().scrollTo(0);
                 break;
         }
     }
 
     @Override
     public void onContactClick(AbstractContact abstractContact) {
+        if (contentFragment != null)
+            ((ContactListFragment) contentFragment).getFilterableAdapter().getFilter().filter("");
+        if (bottomMenu != null) bottomMenu.closeSearch();
+
         if (action == null) {
-            startActivity(ChatActivity.createSpecificChatIntent(this,
-                    abstractContact.getAccount(), abstractContact.getUser()));
+            startActivityForResult(ChatActivity.createSendIntent(this, abstractContact.getAccount(),
+                    abstractContact.getUser(), null), CODE_OPEN_CHAT);
             return;
         }
         switch (action) {
@@ -714,10 +592,21 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
                 break;
             }
             case Intent.ACTION_SEND:
-                action = null;
-                startActivity(ChatActivity.createSendIntent(this,
-                        abstractContact.getAccount(), abstractContact.getUser(), sendText));
-                finish();
+                if (!isSharedText(getIntent().getType())) {
+                    // share file
+                    if (getIntent().getExtras() != null) {
+                        action = null;
+                        startActivity(ChatActivity.createSendUriIntent(this,
+                                abstractContact.getAccount(), abstractContact.getUser(),
+                                (Uri)getIntent().getParcelableExtra(Intent.EXTRA_STREAM)));
+                        finish();
+                    }
+                } else {
+                    action = null;
+                    startActivity(ChatActivity.createSendIntent(this,
+                            abstractContact.getAccount(), abstractContact.getUser(), sendText));
+                    finish();
+                }
                 break;
             case Intent.ACTION_CREATE_SHORTCUT: {
                 createShortcut(abstractContact);
@@ -725,34 +614,18 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
                 break;
             }
             default:
-                startActivity(ChatActivity.createSpecificChatIntent(this,
-                        abstractContact.getAccount(), abstractContact.getUser()));
+                startActivityForResult(ChatActivity.createSpecificChatIntent(this, abstractContact.getAccount(),
+                        abstractContact.getUser()), CODE_OPEN_CHAT);
                 break;
         }
     }
 
     @Override
-    public void onContactListChange(CommonState commonState) {
+    public void onContactListChange(CommonState commonState) {}
 
-        switch (commonState) {
-
-            case empty:
-            case disabled:
-                for (int i = 0; i < optionsMenu.size(); i++) {
-                    optionsMenu.getItem(i).setVisible(false);
-                }
-                break;
-            case offline:
-            case waiting:
-            case connecting:
-            case roster:
-            case online:
-                for (int i = 0; i < optionsMenu.size(); i++) {
-                    optionsMenu.getItem(i).setVisible(true);
-                }
-
-                break;
-        }
+    @Override
+    public void onManageAccountsClick() {
+        showMenuFragment();
     }
 
     private void createShortcut(AbstractContact abstractContact) {
@@ -774,8 +647,6 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
 
     @Override
     public void onAccountsChanged(Collection<AccountJid> accounts) {
-        ((ContactListFragment)getFragmentManager().findFragmentById(R.id.container)).onAccountsChanged();
-        barPainter.setDefaultColor();
         rebuildAccountToggle();
     }
 
@@ -785,12 +656,13 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
     }
 
     private void rebuildAccountToggle() {
-        ((ContactListFragment)getFragmentManager().findFragmentById(R.id.container)).rebuild();
+        BottomMenu bottomMenu = ((BottomMenu)getFragmentManager().findFragmentById(R.id.containerBottomNavigation));
+        if (bottomMenu != null)
+            bottomMenu.update();
     }
 
     @Override
     public void onContactListDrawerListener(int viewId) {
-        drawerLayout.closeDrawers();
         switch (viewId) {
             case R.id.drawer_action_settings:
                 startActivity(PreferenceEditor.createIntent(this));
@@ -818,7 +690,104 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
 
     @Override
     public void onAccountSelected(AccountJid account) {
-        drawerLayout.closeDrawers();
         startActivity(AccountActivity.createIntent(this, account));
+    }
+
+    @Override
+    public void onRecentClick() {
+        if (contentFragment instanceof ContactListFragment) {
+            ((ContactListFragment) getFragmentManager().findFragmentById(R.id.container)).showRecent();
+            ((ContactListFragment) getFragmentManager().findFragmentById(R.id.container)).scrollTo(0);
+            ((ContactListFragment) contentFragment).closeSnackbar();
+        } else showContactListFragment(null);
+    }
+
+    @Override
+    public void onMenuClick() {
+        //drawerLayout.openDrawer(Gravity.START);
+        showMenuFragment();
+    }
+
+    @Override
+    public void onAccountShortcutClick(AccountJid jid) {
+        if (contentFragment instanceof ContactListFragment) {
+            ((ContactListFragment) getFragmentManager().findFragmentById(R.id.container)).showRecent();
+            ((ContactListFragment) getFragmentManager().findFragmentById(R.id.container)).scrollToAccount(jid);
+            ((ContactListFragment) contentFragment).closeSnackbar();
+        } else showContactListFragment(jid);
+    }
+
+    @Override
+    public void onSearch(String filter) {
+        if (contentFragment instanceof ContactListFragment)
+            ((ContactListFragment) contentFragment).getFilterableAdapter().getFilter().filter(filter);
+        else showContactListFragment(null);
+    }
+
+    @Override
+    public void onSearchClick() {
+        if (contentFragment instanceof ContactListFragment) {
+            ((ContactListFragment) contentFragment).closeSnackbar();
+        } else showContactListFragment(null);
+    }
+
+    private void showBottomNavigation() {
+        if (bottomMenu == null)
+            bottomMenu = BottomMenu.newInstance();
+
+        FragmentTransaction fTrans = getFragmentManager().beginTransaction();
+        fTrans.replace(R.id.containerBottomNavigation, bottomMenu);
+        fTrans.commit();
+    }
+
+    private void showMenuFragment() {
+        contentFragment = ContactListDrawerFragment.newInstance();
+
+        FragmentTransaction fTrans = getFragmentManager().beginTransaction();
+        fTrans.replace(R.id.container, contentFragment);
+        fTrans.commit();
+    }
+
+    private void showContactListFragment(@Nullable AccountJid account) {
+        contentFragment = ContactListFragment.newInstance(account);
+
+        FragmentTransaction fTrans = getFragmentManager().beginTransaction();
+        fTrans.replace(R.id.container, contentFragment, CONTACT_LIST_TAG);
+        fTrans.commit();
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onUnreadMessagesCountChanged(ContactListAdapter.UpdateUnreadCountEvent event) {
+        if (bottomMenu != null)
+            bottomMenu.setUnreadMessages(event.getCount());
+    }
+
+    public void setStatusBarColor(AccountJid account) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().setStatusBarColor(ColorManager.getInstance().getAccountPainter().getAccountMainColor(account));
+        }
+    }
+
+    public void setStatusBarColor() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().setStatusBarColor(ColorManager.getInstance().getAccountPainter().getDefaultMainColor());
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (contentFragment instanceof ContactListFragment ) {
+            ContactListAdapter.ChatListState currentState = ((ContactListFragment) contentFragment).getListState();
+            if (requestCode == CODE_OPEN_CHAT &&
+                    (currentState == (ContactListAdapter.ChatListState.unread)
+                    || currentState == (ContactListAdapter.ChatListState.archived))) {
+                ((ContactListFragment) contentFragment).showRecent();
+            }
+        }
+    }
+
+    private boolean isSharedText(String type) {
+        return type.contains("text/plain");
     }
 }

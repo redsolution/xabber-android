@@ -47,7 +47,7 @@ public class AccountPainter {
         greyDark = context.getResources().getColor(R.color.grey_700);
     }
 
-    private static AccountJid getFirstAccount() {
+    public static AccountJid getFirstAccount() {
         List<AccountJid> list = new ArrayList<>();
         list.addAll(AccountManager.getInstance().getEnabledAccounts());
         Collections.sort(list);
@@ -59,7 +59,7 @@ public class AccountPainter {
         }
     }
 
-    private static int getAccountColorLevel(AccountJid account) {
+    public static int getAccountColorLevel(AccountJid account) {
         return AccountManager.getInstance().getColorLevel(account);
     }
 

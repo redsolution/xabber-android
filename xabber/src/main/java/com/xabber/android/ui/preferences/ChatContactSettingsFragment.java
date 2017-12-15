@@ -5,10 +5,14 @@ import android.app.Activity;
 import android.os.Bundle;
 
 import com.xabber.android.R;
+import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.muc.MUCManager;
+import com.xabber.android.data.message.AbstractChat;
+import com.xabber.android.data.message.MessageManager;
+import com.xabber.android.data.message.NotificationState;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.message.chat.ShowMessageTextInNotification;
 
@@ -43,6 +47,12 @@ public class ChatContactSettingsFragment extends BaseSettingsFragment {
             isMUC = true;
         }
 
+        // custom notification
+        AbstractChat chat = MessageManager.getInstance().getChat(account, user);
+        if (chat != null) {
+            putValue(map, R.string.chat_notification_settings_key, chat.notifyAboutMessage());
+        }
+
         putValue(map, R.string.chat_save_history_key, ChatManager.getInstance()
                 .isSaveMessages(account, user));
         putValue(map, R.string.chat_events_visible_chat_key, ChatManager
@@ -63,6 +73,40 @@ public class ChatContactSettingsFragment extends BaseSettingsFragment {
     protected boolean setValues(Map<String, Object> source, Map<String, Object> result) {
         AccountJid account = mListener.getAccount();
         UserJid user = mListener.getUser();
+
+        // custom notification
+        if (hasChanges(source, result, R.string.chat_notification_settings_key)) {
+            AbstractChat chat = MessageManager.getInstance().getChat(account, user);
+            if (chat != null) {
+                boolean newValue = getBoolean(result, R.string.chat_notification_settings_key);
+                if (chat.getNotificationState().getMode().equals(NotificationState.NotificationMode.bydefault)) {
+
+                    NotificationState.NotificationMode mode = newValue
+                            ? NotificationState.NotificationMode.enabled
+                            : NotificationState.NotificationMode.disabled;
+
+                    chat.setNotificationState(new NotificationState(mode, 0), true);
+
+                } else {
+
+                    boolean defValue;
+                    if (MUCManager.getInstance().hasRoom(account, user.getJid().asEntityBareJidIfPossible()))
+                        defValue = SettingsManager.eventsOnMuc();
+                    else defValue = SettingsManager.eventsOnChat();
+
+                    if (!defValue && chat.getNotificationState().getMode()
+                            .equals(NotificationState.NotificationMode.disabled)) {
+                        chat.setNotificationState(new NotificationState(NotificationState.NotificationMode.enabled,
+                                0), true);
+                    } else if (defValue && chat.getNotificationState().getMode()
+                            .equals(NotificationState.NotificationMode.enabled)) {
+                        chat.setNotificationState(new NotificationState(NotificationState.NotificationMode.disabled,
+                                0), true);
+                    } else chat.setNotificationState(new NotificationState(NotificationState.NotificationMode.bydefault,
+                            0), true);
+                }
+            }
+        }
 
         if (hasChanges(source, result, R.string.chat_save_history_key))
             ChatManager.getInstance().setSaveMessages(account, user,
