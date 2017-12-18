@@ -794,10 +794,10 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
                 startActivity(ConferenceAddActivity.createIntent(this, account, user.getBareUserJid()));
                 return true;
 
-            case R.id.action_close_chat:
-                if (chatFragment != null)
-                chatFragment.closeChat(account, user);
-                return true;
+//            case R.id.action_close_chat:
+//                if (chatFragment != null)
+//                chatFragment.closeChat(account, user);
+//                return true;
 
             case R.id.action_clear_history:
                 if (chatFragment != null)
