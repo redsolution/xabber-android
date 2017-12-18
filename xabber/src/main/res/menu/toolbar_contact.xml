@@ -2,6 +2,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <item android:id="@+id/action_send_contact"
+        android:title="@string/action_send_contact" />
+
+    <item android:id="@+id/action_request_subscription"
+    android:title="@string/request_subscription" />
+
     <item android:id="@+id/action_edit_alias"
         android:title="@string/edit_alias"
         app:showAsAction="never"
@@ -13,6 +19,25 @@
         app:showAsAction="never"
         android:orderInCategory="100"
         />
+
+    <item android:id="@+id/action_clear_history"
+        android:icon="@drawable/ic_clear_all_white_24dp"
+        android:orderInCategory="107"
+        android:title="@string/clear_history"
+        app:showAsAction="never"
+    />
+
+    <item android:id="@+id/action_export_chat"
+        android:orderInCategory="108"
+        android:title="@string/export_chat"
+        app:showAsAction="never"
+    />
+
+    <item
+        android:id="@+id/action_block_contact"
+        android:orderInCategory="109"
+        android:title="@string/contact_block"
+        app:showAsAction="never" />
 
     <item android:id="@+id/action_remove_contact"
         android:title="@string/remove_contact"

@@ -40,6 +40,7 @@ import android.widget.Toast;
 import com.xabber.android.R;
 import com.xabber.android.data.ActivityManager;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.entity.AccountJid;
@@ -62,7 +63,9 @@ import com.xabber.android.data.message.NotificationState;
 import com.xabber.android.data.message.RegularChat;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.notification.NotificationManager;
+import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.OnContactChangedListener;
+import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.adapter.ChatViewerAdapter;
@@ -717,6 +720,13 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         setUpRegularChatMenu(menu, abstractChat);
     }
 
+    private void setUpContactInfoMenu(Menu menu, AbstractChat abstractChat) {
+        // request subscription
+        AbstractContact abstractContact = RosterManager.getInstance()
+                .getAbstractContact(abstractChat.getAccount(), abstractChat.getUser());
+        menu.findItem(R.id.action_request_subscription).setVisible(!abstractContact.isSubscribed());
+    }
+
     private void setUpOptionsMenu(Menu menu) {
 
         AbstractChat abstractChat = MessageManager.getInstance().getChat(account, user);
@@ -730,6 +740,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
             }
             if (selectedPagePosition == PAGE_POSITION_CHAT_INFO) {
                 inflater.inflate(R.menu.toolbar_contact, menu);
+                setUpContactInfoMenu(menu, abstractChat);
                 return;
             }
             if (abstractChat instanceof RoomChat) {
@@ -816,6 +827,14 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
 
             case R.id.action_block_contact:
                 BlockContactDialog.newInstance(account, user).show(getFragmentManager(), BlockContactDialog.class.getName());
+                return true;
+
+            case R.id.action_request_subscription:
+                try {
+                    PresenceManager.getInstance().requestSubscription(account, user);
+                } catch (NetworkException e) {
+                    Application.getInstance().onError(e);
+                }
                 return true;
 
             case R.id.action_archive_chat:
