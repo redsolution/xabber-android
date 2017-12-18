@@ -700,6 +700,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
 
         // mute chat
         menu.findItem(R.id.action_mute_chat).setVisible(abstractChat.notifyAboutMessage());
+        menu.findItem(R.id.action_unmute_chat).setVisible(!abstractChat.notifyAboutMessage());
     }
 
     private void setUpMUCMenu(Menu menu, AbstractChat abstractChat) {
@@ -852,9 +853,12 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
                 setUpOptionsMenu(toolbar.getMenu());
                 return true;
 
-//            case R.id.action_unmute_chat:
-//                //if (abstractChat != null) abstractChat.setNotificationEnabled(null, true);
-//                return true;
+            case R.id.action_unmute_chat:
+                if (abstractChat != null) abstractChat.setNotificationState(
+                        new NotificationState(NotificationState.NotificationMode.enabled,
+                                0), true);
+                setUpOptionsMenu(toolbar.getMenu());
+                return true;
 
             /* conference specific options menu */
 

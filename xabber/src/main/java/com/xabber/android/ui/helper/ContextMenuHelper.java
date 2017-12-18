@@ -254,16 +254,18 @@ public class ContextMenuHelper {
                     }
                 });
 
-//        menu.findItem(R.id.action_unmute_chat).setOnMenuItemClickListener(
-//                new MenuItem.OnMenuItemClickListener() {
-//                    @Override
-//                    public boolean onMenuItemClick(MenuItem item) {
-//                        AbstractChat chat = MessageManager.getInstance().getChat(account, user);
-//                        if (chat != null) chat.setNotificationEnabled(null, true);
-//                        adapter.onChange();
-//                        return true;
-//                    }
-//                });
+        menu.findItem(R.id.action_unmute_chat).setOnMenuItemClickListener(
+                new MenuItem.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        AbstractChat chat = MessageManager.getInstance().getChat(account, user);
+                        if (chat != null) chat.setNotificationState(
+                                new NotificationState(NotificationState.NotificationMode.enabled,
+                                        0), true);
+                        adapter.onChange();
+                        return true;
+                    }
+                });
     }
 
     private static void setContactContextMenuItemsVisibilty(AbstractContact abstractContact,
@@ -332,6 +334,7 @@ public class ContextMenuHelper {
 
         // mute chat
         menu.findItem(R.id.action_mute_chat).setVisible(chat != null && chat.notifyAboutMessage());
+        menu.findItem(R.id.action_unmute_chat).setVisible(chat != null && !chat.notifyAboutMessage());
     }
 
     public static void createGroupContextMenu(final ManagedActivity activity,

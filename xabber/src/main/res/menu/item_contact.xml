@@ -48,6 +48,6 @@
     <item android:id="@+id/action_mute_chat"
         android:title="@string/mute_chat" />
 
-    <!--<item android:id="@+id/action_unmute_chat"-->
-        <!--android:title="@string/unmute_chat" />-->
+    <item android:id="@+id/action_unmute_chat"
+        android:title="@string/unmute_chat" />
 </menu>
