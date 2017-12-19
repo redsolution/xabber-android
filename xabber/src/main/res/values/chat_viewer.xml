@@ -60,7 +60,7 @@
     <string name="chat_state_composing">Typing…</string>
     <string name="chat_state_paused">Entered text…</string>
     <string name="chat_typed">entered at %s</string>
-    <string name="export_chat">Export chat</string>
+    <string name="export_chat">Export history</string>
     <string name="export_chat_done">History has been exported to SD Card</string>
     <string name="export_chat_mask">%2$s for %1$s.html</string>
     <string name="export_chat_send">Send after export</string>

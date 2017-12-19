@@ -9,7 +9,7 @@
   <string name="chat_delay">отправлено в %s</string>
   <string name="chat_input_hint">Введите сообщение</string>
   <string name="chat_send">Отправить</string>
-  <string name="clear_history">Очистить историю сообщений</string>
+  <string name="clear_history">Очистить историю</string>
   <string name="clear_chat_history_dialog_button">Очистить</string>
   <string name="clear_chat_history_dialog_message">Очистить всю историю сообщений с %s?</string>
   <string name="contact_is_offline">Сообщения доставлены на сервер получателя и могут быть прочитаны им после подключения к сети</string>
@@ -61,7 +61,7 @@
   <string name="chat_state_composing">Набирает сообщение&#8230;</string>
   <string name="chat_state_paused">Ввел текст&#8230;</string>
   <string name="chat_typed">набрано в %s</string>
-  <string name="export_chat">Сохранить чат</string>
+  <string name="export_chat">Экспортировать историю</string>
   <string name="export_chat_done">История сохранена на SD карте</string>
   <string name="export_chat_mask">%2$s для %1$s.html</string>
   <string name="export_chat_send">Отправить после сохранения</string>

@@ -714,6 +714,14 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
                 menu.findItem(R.id.action_leave_conference).setVisible(true);
             }
         }
+
+        menu.findItem(R.id.action_remove_contact).setVisible(false);
+        menu.findItem(R.id.action_delete_conference).setVisible(true);
+
+        menu.findItem(R.id.action_send_contact).setVisible(false);
+        menu.findItem(R.id.action_edit_alias).setVisible(false);
+        menu.findItem(R.id.action_edit_groups).setVisible(false);
+        menu.findItem(R.id.action_block_contact).setVisible(false);
     }
 
     private void setUpMUCMenu(Menu menu, AbstractChat abstractChat) {
@@ -908,6 +916,11 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
                 return true;
 
             case R.id.action_remove_contact:
+                ContactDeleteDialogFragment.newInstance(account, user)
+                        .show(getFragmentManager(), "CONTACT_DELETE");
+                return true;
+
+            case R.id.action_delete_conference:
                 ContactDeleteDialogFragment.newInstance(account, user)
                         .show(getFragmentManager(), "CONTACT_DELETE");
                 return true;

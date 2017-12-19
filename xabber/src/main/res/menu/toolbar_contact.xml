@@ -18,7 +18,7 @@
     />
 
     <item android:id="@+id/action_leave_conference"
-        android:orderInCategory="136"
+        android:orderInCategory="109"
         android:title="@string/muc_leave"
         android:visible="false"
         app:showAsAction="never"
@@ -64,6 +64,13 @@
     <item android:id="@+id/action_remove_contact"
         android:title="@string/remove_contact"
         app:showAsAction="never"
+        android:orderInCategory="110"
+        />
+
+    <item android:id="@+id/action_delete_conference"
+        android:title="@string/muc_delete"
+        app:showAsAction="never"
+        android:visible="false"
         android:orderInCategory="110"
         />
 
