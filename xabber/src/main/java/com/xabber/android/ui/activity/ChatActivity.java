@@ -962,7 +962,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
 
     private void sendContact() {
         RosterContact rosterContact = RosterManager.getInstance().getRosterContact(account, user);
-        String text = rosterContact != null ? rosterContact.getName() + " " + user.toString() : user.toString();
+        String text = rosterContact != null ? rosterContact.getName() + "\n" + user.toString() : user.toString();
 
         Intent sendIntent = new Intent();
         sendIntent.setAction(Intent.ACTION_SEND);

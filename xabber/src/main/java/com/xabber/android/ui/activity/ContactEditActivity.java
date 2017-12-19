@@ -146,7 +146,7 @@ public class ContactEditActivity extends ContactActivity implements Toolbar.OnMe
 
     private void sendContact() {
         RosterContact rosterContact = RosterManager.getInstance().getRosterContact(getAccount(), getUser());
-        String text = rosterContact != null ? rosterContact.getName() + " " + getUser().toString() : getUser().toString();
+        String text = rosterContact != null ? rosterContact.getName() + "\n" + getUser().toString() : getUser().toString();
 
         Intent sendIntent = new Intent();
         sendIntent.setAction(Intent.ACTION_SEND);
