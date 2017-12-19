@@ -10,7 +10,7 @@
 
             <stroke
                 android:width="@dimen/account_status_border"
-                android:color="#ffffff"/>
+                android:color="?attr/bottom_navigation_background"/>
 
             <size
                 android:width="@dimen/account_status"
@@ -27,7 +27,7 @@
 
             <stroke
                 android:width="@dimen/account_status_border"
-                android:color="#ffffff"/>
+                android:color="?attr/bottom_navigation_background"/>
 
             <size
                 android:width="@dimen/account_status"
@@ -44,7 +44,7 @@
 
             <stroke
                 android:width="@dimen/account_status_border"
-                android:color="#ffffff"/>
+                android:color="?attr/bottom_navigation_background"/>
 
             <size
                 android:width="@dimen/account_status"
@@ -61,7 +61,7 @@
 
             <stroke
                 android:width="@dimen/account_status_border"
-                android:color="#ffffff"/>
+                android:color="?attr/bottom_navigation_background"/>
 
             <size
                 android:width="@dimen/account_status"
@@ -78,7 +78,7 @@
 
             <stroke
                 android:width="@dimen/account_status_border"
-                android:color="#ffffff"/>
+                android:color="?attr/bottom_navigation_background"/>
 
             <size
                 android:width="@dimen/account_status"
@@ -96,7 +96,7 @@
 
             <stroke
                 android:width="@dimen/account_status_border"
-                android:color="#ffffff"/>
+                android:color="?attr/bottom_navigation_background"/>
 
             <size
                 android:width="@dimen/account_status"
