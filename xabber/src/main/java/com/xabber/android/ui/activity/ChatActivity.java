@@ -703,19 +703,24 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         menu.findItem(R.id.action_unmute_chat).setVisible(!abstractChat.notifyAboutMessage());
     }
 
-    private void setUpMUCMenu(Menu menu, AbstractChat abstractChat) {
-
+    private void setUpMUCInfoMenu(Menu menu, AbstractChat abstractChat) {
         RoomState chatState = ((RoomChat) abstractChat).getState();
         if (chatState == RoomState.unavailable)
             menu.findItem(R.id.action_join_conference).setVisible(true);
         else {
             menu.findItem(R.id.action_invite_to_chat).setVisible(true);
 
-            if (chatState == RoomState.error) {
-                menu.findItem(R.id.action_authorization_settings).setVisible(true);
-            } else {
+            if (chatState != RoomState.error) {
                 menu.findItem(R.id.action_leave_conference).setVisible(true);
             }
+        }
+    }
+
+    private void setUpMUCMenu(Menu menu, AbstractChat abstractChat) {
+
+        RoomState chatState = ((RoomChat) abstractChat).getState();
+        if (chatState == RoomState.error) {
+            menu.findItem(R.id.action_authorization_settings).setVisible(true);
         }
 
         setUpRegularChatMenu(menu, abstractChat);
@@ -742,6 +747,8 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
             if (selectedPagePosition == PAGE_POSITION_CHAT_INFO) {
                 inflater.inflate(R.menu.toolbar_contact, menu);
                 setUpContactInfoMenu(menu, abstractChat);
+                if (abstractChat instanceof RoomChat)
+                    setUpMUCInfoMenu(menu, abstractChat);
                 return;
             }
             if (abstractChat instanceof RoomChat) {

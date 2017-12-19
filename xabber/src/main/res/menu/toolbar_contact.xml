@@ -2,6 +2,28 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <item android:id="@+id/action_invite_to_chat"
+        android:orderInCategory="90"
+        android:title="@string/muc_invite"
+        android:visible="false"
+        app:showAsAction="never"
+    />
+
+    <item android:id="@+id/action_join_conference"
+        android:icon="@drawable/ic_group_add_white_24dp"
+        android:orderInCategory="80"
+        android:title="@string/muc_join"
+        android:visible="false"
+        app:showAsAction="never"
+    />
+
+    <item android:id="@+id/action_leave_conference"
+        android:orderInCategory="136"
+        android:title="@string/muc_leave"
+        android:visible="false"
+        app:showAsAction="never"
+    />
+
     <item android:id="@+id/action_send_contact"
         android:title="@string/action_send_contact" />
 
