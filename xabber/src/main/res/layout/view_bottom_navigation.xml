@@ -133,16 +133,31 @@
             android:id="@+id/expandSearchLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_toRightOf="@+id/recentButtonView"
-            android:layout_toLeftOf="@+id/btnMenu"
-            android:visibility="gone">
+            android:background="?attr/bottom_navigation_background"
+            android:visibility="gone"
+            android:layout_marginBottom="2dp">
+
+            <ImageView
+                android:id="@+id/search"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="4dp"
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="6dp"
+                android:padding="10dp"
+                android:src="@drawable/ic_search"
+                android:tint="?attr/chat_input_button_color"
+                />
 
             <SearchView
                 android:id="@+id/searchView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_toRightOf="@id/search"
                 android:textSize="18sp"
                 android:queryBackground="@android:color/transparent"
+                android:searchHintIcon="@null"
+                android:searchIcon="@null"
                 />
 
         </RelativeLayout>
