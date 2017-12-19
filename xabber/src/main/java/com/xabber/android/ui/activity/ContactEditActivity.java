@@ -80,6 +80,10 @@ public class ContactEditActivity extends ContactActivity implements Toolbar.OnMe
                 }
                 return true;
 
+            case R.id.action_send_contact:
+                sendContact();
+                return true;
+
             case R.id.action_clear_history:
                 ChatHistoryClearDialog.newInstance(getAccount(), getUser()).show(getFragmentManager(), ChatHistoryClearDialog.class.getSimpleName());
                 return true;
@@ -138,5 +142,16 @@ public class ContactEditActivity extends ContactActivity implements Toolbar.OnMe
         });
 
         builder.show();
+    }
+
+    private void sendContact() {
+        RosterContact rosterContact = RosterManager.getInstance().getRosterContact(getAccount(), getUser());
+        String text = rosterContact != null ? rosterContact.getName() + " " + getUser().toString() : getUser().toString();
+
+        Intent sendIntent = new Intent();
+        sendIntent.setAction(Intent.ACTION_SEND);
+        sendIntent.putExtra(Intent.EXTRA_TEXT, text);
+        sendIntent.setType("text/plain");
+        startActivity(Intent.createChooser(sendIntent, getResources().getText(R.string.send_to)));
     }
 }

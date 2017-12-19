@@ -793,6 +793,10 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
 
             /* regular chat options menu */
 
+            case R.id.action_send_contact:
+                sendContact();
+                return true;
+
             case R.id.action_view_contact:
                 if (chatFragment != null)
                     chatFragment.showContactInfo();
@@ -954,5 +958,16 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         });
 
         builder.show();
+    }
+
+    private void sendContact() {
+        RosterContact rosterContact = RosterManager.getInstance().getRosterContact(account, user);
+        String text = rosterContact != null ? rosterContact.getName() + " " + user.toString() : user.toString();
+
+        Intent sendIntent = new Intent();
+        sendIntent.setAction(Intent.ACTION_SEND);
+        sendIntent.putExtra(Intent.EXTRA_TEXT, text);
+        sendIntent.setType("text/plain");
+        startActivity(Intent.createChooser(sendIntent, getResources().getText(R.string.send_to)));
     }
 }
