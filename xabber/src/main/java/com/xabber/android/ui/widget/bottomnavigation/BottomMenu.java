@@ -1,5 +1,6 @@
 package com.xabber.android.ui.widget.bottomnavigation;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
@@ -61,6 +62,17 @@ public class BottomMenu extends Fragment implements View.OnClickListener {
             listener = (OnClickListener) context;
         } catch (ClassCastException e) {
             throw new ClassCastException(context.toString() + " must implement OnClickListener");
+        }
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+
+        try {
+            listener = (OnClickListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString() + " must implement OnClickListener");
         }
     }
 
