@@ -695,9 +695,9 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
 
     @Override
     public void onRecentClick() {
-        if (contentFragment instanceof ContactListFragment) {
-            ((ContactListFragment) getFragmentManager().findFragmentById(R.id.container)).showRecent();
-            ((ContactListFragment) getFragmentManager().findFragmentById(R.id.container)).scrollTo(0);
+        if (contentFragment != null && contentFragment instanceof ContactListFragment) {
+            ((ContactListFragment) contentFragment).showRecent();
+            ((ContactListFragment) contentFragment).scrollTo(0);
             ((ContactListFragment) contentFragment).closeSnackbar();
         } else showContactListFragment(null);
     }
@@ -710,23 +710,23 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
 
     @Override
     public void onAccountShortcutClick(AccountJid jid) {
-        if (contentFragment instanceof ContactListFragment) {
-            ((ContactListFragment) getFragmentManager().findFragmentById(R.id.container)).showRecent();
-            ((ContactListFragment) getFragmentManager().findFragmentById(R.id.container)).scrollToAccount(jid);
+        if (contentFragment != null && contentFragment instanceof ContactListFragment) {
+            ((ContactListFragment) contentFragment).showRecent();
+            ((ContactListFragment) contentFragment).scrollToAccount(jid);
             ((ContactListFragment) contentFragment).closeSnackbar();
         } else showContactListFragment(jid);
     }
 
     @Override
     public void onSearch(String filter) {
-        if (contentFragment instanceof ContactListFragment)
+        if (contentFragment != null && contentFragment instanceof ContactListFragment)
             ((ContactListFragment) contentFragment).getFilterableAdapter().getFilter().filter(filter);
         else showContactListFragment(null);
     }
 
     @Override
     public void onSearchClick() {
-        if (contentFragment instanceof ContactListFragment) {
+        if (contentFragment != null && contentFragment instanceof ContactListFragment) {
             ((ContactListFragment) contentFragment).closeSnackbar();
         } else showContactListFragment(null);
     }
@@ -777,7 +777,7 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (contentFragment instanceof ContactListFragment ) {
+        if (contentFragment != null && contentFragment instanceof ContactListFragment ) {
             ContactListAdapter.ChatListState currentState = ((ContactListFragment) contentFragment).getListState();
             if (requestCode == CODE_OPEN_CHAT &&
                     (currentState == (ContactListAdapter.ChatListState.unread)
