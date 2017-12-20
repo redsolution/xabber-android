@@ -1050,11 +1050,12 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     public ArrayList<ChatVO> getTwoNextRecentChat() {
         Collection<AbstractChat> chats = MessageManager.getInstance().getChatsOfEnabledAccount();
         GroupConfiguration chatsGroup = getChatsGroup(chats, currentChatsState);
+        ArrayList<AbstractContact> contacts = (ArrayList<AbstractContact>) chatsGroup.getAbstractContacts();
 
         ArrayList<ChatVO> items = new ArrayList<>();
-        if (chatsGroup.getAbstractContacts() instanceof List) {
-            items.add(ChatVO.convert(((ArrayList<AbstractContact>)chatsGroup.getAbstractContacts()).get(MAX_RECENT_ITEMS - 2)));
-            items.add(ChatVO.convert(((ArrayList<AbstractContact>)chatsGroup.getAbstractContacts()).get(MAX_RECENT_ITEMS - 1)));
+        if (contacts != null && contacts.size() >= MAX_RECENT_ITEMS) {
+            items.add(ChatVO.convert(contacts.get(MAX_RECENT_ITEMS - 2)));
+            items.add(ChatVO.convert(contacts.get(MAX_RECENT_ITEMS - 1)));
         }
         return items;
     }
@@ -1067,16 +1068,18 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         // update end of list
         if (currentChatsState == ChatListState.recent) {
             ArrayList<ChatVO> items = getTwoNextRecentChat();
-            rosterItemVOs.add(MAX_RECENT_ITEMS - 1, items.get(0));
-            notifyItemInserted(MAX_RECENT_ITEMS - 1);
-            rosterItemVOs.set(MAX_RECENT_ITEMS, items.get(1));
-            notifyItemChanged(MAX_RECENT_ITEMS);
+            if (items != null && items.size() == 2) {
+                rosterItemVOs.add(MAX_RECENT_ITEMS - 1, items.get(0));
+                notifyItemInserted(MAX_RECENT_ITEMS - 1);
+                rosterItemVOs.set(MAX_RECENT_ITEMS, items.get(1));
+                notifyItemChanged(MAX_RECENT_ITEMS);
+            }
         }
     }
 
     public void restoreItem(BaseRosterItemVO item, int position) {
         // update end of list
-        if (currentChatsState == ChatListState.recent) {
+        if (currentChatsState == ChatListState.recent && rosterItemVOs.size() >= MAX_RECENT_ITEMS) {
             BaseRosterItemVO lastChat = rosterItemVOs.get(MAX_RECENT_ITEMS - 1);
             rosterItemVOs.remove(MAX_RECENT_ITEMS - 1);
             notifyItemRemoved(MAX_RECENT_ITEMS - 1);
