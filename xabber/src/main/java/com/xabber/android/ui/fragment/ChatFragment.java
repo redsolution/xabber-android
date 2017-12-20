@@ -307,9 +307,9 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
 
         if (SettingsManager.chatsShowBackground()) {
             if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.dark) {
-                view.setBackgroundDrawable(getResources().getDrawable(R.drawable.chat_background_repeat_dark));
+                view.setBackgroundResource(R.drawable.chat_background_repeat_dark);
             } else {
-                view.setBackgroundDrawable(getResources().getDrawable(R.drawable.chat_background_repeat));
+                view.setBackgroundResource(R.drawable.chat_background_repeat);
             }
         } else {
             view.setBackgroundColor(ColorManager.getInstance().getChatBackgroundColor());

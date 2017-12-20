@@ -2,6 +2,7 @@ package com.xabber.android.ui.fragment;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.Context;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -145,6 +146,13 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
     }
 
     @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        contactListFragmentListener = (ContactListFragmentListener) context;
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_contact_list, container, false);
 
@@ -244,7 +252,8 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
     public void onContactListChanged(CommonState commonState, boolean hasContacts,
                                      boolean hasVisibleContacts, boolean isFilterEnabled) {
 
-        contactListFragmentListener.onContactListChange(commonState);
+        if (contactListFragmentListener != null)
+            contactListFragmentListener.onContactListChange(commonState);
 
         if (hasVisibleContacts) {
             infoView.setVisibility(View.GONE);
