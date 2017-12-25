@@ -45,4 +45,6 @@
 
     </LinearLayout>
 
+    <include layout="@layout/showcase_contact_list" android:visibility="gone" />
+
 </RelativeLayout>

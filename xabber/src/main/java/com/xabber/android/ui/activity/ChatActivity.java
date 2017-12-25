@@ -292,7 +292,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
             @Override
             public void onClick(View v) {
                 SettingsManager.setChatShowcaseSuggested();
-                showRecentChatShowcase(false);
+                showShowcase(false);
             }
         });
 
@@ -366,8 +366,9 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
             handleOtrIntent(intent);
         }
 
+        //showcase
         if (!SettingsManager.chatShowcaseSuggested()) {
-            showRecentChatShowcase(true);
+            showShowcase(true);
         }
     }
 
@@ -1012,7 +1013,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         MUCManager.getInstance().joinRoom(account, user.getJid().asEntityBareJidIfPossible(), true);
     }
 
-    public void showRecentChatShowcase(boolean show) {
+    public void showShowcase(boolean show) {
         showcaseView.setVisibility(show ? View.VISIBLE : View.INVISIBLE);
     }
 }

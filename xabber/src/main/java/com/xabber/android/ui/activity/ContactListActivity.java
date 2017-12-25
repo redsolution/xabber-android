@@ -34,6 +34,7 @@ import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.xabber.android.R;
@@ -126,6 +127,9 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
     private BottomMenu bottomMenu;
     private Fragment contentFragment;
 
+    private View showcaseView;
+    private Button btnShowcaseGotIt;
+
     public static Intent createPersistentIntent(Context context) {
         Intent intent = new Intent(context, ContactListActivity.class);
         intent.setAction("android.intent.action.MAIN");
@@ -205,6 +209,16 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
             action = getIntent().getAction();
         }
         getIntent().setAction(null);
+
+        showcaseView = findViewById(R.id.showcaseView);
+        btnShowcaseGotIt = (Button) findViewById(R.id.btnGotIt);
+        btnShowcaseGotIt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SettingsManager.setContactShowcaseSuggested();
+                showShowcase(false);
+            }
+        });
     }
 
     @Override
@@ -421,6 +435,11 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
         //XabberAccountManager.getInstance().createLocalAccountIfNotExist();
         showBottomNavigation();
         showPassDialogs();
+
+        //showcase
+        if (!SettingsManager.contactShowcaseSuggested()) {
+            showShowcase(true);
+        }
     }
 
     public void showPassDialogs() {
@@ -789,5 +808,9 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
 
     private boolean isSharedText(String type) {
         return type.contains("text/plain");
+    }
+
+    public void showShowcase(boolean show) {
+        showcaseView.setVisibility(show ? View.VISIBLE : View.INVISIBLE);
     }
 }

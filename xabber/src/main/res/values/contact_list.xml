@@ -117,4 +117,6 @@
     <string name="all_chats">All chats</string>
     <string name="no_messages">No messages</string>
     <string name="show_all_chats">Show all chats</string>
+
+    <string name="showcase_contact_list_text_1">Swipe chat to archive it</string>
 </resources>
