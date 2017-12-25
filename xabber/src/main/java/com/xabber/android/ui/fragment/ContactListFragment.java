@@ -421,7 +421,8 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
      * Scroll to the top of contact list.
      */
     public void scrollTo(int position) {
-        linearLayoutManager.scrollToPositionWithOffset(position, 0);
+        if (linearLayoutManager != null)
+            linearLayoutManager.scrollToPositionWithOffset(position, 0);
     }
 
 

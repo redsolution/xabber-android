@@ -571,7 +571,9 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     @Override
     public int getItemCount() {
-        return rosterItemVOs.size();
+        if (rosterItemVOs != null)
+            return rosterItemVOs.size();
+        else return 0;
     }
 
     public Object getItem(int position) {
