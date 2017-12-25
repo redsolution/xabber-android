@@ -666,6 +666,14 @@ public class SettingsManager implements OnInitializedListener,
         setBoolean(R.string.start_at_boot_suggested_key, true);
     }
 
+    public static boolean chatShowcaseSuggested() {
+        return getBoolean(R.string.chat_showcase_suggested_key, false);
+    }
+
+    public static void setChatShowcaseSuggested() {
+        setBoolean(R.string.chat_showcase_suggested_key, true);
+    }
+
     public static boolean contactIntegrationSuggested() {
         return getBoolean(R.string.contact_integration_suggested_key, false);
     }

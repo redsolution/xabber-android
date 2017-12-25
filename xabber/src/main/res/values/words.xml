@@ -25,4 +25,6 @@
 
     <string name="share">share</string>
     <string name="send_to">Send to:</string>
+
+    <string name="got_it">Got it</string>
 </resources>

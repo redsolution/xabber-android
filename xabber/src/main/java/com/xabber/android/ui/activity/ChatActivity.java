@@ -34,6 +34,7 @@ import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -148,6 +149,8 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
 
     private Toolbar toolbar;
     private View contactTitleView;
+    private View showcaseView;
+    private Button btnShowcaseGotIt;
 
     boolean showArchived = false;
 
@@ -283,6 +286,16 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
             }
         });
 
+        showcaseView = findViewById(R.id.showcaseView);
+        btnShowcaseGotIt = (Button) findViewById(R.id.btnGotIt);
+        btnShowcaseGotIt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SettingsManager.setChatShowcaseSuggested();
+                showRecentChatShowcase(false);
+            }
+        });
+
         statusBarPainter = new StatusBarPainter(this);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
@@ -351,6 +364,10 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         if (intent.getBooleanExtra(EXTRA_OTR_REQUEST, false) ||
                 intent.getBooleanExtra(EXTRA_OTR_PROGRESS, false)) {
             handleOtrIntent(intent);
+        }
+
+        if (!SettingsManager.chatShowcaseSuggested()) {
+            showRecentChatShowcase(true);
         }
     }
 
@@ -993,5 +1010,9 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
 
     public void onJoinConferenceClick() {
         MUCManager.getInstance().joinRoom(account, user.getJid().asEntityBareJidIfPossible(), true);
+    }
+
+    public void showRecentChatShowcase(boolean show) {
+        showcaseView.setVisibility(show ? View.VISIBLE : View.INVISIBLE);
     }
 }
