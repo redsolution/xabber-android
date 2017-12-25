@@ -17,16 +17,17 @@
 
         <ImageView
             android:layout_width="150dp"
-            android:layout_height="150dp"
+            android:layout_height="70dp"
             android:layout_gravity="center_horizontal"
             android:layout_marginLeft="35dp"
+            android:layout_marginBottom="8dp"
             android:src="@drawable/ic_swipe_right"
             />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
+            android:layout_marginBottom="48dp"
             android:text="@string/showcase_chat_text_1"
             android:textColor="@color/grey_400"
             android:textSize="18sp"
@@ -36,9 +37,10 @@
 
         <ImageView
             android:layout_width="150dp"
-            android:layout_height="150dp"
+            android:layout_height="70dp"
             android:layout_gravity="center_horizontal"
             android:layout_marginRight="35dp"
+            android:layout_marginBottom="8dp"
             android:src="@drawable/ic_swipe_left"
 
             />
@@ -54,16 +56,18 @@
             android:layout_gravity="center"
             />
 
-        <Button
-            android:id="@+id/btnGotIt"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="right"
-            style="@style/Widget.AppCompat.Button.Colored"
-            android:theme="@style/BlueButton"
-            android:text="@string/got_it"
-            />
-
     </LinearLayout>
+
+    <Button
+        android:id="@+id/btnGotIt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_margin="16dp"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:theme="@style/BlueButton"
+        android:text="@string/got_it"
+        />
 
 </RelativeLayout>
