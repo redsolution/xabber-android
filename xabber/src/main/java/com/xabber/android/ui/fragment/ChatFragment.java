@@ -31,6 +31,7 @@ import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
@@ -62,6 +63,8 @@ import com.xabber.android.data.extension.mam.MamManager;
 import com.xabber.android.data.extension.mam.PreviousHistoryLoadFinishedEvent;
 import com.xabber.android.data.extension.mam.PreviousHistoryLoadStartedEvent;
 import com.xabber.android.data.extension.muc.MUCManager;
+import com.xabber.android.data.extension.muc.RoomChat;
+import com.xabber.android.data.extension.muc.RoomState;
 import com.xabber.android.data.extension.otr.AuthAskEvent;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.otr.SecurityLevel;
@@ -147,6 +150,9 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
     private LinearLayoutManager layoutManager;
     private SwipeRefreshLayout swipeContainer;
     private View placeholder;
+    private LinearLayout inputLayout;
+    private LinearLayout joinLayout;
+    private LinearLayout actionJoin;
 
     boolean isInputEmpty = true;
     private boolean skipOnTextChanges = false;
@@ -240,7 +246,8 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         });
 
         // to avoid strange bug on some 4.x androids
-        view.findViewById(R.id.input_layout).setBackgroundColor(ColorManager.getInstance().getChatInputBackgroundColor());
+        inputLayout = (LinearLayout) view.findViewById(R.id.input_layout);
+        inputLayout.setBackgroundColor(ColorManager.getInstance().getChatInputBackgroundColor());
 
         view.findViewById(R.id.button_send_message).setOnClickListener(
                 new View.OnClickListener() {
@@ -318,6 +325,10 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         placeholder = view.findViewById(R.id.placeholder);
         placeholder.setOnClickListener(this);
 
+        joinLayout = (LinearLayout) view.findViewById(R.id.joinLayout);
+        actionJoin = (LinearLayout) view.findViewById(R.id.actionJoin);
+        actionJoin.setOnClickListener(this);
+
         return view;
     }
 
@@ -376,6 +387,8 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
 
         AbstractChat chat = getChat();
         if (chat != null) chat.resetUnreadMessageCount();
+
+        showJoinButtonIfNeed();
     }
 
     @Override
@@ -1071,6 +1084,10 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         if (v.getId() == R.id.placeholder) {
             ((ChatActivity)getActivity()).selectPage(1, true);
         }
+        if (v.getId() == R.id.actionJoin) {
+            ((ChatActivity)getActivity()).onJoinConferenceClick();
+            showJoinButtonIfNeed();
+        }
     }
 
     public void showContactInfo() {
@@ -1338,5 +1355,14 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
     public void showPlaceholder(boolean show) {
         if (show) placeholder.setVisibility(View.VISIBLE);
         else placeholder.setVisibility(View.GONE);
+    }
+
+    public void showJoinButtonIfNeed() {
+        AbstractChat chat = getChat();
+        if (chat != null && chat instanceof RoomChat) {
+            RoomState chatState = ((RoomChat) chat).getState();
+            joinLayout.setVisibility(chatState == RoomState.unavailable ? View.VISIBLE : View.INVISIBLE);
+            inputView.setVisibility(chatState == RoomState.unavailable ? View.INVISIBLE : View.VISIBLE);
+        }
     }
 }

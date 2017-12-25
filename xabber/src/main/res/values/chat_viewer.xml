@@ -124,4 +124,5 @@
 
     <string name="chat_notification_settings_title">Notification for this chat</string>
     <string name="error_file_upload_not_support">The server you are using does not support file transfer. You can try the xabber.org server.</string>
+    <string name="button_join_conference">Join conference</string>
 </resources>

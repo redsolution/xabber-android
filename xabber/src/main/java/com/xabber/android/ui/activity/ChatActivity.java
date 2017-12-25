@@ -882,7 +882,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
             /* conference specific options menu */
 
             case R.id.action_join_conference:
-                MUCManager.getInstance().joinRoom(account, user.getJid().asEntityBareJidIfPossible(), true);
+                onJoinConferenceClick();
                 return true;
 
             case R.id.action_invite_to_chat:
@@ -989,5 +989,9 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         sendIntent.putExtra(Intent.EXTRA_TEXT, text);
         sendIntent.setType("text/plain");
         startActivity(Intent.createChooser(sendIntent, getResources().getText(R.string.send_to)));
+    }
+
+    public void onJoinConferenceClick() {
+        MUCManager.getInstance().joinRoom(account, user.getJid().asEntityBareJidIfPossible(), true);
     }
 }
