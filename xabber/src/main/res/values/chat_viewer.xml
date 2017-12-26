@@ -119,8 +119,8 @@
     <string name="muc_role_moderator">Moderator</string>
     <string name="muc_role_participant">Participant</string>
     <string name="muc_role_visitor">Visitor</string>
-    <string name="toast_archived_show">Archived chats shows</string>
-    <string name="toast_archived_hide">Archived chats hide</string>
+    <string name="toast_archived_show">Archive chats shown</string>
+    <string name="toast_archived_hide">Archive chats hidden</string>
 
     <string name="chat_notification_settings_title">Notification for this chat</string>
     <string name="error_file_upload_not_support">The server you are using does not support file transfer. You can try the xabber.org server.</string>
