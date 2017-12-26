@@ -67,5 +67,4 @@
   <string name="message_info_occupants_number">Участники: %d</string>
   <string name="contact_info_connected_clients_header">Подключенные устройства</string>
   <string name="contact_info_visiting_card_header">Визитная карточка</string>
-  <string name="action_send_contact">Отправить контакт</string>
 </resources>
