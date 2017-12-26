@@ -45,6 +45,7 @@ import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.ui.activity.AccountAddActivity;
 import com.xabber.android.ui.activity.ConferenceSelectActivity;
 import com.xabber.android.ui.activity.ContactAddActivity;
+import com.xabber.android.ui.activity.ContactListActivity;
 import com.xabber.android.ui.activity.ManagedActivity;
 import com.xabber.android.ui.activity.StatusEditActivity;
 import com.xabber.android.ui.adapter.UpdatableAdapter;
@@ -59,7 +60,6 @@ import com.xabber.android.ui.color.AccountPainter;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.helper.ContextMenuHelper;
 import com.xabber.android.ui.helper.RecyclerItemTouchHelper;
-import com.xabber.android.ui.preferences.PreferenceEditor;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -512,6 +512,7 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
     @Override
     public void onChatListStateChanged() {
         closeSnackbar();
+        closeSearch();
     }
 
     public void showRecent() {
@@ -569,6 +570,10 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
 
     public void closeSnackbar() {
         if (snackbar != null) snackbar.dismiss();
+    }
+
+    public void closeSearch() {
+        ((ContactListActivity)getActivity()).closeSearch();
     }
 
     public ContactListAdapter.ChatListState getListState() {

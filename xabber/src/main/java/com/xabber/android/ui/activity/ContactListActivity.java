@@ -813,4 +813,8 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
     public void showShowcase(boolean show) {
         showcaseView.setVisibility(show ? View.VISIBLE : View.INVISIBLE);
     }
+
+    public void closeSearch() {
+        if (bottomMenu != null) bottomMenu.closeSearch();
+    }
 }
