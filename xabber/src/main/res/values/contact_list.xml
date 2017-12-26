@@ -13,6 +13,7 @@
     <string name="application_state_empty">You don\'t have any accounts</string>
     <string name="application_state_no_contacts">You have no contacts</string>
     <string name="application_state_no_online">Nobody online</string>
+    <string name="application_state_nobody_by_filter">No contacts found</string>
     <string name="application_state_offline">No online accounts</string>
     <string name="application_state_roster">Connected.</string>
     <string name="application_state_starting">Launching application…</string>

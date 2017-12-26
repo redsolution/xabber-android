@@ -273,7 +273,7 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
             } else {
                 state = ContactListState.offline;
             }
-            text = R.string.application_state_no_online;
+            text = R.string.application_state_nobody_by_filter;
             button = 0;
             listener = null;
         } else if (hasContacts) {
@@ -504,6 +504,7 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
 
     @Override
     public void showPlaceholder(String message) {
+        //
         tvPlaceholderMessage.setText(message);
         placeholderView.setVisibility(View.VISIBLE);
     }
