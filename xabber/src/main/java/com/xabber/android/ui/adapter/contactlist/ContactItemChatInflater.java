@@ -46,7 +46,11 @@ public class ContactItemChatInflater {
         if (SettingsManager.contactsShowAvatars()) {
             viewHolder.avatarView.setVisibility(View.VISIBLE);
             viewHolder.ivAvatar.setImageDrawable(viewObject.getAvatar());
-        } else viewHolder.avatarView.setVisibility(View.GONE);
+            viewHolder.ivOnlyStatus.setVisibility(View.GONE);
+        } else {
+            viewHolder.avatarView.setVisibility(View.GONE);
+            viewHolder.ivOnlyStatus.setVisibility(View.VISIBLE);
+        }
 
         viewHolder.tvContactName.setText(viewObject.getName());
 
@@ -62,6 +66,7 @@ public class ContactItemChatInflater {
             viewHolder.ivStatus.setVisibility(View.INVISIBLE);
         else viewHolder.ivStatus.setVisibility(View.VISIBLE);
         viewHolder.ivStatus.setImageLevel(viewObject.getStatusLevel());
+        viewHolder.ivOnlyStatus.setImageLevel(viewObject.getStatusLevel());
 
         viewHolder.tvOutgoingMessage.setVisibility(View.GONE);
 

@@ -35,7 +35,11 @@ class ContactItemInflater {
         if (SettingsManager.contactsShowAvatars()) {
             viewHolder.avatarView.setVisibility(View.VISIBLE);
             viewHolder.ivAvatar.setImageDrawable(viewObject.getAvatar());
-        } else viewHolder.avatarView.setVisibility(View.GONE);
+            viewHolder.ivOnlyStatus.setVisibility(View.GONE);
+        } else {
+            viewHolder.avatarView.setVisibility(View.GONE);
+            viewHolder.ivOnlyStatus.setVisibility(View.VISIBLE);
+        }
 
         viewHolder.tvContactName.setText(viewObject.getName());
 
@@ -56,6 +60,7 @@ class ContactItemInflater {
             viewHolder.tvStatus.setTextColor(context.getResources().getColor(R.color.status_color_in_contact_list_online));
         }
         viewHolder.ivStatus.setImageLevel(viewObject.getStatusLevel());
+        viewHolder.ivOnlyStatus.setImageLevel(viewObject.getStatusLevel());
 
         String statusText = viewObject.getStatus();
         if (statusText.isEmpty()) statusText = context.getString(viewObject.getStatusId());

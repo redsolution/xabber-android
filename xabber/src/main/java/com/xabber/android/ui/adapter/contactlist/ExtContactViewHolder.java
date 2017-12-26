@@ -24,6 +24,7 @@ public class ExtContactViewHolder extends RecyclerView.ViewHolder implements Vie
     final View avatarView;
     final ImageView ivAvatar;
     final ImageView ivStatus;
+    final ImageView ivOnlyStatus;
     final TextView tvContactName;
     final TextView tvOutgoingMessage;
     final TextView tvMessageText;
@@ -58,6 +59,7 @@ public class ExtContactViewHolder extends RecyclerView.ViewHolder implements Vie
         ivAvatar = (ImageView) view.findViewById(R.id.ivAvatar);
         ivAvatar.setOnClickListener(this);
         ivStatus = (ImageView) view.findViewById(R.id.ivStatus);
+        ivOnlyStatus = (ImageView) view.findViewById(R.id.ivOnlyStatus);
         tvContactName = (TextView) view.findViewById(R.id.tvContactName);
         tvOutgoingMessage = (TextView) view.findViewById(R.id.tvOutgoingMessage);
         tvMessageText = (TextView) view.findViewById(R.id.tvMessageText);

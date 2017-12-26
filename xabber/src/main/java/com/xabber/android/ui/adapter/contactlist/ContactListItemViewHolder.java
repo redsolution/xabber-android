@@ -18,6 +18,7 @@ class ContactListItemViewHolder extends RecyclerView.ViewHolder implements View.
     final TextView tvContactName;
     //final TextView outgoingMessageIndicator;
     final TextView tvStatus;
+    final ImageView ivOnlyStatus;
     final ImageView ivDevice;
     //final TextView smallRightText;
     //final ImageView smallRightIcon;
@@ -51,6 +52,7 @@ class ContactListItemViewHolder extends RecyclerView.ViewHolder implements View.
         tvContactName = (TextView) view.findViewById(R.id.tvContactName);
         //outgoingMessageIndicator = (TextView) view.findViewById(R.id.outgoing_message_indicator);
         tvStatus = (TextView) view.findViewById(R.id.tvStatus);
+        ivOnlyStatus = (ImageView) view.findViewById(R.id.ivOnlyStatus);
         ivDevice = (ImageView) view.findViewById(R.id.ivDevice);
         //smallRightIcon = (ImageView) view.findViewById(R.id.small_right_icon);
         //smallRightText = (TextView) view.findViewById(R.id.small_right_text);
