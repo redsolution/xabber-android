@@ -6,11 +6,20 @@
     android:layout_height="@dimen/avatar_size_toolbar"
     android:id="@+id/avatar_account"
     >
-    <ImageView
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:src="@color/white"
+        />
+
+    <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/avatar"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:src="@drawable/ic_avatar_1"
         android:scaleType="centerCrop"
+        android:src="#80CBC4"
         />
+
 </RelativeLayout>
