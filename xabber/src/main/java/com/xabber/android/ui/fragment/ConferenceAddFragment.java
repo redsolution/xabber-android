@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -67,7 +68,7 @@ public class ConferenceAddFragment extends Fragment {
         int h = accountAvatar.getIntrinsicHeight();
         int w = accountAvatar.getIntrinsicWidth();
         accountAvatar.setBounds( 0, 0, w, h );
-        ((TextView) view.findViewById(R.id.muc_account_jid)).setCompoundDrawables(accountAvatar, null, null, null);
+        ((ImageView) view.findViewById(R.id.ivAvatar)).setImageDrawable(accountAvatar);
 
 
         nickView = (EditText) view.findViewById(R.id.muc_nick);
