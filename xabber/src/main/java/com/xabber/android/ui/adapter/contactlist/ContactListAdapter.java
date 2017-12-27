@@ -468,7 +468,9 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                             }
 
                             if (rosterAccount.getTotal() == 0)
-                                rosterItemVOs.add(ButtonVO.convert(null, ButtonVO.ACTION_ADD_CONTACT, ButtonVO.ACTION_ADD_CONTACT));
+                                rosterItemVOs.add(ButtonVO.convert(null,
+                                        activity.getString(R.string.contact_add),
+                                        ButtonVO.ACTION_ADD_CONTACT));
                         }
                     } else {
                         if (showGroups) {
