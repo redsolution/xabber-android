@@ -3,16 +3,7 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingRight="16dp"
-        android:paddingLeft="16dp"
-        android:paddingTop="16dp"
-        android:id="@+id/account_selector"
-        >
-        <include layout="@layout/account_select_spinner"/>
-    </FrameLayout>
+    <include layout="@layout/contact_add_header"/>
 
     <ListView
         android:id="@android:id/list"
