@@ -36,6 +36,7 @@ import com.xabber.android.ui.fragment.XabberAccountLoginFragment;
 import com.xabber.android.utils.RetrofitErrorConverter;
 
 import java.util.List;
+import java.util.Locale;
 
 import okhttp3.ResponseBody;
 import rx.Subscription;
@@ -613,7 +614,8 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
 
     private void completeRegister(String username, String pass, String pass2, String firstName, String lastName, boolean createToken) {
         showProgress(getResources().getString(R.string.progress_title_complete));
-        Subscription completeSubscription = AuthManager.completeRegister(username, pass, pass2, firstName, lastName, "xabber.org", createToken)
+        Subscription completeSubscription = AuthManager.completeRegister(username, pass, pass2,
+                firstName, lastName, "xabber.org", Locale.getDefault().getLanguage(), createToken)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<XabberAccount>() {
