@@ -22,6 +22,7 @@ public class XabberAccountRealm extends RealmObject {
     private String firstName;
     private String lastName;
     private String registerDate;
+    private String language;
     private RealmList<XMPPUserRealm> xmppUsers;
     private RealmList<EmailRealm> emails;
     private RealmList<SocialBindingRealm> socialBindings;
@@ -84,6 +85,14 @@ public class XabberAccountRealm extends RealmObject {
 
     public void setRegisterDate(String registerDate) {
         this.registerDate = registerDate;
+    }
+
+    public String getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(String language) {
+        this.language = language;
     }
 
     public RealmList<XMPPUserRealm> getXmppUsers() {

@@ -381,6 +381,7 @@ public class XabberAccountManager implements OnLoadListener {
                 accountRealm.getFirstName(),
                 accountRealm.getLastName(),
                 accountRealm.getRegisterDate(),
+                accountRealm.getLanguage(),
                 xmppUsers,
                 emails,
                 socials,

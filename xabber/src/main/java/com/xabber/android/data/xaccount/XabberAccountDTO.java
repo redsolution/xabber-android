@@ -14,12 +14,13 @@ public class XabberAccountDTO {
     private String first_name;
     private String last_name;
     private String registration_date;
+    private String language;
     private List<XMPPUserDTO> xmpp_users;
     private List<EmailDTO> email_list;
     private List<SocialBindingDTO> social_bindings;
 
     public XabberAccountDTO(int id, String account_status, String username, String first_name,
-                            String last_name, String registration_date, List<XMPPUserDTO> xmpp_users,
+                            String last_name, String registration_date, String language, List<XMPPUserDTO> xmpp_users,
                             List<EmailDTO> email_list, List<SocialBindingDTO> social_bindings) {
         this.id = id;
         this.account_status = account_status;
@@ -27,6 +28,7 @@ public class XabberAccountDTO {
         this.first_name = first_name;
         this.last_name = last_name;
         this.registration_date = registration_date;
+        this.language = language;
         this.xmpp_users = xmpp_users;
         this.email_list = email_list;
         this.social_bindings = social_bindings;
@@ -54,6 +56,10 @@ public class XabberAccountDTO {
 
     public String getRegistrationDate() {
         return registration_date;
+    }
+
+    public String getLanguage() {
+        return language;
     }
 
     public List<XMPPUserDTO> getXmppUsers() {

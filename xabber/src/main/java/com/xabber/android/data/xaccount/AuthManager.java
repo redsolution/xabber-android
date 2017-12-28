@@ -9,6 +9,7 @@ import com.xabber.android.data.SettingsManager;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import okhttp3.ResponseBody;
@@ -80,12 +81,25 @@ public class AuthManager {
 
     public static Single<XabberAccount> getAccount(final String token) {
         return HttpApiManager.getXabberApi().getAccount("Token " + token)
+                .flatMap(new Func1<XabberAccountDTO, Single<? extends XabberAccountDTO>>() {
+                    @Override
+                    public Single<? extends XabberAccountDTO> call(XabberAccountDTO xabberAccountDTO) {
+                        if (xabberAccountDTO.getLanguage() != null && !xabberAccountDTO.getLanguage().equals(""))
+                            return Single.just(xabberAccountDTO);
+                        else return updateAccount(token, new Account(xabberAccountDTO.getFirstName(),
+                                xabberAccountDTO.getLastName(), Locale.getDefault().getLanguage()));
+                    }
+                })
                 .flatMap(new Func1<XabberAccountDTO, Single<? extends XabberAccount>>() {
                     @Override
                     public Single<? extends XabberAccount> call(XabberAccountDTO xabberAccountDTO) {
                         return XabberAccountManager.getInstance().saveOrUpdateXabberAccountToRealm(xabberAccountDTO, token);
                     }
                 });
+    }
+
+    private static Single<XabberAccountDTO> updateAccount(final String token, Account account) {
+        return HttpApiManager.getXabberApi().updateAccount("Token " + token, account);
     }
 
     public static Single<List<XMPPAccountSettings>> getClientSettings() {
@@ -280,6 +294,18 @@ public class AuthManager {
             this.host = host;
             this.language = language;
             this.create_token = create_token;
+        }
+    }
+
+    public static class Account {
+        final String first_name;
+        final String last_name;
+        final String language;
+
+        public Account(String first_name, String last_name, String language) {
+            this.first_name = first_name;
+            this.last_name = last_name;
+            this.language = language;
         }
     }
 
