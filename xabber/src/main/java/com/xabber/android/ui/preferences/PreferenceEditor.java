@@ -161,7 +161,7 @@ public class PreferenceEditor extends ManagedActivity
 
     @Override
     public void onDeleteAccount(AccountItem accountItem) {
-        AccountDeleteDialog.newInstance(accountItem.getAccount()).show(getFragmentManager(),
+        AccountDeleteDialog.newInstance(accountItem.getAccount()).show(getSupportFragmentManager(),
                 AccountDeleteDialog.class.getName());
     }
 

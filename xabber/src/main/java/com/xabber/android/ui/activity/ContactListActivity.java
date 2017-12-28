@@ -15,8 +15,8 @@
 package com.xabber.android.ui.activity;
 
 import android.app.Dialog;
-import android.app.Fragment;
-import android.app.FragmentTransaction;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -546,7 +546,7 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
     }
 
     private ContactListFragment getContactListFragment() {
-        return (ContactListFragment) getFragmentManager().findFragmentByTag(CONTACT_LIST_TAG);
+        return (ContactListFragment) getSupportFragmentManager().findFragmentByTag(CONTACT_LIST_TAG);
     }
 
     @Override
@@ -675,7 +675,7 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
     }
 
     private void rebuildAccountToggle() {
-        BottomMenu bottomMenu = ((BottomMenu)getFragmentManager().findFragmentById(R.id.containerBottomNavigation));
+        BottomMenu bottomMenu = ((BottomMenu)getSupportFragmentManager().findFragmentById(R.id.containerBottomNavigation));
         if (bottomMenu != null)
             bottomMenu.update();
     }
@@ -754,7 +754,7 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
         if (bottomMenu == null)
             bottomMenu = BottomMenu.newInstance();
 
-        FragmentTransaction fTrans = getFragmentManager().beginTransaction();
+        FragmentTransaction fTrans = getSupportFragmentManager().beginTransaction();
         fTrans.replace(R.id.containerBottomNavigation, bottomMenu);
         fTrans.commit();
     }
@@ -762,7 +762,7 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
     private void showMenuFragment() {
         contentFragment = ContactListDrawerFragment.newInstance();
 
-        FragmentTransaction fTrans = getFragmentManager().beginTransaction();
+        FragmentTransaction fTrans = getSupportFragmentManager().beginTransaction();
         fTrans.replace(R.id.container, contentFragment);
         fTrans.commit();
     }
@@ -770,7 +770,7 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
     private void showContactListFragment(@Nullable AccountJid account) {
         contentFragment = ContactListFragment.newInstance(account);
 
-        FragmentTransaction fTrans = getFragmentManager().beginTransaction();
+        FragmentTransaction fTrans = getSupportFragmentManager().beginTransaction();
         fTrans.replace(R.id.container, contentFragment, CONTACT_LIST_TAG);
         fTrans.commit();
     }

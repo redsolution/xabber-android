@@ -114,7 +114,7 @@ public class AccountSettingsActivity extends ManagedActivity
     @Override
     public boolean onMenuItemClick(MenuItem item) {
         if (item.getItemId() == R.id.action_remove_account) {
-            AccountDeleteDialog.newInstance(account).show(getFragmentManager(), AccountDeleteDialog.class.getSimpleName());
+            AccountDeleteDialog.newInstance(account).show(getSupportFragmentManager(), AccountDeleteDialog.class.getSimpleName());
             return true;
         }
 
