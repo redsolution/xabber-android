@@ -27,10 +27,10 @@ public interface IXabberApi {
     @POST("accounts/signup/")
     Single<XAccountTokenDTO> signup(@Body AuthManager.Email email);
 
-    @GET("accounts/current")
+    @GET("accounts/current/")
     Single<XabberAccountDTO> getAccount(@Header("Authorization") String token);
 
-    @PATCH("accounts/current")
+    @PATCH("accounts/current/")
     Single<XabberAccountDTO> updateAccount(@Header("Authorization") String token, @Body AuthManager.Account account);
 
     @GET("accounts/current/client-settings/")

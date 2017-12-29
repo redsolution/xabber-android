@@ -291,6 +291,7 @@ public class XabberAccountManager implements OnLoadListener {
         xabberAccountRealm.setUsername(xabberAccount.getUsername());
         xabberAccountRealm.setFirstName(xabberAccount.getFirstName());
         xabberAccountRealm.setLastName(xabberAccount.getLastName());
+        xabberAccountRealm.setLanguage(xabberAccount.getLanguage());
         xabberAccountRealm.setRegisterDate(xabberAccount.getRegistrationDate());
 
         RealmList<XMPPUserRealm> realmUsers = new RealmList<>();
