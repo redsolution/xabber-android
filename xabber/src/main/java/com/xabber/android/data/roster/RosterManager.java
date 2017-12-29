@@ -114,6 +114,15 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
         }
     }
 
+    public boolean isSubscribed(AccountJid account, UserJid user) {
+        final Roster roster = getRoster(account);
+        if (roster == null) {
+            return false;
+        } else {
+            return roster.iAmSubscribedTo(user.getJid());
+        }
+    }
+
     public Collection<RosterContact> getAccountRosterContacts(final AccountJid accountJid) {
         return Collections.unmodifiableCollection(rosterContacts.getNested(accountJid.toString()).values());
     }
