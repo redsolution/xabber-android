@@ -83,12 +83,30 @@
 
             <include layout="@layout/account_color_indicator"/>
 
-            <include layout="@layout/avatar_view_small"/>
+            <LinearLayout
+                android:id="@+id/avatarLayout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true">
+
+                <include layout="@layout/avatar_view_small"/>
+
+                <ImageView
+                    android:id="@+id/ivOnlyStatus"
+                    android:layout_width="12dp"
+                    android:layout_height="12dp"
+                    android:src="@drawable/ic_status"
+                    android:layout_marginLeft="10dp"
+                    android:layout_gravity="center_vertical"
+                    android:visibility="gone"
+                    />
+
+            </LinearLayout>
 
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_toRightOf="@+id/avatarView"
+                android:layout_toRightOf="@id/avatarLayout"
                 android:layout_marginLeft="14dp"
                 android:layout_centerVertical="true"
                 >
