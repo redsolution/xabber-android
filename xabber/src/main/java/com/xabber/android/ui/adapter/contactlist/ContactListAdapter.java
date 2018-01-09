@@ -94,7 +94,7 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     private static final String LOG_TAG = ContactListAdapter.class.getSimpleName();
 
-    private static final int MAX_RECENT_ITEMS = 8;
+    private static final int MAX_RECENT_ITEMS = 12;
 
     /**
      * Number of milliseconds between lazy refreshes.
@@ -719,7 +719,7 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 holder.tvTitle.setText(R.string.all_chats);
                 break;
             default:
-                holder.tvTitle.setText(R.string.recent_chats);
+                holder.tvTitle.setText("Xabber");
                 break;
         }
     }
