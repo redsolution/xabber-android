@@ -433,13 +433,18 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
         }
 
         //XabberAccountManager.getInstance().createLocalAccountIfNotExist();
-        showBottomNavigation();
         showPassDialogs();
 
         //showcase
         if (!SettingsManager.contactShowcaseSuggested()) {
             showShowcase(true);
         }
+    }
+
+    @Override
+    protected void onResumeFragments() {
+        super.onResumeFragments();
+        showBottomNavigation();
     }
 
     public void showPassDialogs() {
