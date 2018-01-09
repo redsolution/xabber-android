@@ -891,7 +891,7 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
                 onChange();
             }
-        } else {
+        } else if (viewObject instanceof AccountVO) {
             AccountVO accountVO = (AccountVO) getItem(adapterPosition);
             GroupManager.getInstance().setExpanded(accountVO.getAccountJid(),
                     accountVO.getGroupName(), !accountVO.isExpand());
