@@ -19,6 +19,7 @@
     >
 
     <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/avatarBackground"
         android:layout_width="32dp"
         android:layout_height="32dp"
         android:layout_alignParentLeft="true"
