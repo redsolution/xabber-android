@@ -10,12 +10,12 @@ import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.otr.SecurityLevel;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
-import com.xabber.android.ui.adapter.ChatMessageAdapter;
 
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smackx.carbons.packet.CarbonExtension;
+import org.jivesoftware.smackx.hints.element.NoStoreHint;
 
 import java.util.Collection;
 import java.util.Map;
@@ -151,5 +151,6 @@ public class CarbonManager {
      */
     public void setMessageToIgnoreCarbons(Message message) {
         CarbonExtension.Private.addTo(message);
+        NoStoreHint.set(message);
     }
 }
