@@ -29,6 +29,7 @@ import com.xabber.android.data.xaccount.XabberAccount;
 import com.xabber.android.data.xaccount.XabberAccountManager;
 import com.xabber.android.ui.color.BarPainter;
 import com.xabber.android.ui.fragment.XabberAccountCompleteRegsiterFrament;
+import com.xabber.android.ui.fragment.XabberAccountConfirmPhoneFragment;
 import com.xabber.android.ui.fragment.XabberAccountConfirmationFragment;
 import com.xabber.android.ui.fragment.XabberAccountInfoFragment;
 import com.xabber.android.ui.fragment.XabberAccountLastFragment;
@@ -56,6 +57,7 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
     private final static String FRAGMENT_LOGIN = "fragment_login";
     private final static String FRAGMENT_INFO = "fragment_info";
     private final static String FRAGMENT_CONFIRM = "fragment_confirm";
+    private final static String FRAGMENT_PHONE_CONFIRM = "fragment_phone_confirm";
     private final static String FRAGMENT_COMPLETE = "fragment_complete";
     private final static String FRAGMENT_LAST = "fragment_last";
 
@@ -72,6 +74,7 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
     private Fragment fragmentLogin;
     private Fragment fragmentInfo;
     private Fragment fragmentConfirmation;
+    private Fragment fragmentPhoneConfirmation;
     private Fragment fragmentCompleteRegsiter;
     private Fragment fragmentLastStep;
 
@@ -120,6 +123,10 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
             }
             if (XabberAccount.STATUS_CONFIRMED.equals(account.getAccountStatus())) {
                 showCompleteFragment();
+            }
+            // check need confirm phone
+            if (XabberAccount.STATUS_CONFIRMED.equals(account.getAccountStatus()) && true) {
+                showPhoneConfirmFragment();
             }
             if (XabberAccount.STATUS_REGISTERED.equals(account.getAccountStatus())) {
 
@@ -267,6 +274,18 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
 
         fTrans = getFragmentManager().beginTransaction();
         fTrans.replace(R.id.container, fragmentConfirmation, FRAGMENT_CONFIRM);
+        fTrans.commit();
+
+        toolbar.setTitle(R.string.title_register_xabber_account);
+        barPainter.setBlue(this);
+    }
+
+    private void showPhoneConfirmFragment() {
+        if (fragmentPhoneConfirmation == null)
+            fragmentPhoneConfirmation = new XabberAccountConfirmPhoneFragment();
+
+        fTrans = getFragmentManager().beginTransaction();
+        fTrans.replace(R.id.container, fragmentPhoneConfirmation, FRAGMENT_PHONE_CONFIRM);
         fTrans.commit();
 
         toolbar.setTitle(R.string.title_register_xabber_account);
@@ -594,7 +613,7 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
     }
 
     private void handleSuccessConfirm(XabberAccount response) {
-        showCompleteFragment();
+        showPhoneConfirmFragment();
         hideProgress();
         Toast.makeText(this, R.string.confirm_success, Toast.LENGTH_SHORT).show();
     }

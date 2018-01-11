@@ -56,6 +56,8 @@
     <string name="title_xmpp_account">XMPP Accounts</string>
     <string name="title_email_confirm">Confirm email address</string>
     <string name="title_email_confirmed">Email address confirmed</string>
+    <string name="title_phone_confirm">Confirm phone number</string>
+    <string name="title_phone_confirmed">Phone number confirmed</string>
     <string name="title_complete_register">Complete registration</string>
     <string name="title_completed_register">Registration completed</string>
     <string name="title_start_messaging">Start messaging!</string>

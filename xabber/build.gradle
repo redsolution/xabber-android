@@ -181,6 +181,7 @@ dependencies {
     compile 'com.squareup.okhttp3:okhttp:3.5.0'
     compile 'org.greenrobot:eventbus:3.0.0'
 
+    compile 'ru.egslava:MaskedEditText:1.0.5'
     compile 'com.brandongogetap:stickyheaders:0.4.9'
     compile 'com.soundcloud.android:android-crop:1.0.1@aar'
     compile 'de.hdodenhof:circleimageview:2.1.0'
