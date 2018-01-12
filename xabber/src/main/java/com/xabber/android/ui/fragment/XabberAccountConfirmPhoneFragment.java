@@ -56,7 +56,7 @@ public class XabberAccountConfirmPhoneFragment extends Fragment {
     private void checkPhoneNumber() {
         String phone = edtPhone.getText().toString().replaceAll(" ", "");
 
-        if (phone.isEmpty()) {
+        if (phone.isEmpty() || phone.length() < 12) {
             edtPhone.setError(getString(R.string.empty_field));
             return;
         }
@@ -69,6 +69,11 @@ public class XabberAccountConfirmPhoneFragment extends Fragment {
 
         if (code.isEmpty()) {
             edtCode.setError(getString(R.string.empty_field));
+            return;
+        }
+
+        if (code.length() != 6) {
+            edtCode.setError(getString(R.string.code_length_wrong));
             return;
         }
 
