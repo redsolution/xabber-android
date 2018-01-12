@@ -122,14 +122,12 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
                 showConfirmFragment();
             }
             if (XabberAccount.STATUS_CONFIRMED.equals(account.getAccountStatus())) {
-                showCompleteFragment();
-            }
-            // check need confirm phone
-            if (XabberAccount.STATUS_CONFIRMED.equals(account.getAccountStatus()) && true) {
                 showPhoneConfirmFragment();
             }
+            if (XabberAccount.STATUS_CONFIRMED.equals(account.getAccountStatus()) && !account.isNeedToVerifyPhone()) {
+                showCompleteFragment();
+            }
             if (XabberAccount.STATUS_REGISTERED.equals(account.getAccountStatus())) {
-
                 showInfoFragment();
                 needShowSyncDialog = false;
             }

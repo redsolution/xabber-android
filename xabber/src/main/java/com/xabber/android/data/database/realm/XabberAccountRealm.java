@@ -23,6 +23,8 @@ public class XabberAccountRealm extends RealmObject {
     private String lastName;
     private String registerDate;
     private String language;
+    private String phone;
+    private boolean needToVerifyPhone;
     private RealmList<XMPPUserRealm> xmppUsers;
     private RealmList<EmailRealm> emails;
     private RealmList<SocialBindingRealm> socialBindings;
@@ -117,6 +119,22 @@ public class XabberAccountRealm extends RealmObject {
 
     public void setSocialBindings(RealmList<SocialBindingRealm> socialBindings) {
         this.socialBindings = socialBindings;
+    }
+
+    public boolean isNeedToVerifyPhone() {
+        return needToVerifyPhone;
+    }
+
+    public void setNeedToVerifyPhone(boolean needToVerifyPhone) {
+        this.needToVerifyPhone = needToVerifyPhone;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 }
 

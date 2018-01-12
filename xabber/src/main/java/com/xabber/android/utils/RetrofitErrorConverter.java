@@ -2,6 +2,7 @@ package com.xabber.android.utils;
 
 import android.support.annotation.Nullable;
 
+import com.google.gson.JsonSyntaxException;
 import com.xabber.android.data.xaccount.HttpApiManager;
 
 import java.io.IOException;
@@ -33,7 +34,7 @@ public class RetrofitErrorConverter {
                 Converter<ResponseBody, APIError> converter = HttpApiManager.getRetrofit().responseBodyConverter(APIError.class, new Annotation[0]);
                 try {
                     error = converter.convert(responseBody);
-                } catch (IOException e) {
+                } catch (IOException | JsonSyntaxException e) {
                     e.printStackTrace();
                 }
             }

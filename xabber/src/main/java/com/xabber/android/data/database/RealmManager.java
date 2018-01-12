@@ -28,7 +28,7 @@ import io.realm.annotations.RealmModule;
 
 public class RealmManager {
     private static final String REALM_DATABASE_NAME = "realm_database.realm";
-    private static final int REALM_DATABASE_VERSION = 10;
+    private static final int REALM_DATABASE_VERSION = 11;
     private static final String LOG_TAG = RealmManager.class.getSimpleName();
     private final RealmConfiguration realmConfiguration;
 
@@ -187,6 +187,12 @@ public class RealmManager {
                         if (oldVersion == 9) {
                             schema.get(XabberAccountRealm.class.getSimpleName())
                                     .addField("language", String.class);
+                        }
+
+                        if (oldVersion == 10) {
+                            schema.get(XabberAccountRealm.class.getSimpleName())
+                                    .addField("phone", String.class)
+                                    .addField("needToVerifyPhone", boolean.class);
                         }
                     }
                 })
