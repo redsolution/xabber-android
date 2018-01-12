@@ -18,6 +18,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import com.xabber.android.BuildConfig;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
@@ -625,7 +626,9 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
     }
 
     private void handleSuccessConfirm(XabberAccount response) {
-        showPhoneConfirmFragment();
+        if (BuildConfig.FLAVOR.equals("ru") && response.isNeedToVerifyPhone())
+            showPhoneConfirmFragment();
+        else showCompleteFragment();
         hideProgress();
         Toast.makeText(this, R.string.confirm_success, Toast.LENGTH_SHORT).show();
     }

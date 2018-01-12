@@ -126,11 +126,11 @@ public class XabberAccountInfoFragment extends Fragment {
             tvLanguage.setVisibility(View.VISIBLE);
         } else tvLanguage.setVisibility(View.GONE);
 
-        if (BuildConfig.FLAVOR.equals("ru") && tvPhone != null) {
+        if (BuildConfig.FLAVOR.equals("ru")) {
             tvPhone.setVisibility(View.VISIBLE);
             String phone = account.getPhone();
             tvPhone.setText(!phone.trim().isEmpty() ? phone : getString(R.string.no_phone));
-        }
+        } else tvPhone.setVisibility(View.GONE);
     }
 
     public void updateLastSyncTime() {
