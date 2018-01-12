@@ -57,7 +57,7 @@ public class AccountPreference extends Preference {
             }
             if (XabberAccount.STATUS_REGISTERED.equals(account.getAccountStatus())) {
                 tvAccountName.setText(accountName);
-                tvAccountUsername.setText(getContext().getString(R.string.username, account.getUsername()));
+                tvAccountUsername.setText(account.getUsername());
             }
         } else {
             llAccountInfo.setVisibility(View.GONE);

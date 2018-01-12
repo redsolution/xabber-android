@@ -119,7 +119,7 @@ public class XabberAccountInfoFragment extends Fragment {
 
         tvAccountName.setText(accountName);
         if (account.getUsername() != null && !account.getUsername().isEmpty())
-            tvAccountUsername.setText(getString(R.string.username, account.getUsername()));
+            tvAccountUsername.setText(account.getUsername());
 
         if (account.getLanguage() != null && !account.getLanguage().equals("")) {
             tvLanguage.setText(account.getLanguage());
@@ -129,7 +129,7 @@ public class XabberAccountInfoFragment extends Fragment {
         if (BuildConfig.FLAVOR.equals("ru")) {
             tvPhone.setVisibility(View.VISIBLE);
             String phone = account.getPhone();
-            tvPhone.setText(!phone.trim().isEmpty() ? phone : getString(R.string.no_phone));
+            tvPhone.setText(phone != null ? phone : getString(R.string.no_phone));
         } else tvPhone.setVisibility(View.GONE);
     }
 

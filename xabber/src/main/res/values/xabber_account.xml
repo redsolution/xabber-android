@@ -117,8 +117,6 @@
     <string name="signed_up_github">Signed up with GitHub</string>
     <string name="signed_up_twitter">Signed up with Twitter</string>
 
-    <string name="username" translatable="false">%1$s\@xabber.org</string>
-
     <string name="reorder_summary">To synchronize accounts order between devices you need to enable "Synchronize all" option in Xabber Account settings</string>
 
     <string name="cancel_registration_progress">Cancel registration</string>
