@@ -22,8 +22,8 @@
     <string name="resend_fail">Failed to send verification email</string>
     <string name="social_auth_fail">Social authentication failed</string>
     <string name="settings_delete_success">Settings deleted</string>
-    <string name="confirm_phone_success">Номер телефона успешно подтвержден</string>
-    <string name="set_phone_success">Код подверждения отправлен на указанный номер телефона</string>
+    <string name="confirm_phone_success">Phone number successfully confirmed</string>
+    <string name="set_phone_success">Confirmation code sent</string>
 
     <string name="toast_email_already_confirm">Email already confirmed</string>
     <string name="toast_not_authorized">You are not authorized</string>

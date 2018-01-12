@@ -122,4 +122,12 @@
   <string name="complete_register_summary">Вы хотите добавить %1$s в список Ваших XMPP аккаунтов?</string>
   <string name="complete_register_add">Добавить</string>
   <string name="complete_register_no">Нет</string>
+  <string name="confirm_phone_success">Номер телефона успешно подтвержден</string>
+  <string name="set_phone_success">Код подтверждения отправлен</string>
+  <string name="title_phone_confirm">Подтверждение номера телефона</string>
+  <string name="title_phone_confirmed">Номер телефона подтвержден</string>
+  <string name="progress_title_set_phone">Регистрация номера телефона</string>
+  <string name="progress_title_confirm_phone">Подтверждение</string>
+  <string name="no_phone">телефон не указан</string>
+  <string name="code_length_wrong">Код должен быть не менее 6 символов</string>
 </resources>
