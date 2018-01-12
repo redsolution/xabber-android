@@ -16,6 +16,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.xabber.android.BuildConfig;
 import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.xaccount.AuthManager;
@@ -45,6 +46,7 @@ public class XabberAccountInfoFragment extends Fragment {
     private TextView tvAccountName;
     private TextView tvAccountUsername;
     private TextView tvLanguage;
+    private TextView tvPhone;
     private TextView tvLastSyncDate;
     private RelativeLayout rlLogout;
     private RelativeLayout rlSync;
@@ -62,6 +64,7 @@ public class XabberAccountInfoFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        tvPhone = (TextView) view.findViewById(R.id.tvPhoneNumber);
         tvAccountName = (TextView) view.findViewById(R.id.tvAccountName);
         tvAccountUsername = (TextView) view.findViewById(R.id.tvAccountUsername);
         tvLanguage = (TextView) view.findViewById(R.id.tvLanguage);
@@ -122,6 +125,12 @@ public class XabberAccountInfoFragment extends Fragment {
             tvLanguage.setText(account.getLanguage());
             tvLanguage.setVisibility(View.VISIBLE);
         } else tvLanguage.setVisibility(View.GONE);
+
+        if (BuildConfig.FLAVOR.equals("ru") && tvPhone != null) {
+            tvPhone.setVisibility(View.VISIBLE);
+            String phone = account.getPhone();
+            tvPhone.setText(!phone.trim().isEmpty() ? phone : getString(R.string.no_phone));
+        }
     }
 
     public void updateLastSyncTime() {

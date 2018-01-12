@@ -66,6 +66,13 @@ android {
             multiDexEnabled true
         }
 
+        ru {
+            dimension "build"
+            applicationId "com.xabber.android.ru"
+            resValue 'string', 'application_package', applicationId
+            multiDexEnabled true
+        }
+
     }
 
     buildTypes {
