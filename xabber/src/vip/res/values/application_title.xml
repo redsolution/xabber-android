@@ -15,4 +15,5 @@
     <string name="application_title_short">Xabber</string>
     <string name="application_title_full">Xabber VIP</string>
     <string name="caps_entity_node">https://www.xabber.com/</string>
+    <string name="xabber_xmpp_host">xabber.org</string>
 </resources>
