@@ -33,6 +33,12 @@ public interface IXabberApi {
     @PATCH("accounts/current/")
     Single<XabberAccountDTO> updateAccount(@Header("Authorization") String token, @Body AuthManager.Account account);
 
+    @POST("accounts/current/phone/")
+    Single<ResponseBody> setPhoneNumber(@Header("Authorization") String token, @Body AuthManager.SetPhoneNumber setPhoneNumber);
+
+    @POST("accounts/current/phone/")
+    Single<ResponseBody> confirmPhoneNumber(@Header("Authorization") String token, @Body AuthManager.ConfirmPhoneNumber confirmPhoneNumber);
+
     @GET("accounts/current/client-settings/")
     Single<AuthManager.ListClientSettingsDTO> getClientSettings(@Header("Authorization") String token);
 

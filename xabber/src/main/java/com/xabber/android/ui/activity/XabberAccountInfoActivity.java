@@ -335,6 +335,20 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
             Toast.makeText(this, R.string.toast_no_internet, Toast.LENGTH_LONG).show();
     }
 
+    public void onSetPhoneClick(String phoneNumber) {
+        if (NetworkManager.isNetworkAvailable()) {
+            setPhoneNumber(phoneNumber);
+        } else
+            Toast.makeText(this, R.string.toast_no_internet, Toast.LENGTH_LONG).show();
+    }
+
+    public void onConfirmCodeClick(String code) {
+        if (NetworkManager.isNetworkAvailable()) {
+            confirmPhone(code);
+        } else
+            Toast.makeText(this, R.string.toast_no_internet, Toast.LENGTH_LONG).show();
+    }
+
     public void onResendClick() {
         XabberAccount account = XabberAccountManager.getInstance().getAccount();
         String email;
@@ -671,6 +685,83 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
         } else {
             Log.d(LOG_TAG, "Error while completing register: " + throwable.toString());
             Toast.makeText(this, "Error while completing register: " + throwable.toString(), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void confirmPhone(String code) {
+        showProgress(getResources().getString(R.string.progress_title_confirm_phone));
+        Subscription subscription = AuthManager.confirmPhoneNumber(code)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<ResponseBody>() {
+                    @Override
+                    public void call(ResponseBody s) {
+                        handleSuccessConfirmPhone(s);
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        handleErrorConfirmPhone(throwable);
+                    }
+                });
+        compositeSubscription.add(subscription);
+    }
+
+    private void handleSuccessConfirmPhone(ResponseBody response) {
+        showCompleteFragment();
+        hideProgress();
+        Toast.makeText(this, R.string.confirm_phone_success, Toast.LENGTH_SHORT).show();
+    }
+
+    private void handleErrorConfirmPhone(Throwable throwable) {
+        hideProgress();
+
+        String message = RetrofitErrorConverter.throwableToHttpError(throwable);
+        if (message != null) {
+            Log.d(LOG_TAG, "Error while confirm phone number: " + message);
+            Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+        } else {
+            Log.d(LOG_TAG, "Error while confirm phone number: " + throwable.toString());
+            Toast.makeText(this, "Error while confirm phone number: " + throwable.toString(), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void setPhoneNumber(String phoneNumber) {
+        showProgress(getResources().getString(R.string.progress_title_set_phone));
+        Subscription subscription = AuthManager.setPhoneNumber(phoneNumber)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<ResponseBody>() {
+                    @Override
+                    public void call(ResponseBody s) {
+                        handleSuccessSetPhoneNumber(s);
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        handleErrorSetPhoneNumber(throwable);
+                    }
+                });
+        compositeSubscription.add(subscription);
+    }
+
+    private void handleSuccessSetPhoneNumber(ResponseBody response) {
+        // enable code field and button
+
+        hideProgress();
+        Toast.makeText(this, R.string.set_phone_success, Toast.LENGTH_SHORT).show();
+    }
+
+    private void handleErrorSetPhoneNumber(Throwable throwable) {
+        hideProgress();
+
+        String message = RetrofitErrorConverter.throwableToHttpError(throwable);
+        if (message != null) {
+            Log.d(LOG_TAG, "Error while send verification code: " + message);
+            Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+        } else {
+            Log.d(LOG_TAG, "Error while send verification code: " + throwable.toString());
+            Toast.makeText(this, "Error while send verification code: " + throwable.toString(), Toast.LENGTH_LONG).show();
         }
     }
 

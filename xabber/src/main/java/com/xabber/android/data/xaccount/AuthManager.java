@@ -254,6 +254,14 @@ public class AuthManager {
         return HttpApiManager.getXabberApi().addEmail(getXabberTokenHeader(), new Email(email, getSource()));
     }
 
+    public static Single<ResponseBody> setPhoneNumber(String phoneNumber) {
+        return HttpApiManager.getXabberApi().setPhoneNumber(getXabberTokenHeader(), new SetPhoneNumber("set", phoneNumber));
+    }
+
+    public static Single<ResponseBody> confirmPhoneNumber(String code) {
+        return HttpApiManager.getXabberApi().confirmPhoneNumber(getXabberTokenHeader(), new ConfirmPhoneNumber("verify", code));
+    }
+
     // support
 
     private static String getXabberTokenHeader() {
@@ -294,6 +302,26 @@ public class AuthManager {
             this.host = host;
             this.language = language;
             this.create_token = create_token;
+        }
+    }
+
+    public static class SetPhoneNumber {
+        final String action;
+        final String phone;
+
+        public SetPhoneNumber(String action, String phone) {
+            this.action = action;
+            this.phone = phone;
+        }
+    }
+
+    public static class ConfirmPhoneNumber {
+        final String action;
+        final String code;
+
+        public ConfirmPhoneNumber(String action, String code) {
+            this.action = action;
+            this.code = code;
         }
     }
 

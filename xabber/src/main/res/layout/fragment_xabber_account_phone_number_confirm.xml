@@ -176,11 +176,11 @@
                 android:layout_marginTop="8dp"
                 android:theme="@style/Theme"
                 android:inputType="number"
-                mask:mask="+7 (###) ### ##-##"
+                mask:mask="+7 ### ### ####"
                 />
 
             <Button
-                android:id="@+id/btnResend"
+                android:id="@+id/btnSetPhone"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
