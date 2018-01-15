@@ -192,7 +192,7 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
             return;
         }
 
-        if (!isTaskRoot()) {
+        if (!isTaskRoot() && !ACTION_ROOM_INVITE.equals(getIntent().getAction())) {
             finish();
             return;
         }

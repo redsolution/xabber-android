@@ -197,10 +197,10 @@ public class RoomChat extends AbstractChat {
             return false;
         }
 
-        MUCUser mucUserExtension = MUCUser.from(stanza);
-        if (mucUserExtension != null && mucUserExtension.getInvite() != null) {
-            return false;
-        }
+//        MUCUser mucUserExtension = MUCUser.from(stanza);
+//        if (mucUserExtension != null && mucUserExtension.getInvite() != null) {
+//            return false;
+//        }
 
         final org.jxmpp.jid.Jid from = stanza.getFrom();
         final Resourcepart resource = from.getResourceOrNull();
