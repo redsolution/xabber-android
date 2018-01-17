@@ -4,70 +4,39 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="64dp"
-    android:background="?attr/action_with_chat_background"
     android:elevation="1dp"
     >
-
-    <LinearLayout
-        android:id="@+id/viewActionRight"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_centerVertical="true"
-        android:layout_marginRight="12dp"
-        >
-
-        <TextView
-            android:id="@+id/tvAction"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginRight="12dp"
-            android:textColor="@color/white"
-            android:textStyle="bold"
-            android:text="@string/archive_chat"
-            android:textAllCaps="true"
-            />
-
-        <ImageView
-            android:id="@+id/ivActionIcon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_arcived"
-            android:tint="@color/white"
-            />
-
-    </LinearLayout>
-    <LinearLayout
-        android:id="@+id/viewActionLeft"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_marginLeft="12dp"
+    <TextView
+        android:id="@+id/tvAction"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingRight="12dp"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:text="@string/archive_chat"
+        android:textAllCaps="true"
+        android:gravity="right|center"
+        android:drawableRight="@drawable/ic_arcived"
+        android:drawablePadding="12dp"
+        android:background="?attr/action_with_chat_background"
         android:visibility="gone"
-        >
+        />
 
-        <ImageView
-            android:id="@+id/ivActionIconLeft"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="12dp"
-            android:src="@drawable/ic_arcived"
-            android:tint="@color/white"
-            />
-
-        <TextView
-            android:id="@+id/tvActionLeft"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:textColor="@color/white"
-            android:textStyle="bold"
-            android:text="@string/archive_chat"
-            android:textAllCaps="true"
-            />
-
-    </LinearLayout>
+    <TextView
+        android:id="@+id/tvActionLeft"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingLeft="12dp"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:text="@string/archive_chat"
+        android:textAllCaps="true"
+        android:gravity="left|center"
+        android:drawableLeft="@drawable/ic_arcived"
+        android:drawablePadding="12dp"
+        android:background="?attr/action_with_chat_background"
+        android:visibility="gone"
+        />
 
     <RelativeLayout
         android:id="@+id/foregroundView"

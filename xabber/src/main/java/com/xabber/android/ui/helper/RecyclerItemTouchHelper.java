@@ -54,13 +54,13 @@ public class RecyclerItemTouchHelper extends ItemTouchHelper.SimpleCallback {
         if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
             // left swipe
             if (dX > 0) {
-                ((RosterChatViewHolder) viewHolder).viewActionRight.setVisibility(View.GONE);
-                ((RosterChatViewHolder) viewHolder).viewActionLeft.setVisibility(View.VISIBLE);
+                ((RosterChatViewHolder) viewHolder).tvAction.setVisibility(View.GONE);
+                ((RosterChatViewHolder) viewHolder).tvActionLeft.setVisibility(View.VISIBLE);
 
             // right swipe
             } else {
-                ((RosterChatViewHolder) viewHolder).viewActionRight.setVisibility(View.VISIBLE);
-                ((RosterChatViewHolder) viewHolder).viewActionLeft.setVisibility(View.GONE);
+                ((RosterChatViewHolder) viewHolder).tvAction.setVisibility(View.VISIBLE);
+                ((RosterChatViewHolder) viewHolder).tvActionLeft.setVisibility(View.GONE);
             }
 
             final View foregroundView = ((RosterChatViewHolder) viewHolder).foregroundView;

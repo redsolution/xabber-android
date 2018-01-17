@@ -5,7 +5,6 @@ import android.view.ContextMenu;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -33,14 +32,9 @@ public class ExtContactViewHolder extends RecyclerView.ViewHolder implements Vie
     final ImageView offlineShadow;
     final ImageView ivMucIndicator;
     final TextView tvUnreadCount;
-    final TextView tvAction;
-    final ImageView ivActionIcon;
-    final TextView tvActionLeft;
-    final ImageView ivActionIconLeft;
+    public final TextView tvAction;
+    public final TextView tvActionLeft;
     public final RelativeLayout foregroundView;
-    public final RelativeLayout backgroundView;
-    public LinearLayout viewActionRight;
-    public LinearLayout viewActionLeft;
     public RelativeLayout buttonView;
     public Button btnListAction;
 
@@ -69,13 +63,8 @@ public class ExtContactViewHolder extends RecyclerView.ViewHolder implements Vie
         ivMucIndicator = (ImageView) view.findViewById(R.id.ivMucIndicator);
         tvUnreadCount = (TextView) view.findViewById(R.id.tvUnreadCount);
         foregroundView = (RelativeLayout) view.findViewById(R.id.foregroundView);
-        backgroundView = (RelativeLayout) view.findViewById(R.id.backgroundView);
-        viewActionRight = (LinearLayout) view.findViewById(R.id.viewActionRight);
-        viewActionLeft = (LinearLayout) view.findViewById(R.id.viewActionLeft);
         tvAction = (TextView) view.findViewById(R.id.tvAction);
-        ivActionIcon = (ImageView) view.findViewById(R.id.ivActionIcon);
         tvActionLeft = (TextView) view.findViewById(R.id.tvActionLeft);
-        ivActionIconLeft = (ImageView) view.findViewById(R.id.ivActionIconLeft);
         buttonView = (RelativeLayout) view.findViewById(R.id.buttonView);
         btnListAction = (Button) view.findViewById(R.id.btnListAction);
         btnListAction.setOnClickListener(this);

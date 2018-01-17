@@ -6,6 +6,7 @@ import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.util.TypedValue;
 import android.view.View;
 
@@ -153,8 +154,10 @@ public class ContactItemChatInflater {
         boolean archived = viewObject.isArchived();
         viewHolder.tvAction.setText(archived ? R.string.unarchive_chat : R.string.archive_chat);
         viewHolder.tvActionLeft.setText(archived ? R.string.unarchive_chat : R.string.archive_chat);
-        viewHolder.ivActionIcon.setImageResource(archived ? R.drawable.ic_unarchived : R.drawable.ic_arcived);
-        viewHolder.ivActionIconLeft.setImageResource(archived ? R.drawable.ic_unarchived : R.drawable.ic_arcived);
+        Drawable drawable = archived ? context.getResources().getDrawable(R.drawable.ic_unarchived)
+                : context.getResources().getDrawable(R.drawable.ic_arcived);
+        viewHolder.tvAction.setCompoundDrawablesWithIntrinsicBounds(null, null, drawable, null);
+        viewHolder.tvActionLeft.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null);
         viewHolder.foregroundView.setBackgroundColor(archived ? ColorManager.getInstance().getArchivedContactBackgroundColor()
                 : ColorManager.getInstance().getContactBackground());
     }
