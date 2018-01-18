@@ -127,41 +127,14 @@
             />
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/joinLayout"
+    <ViewStub
+        android:id="@+id/stubJoin"
+        android:inflatedId="@+id/joinLayout"
+        android:layout="@layout/layout_chat_join"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:background="?attr/message_status_item_background_color"
-        android:elevation="8dp"
-        android:orientation="vertical"
-        android:paddingTop="6dp"
-        android:paddingBottom="6dp"
-        android:visibility="gone"
-        >
-
-        <LinearLayout
-            android:id="@+id/actionJoin"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:padding="10dp"
-            android:background="?android:selectableItemBackground"
-            android:clickable="true"
-            android:focusable="true"
-            >
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="16sp"
-                android:text="@string/button_join_conference"
-                android:textAllCaps="true"
-                />
-
-        </LinearLayout>
-
-    </LinearLayout>
+        />
 
     <ProgressBar
         style="?android:attr/progressBarStyleHorizontal"

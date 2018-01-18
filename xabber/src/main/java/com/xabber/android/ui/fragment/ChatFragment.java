@@ -153,6 +153,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
     private SwipeRefreshLayout swipeContainer;
     private View placeholder;
     private LinearLayout inputLayout;
+    private ViewStub stubJoin;
     private LinearLayout joinLayout;
     private LinearLayout actionJoin;
 
@@ -302,6 +303,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         });
 
         stubNotify = (ViewStub) view.findViewById(R.id.stubNotify);
+        stubJoin = (ViewStub) view.findViewById(R.id.stubJoin);
 
         setChat(account, user);
 
@@ -317,10 +319,6 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
 
         placeholder = view.findViewById(R.id.placeholder);
         placeholder.setOnClickListener(this);
-
-        joinLayout = (LinearLayout) view.findViewById(R.id.joinLayout);
-        actionJoin = (LinearLayout) view.findViewById(R.id.actionJoin);
-        actionJoin.setOnClickListener(this);
 
         return view;
     }
@@ -1344,12 +1342,27 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         else placeholder.setVisibility(View.GONE);
     }
 
+    private void inflateJoinLayout() {
+        View view = stubJoin.inflate();
+        joinLayout = (LinearLayout) view.findViewById(R.id.joinLayout);
+        actionJoin = (LinearLayout) view.findViewById(R.id.actionJoin);
+        actionJoin.setOnClickListener(this);
+    }
+
     public void showJoinButtonIfNeed() {
         AbstractChat chat = getChat();
         if (chat != null && chat instanceof RoomChat) {
             RoomState chatState = ((RoomChat) chat).getState();
-            joinLayout.setVisibility(chatState == RoomState.unavailable ? View.VISIBLE : View.INVISIBLE);
-            inputView.setVisibility(chatState == RoomState.unavailable ? View.INVISIBLE : View.VISIBLE);
+            if (chatState == RoomState.unavailable) {
+                if (joinLayout == null)
+                    inflateJoinLayout();
+                joinLayout.setVisibility(View.VISIBLE);
+                inputView.setVisibility(View.GONE);
+            } else {
+                if (joinLayout != null)
+                    joinLayout.setVisibility(View.GONE);
+                inputView.setVisibility(View.VISIBLE);
+            }
         }
     }
 
