@@ -15,8 +15,6 @@
 <resources>
 
     <style name="Theme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <item name="android:windowBackground">@null</item>
-
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
 

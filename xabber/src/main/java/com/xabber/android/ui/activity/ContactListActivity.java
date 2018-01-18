@@ -198,6 +198,7 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
         }
 
         setContentView(R.layout.activity_contact_list);
+        getWindow().setBackgroundDrawable(null);
 
         if (savedInstanceState != null) {
             sendText = savedInstanceState.getString(SAVED_SEND_TEXT);

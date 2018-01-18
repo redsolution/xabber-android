@@ -267,6 +267,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         LogManager.i(LOG_TAG, "onCreate " + savedInstanceState);
 
         setContentView(R.layout.activity_chat);
+        getWindow().setBackgroundDrawable(null);
 
         contactTitleView = findViewById(R.id.contact_title);
         contactTitleView.setOnClickListener(new View.OnClickListener() {
