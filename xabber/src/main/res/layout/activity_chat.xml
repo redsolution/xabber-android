@@ -39,6 +39,12 @@
         android:layout_below="@id/toolbar_default"
     />
 
-    <include layout="@layout/showcase_chat_screen" android:visibility="gone" />
+    <ViewStub
+        android:id="@+id/showcaseView"
+        android:inflatedId="@+id/showcaseView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout="@layout/showcase_chat_screen"
+        />
 
 </RelativeLayout>

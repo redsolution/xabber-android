@@ -287,14 +287,6 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         });
 
         showcaseView = findViewById(R.id.showcaseView);
-        btnShowcaseGotIt = (Button) findViewById(R.id.btnGotIt);
-        btnShowcaseGotIt.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                SettingsManager.setChatShowcaseSuggested();
-                showShowcase(false);
-            }
-        });
 
         statusBarPainter = new StatusBarPainter(this);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
@@ -1014,6 +1006,16 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     }
 
     public void showShowcase(boolean show) {
-        showcaseView.setVisibility(show ? View.VISIBLE : View.INVISIBLE);
+        showcaseView.setVisibility(show ? View.VISIBLE : View.GONE);
+        if (show) {
+            btnShowcaseGotIt = (Button) findViewById(R.id.btnGotIt);
+            btnShowcaseGotIt.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    SettingsManager.setChatShowcaseSuggested();
+                    showShowcase(false);
+                }
+            });
+        }
     }
 }
