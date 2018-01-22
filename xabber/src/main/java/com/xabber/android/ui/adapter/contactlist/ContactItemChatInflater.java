@@ -44,22 +44,33 @@ public class ContactItemChatInflater {
 
         viewHolder.accountColorIndicator.setBackgroundColor(viewObject.getAccountColorIndicator());
 
+        if (viewObject.getStatusLevel() == 6 ||
+                (viewObject.getMucIndicatorLevel() != 0 && viewObject.getStatusLevel() != 1))
+            viewHolder.ivStatus.setVisibility(View.INVISIBLE);
+        else viewHolder.ivStatus.setVisibility(View.VISIBLE);
+        viewHolder.ivStatus.setImageLevel(viewObject.getStatusLevel());
+        viewHolder.ivOnlyStatus.setImageLevel(viewObject.getStatusLevel());
+
+
         if (SettingsManager.contactsShowAvatars()) {
-            viewHolder.avatarView.setVisibility(View.VISIBLE);
+            viewHolder.ivAvatar.setVisibility(View.VISIBLE);
+            viewHolder.ivStatus.setVisibility(View.VISIBLE);
             viewHolder.ivAvatar.setImageDrawable(viewObject.getAvatar());
             viewHolder.ivOnlyStatus.setVisibility(View.GONE);
         } else {
-            viewHolder.avatarView.setVisibility(View.GONE);
+            viewHolder.ivAvatar.setVisibility(View.GONE);
+            viewHolder.ivStatus.setVisibility(View.GONE);
             viewHolder.ivOnlyStatus.setVisibility(View.VISIBLE);
         }
 
         viewHolder.tvContactName.setText(viewObject.getName());
 
+        Drawable mucIndicator;
         if (viewObject.getMucIndicatorLevel() == 0)
-            viewHolder.ivMucIndicator.setVisibility(View.GONE);
+            mucIndicator = null;
         else {
-            viewHolder.ivMucIndicator.setVisibility(View.VISIBLE);
-            viewHolder.ivMucIndicator.setImageLevel(viewObject.getMucIndicatorLevel());
+            mucIndicator = context.getResources().getDrawable(R.drawable.muc_indicator_view);
+            mucIndicator.setLevel(viewObject.getMucIndicatorLevel());
         }
 
         if (viewObject.getStatusLevel() == 6 ||
@@ -132,16 +143,16 @@ public class ContactItemChatInflater {
         Resources resources = context.getResources();
         switch (viewObject.getNotificationMode()) {
             case enabled:
-                viewHolder.tvContactName.setCompoundDrawablesWithIntrinsicBounds(null, null,
+                viewHolder.tvContactName.setCompoundDrawablesWithIntrinsicBounds(mucIndicator, null,
                         resources.getDrawable(R.drawable.ic_unmute), null);
                 break;
             case disabled:
-                viewHolder.tvContactName.setCompoundDrawablesWithIntrinsicBounds(null, null,
+                viewHolder.tvContactName.setCompoundDrawablesWithIntrinsicBounds(mucIndicator, null,
                         resources.getDrawable(R.drawable.ic_mute), null);
                 break;
             default:
                 viewHolder.tvContactName.setCompoundDrawablesWithIntrinsicBounds(
-                        null, null, null, null);
+                        mucIndicator, null, null, null);
         }
 
         if (viewObject.isMute())

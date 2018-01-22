@@ -3,6 +3,7 @@ package com.xabber.android.ui.adapter.contactlist;
 import android.support.v7.widget.RecyclerView;
 import android.view.ContextMenu;
 import android.view.View;
+import android.view.ViewStub;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -20,7 +21,6 @@ public class ExtContactViewHolder extends RecyclerView.ViewHolder implements Vie
     private static final String LOG_TAG = ContactListItemViewHolder.class.getSimpleName();
 
     final View accountColorIndicator;
-    final View avatarView;
     final ImageView ivAvatar;
     final ImageView ivStatus;
     final ImageView ivOnlyStatus;
@@ -30,7 +30,6 @@ public class ExtContactViewHolder extends RecyclerView.ViewHolder implements Vie
     final TextView tvTime;
     final ImageView ivMessageStatus;
     final ImageView offlineShadow;
-    final ImageView ivMucIndicator;
     final TextView tvUnreadCount;
     public final TextView tvAction;
     public final TextView tvActionLeft;
@@ -49,7 +48,6 @@ public class ExtContactViewHolder extends RecyclerView.ViewHolder implements Vie
         itemView.setOnCreateContextMenuListener(this);
 
         accountColorIndicator = view.findViewById(R.id.accountColorIndicator);
-        avatarView = view.findViewById(R.id.avatarView);
         ivAvatar = (ImageView) view.findViewById(R.id.ivAvatar);
         ivAvatar.setOnClickListener(this);
         ivStatus = (ImageView) view.findViewById(R.id.ivStatus);
@@ -60,7 +58,6 @@ public class ExtContactViewHolder extends RecyclerView.ViewHolder implements Vie
         tvTime = (TextView) view.findViewById(R.id.tvTime);
         ivMessageStatus = (ImageView) view.findViewById(R.id.ivMessageStatus);
         offlineShadow = (ImageView) view.findViewById(R.id.offline_shadow);
-        ivMucIndicator = (ImageView) view.findViewById(R.id.ivMucIndicator);
         tvUnreadCount = (TextView) view.findViewById(R.id.tvUnreadCount);
         foregroundView = (RelativeLayout) view.findViewById(R.id.foregroundView);
         tvAction = (TextView) view.findViewById(R.id.tvAction);

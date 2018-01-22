@@ -616,7 +616,7 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                         .inflate(R.layout.item_contact_in_contact_list, parent, false), this);
             case TYPE_CHAT:
                 return new RosterChatViewHolder(layoutInflater
-                        .inflate(R.layout.item_chat_in_contact_list, parent, false), this);
+                        .inflate(R.layout.item_chat_in_contact_list_new, parent, false), this);
             case TYPE_EXT_CONTACT:
                 return new ExtContactViewHolder(layoutInflater
                         .inflate(R.layout.item_ext_contact_in_contact_list, parent, false), this);
