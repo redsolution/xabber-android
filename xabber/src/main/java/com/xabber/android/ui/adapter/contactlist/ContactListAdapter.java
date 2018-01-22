@@ -613,7 +613,7 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         switch (viewType) {
             case TYPE_CONTACT:
                 return new ContactListItemViewHolder(layoutInflater
-                        .inflate(R.layout.item_contact_in_contact_list, parent, false), this);
+                        .inflate(R.layout.item_contact_in_contact_list_new, parent, false), this);
             case TYPE_CHAT:
                 return new RosterChatViewHolder(layoutInflater
                         .inflate(R.layout.item_chat_in_contact_list_new, parent, false), this);
@@ -754,10 +754,10 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         viewHolder.tvStatus.setText(statusText);
         //viewHolder.tvStatus.setTextColor(viewObject.getAccountColorIndicator());
 
-        if (SettingsManager.contactsShowAvatars()) {
-            viewHolder.avatarView.setVisibility(View.VISIBLE);
-            viewHolder.ivAvatar.setImageDrawable(viewObject.getAvatar());
-        } else viewHolder.avatarView.setVisibility(View.GONE);
+//        if (SettingsManager.contactsShowAvatars()) {
+//            viewHolder.avatarView.setVisibility(View.VISIBLE);
+//            viewHolder.ivAvatar.setImageDrawable(viewObject.getAvatar());
+//        } else viewHolder.avatarView.setVisibility(View.GONE);
 
         viewHolder.ivStatus.setImageLevel(viewObject.getStatusLevel());
 

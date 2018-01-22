@@ -13,20 +13,12 @@ class ContactListItemViewHolder extends RecyclerView.ViewHolder implements View.
 
     private static final String LOG_TAG = ContactListItemViewHolder.class.getSimpleName();
     final View accountColorIndicator;
-    final View avatarView;
     final ImageView ivAvatar;
     final TextView tvContactName;
-    //final TextView outgoingMessageIndicator;
     final TextView tvStatus;
     final ImageView ivOnlyStatus;
-    final ImageView ivDevice;
-    //final TextView smallRightText;
-    //final ImageView smallRightIcon;
-    //final ImageView largeClientIcon;
     final ImageView ivStatus;
     final ImageView offlineShadow;
-    final ImageView ivMucIndicator;
-    //final View separator;
     final TextView tvUnreadCount;
     private final ContactClickListener listener;
 
@@ -46,21 +38,13 @@ class ContactListItemViewHolder extends RecyclerView.ViewHolder implements View.
         itemView.setOnCreateContextMenuListener(this);
 
         accountColorIndicator = view.findViewById(R.id.accountColorIndicator);
-        avatarView = view.findViewById(R.id.avatarView);
         ivAvatar = (ImageView) view.findViewById(R.id.ivAvatar);
         ivAvatar.setOnClickListener(this);
         tvContactName = (TextView) view.findViewById(R.id.tvContactName);
-        //outgoingMessageIndicator = (TextView) view.findViewById(R.id.outgoing_message_indicator);
         tvStatus = (TextView) view.findViewById(R.id.tvStatus);
         ivOnlyStatus = (ImageView) view.findViewById(R.id.ivOnlyStatus);
-        ivDevice = (ImageView) view.findViewById(R.id.ivDevice);
-        //smallRightIcon = (ImageView) view.findViewById(R.id.small_right_icon);
-        //smallRightText = (TextView) view.findViewById(R.id.small_right_text);
-        //largeClientIcon = (ImageView) view.findViewById(R.id.client_icon_large);
         ivStatus = (ImageView) view.findViewById(R.id.ivStatus);
         offlineShadow = (ImageView) view.findViewById(R.id.offline_shadow);
-        ivMucIndicator = (ImageView) view.findViewById(R.id.ivMucIndicator);
-        //separator = view.findViewById(R.id.contact_list_item_separator);
         tvUnreadCount = (TextView) view.findViewById(R.id.tvUnreadCount);
     }
 

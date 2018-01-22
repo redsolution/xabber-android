@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.view.View;
 
 import com.xabber.android.R;
@@ -33,21 +34,24 @@ class ContactItemInflater {
         viewHolder.accountColorIndicator.setBackgroundColor(viewObject.getAccountColorIndicator());
 
         if (SettingsManager.contactsShowAvatars()) {
-            viewHolder.avatarView.setVisibility(View.VISIBLE);
+            viewHolder.ivAvatar.setVisibility(View.VISIBLE);
+            viewHolder.ivStatus.setVisibility(View.VISIBLE);
             viewHolder.ivAvatar.setImageDrawable(viewObject.getAvatar());
             viewHolder.ivOnlyStatus.setVisibility(View.GONE);
         } else {
-            viewHolder.avatarView.setVisibility(View.GONE);
+            viewHolder.ivAvatar.setVisibility(View.GONE);
+            viewHolder.ivStatus.setVisibility(View.GONE);
             viewHolder.ivOnlyStatus.setVisibility(View.VISIBLE);
         }
 
         viewHolder.tvContactName.setText(viewObject.getName());
 
+        Drawable mucIndicator;
         if (viewObject.getMucIndicatorLevel() == 0)
-            viewHolder.ivMucIndicator.setVisibility(View.GONE);
+            mucIndicator = null;
         else {
-            viewHolder.ivMucIndicator.setVisibility(View.VISIBLE);
-            viewHolder.ivMucIndicator.setImageLevel(viewObject.getMucIndicatorLevel());
+            mucIndicator = context.getResources().getDrawable(R.drawable.muc_indicator_view);
+            mucIndicator.setLevel(viewObject.getMucIndicatorLevel());
         }
 
         if (viewObject.getStatusLevel() == 6) {
@@ -76,16 +80,16 @@ class ContactItemInflater {
         Resources resources = context.getResources();
         switch (viewObject.getNotificationMode()) {
             case enabled:
-                viewHolder.tvContactName.setCompoundDrawablesWithIntrinsicBounds(null, null,
+                viewHolder.tvContactName.setCompoundDrawablesWithIntrinsicBounds(mucIndicator, null,
                         resources.getDrawable(R.drawable.ic_unmute), null);
                 break;
             case disabled:
-                viewHolder.tvContactName.setCompoundDrawablesWithIntrinsicBounds(null, null,
+                viewHolder.tvContactName.setCompoundDrawablesWithIntrinsicBounds(mucIndicator, null,
                         resources.getDrawable(R.drawable.ic_mute), null);
                 break;
             default:
                 viewHolder.tvContactName.setCompoundDrawablesWithIntrinsicBounds(
-                        null, null, null, null);
+                        mucIndicator, null, null, null);
         }
 
         if (viewObject.isMute())
