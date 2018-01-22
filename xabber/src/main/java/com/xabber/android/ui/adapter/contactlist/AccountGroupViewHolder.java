@@ -16,10 +16,8 @@ class AccountGroupViewHolder extends RecyclerView.ViewHolder
     final ImageView ivAvatar;
     final View avatarView;
     final TextView tvAccountName;
-    final TextView tvJid;
     final TextView tvStatus;
     final TextView tvContactCount;
-    final ImageView smallRightIcon;
     final ImageView ivStatus;
     final ImageView ivMenu;
     final ImageView offlineShadow;
@@ -45,9 +43,7 @@ class AccountGroupViewHolder extends RecyclerView.ViewHolder
         avatarView = view.findViewById(R.id.avatarView);
         ivAvatar.setOnClickListener(this);
         tvAccountName = (TextView) view.findViewById(R.id.tvAccountName);
-        tvJid = (TextView) view.findViewById(R.id.tvJid);
         tvStatus = (TextView) view.findViewById(R.id.tvStatus);
-        smallRightIcon = (ImageView) view.findViewById(R.id.small_right_icon);
         tvContactCount = (TextView) view.findViewById(R.id.tvContactCount);
         ivStatus = (ImageView) view.findViewById(R.id.ivStatus);
         ivStatus.setOnClickListener(this);
@@ -60,10 +56,6 @@ class AccountGroupViewHolder extends RecyclerView.ViewHolder
     @Override
     public void onClick(View view) {
         int adapterPosition = getAdapterPosition();
-//        if (adapterPosition == RecyclerView.NO_POSITION) {
-//            LogManager.w(LOG_TAG, "onClick: no position");
-//            return;
-//        }
 
         if (view.getId() == R.id.ivAvatar) {
             listener.onAccountAvatarClick(adapterPosition);
@@ -77,11 +69,6 @@ class AccountGroupViewHolder extends RecyclerView.ViewHolder
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         int adapterPosition = getAdapterPosition();
-//        if (adapterPosition == RecyclerView.NO_POSITION) {
-//            LogManager.w(LOG_TAG, "onCreateContextMenu: no position");
-//            return;
-//        }
-
         listener.onAccountGroupCreateContextMenu(adapterPosition, menu);
     }
 }

@@ -17,6 +17,7 @@ package com.xabber.android.ui.adapter.contactlist;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
+import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -625,7 +626,7 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                         .inflate(R.layout.item_group_in_contact_list, parent, false), this);
             case TYPE_ACCOUNT:
                 return new AccountGroupViewHolder(layoutInflater
-                        .inflate(R.layout.item_account_in_contact_list, parent, false), this);
+                        .inflate(R.layout.item_account_in_contact_list_new, parent, false), this);
             case TYPE_ACCOUNT_TOP_SEPARATOR:
                 return new TopSeparatorHolder(layoutInflater
                         .inflate(R.layout.account_group_item_top_separator, parent, false));
@@ -744,24 +745,27 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         viewHolder.accountColorIndicator.setBackgroundColor(viewObject.getAccountColorIndicator());
 
         viewHolder.tvAccountName.setText(viewObject.getName());
-        //viewHolder.tvAccountName.setTextColor(viewObject.getAccountColorIndicator());
         viewHolder.tvContactCount.setText(viewObject.getContactCount());
-        viewHolder.tvJid.setText(viewObject.getJid());
 
         String statusText = viewObject.getStatus();
         if (statusText.isEmpty()) statusText = activity.getString(viewObject.getStatusId());
 
         viewHolder.tvStatus.setText(statusText);
-        //viewHolder.tvStatus.setTextColor(viewObject.getAccountColorIndicator());
 
-//        if (SettingsManager.contactsShowAvatars()) {
-//            viewHolder.avatarView.setVisibility(View.VISIBLE);
-//            viewHolder.ivAvatar.setImageDrawable(viewObject.getAvatar());
-//        } else viewHolder.avatarView.setVisibility(View.GONE);
+        if (SettingsManager.contactsShowAvatars()) {
+            viewHolder.ivAvatar.setVisibility(View.VISIBLE);
+            viewHolder.ivStatus.setVisibility(View.VISIBLE);
+            viewHolder.ivAvatar.setImageDrawable(viewObject.getAvatar());
+        } else {
+            viewHolder.ivAvatar.setVisibility(View.GONE);
+            viewHolder.ivStatus.setVisibility(View.GONE);
+        }
 
         viewHolder.ivStatus.setImageLevel(viewObject.getStatusLevel());
 
-        viewHolder.smallRightIcon.setImageLevel(viewObject.getOfflineModeLevel());
+        Drawable offlineModeImage = activity.getResources().getDrawable(R.drawable.ic_show_offline_small);
+        offlineModeImage.setLevel(viewObject.getOfflineModeLevel());
+        viewHolder.tvContactCount.setCompoundDrawablesWithIntrinsicBounds(offlineModeImage, null, null, null);
 
         if (viewObject.isShowOfflineShadow())
             viewHolder.offlineShadow.setVisibility(View.VISIBLE);
