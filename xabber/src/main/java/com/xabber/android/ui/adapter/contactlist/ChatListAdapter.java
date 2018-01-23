@@ -43,7 +43,7 @@ public class ChatListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new RosterChatViewHolder(LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_chat_in_contact_list, parent, false), this);
+                .inflate(R.layout.item_chat_in_contact_list_new, parent, false), this);
     }
 
     @Override

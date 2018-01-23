@@ -26,7 +26,7 @@
         android:id="@+id/swipeContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/notifyLayout"
+        android:layout_above="@+id/input_layout"
         android:layout_below="@+id/toolbar_default"
         >
 
