@@ -4,17 +4,10 @@
 
     <View
         android:id="@+id/accountColorIndicator"
+        android:layout_marginTop="2dp"
         android:layout_width="2dp"
         android:layout_height="match_parent"
         android:background="@color/amber_700"
-        />
-
-    <View
-        android:layout_width="2dp"
-        android:layout_height="1dp"
-        android:background="?attr/contact_list_contact_background"
-        android:alpha="0.5"
-        android:layout_alignParentTop="true"
         />
 
 </merge>

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/ivAvatar"
@@ -10,7 +11,7 @@
         android:layout_marginRight="10dp"
         android:layout_centerVertical="true"
         app:civ_fill_color="@color/white"
-        android:src="#80CBC4"
+        tools:src="@tools:sample/avatars"
         />
 
     <ImageView

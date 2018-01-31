@@ -183,13 +183,6 @@ public class ContactItemChatInflater {
         if (isCurrent) viewHolder.foregroundView.setBackgroundColor(accountGroupColors[level]);
     }
 
-    void bindViewHolderWithButton(ExtContactViewHolder viewHolder, final ChatVO viewObject, boolean isButton) {
-        bindViewHolder(viewHolder, viewObject);
-
-        // button
-        viewHolder.buttonView.setVisibility(isButton ? View.VISIBLE : View.GONE);
-    }
-
     void onAvatarClick(ContactVO contact) {
         Intent intent;
         if (MUCManager.getInstance().hasRoom(contact.getAccountJid(), contact.getUserJid())) {

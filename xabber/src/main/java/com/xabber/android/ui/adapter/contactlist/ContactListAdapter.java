@@ -116,6 +116,7 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private static final int TYPE_BUTTON = 6;
     private static final int TYPE_MAIN_TITLE = 7;
     private static final int TYPE_EXT_CONTACT = 8;
+    private static final int TYPE_CHAT_WITH_BUTTON = 9;
     private final ArrayList<BaseRosterItemVO> rosterItemVOs = new ArrayList<>();
 
     /**
@@ -590,6 +591,8 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             if (object instanceof ChatVO) {
                 if (object instanceof ExtContactVO)
                     return TYPE_EXT_CONTACT;
+                else if (position == MAX_RECENT_ITEMS && currentChatsState == ChatListState.recent)
+                    return TYPE_CHAT_WITH_BUTTON;
                 else return TYPE_CHAT;
             } else return TYPE_CONTACT;
         } else if (object instanceof AccountVO) {
@@ -615,6 +618,9 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             case TYPE_CONTACT:
                 return new ContactListItemViewHolder(layoutInflater
                         .inflate(R.layout.item_contact_in_contact_list_new, parent, false), this);
+            case TYPE_CHAT_WITH_BUTTON:
+                return new ChatWithButtonViewHolder(layoutInflater
+                        .inflate(R.layout.item_chat_with_button, parent, false), this);
             case TYPE_CHAT:
                 return new RosterChatViewHolder(layoutInflater
                         .inflate(R.layout.item_chat_in_contact_list_new, parent, false), this);
@@ -656,16 +662,17 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 contactItemInflater.bindViewHolder((ContactListItemViewHolder) holder, (ContactVO) item);
                 break;
 
+            case TYPE_CHAT_WITH_BUTTON:
+                contactItemChatInflater.bindViewHolder((ChatWithButtonViewHolder) holder, (ChatVO) item);
+                break;
+
             case TYPE_CHAT:
-                contactItemChatInflater.bindViewHolderWithButton((RosterChatViewHolder) holder,
-                        (ChatVO) item, position == MAX_RECENT_ITEMS
-                                && currentChatsState == ChatListState.recent);
+                contactItemChatInflater.bindViewHolder((ExtContactViewHolder) holder, (ChatVO) item);
                 break;
 
             case TYPE_EXT_CONTACT:
-                contactItemChatInflater.bindViewHolderWithButton((ExtContactViewHolder) holder,
-                        (ChatVO) item, position == MAX_RECENT_ITEMS
-                                && currentChatsState == ChatListState.recent);
+                contactItemChatInflater.bindViewHolder((ExtContactViewHolder) holder,
+                        (ChatVO) item);
                 break;
 
             case TYPE_ACCOUNT:

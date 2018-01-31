@@ -3,8 +3,6 @@ package com.xabber.android.ui.adapter.contactlist;
 import android.support.v7.widget.RecyclerView;
 import android.view.ContextMenu;
 import android.view.View;
-import android.view.ViewStub;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -34,8 +32,6 @@ public class ExtContactViewHolder extends RecyclerView.ViewHolder implements Vie
     public final TextView tvAction;
     public final TextView tvActionLeft;
     public final RelativeLayout foregroundView;
-    public RelativeLayout buttonView;
-    public Button btnListAction;
 
     private final ContactListItemViewHolder.ContactClickListener listener;
 
@@ -62,9 +58,6 @@ public class ExtContactViewHolder extends RecyclerView.ViewHolder implements Vie
         foregroundView = (RelativeLayout) view.findViewById(R.id.foregroundView);
         tvAction = (TextView) view.findViewById(R.id.tvAction);
         tvActionLeft = (TextView) view.findViewById(R.id.tvActionLeft);
-        buttonView = (RelativeLayout) view.findViewById(R.id.buttonView);
-        btnListAction = (Button) view.findViewById(R.id.btnListAction);
-        btnListAction.setOnClickListener(this);
     }
 
     @Override
