@@ -25,13 +25,14 @@ import java.util.UUID;
 
 import eu.davidea.flexibleadapter.FlexibleAdapter;
 import eu.davidea.flexibleadapter.items.AbstractFlexibleItem;
+import eu.davidea.flexibleadapter.items.IHeader;
 import eu.davidea.viewholders.FlexibleViewHolder;
 
 /**
  * Created by valery.miller on 05.02.18.
  */
 
-public class AccountVO extends AbstractFlexibleItem<AccountVO.ViewHolder> {
+public class AccountVO extends AbstractFlexibleItem<AccountVO.ViewHolder> implements IHeader<AccountVO.ViewHolder> {
 
     private String id;
     private String name;
@@ -233,7 +234,7 @@ public class AccountVO extends AbstractFlexibleItem<AccountVO.ViewHolder> {
         final View accountColorIndicator;
 
         public ViewHolder(View view, FlexibleAdapter adapter) {
-            super(view, adapter);
+            super(view, adapter, true);
 
             itemView.setOnClickListener(this);
             //itemView.setOnCreateContextMenuListener(this);

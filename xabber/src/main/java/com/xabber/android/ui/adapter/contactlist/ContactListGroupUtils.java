@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 
-class ContactListGroupUtils {
+public class ContactListGroupUtils {
     /**
      * List of groups used if contact has no groups.
      */
@@ -60,7 +60,7 @@ class ContactListGroupUtils {
     /**
      * Adds contact to specified group.
      */
-    static void addContact(AbstractContact abstractContact, String group, boolean online,
+    public static void addContact(AbstractContact abstractContact, String group, boolean online,
                            Map<AccountJid, AccountConfiguration> accounts, Map<String, GroupConfiguration> groups,
                            List<AbstractContact> contacts, boolean showAccounts, boolean showGroups) {
         if (showAccounts) {
@@ -104,7 +104,7 @@ class ContactListGroupUtils {
      * Adds contact to there groups.
      * @return whether contact is visible.
      */
-    static boolean addContact(AbstractContact abstractContact,
+    public static boolean addContact(AbstractContact abstractContact,
                               boolean online, Map<AccountJid, AccountConfiguration> accounts,
                               Map<String, GroupConfiguration> groups,
                               List<AbstractContact> contacts, boolean showAccounts,

@@ -183,7 +183,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
                 messageStatus, messageOwner, chat.isArchived());
     }
 
-    public static ArrayList<IFlexible> convert(Collection<RosterContact> contacts) {
+    public static ArrayList<IFlexible> convert(Collection<AbstractContact> contacts) {
         ArrayList<IFlexible> items = new ArrayList<>();
         for (AbstractContact contact : contacts) {
             items.add(convert(contact));

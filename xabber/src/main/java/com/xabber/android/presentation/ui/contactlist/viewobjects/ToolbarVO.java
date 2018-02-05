@@ -1,26 +1,30 @@
 package com.xabber.android.presentation.ui.contactlist.viewobjects;
 
-import android.content.Context;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.xabber.android.R;
-import com.xabber.android.ui.adapter.contactlist.MainTitleViewHolder;
 
 import java.util.List;
+import java.util.UUID;
 
 import eu.davidea.flexibleadapter.FlexibleAdapter;
-import eu.davidea.flexibleadapter.items.AbstractFlexibleItem;
+import eu.davidea.flexibleadapter.items.AbstractHeaderItem;
+import eu.davidea.flexibleadapter.items.IHeader;
 import eu.davidea.viewholders.FlexibleViewHolder;
 
 /**
  * Created by valery.miller on 05.02.18.
  */
 
-public class ToolbarVO extends AbstractFlexibleItem<ToolbarVO.ViewHolder> {
+public class ToolbarVO extends AbstractHeaderItem<ToolbarVO.ViewHolder> implements IHeader<ToolbarVO.ViewHolder> {
 
     private String id;
+
+    public ToolbarVO() {
+        this.id = UUID.randomUUID().toString();
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -53,7 +57,7 @@ public class ToolbarVO extends AbstractFlexibleItem<ToolbarVO.ViewHolder> {
         final TextView tvTitle;
 
         public ViewHolder(View view, FlexibleAdapter adapter) {
-            super(view, adapter);
+            super(view, adapter, true);
 
             accountColorIndicator = view.findViewById(R.id.accountColorIndicator);
             ivAdd = (ImageView) view.findViewById(R.id.ivAdd);
