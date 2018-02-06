@@ -25,8 +25,6 @@ import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.NotificationState;
 import com.xabber.android.data.roster.AbstractContact;
-import com.xabber.android.data.roster.RosterContact;
-import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.utils.StringUtils;
 
@@ -183,7 +181,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
                 messageStatus, messageOwner, chat.isArchived());
     }
 
-    public static ArrayList<IFlexible> convert(Collection<RosterContact> contacts) {
+    public static ArrayList<IFlexible> convert(Collection<AbstractContact> contacts) {
         ArrayList<IFlexible> items = new ArrayList<>();
         for (AbstractContact contact : contacts) {
             items.add(convert(contact));
@@ -207,6 +205,11 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
             return this.id.equals(inItem.id);
         }
         return false;
+    }
+
+    @Override
+    public boolean isSwipeable() {
+        return true;
     }
 
     @Override

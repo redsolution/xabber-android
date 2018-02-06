@@ -188,11 +188,14 @@ dependencies {
     compile 'com.squareup.okhttp3:okhttp:3.5.0'
     compile 'org.greenrobot:eventbus:3.0.0'
 
+    // ui
     compile 'ru.egslava:MaskedEditText:1.0.5'
+    implementation 'eu.davidea:flexible-adapter:5.0.0-rc4'
     compile 'com.brandongogetap:stickyheaders:0.4.9'
     compile 'com.soundcloud.android:android-crop:1.0.1@aar'
     compile 'de.hdodenhof:circleimageview:2.1.0'
     compile 'com.melnykov:floatingactionbutton:1.3.0'
+
     compile('com.crashlytics.sdk.android:crashlytics:2.6.8@aar') {
         transitive = true;
     }

@@ -28,7 +28,7 @@ public class ContactListFragment extends Fragment implements ContactListView {
 
     public static final String ACCOUNT_JID = "account_jid";
 
-    private ContactListPresenter presenter = ContactListPresenter.getInstance();
+    private ContactListPresenter presenter;
 
     private FlexibleAdapter<IFlexible> adapter;
     private List<IFlexible> items;
@@ -53,14 +53,20 @@ public class ContactListFragment extends Fragment implements ContactListView {
         items = new ArrayList<>();
         adapter = new FlexibleAdapter<>(items, null, true);
 
-        //adapter.setStickyHeaders(true);
-        //adapter.setDisplayHeadersAtStartUp(true);
+        adapter.setStickyHeaders(true);
+        adapter.setDisplayHeadersAtStartUp(true);
         recyclerView.setAdapter(adapter);
 
-        //adapter.setSwipeEnabled(true);
-        //adapter.expandItemsAtStartUp();
+        adapter.setSwipeEnabled(true);
+        adapter.expandItemsAtStartUp();
 
         return view;
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        presenter = ContactListPresenter.getInstance(getActivity());
     }
 
     @Override

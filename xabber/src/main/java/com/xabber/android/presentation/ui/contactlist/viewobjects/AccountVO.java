@@ -2,8 +2,6 @@ package com.xabber.android.presentation.ui.contactlist.viewobjects;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SwitchCompat;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -24,14 +22,14 @@ import java.util.List;
 import java.util.UUID;
 
 import eu.davidea.flexibleadapter.FlexibleAdapter;
-import eu.davidea.flexibleadapter.items.AbstractFlexibleItem;
-import eu.davidea.viewholders.FlexibleViewHolder;
+import eu.davidea.flexibleadapter.items.AbstractExpandableHeaderItem;
+import eu.davidea.viewholders.ExpandableViewHolder;
 
 /**
  * Created by valery.miller on 05.02.18.
  */
 
-public class AccountVO extends AbstractFlexibleItem<AccountVO.ViewHolder> {
+public class AccountVO extends AbstractExpandableHeaderItem<AccountVO.ViewHolder, GroupVO> {
 
     private String id;
     private String name;
@@ -220,7 +218,7 @@ public class AccountVO extends AbstractFlexibleItem<AccountVO.ViewHolder> {
         return groupName;
     }
 
-    public class ViewHolder extends FlexibleViewHolder {
+    public class ViewHolder extends ExpandableViewHolder {
 
         final ImageView ivAvatar;
         final View avatarView;
@@ -233,7 +231,7 @@ public class AccountVO extends AbstractFlexibleItem<AccountVO.ViewHolder> {
         final View accountColorIndicator;
 
         public ViewHolder(View view, FlexibleAdapter adapter) {
-            super(view, adapter);
+            super(view, adapter, true);
 
             itemView.setOnClickListener(this);
             //itemView.setOnCreateContextMenuListener(this);

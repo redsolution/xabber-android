@@ -13,18 +13,23 @@ import com.xabber.android.data.roster.GroupManager;
 import com.xabber.android.ui.adapter.contactlist.GroupConfiguration;
 import com.xabber.android.ui.color.ColorManager;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 import eu.davidea.flexibleadapter.FlexibleAdapter;
 import eu.davidea.flexibleadapter.items.AbstractFlexibleItem;
-import eu.davidea.viewholders.FlexibleViewHolder;
+import eu.davidea.flexibleadapter.items.IExpandable;
+import eu.davidea.flexibleadapter.items.ISectionable;
+import eu.davidea.viewholders.ExpandableViewHolder;
 
 /**
  * Created by valery.miller on 02.02.18.
  */
 
-public class GroupVO extends AbstractFlexibleItem<GroupVO.ViewHolder> {
+public class GroupVO extends AbstractFlexibleItem<GroupVO.ViewHolder>
+        implements IExpandable<GroupVO.ViewHolder, ContactVO>,
+        ISectionable<GroupVO.ViewHolder, AccountVO> {
 
     public static final String RECENT_CHATS_TITLE = "Recent chats";
 
@@ -34,6 +39,10 @@ public class GroupVO extends AbstractFlexibleItem<GroupVO.ViewHolder> {
     private int offlineIndicatorLevel;
     private String groupName;
     private AccountJid accountJid;
+
+    private boolean mExpanded = true;
+    private List<ContactVO> mSubItems;
+    private AccountVO mHeader;
 
     public GroupVO(String title,
                    int expandIndicatorLevel, int offlineIndicatorLevel, String groupName,
@@ -90,6 +99,42 @@ public class GroupVO extends AbstractFlexibleItem<GroupVO.ViewHolder> {
 //        else viewHolder.offlineShadow.setVisibility(View.GONE);
     }
 
+    @Override
+    public AccountVO getHeader() {
+        return mHeader;
+    }
+
+    @Override
+    public void setHeader(AccountVO header) {
+        this.mHeader = header;
+    }
+
+    @Override
+    public boolean isExpanded() {
+        return mExpanded;
+    }
+
+    @Override
+    public void setExpanded(boolean expanded) {
+        this.mExpanded = expanded;
+    }
+
+    @Override
+    public int getExpansionLevel() {
+        return 0;
+    }
+
+    @Override
+    public List<ContactVO> getSubItems() {
+        return mSubItems;
+    }
+
+    public void addSubItem(ContactVO subItem) {
+        if (mSubItems == null)
+            mSubItems = new ArrayList<ContactVO>();
+        mSubItems.add(subItem);
+    }
+
     public static GroupVO convert(GroupConfiguration configuration) {
 
         String name = GroupManager.getInstance().getGroupName(configuration.getAccount(), configuration.getGroup());
@@ -141,7 +186,7 @@ public class GroupVO extends AbstractFlexibleItem<GroupVO.ViewHolder> {
         return accountJid;
     }
 
-    public class ViewHolder extends FlexibleViewHolder {
+    public class ViewHolder extends ExpandableViewHolder {
 
         final ImageView indicator;
         final TextView name;
