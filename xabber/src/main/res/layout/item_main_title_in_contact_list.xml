@@ -6,6 +6,7 @@
     android:layout_height="56dp"
     android:clickable="true"
     android:background="@color/white"
+    android:elevation="2dp"
     >
 
     <include layout="@layout/account_color_indicator" />
