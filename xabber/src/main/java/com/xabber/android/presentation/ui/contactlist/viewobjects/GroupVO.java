@@ -34,6 +34,10 @@ public class GroupVO extends AbstractFlexibleItem<GroupVO.ViewHolder>
     public static final String RECENT_CHATS_TITLE = "Recent chats";
 
     private String id;
+
+    private int accountColorIndicator;
+    private boolean showOfflineShadow;
+
     private String title;
     private int expandIndicatorLevel;
     private int offlineIndicatorLevel;
@@ -44,11 +48,13 @@ public class GroupVO extends AbstractFlexibleItem<GroupVO.ViewHolder>
     private List<ContactVO> mSubItems;
     private AccountVO mHeader;
 
-    public GroupVO(String title,
+    public GroupVO(int accountColorIndicator, boolean showOfflineShadow, String title,
                    int expandIndicatorLevel, int offlineIndicatorLevel, String groupName,
                    AccountJid accountJid) {
 
         this.id = UUID.randomUUID().toString();
+        this.accountColorIndicator = accountColorIndicator;
+        this.showOfflineShadow = showOfflineShadow;
         this.title = title;
         this.expandIndicatorLevel = expandIndicatorLevel;
         this.offlineIndicatorLevel = offlineIndicatorLevel;
@@ -77,26 +83,30 @@ public class GroupVO extends AbstractFlexibleItem<GroupVO.ViewHolder>
 
     @Override
     public void bindViewHolder(FlexibleAdapter adapter, ViewHolder viewHolder, int position, List<Object> payloads) {
-        //viewHolder.accountColorIndicator.setBackgroundColor(getAccountColorIndicator());
 
-        viewHolder.indicator.setImageLevel(getExpandIndicatorLevel());
+        /** set up OFFLINE SHADOW */
+        if (isShowOfflineShadow())
+            viewHolder.offlineShadow.setVisibility(View.VISIBLE);
+        else viewHolder.offlineShadow.setVisibility(View.GONE);
+
+        /** set up ACCOUNT COLOR indicator */
+        viewHolder.accountColorIndicator.setBackgroundColor(getAccountColorIndicator());
+
+        /** set up EXPAND indicator */
+        // TODO: 06.02.18 use getExpandIndicatorLevel
+        //viewHolder.indicator.setImageLevel(getExpandIndicatorLevel());
+        viewHolder.indicator.setImageLevel(mExpanded ? 1 : 0);
 
         if (getTitle().equals(com.xabber.android.ui.adapter.contactlist.viewobjects.GroupVO.RECENT_CHATS_TITLE))
             viewHolder.indicator.setVisibility(View.GONE);
         else viewHolder.indicator.setVisibility(View.VISIBLE);
 
+        /** set up OFFLINE indicator */
         viewHolder.groupOfflineIndicator.setImageLevel(getOfflineIndicatorLevel());
-
         viewHolder.groupOfflineIndicator.setVisibility(View.GONE);
-        viewHolder.offlineShadow.setVisibility(View.GONE);
 
+        /** set up NAME */
         viewHolder.name.setText(getTitle());
-
-        viewHolder.groupOfflineIndicator.setVisibility(View.VISIBLE);
-
-//        if (viewObject.isShowOfflineShadow())
-//            viewHolder.offlineShadow.setVisibility(View.VISIBLE);
-//        else viewHolder.offlineShadow.setVisibility(View.GONE);
     }
 
     @Override
@@ -162,7 +172,7 @@ public class GroupVO extends AbstractFlexibleItem<GroupVO.ViewHolder>
                 showOfflineShadow = true;
         }
 
-        return new GroupVO(name, expandIndicatorLevel,
+        return new GroupVO(accountColorIndicator, showOfflineShadow, name, expandIndicatorLevel,
                 offlineIndicatorLevel, configuration.getGroup(), configuration.getAccount());
     }
 
@@ -184,6 +194,14 @@ public class GroupVO extends AbstractFlexibleItem<GroupVO.ViewHolder>
 
     public AccountJid getAccountJid() {
         return accountJid;
+    }
+
+    public int getAccountColorIndicator() {
+        return accountColorIndicator;
+    }
+
+    public boolean isShowOfflineShadow() {
+        return showOfflineShadow;
     }
 
     public class ViewHolder extends ExpandableViewHolder {

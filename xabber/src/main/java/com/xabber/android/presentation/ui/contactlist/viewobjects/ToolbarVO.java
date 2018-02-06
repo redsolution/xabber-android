@@ -1,10 +1,17 @@
 package com.xabber.android.presentation.ui.contactlist.viewobjects;
 
+import android.content.Context;
+import android.content.res.TypedArray;
+import android.util.TypedValue;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.xabber.android.R;
+import com.xabber.android.data.account.AccountManager;
+import com.xabber.android.ui.adapter.contactlist.ContactListAdapter;
+import com.xabber.android.ui.color.AccountPainter;
+import com.xabber.android.ui.color.ColorManager;
 
 import java.util.List;
 import java.util.UUID;
@@ -21,6 +28,9 @@ import eu.davidea.viewholders.FlexibleViewHolder;
 public class ToolbarVO extends AbstractHeaderItem<ToolbarVO.ViewHolder> implements IHeader<ToolbarVO.ViewHolder> {
 
     private String id;
+
+    private ContactListAdapter.ChatListState currentChatsState =
+            ContactListAdapter.ChatListState.recent;
 
     public ToolbarVO() {
         this.id = UUID.randomUUID().toString();
@@ -47,7 +57,41 @@ public class ToolbarVO extends AbstractHeaderItem<ToolbarVO.ViewHolder> implemen
 
     @Override
     public void bindViewHolder(FlexibleAdapter adapter, ViewHolder holder, int position, List<Object> payloads) {
+        Context context = holder.itemView.getContext();
 
+        /** set up ACCOUNT COLOR indicator */
+        holder.accountColorIndicator.setBackgroundColor(
+                ColorManager.getInstance().getAccountPainter().getDefaultMainColor());
+
+        /** set up BACKGROUND COLOR */
+        final int[] accountGroupColors = context.getResources().getIntArray(
+                getThemeResource(context, R.attr.contact_list_account_group_background));
+        final int level = AccountManager.getInstance().getColorLevel(AccountPainter.getFirstAccount());
+        holder.itemView.setBackgroundColor(accountGroupColors[level]);
+
+        /** set up STATE TITLE */
+        switch (currentChatsState) {
+            case unread:
+                holder.tvTitle.setText(R.string.unread_chats);
+                break;
+            case archived:
+                holder.tvTitle.setText(R.string.archived_chats);
+                break;
+            case all:
+                holder.tvTitle.setText(R.string.all_chats);
+                break;
+            default:
+                holder.tvTitle.setText("Xabber");
+                break;
+        }
+    }
+
+    private int getThemeResource(Context context, int themeResourceId) {
+        TypedValue typedValue = new TypedValue();
+        TypedArray a = context.obtainStyledAttributes(typedValue.data, new int[] {themeResourceId});
+        final int accountGroupColorsResourceId = a.getResourceId(0, 0);
+        a.recycle();
+        return accountGroupColorsResourceId;
     }
 
     public class ViewHolder extends FlexibleViewHolder {
