@@ -30,7 +30,7 @@ public class AccountConfiguration extends GroupConfiguration {
 
     private final TreeMap<String, GroupConfiguration> groups;
 
-    AccountConfiguration(AccountJid account, String group,
+    public AccountConfiguration(AccountJid account, String group,
                          GroupStateProvider groupStateProvider) {
         super(account, group, groupStateProvider);
         groups = new TreeMap<>();
@@ -55,7 +55,7 @@ public class AccountConfiguration extends GroupConfiguration {
     /**
      * Returns sorted list of groups.
      */
-    Collection<GroupConfiguration> getSortedGroupConfigurations() {
+    public Collection<GroupConfiguration> getSortedGroupConfigurations() {
         ArrayList<GroupConfiguration> groups = new ArrayList<>(this.groups.values());
         Collections.sort(groups);
         return Collections.unmodifiableCollection(groups);
