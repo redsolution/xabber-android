@@ -1,7 +1,13 @@
 package com.xabber.android.presentation.ui.contactlist.viewobjects;
 
+/**
+ * Created by valery.miller on 05.02.18.
+ */
+
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
+import android.util.TypedValue;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -25,13 +31,13 @@ import eu.davidea.flexibleadapter.FlexibleAdapter;
 import eu.davidea.flexibleadapter.items.AbstractExpandableHeaderItem;
 import eu.davidea.viewholders.ExpandableViewHolder;
 
-/**
- * Created by valery.miller on 05.02.18.
- */
-
 public class AccountVO extends AbstractExpandableHeaderItem<AccountVO.ViewHolder, GroupVO> {
 
     private String id;
+
+    private int accountColorIndicator;
+    private boolean showOfflineShadow;
+
     private String name;
     private String jid;
     private String status;
@@ -44,10 +50,13 @@ public class AccountVO extends AbstractExpandableHeaderItem<AccountVO.ViewHolder
     private boolean isExpand;
     private String groupName;
 
-    public AccountVO(String name, String jid, String status, int statusLevel, int statusId,
+    public AccountVO(int accountColorIndicator, boolean showOfflineShadow,
+                     String name, String jid, String status, int statusLevel, int statusId,
                      Drawable avatar, int offlineModeLevel, String contactCount, AccountJid accountJid,
                      boolean isExpand, String groupName) {
         this.id = UUID.randomUUID().toString();
+        this.accountColorIndicator = accountColorIndicator;
+        this.showOfflineShadow = showOfflineShadow;
         this.name = name;
         this.jid = jid;
         this.status = status;
@@ -84,19 +93,37 @@ public class AccountVO extends AbstractExpandableHeaderItem<AccountVO.ViewHolder
     public void bindViewHolder(FlexibleAdapter adapter, ViewHolder viewHolder, int position, List<Object> payloads) {
         Context context = viewHolder.itemView.getContext();
 
-//        final int level = AccountManager.getInstance().getColorLevel(getAccountJid());
-//        viewHolder.itemView.setBackgroundColor(accountGroupColors[level]);
+        /** bind OFFLINE SHADOW */
+        if (isShowOfflineShadow())
+            viewHolder.offlineShadow.setVisibility(View.VISIBLE);
+        else viewHolder.offlineShadow.setVisibility(View.GONE);
 
-        //viewHolder.accountColorIndicator.setBackgroundColor(viewObject.getAccountColorIndicator());
+        /** set up ACCOUNT COLOR indicator */
+        viewHolder.accountColorIndicator.setBackgroundColor(getAccountColorIndicator());
 
+        /** bind ACCOUNT BACKGROUND color */
+        final int[] accountGroupColors = context.getResources().getIntArray(
+                getThemeResource(context, R.attr.contact_list_account_group_background));
+        final int level = AccountManager.getInstance().getColorLevel(getAccountJid());
+        viewHolder.itemView.setBackgroundColor(accountGroupColors[level]);
+
+        /** bind ACCOUNT NAME */
         viewHolder.tvAccountName.setText(getName());
+
+        /** bind CONTACT COUNT */
         viewHolder.tvContactCount.setText(getContactCount());
 
+        /** bind OFFLINE MODE */
+        Drawable offlineModeImage = context.getResources().getDrawable(R.drawable.ic_show_offline_small);
+        offlineModeImage.setLevel(getOfflineModeLevel());
+        viewHolder.tvContactCount.setCompoundDrawablesWithIntrinsicBounds(offlineModeImage, null, null, null);
+
+        /** bind STATUS TEXT */
         String statusText = getStatus();
         if (statusText.isEmpty()) statusText = context.getString(getStatusId());
-
         viewHolder.tvStatus.setText(statusText);
 
+        /** bind AVATAR */
         if (SettingsManager.contactsShowAvatars()) {
             viewHolder.ivAvatar.setVisibility(View.VISIBLE);
             viewHolder.ivStatus.setVisibility(View.VISIBLE);
@@ -106,15 +133,16 @@ public class AccountVO extends AbstractExpandableHeaderItem<AccountVO.ViewHolder
             viewHolder.ivStatus.setVisibility(View.GONE);
         }
 
+        /** bind STATUS image */
         viewHolder.ivStatus.setImageLevel(getStatusLevel());
+    }
 
-        Drawable offlineModeImage = context.getResources().getDrawable(R.drawable.ic_show_offline_small);
-        offlineModeImage.setLevel(getOfflineModeLevel());
-        viewHolder.tvContactCount.setCompoundDrawablesWithIntrinsicBounds(offlineModeImage, null, null, null);
-
-//        if (isShowOfflineShadow())
-//            viewHolder.offlineShadow.setVisibility(View.VISIBLE);
-//        else viewHolder.offlineShadow.setVisibility(View.GONE);
+    private int getThemeResource(Context context, int themeResourceId) {
+        TypedValue typedValue = new TypedValue();
+        TypedArray a = context.obtainStyledAttributes(typedValue.data, new int[] {themeResourceId});
+        final int accountGroupColorsResourceId = a.getResourceId(0, 0);
+        a.recycle();
+        return accountGroupColorsResourceId;
     }
 
     public static AccountVO convert(AccountConfiguration configuration) {
@@ -169,7 +197,7 @@ public class AccountVO extends AbstractExpandableHeaderItem<AccountVO.ViewHolder
             showOfflineShadow = false;
         }
 
-        return new AccountVO(name, jid, status, statusLevel,
+        return new AccountVO(accountColorIndicator, showOfflineShadow, name, jid, status, statusLevel,
                 statusId, avatar, offlineModeLevel, contactCount, configuration.getAccount(),
                 configuration.isExpanded(), configuration.getGroup());
     }
@@ -216,6 +244,14 @@ public class AccountVO extends AbstractExpandableHeaderItem<AccountVO.ViewHolder
 
     public String getGroupName() {
         return groupName;
+    }
+
+    public int getAccountColorIndicator() {
+        return accountColorIndicator;
+    }
+
+    public boolean isShowOfflineShadow() {
+        return showOfflineShadow;
     }
 
     public class ViewHolder extends ExpandableViewHolder {

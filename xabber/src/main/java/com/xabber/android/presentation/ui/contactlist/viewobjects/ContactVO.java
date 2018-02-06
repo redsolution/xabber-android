@@ -1,5 +1,9 @@
 package com.xabber.android.presentation.ui.contactlist.viewobjects;
 
+/**
+ * Created by valery.miller on 02.02.18.
+ */
+
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.PorterDuff;
@@ -40,13 +44,13 @@ import eu.davidea.flexibleadapter.items.AbstractFlexibleItem;
 import eu.davidea.flexibleadapter.items.IFlexible;
 import eu.davidea.viewholders.FlexibleViewHolder;
 
-/**
- * Created by valery.miller on 02.02.18.
- */
-
 public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
 
     private final String id;
+
+    private int accountColorIndicator;
+    private boolean showOfflineShadow;
+
     private final String name;
     private final String status;
     private final int statusId;
@@ -65,11 +69,14 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
     private final String messageOwner;
     private final boolean archived;
 
-    protected ContactVO(String name, String status, int statusId, int statusLevel, Drawable avatar,
+    protected ContactVO(int accountColorIndicator, boolean showOfflineShadow, String name,
+                        String status, int statusId, int statusLevel, Drawable avatar,
                   int mucIndicatorLevel, UserJid userJid, AccountJid accountJid, int unreadCount,
                   boolean mute, NotificationState.NotificationMode notificationMode, String messageText,
                   boolean isOutgoing, Date time, int messageStatus, String messageOwner, boolean archived) {
         this.id = UUID.randomUUID().toString();
+        this.accountColorIndicator = accountColorIndicator;
+        this.showOfflineShadow = showOfflineShadow;
         this.name = name;
         this.status = status;
         this.statusId = statusId;
@@ -175,7 +182,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
         if (chat.getNotificationState().getMode() == NotificationState.NotificationMode.disabled && defaultValue)
             mode = NotificationState.NotificationMode.disabled;
 
-        return new ContactVO(name, statusText, statusId,
+        return new ContactVO(accountColorIndicator, showOfflineShadow, name, statusText, statusId,
                 statusLevel, avatar, mucIndicatorLevel, contact.getUser(), contact.getAccount(),
                 unreadCount, !chat.notifyAboutMessage(), mode, messageText, isOutgoing, time,
                 messageStatus, messageOwner, chat.isArchived());
@@ -189,15 +196,6 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
         return items;
     }
 
-//    public static ArrayList<IFlexible> convert(Collection<AbstractChat> chats) {
-//        ArrayList<IFlexible> items = new ArrayList<>();
-//        for (AbstractChat chat : chats) {
-//            items.add(convert(RosterManager.getInstance()
-//                    .getBestContact(chat.getAccount(), chat.getUser())));
-//        }
-//        return items;
-//    }
-
     @Override
     public boolean equals(Object o) {
         if (o instanceof ContactVO) {
@@ -208,13 +206,8 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
     }
 
     @Override
-    public boolean isSwipeable() {
-        return true;
-    }
-
-    @Override
     public int getLayoutRes() {
-        return R.layout.item_chat_in_contact_list_new;
+        return R.layout.item_contact_in_contact_list_new;
     }
 
     @Override
@@ -226,20 +219,15 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
     public void bindViewHolder(FlexibleAdapter adapter, ViewHolder viewHolder, int position, List<Object> payloads) {
         Context context = viewHolder.itemView.getContext();
 
-//        if (viewObject.isShowOfflineShadow())
-//            viewHolder.offlineShadow.setVisibility(View.VISIBLE);
-//        else viewHolder.offlineShadow.setVisibility(View.GONE);
+        /** set up OFFLINE SHADOW */
+        if (isShowOfflineShadow())
+            viewHolder.offlineShadow.setVisibility(View.VISIBLE);
+        else viewHolder.offlineShadow.setVisibility(View.GONE);
 
-//        viewHolder.accountColorIndicator.setBackgroundColor(viewObject.getAccountColorIndicator());
+        /** set up ACCOUNT COLOR indicator */
+        viewHolder.accountColorIndicator.setBackgroundColor(getAccountColorIndicator());
 
-        if (getStatusLevel() == 6 ||
-                (getMucIndicatorLevel() != 0 && getStatusLevel() != 1))
-            viewHolder.ivStatus.setVisibility(View.INVISIBLE);
-        else viewHolder.ivStatus.setVisibility(View.VISIBLE);
-        viewHolder.ivStatus.setImageLevel(getStatusLevel());
-        viewHolder.ivOnlyStatus.setImageLevel(getStatusLevel());
-
-
+        /** set up AVATAR */
         if (SettingsManager.contactsShowAvatars()) {
             viewHolder.ivAvatar.setVisibility(View.VISIBLE);
             viewHolder.ivStatus.setVisibility(View.VISIBLE);
@@ -251,8 +239,18 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
             viewHolder.ivOnlyStatus.setVisibility(View.VISIBLE);
         }
 
+        /** set up ROSTER STATUS */
+        if (getStatusLevel() == 6 ||
+                (getMucIndicatorLevel() != 0 && getStatusLevel() != 1))
+            viewHolder.ivStatus.setVisibility(View.INVISIBLE);
+        else viewHolder.ivStatus.setVisibility(View.VISIBLE);
+        viewHolder.ivStatus.setImageLevel(getStatusLevel());
+        viewHolder.ivOnlyStatus.setImageLevel(getStatusLevel());
+
+        /** set up CONTACT/MUC NAME */
         viewHolder.tvContactName.setText(getName());
 
+        /** set up MUC indicator */
         Drawable mucIndicator;
         if (getMucIndicatorLevel() == 0)
             mucIndicator = null;
@@ -261,73 +259,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
             mucIndicator.setLevel(getMucIndicatorLevel());
         }
 
-        if (getStatusLevel() == 6 ||
-                (getMucIndicatorLevel() != 0 && getStatusLevel() != 1))
-            viewHolder.ivStatus.setVisibility(View.INVISIBLE);
-        else viewHolder.ivStatus.setVisibility(View.VISIBLE);
-        viewHolder.ivStatus.setImageLevel(getStatusLevel());
-        viewHolder.ivOnlyStatus.setImageLevel(getStatusLevel());
-
-        viewHolder.tvOutgoingMessage.setVisibility(View.GONE);
-
-        viewHolder.tvTime.setText(StringUtils
-                .getSmartTimeTextForRoster(context, getTime()));
-        viewHolder.tvTime.setVisibility(View.VISIBLE);
-
-//        if (isOutgoing()) {
-//            viewHolder.tvOutgoingMessage.setText(outgoingMessageIndicatorText);
-//            viewHolder.tvOutgoingMessage.setVisibility(View.VISIBLE);
-//            viewHolder.tvOutgoingMessage.setTextColor(getAccountColorIndicator());
-//        }
-
-        if (getMessageOwner() != null && !getMessageOwner().trim().isEmpty()) {
-            viewHolder.tvOutgoingMessage.setText(getMessageOwner() + ": ");
-            viewHolder.tvOutgoingMessage.setVisibility(View.VISIBLE);
-            //viewHolder.tvOutgoingMessage.setTextColor(getAccountColorIndicator());
-        }
-
-        String text = getMessageText();
-        if (text.isEmpty()) {
-            viewHolder.tvMessageText.setText(R.string.no_messages);
-            viewHolder.tvMessageText.
-                    setTypeface(viewHolder.tvMessageText.getTypeface(), Typeface.ITALIC);
-        } else {
-            viewHolder.tvMessageText.setTypeface(Typeface.DEFAULT);
-            viewHolder.tvMessageText.setVisibility(View.VISIBLE);
-            if (OTRManager.getInstance().isEncrypted(text)) {
-                viewHolder.tvMessageText.setText(R.string.otr_not_decrypted_message);
-                viewHolder.tvMessageText.
-                        setTypeface(viewHolder.tvMessageText.getTypeface(), Typeface.ITALIC);
-            } else {
-                viewHolder.tvMessageText.setText(text);
-                viewHolder.tvMessageText.setTypeface(Typeface.DEFAULT);
-            }
-        }
-
-        // message status
-        viewHolder.ivMessageStatus.setVisibility(View.VISIBLE);
-
-        switch (getMessageStatus()) {
-            case 0:
-                viewHolder.ivMessageStatus.setImageResource(R.drawable.ic_message_delivered_14dp);
-                break;
-            case 3:
-                viewHolder.ivMessageStatus.setImageResource(R.drawable.ic_message_has_error_14dp);
-                break;
-            case 4:
-                viewHolder.ivMessageStatus.setImageResource(R.drawable.ic_message_acknowledged_14dp);
-                break;
-            default:
-                viewHolder.ivMessageStatus.setVisibility(View.INVISIBLE);
-                break;
-        }
-
-        if (getUnreadCount() > 0) {
-            viewHolder.tvUnreadCount.setText(String.valueOf(getUnreadCount()));
-            viewHolder.tvUnreadCount.setVisibility(View.VISIBLE);
-        } else viewHolder.tvUnreadCount.setVisibility(View.INVISIBLE);
-
-        // notification mute
+        /** set up NOTIFICATION MUTE */
         Resources resources = context.getResources();
         switch (getNotificationMode()) {
             case enabled:
@@ -343,22 +275,17 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
                         mucIndicator, null, null, null);
         }
 
+        /** set up UNREAD COUNT */
+        if (getUnreadCount() > 0) {
+            viewHolder.tvUnreadCount.setText(String.valueOf(getUnreadCount()));
+            viewHolder.tvUnreadCount.setVisibility(View.VISIBLE);
+        } else viewHolder.tvUnreadCount.setVisibility(View.INVISIBLE);
+
         if (isMute())
             viewHolder.tvUnreadCount.getBackground().mutate().setColorFilter(
                     resources.getColor(R.color.grey_500),
                     PorterDuff.Mode.SRC_IN);
         else viewHolder.tvUnreadCount.getBackground().mutate().clearColorFilter();
-
-        // swipe background
-        boolean archived = isArchived();
-        viewHolder.tvAction.setText(archived ? R.string.unarchive_chat : R.string.archive_chat);
-        viewHolder.tvActionLeft.setText(archived ? R.string.unarchive_chat : R.string.archive_chat);
-        Drawable drawable = archived ? context.getResources().getDrawable(R.drawable.ic_unarchived)
-                : context.getResources().getDrawable(R.drawable.ic_arcived);
-        viewHolder.tvAction.setCompoundDrawablesWithIntrinsicBounds(null, null, drawable, null);
-        viewHolder.tvActionLeft.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null);
-        viewHolder.foregroundView.setBackgroundColor(archived ? ColorManager.getInstance().getArchivedContactBackgroundColor()
-                : ColorManager.getInstance().getContactBackground());
     }
 
     public String getId() {
@@ -431,6 +358,14 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
 
     public boolean isArchived() {
         return archived;
+    }
+
+    public int getAccountColorIndicator() {
+        return accountColorIndicator;
+    }
+
+    public boolean isShowOfflineShadow() {
+        return showOfflineShadow;
     }
 
     public class ViewHolder extends FlexibleViewHolder implements View.OnCreateContextMenuListener {
