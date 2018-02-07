@@ -3,6 +3,7 @@ package com.xabber.android.presentation.mvp.contactlist;
 import android.content.Context;
 import android.text.TextUtils;
 
+import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
@@ -23,6 +24,7 @@ import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.AccountWithContactsVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.AccountWithGroupsVO;
+import com.xabber.android.presentation.ui.contactlist.viewobjects.ButtonVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.ChatVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.ContactVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.ExtContactVO;
@@ -276,12 +278,10 @@ public class ContactListPresenter {
                                 createContactListWithAccounts(items, rosterAccount, comparator);
                             }
 
-                            //if (rosterAccount.getTotal() == 0)
-//                                rosterItemVOs.add(ButtonVO.convert(null,
-//                                        context.getString(R.string.contact_add),
-//                                        ButtonVO.ACTION_ADD_CONTACT));
-
-//                            items.add(account);
+                            if (rosterAccount.getTotal() == 0)
+                                items.add(ButtonVO.convert(rosterAccount,
+                                        context.getString(R.string.contact_add),
+                                        ButtonVO.ACTION_ADD_CONTACT));
                         }
                     } else {
                         if (showGroups) {
