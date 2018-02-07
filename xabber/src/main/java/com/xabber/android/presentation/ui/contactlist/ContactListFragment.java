@@ -107,4 +107,8 @@ public class ContactListFragment extends Fragment implements ContactListView,
         adapter.notifyItemChanged(position);
         return true;
     }
+
+    public void filterContactList(String filter) {
+        if (presenter != null) presenter.setFilterString(filter);
+    }
 }
