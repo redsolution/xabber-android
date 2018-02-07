@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SimpleItemAnimator;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,7 +28,7 @@ import eu.davidea.flexibleadapter.items.IFlexible;
  */
 
 public class ContactListFragment extends Fragment implements ContactListView,
-        FlexibleAdapter.OnStickyHeaderChangeListener {
+        FlexibleAdapter.OnStickyHeaderChangeListener, FlexibleAdapter.OnItemClickListener {
 
     public static final String ACCOUNT_JID = "account_jid";
 
@@ -63,6 +64,7 @@ public class ContactListFragment extends Fragment implements ContactListView,
         adapter.setSwipeEnabled(true);
         adapter.expandItemsAtStartUp();
         adapter.addListener(this);
+        ((SimpleItemAnimator) recyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
 
         return view;
     }
@@ -98,5 +100,11 @@ public class ContactListFragment extends Fragment implements ContactListView,
                 ((ContactListActivity)getActivity()).setStatusBarColor(((AccountVO)item).getAccountJid()); // account color
             else ((ContactListActivity)getActivity()).setStatusBarColor(); // main color
         }
+    }
+
+    @Override
+    public boolean onItemClick(int position) {
+        adapter.notifyItemChanged(position);
+        return true;
     }
 }
