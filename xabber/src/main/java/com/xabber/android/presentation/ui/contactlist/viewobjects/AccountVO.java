@@ -28,10 +28,10 @@ import java.util.List;
 import java.util.UUID;
 
 import eu.davidea.flexibleadapter.FlexibleAdapter;
-import eu.davidea.flexibleadapter.items.AbstractExpandableHeaderItem;
+import eu.davidea.flexibleadapter.items.AbstractHeaderItem;
 import eu.davidea.viewholders.ExpandableViewHolder;
 
-public class AccountVO extends AbstractExpandableHeaderItem<AccountVO.ViewHolder, GroupVO> {
+public class AccountVO extends AbstractHeaderItem<AccountVO.ViewHolder> {
 
     private String id;
 
