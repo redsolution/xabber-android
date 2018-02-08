@@ -2,8 +2,11 @@ package com.xabber.android.presentation.ui.contactlist;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -15,10 +18,13 @@ import android.view.ViewGroup;
 import com.xabber.android.R;
 import com.xabber.android.data.account.CommonState;
 import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.message.AbstractChat;
+import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.presentation.mvp.contactlist.ContactListPresenter;
 import com.xabber.android.presentation.mvp.contactlist.ContactListView;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.AccountVO;
+import com.xabber.android.presentation.ui.contactlist.viewobjects.ChatVO;
 import com.xabber.android.ui.activity.ContactListActivity;
 
 import java.util.ArrayList;
@@ -32,7 +38,8 @@ import eu.davidea.flexibleadapter.items.IFlexible;
  */
 
 public class ContactListFragment extends Fragment implements ContactListView,
-        FlexibleAdapter.OnStickyHeaderChangeListener, FlexibleAdapter.OnItemClickListener {
+        FlexibleAdapter.OnStickyHeaderChangeListener, FlexibleAdapter.OnItemClickListener,
+        FlexibleAdapter.OnItemSwipeListener {
 
     public static final String ACCOUNT_JID = "account_jid";
 
@@ -41,6 +48,8 @@ public class ContactListFragment extends Fragment implements ContactListView,
 
     private FlexibleAdapter<IFlexible> adapter;
     private List<IFlexible> items;
+    private Snackbar snackbar;
+    private CoordinatorLayout coordinatorLayout;
 
     public interface ContactListFragmentListener {
         void onContactClick(AbstractContact contact);
@@ -82,6 +91,7 @@ public class ContactListFragment extends Fragment implements ContactListView,
 
         RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        coordinatorLayout = (CoordinatorLayout) view.findViewById(R.id.coordinatorLayout);
 
         items = new ArrayList<>();
         adapter = new FlexibleAdapter<>(items, null, true);
@@ -139,8 +149,61 @@ public class ContactListFragment extends Fragment implements ContactListView,
     }
 
     @Override
+    public void onItemSwipe(int position, int direction) {
+        Object itemAtPosition = adapter.getItem(position);
+        if (itemAtPosition != null && itemAtPosition instanceof ChatVO) {
+
+            // backup of removed item for undo purpose
+            final ChatVO deletedItem = (ChatVO) itemAtPosition;
+
+            // update value
+            setChatArchived(deletedItem, !(deletedItem).isArchived());
+
+            // remove the item from recycler view
+            adapter.removeItem(position);
+
+            // showing snackbar with Undo option
+            showSnackbar(deletedItem, position);
+        }
+    }
+
+    @Override
+    public void onActionStateChanged(RecyclerView.ViewHolder viewHolder, int actionState) {
+
+    }
+
+    @Override
     public void onContactClick(AbstractContact contact) {
         contactListFragmentListener.onContactClick(contact);
+    }
+
+    public void showSnackbar(final ChatVO deletedItem, final int deletedIndex) {
+        if (snackbar != null) snackbar.dismiss();
+        final boolean archived = (deletedItem).isArchived();
+        snackbar = Snackbar.make(coordinatorLayout, archived ? R.string.chat_was_unarchived
+                : R.string.chat_was_archived, Snackbar.LENGTH_LONG);
+        snackbar.setAction(R.string.undo, new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                // update value
+                setChatArchived((ChatVO) deletedItem, archived);
+
+                // undo is selected, restore the deleted item
+                adapter.addItem(deletedIndex, deletedItem);
+            }
+        });
+        snackbar.setActionTextColor(Color.YELLOW);
+        snackbar.show();
+    }
+
+    public void closeSnackbar() {
+        if (snackbar != null) snackbar.dismiss();
+    }
+
+    public void setChatArchived(ChatVO chatVO, boolean archived) {
+        AbstractChat chat = MessageManager.getInstance().getChat(chatVO.getAccountJid(), chatVO.getUserJid());
+        if (chat != null) chat.setArchived(archived, true);
     }
 
     public void filterContactList(String filter) {

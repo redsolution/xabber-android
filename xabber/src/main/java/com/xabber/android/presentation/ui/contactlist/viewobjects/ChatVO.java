@@ -4,6 +4,7 @@ package com.xabber.android.presentation.ui.contactlist.viewobjects;
  * Created by valery.miller on 06.02.18.
  */
 
+import android.content.Context;
 import android.graphics.drawable.Drawable;
 
 import com.xabber.android.R;
@@ -11,11 +12,14 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.message.NotificationState;
 import com.xabber.android.data.roster.AbstractContact;
+import com.xabber.android.ui.color.ColorManager;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
+import eu.davidea.flexibleadapter.FlexibleAdapter;
 import eu.davidea.flexibleadapter.items.IFlexible;
 
 public class ChatVO extends ExtContactVO {
@@ -49,6 +53,23 @@ public class ChatVO extends ExtContactVO {
             items.add(ChatVO.convert(contact));
         }
         return items;
+    }
+
+    @Override
+    public void bindViewHolder(FlexibleAdapter adapter, ViewHolder viewHolder, int position, List<Object> payloads) {
+        super.bindViewHolder(adapter, viewHolder, position, payloads);
+        Context context = viewHolder.itemView.getContext();
+
+        /** set up SWIPE BACKGROUND */
+        boolean archived = isArchived();
+        viewHolder.tvAction.setText(archived ? R.string.unarchive_chat : R.string.archive_chat);
+        viewHolder.tvActionLeft.setText(archived ? R.string.unarchive_chat : R.string.archive_chat);
+        Drawable drawable = archived ? context.getResources().getDrawable(R.drawable.ic_unarchived)
+                : context.getResources().getDrawable(R.drawable.ic_arcived);
+        viewHolder.tvAction.setCompoundDrawablesWithIntrinsicBounds(null, null, drawable, null);
+        viewHolder.tvActionLeft.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null);
+        viewHolder.foregroundView.setBackgroundColor(archived ? ColorManager.getInstance().getArchivedContactBackgroundColor()
+                : ColorManager.getInstance().getContactBackground());
     }
 
     @Override

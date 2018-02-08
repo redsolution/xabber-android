@@ -7,7 +7,6 @@ package com.xabber.android.presentation.ui.contactlist.viewobjects;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.PorterDuff;
-import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.view.ContextMenu;
 import android.view.View;
@@ -24,13 +23,11 @@ import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.muc.MUCManager;
-import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.NotificationState;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.ui.color.ColorManager;
-import com.xabber.android.utils.StringUtils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -406,6 +403,21 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
             foregroundView = (RelativeLayout) view.findViewById(R.id.foregroundView);
             tvAction = (TextView) view.findViewById(R.id.tvAction);
             tvActionLeft = (TextView) view.findViewById(R.id.tvActionLeft);
+        }
+
+        @Override
+        public View getFrontView() {
+            return foregroundView;
+        }
+
+        @Override
+        public View getRearLeftView() {
+            return tvActionLeft;
+        }
+
+        @Override
+        public View getRearRightView() {
+            return tvAction;
         }
 
         @Override
