@@ -15,8 +15,6 @@
 package com.xabber.android.ui.activity;
 
 import android.app.Dialog;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -29,6 +27,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
@@ -60,6 +60,7 @@ import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.data.xaccount.XMPPAccountSettings;
 import com.xabber.android.data.xaccount.XabberAccount;
 import com.xabber.android.data.xaccount.XabberAccountManager;
+import com.xabber.android.presentation.ui.contactlist.ContactListFragment;
 import com.xabber.android.ui.adapter.contactlist.ContactListAdapter;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.dialog.AccountChooseDialogFragment;
@@ -70,8 +71,6 @@ import com.xabber.android.ui.dialog.MucInviteDialog;
 import com.xabber.android.ui.dialog.MucPrivateChatInvitationDialog;
 import com.xabber.android.ui.dialog.TranslationDialog;
 import com.xabber.android.ui.fragment.ContactListDrawerFragment;
-import com.xabber.android.ui.fragment.ContactListFragment;
-import com.xabber.android.ui.fragment.ContactListFragment.ContactListFragmentListener;
 import com.xabber.android.ui.preferences.PreferenceEditor;
 import com.xabber.android.ui.widget.bottomnavigation.BottomMenu;
 import com.xabber.xmpp.uri.XMPPUri;
@@ -90,7 +89,7 @@ import java.util.Locale;
  * @author alexander.ivanov
  */
 public class ContactListActivity extends ManagedActivity implements OnAccountChangedListener,
-        View.OnClickListener, OnChooseListener, ContactListFragmentListener,
+        View.OnClickListener, OnChooseListener, ContactListFragment.ContactListFragmentListener,
         ContactListDrawerFragment.ContactListDrawerListener,
         BottomMenu.OnClickListener {
 
@@ -584,15 +583,15 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.toolbar_default:
-                getContactListFragment().scrollTo(0);
+                //getContactListFragment().scrollTo(0);
                 break;
         }
     }
 
     @Override
     public void onContactClick(AbstractContact abstractContact) {
-        if (contentFragment != null)
-            ((ContactListFragment) contentFragment).getFilterableAdapter().getFilter().filter("");
+//        if (contentFragment != null)
+//            ((ContactListFragment) contentFragment).getFilterableAdapter().getFilter().filter("");
         if (bottomMenu != null) bottomMenu.closeSearch();
 
         if (action == null) {
@@ -721,9 +720,9 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
     @Override
     public void onRecentClick() {
         if (contentFragment != null && contentFragment instanceof ContactListFragment) {
-            ((ContactListFragment) contentFragment).showRecent();
-            ((ContactListFragment) contentFragment).scrollTo(0);
-            ((ContactListFragment) contentFragment).closeSnackbar();
+//            ((ContactListFragment) contentFragment).showRecent();
+//            ((ContactListFragment) contentFragment).scrollTo(0);
+//            ((ContactListFragment) contentFragment).closeSnackbar();
         } else showContactListFragment(null);
     }
 
@@ -736,16 +735,16 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
     @Override
     public void onAccountShortcutClick(AccountJid jid) {
         if (contentFragment != null && contentFragment instanceof ContactListFragment) {
-            ((ContactListFragment) contentFragment).showRecent();
-            ((ContactListFragment) contentFragment).scrollToAccount(jid);
-            ((ContactListFragment) contentFragment).closeSnackbar();
+//            ((ContactListFragment) contentFragment).showRecent();
+//            ((ContactListFragment) contentFragment).scrollToAccount(jid);
+//            ((ContactListFragment) contentFragment).closeSnackbar();
         } else showContactListFragment(jid);
     }
 
     @Override
     public void onSearch(String filter) {
         if (contentFragment != null && contentFragment instanceof ContactListFragment)
-            ((ContactListFragment) contentFragment).getFilterableAdapter().getFilter().filter(filter);
+            ((ContactListFragment) contentFragment).filterContactList(filter);
         else showContactListFragment(null);
     }
 
@@ -802,14 +801,14 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (contentFragment != null && contentFragment instanceof ContactListFragment ) {
-            ContactListAdapter.ChatListState currentState = ((ContactListFragment) contentFragment).getListState();
-            if (requestCode == CODE_OPEN_CHAT &&
-                    (currentState == (ContactListAdapter.ChatListState.unread)
-                    || currentState == (ContactListAdapter.ChatListState.archived))) {
-                ((ContactListFragment) contentFragment).showRecent();
-            }
-        }
+//        if (contentFragment != null && contentFragment instanceof ContactListFragment ) {
+//            ContactListAdapter.ChatListState currentState = ((ContactListFragment) contentFragment).getListState();
+//            if (requestCode == CODE_OPEN_CHAT &&
+//                    (currentState == (ContactListAdapter.ChatListState.unread)
+//                    || currentState == (ContactListAdapter.ChatListState.archived))) {
+//                ((ContactListFragment) contentFragment).showRecent();
+//            }
+//        }
     }
 
     private boolean isSharedText(String type) {
