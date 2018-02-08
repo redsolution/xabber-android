@@ -70,7 +70,8 @@ import com.xabber.android.ui.dialog.MucInviteDialog;
 import com.xabber.android.ui.dialog.MucPrivateChatInvitationDialog;
 import com.xabber.android.ui.dialog.TranslationDialog;
 import com.xabber.android.ui.fragment.ContactListDrawerFragment;
-import com.xabber.android.ui.fragment.ContactListFragment;
+import com.xabber.android.presentation.ui.contactlist.ContactListFragment;
+//import com.xabber.android.ui.fragment.ContactListFragment;
 import com.xabber.android.ui.fragment.ContactListFragment.ContactListFragmentListener;
 import com.xabber.android.ui.preferences.PreferenceEditor;
 import com.xabber.android.ui.widget.bottomnavigation.BottomMenu;
@@ -584,15 +585,15 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.toolbar_default:
-                getContactListFragment().scrollTo(0);
+                //getContactListFragment().scrollTo(0);
                 break;
         }
     }
 
     @Override
     public void onContactClick(AbstractContact abstractContact) {
-        if (contentFragment != null)
-            ((ContactListFragment) contentFragment).getFilterableAdapter().getFilter().filter("");
+//        if (contentFragment != null)
+//            ((ContactListFragment) contentFragment).getFilterableAdapter().getFilter().filter("");
         if (bottomMenu != null) bottomMenu.closeSearch();
 
         if (action == null) {
@@ -720,11 +721,11 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
 
     @Override
     public void onRecentClick() {
-        if (contentFragment != null && contentFragment instanceof ContactListFragment) {
-            ((ContactListFragment) contentFragment).showRecent();
-            ((ContactListFragment) contentFragment).scrollTo(0);
-            ((ContactListFragment) contentFragment).closeSnackbar();
-        } else showContactListFragment(null);
+//        if (contentFragment != null && contentFragment instanceof ContactListFragment) {
+//            ((ContactListFragment) contentFragment).showRecent();
+//            ((ContactListFragment) contentFragment).scrollTo(0);
+//            ((ContactListFragment) contentFragment).closeSnackbar();
+//        } else showContactListFragment(null);
     }
 
     @Override
@@ -735,25 +736,25 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
 
     @Override
     public void onAccountShortcutClick(AccountJid jid) {
-        if (contentFragment != null && contentFragment instanceof ContactListFragment) {
-            ((ContactListFragment) contentFragment).showRecent();
-            ((ContactListFragment) contentFragment).scrollToAccount(jid);
-            ((ContactListFragment) contentFragment).closeSnackbar();
-        } else showContactListFragment(jid);
+//        if (contentFragment != null && contentFragment instanceof ContactListFragment) {
+//            ((ContactListFragment) contentFragment).showRecent();
+//            ((ContactListFragment) contentFragment).scrollToAccount(jid);
+//            ((ContactListFragment) contentFragment).closeSnackbar();
+//        } else showContactListFragment(jid);
     }
 
     @Override
     public void onSearch(String filter) {
-        if (contentFragment != null && contentFragment instanceof ContactListFragment)
-            ((ContactListFragment) contentFragment).getFilterableAdapter().getFilter().filter(filter);
-        else showContactListFragment(null);
+//        if (contentFragment != null && contentFragment instanceof ContactListFragment)
+//            ((ContactListFragment) contentFragment).getFilterableAdapter().getFilter().filter(filter);
+//        else showContactListFragment(null);
     }
 
     @Override
     public void onSearchClick() {
-        if (contentFragment != null && contentFragment instanceof ContactListFragment) {
-            ((ContactListFragment) contentFragment).closeSnackbar();
-        } else showContactListFragment(null);
+//        if (contentFragment != null && contentFragment instanceof ContactListFragment) {
+//            ((ContactListFragment) contentFragment).closeSnackbar();
+//        } else showContactListFragment(null);
     }
 
     private void showBottomNavigation() {
@@ -802,14 +803,14 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (contentFragment != null && contentFragment instanceof ContactListFragment ) {
-            ContactListAdapter.ChatListState currentState = ((ContactListFragment) contentFragment).getListState();
-            if (requestCode == CODE_OPEN_CHAT &&
-                    (currentState == (ContactListAdapter.ChatListState.unread)
-                    || currentState == (ContactListAdapter.ChatListState.archived))) {
-                ((ContactListFragment) contentFragment).showRecent();
-            }
-        }
+//        if (contentFragment != null && contentFragment instanceof ContactListFragment ) {
+//            ContactListAdapter.ChatListState currentState = ((ContactListFragment) contentFragment).getListState();
+//            if (requestCode == CODE_OPEN_CHAT &&
+//                    (currentState == (ContactListAdapter.ChatListState.unread)
+//                    || currentState == (ContactListAdapter.ChatListState.archived))) {
+//                ((ContactListFragment) contentFragment).showRecent();
+//            }
+//        }
     }
 
     private boolean isSharedText(String type) {
