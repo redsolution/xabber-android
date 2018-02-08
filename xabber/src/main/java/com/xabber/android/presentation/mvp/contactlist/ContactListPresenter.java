@@ -1,13 +1,16 @@
 package com.xabber.android.presentation.mvp.contactlist;
 
 import android.content.Context;
+import android.os.Handler;
 import android.text.TextUtils;
 
 import com.xabber.android.R;
+import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.CommonState;
+import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
@@ -20,6 +23,7 @@ import com.xabber.android.data.message.ChatContact;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.GroupManager;
+import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.AccountWithContactsVO;
@@ -42,6 +46,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -53,13 +58,39 @@ import eu.davidea.flexibleadapter.items.IFlexible;
  * Created by valery.miller on 02.02.18.
  */
 
-public class ContactListPresenter {
+public class ContactListPresenter implements Runnable, OnContactChangedListener, OnAccountChangedListener {
 
     private static final int MAX_RECENT_ITEMS = 12;
+    private static final long REFRESH_INTERVAL = 1000;
 
     private static ContactListPresenter instance;
     private ContactListView view;
     private Context context;
+
+    /**
+     * Handler for deferred refresh.
+     */
+    private final Handler handler;
+
+    /**
+     * Lock for refresh requests.
+     */
+    private final Object refreshLock;
+
+    /**
+     * Whether refresh was requested.
+     */
+    private boolean refreshRequested;
+
+    /**
+     * Whether refresh is in progress.
+     */
+    private boolean refreshInProgress;
+
+    /**
+     * Minimal time when next refresh can be executed.
+     */
+    private Date nextRefresh;
 
     private String filterString = null;
     protected Locale locale = Locale.getDefault();
@@ -72,14 +103,19 @@ public class ContactListPresenter {
 
     public ContactListPresenter(Context context) {
         this.context = context;
+        handler = new Handler();
+        refreshLock = new Object();
+        refreshRequested = false;
+        refreshInProgress = false;
+        nextRefresh = new Date();
+
+        Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
+        Application.getInstance().addUIListener(OnContactChangedListener.class, this);
     }
 
     public void onLoadContactList(ContactListView view) {
         this.view = view;
-        List<IFlexible> items = new ArrayList<>();
-        buildStructure(items);
-
-        this.view.updateItems(items);
+        buildStructure();
     }
 
     public void setFilterString(String filter) {
@@ -87,15 +123,61 @@ public class ContactListPresenter {
         onLoadContactList(view);
     }
 
-    private void buildStructure(List<IFlexible> items) {
+    @Override
+    public void onAccountsChanged(Collection<AccountJid> accounts) {
+        refreshRequest();
+    }
 
-//        synchronized (refreshLock) {
-//            refreshRequested = false;
-//            refreshInProgress = true;
-//            handler.removeCallbacks(this);
-//        }
+    @Override
+    public void onContactsChanged(Collection<RosterContact> entities) {
+        // вызывается всякий раз, когда собеседник набирает сообщение - это плохо
+        refreshRequest();
+    }
+
+    @Override
+    public void run() {
+        buildStructure();
+    }
+
+    /**
+     * Requests refresh in some time in future.
+     */
+    public void refreshRequest() {
+        synchronized (refreshLock) {
+            if (refreshRequested) {
+                return;
+            }
+            if (refreshInProgress) {
+                refreshRequested = true;
+            } else {
+                long delay = nextRefresh.getTime() - new Date().getTime();
+                handler.postDelayed(this, delay > 0 ? delay : 0);
+            }
+        }
+    }
+
+    /**
+     * Remove refresh requests.
+     */
+    public void removeRefreshRequests() {
+        synchronized (refreshLock) {
+            refreshRequested = false;
+            refreshInProgress = false;
+            handler.removeCallbacks(this);
+        }
+    }
+
+    private void buildStructure() {
+
+        synchronized (refreshLock) {
+            refreshRequested = false;
+            refreshInProgress = true;
+            handler.removeCallbacks(this);
+        }
 
 //        listener.hidePlaceholder();
+
+        List<IFlexible> items = new ArrayList<>();
 
         final Collection<RosterContact> allRosterContacts = RosterManager.getInstance().getAllContacts();
 
@@ -173,7 +255,7 @@ public class ContactListPresenter {
             }
         }
 
-        if (filterString == null) {
+        if (filterString == null || filterString.isEmpty()) {
 
             // BUILD STRUCTURE //
 
@@ -309,15 +391,16 @@ public class ContactListPresenter {
         }
 
         //listener.onContactListChanged(commonState, hasContacts, hasVisibleContacts, filterString != null);
+        this.view.updateItems(items);
 
-//        synchronized (refreshLock) {
-//            nextRefresh = new Date(new Date().getTime() + REFRESH_INTERVAL);
-//            refreshInProgress = false;
-//            handler.removeCallbacks(this); // Just to be sure.
-//            if (refreshRequested) {
-//                handler.postDelayed(this, REFRESH_INTERVAL);
-//            }
-//        }
+        synchronized (refreshLock) {
+            nextRefresh = new Date(new Date().getTime() + REFRESH_INTERVAL);
+            refreshInProgress = false;
+            handler.removeCallbacks(this); // Just to be sure.
+            if (refreshRequested) {
+                handler.postDelayed(this, REFRESH_INTERVAL);
+            }
+        }
     }
 
     /**

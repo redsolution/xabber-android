@@ -86,7 +86,7 @@ public class ContactListFragment extends Fragment implements ContactListView,
     public void updateItems(List<IFlexible> items) {
         this.items.clear();
         this.items.addAll(items);
-        adapter.updateDataSet(items);
+        adapter.updateDataSet(items, false);
     }
 
     /**
