@@ -1,5 +1,7 @@
 package com.xabber.android.presentation.ui.contactlist;
 
+import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -11,7 +13,9 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.xabber.android.R;
+import com.xabber.android.data.account.CommonState;
 import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.presentation.mvp.contactlist.ContactListPresenter;
 import com.xabber.android.presentation.mvp.contactlist.ContactListView;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.AccountVO;
@@ -33,9 +37,16 @@ public class ContactListFragment extends Fragment implements ContactListView,
     public static final String ACCOUNT_JID = "account_jid";
 
     private ContactListPresenter presenter;
+    private ContactListFragmentListener contactListFragmentListener;
 
     private FlexibleAdapter<IFlexible> adapter;
     private List<IFlexible> items;
+
+    public interface ContactListFragmentListener {
+        void onContactClick(AbstractContact contact);
+        void onContactListChange(CommonState commonState);
+        void onManageAccountsClick();
+    }
 
     public static ContactListFragment newInstance(@Nullable AccountJid account) {
         ContactListFragment fragment = new ContactListFragment();
@@ -44,6 +55,24 @@ public class ContactListFragment extends Fragment implements ContactListView,
             args.putSerializable(ACCOUNT_JID, account);
         fragment.setArguments(args);
         return fragment;
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        contactListFragmentListener = (ContactListFragmentListener) activity;
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        contactListFragmentListener = (ContactListFragmentListener) context;
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        contactListFragmentListener = null;
     }
 
     @Nullable
@@ -105,7 +134,13 @@ public class ContactListFragment extends Fragment implements ContactListView,
     @Override
     public boolean onItemClick(int position) {
         adapter.notifyItemChanged(position);
+        presenter.onItemClick(adapter.getItem(position));
         return true;
+    }
+
+    @Override
+    public void onContactClick(AbstractContact contact) {
+        contactListFragmentListener.onContactClick(contact);
     }
 
     public void filterContactList(String filter) {

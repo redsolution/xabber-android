@@ -1,5 +1,7 @@
 package com.xabber.android.presentation.mvp.contactlist;
 
+import com.xabber.android.data.roster.AbstractContact;
+
 import java.util.List;
 
 import eu.davidea.flexibleadapter.items.IFlexible;
@@ -11,4 +13,5 @@ import eu.davidea.flexibleadapter.items.IFlexible;
 public interface ContactListView {
 
     void updateItems(List<IFlexible> items);
+    void onContactClick(AbstractContact contact);
 }

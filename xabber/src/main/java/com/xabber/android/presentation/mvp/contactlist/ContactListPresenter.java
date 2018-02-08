@@ -118,6 +118,14 @@ public class ContactListPresenter implements Runnable, OnContactChangedListener,
         buildStructure();
     }
 
+    public void onItemClick(IFlexible item) {
+        if (item instanceof ContactVO) {
+            AccountJid accountJid = ((ContactVO) item).getAccountJid();
+            UserJid userJid = ((ContactVO) item).getUserJid();
+            view.onContactClick(RosterManager.getInstance().getAbstractContact(accountJid, userJid));
+        }
+    }
+
     public void setFilterString(String filter) {
         filterString = filter;
         onLoadContactList(view);
