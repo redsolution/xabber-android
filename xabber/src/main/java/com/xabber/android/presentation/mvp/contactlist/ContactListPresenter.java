@@ -1,6 +1,7 @@
 package com.xabber.android.presentation.mvp.contactlist;
 
 import android.content.Context;
+import android.content.Intent;
 import android.text.TextUtils;
 import android.view.ContextMenu;
 
@@ -34,6 +35,8 @@ import com.xabber.android.presentation.ui.contactlist.viewobjects.ContactVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.ExtContactVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.GroupVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.ToolbarVO;
+import com.xabber.android.ui.activity.ContactActivity;
+import com.xabber.android.ui.activity.ContactEditActivity;
 import com.xabber.android.ui.adapter.ChatComparator;
 import com.xabber.android.ui.adapter.contactlist.AccountConfiguration;
 import com.xabber.android.ui.adapter.contactlist.ContactListAdapter;
@@ -114,6 +117,11 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
     @Override
     public void onContactCreateContextMenu(int adapterPosition, ContextMenu menu) {
         if (view != null) view.onContactContextMenu(adapterPosition, menu);
+    }
+
+    @Override
+    public void onContactAvatarClick(int adapterPosition) {
+        if (view != null) view.onContactAvatarClick(adapterPosition);
     }
 
     public void setFilterString(String filter) {

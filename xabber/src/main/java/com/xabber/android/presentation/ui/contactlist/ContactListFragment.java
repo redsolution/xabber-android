@@ -2,6 +2,7 @@ package com.xabber.android.presentation.ui.contactlist;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -20,6 +21,7 @@ import com.xabber.android.R;
 import com.xabber.android.data.account.CommonState;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.roster.AbstractContact;
@@ -29,6 +31,8 @@ import com.xabber.android.presentation.mvp.contactlist.ContactListView;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.AccountVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.ChatVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.ContactVO;
+import com.xabber.android.ui.activity.ContactActivity;
+import com.xabber.android.ui.activity.ContactEditActivity;
 import com.xabber.android.ui.activity.ContactListActivity;
 import com.xabber.android.ui.helper.ContextMenuHelper;
 
@@ -196,6 +200,22 @@ public class ContactListFragment extends Fragment implements ContactListView,
             UserJid userJid = ((ContactVO) item).getUserJid();
             AbstractContact abstractContact = RosterManager.getInstance().getAbstractContact(accountJid, userJid);
             ContextMenuHelper.createContactContextMenu(getActivity(), presenter, abstractContact, menu);
+        }
+    }
+
+    @Override
+    public void onContactAvatarClick(int adapterPosition) {
+        IFlexible item = adapter.getItem(adapterPosition);
+        if (item != null && item instanceof ContactVO) {
+            Intent intent;
+            AccountJid accountJid = ((ContactVO) item).getAccountJid();
+            UserJid userJid = ((ContactVO) item).getUserJid();
+            if (MUCManager.getInstance().hasRoom(accountJid, userJid)) {
+                intent = ContactActivity.createIntent(getActivity(), accountJid, userJid);
+            } else {
+                intent = ContactEditActivity.createIntent(getActivity(), accountJid, userJid);
+            }
+            getActivity().startActivity(intent);
         }
     }
 

@@ -70,6 +70,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
     protected final ContactClickListener listener;
 
     public interface ContactClickListener {
+        void onContactAvatarClick(int adapterPosition);
         void onContactCreateContextMenu(int adapterPosition, ContextMenu menu);
     }
 
@@ -437,6 +438,15 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
             int adapterPosition = getAdapterPosition();
             if (adapterPosition == RecyclerView.NO_POSITION) return;
             listener.onContactCreateContextMenu(adapterPosition, menu);
+        }
+
+        @Override
+        public void onClick(View view) {
+            if (view.getId() == R.id.ivAvatar) {
+                listener.onContactAvatarClick(getAdapterPosition());
+            } else {
+                super.onClick(view);
+            }
         }
     }
 }

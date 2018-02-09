@@ -17,4 +17,5 @@ public interface ContactListView {
     void updateItems(List<IFlexible> items);
     void onContactClick(AbstractContact contact);
     void onContactContextMenu(int adapterPosition, ContextMenu menu);
+    void onContactAvatarClick(int adapterPosition);
 }
