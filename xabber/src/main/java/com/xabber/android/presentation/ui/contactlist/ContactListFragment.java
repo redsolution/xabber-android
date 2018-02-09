@@ -11,6 +11,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,14 +19,18 @@ import android.view.ViewGroup;
 import com.xabber.android.R;
 import com.xabber.android.data.account.CommonState;
 import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.roster.AbstractContact;
+import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.presentation.mvp.contactlist.ContactListPresenter;
 import com.xabber.android.presentation.mvp.contactlist.ContactListView;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.AccountVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.ChatVO;
+import com.xabber.android.presentation.ui.contactlist.viewobjects.ContactVO;
 import com.xabber.android.ui.activity.ContactListActivity;
+import com.xabber.android.ui.helper.ContextMenuHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -181,6 +186,17 @@ public class ContactListFragment extends Fragment implements ContactListView,
     @Override
     public void onContactClick(AbstractContact contact) {
         contactListFragmentListener.onContactClick(contact);
+    }
+
+    @Override
+    public void onContactContextMenu(int adapterPosition, ContextMenu menu) {
+        IFlexible item = adapter.getItem(adapterPosition);
+        if (item != null && item instanceof ContactVO) {
+            AccountJid accountJid = ((ContactVO) item).getAccountJid();
+            UserJid userJid = ((ContactVO) item).getUserJid();
+            AbstractContact abstractContact = RosterManager.getInstance().getAbstractContact(accountJid, userJid);
+            ContextMenuHelper.createContactContextMenu(getActivity(), presenter, abstractContact, menu);
+        }
     }
 
     public void showSnackbar(final ChatVO deletedItem, final int deletedIndex) {

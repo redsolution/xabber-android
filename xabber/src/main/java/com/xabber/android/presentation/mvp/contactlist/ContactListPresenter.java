@@ -2,6 +2,7 @@ package com.xabber.android.presentation.mvp.contactlist;
 
 import android.content.Context;
 import android.text.TextUtils;
+import android.view.ContextMenu;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
@@ -56,7 +57,8 @@ import eu.davidea.flexibleadapter.items.IFlexible;
  * Created by valery.miller on 02.02.18.
  */
 
-public class ContactListPresenter implements OnContactChangedListener, OnAccountChangedListener {
+public class ContactListPresenter implements OnContactChangedListener, OnAccountChangedListener,
+        ContactVO.ContactClickListener {
 
     private static final int MAX_RECENT_ITEMS = 12;
 
@@ -96,6 +98,10 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
         structureBuilder.removeRefreshRequests();
     }
 
+    public void updateContactList() {
+        structureBuilder.refreshRequest();
+    }
+
     public void onItemClick(IFlexible item) {
         if (item instanceof ContactVO) {
             AccountJid accountJid = ((ContactVO) item).getAccountJid();
@@ -103,6 +109,11 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
             if (view != null) view.onContactClick(
                     RosterManager.getInstance().getAbstractContact(accountJid, userJid));
         }
+    }
+
+    @Override
+    public void onContactCreateContextMenu(int adapterPosition, ContextMenu menu) {
+        if (view != null) view.onContactContextMenu(adapterPosition, menu);
     }
 
     public void setFilterString(String filter) {
@@ -122,7 +133,7 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
     }
 
     /** Do not call directly. Only from Structure Builder */
-    public void buildStructure() {
+    void buildStructure() {
 //        listener.hidePlaceholder();
 
         List<IFlexible> items = new ArrayList<>();
@@ -289,7 +300,7 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
             if (hasVisibleContacts) {
 
                 // add recent chats
-                items.addAll(ChatVO.convert(chatsGroup.getAbstractContacts()));
+                items.addAll(ChatVO.convert(chatsGroup.getAbstractContacts(), this));
 
                 if (currentChatsState == ContactListAdapter.ChatListState.recent) {
 
@@ -333,8 +344,8 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
             final ArrayList<AbstractContact> baseEntities = getSearchResults(rosterContacts, comparator, abstractChats);
             items.clear();
             items.addAll(SettingsManager.contactsShowMessages()
-                    ? ExtContactVO.convert(baseEntities)
-                    : ContactVO.convert(baseEntities));
+                    ? ExtContactVO.convert(baseEntities, this)
+                    : ContactVO.convert(baseEntities, this));
             hasVisibleContacts = baseEntities.size() > 0;
         }
 
@@ -408,8 +419,8 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
 
                 for (AbstractContact contact : rosterConfiguration.getAbstractContacts()) {
                     group.addSubItem(SettingsManager.contactsShowMessages()
-                            ? ExtContactVO.convert(contact)
-                            : ContactVO.convert(contact));
+                            ? ExtContactVO.convert(contact, this)
+                            : ContactVO.convert(contact, this));
                 }
                 account.addSubItem(group);
             }
@@ -424,8 +435,8 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
 
         for (AbstractContact contact : rosterAccount.getAbstractContacts()) {
             account.addSubItem(SettingsManager.contactsShowMessages()
-                    ? ExtContactVO.convert(contact)
-                    : ContactVO.convert(contact));
+                    ? ExtContactVO.convert(contact, this)
+                    : ContactVO.convert(contact, this));
         }
         items.add(account);
     }
@@ -440,8 +451,8 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
 
                 for (AbstractContact contact : rosterConfiguration.getAbstractContacts()) {
                     group.addSubItem(SettingsManager.contactsShowMessages()
-                            ? ExtContactVO.convert(contact)
-                            : ContactVO.convert(contact));
+                            ? ExtContactVO.convert(contact, this)
+                            : ContactVO.convert(contact, this));
                 }
                 items.add(group);
             }
@@ -452,8 +463,8 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
                                    Comparator<AbstractContact> comparator) {
         Collections.sort(contacts, comparator);
         items.addAll(SettingsManager.contactsShowMessages()
-                ? ExtContactVO.convert(contacts)
-                : ContactVO.convert(contacts));
+                ? ExtContactVO.convert(contacts, this)
+                : ContactVO.convert(contacts, this));
     }
 
     private ArrayList<AbstractContact> getSearchResults(Collection<RosterContact> rosterContacts,

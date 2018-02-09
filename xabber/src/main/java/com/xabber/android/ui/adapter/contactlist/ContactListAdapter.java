@@ -822,7 +822,7 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         AccountJid accountJid = ((ContactVO) rosterItemVOs.get(adapterPosition)).getAccountJid();
         UserJid userJid = ((ContactVO) rosterItemVOs.get(adapterPosition)).getUserJid();
         AbstractContact abstractContact = RosterManager.getInstance().getAbstractContact(accountJid, userJid);
-        ContextMenuHelper.createContactContextMenu(activity, this, abstractContact, menu);
+        //ContextMenuHelper.createContactContextMenu(activity, this, abstractContact, menu);
     }
 
     @Override

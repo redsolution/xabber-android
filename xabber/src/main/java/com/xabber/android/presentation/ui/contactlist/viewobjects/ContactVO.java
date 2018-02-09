@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.support.v7.widget.RecyclerView;
 import android.view.ContextMenu;
 import android.view.View;
 import android.widget.ImageView;
@@ -66,11 +67,18 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
     private final String messageOwner;
     private final boolean archived;
 
+    protected final ContactClickListener listener;
+
+    public interface ContactClickListener {
+        void onContactCreateContextMenu(int adapterPosition, ContextMenu menu);
+    }
+
     protected ContactVO(int accountColorIndicator, boolean showOfflineShadow, String name,
                         String status, int statusId, int statusLevel, Drawable avatar,
                   int mucIndicatorLevel, UserJid userJid, AccountJid accountJid, int unreadCount,
                   boolean mute, NotificationState.NotificationMode notificationMode, String messageText,
-                  boolean isOutgoing, Date time, int messageStatus, String messageOwner, boolean archived) {
+                  boolean isOutgoing, Date time, int messageStatus, String messageOwner,
+                        boolean archived, ContactClickListener listener) {
         this.id = UUID.randomUUID().toString();
         this.accountColorIndicator = accountColorIndicator;
         this.showOfflineShadow = showOfflineShadow;
@@ -91,9 +99,10 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
         this.messageStatus = messageStatus;
         this.messageOwner = messageOwner;
         this.archived = archived;
+        this.listener = listener;
     }
 
-    public static ContactVO convert(AbstractContact contact) {
+    public static ContactVO convert(AbstractContact contact, ContactClickListener listener) {
         boolean showOfflineShadow;
         int accountColorIndicator;
         Drawable avatar;
@@ -182,13 +191,13 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
         return new ContactVO(accountColorIndicator, showOfflineShadow, name, statusText, statusId,
                 statusLevel, avatar, mucIndicatorLevel, contact.getUser(), contact.getAccount(),
                 unreadCount, !chat.notifyAboutMessage(), mode, messageText, isOutgoing, time,
-                messageStatus, messageOwner, chat.isArchived());
+                messageStatus, messageOwner, chat.isArchived(), listener);
     }
 
-    public static ArrayList<IFlexible> convert(Collection<AbstractContact> contacts) {
+    public static ArrayList<IFlexible> convert(Collection<AbstractContact> contacts, ContactClickListener listener) {
         ArrayList<IFlexible> items = new ArrayList<>();
         for (AbstractContact contact : contacts) {
-            items.add(convert(contact));
+            items.add(convert(contact, listener));
         }
         return items;
     }
@@ -209,7 +218,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
 
     @Override
     public ViewHolder createViewHolder(View view, FlexibleAdapter adapter) {
-        return new ViewHolder(view, adapter);
+        return new ViewHolder(view, adapter, listener);
     }
 
     @Override
@@ -367,6 +376,8 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
 
     public class ViewHolder extends FlexibleViewHolder implements View.OnCreateContextMenuListener {
 
+        private final ContactClickListener listener;
+
         final View accountColorIndicator;
         final ImageView ivAvatar;
         final ImageView ivStatus;
@@ -382,9 +393,10 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
         public final TextView tvActionLeft;
         public final RelativeLayout foregroundView;
 
-        public ViewHolder(View view, FlexibleAdapter adapter) {
+        public ViewHolder(View view, FlexibleAdapter adapter, ContactClickListener listener) {
             super(view, adapter);
 
+            this.listener = listener;
             itemView.setOnClickListener(this);
             itemView.setOnCreateContextMenuListener(this);
 
@@ -421,6 +433,10 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
         }
 
         @Override
-        public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {}
+        public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+            int adapterPosition = getAdapterPosition();
+            if (adapterPosition == RecyclerView.NO_POSITION) return;
+            listener.onContactCreateContextMenu(adapterPosition, menu);
+        }
     }
 }

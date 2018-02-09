@@ -1,5 +1,7 @@
 package com.xabber.android.presentation.mvp.contactlist;
 
+import android.view.ContextMenu;
+
 import com.xabber.android.data.roster.AbstractContact;
 
 import java.util.List;
@@ -14,4 +16,5 @@ public interface ContactListView {
 
     void updateItems(List<IFlexible> items);
     void onContactClick(AbstractContact contact);
+    void onContactContextMenu(int adapterPosition, ContextMenu menu);
 }
