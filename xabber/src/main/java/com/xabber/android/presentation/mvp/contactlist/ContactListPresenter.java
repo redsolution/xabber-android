@@ -60,7 +60,7 @@ import eu.davidea.flexibleadapter.items.IFlexible;
  */
 
 public class ContactListPresenter implements OnContactChangedListener, OnAccountChangedListener,
-        ContactVO.ContactClickListener, AccountVO.AccountClickListener {
+        ContactVO.ContactClickListener, AccountVO.AccountClickListener, ToolbarVO.OnClickListener {
 
     private static final int MAX_RECENT_ITEMS = 12;
 
@@ -136,6 +136,16 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
     @Override
     public void onAccountCreateContextMenu(int adapterPosition, ContextMenu menu) {
         if (view != null) view.onAccountContextMenu(adapterPosition, menu);
+    }
+
+    @Override
+    public void onStateSelected(ContactListAdapter.ChatListState state) {
+        this.currentChatsState = state;
+        structureBuilder.refreshRequest();
+        if (view != null) {
+            view.closeSnackbar();
+            view.closeSearch();
+        }
     }
 
     public void setFilterString(String filter) {
@@ -318,7 +328,7 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
 
             // Remove empty groups, sort and apply structure.
             items.clear();
-            items.add(new ToolbarVO());
+            items.add(new ToolbarVO(context, this));
             if (hasVisibleContacts) {
 
                 // add recent chats

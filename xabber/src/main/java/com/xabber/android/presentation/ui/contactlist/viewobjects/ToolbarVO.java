@@ -3,12 +3,17 @@ package com.xabber.android.presentation.ui.contactlist.viewobjects;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.TypedValue;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import com.xabber.android.R;
 import com.xabber.android.data.account.AccountManager;
+import com.xabber.android.ui.activity.ConferenceSelectActivity;
+import com.xabber.android.ui.activity.ContactAddActivity;
+import com.xabber.android.ui.activity.StatusEditActivity;
 import com.xabber.android.ui.adapter.contactlist.ContactListAdapter;
 import com.xabber.android.ui.color.AccountPainter;
 import com.xabber.android.ui.color.ColorManager;
@@ -32,8 +37,17 @@ public class ToolbarVO extends AbstractHeaderItem<ToolbarVO.ViewHolder> implemen
     private ContactListAdapter.ChatListState currentChatsState =
             ContactListAdapter.ChatListState.recent;
 
-    public ToolbarVO() {
+    private Context context;
+    protected OnClickListener listener;
+
+    public interface OnClickListener {
+        void onStateSelected(ContactListAdapter.ChatListState state);
+    }
+
+    public ToolbarVO(Context context, OnClickListener listener) {
         this.id = UUID.randomUUID().toString();
+        this.context = context;
+        this.listener = listener;
     }
 
     @Override
@@ -52,7 +66,7 @@ public class ToolbarVO extends AbstractHeaderItem<ToolbarVO.ViewHolder> implemen
 
     @Override
     public ViewHolder createViewHolder(View view, FlexibleAdapter adapter) {
-        return new ViewHolder(view, adapter);
+        return new ViewHolder(view, adapter, context, listener);
     }
 
     @Override
@@ -94,14 +108,22 @@ public class ToolbarVO extends AbstractHeaderItem<ToolbarVO.ViewHolder> implemen
         return accountGroupColorsResourceId;
     }
 
-    public class ViewHolder extends FlexibleViewHolder {
+    public class ViewHolder extends FlexibleViewHolder
+            implements android.widget.PopupMenu.OnMenuItemClickListener {
+
         final View accountColorIndicator;
         final ImageView ivAdd;
         final ImageView ivSetStatus;
         final TextView tvTitle;
 
-        public ViewHolder(View view, FlexibleAdapter adapter) {
+        private final Context context;
+        private OnClickListener listener;
+
+        public ViewHolder(View view, FlexibleAdapter adapter, Context context, OnClickListener listener) {
             super(view, adapter, true);
+
+            this.context = context;
+            this.listener = listener;
 
             accountColorIndicator = view.findViewById(R.id.accountColorIndicator);
             ivAdd = (ImageView) view.findViewById(R.id.ivAdd);
@@ -110,6 +132,60 @@ public class ToolbarVO extends AbstractHeaderItem<ToolbarVO.ViewHolder> implemen
             ivSetStatus.setOnClickListener(this);
             tvTitle = (TextView) view.findViewById(R.id.tvTitle);
             tvTitle.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            switch (v.getId()) {
+                case R.id.ivAdd:
+                    showToolbarPopup(ivAdd);
+                    break;
+                case R.id.ivSetStatus:
+                    context.startActivity(StatusEditActivity.createIntent(context));
+                    break;
+                case R.id.tvTitle:
+                    showTitlePopup(tvTitle);
+                    break;
+                default:
+                    super.onClick(v);
+            }
+        }
+
+        @Override
+        public boolean onMenuItemClick(MenuItem item) {
+            switch (item.getItemId()) {
+                case R.id.action_add_contact:
+                    context.startActivity(ContactAddActivity.createIntent(context));
+                    return true;
+                case R.id.action_join_conference:
+                    context.startActivity(ConferenceSelectActivity.createIntent(context));
+                    return true;
+                case R.id.action_recent_chats:
+                    listener.onStateSelected(ContactListAdapter.ChatListState.recent);
+                    return true;
+                case R.id.action_unread_chats:
+                    listener.onStateSelected(ContactListAdapter.ChatListState.unread);
+                    return true;
+                case R.id.action_archived_chats:
+                    listener.onStateSelected(ContactListAdapter.ChatListState.archived);
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        private void showToolbarPopup(View v) {
+            PopupMenu popupMenu = new PopupMenu(context, v);
+            popupMenu.setOnMenuItemClickListener(this);
+            popupMenu.inflate(R.menu.menu_add_in_contact_list);
+            popupMenu.show();
+        }
+
+        private void showTitlePopup(View v) {
+            PopupMenu popupMenu = new PopupMenu(context, v);
+            popupMenu.setOnMenuItemClickListener(this);
+            popupMenu.inflate(R.menu.menu_chat_list);
+            popupMenu.show();
         }
     }
 

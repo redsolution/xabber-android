@@ -269,8 +269,14 @@ public class ContactListFragment extends Fragment implements ContactListView,
         snackbar.show();
     }
 
+    @Override
     public void closeSnackbar() {
         if (snackbar != null) snackbar.dismiss();
+    }
+
+    @Override
+    public void closeSearch() {
+        ((ContactListActivity)getActivity()).closeSearch();
     }
 
     public void setChatArchived(ChatVO chatVO, boolean archived) {
