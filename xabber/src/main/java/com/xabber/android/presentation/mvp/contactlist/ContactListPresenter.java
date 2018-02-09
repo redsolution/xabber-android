@@ -1,9 +1,9 @@
 package com.xabber.android.presentation.mvp.contactlist;
 
 import android.content.Context;
-import android.content.Intent;
 import android.text.TextUtils;
 import android.view.ContextMenu;
+import android.view.View;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
@@ -27,6 +27,7 @@ import com.xabber.android.data.roster.GroupManager;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
+import com.xabber.android.presentation.ui.contactlist.viewobjects.AccountVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.AccountWithContactsVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.AccountWithGroupsVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.ButtonVO;
@@ -35,8 +36,6 @@ import com.xabber.android.presentation.ui.contactlist.viewobjects.ContactVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.ExtContactVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.GroupVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.ToolbarVO;
-import com.xabber.android.ui.activity.ContactActivity;
-import com.xabber.android.ui.activity.ContactEditActivity;
 import com.xabber.android.ui.adapter.ChatComparator;
 import com.xabber.android.ui.adapter.contactlist.AccountConfiguration;
 import com.xabber.android.ui.adapter.contactlist.ContactListAdapter;
@@ -61,7 +60,7 @@ import eu.davidea.flexibleadapter.items.IFlexible;
  */
 
 public class ContactListPresenter implements OnContactChangedListener, OnAccountChangedListener,
-        ContactVO.ContactClickListener {
+        ContactVO.ContactClickListener, AccountVO.AccountClickListener {
 
     private static final int MAX_RECENT_ITEMS = 12;
 
@@ -122,6 +121,21 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
     @Override
     public void onContactAvatarClick(int adapterPosition) {
         if (view != null) view.onContactAvatarClick(adapterPosition);
+    }
+
+    @Override
+    public void onAccountAvatarClick(int adapterPosition) {
+        if (view != null) view.onAccountAvatarClick(adapterPosition);
+    }
+
+    @Override
+    public void onAccountMenuClick(int adapterPosition, View view) {
+        if (this.view != null) this.view.onAccountMenuClick(adapterPosition, view);
+    }
+
+    @Override
+    public void onAccountCreateContextMenu(int adapterPosition, ContextMenu menu) {
+        if (view != null) view.onAccountContextMenu(adapterPosition, menu);
     }
 
     public void setFilterString(String filter) {
@@ -418,7 +432,7 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
 
     private void createContactListWithAccountsAndGroups(List<IFlexible> items, AccountConfiguration rosterAccount,
                                                         boolean showEmptyGroups, Comparator<AbstractContact> comparator) {
-        AccountWithGroupsVO account = AccountWithGroupsVO.convert(rosterAccount);
+        AccountWithGroupsVO account = AccountWithGroupsVO.convert(rosterAccount, this);
         for (GroupConfiguration rosterConfiguration : rosterAccount
                 .getSortedGroupConfigurations()) {
             if (showEmptyGroups || !rosterConfiguration.isEmpty()) {
@@ -438,7 +452,7 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
 
     private void createContactListWithAccounts(List<IFlexible> items, AccountConfiguration rosterAccount,
                                                Comparator<AbstractContact> comparator) {
-        AccountWithContactsVO account = AccountWithContactsVO.convert(rosterAccount);
+        AccountWithContactsVO account = AccountWithContactsVO.convert(rosterAccount, this);
         rosterAccount.sortAbstractContacts(comparator);
 
         for (AbstractContact contact : rosterAccount.getAbstractContacts()) {

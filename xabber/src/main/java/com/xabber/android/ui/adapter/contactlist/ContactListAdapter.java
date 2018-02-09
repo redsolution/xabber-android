@@ -858,7 +858,7 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     public void onAccountGroupCreateContextMenu(int adapterPosition, ContextMenu menu) {
         if (adapterPosition == -1) adapterPosition = currentHeaderPosition;
         AccountVO accountVO = (AccountVO) getItem(adapterPosition);
-        ContextMenuHelper.createAccountContextMenu(activity, this, accountVO.getAccountJid(), menu);
+        //ContextMenuHelper.createAccountContextMenu(activity, this, accountVO.getAccountJid(), menu);
     }
 
     @Override
@@ -870,8 +870,8 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     public void onGroupCreateContextMenu(int adapterPosition, ContextMenu menu) {
         GroupVO groupVO = (GroupVO) getItem(adapterPosition);
 
-        ContextMenuHelper.createGroupContextMenu(activity, this,
-                groupVO.getAccountJid(), groupVO.getGroupName(), menu);
+//        ContextMenuHelper.createGroupContextMenu(activity, this,
+//                groupVO.getAccountJid(), groupVO.getGroupName(), menu);
     }
 
     @Override

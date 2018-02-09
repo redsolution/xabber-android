@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.util.TypedValue;
+import android.view.ContextMenu;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -50,10 +51,18 @@ public class AccountVO extends AbstractHeaderItem<AccountVO.ViewHolder> {
     private boolean isExpand;
     private String groupName;
 
+    protected final AccountClickListener listener;
+
+    public interface AccountClickListener {
+        void onAccountAvatarClick(int adapterPosition);
+        void onAccountMenuClick(int adapterPosition, View view);
+        void onAccountCreateContextMenu(int adapterPosition, ContextMenu menu);
+    }
+
     public AccountVO(int accountColorIndicator, boolean showOfflineShadow,
                      String name, String jid, String status, int statusLevel, int statusId,
                      Drawable avatar, int offlineModeLevel, String contactCount, AccountJid accountJid,
-                     boolean isExpand, String groupName) {
+                     boolean isExpand, String groupName, AccountClickListener listener) {
         this.id = UUID.randomUUID().toString();
         this.accountColorIndicator = accountColorIndicator;
         this.showOfflineShadow = showOfflineShadow;
@@ -68,6 +77,7 @@ public class AccountVO extends AbstractHeaderItem<AccountVO.ViewHolder> {
         this.accountJid = accountJid;
         this.isExpand = isExpand;
         this.groupName = groupName;
+        this.listener = listener;
     }
 
     @Override
@@ -86,7 +96,7 @@ public class AccountVO extends AbstractHeaderItem<AccountVO.ViewHolder> {
 
     @Override
     public AccountVO.ViewHolder createViewHolder(View view, FlexibleAdapter adapter) {
-        return new AccountVO.ViewHolder(view, adapter);
+        return new AccountVO.ViewHolder(view, adapter, listener);
     }
 
     @Override
@@ -145,7 +155,7 @@ public class AccountVO extends AbstractHeaderItem<AccountVO.ViewHolder> {
         return accountGroupColorsResourceId;
     }
 
-    public static AccountVO convert(AccountConfiguration configuration) {
+    public static AccountVO convert(AccountConfiguration configuration, AccountClickListener listener) {
         String jid;
         String name;
         String status;
@@ -199,7 +209,7 @@ public class AccountVO extends AbstractHeaderItem<AccountVO.ViewHolder> {
 
         return new AccountVO(accountColorIndicator, showOfflineShadow, name, jid, status, statusLevel,
                 statusId, avatar, offlineModeLevel, contactCount, configuration.getAccount(),
-                configuration.isExpanded(), configuration.getGroup());
+                configuration.isExpanded(), configuration.getGroup(), listener);
     }
 
     public String getName() {
@@ -254,7 +264,7 @@ public class AccountVO extends AbstractHeaderItem<AccountVO.ViewHolder> {
         return showOfflineShadow;
     }
 
-    public class ViewHolder extends ExpandableViewHolder {
+    public class ViewHolder extends ExpandableViewHolder implements View.OnCreateContextMenuListener {
 
         final ImageView ivAvatar;
         final View avatarView;
@@ -266,11 +276,14 @@ public class AccountVO extends AbstractHeaderItem<AccountVO.ViewHolder> {
         final ImageView offlineShadow;
         final View accountColorIndicator;
 
-        public ViewHolder(View view, FlexibleAdapter adapter) {
+        final AccountClickListener listener;
+
+        public ViewHolder(View view, FlexibleAdapter adapter, AccountClickListener listener) {
             super(view, adapter, true);
 
             itemView.setOnClickListener(this);
-            //itemView.setOnCreateContextMenuListener(this);
+            itemView.setOnCreateContextMenuListener(this);
+            this.listener = listener;
 
             ivAvatar = (ImageView) view.findViewById(R.id.ivAvatar);
             avatarView = view.findViewById(R.id.avatarView);
@@ -284,6 +297,24 @@ public class AccountVO extends AbstractHeaderItem<AccountVO.ViewHolder> {
             accountColorIndicator = view.findViewById(R.id.accountColorIndicator);
             ivMenu = (ImageView) view.findViewById(R.id.ivMenu);
             ivMenu.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View view) {
+            int adapterPosition = getAdapterPosition();
+
+            if (view.getId() == R.id.ivAvatar) {
+                listener.onAccountAvatarClick(adapterPosition);
+            } else if (view.getId() == R.id.ivMenu) {
+                listener.onAccountMenuClick(adapterPosition, view);
+            } else {
+                super.onClick(view);
+            }
+        }
+
+        @Override
+        public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+            listener.onAccountCreateContextMenu(getAdapterPosition(), menu);
         }
     }
 }

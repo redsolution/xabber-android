@@ -10,6 +10,7 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
 import android.view.ContextMenu;
@@ -31,6 +32,7 @@ import com.xabber.android.presentation.mvp.contactlist.ContactListView;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.AccountVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.ChatVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.ContactVO;
+import com.xabber.android.ui.activity.AccountActivity;
 import com.xabber.android.ui.activity.ContactActivity;
 import com.xabber.android.ui.activity.ContactEditActivity;
 import com.xabber.android.ui.activity.ContactListActivity;
@@ -216,6 +218,34 @@ public class ContactListFragment extends Fragment implements ContactListView,
                 intent = ContactEditActivity.createIntent(getActivity(), accountJid, userJid);
             }
             getActivity().startActivity(intent);
+        }
+    }
+
+    @Override
+    public void onAccountAvatarClick(int adapterPosition) {
+        IFlexible item = adapter.getItem(adapterPosition);
+        if (item != null && item instanceof AccountVO) {
+            getActivity().startActivity(AccountActivity.createIntent(getActivity(),
+                    ((AccountVO) item).getAccountJid()));
+        }
+    }
+
+    @Override
+    public void onAccountMenuClick(int adapterPosition, View view) {
+        IFlexible item = adapter.getItem(adapterPosition);
+        if (item != null && item instanceof AccountVO) {
+            PopupMenu popup = new PopupMenu(getActivity(), view);
+            popup.inflate(R.menu.item_account_group);
+            ContextMenuHelper.setUpAccountMenu(getActivity(), presenter, ((AccountVO) item).getAccountJid(), popup.getMenu());
+            popup.show();
+        }
+    }
+
+    @Override
+    public void onAccountContextMenu(int adapterPosition, ContextMenu menu) {
+        IFlexible item = adapter.getItem(adapterPosition);
+        if (item != null && item instanceof AccountVO) {
+            ContextMenuHelper.createAccountContextMenu(getActivity(), presenter, ((AccountVO) item).getAccountJid(), menu);
         }
     }
 

@@ -50,7 +50,6 @@ import com.xabber.android.ui.activity.ContactAddActivity;
 import com.xabber.android.ui.activity.GroupEditActivity;
 import com.xabber.android.ui.activity.ManagedActivity;
 import com.xabber.android.ui.activity.StatusEditActivity;
-import com.xabber.android.ui.adapter.UpdatableAdapter;
 import com.xabber.android.ui.dialog.BlockContactDialog;
 import com.xabber.android.ui.dialog.ContactDeleteDialogFragment;
 import com.xabber.android.ui.dialog.GroupDeleteDialogFragment;
@@ -337,7 +336,7 @@ public class ContextMenuHelper {
     }
 
     public static void createGroupContextMenu(final ManagedActivity activity,
-              final UpdatableAdapter adapter, final AccountJid account, final String group, ContextMenu menu) {
+              final ContactListPresenter presenter, final AccountJid account, final String group, ContextMenu menu) {
         menu.setHeaderTitle(GroupManager.getInstance().getGroupName(account, group));
         if (!group.equals(GroupManager.ACTIVE_CHATS) && !group.equals(GroupManager.IS_ROOM)) {
             menu.add(R.string.group_rename).setOnMenuItemClickListener(
@@ -371,22 +370,22 @@ public class ContextMenuHelper {
                 menu.add(R.string.show_offline_settings).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
-                        createOfflineContactsDialog(activity, adapter, account, group).show();
+                        createOfflineContactsDialog(activity, presenter, account, group).show();
                         return true;
                     }
                 });
         }
     }
 
-    public static void createAccountContextMenu( final ManagedActivity activity, final UpdatableAdapter adapter,
+    public static void createAccountContextMenu( final Activity activity, final ContactListPresenter presenter,
                                                  final AccountJid account, ContextMenu menu) {
         activity.getMenuInflater().inflate(R.menu.item_account_group, menu);
         menu.setHeaderTitle(AccountManager.getInstance().getVerboseName(account));
 
-        setUpAccountMenu(activity, adapter, account, menu);
+        setUpAccountMenu(activity, presenter, account, menu);
     }
 
-    public static void setUpAccountMenu(final ManagedActivity activity, final UpdatableAdapter adapter, final AccountJid account, Menu menu) {
+    public static void setUpAccountMenu(final Activity activity, final ContactListPresenter presenter, final AccountJid account, Menu menu) {
         final AccountItem accountItem = AccountManager.getInstance().getAccount(account);
         if (accountItem == null) {
             return;
@@ -420,7 +419,8 @@ public class ContextMenuHelper {
                     .setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                         @Override
                         public boolean onMenuItemClick(MenuItem item) {
-                            ContextMenuHelper.createOfflineContactsDialog(activity, adapter,
+                            ContextMenuHelper.createOfflineContactsDialog(activity, presenter
+                                    ,
                                     account, GroupManager.IS_ACCOUNT).show();
                             return true;
                         }
@@ -428,7 +428,7 @@ public class ContextMenuHelper {
         }
     }
 
-    public static AlertDialog createOfflineContactsDialog(Context context, final UpdatableAdapter adapter,
+    public static AlertDialog createOfflineContactsDialog(Context context, final ContactListPresenter presenter,
                                                           final AccountJid account, final String group) {
         return new AlertDialog.Builder(context)
                 .setTitle(R.string.show_offline_settings)
@@ -440,7 +440,7 @@ public class ContextMenuHelper {
                             public void onClick(DialogInterface dialog, int which) {
                                 GroupManager.getInstance().setShowOfflineMode(account,
                                         group, ShowOfflineMode.values()[which]);
-                                adapter.onChange();
+                                presenter.updateContactList();
                                 dialog.dismiss();
                             }
                         }).create();
