@@ -287,8 +287,10 @@ public class ContactListFragment extends Fragment implements ContactListView,
     }
 
     public void showRecent() {
-        if (presenter != null)
+        if (presenter != null) {
             presenter.onStateSelected(ContactListAdapter.ChatListState.recent);
+            ((ContactListActivity)getActivity()).setStatusBarColor();
+        }
     }
 
     /**
