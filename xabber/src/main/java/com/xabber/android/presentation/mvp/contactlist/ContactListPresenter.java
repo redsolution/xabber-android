@@ -134,11 +134,6 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
     }
 
     @Override
-    public void onAccountCreateContextMenu(int adapterPosition, ContextMenu menu) {
-        if (view != null) view.onAccountContextMenu(adapterPosition, menu);
-    }
-
-    @Override
     public void onStateSelected(ContactListAdapter.ChatListState state) {
         this.currentChatsState = state;
         structureBuilder.refreshRequest();

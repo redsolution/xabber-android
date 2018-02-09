@@ -241,14 +241,6 @@ public class ContactListFragment extends Fragment implements ContactListView,
         }
     }
 
-    @Override
-    public void onAccountContextMenu(int adapterPosition, ContextMenu menu) {
-        IFlexible item = adapter.getItem(adapterPosition);
-        if (item != null && item instanceof AccountVO) {
-            ContextMenuHelper.createAccountContextMenu(getActivity(), presenter, ((AccountVO) item).getAccountJid(), menu);
-        }
-    }
-
     public void showSnackbar(final ChatVO deletedItem, final int deletedIndex) {
         if (snackbar != null) snackbar.dismiss();
         final boolean archived = (deletedItem).isArchived();

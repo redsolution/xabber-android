@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.util.TypedValue;
-import android.view.ContextMenu;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -56,7 +55,6 @@ public class AccountVO extends AbstractHeaderItem<AccountVO.ViewHolder> {
     public interface AccountClickListener {
         void onAccountAvatarClick(int adapterPosition);
         void onAccountMenuClick(int adapterPosition, View view);
-        void onAccountCreateContextMenu(int adapterPosition, ContextMenu menu);
     }
 
     public AccountVO(int accountColorIndicator, boolean showOfflineShadow,
@@ -264,7 +262,7 @@ public class AccountVO extends AbstractHeaderItem<AccountVO.ViewHolder> {
         return showOfflineShadow;
     }
 
-    public class ViewHolder extends ExpandableViewHolder implements View.OnCreateContextMenuListener {
+    public class ViewHolder extends ExpandableViewHolder {
 
         final ImageView ivAvatar;
         final View avatarView;
@@ -282,7 +280,6 @@ public class AccountVO extends AbstractHeaderItem<AccountVO.ViewHolder> {
             super(view, adapter, true);
 
             itemView.setOnClickListener(this);
-            itemView.setOnCreateContextMenuListener(this);
             this.listener = listener;
 
             ivAvatar = (ImageView) view.findViewById(R.id.ivAvatar);
@@ -310,11 +307,6 @@ public class AccountVO extends AbstractHeaderItem<AccountVO.ViewHolder> {
             } else {
                 super.onClick(view);
             }
-        }
-
-        @Override
-        public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-            listener.onAccountCreateContextMenu(getAdapterPosition(), menu);
         }
     }
 }

@@ -21,7 +21,6 @@ public interface ContactListView {
     void onContactAvatarClick(int adapterPosition);
     void onAccountAvatarClick(int adapterPosition);
     void onAccountMenuClick(int adapterPosition, View view);
-    void onAccountContextMenu(int adapterPosition, ContextMenu menu);
     void closeSnackbar();
     void closeSearch();
 }
