@@ -1,7 +1,6 @@
 package com.xabber.android.presentation.mvp.contactlist;
 
 import android.content.Context;
-import android.os.Handler;
 import android.text.TextUtils;
 
 import com.xabber.android.R;
@@ -46,7 +45,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -58,39 +56,14 @@ import eu.davidea.flexibleadapter.items.IFlexible;
  * Created by valery.miller on 02.02.18.
  */
 
-public class ContactListPresenter implements Runnable, OnContactChangedListener, OnAccountChangedListener {
+public class ContactListPresenter implements OnContactChangedListener, OnAccountChangedListener {
 
     private static final int MAX_RECENT_ITEMS = 12;
-    private static final long REFRESH_INTERVAL = 1000;
 
     private static ContactListPresenter instance;
     private ContactListView view;
     private Context context;
-
-    /**
-     * Handler for deferred refresh.
-     */
-    private final Handler handler;
-
-    /**
-     * Lock for refresh requests.
-     */
-    private final Object refreshLock;
-
-    /**
-     * Whether refresh was requested.
-     */
-    private boolean refreshRequested;
-
-    /**
-     * Whether refresh is in progress.
-     */
-    private boolean refreshInProgress;
-
-    /**
-     * Minimal time when next refresh can be executed.
-     */
-    private Date nextRefresh;
+    private StructureBuilder structureBuilder;
 
     private String filterString = null;
     protected Locale locale = Locale.getDefault();
@@ -103,86 +76,53 @@ public class ContactListPresenter implements Runnable, OnContactChangedListener,
 
     public ContactListPresenter(Context context) {
         this.context = context;
-        handler = new Handler();
-        refreshLock = new Object();
-        refreshRequested = false;
-        refreshInProgress = false;
-        nextRefresh = new Date();
-
-        Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
-        Application.getInstance().addUIListener(OnContactChangedListener.class, this);
+        structureBuilder = new StructureBuilder(this);
     }
 
-    public void onLoadContactList(ContactListView view) {
+    public void bindView(ContactListView view) {
         this.view = view;
-        buildStructure();
+        Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
+        Application.getInstance().addUIListener(OnContactChangedListener.class, this);
+        structureBuilder.build();
+    }
+
+    /**
+     * Force stop contact list updates before pause or application close.
+     */
+    public void unbindView() {
+        this.view = null;
+        Application.getInstance().removeUIListener(OnAccountChangedListener.class, this);
+        Application.getInstance().removeUIListener(OnContactChangedListener.class, this);
+        structureBuilder.removeRefreshRequests();
     }
 
     public void onItemClick(IFlexible item) {
         if (item instanceof ContactVO) {
             AccountJid accountJid = ((ContactVO) item).getAccountJid();
             UserJid userJid = ((ContactVO) item).getUserJid();
-            view.onContactClick(RosterManager.getInstance().getAbstractContact(accountJid, userJid));
+            if (view != null) view.onContactClick(
+                    RosterManager.getInstance().getAbstractContact(accountJid, userJid));
         }
     }
 
     public void setFilterString(String filter) {
         filterString = filter;
-        onLoadContactList(view);
+        structureBuilder.build();
     }
 
     @Override
     public void onAccountsChanged(Collection<AccountJid> accounts) {
-        refreshRequest();
+        structureBuilder.refreshRequest();
     }
 
     @Override
     public void onContactsChanged(Collection<RosterContact> entities) {
         // вызывается всякий раз, когда собеседник набирает сообщение - это плохо
-        refreshRequest();
+        structureBuilder.refreshRequest();
     }
 
-    @Override
-    public void run() {
-        buildStructure();
-    }
-
-    /**
-     * Requests refresh in some time in future.
-     */
-    public void refreshRequest() {
-        synchronized (refreshLock) {
-            if (refreshRequested) {
-                return;
-            }
-            if (refreshInProgress) {
-                refreshRequested = true;
-            } else {
-                long delay = nextRefresh.getTime() - new Date().getTime();
-                handler.postDelayed(this, delay > 0 ? delay : 0);
-            }
-        }
-    }
-
-    /**
-     * Remove refresh requests.
-     */
-    public void removeRefreshRequests() {
-        synchronized (refreshLock) {
-            refreshRequested = false;
-            refreshInProgress = false;
-            handler.removeCallbacks(this);
-        }
-    }
-
-    private void buildStructure() {
-
-        synchronized (refreshLock) {
-            refreshRequested = false;
-            refreshInProgress = true;
-            handler.removeCallbacks(this);
-        }
-
+    /** Do not call directly. Only from Structure Builder */
+    public void buildStructure() {
 //        listener.hidePlaceholder();
 
         List<IFlexible> items = new ArrayList<>();
@@ -399,16 +339,7 @@ public class ContactListPresenter implements Runnable, OnContactChangedListener,
         }
 
         //listener.onContactListChanged(commonState, hasContacts, hasVisibleContacts, filterString != null);
-        this.view.updateItems(items);
-
-        synchronized (refreshLock) {
-            nextRefresh = new Date(new Date().getTime() + REFRESH_INTERVAL);
-            refreshInProgress = false;
-            handler.removeCallbacks(this); // Just to be sure.
-            if (refreshRequested) {
-                handler.postDelayed(this, REFRESH_INTERVAL);
-            }
-        }
+        if (view != null) view.updateItems(items);
     }
 
     /**

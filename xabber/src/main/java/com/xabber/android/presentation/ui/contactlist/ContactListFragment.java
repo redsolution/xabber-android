@@ -118,7 +118,13 @@ public class ContactListFragment extends Fragment implements ContactListView,
     @Override
     public void onResume() {
         super.onResume();
-        presenter.onLoadContactList(this);
+        presenter.bindView(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        presenter.unbindView();
     }
 
     @Override
