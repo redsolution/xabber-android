@@ -36,6 +36,7 @@ import com.xabber.android.ui.activity.AccountActivity;
 import com.xabber.android.ui.activity.ContactActivity;
 import com.xabber.android.ui.activity.ContactEditActivity;
 import com.xabber.android.ui.activity.ContactListActivity;
+import com.xabber.android.ui.adapter.contactlist.ContactListAdapter;
 import com.xabber.android.ui.helper.ContextMenuHelper;
 
 import java.util.ArrayList;
@@ -54,6 +55,7 @@ public class ContactListFragment extends Fragment implements ContactListView,
 
     public static final String ACCOUNT_JID = "account_jid";
 
+    private AccountJid scrollToAccountJid;
     private ContactListPresenter presenter;
     private ContactListFragmentListener contactListFragmentListener;
 
@@ -61,6 +63,7 @@ public class ContactListFragment extends Fragment implements ContactListView,
     private List<IFlexible> items;
     private Snackbar snackbar;
     private CoordinatorLayout coordinatorLayout;
+    private LinearLayoutManager linearLayoutManager;
 
     public interface ContactListFragmentListener {
         void onContactClick(AbstractContact contact);
@@ -95,13 +98,20 @@ public class ContactListFragment extends Fragment implements ContactListView,
         contactListFragmentListener = null;
     }
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        this.scrollToAccountJid = (AccountJid) getArguments().getSerializable(ACCOUNT_JID);
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_contact_list_new, container, false);
 
         RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        linearLayoutManager = new LinearLayoutManager(getActivity());
+        recyclerView.setLayoutManager(linearLayoutManager);
         coordinatorLayout = (CoordinatorLayout) view.findViewById(R.id.coordinatorLayout);
 
         items = new ArrayList<>();
@@ -130,6 +140,11 @@ public class ContactListFragment extends Fragment implements ContactListView,
     public void onResume() {
         super.onResume();
         presenter.bindView(this);
+
+        if (scrollToAccountJid != null) {
+            scrollToAccount(scrollToAccountJid);
+            scrollToAccountJid = null;
+        }
     }
 
     @Override
@@ -269,6 +284,36 @@ public class ContactListFragment extends Fragment implements ContactListView,
     @Override
     public void closeSearch() {
         ((ContactListActivity)getActivity()).closeSearch();
+    }
+
+    public void showRecent() {
+        if (presenter != null)
+            presenter.onStateSelected(ContactListAdapter.ChatListState.recent);
+    }
+
+    /**
+     * Scroll contact list to specified account.
+     *
+     * @param account
+     */
+    public void scrollToAccount(AccountJid account) {
+        long count = adapter.getItemCount();
+        for (int position = 0; position < (int) count; position++) {
+            Object itemAtPosition = adapter.getItem(position);
+            if (itemAtPosition != null && itemAtPosition instanceof AccountVO
+                    && ((AccountVO)itemAtPosition).getAccountJid().equals(account)) {
+                scrollTo(position);
+                break;
+            }
+        }
+    }
+
+    /**
+     * Scroll to the top of contact list.
+     */
+    public void scrollTo(int position) {
+        if (linearLayoutManager != null)
+            linearLayoutManager.scrollToPositionWithOffset(position, 0);
     }
 
     public void setChatArchived(ChatVO chatVO, boolean archived) {

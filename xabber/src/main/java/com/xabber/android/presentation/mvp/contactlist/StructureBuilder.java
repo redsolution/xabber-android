@@ -81,7 +81,7 @@ public class StructureBuilder implements Runnable {
         }
     }
 
-    public void build() {
+    protected void build() {
         synchronized (refreshLock) {
             refreshRequested = false;
             refreshInProgress = true;

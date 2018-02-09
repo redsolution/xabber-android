@@ -583,15 +583,15 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.toolbar_default:
-                //getContactListFragment().scrollTo(0);
+                getContactListFragment().scrollTo(0);
                 break;
         }
     }
 
     @Override
     public void onContactClick(AbstractContact abstractContact) {
-//        if (contentFragment != null)
-//            ((ContactListFragment) contentFragment).getFilterableAdapter().getFilter().filter("");
+        if (contentFragment != null)
+            ((ContactListFragment) contentFragment).filterContactList("");
         if (bottomMenu != null) bottomMenu.closeSearch();
 
         if (action == null) {
@@ -720,9 +720,9 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
     @Override
     public void onRecentClick() {
         if (contentFragment != null && contentFragment instanceof ContactListFragment) {
-//            ((ContactListFragment) contentFragment).showRecent();
-//            ((ContactListFragment) contentFragment).scrollTo(0);
-//            ((ContactListFragment) contentFragment).closeSnackbar();
+            ((ContactListFragment) contentFragment).showRecent();
+            ((ContactListFragment) contentFragment).scrollTo(0);
+            ((ContactListFragment) contentFragment).closeSnackbar();
         } else showContactListFragment(null);
     }
 
@@ -735,9 +735,9 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
     @Override
     public void onAccountShortcutClick(AccountJid jid) {
         if (contentFragment != null && contentFragment instanceof ContactListFragment) {
-//            ((ContactListFragment) contentFragment).showRecent();
-//            ((ContactListFragment) contentFragment).scrollToAccount(jid);
-//            ((ContactListFragment) contentFragment).closeSnackbar();
+            ((ContactListFragment) contentFragment).showRecent();
+            ((ContactListFragment) contentFragment).scrollToAccount(jid);
+            ((ContactListFragment) contentFragment).closeSnackbar();
         } else showContactListFragment(jid);
     }
 

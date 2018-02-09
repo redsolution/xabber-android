@@ -136,7 +136,7 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
     @Override
     public void onStateSelected(ContactListAdapter.ChatListState state) {
         this.currentChatsState = state;
-        structureBuilder.refreshRequest();
+        structureBuilder.build();
         if (view != null) {
             view.closeSnackbar();
             view.closeSearch();
