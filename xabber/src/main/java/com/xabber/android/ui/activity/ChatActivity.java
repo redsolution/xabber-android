@@ -65,6 +65,7 @@ import com.xabber.android.data.message.RegularChat;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.AbstractContact;
+import com.xabber.android.data.roster.OnChatStateListener;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterContact;
@@ -98,7 +99,7 @@ import static com.xabber.android.ui.adapter.ChatViewerAdapter.PAGE_POSITION_RECE
  * @author alexander.ivanov
  */
 public class ChatActivity extends ManagedActivity implements OnContactChangedListener,
-        OnAccountChangedListener, ViewPager.OnPageChangeListener,
+        OnAccountChangedListener, OnChatStateListener, ViewPager.OnPageChangeListener,
         ChatFragment.ChatViewerFragmentListener, OnBlockedListChangedListener,
         RecentChatFragment.Listener, ChatViewerAdapter.FinishUpdateListener,
         ContactVcardViewerFragment.Listener, Toolbar.OnMenuItemClickListener {
@@ -325,6 +326,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
 
         isVisible = true;
 
+        Application.getInstance().addUIListener(OnChatStateListener.class, this);
         Application.getInstance().addUIListener(OnContactChangedListener.class, this);
         Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
         Application.getInstance().addUIListener(OnBlockedListChangedListener.class, this);
@@ -485,6 +487,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     @Override
     protected void onPause() {
         super.onPause();
+        Application.getInstance().removeUIListener(OnChatStateListener.class, this);
         Application.getInstance().removeUIListener(OnContactChangedListener.class, this);
         Application.getInstance().removeUIListener(OnAccountChangedListener.class, this);
         Application.getInstance().removeUIListener(OnBlockedListChangedListener.class, this);
@@ -540,6 +543,11 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         updateChat();
         updateRecentChats();
         updateStatusBar();
+    }
+
+    @Override
+    public void onChatStateChanged(Collection<RosterContact> entities) {
+        updateToolbar();
     }
 
     @Override

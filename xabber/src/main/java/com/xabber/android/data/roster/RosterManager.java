@@ -588,4 +588,25 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
         }
         onContactsChanged(entities);
     }
+
+    /**
+     * Notifies registered {@link OnChatStateListener}.
+     */
+    public static void onChatStateChanged(AccountJid account, UserJid bareAddress) {
+        final Collection<RosterContact> entities = new ArrayList<>();
+        RosterContact rosterContact = getInstance().getRosterContact(account, bareAddress);
+        if (rosterContact != null) {
+            entities.add(rosterContact);
+        }
+
+        Application.getInstance().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                for (OnChatStateListener onChatStateListener : Application
+                        .getInstance().getUIListeners(OnChatStateListener.class)) {
+                    onChatStateListener.onChatStateChanged(entities);
+                }
+            }
+        });
+    }
 }
