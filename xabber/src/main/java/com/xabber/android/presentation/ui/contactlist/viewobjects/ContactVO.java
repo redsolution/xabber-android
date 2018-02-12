@@ -11,6 +11,7 @@ import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
 import android.view.ContextMenu;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -72,6 +73,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
     public interface ContactClickListener {
         void onContactAvatarClick(int adapterPosition);
         void onContactCreateContextMenu(int adapterPosition, ContextMenu menu);
+        void onContactButtonClick(int adapterPosition);
     }
 
     protected ContactVO(int accountColorIndicator, boolean showOfflineShadow, String name,
@@ -393,6 +395,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
         public final TextView tvAction;
         public final TextView tvActionLeft;
         public final RelativeLayout foregroundView;
+        final Button btnListAction;
 
         public ViewHolder(View view, FlexibleAdapter adapter, ContactClickListener listener) {
             super(view, adapter);
@@ -416,6 +419,8 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
             foregroundView = (RelativeLayout) view.findViewById(R.id.foregroundView);
             tvAction = (TextView) view.findViewById(R.id.tvAction);
             tvActionLeft = (TextView) view.findViewById(R.id.tvActionLeft);
+            btnListAction = (Button) view.findViewById(R.id.btnListAction);
+            if (btnListAction != null) btnListAction.setOnClickListener(this);
         }
 
         @Override
@@ -444,6 +449,8 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
         public void onClick(View view) {
             if (view.getId() == R.id.ivAvatar) {
                 listener.onContactAvatarClick(getAdapterPosition());
+            } else if (view.getId() == R.id.btnListAction) {
+                listener.onContactButtonClick(getAdapterPosition());
             } else {
                 super.onClick(view);
             }

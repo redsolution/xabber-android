@@ -1,0 +1,48 @@
+package com.xabber.android.presentation.ui.contactlist.viewobjects;
+
+import android.graphics.drawable.Drawable;
+
+import com.xabber.android.R;
+import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.message.NotificationState;
+import com.xabber.android.data.roster.AbstractContact;
+
+import java.util.Date;
+
+/**
+ * Created by valery.miller on 12.02.18.
+ */
+
+public class ChatWithButtonVO extends ExtContactVO {
+
+    public ChatWithButtonVO(int accountColorIndicator, boolean showOfflineShadow,
+                            String name, String status, int statusId, int statusLevel, Drawable avatar,
+                            int mucIndicatorLevel, UserJid userJid, AccountJid accountJid, int unreadCount,
+                            boolean mute, NotificationState.NotificationMode notificationMode, String messageText,
+                            boolean isOutgoing, Date time, int messageStatus, String messageOwner,
+                            boolean archived, ContactClickListener listener) {
+
+        super(accountColorIndicator, showOfflineShadow, name, status, statusId, statusLevel, avatar, mucIndicatorLevel, userJid, accountJid,
+                unreadCount, mute, notificationMode, messageText, isOutgoing, time, messageStatus,
+                messageOwner, archived, listener);
+    }
+
+    public static ChatWithButtonVO convert(AbstractContact contact, ContactClickListener listener) {
+        ExtContactVO contactVO = ExtContactVO.convert(contact, listener);
+        return new ChatWithButtonVO(
+                contactVO.getAccountColorIndicator(), contactVO.isShowOfflineShadow(),
+                contactVO.getName(), contactVO.getStatus(), contactVO.getStatusId(),
+                contactVO.getStatusLevel(), contactVO.getAvatar(), contactVO.getMucIndicatorLevel(),
+                contactVO.getUserJid(), contactVO.getAccountJid(), contactVO.getUnreadCount(),
+                contactVO.isMute(), contactVO.getNotificationMode(), contactVO.getMessageText(),
+                contactVO.isOutgoing(), contactVO.getTime(), contactVO.getMessageStatus(),
+                contactVO.getMessageOwner(), contactVO.isArchived(), contactVO.listener);
+    }
+
+    @Override
+    public int getLayoutRes() {
+        return R.layout.item_chat_with_button;
+    }
+
+}

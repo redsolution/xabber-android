@@ -33,11 +33,11 @@ import com.xabber.android.presentation.ui.contactlist.viewobjects.AccountWithCon
 import com.xabber.android.presentation.ui.contactlist.viewobjects.AccountWithGroupsVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.ButtonVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.ChatVO;
+import com.xabber.android.presentation.ui.contactlist.viewobjects.ChatWithButtonVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.ContactVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.ExtContactVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.GroupVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.ToolbarVO;
-import com.xabber.android.ui.activity.ContactAddActivity;
 import com.xabber.android.ui.adapter.ChatComparator;
 import com.xabber.android.ui.adapter.contactlist.AccountConfiguration;
 import com.xabber.android.ui.adapter.contactlist.ContactListAdapter;
@@ -130,6 +130,11 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
     @Override
     public void onContactAvatarClick(int adapterPosition) {
         if (view != null) view.onContactAvatarClick(adapterPosition);
+    }
+
+    @Override
+    public void onContactButtonClick(int adapterPosition) {
+        onStateSelected(ContactListAdapter.ChatListState.all);
     }
 
     @Override
@@ -339,10 +344,16 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
             items.add(new ToolbarVO(context, this));
             if (hasVisibleContacts) {
 
-                // add recent chats
-                items.addAll(ChatVO.convert(chatsGroup.getAbstractContacts(), this));
-
                 if (currentChatsState == ContactListAdapter.ChatListState.recent) {
+
+                    // add recent chats
+                    int i = 0;
+                    for (AbstractContact contact : chatsGroup.getAbstractContacts()) {
+                        if (i == MAX_RECENT_ITEMS - 1)
+                            items.add(ChatWithButtonVO.convert(contact, this));
+                        else items.add(ChatVO.convert(contact, this));
+                        i++;
+                    }
 
                     if (showAccounts) {
                         //boolean isFirst = items.isEmpty();
@@ -372,6 +383,8 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
                         }
                     }
                 } else {
+
+                    items.addAll(ChatVO.convert(chatsGroup.getAbstractContacts(), this));
 //                    if (chatsGroup.getAbstractContacts().size() == 0) {
 //                        if (currentChatsState == ContactListAdapter.ChatListState.unread)
 //                            listener.showPlaceholder(context.getString(R.string.placeholder_no_unread));
