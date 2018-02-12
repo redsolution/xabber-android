@@ -4,6 +4,7 @@ import android.view.ContextMenu;
 import android.view.View;
 
 import com.xabber.android.data.roster.AbstractContact;
+import com.xabber.android.presentation.ui.contactlist.viewobjects.ButtonVO;
 
 import java.util.List;
 
@@ -21,6 +22,7 @@ public interface ContactListView {
     void onContactAvatarClick(int adapterPosition);
     void onAccountAvatarClick(int adapterPosition);
     void onAccountMenuClick(int adapterPosition, View view);
+    void onButtonItemClick(ButtonVO buttonVO);
     void closeSnackbar();
     void closeSearch();
 }

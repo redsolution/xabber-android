@@ -30,10 +30,12 @@ import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.presentation.mvp.contactlist.ContactListPresenter;
 import com.xabber.android.presentation.mvp.contactlist.ContactListView;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.AccountVO;
+import com.xabber.android.presentation.ui.contactlist.viewobjects.ButtonVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.ChatVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.ContactVO;
 import com.xabber.android.ui.activity.AccountActivity;
 import com.xabber.android.ui.activity.ContactActivity;
+import com.xabber.android.ui.activity.ContactAddActivity;
 import com.xabber.android.ui.activity.ContactEditActivity;
 import com.xabber.android.ui.activity.ContactListActivity;
 import com.xabber.android.ui.adapter.contactlist.ContactListAdapter;
@@ -253,6 +255,13 @@ public class ContactListFragment extends Fragment implements ContactListView,
             popup.inflate(R.menu.item_account_group);
             ContextMenuHelper.setUpAccountMenu(getActivity(), presenter, ((AccountVO) item).getAccountJid(), popup.getMenu());
             popup.show();
+        }
+    }
+
+    @Override
+    public void onButtonItemClick(ButtonVO buttonVO) {
+        if (buttonVO.getAction().equals(ButtonVO.ACTION_ADD_CONTACT)) {
+            getActivity().startActivity(ContactAddActivity.createIntent(getActivity()));
         }
     }
 

@@ -37,6 +37,7 @@ import com.xabber.android.presentation.ui.contactlist.viewobjects.ContactVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.ExtContactVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.GroupVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.ToolbarVO;
+import com.xabber.android.ui.activity.ContactAddActivity;
 import com.xabber.android.ui.adapter.ChatComparator;
 import com.xabber.android.ui.adapter.contactlist.AccountConfiguration;
 import com.xabber.android.ui.adapter.contactlist.ContactListAdapter;
@@ -115,6 +116,9 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
             UserJid userJid = ((ContactVO) item).getUserJid();
             if (view != null) view.onContactClick(
                     RosterManager.getInstance().getAbstractContact(accountJid, userJid));
+        } else if (item instanceof ButtonVO) {
+            ButtonVO button = (ButtonVO) item;
+            if (view != null) view.onButtonItemClick(button);
         }
     }
 
