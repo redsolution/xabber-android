@@ -22,6 +22,7 @@ import com.xabber.android.data.extension.muc.RoomContact;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.ChatContact;
 import com.xabber.android.data.message.MessageManager;
+import com.xabber.android.data.message.NewMessageEvent;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.GroupManager;
 import com.xabber.android.data.roster.OnContactChangedListener;
@@ -43,6 +44,8 @@ import com.xabber.android.ui.adapter.contactlist.ContactListGroupUtils;
 import com.xabber.android.ui.adapter.contactlist.GroupConfiguration;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -87,6 +90,7 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
         this.view = view;
         Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
         Application.getInstance().addUIListener(OnContactChangedListener.class, this);
+        EventBus.getDefault().register(this);
         structureBuilder.build();
     }
 
@@ -97,6 +101,7 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
         this.view = null;
         Application.getInstance().removeUIListener(OnAccountChangedListener.class, this);
         Application.getInstance().removeUIListener(OnContactChangedListener.class, this);
+        EventBus.getDefault().unregister(this);
         structureBuilder.removeRefreshRequests();
     }
 
@@ -155,7 +160,11 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
 
     @Override
     public void onContactsChanged(Collection<RosterContact> entities) {
-        // вызывается всякий раз, когда собеседник набирает сообщение - это плохо
+        structureBuilder.refreshRequest();
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onNewMessageEvent(NewMessageEvent event) {
         structureBuilder.refreshRequest();
     }
 
