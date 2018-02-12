@@ -1,6 +1,8 @@
 package com.xabber.android.presentation.ui.contactlist.viewobjects;
 
 import android.graphics.drawable.Drawable;
+import android.os.Build;
+import android.view.View;
 
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.roster.GroupManager;
@@ -9,6 +11,7 @@ import com.xabber.android.ui.adapter.contactlist.AccountConfiguration;
 import java.util.ArrayList;
 import java.util.List;
 
+import eu.davidea.flexibleadapter.FlexibleAdapter;
 import eu.davidea.flexibleadapter.items.IExpandable;
 
 /**
@@ -29,6 +32,16 @@ public class AccountWithContactsVO extends AccountVO implements IExpandable<Acco
                 avatar, offlineModeLevel, contactCount, accountJid, isExpand, groupName, listener);
 
         mExpanded = isExpand;
+    }
+
+    @Override
+    public void bindViewHolder(FlexibleAdapter adapter, ViewHolder viewHolder, int position, List<Object> payloads) {
+        super.bindViewHolder(adapter, viewHolder, position, payloads);
+
+        /** bind EXPAND state */
+        viewHolder.bottomView.setVisibility(mExpanded ? View.GONE : View.VISIBLE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+            viewHolder.itemView.setElevation(mExpanded ? 2 : 0);
     }
 
     @Override

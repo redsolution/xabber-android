@@ -113,7 +113,7 @@ public class AccountVO extends AbstractHeaderItem<AccountVO.ViewHolder> {
         final int[] accountGroupColors = context.getResources().getIntArray(
                 getThemeResource(context, R.attr.contact_list_account_group_background));
         final int level = AccountManager.getInstance().getColorLevel(getAccountJid());
-        viewHolder.itemView.setBackgroundColor(accountGroupColors[level]);
+        viewHolder.backgroundView.setBackgroundColor(accountGroupColors[level]);
 
         /** bind ACCOUNT NAME */
         viewHolder.tvAccountName.setText(getName());
@@ -273,6 +273,8 @@ public class AccountVO extends AbstractHeaderItem<AccountVO.ViewHolder> {
         final ImageView ivMenu;
         final ImageView offlineShadow;
         final View accountColorIndicator;
+        final View backgroundView;
+        final View bottomView;
 
         final AccountClickListener listener;
 
@@ -294,6 +296,8 @@ public class AccountVO extends AbstractHeaderItem<AccountVO.ViewHolder> {
             accountColorIndicator = view.findViewById(R.id.accountColorIndicator);
             ivMenu = (ImageView) view.findViewById(R.id.ivMenu);
             ivMenu.setOnClickListener(this);
+            backgroundView = view.findViewById(R.id.backgroundView);
+            bottomView = view.findViewById(R.id.bottomView);
         }
 
         @Override
