@@ -3,6 +3,7 @@ package com.xabber.android.presentation.ui.contactlist.viewobjects;
 import android.graphics.drawable.Drawable;
 
 import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.roster.GroupManager;
 import com.xabber.android.ui.adapter.contactlist.AccountConfiguration;
 
 import java.util.ArrayList;
@@ -26,6 +27,8 @@ public class AccountWithContactsVO extends AccountVO implements IExpandable<Acco
 
         super(accountColorIndicator, showOfflineShadow, name, jid, status, statusLevel, statusId,
                 avatar, offlineModeLevel, contactCount, accountJid, isExpand, groupName, listener);
+
+        mExpanded = isExpand;
     }
 
     @Override
@@ -36,6 +39,7 @@ public class AccountWithContactsVO extends AccountVO implements IExpandable<Acco
     @Override
     public void setExpanded(boolean expanded) {
         mExpanded = expanded;
+        GroupManager.getInstance().setExpanded(getAccountJid(), getGroupName(), mExpanded);
     }
 
     @Override

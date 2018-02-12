@@ -39,7 +39,6 @@ public class GroupVO extends AbstractFlexibleItem<GroupVO.ViewHolder>
     private boolean showOfflineShadow;
 
     private String title;
-    private int expandIndicatorLevel;
     private int offlineIndicatorLevel;
     private String groupName;
     private AccountJid accountJid;
@@ -49,14 +48,14 @@ public class GroupVO extends AbstractFlexibleItem<GroupVO.ViewHolder>
     private AccountVO mHeader;
 
     public GroupVO(int accountColorIndicator, boolean showOfflineShadow, String title,
-                   int expandIndicatorLevel, int offlineIndicatorLevel, String groupName,
+                   boolean expanded, int offlineIndicatorLevel, String groupName,
                    AccountJid accountJid) {
 
         this.id = UUID.randomUUID().toString();
         this.accountColorIndicator = accountColorIndicator;
         this.showOfflineShadow = showOfflineShadow;
         this.title = title;
-        this.expandIndicatorLevel = expandIndicatorLevel;
+        this.mExpanded = expanded;
         this.offlineIndicatorLevel = offlineIndicatorLevel;
         this.groupName = groupName;
         this.accountJid = accountJid;
@@ -93,7 +92,6 @@ public class GroupVO extends AbstractFlexibleItem<GroupVO.ViewHolder>
         viewHolder.accountColorIndicator.setBackgroundColor(getAccountColorIndicator());
 
         /** set up EXPAND indicator */
-        // TODO: 06.02.18 use getExpandIndicatorLevel
         //viewHolder.indicator.setImageLevel(getExpandIndicatorLevel());
         viewHolder.indicator.setImageLevel(mExpanded ? 1 : 0);
 
@@ -127,6 +125,7 @@ public class GroupVO extends AbstractFlexibleItem<GroupVO.ViewHolder>
     @Override
     public void setExpanded(boolean expanded) {
         this.mExpanded = expanded;
+        GroupManager.getInstance().setExpanded(accountJid, groupName, mExpanded);
     }
 
     @Override
@@ -150,7 +149,7 @@ public class GroupVO extends AbstractFlexibleItem<GroupVO.ViewHolder>
         String name = GroupManager.getInstance().getGroupName(configuration.getAccount(), configuration.getGroup());
         boolean showOfflineShadow = false;
         int accountColorIndicator;
-        int expandIndicatorLevel;
+        boolean expanded;
         int offlineIndicatorLevel;
 
         AccountJid account = configuration.getAccount();
@@ -158,7 +157,7 @@ public class GroupVO extends AbstractFlexibleItem<GroupVO.ViewHolder>
             accountColorIndicator = ColorManager.getInstance().getAccountPainter().getDefaultMainColor();
         else accountColorIndicator = ColorManager.getInstance().getAccountPainter().getAccountMainColor(account);
 
-        expandIndicatorLevel = configuration.isExpanded() ? 1 : 0;
+        expanded = configuration.isExpanded();
         offlineIndicatorLevel = configuration.getShowOfflineMode().ordinal();
 
         if (!name.equals(RECENT_CHATS_TITLE))
@@ -172,16 +171,12 @@ public class GroupVO extends AbstractFlexibleItem<GroupVO.ViewHolder>
                 showOfflineShadow = true;
         }
 
-        return new GroupVO(accountColorIndicator, showOfflineShadow, name, expandIndicatorLevel,
+        return new GroupVO(accountColorIndicator, showOfflineShadow, name, expanded,
                 offlineIndicatorLevel, configuration.getGroup(), configuration.getAccount());
     }
 
     public String getTitle() {
         return title;
-    }
-
-    public int getExpandIndicatorLevel() {
-        return expandIndicatorLevel;
     }
 
     public int getOfflineIndicatorLevel() {
