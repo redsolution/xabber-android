@@ -50,6 +50,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.UUID;
 
 import io.realm.Realm;
 
@@ -239,6 +240,8 @@ public class RoomChat extends AbstractChat {
             } else {
                 boolean notify = true;
                 String stanzaId = message.getStanzaId();
+                if (stanzaId == null) stanzaId = UUID.randomUUID().toString();
+
                 DelayInformation delayInformation = DelayInformation.from(message);
                 Date delay = null;
                 if (delayInformation != null) {
@@ -268,7 +271,7 @@ public class RoomChat extends AbstractChat {
                 }
 
                 updateThreadId(message.getThread());
-                createAndSaveNewMessage(resource, text, null, delay, true, notify, false, false, message.getStanzaId());
+                createAndSaveNewMessage(resource, text, null, delay, true, notify, false, false, stanzaId);
             }
         } else if (stanza instanceof Presence) {
             Presence presence = (Presence) stanza;
