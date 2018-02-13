@@ -3,6 +3,7 @@ package com.xabber.android.presentation.mvp.contactlist;
 import android.view.ContextMenu;
 import android.view.View;
 
+import com.xabber.android.data.account.CommonState;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.ButtonVO;
 
@@ -27,4 +28,6 @@ public interface ContactListView {
     void closeSearch();
     void showPlaceholder(String message);
     void hidePlaceholder();
+    void onContactListChanged(CommonState commonState, boolean hasContacts,
+                              boolean hasVisibleContacts, boolean isFilterEnabled);
 }
