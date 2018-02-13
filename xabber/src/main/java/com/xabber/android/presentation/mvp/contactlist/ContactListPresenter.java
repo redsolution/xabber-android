@@ -572,4 +572,20 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
         return baseEntities;
     }
 
+    public ContactListAdapter.ChatListState getCurrentChatsState() {
+        return currentChatsState;
+    }
+
+    public ArrayList<IFlexible> getTwoNextRecentChat() {
+        Collection<AbstractChat> chats = MessageManager.getInstance().getChatsOfEnabledAccount();
+        GroupConfiguration chatsGroup = getChatsGroup(chats, currentChatsState);
+        ArrayList<AbstractContact> contacts = (ArrayList<AbstractContact>) chatsGroup.getAbstractContacts();
+
+        ArrayList<IFlexible> items = new ArrayList<>();
+        if (contacts != null && contacts.size() >= MAX_RECENT_ITEMS) {
+            items.add(ChatVO.convert(contacts.get(MAX_RECENT_ITEMS - 2), this));
+            items.add(ChatWithButtonVO.convert(contacts.get(MAX_RECENT_ITEMS - 1), this));
+        }
+        return items;
+    }
 }

@@ -40,6 +40,17 @@ public class ChatWithButtonVO extends ExtContactVO {
                 contactVO.getMessageOwner(), contactVO.isArchived(), contactVO.listener);
     }
 
+    public static ChatWithButtonVO convert(ChatVO chat) {
+        return new ChatWithButtonVO(
+                chat.getAccountColorIndicator(), chat.isShowOfflineShadow(),
+                chat.getName(), chat.getStatus(), chat.getStatusId(),
+                chat.getStatusLevel(), chat.getAvatar(), chat.getMucIndicatorLevel(),
+                chat.getUserJid(), chat.getAccountJid(), chat.getUnreadCount(),
+                chat.isMute(), chat.getNotificationMode(), chat.getMessageText(),
+                chat.isOutgoing(), chat.getTime(), chat.getMessageStatus(),
+                chat.getMessageOwner(), chat.isArchived(), chat.listener);
+    }
+
     @Override
     public int getLayoutRes() {
         return R.layout.item_chat_with_button;

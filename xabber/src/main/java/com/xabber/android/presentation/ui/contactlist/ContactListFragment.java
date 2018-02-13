@@ -41,6 +41,7 @@ import com.xabber.android.presentation.mvp.contactlist.ContactListView;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.AccountVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.ButtonVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.ChatVO;
+import com.xabber.android.presentation.ui.contactlist.viewobjects.ChatWithButtonVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.ContactVO;
 import com.xabber.android.ui.activity.AccountActivity;
 import com.xabber.android.ui.activity.AccountAddActivity;
@@ -50,9 +51,12 @@ import com.xabber.android.ui.activity.ContactEditActivity;
 import com.xabber.android.ui.activity.ContactListActivity;
 import com.xabber.android.ui.adapter.contactlist.ContactListAdapter;
 import com.xabber.android.ui.adapter.contactlist.ContactListState;
+import com.xabber.android.ui.adapter.contactlist.GroupConfiguration;
+import com.xabber.android.ui.adapter.contactlist.viewobjects.BaseRosterItemVO;
 import com.xabber.android.ui.helper.ContextMenuHelper;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import eu.davidea.flexibleadapter.FlexibleAdapter;
@@ -67,6 +71,8 @@ public class ContactListFragment extends Fragment implements ContactListView,
         FlexibleAdapter.OnItemSwipeListener {
 
     public static final String ACCOUNT_JID = "account_jid";
+
+    private static final int MAX_RECENT_ITEMS = 12;
 
     private AccountJid scrollToAccountJid;
     private ContactListPresenter presenter;
@@ -247,6 +253,17 @@ public class ContactListFragment extends Fragment implements ContactListView,
             // remove the item from recycler view
             adapter.removeItem(position);
 
+            // update end of list
+            if (presenter.getCurrentChatsState() == ContactListAdapter.ChatListState.recent) {
+                ArrayList<IFlexible> items = presenter.getTwoNextRecentChat();
+                if (items != null && items.size() == 2) {
+                    adapter.addItem(MAX_RECENT_ITEMS - 1, items.get(0));
+                    adapter.notifyItemInserted(MAX_RECENT_ITEMS - 1);
+                    adapter.updateItem(MAX_RECENT_ITEMS, items.get(1), null);
+                    adapter.notifyItemChanged(MAX_RECENT_ITEMS);
+                }
+            }
+
             // showing snackbar with Undo option
             showSnackbar(deletedItem, position);
         }
@@ -327,6 +344,17 @@ public class ContactListFragment extends Fragment implements ContactListView,
 
                 // update value
                 setChatArchived((ChatVO) deletedItem, archived);
+
+                // update end of list
+                if (presenter.getCurrentChatsState() == ContactListAdapter.ChatListState.recent
+                        && adapter.getItemCount() >= MAX_RECENT_ITEMS) {
+                    ChatWithButtonVO lastChat = ChatWithButtonVO.convert((ChatVO)
+                            adapter.getItem(MAX_RECENT_ITEMS - 1));
+                    adapter.removeItem(MAX_RECENT_ITEMS - 1);
+                    adapter.notifyItemRemoved(MAX_RECENT_ITEMS - 1);
+                    adapter.updateItem(MAX_RECENT_ITEMS - 1, lastChat, null);
+                    adapter.notifyItemChanged(MAX_RECENT_ITEMS - 1);
+                }
 
                 // undo is selected, restore the deleted item
                 adapter.addItem(deletedIndex, deletedItem);
