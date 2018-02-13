@@ -14,6 +14,7 @@ import com.xabber.android.ui.adapter.contactlist.AccountConfiguration;
 import com.xabber.android.ui.color.ColorManager;
 
 import java.util.List;
+import java.util.UUID;
 
 import eu.davidea.flexibleadapter.FlexibleAdapter;
 import eu.davidea.flexibleadapter.items.AbstractFlexibleItem;
@@ -39,6 +40,7 @@ public class ButtonVO extends AbstractFlexibleItem<ButtonVO.ViewHolder> {
     public ButtonVO(int accountColorIndicator, boolean showOfflineShadow,
                     String title, String action, AccountJid account) {
 
+        this.id = UUID.randomUUID().toString();
         this.accountColorIndicator = accountColorIndicator;
         this.showOfflineShadow = showOfflineShadow;
         this.title = title;

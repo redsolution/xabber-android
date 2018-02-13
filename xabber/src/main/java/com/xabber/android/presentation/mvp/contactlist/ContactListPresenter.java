@@ -29,6 +29,7 @@ import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.AccountVO;
+import com.xabber.android.presentation.ui.contactlist.viewobjects.AccountWithButtonsVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.AccountWithContactsVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.AccountWithGroupsVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.ButtonVO;
@@ -364,16 +365,19 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
 //                                items.add(new TopAccountSeparatorVO());
 //                            }
 
-                            if (showGroups) {
-                                createContactListWithAccountsAndGroups(items, rosterAccount, showEmptyGroups, comparator);
+                            if (rosterAccount.getTotal() != 0) {
+                                if (showGroups) {
+                                    createContactListWithAccountsAndGroups(items, rosterAccount, showEmptyGroups, comparator);
+                                } else {
+                                    createContactListWithAccounts(items, rosterAccount, comparator);
+                                }
                             } else {
-                                createContactListWithAccounts(items, rosterAccount, comparator);
+                                AccountWithButtonsVO account = AccountWithButtonsVO.convert(rosterAccount, this);
+                                ButtonVO button = ButtonVO.convert(rosterAccount,
+                                        context.getString(R.string.contact_add), ButtonVO.ACTION_ADD_CONTACT);
+                                account.addSubItem(button);
+                                items.add(account);
                             }
-
-                            if (rosterAccount.getTotal() == 0)
-                                items.add(ButtonVO.convert(rosterAccount,
-                                        context.getString(R.string.contact_add),
-                                        ButtonVO.ACTION_ADD_CONTACT));
                         }
                     } else {
                         if (showGroups) {
