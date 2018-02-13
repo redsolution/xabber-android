@@ -25,4 +25,6 @@ public interface ContactListView {
     void onButtonItemClick(ButtonVO buttonVO);
     void closeSnackbar();
     void closeSearch();
+    void showPlaceholder(String message);
+    void hidePlaceholder();
 }

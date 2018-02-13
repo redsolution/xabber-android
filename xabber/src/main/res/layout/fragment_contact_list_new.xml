@@ -17,4 +17,31 @@
 
     </FrameLayout>
 
+    <LinearLayout
+        android:id="@+id/placeholderView"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical"
+        android:visibility="gone"
+        >
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:src="@drawable/xabber_logo_grey_80dp"
+            />
+
+        <TextView
+            android:id="@+id/tvPlaceholderMessage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="10dp"
+            android:text="@string/placeholder_no_unread"
+            android:textColor="?android:attr/textColorSecondary" />
+
+    </LinearLayout>
+
 </android.support.design.widget.CoordinatorLayout>

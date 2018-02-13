@@ -17,6 +17,8 @@ import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.xabber.android.R;
 import com.xabber.android.data.account.CommonState;
@@ -66,6 +68,8 @@ public class ContactListFragment extends Fragment implements ContactListView,
     private Snackbar snackbar;
     private CoordinatorLayout coordinatorLayout;
     private LinearLayoutManager linearLayoutManager;
+    private View placeholderView;
+    private TextView tvPlaceholderMessage;
 
     public interface ContactListFragmentListener {
         void onContactClick(AbstractContact contact);
@@ -115,6 +119,8 @@ public class ContactListFragment extends Fragment implements ContactListView,
         linearLayoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(linearLayoutManager);
         coordinatorLayout = (CoordinatorLayout) view.findViewById(R.id.coordinatorLayout);
+        placeholderView = view.findViewById(R.id.placeholderView);
+        tvPlaceholderMessage = (TextView) view.findViewById(R.id.tvPlaceholderMessage);
 
         items = new ArrayList<>();
         adapter = new FlexibleAdapter<>(items, null, true);
@@ -293,6 +299,17 @@ public class ContactListFragment extends Fragment implements ContactListView,
     @Override
     public void closeSearch() {
         ((ContactListActivity)getActivity()).closeSearch();
+    }
+
+    @Override
+    public void showPlaceholder(String message) {
+        tvPlaceholderMessage.setText(message);
+        placeholderView.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void hidePlaceholder() {
+        placeholderView.setVisibility(View.GONE);
     }
 
     public void showRecent() {

@@ -400,6 +400,7 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
         } else { // Search
             final ArrayList<AbstractContact> baseEntities = getSearchResults(rosterContacts, comparator, abstractChats);
             items.clear();
+            items.add(new ToolbarVO(context, this));
             items.addAll(SettingsManager.contactsShowMessages()
                     ? ExtContactVO.convert(baseEntities, this)
                     : ContactVO.convert(baseEntities, this));
@@ -407,7 +408,18 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
         }
 
         //listener.onContactListChanged(commonState, hasContacts, hasVisibleContacts, filterString != null);
-        if (view != null) view.updateItems(items);
+
+        if (view != null) {
+            if (items.size() == 1) {
+                if (filterString != null && !filterString.isEmpty())
+                    view.showPlaceholder(context.getString(R.string.placeholder_no_filtered));
+                if (currentChatsState == ContactListAdapter.ChatListState.unread)
+                    view.showPlaceholder(context.getString(R.string.placeholder_no_unread));
+                if (currentChatsState == ContactListAdapter.ChatListState.archived)
+                    view.showPlaceholder(context.getString(R.string.placeholder_no_archived));
+            } else view.hidePlaceholder();
+            view.updateItems(items);
+        }
     }
 
     /**
