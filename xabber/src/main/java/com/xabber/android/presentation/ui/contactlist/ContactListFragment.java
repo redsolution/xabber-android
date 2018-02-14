@@ -9,6 +9,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
@@ -174,7 +175,7 @@ public class ContactListFragment extends Fragment implements ContactListView,
         animation = AnimationUtils.loadAnimation(getActivity(), R.anim.connection);
 
         items = new ArrayList<>();
-        adapter = new FlexibleAdapter<>(items, null, true);
+        adapter = new FlexibleAdapter<>(items, null, false);
 
         adapter.setStickyHeaders(true);
         adapter.setDisplayHeadersAtStartUp(true);
@@ -216,7 +217,7 @@ public class ContactListFragment extends Fragment implements ContactListView,
     public void updateItems(List<IFlexible> items) {
         this.items.clear();
         this.items.addAll(items);
-        adapter.updateDataSet(items, false);
+        adapter.updateDataSet(this.items);
     }
 
     /**
