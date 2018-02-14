@@ -76,6 +76,8 @@ public class ToolbarVO extends AbstractHeaderItem<ToolbarVO.ViewHolder> implemen
         /** set up ACCOUNT COLOR indicator */
         holder.accountColorIndicator.setBackgroundColor(
                 ColorManager.getInstance().getAccountPainter().getDefaultMainColor());
+        holder.accountColorIndicatorBack.setBackgroundColor(
+                ColorManager.getInstance().getAccountPainter().getDefaultIndicatorBackColor());
 
         /** set up BACKGROUND COLOR */
         final int[] accountGroupColors = context.getResources().getIntArray(
@@ -112,6 +114,7 @@ public class ToolbarVO extends AbstractHeaderItem<ToolbarVO.ViewHolder> implemen
             implements android.widget.PopupMenu.OnMenuItemClickListener {
 
         final View accountColorIndicator;
+        final View accountColorIndicatorBack;
         final ImageView ivAdd;
         final ImageView ivSetStatus;
         final TextView tvTitle;
@@ -126,6 +129,7 @@ public class ToolbarVO extends AbstractHeaderItem<ToolbarVO.ViewHolder> implemen
             this.listener = listener;
 
             accountColorIndicator = view.findViewById(R.id.accountColorIndicator);
+            accountColorIndicatorBack = view.findViewById(R.id.accountColorIndicatorBack);
             ivAdd = (ImageView) view.findViewById(R.id.ivAdd);
             ivAdd.setOnClickListener(this);
             ivSetStatus = (ImageView) view.findViewById(R.id.ivSetStatus);

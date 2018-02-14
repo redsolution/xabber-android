@@ -22,12 +22,14 @@ public class AccountWithButtonsVO extends AccountVO implements IExpandable<Accou
     private boolean mExpanded = true;
     private List<ButtonVO> mSubItems;
 
-    public AccountWithButtonsVO(int accountColorIndicator, boolean showOfflineShadow, String name,
+    public AccountWithButtonsVO(int accountColorIndicator, int accountColorIndicatorBack,
+                                boolean showOfflineShadow, String name,
                                String jid, String status, int statusLevel, int statusId, Drawable avatar,
                                int offlineModeLevel, String contactCount, AccountJid accountJid,
                                boolean isExpand, String groupName, AccountClickListener listener) {
 
-        super(accountColorIndicator, showOfflineShadow, name, jid, status, statusLevel, statusId,
+        super(accountColorIndicator, accountColorIndicatorBack, showOfflineShadow, name, jid,
+                status, statusLevel, statusId,
                 avatar, offlineModeLevel, contactCount, accountJid, isExpand, groupName, listener);
 
         mExpanded = isExpand;
@@ -71,7 +73,8 @@ public class AccountWithButtonsVO extends AccountVO implements IExpandable<Accou
     public static AccountWithButtonsVO convert(AccountConfiguration configuration, AccountClickListener listener) {
         AccountVO contactVO = AccountVO.convert(configuration, listener);
         return new AccountWithButtonsVO(
-                contactVO.getAccountColorIndicator(), contactVO.isShowOfflineShadow(),
+                contactVO.getAccountColorIndicator(), contactVO.getAccountColorIndicatorBack(),
+                contactVO.isShowOfflineShadow(),
                 contactVO.getName(), contactVO.getJid(), contactVO.getStatus(),
                 contactVO.getStatusLevel(), contactVO.getStatusId(), contactVO.getAvatar(),
                 contactVO.getOfflineModeLevel(), contactVO.getContactCount(),

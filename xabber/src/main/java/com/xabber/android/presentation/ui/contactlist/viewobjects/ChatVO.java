@@ -24,14 +24,15 @@ import eu.davidea.flexibleadapter.items.IFlexible;
 
 public class ChatVO extends ExtContactVO {
 
-    public ChatVO(int accountColorIndicator, boolean showOfflineShadow,
+    public ChatVO(int accountColorIndicator, int accountColorIndicatorBack, boolean showOfflineShadow,
                   String name, String status, int statusId, int statusLevel, Drawable avatar,
                   int mucIndicatorLevel, UserJid userJid, AccountJid accountJid, int unreadCount,
                   boolean mute, NotificationState.NotificationMode notificationMode, String messageText,
                   boolean isOutgoing, Date time, int messageStatus, String messageOwner,
                   boolean archived, ContactClickListener listener) {
 
-        super(accountColorIndicator, showOfflineShadow, name, status, statusId, statusLevel, avatar, mucIndicatorLevel, userJid, accountJid,
+        super(accountColorIndicator, accountColorIndicatorBack, showOfflineShadow, name, status,
+                statusId, statusLevel, avatar, mucIndicatorLevel, userJid, accountJid,
                 unreadCount, mute, notificationMode, messageText, isOutgoing, time, messageStatus,
                 messageOwner, archived, listener);
     }
@@ -39,7 +40,8 @@ public class ChatVO extends ExtContactVO {
     public static ChatVO convert(AbstractContact contact, ContactClickListener listener) {
         ExtContactVO contactVO = ExtContactVO.convert(contact, listener);
         return new ChatVO(
-                contactVO.getAccountColorIndicator(), contactVO.isShowOfflineShadow(),
+                contactVO.getAccountColorIndicator(), contactVO.getAccountColorIndicatorBack(),
+                contactVO.isShowOfflineShadow(),
                 contactVO.getName(), contactVO.getStatus(), contactVO.getStatusId(),
                 contactVO.getStatusLevel(), contactVO.getAvatar(), contactVO.getMucIndicatorLevel(),
                 contactVO.getUserJid(), contactVO.getAccountJid(), contactVO.getUnreadCount(),

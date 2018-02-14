@@ -7,8 +7,6 @@ import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.xaccount.XMPPAccountSettings;
-import com.xabber.android.data.xaccount.XabberAccountManager;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -21,6 +19,7 @@ public class AccountPainter {
     private final String[] accountColorNames;
 
     private final int[] accountMainColors;
+    private final int[] accountIndicatorBackColors;
     private final int[] accountDarkColors;
     private final int[] accountTextColors;
     private final int[] accountRippleColors;
@@ -32,6 +31,7 @@ public class AccountPainter {
     AccountPainter(Context context) {
 
         accountMainColors = context.getResources().getIntArray(getThemeAttribute(context, R.attr.account_main_color));
+        accountIndicatorBackColors = context.getResources().getIntArray(getThemeAttribute(context, R.attr.contact_list_account_group_background));
         accountDarkColors = context.getResources().getIntArray(getThemeAttribute(context, R.attr.account_status_bar_color));
         accountTextColors = context.getResources().getIntArray(getThemeAttribute(context, R.attr.account_text_color));
         accountRippleColors = context.getResources().getIntArray(R.array.account_100);
@@ -104,12 +104,25 @@ public class AccountPainter {
         return accountMainColors[getAccountColorLevel(account)];
     }
 
+    public int getAccountIndicatorBackColor(AccountJid account) {
+        return accountIndicatorBackColors[getAccountColorLevel(account)];
+    }
+
     public int getDefaultMainColor() {
         AccountJid firstAccount = getFirstAccount();
         if (firstAccount == null) {
             return themeMainColor;
         } else {
             return getAccountMainColor(firstAccount);
+        }
+    }
+
+    public int getDefaultIndicatorBackColor() {
+        AccountJid firstAccount = getFirstAccount();
+        if (firstAccount == null) {
+            return themeMainColor;
+        } else {
+            return getAccountIndicatorBackColor(firstAccount);
         }
     }
 

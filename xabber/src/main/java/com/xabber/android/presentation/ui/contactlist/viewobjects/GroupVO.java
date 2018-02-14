@@ -36,6 +36,7 @@ public class GroupVO extends AbstractFlexibleItem<GroupVO.ViewHolder>
     private String id;
 
     private int accountColorIndicator;
+    private int accountColorIndicatorBack;
     private boolean showOfflineShadow;
 
     private String title;
@@ -47,12 +48,14 @@ public class GroupVO extends AbstractFlexibleItem<GroupVO.ViewHolder>
     private List<ContactVO> mSubItems;
     private AccountVO mHeader;
 
-    public GroupVO(int accountColorIndicator, boolean showOfflineShadow, String title,
+    public GroupVO(int accountColorIndicator, int accountColorIndicatorBack,
+                   boolean showOfflineShadow, String title,
                    boolean expanded, int offlineIndicatorLevel, String groupName,
                    AccountJid accountJid) {
 
         this.id = UUID.randomUUID().toString();
         this.accountColorIndicator = accountColorIndicator;
+        this.accountColorIndicatorBack = accountColorIndicatorBack;
         this.showOfflineShadow = showOfflineShadow;
         this.title = title;
         this.mExpanded = expanded;
@@ -90,6 +93,7 @@ public class GroupVO extends AbstractFlexibleItem<GroupVO.ViewHolder>
 
         /** set up ACCOUNT COLOR indicator */
         viewHolder.accountColorIndicator.setBackgroundColor(getAccountColorIndicator());
+        viewHolder.accountColorIndicatorBack.setBackgroundColor(getAccountColorIndicatorBack());
 
         /** set up EXPAND indicator */
         //viewHolder.indicator.setImageLevel(getExpandIndicatorLevel());
@@ -149,13 +153,18 @@ public class GroupVO extends AbstractFlexibleItem<GroupVO.ViewHolder>
         String name = GroupManager.getInstance().getGroupName(configuration.getAccount(), configuration.getGroup());
         boolean showOfflineShadow = false;
         int accountColorIndicator;
+        int accountColorIndicatorBack;
         boolean expanded;
         int offlineIndicatorLevel;
 
         AccountJid account = configuration.getAccount();
-        if (account == null || account == GroupManager.NO_ACCOUNT)
+        if (account == null || account == GroupManager.NO_ACCOUNT) {
             accountColorIndicator = ColorManager.getInstance().getAccountPainter().getDefaultMainColor();
-        else accountColorIndicator = ColorManager.getInstance().getAccountPainter().getAccountMainColor(account);
+            accountColorIndicatorBack = ColorManager.getInstance().getAccountPainter().getDefaultIndicatorBackColor();
+        } else {
+            accountColorIndicator = ColorManager.getInstance().getAccountPainter().getAccountMainColor(account);
+            accountColorIndicatorBack = ColorManager.getInstance().getAccountPainter().getAccountIndicatorBackColor(account);
+        }
 
         expanded = configuration.isExpanded();
         offlineIndicatorLevel = configuration.getShowOfflineMode().ordinal();
@@ -171,7 +180,7 @@ public class GroupVO extends AbstractFlexibleItem<GroupVO.ViewHolder>
                 showOfflineShadow = true;
         }
 
-        return new GroupVO(accountColorIndicator, showOfflineShadow, name, expanded,
+        return new GroupVO(accountColorIndicator, accountColorIndicatorBack, showOfflineShadow, name, expanded,
                 offlineIndicatorLevel, configuration.getGroup(), configuration.getAccount());
     }
 
@@ -195,6 +204,10 @@ public class GroupVO extends AbstractFlexibleItem<GroupVO.ViewHolder>
         return accountColorIndicator;
     }
 
+    public int getAccountColorIndicatorBack() {
+        return accountColorIndicatorBack;
+    }
+
     public boolean isShowOfflineShadow() {
         return showOfflineShadow;
     }
@@ -206,6 +219,7 @@ public class GroupVO extends AbstractFlexibleItem<GroupVO.ViewHolder>
         final ImageView groupOfflineIndicator;
         final ImageView offlineShadow;
         final View accountColorIndicator;
+        final View accountColorIndicatorBack;
 
         public ViewHolder(View view, FlexibleAdapter adapter) {
             super(view, adapter);
@@ -213,6 +227,7 @@ public class GroupVO extends AbstractFlexibleItem<GroupVO.ViewHolder>
             itemView.setOnClickListener(this);
 
             accountColorIndicator = view.findViewById(R.id.accountColorIndicator);
+            accountColorIndicatorBack = view.findViewById(R.id.accountColorIndicatorBack);
             indicator = (ImageView) view.findViewById(R.id.indicator);
             name = (TextView) view.findViewById(R.id.name);
             groupOfflineIndicator = (ImageView) view.findViewById(R.id.group_offline_indicator);

@@ -48,6 +48,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
     private final String id;
 
     private int accountColorIndicator;
+    private int accountColorIndicatorBack;
     private boolean showOfflineShadow;
 
     private final String name;
@@ -76,7 +77,8 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
         void onContactButtonClick(int adapterPosition);
     }
 
-    protected ContactVO(int accountColorIndicator, boolean showOfflineShadow, String name,
+    protected ContactVO(int accountColorIndicator, int accountColorIndicatorBack,
+                        boolean showOfflineShadow, String name,
                         String status, int statusId, int statusLevel, Drawable avatar,
                   int mucIndicatorLevel, UserJid userJid, AccountJid accountJid, int unreadCount,
                   boolean mute, NotificationState.NotificationMode notificationMode, String messageText,
@@ -84,6 +86,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
                         boolean archived, ContactClickListener listener) {
         this.id = UUID.randomUUID().toString();
         this.accountColorIndicator = accountColorIndicator;
+        this.accountColorIndicatorBack = accountColorIndicatorBack;
         this.showOfflineShadow = showOfflineShadow;
         this.name = name;
         this.status = status;
@@ -108,6 +111,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
     public static ContactVO convert(AbstractContact contact, ContactClickListener listener) {
         boolean showOfflineShadow;
         int accountColorIndicator;
+        int accountColorIndicatorBack;
         Drawable avatar;
         int statusLevel;
         int mucIndicatorLevel;
@@ -126,6 +130,8 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
 
         accountColorIndicator = ColorManager.getInstance().getAccountPainter()
                 .getAccountMainColor(contact.getAccount());
+        accountColorIndicatorBack = ColorManager.getInstance().getAccountPainter()
+                .getAccountIndicatorBackColor(contact.getAccount());
         avatar = contact.getAvatarForContactList();
 
 
@@ -191,7 +197,8 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
         if (chat.getNotificationState().getMode() == NotificationState.NotificationMode.disabled && defaultValue)
             mode = NotificationState.NotificationMode.disabled;
 
-        return new ContactVO(accountColorIndicator, showOfflineShadow, name, statusText, statusId,
+        return new ContactVO(accountColorIndicator, accountColorIndicatorBack,
+                showOfflineShadow, name, statusText, statusId,
                 statusLevel, avatar, mucIndicatorLevel, contact.getUser(), contact.getAccount(),
                 unreadCount, !chat.notifyAboutMessage(), mode, messageText, isOutgoing, time,
                 messageStatus, messageOwner, chat.isArchived(), listener);
@@ -235,6 +242,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
 
         /** set up ACCOUNT COLOR indicator */
         viewHolder.accountColorIndicator.setBackgroundColor(getAccountColorIndicator());
+        viewHolder.accountColorIndicatorBack.setBackgroundColor(getAccountColorIndicatorBack());
 
         /** set up AVATAR */
         if (SettingsManager.contactsShowAvatars()) {
@@ -373,6 +381,10 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
         return accountColorIndicator;
     }
 
+    public int getAccountColorIndicatorBack() {
+        return accountColorIndicatorBack;
+    }
+
     public boolean isShowOfflineShadow() {
         return showOfflineShadow;
     }
@@ -382,6 +394,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
         private final ContactClickListener listener;
 
         final View accountColorIndicator;
+        final View accountColorIndicatorBack;
         final ImageView ivAvatar;
         final ImageView ivStatus;
         final ImageView ivOnlyStatus;
@@ -405,6 +418,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
             itemView.setOnCreateContextMenuListener(this);
 
             accountColorIndicator = view.findViewById(R.id.accountColorIndicator);
+            accountColorIndicatorBack = view.findViewById(R.id.accountColorIndicatorBack);
             ivAvatar = (ImageView) view.findViewById(R.id.ivAvatar);
             ivAvatar.setOnClickListener(this);
             ivStatus = (ImageView) view.findViewById(R.id.ivStatus);

@@ -36,6 +36,7 @@ public class AccountVO extends AbstractHeaderItem<AccountVO.ViewHolder> {
     private String id;
 
     private int accountColorIndicator;
+    private int accountColorIndicatorBack;
     private boolean showOfflineShadow;
 
     private String name;
@@ -57,12 +58,13 @@ public class AccountVO extends AbstractHeaderItem<AccountVO.ViewHolder> {
         void onAccountMenuClick(int adapterPosition, View view);
     }
 
-    public AccountVO(int accountColorIndicator, boolean showOfflineShadow,
+    public AccountVO(int accountColorIndicator, int accountColorIndicatorBack, boolean showOfflineShadow,
                      String name, String jid, String status, int statusLevel, int statusId,
                      Drawable avatar, int offlineModeLevel, String contactCount, AccountJid accountJid,
                      boolean isExpand, String groupName, AccountClickListener listener) {
         this.id = UUID.randomUUID().toString();
         this.accountColorIndicator = accountColorIndicator;
+        this.accountColorIndicatorBack = accountColorIndicatorBack;
         this.showOfflineShadow = showOfflineShadow;
         this.name = name;
         this.jid = jid;
@@ -108,6 +110,7 @@ public class AccountVO extends AbstractHeaderItem<AccountVO.ViewHolder> {
 
         /** set up ACCOUNT COLOR indicator */
         viewHolder.accountColorIndicator.setBackgroundColor(getAccountColorIndicator());
+        viewHolder.accountColorIndicatorBack.setBackgroundColor(getAccountColorIndicatorBack());
 
         /** bind ACCOUNT BACKGROUND color */
         final int[] accountGroupColors = context.getResources().getIntArray(
@@ -163,11 +166,13 @@ public class AccountVO extends AbstractHeaderItem<AccountVO.ViewHolder> {
         int offlineModeLevel;
         boolean showOfflineShadow = false;
         int accountColorIndicator;
+        int accountColorIndicatorBack;
         String contactCount;
 
         AccountJid account = configuration.getAccount();
 
         accountColorIndicator = ColorManager.getInstance().getAccountPainter().getAccountMainColor(account);
+        accountColorIndicatorBack = ColorManager.getInstance().getAccountPainter().getAccountIndicatorBackColor(account);
 
         jid = GroupManager.getInstance().getGroupName(account, configuration.getGroup());
         name = AccountManager.getInstance().getNickName(account);
@@ -205,7 +210,8 @@ public class AccountVO extends AbstractHeaderItem<AccountVO.ViewHolder> {
             showOfflineShadow = false;
         }
 
-        return new AccountVO(accountColorIndicator, showOfflineShadow, name, jid, status, statusLevel,
+        return new AccountVO(accountColorIndicator, accountColorIndicatorBack, showOfflineShadow,
+                name, jid, status, statusLevel,
                 statusId, avatar, offlineModeLevel, contactCount, configuration.getAccount(),
                 configuration.isExpanded(), configuration.getGroup(), listener);
     }
@@ -258,6 +264,11 @@ public class AccountVO extends AbstractHeaderItem<AccountVO.ViewHolder> {
         return accountColorIndicator;
     }
 
+    public int getAccountColorIndicatorBack() {
+        return accountColorIndicatorBack;
+    }
+
+
     public boolean isShowOfflineShadow() {
         return showOfflineShadow;
     }
@@ -273,6 +284,7 @@ public class AccountVO extends AbstractHeaderItem<AccountVO.ViewHolder> {
         final ImageView ivMenu;
         final ImageView offlineShadow;
         final View accountColorIndicator;
+        final View accountColorIndicatorBack;
         final View backgroundView;
         final View bottomView;
 
@@ -294,6 +306,7 @@ public class AccountVO extends AbstractHeaderItem<AccountVO.ViewHolder> {
             ivStatus.setOnClickListener(this);
             offlineShadow = (ImageView) view.findViewById(R.id.offline_shadow);
             accountColorIndicator = view.findViewById(R.id.accountColorIndicator);
+            accountColorIndicatorBack = view.findViewById(R.id.accountColorIndicatorBack);
             ivMenu = (ImageView) view.findViewById(R.id.ivMenu);
             ivMenu.setOnClickListener(this);
             backgroundView = view.findViewById(R.id.backgroundView);
