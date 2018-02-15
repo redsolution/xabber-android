@@ -394,7 +394,7 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
             final ArrayList<AbstractContact> baseEntities = getSearchResults(rosterContacts, comparator, abstractChats);
             items.clear();
 
-            items.add(new CategoryVO("Chats"));
+            items.add(new CategoryVO(context.getString(R.string.category_title_contacts)));
             items.addAll(SettingsManager.contactsShowMessages()
                     ? ExtContactVO.convert(baseEntities, this)
                     : ContactVO.convert(baseEntities, this));

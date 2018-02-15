@@ -4,6 +4,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.xabber.android.R;
+import com.xabber.android.ui.color.ColorManager;
 
 import java.util.List;
 import java.util.UUID;
@@ -48,13 +49,23 @@ public class CategoryVO extends AbstractFlexibleItem<CategoryVO.ViewHolder> {
     @Override
     public void bindViewHolder(FlexibleAdapter adapter, ViewHolder holder, int position, List<Object> payloads) {
         holder.tvTitle.setText(title);
+
+        /** set up ACCOUNT COLOR indicator */
+        holder.accountColorIndicator.setBackgroundColor(
+                ColorManager.getInstance().getAccountPainter().getDefaultMainColor());
+        holder.accountColorIndicatorBack.setBackgroundColor(
+                ColorManager.getInstance().getAccountPainter().getDefaultIndicatorBackColor());
     }
 
     public class ViewHolder extends FlexibleViewHolder {
         final TextView tvTitle;
+        final View accountColorIndicator;
+        final View accountColorIndicatorBack;
 
         public ViewHolder(View view, FlexibleAdapter adapter) {
             super(view, adapter);
+            accountColorIndicator = view.findViewById(R.id.accountColorIndicator);
+            accountColorIndicatorBack = view.findViewById(R.id.accountColorIndicatorBack);
             tvTitle = (TextView) view.findViewById(R.id.tvTitle);
         }
     }
