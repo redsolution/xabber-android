@@ -387,16 +387,8 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
                             createContactList(items, contacts, comparator);
                         }
                     }
-                } else {
-
+                } else
                     items.addAll(ChatVO.convert(chatsGroup.getAbstractContacts(), this));
-//                    if (chatsGroup.getAbstractContacts().size() == 0) {
-//                        if (currentChatsState == ContactListAdapter.ChatListState.unread)
-//                            listener.showPlaceholder(context.getString(R.string.placeholder_no_unread));
-//                        if (currentChatsState == ContactListAdapter.ChatListState.archived)
-//                            listener.showPlaceholder(context.getString(R.string.placeholder_no_archived));
-//                    }
-                }
             }
         } else { // Search
             final ArrayList<AbstractContact> baseEntities = getSearchResults(rosterContacts, comparator, abstractChats);
@@ -413,8 +405,6 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
 
         if (view != null) {
             if (items.size() == 1) {
-                if (filterString != null && !filterString.isEmpty())
-                    view.showPlaceholder(context.getString(R.string.placeholder_no_filtered));
                 if (currentChatsState == ContactListAdapter.ChatListState.unread)
                     view.showPlaceholder(context.getString(R.string.placeholder_no_unread));
                 if (currentChatsState == ContactListAdapter.ChatListState.archived)

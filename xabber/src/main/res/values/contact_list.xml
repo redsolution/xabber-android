@@ -107,7 +107,6 @@
 
     <string name="placeholder_no_archived">Archive has no chats</string>
     <string name="placeholder_no_unread">No unread chats</string>
-    <string name="placeholder_no_filtered">Contacts not found</string>
 
     <string name="chat_was_archived">Chat was archived</string>
     <string name="chat_was_unarchived">Removed from archive</string>

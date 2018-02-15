@@ -435,9 +435,6 @@ public class ContactListFragment extends Fragment implements ContactListView,
                     startActivity(ContactAddActivity.createIntent(getActivity()));
                 }
             };
-//            for (int i = 0; i < optionsMenu.size(); i++) {
-//                optionsMenu.getItem(i).setVisible(true);
-//            }
         } else if (commonState == CommonState.roster) {
             state = ContactListState.connecting;
             text = R.string.application_state_roster;
@@ -479,9 +476,6 @@ public class ContactListFragment extends Fragment implements ContactListView,
                     contactListFragmentListener.onManageAccountsClick();
                 }
             };
-//            for (int i = 0; i < optionsMenu.size(); i++) {
-//                optionsMenu.getItem(i).setVisible(false);
-//            }
         } else if (commonState == CommonState.empty) {
             state = ContactListState.offline;
             text = R.string.application_state_empty;
@@ -495,6 +489,8 @@ public class ContactListFragment extends Fragment implements ContactListView,
         } else {
             throw new IllegalStateException();
         }
+
+        // set up image and animation in placeholder
         if (state == ContactListState.offline) {
             connectedView.setVisibility(View.INVISIBLE);
             disconnectedView.setVisibility(View.VISIBLE);
@@ -510,7 +506,11 @@ public class ContactListFragment extends Fragment implements ContactListView,
             disconnectedView.setVisibility(View.INVISIBLE);
             disconnectedView.clearAnimation();
         }
+
+        // set up text in placeholder
         textView.setText(text);
+
+        // set up button in placeholder
         if (button == 0) {
             buttonView.setVisibility(View.GONE);
         } else {
