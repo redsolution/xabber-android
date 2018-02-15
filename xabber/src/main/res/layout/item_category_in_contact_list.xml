@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:elevation="2dp"
+    android:background="?attr/contact_list_contact_background">
+
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/expander_height"
+        android:gravity="center_vertical"
+        android:singleLine="true"
+        android:ellipsize="marquee"
+        android:textColor="#FF9E9E9E"
+        android:fontFamily="sans-serif-medium"
+        tools:text="@tools:sample/lorem"
+        android:layout_marginLeft="10dp"
+        />
+
+</LinearLayout>

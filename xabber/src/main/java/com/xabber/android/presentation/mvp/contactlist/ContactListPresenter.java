@@ -33,6 +33,7 @@ import com.xabber.android.presentation.ui.contactlist.viewobjects.AccountWithBut
 import com.xabber.android.presentation.ui.contactlist.viewobjects.AccountWithContactsVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.AccountWithGroupsVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.ButtonVO;
+import com.xabber.android.presentation.ui.contactlist.viewobjects.CategoryVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.ChatVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.ChatWithButtonVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.ContactVO;
@@ -400,7 +401,8 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
         } else { // Search
             final ArrayList<AbstractContact> baseEntities = getSearchResults(rosterContacts, comparator, abstractChats);
             items.clear();
-            items.add(new ToolbarVO(context, this));
+
+            items.add(new CategoryVO("Chats"));
             items.addAll(SettingsManager.contactsShowMessages()
                     ? ExtContactVO.convert(baseEntities, this)
                     : ContactVO.convert(baseEntities, this));
