@@ -6,9 +6,12 @@ package com.xabber.android.presentation.ui.contactlist.viewobjects;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.content.res.TypedArray;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.support.v7.widget.RecyclerView;
+import android.util.TypedValue;
 import android.view.ContextMenu;
 import android.view.View;
 import android.widget.Button;
@@ -282,6 +285,10 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
         else {
             mucIndicator = context.getResources().getDrawable(R.drawable.muc_indicator_view);
             mucIndicator.setLevel(getMucIndicatorLevel());
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                mucIndicator.setTint(context.getResources().getColor(getThemeResource(context,
+                        R.attr.contact_list_contact_name_text_color)));
+            }
         }
 
         /** set up NOTIFICATION MUTE */
@@ -395,6 +402,14 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
 
     public boolean isShowOfflineShadow() {
         return showOfflineShadow;
+    }
+
+    private int getThemeResource(Context context, int themeResourceId) {
+        TypedValue typedValue = new TypedValue();
+        TypedArray a = context.obtainStyledAttributes(typedValue.data, new int[] {themeResourceId});
+        final int accountGroupColorsResourceId = a.getResourceId(0, 0);
+        a.recycle();
+        return accountGroupColorsResourceId;
     }
 
     public class ViewHolder extends FlexibleViewHolder implements View.OnCreateContextMenuListener {
