@@ -258,11 +258,19 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
 
         /** set up ROSTER STATUS */
         if (getStatusLevel() == 6 ||
-                (getMucIndicatorLevel() != 0 && getStatusLevel() != 1))
+                (getMucIndicatorLevel() != 0 && getStatusLevel() != 1)) {
+            if (viewHolder.tvStatus != null)
+                viewHolder.tvStatus.setTextColor(ColorManager.getInstance().getColorContactSecondLine());
             viewHolder.ivStatus.setVisibility(View.INVISIBLE);
-        else viewHolder.ivStatus.setVisibility(View.VISIBLE);
+        } else {
+            viewHolder.ivStatus.setVisibility(View.VISIBLE);
+            if (viewHolder.tvStatus != null)
+                viewHolder.tvStatus.setTextColor(context.getResources().getColor(R.color.status_color_in_contact_list_online));
+        }
         viewHolder.ivStatus.setImageLevel(getStatusLevel());
         viewHolder.ivOnlyStatus.setImageLevel(getStatusLevel());
+        if (viewHolder.tvStatus != null) viewHolder.tvStatus.setText(getStatus().isEmpty()
+                ? context.getString(getStatusId()) : getStatus());
 
         /** set up CONTACT/MUC NAME */
         viewHolder.tvContactName.setText(getName());
@@ -398,6 +406,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
         final ImageView ivAvatar;
         final ImageView ivStatus;
         final ImageView ivOnlyStatus;
+        final TextView tvStatus;
         final TextView tvContactName;
         final TextView tvOutgoingMessage;
         final TextView tvMessageText;
@@ -423,6 +432,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
             ivAvatar.setOnClickListener(this);
             ivStatus = (ImageView) view.findViewById(R.id.ivStatus);
             ivOnlyStatus = (ImageView) view.findViewById(R.id.ivOnlyStatus);
+            tvStatus = (TextView) view.findViewById(R.id.tvStatus);
             tvContactName = (TextView) view.findViewById(R.id.tvContactName);
             tvOutgoingMessage = (TextView) view.findViewById(R.id.tvOutgoingMessage);
             tvMessageText = (TextView) view.findViewById(R.id.tvMessageText);
