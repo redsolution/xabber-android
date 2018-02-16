@@ -84,7 +84,7 @@
         android:layout_width="match_parent"
         android:layout_height="8dp"
         android:layout_below="@id/backgroundView"
-        android:background="?attr/contact_list_contact_background"
+        android:background="?attr/contact_list_background"
         android:elevation="1dp"
         android:visibility="gone"
         >
@@ -93,7 +93,7 @@
             android:layout_width="match_parent"
             android:layout_height="4dp"
             android:elevation="2dp"
-            android:background="?attr/contact_list_contact_background"
+            android:background="?attr/contact_list_background"
             />
 
     </LinearLayout>
