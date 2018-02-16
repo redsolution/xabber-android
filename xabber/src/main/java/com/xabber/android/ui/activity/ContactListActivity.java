@@ -801,14 +801,14 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-//        if (contentFragment != null && contentFragment instanceof ContactListFragment ) {
-//            ContactListAdapter.ChatListState currentState = ((ContactListFragment) contentFragment).getListState();
-//            if (requestCode == CODE_OPEN_CHAT &&
-//                    (currentState == (ContactListAdapter.ChatListState.unread)
-//                    || currentState == (ContactListAdapter.ChatListState.archived))) {
-//                ((ContactListFragment) contentFragment).showRecent();
-//            }
-//        }
+        if (contentFragment != null && contentFragment instanceof ContactListFragment ) {
+            ContactListAdapter.ChatListState currentState = ((ContactListFragment) contentFragment).getListState();
+            if (requestCode == CODE_OPEN_CHAT &&
+                    (currentState == (ContactListAdapter.ChatListState.unread)
+                    || currentState == (ContactListAdapter.ChatListState.archived))) {
+                ((ContactListFragment) contentFragment).showRecent();
+            }
+        }
     }
 
     private boolean isSharedText(String type) {

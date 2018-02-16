@@ -401,7 +401,8 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
             hasVisibleContacts = baseEntities.size() > 0;
         }
 
-        view.onContactListChanged(commonState, hasContacts, hasVisibleContacts, filterString != null);
+        if (view != null) view.onContactListChanged(commonState, hasContacts, hasVisibleContacts,
+                    filterString != null);
 
         if (view != null) {
             if (items.size() == 1) {

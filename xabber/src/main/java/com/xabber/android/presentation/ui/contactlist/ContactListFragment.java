@@ -560,4 +560,8 @@ public class ContactListFragment extends Fragment implements ContactListView,
     public void filterContactList(String filter) {
         if (presenter != null) presenter.setFilterString(filter);
     }
+
+    public ContactListAdapter.ChatListState getListState() {
+        return presenter.getCurrentChatsState();
+    }
 }
