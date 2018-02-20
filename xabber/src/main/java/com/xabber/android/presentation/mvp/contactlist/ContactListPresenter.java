@@ -405,7 +405,7 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
                     filterString != null);
 
         if (view != null) {
-            if (items.size() == 1) {
+            if (items.size() == 1 && (filterString == null || filterString.isEmpty())) {
                 if (currentChatsState == ContactListAdapter.ChatListState.unread)
                     view.showPlaceholder(context.getString(R.string.placeholder_no_unread));
                 if (currentChatsState == ContactListAdapter.ChatListState.archived)
