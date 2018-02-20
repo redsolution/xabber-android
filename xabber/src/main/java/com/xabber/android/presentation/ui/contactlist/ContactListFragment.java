@@ -533,6 +533,9 @@ public class ContactListFragment extends Fragment implements ContactListView,
      * @param account
      */
     public void scrollToAccount(AccountJid account) {
+        if (presenter.getCurrentChatsState() != ContactListAdapter.ChatListState.recent)
+            showRecent();
+
         long count = adapter.getItemCount();
         for (int position = 0; position < (int) count; position++) {
             Object itemAtPosition = adapter.getItem(position);
