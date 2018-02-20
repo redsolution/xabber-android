@@ -285,7 +285,7 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
 
             // chats on top
             Collection<AbstractChat> chats = MessageManager.getInstance().getChatsOfEnabledAccount();
-            chatsGroup = getChatsGroup(blockedContacts, chats, currentChatsState);
+            chatsGroup = getChatsGroup(chats, currentChatsState);
 
             // Build structure.
             for (RosterContact rosterContact : rosterContacts) {
@@ -420,9 +420,7 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
      * @param state for which you want to filter
      * @return GroupConfiguration that may contains recent, unread or archived chats.
      */
-    private GroupConfiguration getChatsGroup(Map<AccountJid, Collection<UserJid>> blockedContacts,
-                                             Collection<AbstractChat> chats,
-                                             ContactListAdapter.ChatListState state) {
+    private GroupConfiguration getChatsGroup(Collection<AbstractChat> chats, ContactListAdapter.ChatListState state) {
         GroupConfiguration chatsGroup = new GroupConfiguration(GroupManager.NO_ACCOUNT,
                 com.xabber.android.ui.adapter.contactlist.viewobjects.GroupVO.RECENT_CHATS_TITLE, GroupManager.getInstance());
 
@@ -462,14 +460,10 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
         int itemsCount = 0;
         for (AbstractChat chat : newChats) {
             if (itemsCount < MAX_RECENT_ITEMS || state != ContactListAdapter.ChatListState.recent) {
-                if (blockedContacts.containsKey(chat.getAccount()) && blockedContacts.get(chat.getAccount()) != null) {
-                    if (!blockedContacts.get(chat.getAccount()).contains(chat.getUser())) {
-                        chatsGroup.addAbstractContact(RosterManager.getInstance()
-                                .getBestContact(chat.getAccount(), chat.getUser()));
-                        chatsGroup.increment(true);
-                        itemsCount++;
-                    }
-                }
+                chatsGroup.addAbstractContact(RosterManager.getInstance()
+                        .getBestContact(chat.getAccount(), chat.getUser()));
+                chatsGroup.increment(true);
+                itemsCount++;
             } else break;
         }
 
@@ -578,12 +572,7 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
     public ArrayList<IFlexible> getTwoNextRecentChat() {
         Collection<AbstractChat> chats = MessageManager.getInstance().getChatsOfEnabledAccount();
 
-        Map<AccountJid, Collection<UserJid>> blockedContacts = new TreeMap<>();
-        for (AccountJid account : AccountManager.getInstance().getEnabledAccounts()) {
-            blockedContacts.put(account, BlockingManager.getInstance().getCachedBlockedContacts(account));
-        }
-
-        GroupConfiguration chatsGroup = getChatsGroup(blockedContacts, chats, currentChatsState);
+        GroupConfiguration chatsGroup = getChatsGroup(chats, currentChatsState);
         ArrayList<AbstractContact> contacts = (ArrayList<AbstractContact>) chatsGroup.getAbstractContacts();
 
         ArrayList<IFlexible> items = new ArrayList<>();
