@@ -623,8 +623,8 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     }
 
     @Override
-    public void onChatSelected(BaseEntity chat) {
-        selectChat(chat.getAccount(), chat.getUser());
+    public void onChatSelected(AccountJid accountJid, UserJid userJid) {
+        selectChat(accountJid, userJid);
     }
 
     @Override

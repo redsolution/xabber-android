@@ -353,7 +353,7 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
                     for (AbstractContact contact : chatsGroup.getAbstractContacts()) {
                         if (i == MAX_RECENT_ITEMS - 1)
                             items.add(ChatWithButtonVO.convert(contact, this));
-                        else items.add(ChatVO.convert(contact, this));
+                        else items.add(ChatVO.convert(contact, this, null));
                         i++;
                     }
 
@@ -388,7 +388,7 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
                         }
                     }
                 } else
-                    items.addAll(ChatVO.convert(chatsGroup.getAbstractContacts(), this));
+                    items.addAll(ChatVO.convert(chatsGroup.getAbstractContacts(), this, null));
             }
         } else { // Search
             final ArrayList<AbstractContact> baseEntities = getSearchResults(rosterContacts, comparator, abstractChats);
@@ -577,7 +577,7 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
 
         ArrayList<IFlexible> items = new ArrayList<>();
         if (contacts != null && contacts.size() >= MAX_RECENT_ITEMS) {
-            items.add(ChatVO.convert(contacts.get(MAX_RECENT_ITEMS - 2), this));
+            items.add(ChatVO.convert(contacts.get(MAX_RECENT_ITEMS - 2), this, null));
             items.add(ChatWithButtonVO.convert(contacts.get(MAX_RECENT_ITEMS - 1), this));
         }
         return items;

@@ -70,7 +70,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
     private final Date time;
     private final int messageStatus;
     private final String messageOwner;
-    private final boolean archived;
+    protected boolean archived;
 
     protected final ContactClickListener listener;
 
@@ -494,5 +494,10 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
                 super.onClick(view);
             }
         }
+    }
+
+    /** Use only in RecentChatFragment for dynamic update item */
+    public void setArchived(boolean archived) {
+        this.archived = archived;
     }
 }
