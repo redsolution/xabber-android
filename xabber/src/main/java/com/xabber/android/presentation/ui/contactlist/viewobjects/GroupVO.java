@@ -99,7 +99,7 @@ public class GroupVO extends AbstractFlexibleItem<GroupVO.ViewHolder>
         //viewHolder.indicator.setImageLevel(getExpandIndicatorLevel());
         viewHolder.indicator.setImageLevel(mExpanded ? 1 : 0);
 
-        if (getTitle().equals(com.xabber.android.ui.adapter.contactlist.viewobjects.GroupVO.RECENT_CHATS_TITLE))
+        if (getTitle().equals(GroupVO.RECENT_CHATS_TITLE))
             viewHolder.indicator.setVisibility(View.GONE);
         else viewHolder.indicator.setVisibility(View.VISIBLE);
 

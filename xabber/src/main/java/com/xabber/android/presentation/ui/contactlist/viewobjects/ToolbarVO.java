@@ -11,10 +11,10 @@ import android.widget.TextView;
 
 import com.xabber.android.R;
 import com.xabber.android.data.account.AccountManager;
+import com.xabber.android.presentation.mvp.contactlist.ContactListPresenter;
 import com.xabber.android.ui.activity.ConferenceSelectActivity;
 import com.xabber.android.ui.activity.ContactAddActivity;
 import com.xabber.android.ui.activity.StatusEditActivity;
-import com.xabber.android.ui.adapter.contactlist.ContactListAdapter;
 import com.xabber.android.ui.color.AccountPainter;
 import com.xabber.android.ui.color.ColorManager;
 
@@ -34,14 +34,14 @@ public class ToolbarVO extends AbstractHeaderItem<ToolbarVO.ViewHolder> implemen
 
     private String id;
 
-    private ContactListAdapter.ChatListState currentChatsState =
-            ContactListAdapter.ChatListState.recent;
+    private ContactListPresenter.ChatListState currentChatsState =
+            ContactListPresenter.ChatListState.recent;
 
     private Context context;
     protected OnClickListener listener;
 
     public interface OnClickListener {
-        void onStateSelected(ContactListAdapter.ChatListState state);
+        void onStateSelected(ContactListPresenter.ChatListState state);
     }
 
     public ToolbarVO(Context context, OnClickListener listener) {
@@ -165,13 +165,13 @@ public class ToolbarVO extends AbstractHeaderItem<ToolbarVO.ViewHolder> implemen
                     context.startActivity(ConferenceSelectActivity.createIntent(context));
                     return true;
                 case R.id.action_recent_chats:
-                    listener.onStateSelected(ContactListAdapter.ChatListState.recent);
+                    listener.onStateSelected(ContactListPresenter.ChatListState.recent);
                     return true;
                 case R.id.action_unread_chats:
-                    listener.onStateSelected(ContactListAdapter.ChatListState.unread);
+                    listener.onStateSelected(ContactListPresenter.ChatListState.unread);
                     return true;
                 case R.id.action_archived_chats:
-                    listener.onStateSelected(ContactListAdapter.ChatListState.archived);
+                    listener.onStateSelected(ContactListPresenter.ChatListState.archived);
                     return true;
                 default:
                     return false;

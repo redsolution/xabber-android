@@ -60,8 +60,8 @@ import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.data.xaccount.XMPPAccountSettings;
 import com.xabber.android.data.xaccount.XabberAccount;
 import com.xabber.android.data.xaccount.XabberAccountManager;
+import com.xabber.android.presentation.mvp.contactlist.ContactListPresenter;
 import com.xabber.android.presentation.ui.contactlist.ContactListFragment;
-import com.xabber.android.ui.adapter.contactlist.ContactListAdapter;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.dialog.AccountChooseDialogFragment;
 import com.xabber.android.ui.dialog.AccountChooseDialogFragment.OnChooseListener;
@@ -781,7 +781,7 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onUnreadMessagesCountChanged(ContactListAdapter.UpdateUnreadCountEvent event) {
+    public void onUnreadMessagesCountChanged(ContactListPresenter.UpdateUnreadCountEvent event) {
         if (bottomMenu != null)
             bottomMenu.setUnreadMessages(event.getCount());
     }
@@ -802,10 +802,10 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (contentFragment != null && contentFragment instanceof ContactListFragment ) {
-            ContactListAdapter.ChatListState currentState = ((ContactListFragment) contentFragment).getListState();
+            ContactListPresenter.ChatListState currentState = ((ContactListFragment) contentFragment).getListState();
             if (requestCode == CODE_OPEN_CHAT &&
-                    (currentState == (ContactListAdapter.ChatListState.unread)
-                    || currentState == (ContactListAdapter.ChatListState.archived))) {
+                    (currentState == (ContactListPresenter.ChatListState.unread)
+                    || currentState == (ContactListPresenter.ChatListState.archived))) {
                 ((ContactListFragment) contentFragment).showRecent();
             }
         }

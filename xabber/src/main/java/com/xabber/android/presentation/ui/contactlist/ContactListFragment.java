@@ -9,7 +9,6 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
@@ -21,7 +20,6 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.xabber.android.R;
@@ -50,14 +48,10 @@ import com.xabber.android.ui.activity.ContactActivity;
 import com.xabber.android.ui.activity.ContactAddActivity;
 import com.xabber.android.ui.activity.ContactEditActivity;
 import com.xabber.android.ui.activity.ContactListActivity;
-import com.xabber.android.ui.adapter.contactlist.ContactListAdapter;
 import com.xabber.android.ui.adapter.contactlist.ContactListState;
-import com.xabber.android.ui.adapter.contactlist.GroupConfiguration;
-import com.xabber.android.ui.adapter.contactlist.viewobjects.BaseRosterItemVO;
 import com.xabber.android.ui.helper.ContextMenuHelper;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import eu.davidea.flexibleadapter.FlexibleAdapter;
@@ -255,7 +249,7 @@ public class ContactListFragment extends Fragment implements ContactListView,
             adapter.removeItem(position);
 
             // update end of list
-            if (presenter.getCurrentChatsState() == ContactListAdapter.ChatListState.recent) {
+            if (presenter.getCurrentChatsState() == ContactListPresenter.ChatListState.recent) {
                 ArrayList<IFlexible> items = presenter.getTwoNextRecentChat();
                 if (items != null && items.size() == 2) {
                     adapter.addItem(MAX_RECENT_ITEMS - 1, items.get(0));
@@ -347,7 +341,7 @@ public class ContactListFragment extends Fragment implements ContactListView,
                 setChatArchived((ChatVO) deletedItem, archived);
 
                 // update end of list
-                if (presenter.getCurrentChatsState() == ContactListAdapter.ChatListState.recent
+                if (presenter.getCurrentChatsState() == ContactListPresenter.ChatListState.recent
                         && adapter.getItemCount() >= MAX_RECENT_ITEMS) {
                     ChatWithButtonVO lastChat = ChatWithButtonVO.convert((ChatVO)
                             adapter.getItem(MAX_RECENT_ITEMS - 1));
@@ -522,7 +516,7 @@ public class ContactListFragment extends Fragment implements ContactListView,
 
     public void showRecent() {
         if (presenter != null) {
-            presenter.onStateSelected(ContactListAdapter.ChatListState.recent);
+            presenter.onStateSelected(ContactListPresenter.ChatListState.recent);
             ((ContactListActivity)getActivity()).setStatusBarColor();
         }
     }
@@ -533,7 +527,7 @@ public class ContactListFragment extends Fragment implements ContactListView,
      * @param account
      */
     public void scrollToAccount(AccountJid account) {
-        if (presenter.getCurrentChatsState() != ContactListAdapter.ChatListState.recent)
+        if (presenter.getCurrentChatsState() != ContactListPresenter.ChatListState.recent)
             showRecent();
 
         long count = adapter.getItemCount();
@@ -564,7 +558,7 @@ public class ContactListFragment extends Fragment implements ContactListView,
         if (presenter != null) presenter.setFilterString(filter);
     }
 
-    public ContactListAdapter.ChatListState getListState() {
+    public ContactListPresenter.ChatListState getListState() {
         return presenter.getCurrentChatsState();
     }
 }

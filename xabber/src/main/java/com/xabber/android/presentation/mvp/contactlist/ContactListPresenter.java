@@ -42,7 +42,6 @@ import com.xabber.android.presentation.ui.contactlist.viewobjects.GroupVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.ToolbarVO;
 import com.xabber.android.ui.adapter.ChatComparator;
 import com.xabber.android.ui.adapter.contactlist.AccountConfiguration;
-import com.xabber.android.ui.adapter.contactlist.ContactListAdapter;
 import com.xabber.android.ui.adapter.contactlist.ContactListGroupUtils;
 import com.xabber.android.ui.adapter.contactlist.GroupConfiguration;
 
@@ -77,7 +76,7 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
 
     private String filterString = null;
     protected Locale locale = Locale.getDefault();
-    private ContactListAdapter.ChatListState currentChatsState = ContactListAdapter.ChatListState.recent;
+    private ChatListState currentChatsState = ChatListState.recent;
 
     public static ContactListPresenter getInstance(Context context) {
         if (instance == null) instance = new ContactListPresenter(context);
@@ -136,7 +135,7 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
 
     @Override
     public void onContactButtonClick(int adapterPosition) {
-        onStateSelected(ContactListAdapter.ChatListState.all);
+        onStateSelected(ChatListState.all);
     }
 
     @Override
@@ -150,7 +149,7 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
     }
 
     @Override
-    public void onStateSelected(ContactListAdapter.ChatListState state) {
+    public void onStateSelected(ChatListState state) {
         this.currentChatsState = state;
         structureBuilder.build();
         if (view != null) {
@@ -346,7 +345,7 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
             items.add(new ToolbarVO(context, this));
             if (hasVisibleContacts) {
 
-                if (currentChatsState == ContactListAdapter.ChatListState.recent) {
+                if (currentChatsState == ChatListState.recent) {
 
                     // add recent chats
                     int i = 0;
@@ -406,9 +405,9 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
 
         if (view != null) {
             if (items.size() == 1 && (filterString == null || filterString.isEmpty())) {
-                if (currentChatsState == ContactListAdapter.ChatListState.unread)
+                if (currentChatsState == ChatListState.unread)
                     view.showPlaceholder(context.getString(R.string.placeholder_no_unread));
-                if (currentChatsState == ContactListAdapter.ChatListState.archived)
+                if (currentChatsState == ChatListState.archived)
                     view.showPlaceholder(context.getString(R.string.placeholder_no_archived));
             } else view.hidePlaceholder();
             view.updateItems(items);
@@ -420,9 +419,9 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
      * @param state for which you want to filter
      * @return GroupConfiguration that may contains recent, unread or archived chats.
      */
-    private GroupConfiguration getChatsGroup(Collection<AbstractChat> chats, ContactListAdapter.ChatListState state) {
+    private GroupConfiguration getChatsGroup(Collection<AbstractChat> chats, ChatListState state) {
         GroupConfiguration chatsGroup = new GroupConfiguration(GroupManager.NO_ACCOUNT,
-                com.xabber.android.ui.adapter.contactlist.viewobjects.GroupVO.RECENT_CHATS_TITLE, GroupManager.getInstance());
+                GroupVO.RECENT_CHATS_TITLE, GroupManager.getInstance());
 
         List<AbstractChat> newChats = new ArrayList<>();
 
@@ -451,7 +450,7 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
                 }
             }
         }
-        EventBus.getDefault().post(new ContactListAdapter.UpdateUnreadCountEvent(unreadMessageCount));
+        EventBus.getDefault().post(new UpdateUnreadCountEvent(unreadMessageCount));
 
         Collections.sort(newChats, ChatComparator.CHAT_COMPARATOR);
 
@@ -459,7 +458,7 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
 
         int itemsCount = 0;
         for (AbstractChat chat : newChats) {
-            if (itemsCount < MAX_RECENT_ITEMS || state != ContactListAdapter.ChatListState.recent) {
+            if (itemsCount < MAX_RECENT_ITEMS || state != ChatListState.recent) {
                 chatsGroup.addAbstractContact(RosterManager.getInstance()
                         .getBestContact(chat.getAccount(), chat.getUser()));
                 chatsGroup.increment(true);
@@ -565,7 +564,7 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
         return baseEntities;
     }
 
-    public ContactListAdapter.ChatListState getCurrentChatsState() {
+    public ChatListState getCurrentChatsState() {
         return currentChatsState;
     }
 
@@ -581,5 +580,24 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
             items.add(ChatWithButtonVO.convert(contacts.get(MAX_RECENT_ITEMS - 1), this));
         }
         return items;
+    }
+
+    public enum ChatListState {
+        recent,
+        unread,
+        archived,
+        all
+    }
+
+    public static class UpdateUnreadCountEvent {
+        private int count;
+
+        public UpdateUnreadCountEvent(int count) {
+            this.count = count;
+        }
+
+        public int getCount() {
+            return count;
+        }
     }
 }
