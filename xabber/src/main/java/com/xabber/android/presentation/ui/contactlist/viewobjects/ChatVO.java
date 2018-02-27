@@ -105,7 +105,7 @@ public class ChatVO extends ExtContactVO {
 
     @Override
     public int getLayoutRes() {
-        return R.layout.item_chat_in_contact_list_new;
+        return R.layout.item_chat_in_contact_list;
     }
 
     @Override

@@ -1,14 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginLeft="8dp"
+    android:layout_marginRight="10dp"
+    android:layout_centerVertical="true"
+    android:id="@+id/avatarView"
+    >
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/ivAvatar"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="10dp"
-        android:layout_centerVertical="true"
         app:civ_fill_color="@color/white"
         android:src="#80CBC4"
         />
@@ -20,8 +26,16 @@
         android:src="@drawable/ic_status"
         android:layout_toLeftOf="@id/ivAvatar"
         android:layout_alignBottom="@id/ivAvatar"
-        android:layout_marginRight="-50dp"
+        android:layout_marginRight="-42dp"
         android:layout_marginBottom="2dp"
         />
 
-</merge>
+    <ImageView
+        android:id="@+id/ivOnlyStatus"
+        android:layout_width="12dp"
+        android:layout_height="12dp"
+        android:src="@drawable/ic_status"
+        android:visibility="gone"
+        />
+
+</RelativeLayout>

@@ -53,7 +53,7 @@ public class ExtContactVO extends ContactVO {
 
     @Override
     public int getLayoutRes() {
-        return R.layout.item_ext_contact_in_contact_list_new;
+        return R.layout.item_ext_contact_in_contact_list;
     }
 
     @Override

@@ -226,7 +226,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
 
     @Override
     public int getLayoutRes() {
-        return R.layout.item_contact_in_contact_list_new;
+        return R.layout.item_contact_in_contact_list;
     }
 
     @Override
@@ -247,18 +247,6 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
         viewHolder.accountColorIndicator.setBackgroundColor(getAccountColorIndicator());
         viewHolder.accountColorIndicatorBack.setBackgroundColor(getAccountColorIndicatorBack());
 
-        /** set up AVATAR */
-        if (SettingsManager.contactsShowAvatars()) {
-            viewHolder.ivAvatar.setVisibility(View.VISIBLE);
-            viewHolder.ivStatus.setVisibility(View.VISIBLE);
-            viewHolder.ivAvatar.setImageDrawable(getAvatar());
-            viewHolder.ivOnlyStatus.setVisibility(View.GONE);
-        } else {
-            viewHolder.ivAvatar.setVisibility(View.GONE);
-            viewHolder.ivStatus.setVisibility(View.GONE);
-            viewHolder.ivOnlyStatus.setVisibility(View.VISIBLE);
-        }
-
         /** set up ROSTER STATUS */
         if (getStatusLevel() == 6 ||
                 (getMucIndicatorLevel() != 0 && getStatusLevel() != 1)) {
@@ -274,6 +262,18 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
         viewHolder.ivOnlyStatus.setImageLevel(getStatusLevel());
         if (viewHolder.tvStatus != null) viewHolder.tvStatus.setText(getStatus().isEmpty()
                 ? context.getString(getStatusId()) : getStatus());
+
+        /** set up AVATAR */
+        if (SettingsManager.contactsShowAvatars()) {
+            viewHolder.ivAvatar.setVisibility(View.VISIBLE);
+            viewHolder.ivStatus.setVisibility(View.VISIBLE);
+            viewHolder.ivAvatar.setImageDrawable(getAvatar());
+            viewHolder.ivOnlyStatus.setVisibility(View.GONE);
+        } else {
+            viewHolder.ivAvatar.setVisibility(View.GONE);
+            viewHolder.ivStatus.setVisibility(View.GONE);
+            viewHolder.ivOnlyStatus.setVisibility(View.VISIBLE);
+        }
 
         /** set up CONTACT/MUC NAME */
         viewHolder.tvContactName.setText(getName());
