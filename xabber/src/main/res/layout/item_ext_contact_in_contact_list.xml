@@ -37,11 +37,17 @@
         android:visibility="gone"
         />
 
-    <RelativeLayout
+    <LinearLayout
         android:id="@+id/foregroundView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="?attr/contact_list_contact_background"
+        >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="?attr/selectableItemBackgroundBorderless"
         >
 
         <include layout="@layout/account_color_indicator"/>
@@ -175,6 +181,8 @@
             />
 
     </RelativeLayout>
+
+    </LinearLayout>
 
     <include layout="@layout/offline_shadow" />
 

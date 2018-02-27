@@ -1,10 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="56dp"
     android:background="?attr/contact_list_contact_background"
     android:elevation="1dp">
+
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/selectableItemBackgroundBorderless"
+    >
 
     <include layout="@layout/account_color_indicator"/>
 
@@ -69,3 +75,4 @@
     <include layout="@layout/offline_shadow" />
 
 </RelativeLayout>
+</LinearLayout>

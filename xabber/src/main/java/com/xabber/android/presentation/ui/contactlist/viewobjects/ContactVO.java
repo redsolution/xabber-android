@@ -16,6 +16,7 @@ import android.view.ContextMenu;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -431,7 +432,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
         final TextView tvUnreadCount;
         public final TextView tvAction;
         public final TextView tvActionLeft;
-        public final RelativeLayout foregroundView;
+        public final LinearLayout foregroundView;
         final Button btnListAction;
 
         public ViewHolder(View view, FlexibleAdapter adapter, ContactClickListener listener) {
@@ -455,7 +456,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
             ivMessageStatus = (ImageView) view.findViewById(R.id.ivMessageStatus);
             offlineShadow = (ImageView) view.findViewById(R.id.offline_shadow);
             tvUnreadCount = (TextView) view.findViewById(R.id.tvUnreadCount);
-            foregroundView = (RelativeLayout) view.findViewById(R.id.foregroundView);
+            foregroundView = (LinearLayout) view.findViewById(R.id.foregroundView);
             tvAction = (TextView) view.findViewById(R.id.tvAction);
             tvActionLeft = (TextView) view.findViewById(R.id.tvActionLeft);
             btnListAction = (Button) view.findViewById(R.id.btnListAction);
