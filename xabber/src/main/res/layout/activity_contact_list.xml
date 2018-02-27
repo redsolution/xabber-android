@@ -23,27 +23,21 @@
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/bottom"
+        android:layout_above="@+id/containerBottomNavigation"
         />
 
-    <LinearLayout
-        android:id="@+id/bottom"
+    <View
         android:layout_width="match_parent"
-        android:layout_height="60dp"
+        android:layout_height="4dp"
+        android:layout_above="@id/containerBottomNavigation"
+        android:background="@drawable/bottom_view_shadow"/>
+
+    <FrameLayout
+        android:id="@+id/containerBottomNavigation"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
         android:layout_alignParentBottom="true"
-        android:elevation="4dp"
-        android:outlineProvider="bounds"
-        android:paddingTop="4dp"
-        android:layout_marginTop="-4dp"
-        android:background="@color/transparent">
-
-        <FrameLayout
-            android:id="@+id/containerBottomNavigation"
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            />
-
-    </LinearLayout>
+        />
 
     <include layout="@layout/showcase_contact_list" android:visibility="gone" />
 
