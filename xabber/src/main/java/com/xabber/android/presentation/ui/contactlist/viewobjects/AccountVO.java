@@ -91,7 +91,7 @@ public class AccountVO extends AbstractHeaderItem<AccountVO.ViewHolder> {
 
     @Override
     public int getLayoutRes() {
-        return R.layout.item_account_in_contact_list_new;
+        return R.layout.item_account_in_contact_list;
     }
 
     @Override
