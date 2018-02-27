@@ -15,6 +15,7 @@
         android:id="@+id/ivAvatar"
         android:layout_width="40dp"
         android:layout_height="40dp"
+        android:layout_marginRight="2dp"
         app:civ_fill_color="@color/white"
         tools:src="@tools:sample/avatars"
         />
