@@ -247,26 +247,10 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
         viewHolder.accountColorIndicator.setBackgroundColor(getAccountColorIndicator());
         viewHolder.accountColorIndicatorBack.setBackgroundColor(getAccountColorIndicatorBack());
 
-        /** set up ROSTER STATUS */
-        if (getStatusLevel() == 6 ||
-                (getMucIndicatorLevel() != 0 && getStatusLevel() != 1)) {
-            if (viewHolder.tvStatus != null)
-                viewHolder.tvStatus.setTextColor(ColorManager.getInstance().getColorContactSecondLine());
-            viewHolder.ivStatus.setVisibility(View.INVISIBLE);
-        } else {
-            viewHolder.ivStatus.setVisibility(View.VISIBLE);
-            if (viewHolder.tvStatus != null)
-                viewHolder.tvStatus.setTextColor(context.getResources().getColor(R.color.status_color_in_contact_list_online));
-        }
-        viewHolder.ivStatus.setImageLevel(getStatusLevel());
-        viewHolder.ivOnlyStatus.setImageLevel(getStatusLevel());
-        if (viewHolder.tvStatus != null) viewHolder.tvStatus.setText(getStatus().isEmpty()
-                ? context.getString(getStatusId()) : getStatus());
-
         /** set up AVATAR */
-        if (SettingsManager.contactsShowAvatars()) {
+        boolean showAvatars = SettingsManager.contactsShowAvatars();
+        if (showAvatars) {
             viewHolder.ivAvatar.setVisibility(View.VISIBLE);
-            viewHolder.ivStatus.setVisibility(View.VISIBLE);
             viewHolder.ivAvatar.setImageDrawable(getAvatar());
             viewHolder.ivOnlyStatus.setVisibility(View.GONE);
         } else {
@@ -274,6 +258,22 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
             viewHolder.ivStatus.setVisibility(View.GONE);
             viewHolder.ivOnlyStatus.setVisibility(View.VISIBLE);
         }
+
+        /** set up ROSTER STATUS */
+        if (getStatusLevel() == 6 ||
+                (getMucIndicatorLevel() != 0 && getStatusLevel() != 1)) {
+            if (viewHolder.tvStatus != null)
+                viewHolder.tvStatus.setTextColor(ColorManager.getInstance().getColorContactSecondLine());
+            viewHolder.ivStatus.setVisibility(View.INVISIBLE);
+        } else {
+            if (showAvatars) viewHolder.ivStatus.setVisibility(View.VISIBLE);
+            if (viewHolder.tvStatus != null)
+                viewHolder.tvStatus.setTextColor(context.getResources().getColor(R.color.status_color_in_contact_list_online));
+        }
+        viewHolder.ivStatus.setImageLevel(getStatusLevel());
+        viewHolder.ivOnlyStatus.setImageLevel(getStatusLevel());
+        if (viewHolder.tvStatus != null) viewHolder.tvStatus.setText(getStatus().isEmpty()
+                ? context.getString(getStatusId()) : getStatus());
 
         /** set up CONTACT/MUC NAME */
         viewHolder.tvContactName.setText(getName());
