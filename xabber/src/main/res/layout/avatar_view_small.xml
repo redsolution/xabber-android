@@ -16,7 +16,7 @@
         android:layout_width="40dp"
         android:layout_height="40dp"
         app:civ_fill_color="@color/white"
-        android:src="#80CBC4"
+        tools:src="@tools:sample/avatars"
         />
 
     <ImageView
