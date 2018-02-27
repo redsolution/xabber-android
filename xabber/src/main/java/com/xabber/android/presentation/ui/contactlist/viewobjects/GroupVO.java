@@ -43,6 +43,7 @@ public class GroupVO extends AbstractFlexibleItem<GroupVO.ViewHolder>
     private int offlineIndicatorLevel;
     private String groupName;
     private AccountJid accountJid;
+    private boolean firstInAccount = false;
 
     private boolean mExpanded = true;
     private List<ContactVO> mSubItems;
@@ -51,7 +52,7 @@ public class GroupVO extends AbstractFlexibleItem<GroupVO.ViewHolder>
     public GroupVO(int accountColorIndicator, int accountColorIndicatorBack,
                    boolean showOfflineShadow, String title,
                    boolean expanded, int offlineIndicatorLevel, String groupName,
-                   AccountJid accountJid) {
+                   AccountJid accountJid, boolean firstInAccount) {
 
         this.id = UUID.randomUUID().toString();
         this.accountColorIndicator = accountColorIndicator;
@@ -62,6 +63,7 @@ public class GroupVO extends AbstractFlexibleItem<GroupVO.ViewHolder>
         this.offlineIndicatorLevel = offlineIndicatorLevel;
         this.groupName = groupName;
         this.accountJid = accountJid;
+        this.firstInAccount = firstInAccount;
     }
 
     @Override
@@ -109,6 +111,9 @@ public class GroupVO extends AbstractFlexibleItem<GroupVO.ViewHolder>
 
         /** set up NAME */
         viewHolder.name.setText(getTitle());
+
+        /** set up divider LINE */
+        viewHolder.line.setVisibility(firstInAccount ? View.INVISIBLE : View.VISIBLE);
     }
 
     @Override
@@ -148,7 +153,7 @@ public class GroupVO extends AbstractFlexibleItem<GroupVO.ViewHolder>
         mSubItems.add(subItem);
     }
 
-    public static GroupVO convert(GroupConfiguration configuration) {
+    public static GroupVO convert(GroupConfiguration configuration, boolean firstInAccount) {
 
         String name = GroupManager.getInstance().getGroupName(configuration.getAccount(), configuration.getGroup());
         boolean showOfflineShadow = false;
@@ -181,7 +186,7 @@ public class GroupVO extends AbstractFlexibleItem<GroupVO.ViewHolder>
         }
 
         return new GroupVO(accountColorIndicator, accountColorIndicatorBack, showOfflineShadow, name, expanded,
-                offlineIndicatorLevel, configuration.getGroup(), configuration.getAccount());
+                offlineIndicatorLevel, configuration.getGroup(), configuration.getAccount(), firstInAccount);
     }
 
     public String getTitle() {
@@ -220,6 +225,7 @@ public class GroupVO extends AbstractFlexibleItem<GroupVO.ViewHolder>
         final ImageView offlineShadow;
         final View accountColorIndicator;
         final View accountColorIndicatorBack;
+        final View line;
 
         public ViewHolder(View view, FlexibleAdapter adapter) {
             super(view, adapter);
@@ -232,6 +238,7 @@ public class GroupVO extends AbstractFlexibleItem<GroupVO.ViewHolder>
             name = (TextView) view.findViewById(R.id.name);
             groupOfflineIndicator = (ImageView) view.findViewById(R.id.group_offline_indicator);
             offlineShadow = (ImageView) view.findViewById(R.id.offline_shadow);
+            line = view.findViewById(R.id.line);
         }
     }
 }

@@ -472,10 +472,12 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
     private void createContactListWithAccountsAndGroups(List<IFlexible> items, AccountConfiguration rosterAccount,
                                                         boolean showEmptyGroups, Comparator<AbstractContact> comparator) {
         AccountWithGroupsVO account = AccountWithGroupsVO.convert(rosterAccount, this);
+        boolean firstGroupInAccount = true;
         for (GroupConfiguration rosterConfiguration : rosterAccount
                 .getSortedGroupConfigurations()) {
             if (showEmptyGroups || !rosterConfiguration.isEmpty()) {
-                GroupVO group = GroupVO.convert(rosterConfiguration);
+                GroupVO group = GroupVO.convert(rosterConfiguration, firstGroupInAccount);
+                firstGroupInAccount = false;
                 rosterConfiguration.sortAbstractContacts(comparator);
 
                 for (AbstractContact contact : rosterConfiguration.getAbstractContacts()) {
@@ -507,7 +509,7 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
                                              Comparator<AbstractContact> comparator) {
         for (GroupConfiguration rosterConfiguration : groups.values()) {
             if (showEmptyGroups || !rosterConfiguration.isEmpty()) {
-                GroupVO group = GroupVO.convert(rosterConfiguration);
+                GroupVO group = GroupVO.convert(rosterConfiguration, false);
                 rosterConfiguration.sortAbstractContacts(comparator);
 
                 for (AbstractContact contact : rosterConfiguration.getAbstractContacts()) {
