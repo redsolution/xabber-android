@@ -286,10 +286,10 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
         else {
             mucIndicator = context.getResources().getDrawable(R.drawable.muc_indicator_view);
             mucIndicator.setLevel(getMucIndicatorLevel());
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                mucIndicator.setTint(context.getResources().getColor(getThemeResource(context,
-                        R.attr.contact_list_contact_name_text_color)));
-            }
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//                mucIndicator.setTint(context.getResources().getColor(getThemeResource(context,
+//                        R.attr.contact_list_contact_name_text_color)));
+//            }
         }
 
         /** set up NOTIFICATION MUTE */

@@ -10,13 +10,13 @@
         android:translateY="4.000000">
         <path
             android:name="Path-2"
-            android:fillColor="#757575"
+            android:fillColor="#B3757575"
             android:fillType="evenOdd"
             android:strokeWidth="1"
             android:pathData="M 0 5 L 0 11 L 4 11 L 9 16 L 9 12.5 L 1.5 5 Z" />
         <path
             android:name="Path-3"
-            android:fillColor="#757575"
+            android:fillColor="#B3757575"
             android:fillType="evenOdd"
             android:strokeWidth="1"
             android:pathData="M 0 2 L 11.5 13.5 L 12.4964825 12.5 L 9 9 L 9 0 L 4.5 4.5 L 1 1 Z" />
