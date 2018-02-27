@@ -141,7 +141,7 @@
             android:layout_width="match_parent"
             android:layout_height="1px"
             android:layout_alignParentBottom="true"
-            android:layout_toRightOf="@+id/ivAvatar"
+            android:layout_toRightOf="@+id/avatarView"
             android:background="?attr/contact_list_subgroup_separator"
             />
 
