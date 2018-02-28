@@ -1,17 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/contact_list_background"
+    android:orientation="vertical"
     android:elevation="2dp"
     >
 
-    <RelativeLayout
+    <LinearLayout
         android:id="@+id/backgroundView"
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:elevation="3dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="?attr/selectableItemBackgroundBorderless">
 
         <include layout="@layout/account_color_indicator"/>
 
@@ -79,11 +85,12 @@
 
     </RelativeLayout>
 
+    </LinearLayout>
+
     <LinearLayout
         android:id="@+id/bottomView"
         android:layout_width="match_parent"
         android:layout_height="8dp"
-        android:layout_below="@id/backgroundView"
         android:background="?attr/contact_list_background"
         android:elevation="1dp"
         android:visibility="gone"
@@ -98,4 +105,4 @@
 
     </LinearLayout>
 
-</RelativeLayout>
+</LinearLayout>

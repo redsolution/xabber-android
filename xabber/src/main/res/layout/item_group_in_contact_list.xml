@@ -12,12 +12,16 @@
      You should have received a copy of the GNU General Public License,
      along with this program. If not, see http://www.gnu.org/licenses/.
 -->
-<RelativeLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="@dimen/expander_height"
     android:elevation="1dp"
-    android:background="?attr/contact_list_contact_background"
+    android:background="?attr/contact_list_contact_background">
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/selectableItemBackgroundBorderless"
     >
 
     <include layout="@layout/account_color_indicator" />
@@ -78,3 +82,4 @@
     <include layout="@layout/offline_shadow" />
 
 </RelativeLayout>
+</LinearLayout>
