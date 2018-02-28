@@ -240,7 +240,8 @@ public class RoomChat extends AbstractChat {
             } else {
                 boolean notify = true;
                 String stanzaId = message.getStanzaId();
-                if (stanzaId == null) stanzaId = UUID.randomUUID().toString();
+                // disabling because new messages without stanza will be repeated
+                //if (stanzaId == null) stanzaId = UUID.randomUUID().toString();
 
                 DelayInformation delayInformation = DelayInformation.from(message);
                 Date delay = null;
