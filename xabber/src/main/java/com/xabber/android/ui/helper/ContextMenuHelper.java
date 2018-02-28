@@ -335,7 +335,7 @@ public class ContextMenuHelper {
         menu.findItem(R.id.action_unmute_chat).setVisible(chat != null && !chat.notifyAboutMessage());
     }
 
-    public static void createGroupContextMenu(final ManagedActivity activity,
+    public static void createGroupContextMenu(final Activity activity,
               final ContactListPresenter presenter, final AccountJid account, final String group, ContextMenu menu) {
         menu.setHeaderTitle(GroupManager.getInstance().getGroupName(account, group));
         if (!group.equals(GroupManager.ACTIVE_CHATS) && !group.equals(GroupManager.IS_ROOM)) {

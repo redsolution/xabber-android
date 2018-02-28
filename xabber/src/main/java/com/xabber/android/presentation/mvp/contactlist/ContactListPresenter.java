@@ -65,7 +65,8 @@ import eu.davidea.flexibleadapter.items.IFlexible;
  */
 
 public class ContactListPresenter implements OnContactChangedListener, OnAccountChangedListener,
-        ContactVO.ContactClickListener, AccountVO.AccountClickListener, ToolbarVO.OnClickListener {
+        ContactVO.ContactClickListener, AccountVO.AccountClickListener, ToolbarVO.OnClickListener,
+        GroupVO.GroupClickListener {
 
     private static final int MAX_RECENT_ITEMS = 12;
 
@@ -124,8 +125,13 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
     }
 
     @Override
+    public void onGroupCreateContextMenu(int adapterPosition, ContextMenu menu) {
+        if (view != null) view.onItemContextMenu(adapterPosition, menu);
+    }
+
+    @Override
     public void onContactCreateContextMenu(int adapterPosition, ContextMenu menu) {
-        if (view != null) view.onContactContextMenu(adapterPosition, menu);
+        if (view != null) view.onItemContextMenu(adapterPosition, menu);
     }
 
     @Override
@@ -476,7 +482,7 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
         for (GroupConfiguration rosterConfiguration : rosterAccount
                 .getSortedGroupConfigurations()) {
             if (showEmptyGroups || !rosterConfiguration.isEmpty()) {
-                GroupVO group = GroupVO.convert(rosterConfiguration, firstGroupInAccount);
+                GroupVO group = GroupVO.convert(rosterConfiguration, firstGroupInAccount, this);
                 firstGroupInAccount = false;
                 rosterConfiguration.sortAbstractContacts(comparator);
 
@@ -509,7 +515,7 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
                                              Comparator<AbstractContact> comparator) {
         for (GroupConfiguration rosterConfiguration : groups.values()) {
             if (showEmptyGroups || !rosterConfiguration.isEmpty()) {
-                GroupVO group = GroupVO.convert(rosterConfiguration, false);
+                GroupVO group = GroupVO.convert(rosterConfiguration, false, this);
                 rosterConfiguration.sortAbstractContacts(comparator);
 
                 for (AbstractContact contact : rosterConfiguration.getAbstractContacts()) {

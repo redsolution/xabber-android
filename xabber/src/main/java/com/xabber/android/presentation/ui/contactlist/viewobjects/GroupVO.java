@@ -1,5 +1,7 @@
 package com.xabber.android.presentation.ui.contactlist.viewobjects;
 
+import android.support.v7.widget.RecyclerView;
+import android.view.ContextMenu;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -49,10 +51,16 @@ public class GroupVO extends AbstractFlexibleItem<GroupVO.ViewHolder>
     private List<ContactVO> mSubItems;
     private AccountVO mHeader;
 
+    protected final GroupClickListener listener;
+
+    public interface GroupClickListener {
+        void onGroupCreateContextMenu(int adapterPosition, ContextMenu menu);
+    }
+
     public GroupVO(int accountColorIndicator, int accountColorIndicatorBack,
                    boolean showOfflineShadow, String title,
                    boolean expanded, int offlineIndicatorLevel, String groupName,
-                   AccountJid accountJid, boolean firstInAccount) {
+                   AccountJid accountJid, boolean firstInAccount, GroupClickListener listener) {
 
         this.id = UUID.randomUUID().toString();
         this.accountColorIndicator = accountColorIndicator;
@@ -64,6 +72,7 @@ public class GroupVO extends AbstractFlexibleItem<GroupVO.ViewHolder>
         this.groupName = groupName;
         this.accountJid = accountJid;
         this.firstInAccount = firstInAccount;
+        this.listener = listener;
     }
 
     @Override
@@ -106,8 +115,9 @@ public class GroupVO extends AbstractFlexibleItem<GroupVO.ViewHolder>
         else viewHolder.indicator.setVisibility(View.VISIBLE);
 
         /** set up OFFLINE indicator */
-        viewHolder.groupOfflineIndicator.setImageLevel(getOfflineIndicatorLevel());
         viewHolder.groupOfflineIndicator.setVisibility(View.GONE);
+        viewHolder.groupOfflineIndicator.setImageLevel(getOfflineIndicatorLevel());
+        viewHolder.groupOfflineIndicator.setVisibility(View.VISIBLE);
 
         /** set up NAME */
         viewHolder.name.setText(getTitle());
@@ -153,9 +163,11 @@ public class GroupVO extends AbstractFlexibleItem<GroupVO.ViewHolder>
         mSubItems.add(subItem);
     }
 
-    public static GroupVO convert(GroupConfiguration configuration, boolean firstInAccount) {
+    public static GroupVO convert(GroupConfiguration configuration, boolean firstInAccount,
+                                  GroupClickListener listener) {
 
-        String name = GroupManager.getInstance().getGroupName(configuration.getAccount(), configuration.getGroup());
+        String name = GroupManager.getInstance().getGroupName(configuration.getAccount(),
+                configuration.getGroup());
         boolean showOfflineShadow = false;
         int accountColorIndicator;
         int accountColorIndicatorBack;
@@ -186,7 +198,7 @@ public class GroupVO extends AbstractFlexibleItem<GroupVO.ViewHolder>
         }
 
         return new GroupVO(accountColorIndicator, accountColorIndicatorBack, showOfflineShadow, name, expanded,
-                offlineIndicatorLevel, configuration.getGroup(), configuration.getAccount(), firstInAccount);
+                offlineIndicatorLevel, configuration.getGroup(), configuration.getAccount(), firstInAccount, listener);
     }
 
     public String getTitle() {
@@ -217,7 +229,7 @@ public class GroupVO extends AbstractFlexibleItem<GroupVO.ViewHolder>
         return showOfflineShadow;
     }
 
-    public class ViewHolder extends ExpandableViewHolder {
+    public class ViewHolder extends ExpandableViewHolder implements View.OnCreateContextMenuListener {
 
         final ImageView indicator;
         final TextView name;
@@ -231,6 +243,7 @@ public class GroupVO extends AbstractFlexibleItem<GroupVO.ViewHolder>
             super(view, adapter);
 
             itemView.setOnClickListener(this);
+            itemView.setOnCreateContextMenuListener(this);
 
             accountColorIndicator = view.findViewById(R.id.accountColorIndicator);
             accountColorIndicatorBack = view.findViewById(R.id.accountColorIndicatorBack);
@@ -239,6 +252,13 @@ public class GroupVO extends AbstractFlexibleItem<GroupVO.ViewHolder>
             groupOfflineIndicator = (ImageView) view.findViewById(R.id.group_offline_indicator);
             offlineShadow = (ImageView) view.findViewById(R.id.offline_shadow);
             line = view.findViewById(R.id.line);
+        }
+
+        @Override
+        public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+            int adapterPosition = getAdapterPosition();
+            if (adapterPosition == RecyclerView.NO_POSITION) return;
+            listener.onGroupCreateContextMenu(adapterPosition, menu);
         }
     }
 }

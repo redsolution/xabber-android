@@ -42,6 +42,7 @@ import com.xabber.android.presentation.ui.contactlist.viewobjects.ButtonVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.ChatVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.ChatWithButtonVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.ContactVO;
+import com.xabber.android.presentation.ui.contactlist.viewobjects.GroupVO;
 import com.xabber.android.ui.activity.AccountActivity;
 import com.xabber.android.ui.activity.AccountAddActivity;
 import com.xabber.android.ui.activity.ContactActivity;
@@ -275,13 +276,21 @@ public class ContactListFragment extends Fragment implements ContactListView,
     }
 
     @Override
-    public void onContactContextMenu(int adapterPosition, ContextMenu menu) {
+    public void onItemContextMenu(int adapterPosition, ContextMenu menu) {
         IFlexible item = adapter.getItem(adapterPosition);
         if (item != null && item instanceof ContactVO) {
             AccountJid accountJid = ((ContactVO) item).getAccountJid();
             UserJid userJid = ((ContactVO) item).getUserJid();
             AbstractContact abstractContact = RosterManager.getInstance().getAbstractContact(accountJid, userJid);
             ContextMenuHelper.createContactContextMenu(getActivity(), presenter, abstractContact, menu);
+            return;
+        }
+
+        if (item != null && item instanceof GroupVO) {
+            AccountJid accountJid = ((GroupVO) item).getAccountJid();
+            ContextMenuHelper.createGroupContextMenu(getActivity(), presenter, accountJid,
+                    ((GroupVO) item).getGroupName(), menu);
+            return;
         }
     }
 
