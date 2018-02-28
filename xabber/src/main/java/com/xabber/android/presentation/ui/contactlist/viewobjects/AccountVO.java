@@ -139,13 +139,16 @@ public class AccountVO extends AbstractHeaderItem<AccountVO.ViewHolder> {
             viewHolder.ivAvatar.setVisibility(View.VISIBLE);
             viewHolder.ivStatus.setVisibility(View.VISIBLE);
             viewHolder.ivAvatar.setImageDrawable(getAvatar());
+            viewHolder.ivOnlyStatus.setVisibility(View.GONE);
         } else {
             viewHolder.ivAvatar.setVisibility(View.GONE);
             viewHolder.ivStatus.setVisibility(View.GONE);
+            viewHolder.ivOnlyStatus.setVisibility(View.VISIBLE);
         }
 
         /** bind STATUS image */
         viewHolder.ivStatus.setImageLevel(getStatusLevel());
+        viewHolder.ivOnlyStatus.setImageLevel(getStatusLevel());
     }
 
     private int getThemeResource(Context context, int themeResourceId) {
@@ -279,6 +282,7 @@ public class AccountVO extends AbstractHeaderItem<AccountVO.ViewHolder> {
         final View avatarView;
         final TextView tvAccountName;
         final TextView tvStatus;
+        final ImageView ivOnlyStatus;
         final TextView tvContactCount;
         final ImageView ivStatus;
         final ImageView ivMenu;
@@ -301,6 +305,7 @@ public class AccountVO extends AbstractHeaderItem<AccountVO.ViewHolder> {
             ivAvatar.setOnClickListener(this);
             tvAccountName = (TextView) view.findViewById(R.id.tvAccountName);
             tvStatus = (TextView) view.findViewById(R.id.tvStatus);
+            ivOnlyStatus = (ImageView) view.findViewById(R.id.ivOnlyStatus);
             tvContactCount = (TextView) view.findViewById(R.id.tvContactCount);
             ivStatus = (ImageView) view.findViewById(R.id.ivStatus);
             ivStatus.setOnClickListener(this);
