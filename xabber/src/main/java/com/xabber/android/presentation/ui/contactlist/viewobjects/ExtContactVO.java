@@ -100,7 +100,7 @@ public class ExtContactVO extends ContactVO {
         }
 
         /** set up MESSAGE STATUS */
-        viewHolder.ivMessageStatus.setVisibility(View.VISIBLE);
+        viewHolder.ivMessageStatus.setVisibility(text.isEmpty() ? View.INVISIBLE : View.VISIBLE);
 
         switch (getMessageStatus()) {
             case 0:
