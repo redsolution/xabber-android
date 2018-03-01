@@ -30,6 +30,13 @@
         app:showAsAction="never"
         />
 
+    <item android:id="@+id/action_clear_history"
+        android:icon="@drawable/ic_clear_all_white_24dp"
+        android:orderInCategory="134"
+        android:title="@string/clear_history"
+        app:showAsAction="never"
+        />
+
     <!--<item android:id="@+id/action_leave_conference"-->
         <!--android:orderInCategory="136"-->
         <!--android:title="@string/muc_leave"-->

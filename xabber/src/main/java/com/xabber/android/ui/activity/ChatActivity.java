@@ -583,6 +583,11 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         NewContactTitleInflater.updateTitle(contactTitleView, this,
                 RosterManager.getInstance().getBestContact(account, user), getNotifMode());
         toolbar.setBackgroundColor(ColorManager.getInstance().getAccountPainter().getAccountMainColor(account));
+        if (selectedPagePosition == 1)
+            toolbar.setOverflowIcon(getResources().getDrawable(R.drawable.ic_overflow_menu_white_24dp));
+        else if (selectedPagePosition == 2)
+            toolbar.setOverflowIcon(getResources().getDrawable(R.drawable.ic_settings_white_24dp));
+
         setUpOptionsMenu(toolbar.getMenu());
     }
 
