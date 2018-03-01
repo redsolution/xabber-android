@@ -231,9 +231,9 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
         outState.putString(SAVED_ACTION, action);
         outState.putString(SAVED_SEND_TEXT, sendText);
+        super.onSaveInstanceState(outState);
     }
 
     /**
@@ -756,28 +756,34 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
     }
 
     private void showBottomNavigation() {
-        if (bottomMenu == null)
-            bottomMenu = BottomMenu.newInstance();
+        if (!isFinishing()) {
+            if (bottomMenu == null)
+                bottomMenu = BottomMenu.newInstance();
 
-        FragmentTransaction fTrans = getSupportFragmentManager().beginTransaction();
-        fTrans.replace(R.id.containerBottomNavigation, bottomMenu);
-        fTrans.commit();
+            FragmentTransaction fTrans = getSupportFragmentManager().beginTransaction();
+            fTrans.replace(R.id.containerBottomNavigation, bottomMenu);
+            fTrans.commit();
+        }
     }
 
     private void showMenuFragment() {
-        contentFragment = ContactListDrawerFragment.newInstance();
+        if (!isFinishing()) {
+            contentFragment = ContactListDrawerFragment.newInstance();
 
-        FragmentTransaction fTrans = getSupportFragmentManager().beginTransaction();
-        fTrans.replace(R.id.container, contentFragment);
-        fTrans.commit();
+            FragmentTransaction fTrans = getSupportFragmentManager().beginTransaction();
+            fTrans.replace(R.id.container, contentFragment);
+            fTrans.commit();
+        }
     }
 
     private void showContactListFragment(@Nullable AccountJid account) {
-        contentFragment = ContactListFragment.newInstance(account);
+        if (!isFinishing()) {
+            contentFragment = ContactListFragment.newInstance(account);
 
-        FragmentTransaction fTrans = getSupportFragmentManager().beginTransaction();
-        fTrans.replace(R.id.container, contentFragment, CONTACT_LIST_TAG);
-        fTrans.commit();
+            FragmentTransaction fTrans = getSupportFragmentManager().beginTransaction();
+            fTrans.replace(R.id.container, contentFragment, CONTACT_LIST_TAG);
+            fTrans.commit();
+        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
