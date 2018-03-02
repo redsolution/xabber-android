@@ -194,8 +194,12 @@ public class RecentChatFragment extends Fragment implements Toolbar.OnMenuItemCl
     @Override
     public boolean onItemClick(int position) {
         ChatVO chat = (ChatVO) adapter.getItem(position);
-        if (listener != null && chat != null)
+        if (listener != null && chat != null) {
+            AbstractChat abstractChat = MessageManager.getInstance()
+                    .getOrCreateChat(chat.getAccountJid(), chat.getUserJid());
+            if (abstractChat != null) abstractChat.resetUnreadMessageCount();
             listener.onChatSelected(chat.getAccountJid(), chat.getUserJid());
+        }
         return true;
     }
 
