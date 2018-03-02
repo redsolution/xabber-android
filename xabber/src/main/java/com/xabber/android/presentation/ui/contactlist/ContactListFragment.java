@@ -254,9 +254,7 @@ public class ContactListFragment extends Fragment implements ContactListView,
                 ArrayList<IFlexible> items = presenter.getTwoNextRecentChat();
                 if (items != null && items.size() == 2) {
                     adapter.addItem(MAX_RECENT_ITEMS - 1, items.get(0));
-                    adapter.notifyItemInserted(MAX_RECENT_ITEMS - 1);
                     adapter.updateItem(MAX_RECENT_ITEMS, items.get(1), null);
-                    adapter.notifyItemChanged(MAX_RECENT_ITEMS);
                 }
             }
 
@@ -355,9 +353,7 @@ public class ContactListFragment extends Fragment implements ContactListView,
                     ChatWithButtonVO lastChat = ChatWithButtonVO.convert((ChatVO)
                             adapter.getItem(MAX_RECENT_ITEMS - 1));
                     adapter.removeItem(MAX_RECENT_ITEMS - 1);
-                    adapter.notifyItemRemoved(MAX_RECENT_ITEMS - 1);
                     adapter.updateItem(MAX_RECENT_ITEMS - 1, lastChat, null);
-                    adapter.notifyItemChanged(MAX_RECENT_ITEMS - 1);
                 }
 
                 // undo is selected, restore the deleted item
