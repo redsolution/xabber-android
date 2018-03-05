@@ -437,6 +437,7 @@
         <receiver android:name=".receiver.GoAwayReceiver" />
         <receiver android:name=".receiver.GoXaReceiver" />
         <receiver android:name=".receiver.ComposingPausedReceiver" />
+        <receiver android:name=".receiver.NotificationCancelReceiver" />
 
         <provider
             android:name="android.support.v4.content.FileProvider"

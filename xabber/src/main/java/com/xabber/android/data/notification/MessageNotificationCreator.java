@@ -19,6 +19,7 @@ import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.roster.RosterManager;
+import com.xabber.android.receiver.NotificationCancelReceiver;
 import com.xabber.android.ui.activity.ChatActivity;
 import com.xabber.android.ui.activity.ContactListActivity;
 import com.xabber.android.ui.color.ColorManager;
@@ -96,6 +97,8 @@ public class MessageNotificationCreator {
 
         notificationBuilder.setCategory(NotificationCompat.CATEGORY_MESSAGE);
         notificationBuilder.setPriority(NotificationCompat.PRIORITY_HIGH);
+
+        notificationBuilder.setDeleteIntent(NotificationCancelReceiver.createPendingIntent());
 
         NotificationManager.addEffects(notificationBuilder, messageItem, isMUC, checkVibrateMode(), isAppInForeground);
 
