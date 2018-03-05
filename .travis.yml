@@ -3,9 +3,11 @@ android:
   components:
     - platform-tools
     - tools
+    - build-tools-27.0.3
     - build-tools-26.0.2
     - build-tools-25.0.2
     - build-tools-25.0.0
+    - android-27
     - android-26
     - android-25
     - android-23
@@ -14,6 +16,9 @@ android:
 
   licenses:
     - '.+'
+
+before_install:
+- yes | sdkmanager "platforms;android-27"
 
 install:
   # Check install section: http://docs.travis-ci.com/user/build-configuration/#install

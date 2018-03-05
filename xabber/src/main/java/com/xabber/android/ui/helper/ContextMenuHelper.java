@@ -14,6 +14,7 @@
  */
 package com.xabber.android.ui.helper;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -42,15 +43,13 @@ import com.xabber.android.data.roster.GroupManager;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.data.roster.ShowOfflineMode;
+import com.xabber.android.presentation.mvp.contactlist.ContactListPresenter;
 import com.xabber.android.ui.activity.AccountActivity;
-import com.xabber.android.ui.activity.ChatActivity;
 import com.xabber.android.ui.activity.ConferenceAddActivity;
 import com.xabber.android.ui.activity.ContactAddActivity;
-import com.xabber.android.ui.activity.ContactEditActivity;
 import com.xabber.android.ui.activity.GroupEditActivity;
 import com.xabber.android.ui.activity.ManagedActivity;
 import com.xabber.android.ui.activity.StatusEditActivity;
-import com.xabber.android.ui.adapter.UpdatableAdapter;
 import com.xabber.android.ui.dialog.BlockContactDialog;
 import com.xabber.android.ui.dialog.ContactDeleteDialogFragment;
 import com.xabber.android.ui.dialog.GroupDeleteDialogFragment;
@@ -67,21 +66,20 @@ public class ContextMenuHelper {
     private ContextMenuHelper() {
     }
 
-    public static void createContactContextMenu(final ManagedActivity activity,
-            final UpdatableAdapter adapter, AbstractContact abstractContact, ContextMenu menu) {
+    public static void createContactContextMenu(final Activity activity, ContactListPresenter presenter,
+                                                AbstractContact abstractContact, ContextMenu menu) {
         final AccountJid account = abstractContact.getAccount();
         final UserJid user = abstractContact.getUser();
         menu.setHeaderTitle(abstractContact.getName());
         MenuInflater inflater = activity.getMenuInflater();
         inflater.inflate(R.menu.item_contact, menu);
 
-        setContactContextMenuActions(activity, adapter, menu, account, user);
+        setContactContextMenuActions(activity, presenter, menu, account, user);
         setContactContextMenuItemsVisibilty(abstractContact, menu, account, user);
     }
 
-    private static void setContactContextMenuActions(final ManagedActivity activity,
-                                                     final UpdatableAdapter adapter,
-                                                     ContextMenu menu,
+    private static void setContactContextMenuActions(final Activity activity,
+                                                     final ContactListPresenter presenter, ContextMenu menu,
                                                      final AccountJid account, final UserJid user) {
 //        menu.findItem(R.id.action_chat).setOnMenuItemClickListener(
 //                new MenuItem.OnMenuItemClickListener() {
@@ -125,7 +123,7 @@ public class ContextMenuHelper {
                         MUCManager.getInstance().leaveRoom(account, user.getJid().asEntityBareJidIfPossible());
                         MessageManager.getInstance().closeChat(account, user);
                         NotificationManager.getInstance().removeMessageNotification(account, user);
-                        adapter.onChange();
+                        presenter.updateContactList();
                         return true;
                     }
 
@@ -249,7 +247,7 @@ public class ContextMenuHelper {
                         if (chat != null) chat.setNotificationState(
                                 new NotificationState(NotificationState.NotificationMode.disabled,
                                         0), true);
-                        adapter.onChange();
+                        presenter.updateContactList();
                         return true;
                     }
                 });
@@ -262,7 +260,7 @@ public class ContextMenuHelper {
                         if (chat != null) chat.setNotificationState(
                                 new NotificationState(NotificationState.NotificationMode.enabled,
                                         0), true);
-                        adapter.onChange();
+                        presenter.updateContactList();
                         return true;
                     }
                 });
@@ -337,8 +335,8 @@ public class ContextMenuHelper {
         menu.findItem(R.id.action_unmute_chat).setVisible(chat != null && !chat.notifyAboutMessage());
     }
 
-    public static void createGroupContextMenu(final ManagedActivity activity,
-              final UpdatableAdapter adapter, final AccountJid account, final String group, ContextMenu menu) {
+    public static void createGroupContextMenu(final Activity activity,
+              final ContactListPresenter presenter, final AccountJid account, final String group, ContextMenu menu) {
         menu.setHeaderTitle(GroupManager.getInstance().getGroupName(account, group));
         if (!group.equals(GroupManager.ACTIVE_CHATS) && !group.equals(GroupManager.IS_ROOM)) {
             menu.add(R.string.group_rename).setOnMenuItemClickListener(
@@ -372,22 +370,22 @@ public class ContextMenuHelper {
                 menu.add(R.string.show_offline_settings).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
-                        createOfflineContactsDialog(activity, adapter, account, group).show();
+                        createOfflineContactsDialog(activity, presenter, account, group).show();
                         return true;
                     }
                 });
         }
     }
 
-    public static void createAccountContextMenu( final ManagedActivity activity, final UpdatableAdapter adapter,
+    public static void createAccountContextMenu( final Activity activity, final ContactListPresenter presenter,
                                                  final AccountJid account, ContextMenu menu) {
         activity.getMenuInflater().inflate(R.menu.item_account_group, menu);
         menu.setHeaderTitle(AccountManager.getInstance().getVerboseName(account));
 
-        setUpAccountMenu(activity, adapter, account, menu);
+        setUpAccountMenu(activity, presenter, account, menu);
     }
 
-    public static void setUpAccountMenu(final ManagedActivity activity, final UpdatableAdapter adapter, final AccountJid account, Menu menu) {
+    public static void setUpAccountMenu(final Activity activity, final ContactListPresenter presenter, final AccountJid account, Menu menu) {
         final AccountItem accountItem = AccountManager.getInstance().getAccount(account);
         if (accountItem == null) {
             return;
@@ -421,7 +419,8 @@ public class ContextMenuHelper {
                     .setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                         @Override
                         public boolean onMenuItemClick(MenuItem item) {
-                            ContextMenuHelper.createOfflineContactsDialog(activity, adapter,
+                            ContextMenuHelper.createOfflineContactsDialog(activity, presenter
+                                    ,
                                     account, GroupManager.IS_ACCOUNT).show();
                             return true;
                         }
@@ -429,7 +428,7 @@ public class ContextMenuHelper {
         }
     }
 
-    public static AlertDialog createOfflineContactsDialog(Context context, final UpdatableAdapter adapter,
+    public static AlertDialog createOfflineContactsDialog(Context context, final ContactListPresenter presenter,
                                                           final AccountJid account, final String group) {
         return new AlertDialog.Builder(context)
                 .setTitle(R.string.show_offline_settings)
@@ -441,7 +440,7 @@ public class ContextMenuHelper {
                             public void onClick(DialogInterface dialog, int which) {
                                 GroupManager.getInstance().setShowOfflineMode(account,
                                         group, ShowOfflineMode.values()[which]);
-                                adapter.onChange();
+                                presenter.updateContactList();
                                 dialog.dismiss();
                             }
                         }).create();

@@ -4,19 +4,16 @@
     android:layout_width="72dp"
     android:layout_height="72dp"
     android:layout_centerVertical="true"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     >
-
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:layout_width="72dp"
-        android:layout_height="72dp"
-        android:src="@color/white"
-        />
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/ivAvatar"
         android:layout_width="72dp"
         android:layout_height="72dp"
-        android:src="#80CBC4"
+        app:civ_fill_color="@color/white"
+        tools:src="@tools:sample/avatars"
         />
 
     <ImageView

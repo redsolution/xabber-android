@@ -65,7 +65,7 @@ public class GroupConfiguration implements Comparable<GroupConfiguration> {
      */
     private final ShowOfflineMode showOfflineMode;
 
-    GroupConfiguration(AccountJid account, String group,
+    public GroupConfiguration(AccountJid account, String group,
                        GroupStateProvider groupStateProvider) {
         this.account = account;
         this.group = group;
@@ -88,7 +88,7 @@ public class GroupConfiguration implements Comparable<GroupConfiguration> {
     /**
      * Adds new contact.
      */
-    void addAbstractContact(AbstractContact abstractContact) {
+    public void addAbstractContact(AbstractContact abstractContact) {
         abstractContacts.add(abstractContact);
     }
 
@@ -96,14 +96,14 @@ public class GroupConfiguration implements Comparable<GroupConfiguration> {
      * Gets list of contacts.
      *
      */
-    Collection<AbstractContact> getAbstractContacts() {
+    public Collection<AbstractContact> getAbstractContacts() {
         return abstractContacts;
     }
 
     /**
      * Sorts list of abstract contacts.
      */
-    void sortAbstractContacts(Comparator<AbstractContact> comparator) {
+    public void sortAbstractContacts(Comparator<AbstractContact> comparator) {
         Collections.sort(abstractContacts, comparator);
     }
 
@@ -112,7 +112,7 @@ public class GroupConfiguration implements Comparable<GroupConfiguration> {
      *
      * @param online whether contact is online.
      */
-    void increment(boolean online) {
+    public void increment(boolean online) {
         this.total++;
         if (online) {
             this.online++;
@@ -129,7 +129,7 @@ public class GroupConfiguration implements Comparable<GroupConfiguration> {
     /**
      * Set that there is at least one contact to be displayed in expanded mode.
      */
-    void setNotEmpty() {
+    public void setNotEmpty() {
         empty = false;
     }
 

@@ -9,7 +9,7 @@
     android:paddingRight="24dp"
     >
 
-    <include layout="@layout/avatar" />
+    <include layout="@layout/avatar_view_without_status" />
 
     <TextView
         android:id="@+id/name"
@@ -18,8 +18,8 @@
         android:singleLine="true"
         android:text="Lorem Ipsum"
         android:textColor="?android:attr/textColorPrimary"
-        android:layout_marginLeft="8dp"
-        android:layout_toRightOf="@id/avatar"
+        android:layout_marginLeft="16dp"
+        android:layout_toRightOf="@id/avatarView"
         android:textAppearance="?android:attr/textAppearanceMedium"
         />
 
@@ -29,8 +29,8 @@
         android:layout_height="wrap_content"
         android:singleLine="true"
         android:text="Lorem ipsum dolor sit amet"
-        android:layout_marginLeft="8dp"
-        android:layout_toRightOf="@id/avatar"
+        android:layout_marginLeft="16dp"
+        android:layout_toRightOf="@id/avatarView"
         android:layout_below="@id/name"
         />
 
@@ -39,7 +39,7 @@
         android:layout_height="wrap_content"
         android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
         android:id="@+id/dialog_message"
-        android:layout_below="@id/avatar"
+        android:layout_below="@id/avatarView"
         android:layout_marginTop="16dp"
      />
 

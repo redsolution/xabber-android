@@ -12,7 +12,7 @@
      You should have received a copy of the GNU General Public License,
      along with this program. If not, see http://www.gnu.org/licenses/.
 -->
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="@dimen/contact_list_item_height"
@@ -27,7 +27,8 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="14dp"
+        android:layout_toRightOf="@id/avatarView"
+        android:layout_centerVertical="true"
         >
         <TextView
             android:id="@+id/name"
@@ -68,4 +69,4 @@
             />
     </RelativeLayout>
 
-</LinearLayout>
+</RelativeLayout>

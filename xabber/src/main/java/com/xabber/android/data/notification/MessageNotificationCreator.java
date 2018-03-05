@@ -2,10 +2,10 @@ package com.xabber.android.data.notification;
 
 import android.app.ActivityManager;
 import android.app.PendingIntent;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
+import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -73,7 +73,12 @@ public class MessageNotificationCreator {
             if (!SettingsManager.eventsInAppPreview()) showText = false;
         }
 
-        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(application);
+        NotificationCompat.Builder notificationBuilder;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+            notificationBuilder = new NotificationCompat.Builder(application,
+                NotificationManager.getInstance().createNotificationChannel());
+        else notificationBuilder = new NotificationCompat.Builder(application, "");
+
         notificationBuilder.setContentTitle(getTitle(message, messageCount));
         notificationBuilder.setContentText(getText(message, showText));
         notificationBuilder.setSubText(message.getAccount().toString());

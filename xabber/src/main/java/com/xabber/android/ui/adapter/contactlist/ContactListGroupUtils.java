@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 
-class ContactListGroupUtils {
+public class ContactListGroupUtils {
     /**
      * List of groups used if contact has no groups.
      */
@@ -60,7 +60,7 @@ class ContactListGroupUtils {
     /**
      * Adds contact to specified group.
      */
-    static void addContact(AbstractContact abstractContact, String group, boolean online,
+    public static void addContact(AbstractContact abstractContact, String group, boolean online,
                            Map<AccountJid, AccountConfiguration> accounts, Map<String, GroupConfiguration> groups,
                            List<AbstractContact> contacts, boolean showAccounts, boolean showGroups) {
         if (showAccounts) {
@@ -73,26 +73,31 @@ class ContactListGroupUtils {
             if (showGroups) {
                 GroupConfiguration groupConfiguration
                         = getGroupConfiguration(accountConfiguration, group);
-                if (accountConfiguration.isExpanded()) {
-                    groupConfiguration.setNotEmpty();
-                    if (groupConfiguration.isExpanded()) {
-                        groupConfiguration.addAbstractContact(abstractContact);
-                    }
-                }
+//                if (accountConfiguration.isExpanded()) {
+//                    groupConfiguration.setNotEmpty();
+//                    if (groupConfiguration.isExpanded()) {
+//                        groupConfiguration.addAbstractContact(abstractContact);
+//                    }
+//                }
+                groupConfiguration.setNotEmpty();
+                groupConfiguration.addAbstractContact(abstractContact);
+
                 groupConfiguration.increment(online);
             } else {
-                if (accountConfiguration.isExpanded()) {
-                    accountConfiguration.addAbstractContact(abstractContact);
-                }
+//                if (accountConfiguration.isExpanded()) {
+//                    accountConfiguration.addAbstractContact(abstractContact);
+//                }
+                accountConfiguration.addAbstractContact(abstractContact);
             }
             accountConfiguration.increment(online);
         } else {
             if (showGroups) {
                 GroupConfiguration groupConfiguration = getGroupConfiguration(groups, group);
                 groupConfiguration.setNotEmpty();
-                if (groupConfiguration.isExpanded()) {
-                    groupConfiguration.addAbstractContact(abstractContact);
-                }
+//                if (groupConfiguration.isExpanded()) {
+//                    groupConfiguration.addAbstractContact(abstractContact);
+//                }
+                groupConfiguration.addAbstractContact(abstractContact);
                 groupConfiguration.increment(online);
             } else {
                 contacts.add(abstractContact);
@@ -104,7 +109,7 @@ class ContactListGroupUtils {
      * Adds contact to there groups.
      * @return whether contact is visible.
      */
-    static boolean addContact(AbstractContact abstractContact,
+    public static boolean addContact(AbstractContact abstractContact,
                               boolean online, Map<AccountJid, AccountConfiguration> accounts,
                               Map<String, GroupConfiguration> groups,
                               List<AbstractContact> contacts, boolean showAccounts,
@@ -136,12 +141,14 @@ class ContactListGroupUtils {
                         // account N | + | ? | -
                         // ....... E | + | - | -
                         hasVisible = true;
-                        if (accountConfiguration.isExpanded()) {
-                            groupConfiguration.setNotEmpty();
-                            if (groupConfiguration.isExpanded()) {
-                                groupConfiguration.addAbstractContact(abstractContact);
-                            }
-                        }
+//                        if (accountConfiguration.isExpanded()) {
+//                            groupConfiguration.setNotEmpty();
+//                            if (groupConfiguration.isExpanded()) {
+//                                groupConfiguration.addAbstractContact(abstractContact);
+//                            }
+//                        }
+                        groupConfiguration.setNotEmpty();
+                        groupConfiguration.addAbstractContact(abstractContact);
                     }
                     groupConfiguration.increment(online);
                 }
@@ -149,9 +156,10 @@ class ContactListGroupUtils {
                 if (online || (accountConfiguration.getShowOfflineMode() == ShowOfflineMode.always)
                         || (accountConfiguration.getShowOfflineMode() == ShowOfflineMode.normal && showOffline)) {
                     hasVisible = true;
-                    if (accountConfiguration.isExpanded()) {
-                        accountConfiguration.addAbstractContact(abstractContact);
-                    }
+//                    if (accountConfiguration.isExpanded()) {
+//                        accountConfiguration.addAbstractContact(abstractContact);
+//                    }
+                    accountConfiguration.addAbstractContact(abstractContact);
                 }
             }
             accountConfiguration.increment(online);
@@ -168,9 +176,10 @@ class ContactListGroupUtils {
                             || (groupConfiguration.getShowOfflineMode() == ShowOfflineMode.normal && showOffline)) {
                         groupConfiguration.setNotEmpty();
                         hasVisible = true;
-                        if (groupConfiguration.isExpanded()) {
-                            groupConfiguration.addAbstractContact(abstractContact);
-                        }
+//                        if (groupConfiguration.isExpanded()) {
+//                            groupConfiguration.addAbstractContact(abstractContact);
+//                        }
+                        groupConfiguration.addAbstractContact(abstractContact);
                     }
                     groupConfiguration.increment(online);
                 }

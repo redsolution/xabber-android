@@ -26,6 +26,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewStub;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.EditText;
@@ -141,6 +142,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
     private View lastHistoryProgressBar;
     private View previousHistoryProgressBar;
 
+    private ViewStub stubNotify;
     private RelativeLayout notifyLayout;
     private TextView tvNotifyTitle;
     private TextView tvNotifyAction;
@@ -151,6 +153,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
     private SwipeRefreshLayout swipeContainer;
     private View placeholder;
     private LinearLayout inputLayout;
+    private ViewStub stubJoin;
     private LinearLayout joinLayout;
     private LinearLayout actionJoin;
 
@@ -299,16 +302,8 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
             }
         });
 
-        tvNotifyTitle = (TextView) view.findViewById(R.id.tvNotifyTitle);
-        tvNotifyAction = (TextView) view.findViewById(R.id.tvNotifyAction);
-        notifyLayout = (RelativeLayout) view.findViewById(R.id.notifyLayout);
-        notifyLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (notifyIntent != null) startActivity(notifyIntent);
-                notifyLayout.setVisibility(View.GONE);
-            }
-        });
+        stubNotify = (ViewStub) view.findViewById(R.id.stubNotify);
+        stubJoin = (ViewStub) view.findViewById(R.id.stubJoin);
 
         setChat(account, user);
 
@@ -324,10 +319,6 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
 
         placeholder = view.findViewById(R.id.placeholder);
         placeholder.setOnClickListener(this);
-
-        joinLayout = (LinearLayout) view.findViewById(R.id.joinLayout);
-        actionJoin = (LinearLayout) view.findViewById(R.id.actionJoin);
-        actionJoin.setOnClickListener(this);
 
         return view;
     }
@@ -1340,15 +1331,9 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         if (chat != null && chat instanceof RegularChat) {
             notifyIntent = ((RegularChat)chat).getIntent();
             if (notifyIntent != null) {
-                if (notifyIntent.getBooleanExtra(QuestionActivity.EXTRA_FIELD_CANCEL, false)) {
-                    tvNotifyTitle.setText(R.string.otr_verification_progress_title);
-                    tvNotifyAction.setText(R.string.otr_verification_notify_button_cancel);
-                } else {
-                    tvNotifyTitle.setText(R.string.otr_verification_notify_title);
-                    tvNotifyAction.setText(R.string.otr_verification_notify_button);
-                }
-                notifyLayout.setVisibility(View.VISIBLE);
-            } else notifyLayout.setVisibility(View.GONE);
+                setupNotifyLayout(notifyIntent);
+            } else if (notifyLayout != null)
+                notifyLayout.setVisibility(View.GONE);
         }
     }
 
@@ -1357,12 +1342,56 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         else placeholder.setVisibility(View.GONE);
     }
 
+    private void inflateJoinLayout() {
+        View view = stubJoin.inflate();
+        joinLayout = (LinearLayout) view.findViewById(R.id.joinLayout);
+        actionJoin = (LinearLayout) view.findViewById(R.id.actionJoin);
+        actionJoin.setOnClickListener(this);
+    }
+
     public void showJoinButtonIfNeed() {
         AbstractChat chat = getChat();
         if (chat != null && chat instanceof RoomChat) {
             RoomState chatState = ((RoomChat) chat).getState();
-            joinLayout.setVisibility(chatState == RoomState.unavailable ? View.VISIBLE : View.INVISIBLE);
-            inputView.setVisibility(chatState == RoomState.unavailable ? View.INVISIBLE : View.VISIBLE);
+            if (chatState == RoomState.unavailable) {
+                if (joinLayout == null)
+                    inflateJoinLayout();
+                joinLayout.setVisibility(View.VISIBLE);
+                inputView.setVisibility(View.GONE);
+            } else {
+                if (joinLayout != null)
+                    joinLayout.setVisibility(View.GONE);
+                inputView.setVisibility(View.VISIBLE);
+            }
         }
+    }
+
+    private void setupNotifyLayout(Intent notifyIntent) {
+        if (notifyLayout == null || tvNotifyTitle == null || tvNotifyAction == null) {
+            inflateNotifyLayout();
+        }
+
+        if (notifyIntent.getBooleanExtra(QuestionActivity.EXTRA_FIELD_CANCEL, false)) {
+            tvNotifyTitle.setText(R.string.otr_verification_progress_title);
+            tvNotifyAction.setText(R.string.otr_verification_notify_button_cancel);
+        } else {
+            tvNotifyTitle.setText(R.string.otr_verification_notify_title);
+            tvNotifyAction.setText(R.string.otr_verification_notify_button);
+        }
+        notifyLayout.setVisibility(View.VISIBLE);
+    }
+
+    private void inflateNotifyLayout() {
+        View view = stubNotify.inflate();
+        tvNotifyTitle = (TextView) view.findViewById(R.id.tvNotifyTitle);
+        tvNotifyAction = (TextView) view.findViewById(R.id.tvNotifyAction);
+        notifyLayout = (RelativeLayout) view.findViewById(R.id.notifyLayout);
+        notifyLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (notifyIntent != null) startActivity(notifyIntent);
+                notifyLayout.setVisibility(View.GONE);
+            }
+        });
     }
 }

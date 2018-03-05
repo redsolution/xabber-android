@@ -14,17 +14,19 @@
  */
 package com.xabber.android.data.notification;
 
-import android.app.ActivityManager;
+import android.annotation.SuppressLint;
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.PendingIntent;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.media.AudioManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Vibrator;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 
@@ -149,7 +151,9 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
             }
         };
 
-        persistentNotificationBuilder = new NotificationCompat.Builder(application);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+            persistentNotificationBuilder = new NotificationCompat.Builder(application, createNotificationChannelService());
+        else persistentNotificationBuilder = new NotificationCompat.Builder(application, "");
         initPersistentNotification();
 
 
@@ -293,7 +297,10 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
             ticker = top.getTitle();
         }
 
-        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(application);
+        NotificationCompat.Builder notificationBuilder;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+            notificationBuilder = new NotificationCompat.Builder(application, createNotificationChannel());
+        else notificationBuilder = new NotificationCompat.Builder(application, "");
 
         notificationBuilder.setSmallIcon(provider.getIcon());
         notificationBuilder.setTicker(ticker);
@@ -655,5 +662,31 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
                 notificationBuilder.setVibrate(new long[] {0, 500});
                 break;
         }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private String createNotificationChannelService() {
+        String channelId = "xabber_service";
+        String channelName = "Xabber Background Service";
+        @SuppressLint("WrongConstant") NotificationChannel channel =
+                new NotificationChannel(channelId, channelName,
+                        android.app.NotificationManager.IMPORTANCE_NONE);
+        android.app.NotificationManager service = (android.app.NotificationManager)
+                Application.getInstance().getSystemService(Context.NOTIFICATION_SERVICE);
+        if (service != null) service.createNotificationChannel(channel);
+        return channelId;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public String createNotificationChannel() {
+        String channelId = "xabber_notification";
+        String channelName = "Xabber Notification";
+        @SuppressLint("WrongConstant") NotificationChannel channel =
+                new NotificationChannel(channelId, channelName,
+                        android.app.NotificationManager.IMPORTANCE_HIGH);
+        android.app.NotificationManager service = (android.app.NotificationManager)
+                Application.getInstance().getSystemService(Context.NOTIFICATION_SERVICE);
+        if (service != null) service.createNotificationChannel(channel);
+        return channelId;
     }
 }

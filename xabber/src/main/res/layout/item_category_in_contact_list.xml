@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="38dp"
+    android:elevation="1dp"
+    android:background="?attr/contact_list_contact_background">
+
+    <include layout="@layout/account_color_indicator"/>
+
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/expander_height"
+        android:gravity="center_vertical"
+        android:singleLine="true"
+        android:ellipsize="marquee"
+        android:textColor="#FF9E9E9E"
+        android:fontFamily="sans-serif-medium"
+        tools:text="@tools:sample/lorem"
+        android:layout_marginLeft="10dp"
+        />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="?attr/contact_list_subgroup_separator"
+        android:layout_alignParentBottom="true"
+        android:layout_marginLeft="2dp"
+        />
+
+</RelativeLayout>

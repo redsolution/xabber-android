@@ -65,6 +65,7 @@ import com.xabber.android.data.message.RegularChat;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.AbstractContact;
+import com.xabber.android.data.roster.OnChatStateListener;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterContact;
@@ -98,7 +99,7 @@ import static com.xabber.android.ui.adapter.ChatViewerAdapter.PAGE_POSITION_RECE
  * @author alexander.ivanov
  */
 public class ChatActivity extends ManagedActivity implements OnContactChangedListener,
-        OnAccountChangedListener, ViewPager.OnPageChangeListener,
+        OnAccountChangedListener, OnChatStateListener, ViewPager.OnPageChangeListener,
         ChatFragment.ChatViewerFragmentListener, OnBlockedListChangedListener,
         RecentChatFragment.Listener, ChatViewerAdapter.FinishUpdateListener,
         ContactVcardViewerFragment.Listener, Toolbar.OnMenuItemClickListener {
@@ -267,6 +268,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         LogManager.i(LOG_TAG, "onCreate " + savedInstanceState);
 
         setContentView(R.layout.activity_chat);
+        getWindow().setBackgroundDrawable(null);
 
         contactTitleView = findViewById(R.id.contact_title);
         contactTitleView.setOnClickListener(new View.OnClickListener() {
@@ -287,14 +289,6 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         });
 
         showcaseView = findViewById(R.id.showcaseView);
-        btnShowcaseGotIt = (Button) findViewById(R.id.btnGotIt);
-        btnShowcaseGotIt.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                SettingsManager.setChatShowcaseSuggested();
-                showShowcase(false);
-            }
-        });
 
         statusBarPainter = new StatusBarPainter(this);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
@@ -332,6 +326,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
 
         isVisible = true;
 
+        Application.getInstance().addUIListener(OnChatStateListener.class, this);
         Application.getInstance().addUIListener(OnContactChangedListener.class, this);
         Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
         Application.getInstance().addUIListener(OnBlockedListChangedListener.class, this);
@@ -492,6 +487,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     @Override
     protected void onPause() {
         super.onPause();
+        Application.getInstance().removeUIListener(OnChatStateListener.class, this);
         Application.getInstance().removeUIListener(OnContactChangedListener.class, this);
         Application.getInstance().removeUIListener(OnAccountChangedListener.class, this);
         Application.getInstance().removeUIListener(OnBlockedListChangedListener.class, this);
@@ -550,6 +546,11 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     }
 
     @Override
+    public void onChatStateChanged(Collection<RosterContact> entities) {
+        updateToolbar();
+    }
+
+    @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
         hideKeyboard(this);
     }
@@ -582,6 +583,11 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         NewContactTitleInflater.updateTitle(contactTitleView, this,
                 RosterManager.getInstance().getBestContact(account, user), getNotifMode());
         toolbar.setBackgroundColor(ColorManager.getInstance().getAccountPainter().getAccountMainColor(account));
+        if (selectedPagePosition == 1)
+            toolbar.setOverflowIcon(getResources().getDrawable(R.drawable.ic_overflow_menu_white_24dp));
+        else if (selectedPagePosition == 2)
+            toolbar.setOverflowIcon(getResources().getDrawable(R.drawable.ic_settings_white_24dp));
+
         setUpOptionsMenu(toolbar.getMenu());
     }
 
@@ -622,8 +628,8 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     }
 
     @Override
-    public void onChatSelected(BaseEntity chat) {
-        selectChat(chat.getAccount(), chat.getUser());
+    public void onChatSelected(AccountJid accountJid, UserJid userJid) {
+        selectChat(accountJid, userJid);
     }
 
     @Override
@@ -1014,6 +1020,16 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     }
 
     public void showShowcase(boolean show) {
-        showcaseView.setVisibility(show ? View.VISIBLE : View.INVISIBLE);
+        showcaseView.setVisibility(show ? View.VISIBLE : View.GONE);
+        if (show) {
+            btnShowcaseGotIt = (Button) findViewById(R.id.btnGotIt);
+            btnShowcaseGotIt.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    SettingsManager.setChatShowcaseSuggested();
+                    showShowcase(false);
+                }
+            });
+        }
     }
 }

@@ -15,8 +15,6 @@
 package com.xabber.android.ui.activity;
 
 import android.app.Dialog;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -29,6 +27,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
@@ -60,7 +60,8 @@ import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.data.xaccount.XMPPAccountSettings;
 import com.xabber.android.data.xaccount.XabberAccount;
 import com.xabber.android.data.xaccount.XabberAccountManager;
-import com.xabber.android.ui.adapter.contactlist.ContactListAdapter;
+import com.xabber.android.presentation.mvp.contactlist.ContactListPresenter;
+import com.xabber.android.presentation.ui.contactlist.ContactListFragment;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.dialog.AccountChooseDialogFragment;
 import com.xabber.android.ui.dialog.AccountChooseDialogFragment.OnChooseListener;
@@ -70,8 +71,6 @@ import com.xabber.android.ui.dialog.MucInviteDialog;
 import com.xabber.android.ui.dialog.MucPrivateChatInvitationDialog;
 import com.xabber.android.ui.dialog.TranslationDialog;
 import com.xabber.android.ui.fragment.ContactListDrawerFragment;
-import com.xabber.android.ui.fragment.ContactListFragment;
-import com.xabber.android.ui.fragment.ContactListFragment.ContactListFragmentListener;
 import com.xabber.android.ui.preferences.PreferenceEditor;
 import com.xabber.android.ui.widget.bottomnavigation.BottomMenu;
 import com.xabber.xmpp.uri.XMPPUri;
@@ -90,7 +89,7 @@ import java.util.Locale;
  * @author alexander.ivanov
  */
 public class ContactListActivity extends ManagedActivity implements OnAccountChangedListener,
-        View.OnClickListener, OnChooseListener, ContactListFragmentListener,
+        View.OnClickListener, OnChooseListener, ContactListFragment.ContactListFragmentListener,
         ContactListDrawerFragment.ContactListDrawerListener,
         BottomMenu.OnClickListener {
 
@@ -198,6 +197,7 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
         }
 
         setContentView(R.layout.activity_contact_list);
+        getWindow().setBackgroundDrawable(null);
 
         if (savedInstanceState != null) {
             sendText = savedInstanceState.getString(SAVED_SEND_TEXT);
@@ -231,9 +231,9 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
         outState.putString(SAVED_ACTION, action);
         outState.putString(SAVED_SEND_TEXT, sendText);
+        super.onSaveInstanceState(outState);
     }
 
     /**
@@ -591,7 +591,7 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
     @Override
     public void onContactClick(AbstractContact abstractContact) {
         if (contentFragment != null)
-            ((ContactListFragment) contentFragment).getFilterableAdapter().getFilter().filter("");
+            ((ContactListFragment) contentFragment).filterContactList("");
         if (bottomMenu != null) bottomMenu.closeSearch();
 
         if (action == null) {
@@ -735,7 +735,7 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
     @Override
     public void onAccountShortcutClick(AccountJid jid) {
         if (contentFragment != null && contentFragment instanceof ContactListFragment) {
-            ((ContactListFragment) contentFragment).showRecent();
+            //((ContactListFragment) contentFragment).showRecent();
             ((ContactListFragment) contentFragment).scrollToAccount(jid);
             ((ContactListFragment) contentFragment).closeSnackbar();
         } else showContactListFragment(jid);
@@ -744,7 +744,7 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
     @Override
     public void onSearch(String filter) {
         if (contentFragment != null && contentFragment instanceof ContactListFragment)
-            ((ContactListFragment) contentFragment).getFilterableAdapter().getFilter().filter(filter);
+            ((ContactListFragment) contentFragment).filterContactList(filter);
         else showContactListFragment(null);
     }
 
@@ -756,32 +756,38 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
     }
 
     private void showBottomNavigation() {
-        if (bottomMenu == null)
-            bottomMenu = BottomMenu.newInstance();
+        if (!isFinishing()) {
+            if (bottomMenu == null)
+                bottomMenu = BottomMenu.newInstance();
 
-        FragmentTransaction fTrans = getSupportFragmentManager().beginTransaction();
-        fTrans.replace(R.id.containerBottomNavigation, bottomMenu);
-        fTrans.commit();
+            FragmentTransaction fTrans = getSupportFragmentManager().beginTransaction();
+            fTrans.replace(R.id.containerBottomNavigation, bottomMenu);
+            fTrans.commit();
+        }
     }
 
     private void showMenuFragment() {
-        contentFragment = ContactListDrawerFragment.newInstance();
+        if (!isFinishing()) {
+            contentFragment = ContactListDrawerFragment.newInstance();
 
-        FragmentTransaction fTrans = getSupportFragmentManager().beginTransaction();
-        fTrans.replace(R.id.container, contentFragment);
-        fTrans.commit();
+            FragmentTransaction fTrans = getSupportFragmentManager().beginTransaction();
+            fTrans.replace(R.id.container, contentFragment);
+            fTrans.commit();
+        }
     }
 
     private void showContactListFragment(@Nullable AccountJid account) {
-        contentFragment = ContactListFragment.newInstance(account);
+        if (!isFinishing()) {
+            contentFragment = ContactListFragment.newInstance(account);
 
-        FragmentTransaction fTrans = getSupportFragmentManager().beginTransaction();
-        fTrans.replace(R.id.container, contentFragment, CONTACT_LIST_TAG);
-        fTrans.commit();
+            FragmentTransaction fTrans = getSupportFragmentManager().beginTransaction();
+            fTrans.replace(R.id.container, contentFragment, CONTACT_LIST_TAG);
+            fTrans.commit();
+        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onUnreadMessagesCountChanged(ContactListAdapter.UpdateUnreadCountEvent event) {
+    public void onUnreadMessagesCountChanged(ContactListPresenter.UpdateUnreadCountEvent event) {
         if (bottomMenu != null)
             bottomMenu.setUnreadMessages(event.getCount());
     }
@@ -802,10 +808,10 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (contentFragment != null && contentFragment instanceof ContactListFragment ) {
-            ContactListAdapter.ChatListState currentState = ((ContactListFragment) contentFragment).getListState();
+            ContactListPresenter.ChatListState currentState = ((ContactListFragment) contentFragment).getListState();
             if (requestCode == CODE_OPEN_CHAT &&
-                    (currentState == (ContactListAdapter.ChatListState.unread)
-                    || currentState == (ContactListAdapter.ChatListState.archived))) {
+                    (currentState == (ContactListPresenter.ChatListState.unread)
+                    || currentState == (ContactListPresenter.ChatListState.archived))) {
                 ((ContactListFragment) contentFragment).showRecent();
             }
         }
