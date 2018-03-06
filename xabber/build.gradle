@@ -146,7 +146,7 @@ if (build_param != "dev") {
 
 ext {
     smackVersion = '4.2.1-SNAPSHOT'
-    supportVersion = '27.0.2'
+    supportVersion = '27.1.0'
 }
 
 dependencies {
