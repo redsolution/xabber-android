@@ -148,10 +148,13 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         if (menu == null) return true;
+        MenuItem menuItem = menu.findItem(R.id.action_cancel_register);
+        if (menuItem == null) return true;
+
         XabberAccount account = XabberAccountManager.getInstance().getAccount();
         if (account != null) {
-            menu.findItem(R.id.action_cancel_register).setVisible(!XabberAccount.STATUS_REGISTERED.equals(account.getAccountStatus()));
-        } else menu.findItem(R.id.action_cancel_register).setVisible(false);
+            menuItem.setVisible(!XabberAccount.STATUS_REGISTERED.equals(account.getAccountStatus()));
+        } else menuItem.setVisible(false);
         return true;
     }
 
