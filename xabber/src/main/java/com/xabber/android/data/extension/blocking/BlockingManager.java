@@ -170,7 +170,9 @@ public class BlockingManager {
     }
 
     public List<UserJid> getCachedBlockedContacts(AccountJid account) {
-        return cachedBlockedContacts.get(account);
+        if (cachedBlockedContacts.get(account) == null)
+            return new ArrayList<>();
+        else return cachedBlockedContacts.get(account);
     }
 
     private void updateCachedBlockedContacts(AccountJid account, List<UserJid> blockedContacts) {
