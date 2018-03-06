@@ -349,7 +349,7 @@ public class ContactListFragment extends Fragment implements ContactListView,
 
                 // update end of list
                 if (presenter.getCurrentChatsState() == ContactListPresenter.ChatListState.recent
-                        && adapter.getItemCount() >= MAX_RECENT_ITEMS) {
+                        && presenter.getAllChatsSize() > MAX_RECENT_ITEMS) {
                     ChatWithButtonVO lastChat = ChatWithButtonVO.convert((ChatVO)
                             adapter.getItem(MAX_RECENT_ITEMS - 1));
                     adapter.removeItem(MAX_RECENT_ITEMS - 1);

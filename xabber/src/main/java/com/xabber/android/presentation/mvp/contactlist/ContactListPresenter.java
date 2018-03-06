@@ -356,9 +356,11 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
                     // add recent chats
                     int i = 0;
                     for (AbstractContact contact : chatsGroup.getAbstractContacts()) {
-                        if (i == MAX_RECENT_ITEMS - 1)
-                            items.add(ChatWithButtonVO.convert(contact, this));
-                        else items.add(ChatVO.convert(contact, this, null));
+                        if (i == MAX_RECENT_ITEMS - 1) {
+                            if (getAllChatsSize() > MAX_RECENT_ITEMS)
+                                items.add(ChatWithButtonVO.convert(contact, this));
+                            else items.add(ChatVO.convert(contact, this, null));
+                        } else items.add(ChatVO.convert(contact, this, null));
                         i++;
                     }
 
@@ -576,6 +578,12 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
         return currentChatsState;
     }
 
+    public int getAllChatsSize() {
+        Collection<AbstractChat> chats = MessageManager.getInstance().getChatsOfEnabledAccount();
+        GroupConfiguration chatsGroup = getChatsGroup(chats, ChatListState.all);
+        return chatsGroup.getTotal();
+    }
+
     public ArrayList<IFlexible> getTwoNextRecentChat() {
         Collection<AbstractChat> chats = MessageManager.getInstance().getChatsOfEnabledAccount();
 
@@ -585,7 +593,9 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
         ArrayList<IFlexible> items = new ArrayList<>();
         if (contacts != null && contacts.size() >= MAX_RECENT_ITEMS) {
             items.add(ChatVO.convert(contacts.get(MAX_RECENT_ITEMS - 2), this, null));
-            items.add(ChatWithButtonVO.convert(contacts.get(MAX_RECENT_ITEMS - 1), this));
+            if (getAllChatsSize() > MAX_RECENT_ITEMS)
+                items.add(ChatWithButtonVO.convert(contacts.get(MAX_RECENT_ITEMS - 1), this));
+            else items.add(ChatVO.convert(contacts.get(MAX_RECENT_ITEMS - 1), this));
         }
         return items;
     }
