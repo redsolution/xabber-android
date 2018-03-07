@@ -21,4 +21,8 @@
   <string name="ok">ОК</string>
   <string name="login">Вход</string>
   <string name="resume">Продолжить</string>
+  <string name="share">Поделиться</string>
+  <string name="send_to">Отправить:</string>
+  <string name="got_it">Понял</string>
+  <string name="search">Поиск</string>
 </resources>

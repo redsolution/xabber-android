@@ -45,6 +45,7 @@ import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.ssn.SSNManager;
 import com.xabber.android.data.extension.vcard.VCardManager;
+import com.xabber.android.data.http.PatreonManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.ReceiptManager;
@@ -336,6 +337,7 @@ public class Application extends android.app.Application {
         addManager(ScreenManager.getInstance());
         addManager(AccountManager.getInstance());
         addManager(XabberAccountManager.getInstance());
+        addManager(PatreonManager.getInstance());
         addManager(MUCManager.getInstance());
         addManager(MessageManager.getInstance());
         addManager(ChatManager.getInstance());

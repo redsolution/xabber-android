@@ -16,6 +16,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.xabber.android.BuildConfig;
 import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.xaccount.AuthManager;
@@ -44,6 +45,8 @@ public class XabberAccountInfoFragment extends Fragment {
 
     private TextView tvAccountName;
     private TextView tvAccountUsername;
+    private TextView tvLanguage;
+    private TextView tvPhone;
     private TextView tvLastSyncDate;
     private RelativeLayout rlLogout;
     private RelativeLayout rlSync;
@@ -61,8 +64,10 @@ public class XabberAccountInfoFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        tvPhone = (TextView) view.findViewById(R.id.tvPhoneNumber);
         tvAccountName = (TextView) view.findViewById(R.id.tvAccountName);
         tvAccountUsername = (TextView) view.findViewById(R.id.tvAccountUsername);
+        tvLanguage = (TextView) view.findViewById(R.id.tvLanguage);
         tvLastSyncDate = (TextView) view.findViewById(R.id.tvLastSyncDate);
 
         rlLogout = (RelativeLayout) view.findViewById(R.id.rlLogout);
@@ -114,7 +119,18 @@ public class XabberAccountInfoFragment extends Fragment {
 
         tvAccountName.setText(accountName);
         if (account.getUsername() != null && !account.getUsername().isEmpty())
-            tvAccountUsername.setText(getString(R.string.username, account.getUsername()));
+            tvAccountUsername.setText(account.getUsername());
+
+        if (account.getLanguage() != null && !account.getLanguage().equals("")) {
+            tvLanguage.setText(account.getLanguage());
+            tvLanguage.setVisibility(View.VISIBLE);
+        } else tvLanguage.setVisibility(View.GONE);
+
+        if (BuildConfig.FLAVOR.equals("ru")) {
+            tvPhone.setVisibility(View.VISIBLE);
+            String phone = account.getPhone();
+            tvPhone.setText(phone != null ? phone : getString(R.string.no_phone));
+        } else tvPhone.setVisibility(View.GONE);
     }
 
     public void updateLastSyncTime() {

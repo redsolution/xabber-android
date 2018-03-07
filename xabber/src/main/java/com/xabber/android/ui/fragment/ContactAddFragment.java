@@ -41,7 +41,6 @@ public class ContactAddFragment extends GroupEditorFragment
     private EditText userView;
     private EditText nameView;
     private String name;
-    private View accountSelectorPanel;
 
     public static ContactAddFragment newInstance(AccountJid account, UserJid user) {
         ContactAddFragment fragment = new ContactAddFragment();
@@ -61,7 +60,6 @@ public class ContactAddFragment extends GroupEditorFragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_contact_add, container, false);
-
 
         if (savedInstanceState != null) {
             name = savedInstanceState.getString(SAVED_NAME);
@@ -84,9 +82,17 @@ public class ContactAddFragment extends GroupEditorFragment
             }
         }
 
-        accountSelectorPanel = view.findViewById(R.id.account_selector);
-
         setUpAccountView((Spinner) view.findViewById(R.id.contact_account));
+
+        userView = (EditText) view.findViewById(R.id.contact_user);
+        nameView = (EditText) view.findViewById(R.id.contact_name);
+
+        if (getUser() != null) {
+            userView.setText(getUser().toString());
+        }
+        if (name != null) {
+            nameView.setText(name);
+        }
 
         return view;
     }
@@ -113,28 +119,7 @@ public class ContactAddFragment extends GroupEditorFragment
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
         getListView().setVisibility(View.GONE);
-    }
-
-    private void setUpListView() {
-        View headerView = ((LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE))
-                .inflate(R.layout.contact_add_header, null, false);
-        getListView().addHeaderView(headerView);
-
-        accountSelectorPanel.setVisibility(View.GONE);
-
-        setUpAccountView((Spinner) headerView.findViewById(R.id.contact_account));
-
-        userView = (EditText) headerView.findViewById(R.id.contact_user);
-        nameView = (EditText) headerView.findViewById(R.id.contact_name);
-
-        if (getUser() != null) {
-            userView.setText(getUser().toString());
-        }
-        if (name != null) {
-            nameView.setText(name);
-        }
     }
 
     @Override
@@ -169,7 +154,6 @@ public class ContactAddFragment extends GroupEditorFragment
             }
 
             if (getListView().getVisibility() == View.GONE) {
-                setUpListView();
                 getListView().setVisibility(View.VISIBLE);
             }
         }

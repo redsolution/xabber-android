@@ -7,7 +7,10 @@
     <TextView
         android:text="@string/contact_user"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="4dp"
+        android:layout_marginTop="10dp"
+        />
 
     <EditText
         android:text=""
@@ -21,7 +24,10 @@
     <TextView
         android:text="@string/contact_name"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="4dp"
+        />
 
     <EditText
         android:text=""

@@ -169,9 +169,9 @@ public class AccountEditorFragment extends BaseSettingsFragment {
         Localpart userName;
         Resourcepart resource;
         try {
-            serverName = JidCreate.domainBareFrom(getString(result, R.string.account_server_key));
-            userName = Localpart.from(getString(result, R.string.account_username_key));
-            resource = Resourcepart.from(getString(result, R.string.account_resource_key));
+            serverName = JidCreate.domainBareFrom(getString(result, R.string.account_server_key).trim());
+            userName = Localpart.from(getString(result, R.string.account_username_key).trim());
+            resource = Resourcepart.from(getString(result, R.string.account_resource_key).trim());
         } catch (XmppStringprepException e) {
             LogManager.exception(this, e);
             return false;

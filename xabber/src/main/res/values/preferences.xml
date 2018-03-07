@@ -29,6 +29,8 @@
     <string name="sync_all_key">sync_all_key</string>
     <string name="order_last_timestamp_key">order_last_timestamp_key</string>
 
+    <string name="patreon_last_load_timestamp_key">patreon_last_load_timestamp_key</string>
+
     <string name="last_sync_date_key">last_sync_date_key</string>
     <string name="last_sync_date_default">@string/last_sync_date_never</string>
 
@@ -87,6 +89,9 @@
 
     <string name="contacts_show_avatars_key">contacts_show_avatars</string>
     <bool name="contacts_show_avatars_default">true</bool>
+
+    <string name="contacts_show_messages_key">contacts_show_messages</string>
+    <bool name="contacts_show_messages_default">false</bool>
 
     <string name="contacts_show_offline_key">contacts_show_offline</string>
     <bool name="contacts_show_offline_default">true</bool>
@@ -523,6 +528,24 @@
     <string name="phrase_sound_key">phrase_sound</string>
 
 <!-- preference_chat -->
+    <string name="chat_notification_settings_key">chat_notification_settings_key</string>
+    <string-array name="chat_notification_settings_entries">
+        <item>@string/chat_notification_settings_enabled</item>
+        <item>@string/chat_notification_settings_bydefault</item>
+        <item>@string/chat_notification_settings_disabled</item>
+    </string-array>
+    <string name="chat_notification_settings_enabled">Enabled</string>
+    <string name="chat_notification_settings_bydefault">Default</string>
+    <string name="chat_notification_settings_disabled">Disabled</string>
+    <string-array name="chat_notification_settings_entryvalues">
+        <item>@string/chat_notification_settings_bydefault_value</item>
+        <item>@string/chat_notification_settings_enabled_value</item>
+        <item>@string/chat_notification_settings_disabled_value</item>
+    </string-array>
+    <string name="chat_notification_settings_bydefault_value">chat_notification_settings_bydefault_value</string>
+    <string name="chat_notification_settings_enabled_value">chat_notification_settings_enabled_value</string>
+    <string name="chat_notification_settings_disabled_value">chat_notification_settings_disabled_value</string>
+
     <string name="chat_save_history_key">chat_save_history</string>
     <string name="chat_events_sound_key">chat_events_sound</string>
     <string name="chat_events_show_text_key">chat_events_show_message_text</string>
@@ -565,4 +588,6 @@
     <string name="battery_optimization_disable_suggested_key">battery_optimization_disable_suggested</string>
     <string name="sync_account_type">@string/application_package</string>
     <string name="contact_viewer_mime_type">vnd.android.cursor.item/vnd.com.xabber.view</string>
+    <string name="chat_showcase_suggested_key">chat_showcase_suggested_key</string>
+    <string name="contact_showcase_suggested_key">contact_showcase_suggested_key</string>
 </resources>

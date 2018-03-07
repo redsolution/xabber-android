@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item android:id="@android:id/background">
+        <shape>
+            <corners android:radius="2dip" />
+            <solid android:color="?attr/patreon_progress_background_color" />
+        </shape>
+    </item>
+
+    <item android:id="@android:id/progress">
+        <clip>
+            <shape>
+                <corners android:radius="2dip" />
+                <solid android:color="@color/patreon_coral" />
+            </shape>
+        </clip>
+    </item>
+
+</layer-list>

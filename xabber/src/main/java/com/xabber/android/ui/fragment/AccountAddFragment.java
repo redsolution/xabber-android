@@ -96,7 +96,7 @@ public class AccountAddFragment extends Fragment implements View.OnClickListener
         AccountJid account;
         try {
             account = AccountManager.getInstance().addAccount(
-                    userView.getText().toString(),
+                    userView.getText().toString().trim(),
                     passwordView.getText().toString(),
                     "",
                     false,

@@ -9,6 +9,7 @@ import com.xabber.android.data.SettingsManager;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import okhttp3.ResponseBody;
@@ -80,12 +81,25 @@ public class AuthManager {
 
     public static Single<XabberAccount> getAccount(final String token) {
         return HttpApiManager.getXabberApi().getAccount("Token " + token)
+                .flatMap(new Func1<XabberAccountDTO, Single<? extends XabberAccountDTO>>() {
+                    @Override
+                    public Single<? extends XabberAccountDTO> call(XabberAccountDTO xabberAccountDTO) {
+                        if (xabberAccountDTO.getLanguage() != null && !xabberAccountDTO.getLanguage().equals(""))
+                            return Single.just(xabberAccountDTO);
+                        else return updateAccount(token, new Account(xabberAccountDTO.getFirstName(),
+                                xabberAccountDTO.getLastName(), Locale.getDefault().getLanguage()));
+                    }
+                })
                 .flatMap(new Func1<XabberAccountDTO, Single<? extends XabberAccount>>() {
                     @Override
                     public Single<? extends XabberAccount> call(XabberAccountDTO xabberAccountDTO) {
                         return XabberAccountManager.getInstance().saveOrUpdateXabberAccountToRealm(xabberAccountDTO, token);
                     }
                 });
+    }
+
+    private static Single<XabberAccountDTO> updateAccount(final String token, Account account) {
+        return HttpApiManager.getXabberApi().updateAccount("Token " + token, account);
     }
 
     public static Single<List<XMPPAccountSettings>> getClientSettings() {
@@ -224,9 +238,10 @@ public class AuthManager {
     }
 
     public static Single<XabberAccount> completeRegister(String username, String pass, String confirmPass,
-                                                         String firstName, String lastName, String host, boolean createToken) {
+                                                         String firstName, String lastName,
+                                                         String host, String language, boolean createToken) {
         return HttpApiManager.getXabberApi().completeRegister(getXabberTokenHeader(),
-                new CompleteRegister(username, pass, confirmPass, firstName, lastName, host, createToken))
+                new CompleteRegister(username, pass, confirmPass, firstName, lastName, host, language, createToken))
                 .flatMap(new Func1<XabberAccountDTO, Single<? extends XabberAccount>>() {
                     @Override
                     public Single<? extends XabberAccount> call(XabberAccountDTO xabberAccountDTO) {
@@ -237,6 +252,14 @@ public class AuthManager {
 
     public static Single<ResponseBody> addEmail(String email) {
         return HttpApiManager.getXabberApi().addEmail(getXabberTokenHeader(), new Email(email, getSource()));
+    }
+
+    public static Single<ResponseBody> setPhoneNumber(String phoneNumber) {
+        return HttpApiManager.getXabberApi().setPhoneNumber(getXabberTokenHeader(), new SetPhoneNumber("set", phoneNumber));
+    }
+
+    public static Single<ResponseBody> confirmPhoneNumber(String code) {
+        return HttpApiManager.getXabberApi().confirmPhoneNumber(getXabberTokenHeader(), new ConfirmPhoneNumber("verify", code));
     }
 
     // support
@@ -265,16 +288,52 @@ public class AuthManager {
         final String first_name;
         final String last_name;
         final String host;
+        final String language;
         final boolean create_token;
 
-        public CompleteRegister(String username, String password, String confirm_password, String first_name, String last_name, String host, boolean create_token) {
+        public CompleteRegister(String username, String password, String confirm_password,
+                                String first_name, String last_name, String host, String language,
+                                boolean create_token) {
             this.username = username;
             this.password = password;
             this.confirm_password = confirm_password;
             this.first_name = first_name;
             this.last_name = last_name;
             this.host = host;
+            this.language = language;
             this.create_token = create_token;
+        }
+    }
+
+    public static class SetPhoneNumber {
+        final String action;
+        final String phone;
+
+        public SetPhoneNumber(String action, String phone) {
+            this.action = action;
+            this.phone = phone;
+        }
+    }
+
+    public static class ConfirmPhoneNumber {
+        final String action;
+        final String code;
+
+        public ConfirmPhoneNumber(String action, String code) {
+            this.action = action;
+            this.code = code;
+        }
+    }
+
+    public static class Account {
+        final String first_name;
+        final String last_name;
+        final String language;
+
+        public Account(String first_name, String last_name, String language) {
+            this.first_name = first_name;
+            this.last_name = last_name;
+            this.language = language;
         }
     }
 

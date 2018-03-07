@@ -114,6 +114,15 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
         }
     }
 
+    public boolean isSubscribed(AccountJid account, UserJid user) {
+        final Roster roster = getRoster(account);
+        if (roster == null) {
+            return false;
+        } else {
+            return roster.iAmSubscribedTo(user.getJid());
+        }
+    }
+
     public Collection<RosterContact> getAccountRosterContacts(final AccountJid accountJid) {
         return Collections.unmodifiableCollection(rosterContacts.getNested(accountJid.toString()).values());
     }
@@ -578,5 +587,26 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
             entities.add(rosterContact);
         }
         onContactsChanged(entities);
+    }
+
+    /**
+     * Notifies registered {@link OnChatStateListener}.
+     */
+    public static void onChatStateChanged(AccountJid account, UserJid bareAddress) {
+        final Collection<RosterContact> entities = new ArrayList<>();
+        RosterContact rosterContact = getInstance().getRosterContact(account, bareAddress);
+        if (rosterContact != null) {
+            entities.add(rosterContact);
+        }
+
+        Application.getInstance().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                for (OnChatStateListener onChatStateListener : Application
+                        .getInstance().getUIListeners(OnChatStateListener.class)) {
+                    onChatStateListener.onChatStateChanged(entities);
+                }
+            }
+        });
     }
 }

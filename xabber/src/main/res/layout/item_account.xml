@@ -39,7 +39,7 @@
         android:layout_marginStart="2dp"
         />
 
-    <include layout="@layout/avatar_account" />
+    <include layout="@layout/avatar_view_without_status" />
 
     <LinearLayout
         android:orientation="vertical"

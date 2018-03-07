@@ -2,6 +2,34 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <item android:id="@+id/action_invite_to_chat"
+        android:orderInCategory="90"
+        android:title="@string/muc_invite"
+        android:visible="false"
+        app:showAsAction="never"
+    />
+
+    <item android:id="@+id/action_join_conference"
+        android:icon="@drawable/ic_group_add_white_24dp"
+        android:orderInCategory="80"
+        android:title="@string/muc_join"
+        android:visible="false"
+        app:showAsAction="never"
+    />
+
+    <item android:id="@+id/action_leave_conference"
+        android:orderInCategory="109"
+        android:title="@string/muc_leave"
+        android:visible="false"
+        app:showAsAction="never"
+    />
+
+    <item android:id="@+id/action_send_contact"
+        android:title="@string/action_send_contact" />
+
+    <item android:id="@+id/action_request_subscription"
+    android:title="@string/request_subscription" />
+
     <item android:id="@+id/action_edit_alias"
         android:title="@string/edit_alias"
         app:showAsAction="never"
@@ -14,9 +42,35 @@
         android:orderInCategory="100"
         />
 
+    <!--<item android:id="@+id/action_clear_history"-->
+        <!--android:icon="@drawable/ic_clear_all_white_24dp"-->
+        <!--android:orderInCategory="107"-->
+        <!--android:title="@string/clear_history"-->
+        <!--app:showAsAction="never"-->
+    <!--/>-->
+
+    <item android:id="@+id/action_export_chat"
+        android:orderInCategory="108"
+        android:title="@string/export_chat"
+        app:showAsAction="never"
+    />
+
+    <item
+        android:id="@+id/action_block_contact"
+        android:orderInCategory="109"
+        android:title="@string/contact_block"
+        app:showAsAction="never" />
+
     <item android:id="@+id/action_remove_contact"
         android:title="@string/remove_contact"
         app:showAsAction="never"
+        android:orderInCategory="110"
+        />
+
+    <item android:id="@+id/action_delete_conference"
+        android:title="@string/muc_delete"
+        app:showAsAction="never"
+        android:visible="false"
         android:orderInCategory="110"
         />
 

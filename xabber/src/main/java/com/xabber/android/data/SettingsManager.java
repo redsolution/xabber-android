@@ -148,6 +148,11 @@ public class SettingsManager implements OnInitializedListener,
                 R.bool.contacts_show_avatars_default);
     }
 
+    public static boolean contactsShowMessages() {
+        return getBoolean(R.string.contacts_show_messages_key,
+                R.bool.contacts_show_messages_default);
+    }
+
     public static boolean contactsShowOffline() {
         return getBoolean(R.string.contacts_show_offline_key,
                 R.bool.contacts_show_offline_default);
@@ -167,16 +172,6 @@ public class SettingsManager implements OnInitializedListener,
                 R.bool.contacts_show_empty_groups_default);
     }
 
-    public static boolean contactsShowActiveChats() {
-        return getBoolean(R.string.contacts_show_active_chats_key,
-                R.bool.contacts_show_active_chats_default);
-    }
-
-    public static boolean contactsStayActiveChats() {
-        return getBoolean(R.string.contacts_stay_active_chats_key,
-                R.bool.contacts_stay_active_chats_default);
-    }
-
     public static boolean contactsShowAccounts() {
         return getBoolean(R.string.contacts_show_accounts_key,
                 R.bool.contacts_show_accounts_default);
@@ -194,11 +189,6 @@ public class SettingsManager implements OnInitializedListener,
             return ComparatorByStatus.COMPARATOR_BY_STATUS;
         else
             throw new IllegalStateException();
-    }
-
-    public static boolean contactsShowPanel() {
-        return getBoolean(R.string.contacts_show_panel_key,
-                R.bool.contacts_show_panel_default);
     }
 
     public static boolean contactsEnableShowAccounts() {
@@ -676,6 +666,22 @@ public class SettingsManager implements OnInitializedListener,
         setBoolean(R.string.start_at_boot_suggested_key, true);
     }
 
+    public static boolean chatShowcaseSuggested() {
+        return getBoolean(R.string.chat_showcase_suggested_key, false);
+    }
+
+    public static void setChatShowcaseSuggested() {
+        setBoolean(R.string.chat_showcase_suggested_key, true);
+    }
+
+    public static boolean contactShowcaseSuggested() {
+        return getBoolean(R.string.contact_showcase_suggested_key, false);
+    }
+
+    public static void setContactShowcaseSuggested() {
+        setBoolean(R.string.contact_showcase_suggested_key, true);
+    }
+
     public static boolean contactIntegrationSuggested() {
         return getBoolean(R.string.contact_integration_suggested_key, false);
     }
@@ -761,6 +767,14 @@ public class SettingsManager implements OnInitializedListener,
 
     public static int getLastOrderChangeTimestamp() {
         return getInteger(R.string.order_last_timestamp_key, 1);
+    }
+
+    public static void setLastPatreonLoadTimestamp(int timestamp) {
+        setInt(R.string.patreon_last_load_timestamp_key, timestamp);
+    }
+
+    public static int getLastPatreonLoadTimestamp() {
+        return getInteger(R.string.patreon_last_load_timestamp_key, 1);
     }
 
     @Override

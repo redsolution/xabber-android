@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="56dp"
+    android:background="?attr/contact_list_contact_background"
+    android:elevation="1dp">
+
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/selectableItemBackgroundBorderless"
+    >
+
+    <include layout="@layout/account_color_indicator"/>
+
+    <include layout="@layout/avatar_view_small"/>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_toRightOf="@id/avatarView"
+        android:layout_toLeftOf="@id/tvUnreadCount"
+        >
+
+        <TextView
+            android:id="@+id/tvContactName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:drawablePadding="4dp"
+            android:textSize="14sp"
+            android:textColor="?attr/contact_list_contact_name_text_color"
+            android:fontFamily="sans-serif-medium"
+            android:text="Erik Walton"
+            />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tvStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/avatarView"
+        android:layout_toLeftOf="@id/tvUnreadCount"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="8dp"
+        android:layout_marginRight="8dp"
+        android:singleLine="true"
+        android:textSize="14sp"
+        android:textColor="?attr/contact_list_contact_second_line_text_color"
+        android:text="Online"
+        />
+
+    <TextView
+        android:id="@+id/tvUnreadCount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingTop="0dp"
+        android:paddingBottom="1dp"
+        android:paddingRight="5dp"
+        android:paddingLeft="5dp"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="10dp"
+        android:background="@drawable/rounded_background_green"
+        android:textColor="@color/white"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:text="1"
+        />
+
+    <include layout="@layout/offline_shadow" />
+
+</RelativeLayout>
+</LinearLayout>

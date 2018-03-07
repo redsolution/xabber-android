@@ -111,20 +111,6 @@ public enum StatusMode {
         return StatusMode.unavailable;
     }
 
-    // using only for determine show or not button "request subscription"
-    static public boolean isSubscribed(Presence presence) {
-        if (presence != null) {
-            switch (presence.getType()) {
-                case available:
-                    return true;
-                case subscribed:
-                    return true;
-                default:
-                    return false;
-            }
-        } else return false;
-    }
-
     /**
      * Get {@link Mode} for {@link StatusMode}.
      *

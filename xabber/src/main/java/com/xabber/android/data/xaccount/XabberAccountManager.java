@@ -291,7 +291,10 @@ public class XabberAccountManager implements OnLoadListener {
         xabberAccountRealm.setUsername(xabberAccount.getUsername());
         xabberAccountRealm.setFirstName(xabberAccount.getFirstName());
         xabberAccountRealm.setLastName(xabberAccount.getLastName());
+        xabberAccountRealm.setLanguage(xabberAccount.getLanguage());
         xabberAccountRealm.setRegisterDate(xabberAccount.getRegistrationDate());
+        xabberAccountRealm.setNeedToVerifyPhone(xabberAccount.isNeedToVerifyPhone());
+        xabberAccountRealm.setPhone(xabberAccount.getPhone());
 
         RealmList<XMPPUserRealm> realmUsers = new RealmList<>();
         for (XMPPUserDTO user : xabberAccount.getXmppUsers()) {
@@ -381,10 +384,13 @@ public class XabberAccountManager implements OnLoadListener {
                 accountRealm.getFirstName(),
                 accountRealm.getLastName(),
                 accountRealm.getRegisterDate(),
+                accountRealm.getLanguage(),
                 xmppUsers,
                 emails,
                 socials,
-                accountRealm.getToken()
+                accountRealm.getToken(),
+                accountRealm.isNeedToVerifyPhone(),
+                accountRealm.getPhone()
         );
 
         return xabberAccount;

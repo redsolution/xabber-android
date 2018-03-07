@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginLeft="10dp"
+    android:layout_marginRight="8dp"
+    android:layout_centerVertical="true"
+    android:id="@+id/avatarView"
+    >
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/ivAvatar"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        app:civ_fill_color="@color/white"
+        tools:src="@tools:sample/avatars"
+        />
+
+    <ImageView
+        android:id="@+id/ivStatus"
+        android:layout_width="12dp"
+        android:layout_height="12dp"
+        android:src="@drawable/ic_status"
+        android:layout_toLeftOf="@id/ivAvatar"
+        android:layout_alignBottom="@id/ivAvatar"
+        android:layout_marginRight="-48dp"
+        android:layout_marginBottom="2dp"
+        />
+
+    <ImageView
+        android:id="@+id/ivOnlyStatus"
+        android:layout_width="12dp"
+        android:layout_height="12dp"
+        android:layout_marginLeft="4dp"
+        android:layout_marginRight="4dp"
+        android:src="@drawable/ic_status"
+        android:visibility="gone"
+        />
+
+</RelativeLayout>

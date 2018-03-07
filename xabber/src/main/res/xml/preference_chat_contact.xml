@@ -14,6 +14,12 @@
 -->
 <PreferenceScreen
     xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <CheckBoxPreference
+        android:key="@string/chat_notification_settings_key"
+        android:title="@string/chat_notification_settings_title"
+        />
+
     <CheckBoxPreference
         android:key="@string/chat_save_history_key"
         android:title="@string/save_history"

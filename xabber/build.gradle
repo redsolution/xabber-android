@@ -1,18 +1,17 @@
 apply plugin: 'com.android.application'
-apply plugin: 'com.neenbedankt.android-apt'
 apply plugin: 'realm-android'
 apply plugin: 'com.frogermcs.androiddevmetrics'
 apply plugin: 'io.fabric'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    compileSdkVersion 27
+    buildToolsVersion '27.0.3'
 
     defaultConfig {
         minSdkVersion 15
-        targetSdkVersion 25
-        versionCode 401
-        versionName '2.1(401)'
+        targetSdkVersion 27
+        versionCode 465
+        versionName '2.2.1(465)'
     }
 
     lintOptions {
@@ -36,28 +35,40 @@ android {
         }
     }
 
+    flavorDimensions "build"
     productFlavors {
 
         dev {
+            dimension "build"
             applicationId "com.xabber.androiddev"
             resValue 'string', 'application_package', applicationId
             multiDexEnabled true
         }
 
         beta {
+            dimension "build"
             applicationId "com.xabber.android.beta"
             resValue 'string', 'application_package', applicationId
             multiDexEnabled true
         }
 
         prod {
+            dimension "build"
             applicationId "com.xabber.android"
             resValue 'string', 'application_package', applicationId
             multiDexEnabled true
         }
 
         vip {
+            dimension "build"
             applicationId "com.xabber.androidvip"
+            resValue 'string', 'application_package', applicationId
+            multiDexEnabled true
+        }
+
+        ru {
+            dimension "build"
+            applicationId "com.xabber.android.ru"
             resValue 'string', 'application_package', applicationId
             multiDexEnabled true
         }
@@ -135,54 +146,60 @@ if (build_param != "dev") {
 
 ext {
     smackVersion = '4.2.1-SNAPSHOT'
-    supportVersion = '25.3.1'
+    supportVersion = '27.0.2'
 }
 
 dependencies {
-    compile project('MemorizingTrustManager')
-    compile project('emojicon')
+    implementation project(path: 'MemorizingTrustManager', configuration: 'default')
+    implementation project(path: 'emojicon', configuration: 'default')
 
-    compile 'com.github.str4tocaster.smack:smack-android-extensions:ffb99cc'
-    compile 'com.github.str4tocaster.smack:smack-experimental:ffb99cc'
-    compile 'com.github.str4tocaster.smack:smack-tcp:ffb99cc'
-    compile 'com.github.str4tocaster.smack:smack-resolver-dnsjava:ffb99cc'
+    implementation 'com.github.str4tocaster.smack:smack-android-extensions:ffb99cc'
+    implementation 'com.github.str4tocaster.smack:smack-experimental:ffb99cc'
+    implementation 'com.github.str4tocaster.smack:smack-tcp:ffb99cc'
+    implementation 'com.github.str4tocaster.smack:smack-resolver-dnsjava:ffb99cc'
 
-    compile "com.android.support:design:$supportVersion"
-    compile "com.android.support:support-v13:$supportVersion"
-    compile 'com.android.support:multidex:1.0.1'
+    implementation "com.android.support:design:$supportVersion"
+    implementation "com.android.support:support-v13:$supportVersion"
+    implementation 'com.android.support:multidex:1.0.1'
 
-    compile 'com.github.Str4tocaster:otr4j:custom-SNAPSHOT'
-    compile 'com.google.zxing:android-integration:3.3.0'
+    implementation 'com.github.Str4tocaster:otr4j:custom-SNAPSHOT'
+    implementation 'com.google.zxing:android-integration:3.3.0'
 
     // retrofit
-    compile 'com.squareup.retrofit2:retrofit:2.3.0'
-    compile 'com.squareup.retrofit2:adapter-rxjava:2.3.0'
-    compile 'com.squareup.retrofit2:converter-gson:2.3.0'
-    compile 'com.squareup.okhttp3:logging-interceptor:3.5.0'
+    implementation 'com.squareup.retrofit2:retrofit:2.3.0'
+    implementation 'com.squareup.retrofit2:adapter-rxjava:2.3.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.3.0'
+    implementation 'com.squareup.okhttp3:logging-interceptor:3.5.0'
 
     // rx java
-    compile 'io.reactivex:rxandroid:1.1.0'
-    compile 'io.reactivex:rxjava:1.1.0'
+    implementation 'io.reactivex:rxandroid:1.1.0'
+    implementation 'io.reactivex:rxjava:1.1.0'
 
     //social
-    compile 'com.facebook.android:facebook-android-sdk:4.27.0'
-    compile 'com.twitter.sdk.android:twitter:3.0.0'
-    compile 'com.google.android.gms:play-services-auth:11.4.0'
-    compile ('com.google.api-client:google-api-client-android:1.22.0') {
+    implementation 'com.facebook.android:facebook-android-sdk:4.31.0'
+    implementation 'com.twitter.sdk.android:twitter:3.0.0'
+    implementation 'com.google.android.gms:play-services-auth:11.4.0'
+    implementation ('com.google.api-client:google-api-client-android:1.22.0') {
         exclude module: 'httpclient'
     }
 
-    compile 'me.relex:circleindicator:1.2.2@aar'
-    compile 'com.github.bumptech.glide:glide:3.7.0'
-    compile 'com.squareup.okhttp3:okhttp:3.5.0'
-    compile 'org.greenrobot:eventbus:3.0.0'
+    implementation 'me.relex:circleindicator:1.2.2@aar'
+    implementation 'com.github.bumptech.glide:glide:3.7.0'
+    implementation 'com.squareup.okhttp3:okhttp:3.5.0'
+    implementation 'org.greenrobot:eventbus:3.0.0'
 
-    compile 'com.soundcloud.android:android-crop:1.0.1@aar'
-    compile 'de.hdodenhof:circleimageview:2.1.0'
-    compile 'com.melnykov:floatingactionbutton:1.3.0'
-    compile('com.crashlytics.sdk.android:crashlytics:2.6.8@aar') {
+    // ui
+    implementation 'ru.egslava:MaskedEditText:1.0.5'
+    implementation 'eu.davidea:flexible-adapter:5.0.0-rc4'
+    implementation 'com.soundcloud.android:android-crop:1.0.1@aar'
+    implementation 'de.hdodenhof:circleimageview:2.1.0'
+    implementation 'com.melnykov:floatingactionbutton:1.3.0'
+
+    implementation('com.crashlytics.sdk.android:crashlytics:2.6.8@aar') {
         transitive = true;
     }
+
+    implementation group: 'org.bouncycastle', name: 'bcpkix-jdk15on', version: '1.58'
 }
 apply plugin: 'com.google.gms.google-services'
 

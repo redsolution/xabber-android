@@ -18,6 +18,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import com.xabber.android.BuildConfig;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
@@ -29,6 +30,7 @@ import com.xabber.android.data.xaccount.XabberAccount;
 import com.xabber.android.data.xaccount.XabberAccountManager;
 import com.xabber.android.ui.color.BarPainter;
 import com.xabber.android.ui.fragment.XabberAccountCompleteRegsiterFrament;
+import com.xabber.android.ui.fragment.XabberAccountConfirmPhoneFragment;
 import com.xabber.android.ui.fragment.XabberAccountConfirmationFragment;
 import com.xabber.android.ui.fragment.XabberAccountInfoFragment;
 import com.xabber.android.ui.fragment.XabberAccountLastFragment;
@@ -36,6 +38,7 @@ import com.xabber.android.ui.fragment.XabberAccountLoginFragment;
 import com.xabber.android.utils.RetrofitErrorConverter;
 
 import java.util.List;
+import java.util.Locale;
 
 import okhttp3.ResponseBody;
 import rx.Subscription;
@@ -55,6 +58,7 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
     private final static String FRAGMENT_LOGIN = "fragment_login";
     private final static String FRAGMENT_INFO = "fragment_info";
     private final static String FRAGMENT_CONFIRM = "fragment_confirm";
+    private final static String FRAGMENT_PHONE_CONFIRM = "fragment_phone_confirm";
     private final static String FRAGMENT_COMPLETE = "fragment_complete";
     private final static String FRAGMENT_LAST = "fragment_last";
 
@@ -71,6 +75,7 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
     private Fragment fragmentLogin;
     private Fragment fragmentInfo;
     private Fragment fragmentConfirmation;
+    private Fragment fragmentPhoneConfirmation;
     private Fragment fragmentCompleteRegsiter;
     private Fragment fragmentLastStep;
 
@@ -118,10 +123,12 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
                 showConfirmFragment();
             }
             if (XabberAccount.STATUS_CONFIRMED.equals(account.getAccountStatus())) {
+                showPhoneConfirmFragment();
+            }
+            if (XabberAccount.STATUS_CONFIRMED.equals(account.getAccountStatus()) && !account.isNeedToVerifyPhone()) {
                 showCompleteFragment();
             }
             if (XabberAccount.STATUS_REGISTERED.equals(account.getAccountStatus())) {
-
                 showInfoFragment();
                 needShowSyncDialog = false;
             }
@@ -141,10 +148,13 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         if (menu == null) return true;
+        MenuItem menuItem = menu.findItem(R.id.action_cancel_register);
+        if (menuItem == null) return true;
+
         XabberAccount account = XabberAccountManager.getInstance().getAccount();
         if (account != null) {
-            menu.findItem(R.id.action_cancel_register).setVisible(!XabberAccount.STATUS_REGISTERED.equals(account.getAccountStatus()));
-        } else menu.findItem(R.id.action_cancel_register).setVisible(false);
+            menuItem.setVisible(!XabberAccount.STATUS_REGISTERED.equals(account.getAccountStatus()));
+        } else menuItem.setVisible(false);
         return true;
     }
 
@@ -272,6 +282,18 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
         barPainter.setBlue(this);
     }
 
+    private void showPhoneConfirmFragment() {
+        if (fragmentPhoneConfirmation == null)
+            fragmentPhoneConfirmation = new XabberAccountConfirmPhoneFragment();
+
+        fTrans = getFragmentManager().beginTransaction();
+        fTrans.replace(R.id.container, fragmentPhoneConfirmation, FRAGMENT_PHONE_CONFIRM);
+        fTrans.commit();
+
+        toolbar.setTitle(R.string.title_register_xabber_account);
+        barPainter.setBlue(this);
+    }
+
     private void showCompleteFragment() {
         if (fragmentCompleteRegsiter == null)
             fragmentCompleteRegsiter = new XabberAccountCompleteRegsiterFrament();
@@ -311,6 +333,20 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
     public void onSyncClick(boolean needGoToMainActivity) {
         if (NetworkManager.isNetworkAvailable()) {
             synchronize(needGoToMainActivity);
+        } else
+            Toast.makeText(this, R.string.toast_no_internet, Toast.LENGTH_LONG).show();
+    }
+
+    public void onSetPhoneClick(String phoneNumber) {
+        if (NetworkManager.isNetworkAvailable()) {
+            setPhoneNumber(phoneNumber);
+        } else
+            Toast.makeText(this, R.string.toast_no_internet, Toast.LENGTH_LONG).show();
+    }
+
+    public void onConfirmCodeClick(String code) {
+        if (NetworkManager.isNetworkAvailable()) {
+            confirmPhone(code);
         } else
             Toast.makeText(this, R.string.toast_no_internet, Toast.LENGTH_LONG).show();
     }
@@ -593,7 +629,9 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
     }
 
     private void handleSuccessConfirm(XabberAccount response) {
-        showCompleteFragment();
+        if (BuildConfig.FLAVOR.equals("ru") && response.isNeedToVerifyPhone())
+            showPhoneConfirmFragment();
+        else showCompleteFragment();
         hideProgress();
         Toast.makeText(this, R.string.confirm_success, Toast.LENGTH_SHORT).show();
     }
@@ -613,7 +651,8 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
 
     private void completeRegister(String username, String pass, String pass2, String firstName, String lastName, boolean createToken) {
         showProgress(getResources().getString(R.string.progress_title_complete));
-        Subscription completeSubscription = AuthManager.completeRegister(username, pass, pass2, firstName, lastName, "xabber.org", createToken)
+        Subscription completeSubscription = AuthManager.completeRegister(username, pass, pass2,
+                firstName, lastName, getString(R.string.xabber_xmpp_host), Locale.getDefault().getLanguage(), createToken)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<XabberAccount>() {
@@ -650,6 +689,83 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
         } else {
             Log.d(LOG_TAG, "Error while completing register: " + throwable.toString());
             Toast.makeText(this, "Error while completing register: " + throwable.toString(), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void confirmPhone(String code) {
+        showProgress(getResources().getString(R.string.progress_title_confirm_phone));
+        Subscription subscription = AuthManager.confirmPhoneNumber(code)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<ResponseBody>() {
+                    @Override
+                    public void call(ResponseBody s) {
+                        handleSuccessConfirmPhone(s);
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        handleErrorConfirmPhone(throwable);
+                    }
+                });
+        compositeSubscription.add(subscription);
+    }
+
+    private void handleSuccessConfirmPhone(ResponseBody response) {
+        showCompleteFragment();
+        hideProgress();
+        Toast.makeText(this, R.string.confirm_phone_success, Toast.LENGTH_SHORT).show();
+    }
+
+    private void handleErrorConfirmPhone(Throwable throwable) {
+        hideProgress();
+
+        String message = RetrofitErrorConverter.throwableToHttpError(throwable);
+        if (message != null) {
+            Log.d(LOG_TAG, "Error while confirm phone number: " + message);
+            Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+        } else {
+            Log.d(LOG_TAG, "Error while confirm phone number: " + throwable.toString());
+            Toast.makeText(this, "Error while confirm phone number: " + throwable.toString(), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void setPhoneNumber(String phoneNumber) {
+        showProgress(getResources().getString(R.string.progress_title_set_phone));
+        Subscription subscription = AuthManager.setPhoneNumber(phoneNumber)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<ResponseBody>() {
+                    @Override
+                    public void call(ResponseBody s) {
+                        handleSuccessSetPhoneNumber(s);
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        handleErrorSetPhoneNumber(throwable);
+                    }
+                });
+        compositeSubscription.add(subscription);
+    }
+
+    private void handleSuccessSetPhoneNumber(ResponseBody response) {
+        // enable code field and button
+
+        hideProgress();
+        Toast.makeText(this, R.string.set_phone_success, Toast.LENGTH_SHORT).show();
+    }
+
+    private void handleErrorSetPhoneNumber(Throwable throwable) {
+        hideProgress();
+
+        String message = RetrofitErrorConverter.throwableToHttpError(throwable);
+        if (message != null) {
+            Log.d(LOG_TAG, "Error while send verification code: " + message);
+            Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+        } else {
+            Log.d(LOG_TAG, "Error while send verification code: " + throwable.toString());
+            Toast.makeText(this, "Error while send verification code: " + throwable.toString(), Toast.LENGTH_LONG).show();
         }
     }
 

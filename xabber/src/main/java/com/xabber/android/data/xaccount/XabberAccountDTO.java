@@ -14,12 +14,16 @@ public class XabberAccountDTO {
     private String first_name;
     private String last_name;
     private String registration_date;
+    private String language;
+    private String phone;
+    private boolean need_to_verify_phone;
     private List<XMPPUserDTO> xmpp_users;
     private List<EmailDTO> email_list;
     private List<SocialBindingDTO> social_bindings;
 
     public XabberAccountDTO(int id, String account_status, String username, String first_name,
-                            String last_name, String registration_date, List<XMPPUserDTO> xmpp_users,
+                            String last_name, String registration_date, String language, String phone,
+                            boolean need_to_verify_phone, List<XMPPUserDTO> xmpp_users,
                             List<EmailDTO> email_list, List<SocialBindingDTO> social_bindings) {
         this.id = id;
         this.account_status = account_status;
@@ -27,6 +31,9 @@ public class XabberAccountDTO {
         this.first_name = first_name;
         this.last_name = last_name;
         this.registration_date = registration_date;
+        this.language = language;
+        this.phone = phone;
+        this.need_to_verify_phone = need_to_verify_phone;
         this.xmpp_users = xmpp_users;
         this.email_list = email_list;
         this.social_bindings = social_bindings;
@@ -56,6 +63,10 @@ public class XabberAccountDTO {
         return registration_date;
     }
 
+    public String getLanguage() {
+        return language;
+    }
+
     public List<XMPPUserDTO> getXmppUsers() {
         return xmpp_users;
     }
@@ -66,6 +77,14 @@ public class XabberAccountDTO {
 
     public List<SocialBindingDTO> getSocialBindings() {
         return social_bindings;
+    }
+
+    public boolean isNeedToVerifyPhone() {
+        return need_to_verify_phone;
+    }
+
+    public String getPhone() {
+        return phone;
     }
 }
 

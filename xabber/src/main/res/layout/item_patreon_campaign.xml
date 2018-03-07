@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="40dp"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:layout_marginTop="8dp"
+    android:layout_marginBottom="8dp">
+
+    <ImageView
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:padding="8dp"
+        android:layout_marginRight="16dp"
+        android:src="@drawable/ic_patreon"
+        android:background="@color/patreon_coral"/>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/tvPatreonTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="marquee"
+            android:singleLine="true"
+            android:text="@string/patreon_title"
+            />
+
+        <ProgressBar
+            android:id="@+id/pbPatreon"
+            android:layout_width="match_parent"
+            android:layout_height="8dp"
+            android:layout_marginTop="4dp"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:progressDrawable="@xml/progress_bar_patreon_style"
+            android:progress="1"
+            android:max="100"
+            />
+
+    </LinearLayout>
+
+</LinearLayout>

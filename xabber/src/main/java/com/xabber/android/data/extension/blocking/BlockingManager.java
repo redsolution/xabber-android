@@ -21,6 +21,7 @@ import org.jivesoftware.smackx.blocking.BlockingCommandManager;
 import org.jxmpp.jid.Jid;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -40,6 +41,8 @@ public class BlockingManager {
     @SuppressWarnings("WeakerAccess")
     Map<AccountJid, UnblockedAllListener> unblockedAllListeners;
 
+    private Map<AccountJid, List<UserJid>> cachedBlockedContacts;
+
     public static BlockingManager getInstance() {
         if (instance == null) {
             instance = new BlockingManager();
@@ -54,9 +57,8 @@ public class BlockingManager {
         blockedListeners = new ConcurrentHashMap<>();
         unblockedListeners = new ConcurrentHashMap<>();
         unblockedAllListeners = new ConcurrentHashMap<>();
+        cachedBlockedContacts = new HashMap<>();
     }
-
-
 
     public void onAuthorized(final ConnectionItem connection) {
         final AccountJid account = connection.getAccount();
@@ -68,7 +70,20 @@ public class BlockingManager {
 
             if (supportedByServer) {
                 // cache block list inside
-                blockingCommandManager.getBlockList();
+                List<UserJid> blockedContacts = new ArrayList<>();
+                try {
+                    List<Jid> blockedJids = blockingCommandManager.getBlockList();
+                    for (Jid jid : blockedJids) {
+                        blockedContacts.add(UserJid.from(jid));
+                    }
+
+                } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException
+                        | InterruptedException | SmackException.NotConnectedException | UserJid.UserJidCreateException e) {
+                    LogManager.exception(LOG_TAG, e);
+                }
+                // Cache block inside manager
+                // For contact list building used only this list of blocked contacts
+                updateCachedBlockedContacts(account, blockedContacts);
             }
 
             addBlockedListener(blockingCommandManager, account);
@@ -154,6 +169,17 @@ public class BlockingManager {
         return supportForAccounts.get(account);
     }
 
+    public List<UserJid> getCachedBlockedContacts(AccountJid account) {
+        if (cachedBlockedContacts.get(account) == null)
+            return new ArrayList<>();
+        else return cachedBlockedContacts.get(account);
+    }
+
+    private void updateCachedBlockedContacts(AccountJid account, List<UserJid> blockedContacts) {
+        cachedBlockedContacts.remove(account);
+        cachedBlockedContacts.put(account, blockedContacts);
+    }
+
     public List<UserJid> getBlockedContacts(AccountJid account) {
         List<UserJid> blockedContacts = new ArrayList<>();
 
@@ -174,6 +200,7 @@ public class BlockingManager {
             }
         }
 
+        updateCachedBlockedContacts(account, blockedContacts);
         return blockedContacts;
     }
 
@@ -208,6 +235,7 @@ public class BlockingManager {
                     @Override
                     public void run() {
                         if (finalSuccess) {
+                            cachedBlockedContacts.get(account).add(contactJid);
                             listener.onSuccess();
                         } else {
                             listener.onError();

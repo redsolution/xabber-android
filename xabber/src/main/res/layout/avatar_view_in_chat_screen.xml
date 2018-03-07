@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/avatarView"
+    android:layout_width="40dp"
+    android:layout_height="40dp"
+    android:layout_marginRight="10dp"
+    android:layout_centerVertical="true">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/ivAvatar"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        app:civ_fill_color="@color/white"
+        tools:src="@tools:sample/avatars"
+        />
+
+    <ImageView
+        android:id="@+id/ivStatus"
+        android:layout_width="12dp"
+        android:layout_height="12dp"
+        android:src="@drawable/ic_status"
+        android:layout_alignBaseline="@+id/imageView"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_margin="1dp"
+        />
+
+</RelativeLayout>

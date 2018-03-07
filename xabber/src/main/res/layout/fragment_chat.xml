@@ -18,33 +18,15 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    android:id="@+id/root_view">
-
-    <android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/toolbar_default"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-
-        android:background="?attr/colorPrimary"
-        android:elevation="8dp"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        app:popupTheme="?attr/toolbar_popup_theme"
-        >
-
-        <include
-            android:id="@+id/contact_title"
-            layout="@layout/contact_title"
-            />
-
-    </android.support.v7.widget.Toolbar>
+    android:id="@+id/root_view"
+    android:elevation="24dp">
 
     <android.support.v4.widget.SwipeRefreshLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/swipeContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/notifyLayout"
+        android:layout_above="@+id/input_layout"
         android:layout_below="@+id/toolbar_default"
         >
 
@@ -61,43 +43,14 @@
 
     </android.support.v4.widget.SwipeRefreshLayout>
 
-    <RelativeLayout
-        android:id="@+id/notifyLayout"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:background="?attr/message_status_item_background_color"
+    <ViewStub
+        android:id="@+id/stubNotify"
+        android:inflatedId="@+id/notifyLayout"
+        android:layout="@layout/layout_chat_notify"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_above="@+id/input_layout"
-        android:visibility="gone"
-        android:elevation="8dp"
-        >
-
-        <TextView
-            android:id="@+id/tvNotifyTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-            android:layout_marginLeft="16dp"
-            android:layout_marginStart="16dp"
-            android:layout_centerVertical="true"
-            android:text="@string/otr_verification_notify_title"
-            android:textSize="16sp"
-            />
-
-        <TextView
-            android:id="@+id/tvNotifyAction"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_centerVertical="true"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:textSize="16sp"
-            android:text="@string/otr_verification_notify_button"
-            />
-
-    </RelativeLayout>
+        />
 
     <LinearLayout
         android:id="@+id/input_layout"
@@ -174,6 +127,15 @@
             />
     </LinearLayout>
 
+    <ViewStub
+        android:id="@+id/stubJoin"
+        android:inflatedId="@+id/joinLayout"
+        android:layout="@layout/layout_chat_join"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        />
+
     <ProgressBar
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="match_parent"
@@ -197,5 +159,15 @@
         android:visibility="gone"
         />
 
+    <LinearLayout
+        android:id="@+id/placeholder"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:focusable="true"
+        android:clickable="true"
+        android:elevation="8dp"
+        android:visibility="gone"
+        />
 
 </RelativeLayout>

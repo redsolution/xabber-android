@@ -17,11 +17,11 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     >
-    <ImageView
-        android:id="@+id/avatar"
-        android:layout_width="32dip"
-        android:layout_height="32dip"
 
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/avatarBackground"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
 
@@ -29,11 +29,28 @@
         android:layout_marginLeft="6dp"
         android:layout_marginTop="3dp"
         android:scaleType="centerCrop"
-        android:src="@drawable/ic_avatar_1"
+
+        android:src="@color/white"
+        />
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/avatar"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+
+        android:layout_alignTop="@+id/message_text"
+        android:layout_marginLeft="6dp"
+        android:layout_marginTop="3dp"
+        android:scaleType="centerCrop"
+
+        android:src="#80CBC4"
         />
 
     <LinearLayout
         android:id="@+id/message_balloon"
+        android:orientation="vertical"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
 
@@ -60,8 +77,7 @@
         android:paddingTop="8dp">
 
 
-        <include layout="@layout/item_message"
-            />
+        <include layout="@layout/item_message" />
 
     </LinearLayout>
 

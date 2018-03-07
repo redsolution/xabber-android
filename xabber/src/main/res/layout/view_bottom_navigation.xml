@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout android:id="@+id/viewBottomNavigation"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="56dp"
+    android:background="?attr/bottom_navigation_background"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:id="@+id/recentButtonView"
+            android:layout_width="48dp"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/btnRecent"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="4dp"
+                android:padding="10dp"
+                android:layout_centerVertical="true"
+                android:src="@drawable/ic_message"
+                android:tint="?attr/chat_input_button_color"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="6dp"
+                />
+
+            <TextView
+                android:id="@+id/tvUnreadCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_marginBottom="12dp"
+                android:layout_marginLeft="22dp"
+                android:paddingTop="1dp"
+                android:paddingBottom="2dp"
+                android:paddingRight="6dp"
+                android:paddingLeft="6dp"
+                android:background="@drawable/rounded_background_green_border"
+                android:textColor="@color/white"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:text="1"
+                android:visibility="gone"
+                />
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/controlView"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_toRightOf="@+id/recentButtonView"
+            android:layout_toLeftOf="@+id/btnMenu"
+            android:paddingTop="6dp"
+            android:paddingBottom="6dp"
+            >
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/accountList"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:overScrollMode="never"
+                tools:listitem="@layout/avatar_view_xsmall"
+                android:layout_weight="1"
+                />
+
+            <RelativeLayout
+                android:id="@+id/searchLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="visible"
+                android:layout_weight="0.3"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                >
+
+                <ImageView
+                    android:id="@+id/ivSearch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:padding="10dp"
+                    android:src="@drawable/ic_search"
+                    android:tint="?attr/chat_input_button_color"
+                    />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@+id/ivSearch"
+                    android:textSize="18sp"
+                    android:textColor="?attr/contact_list_account_group_second_line_text_color"
+                    android:text="@string/search"
+                    />
+
+            </RelativeLayout>
+
+            <ImageView
+                android:id="@+id/btnSearch"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="10dp"
+                android:src="@drawable/ic_search"
+                android:tint="?attr/chat_input_button_color"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:layout_weight="1"
+                android:visibility="gone"
+                android:clickable="true"
+                />
+
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/btnMenu"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginRight="4dp"
+            android:layout_alignParentRight="true"
+            android:padding="10dp"
+            android:src="@drawable/ic_menu"
+            android:tint="?attr/chat_input_button_color"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="6dp"
+            />
+
+        <RelativeLayout
+            android:id="@+id/expandSearchLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="?attr/bottom_navigation_background"
+            android:visibility="gone">
+
+            <SearchView
+                android:id="@+id/searchView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="2dp"
+                android:textSize="18sp"
+                android:queryBackground="@android:color/transparent"
+                />
+
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+</FrameLayout>
+

@@ -50,6 +50,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.UUID;
 
 import io.realm.Realm;
 
@@ -183,8 +184,12 @@ public class RoomChat extends AbstractChat {
     }
 
     @Override
-    protected boolean notifyAboutMessage() {
-        return SettingsManager.eventsOnMuc();
+    public boolean notifyAboutMessage() {
+        switch (notificationState.getMode()) {
+            case enabled: return true;
+            case disabled: return false;
+            default: return SettingsManager.eventsOnMuc();
+        }
     }
 
     @Override
@@ -193,10 +198,10 @@ public class RoomChat extends AbstractChat {
             return false;
         }
 
-        MUCUser mucUserExtension = MUCUser.from(stanza);
-        if (mucUserExtension != null && mucUserExtension.getInvite() != null) {
-            return false;
-        }
+//        MUCUser mucUserExtension = MUCUser.from(stanza);
+//        if (mucUserExtension != null && mucUserExtension.getInvite() != null) {
+//            return false;
+//        }
 
         final org.jxmpp.jid.Jid from = stanza.getFrom();
         final Resourcepart resource = from.getResourceOrNull();
@@ -235,6 +240,9 @@ public class RoomChat extends AbstractChat {
             } else {
                 boolean notify = true;
                 String stanzaId = message.getStanzaId();
+                // disabling because new messages without stanza will be repeated
+                //if (stanzaId == null) stanzaId = UUID.randomUUID().toString();
+
                 DelayInformation delayInformation = DelayInformation.from(message);
                 Date delay = null;
                 if (delayInformation != null) {
@@ -264,7 +272,7 @@ public class RoomChat extends AbstractChat {
                 }
 
                 updateThreadId(message.getThread());
-                createAndSaveNewMessage(resource, text, null, delay, true, notify, false, false, message.getStanzaId());
+                createAndSaveNewMessage(resource, text, null, delay, true, notify, false, false, stanzaId);
             }
         } else if (stanza instanceof Presence) {
             Presence presence = (Presence) stanza;

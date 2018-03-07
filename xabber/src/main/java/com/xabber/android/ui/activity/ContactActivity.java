@@ -140,7 +140,7 @@ public class ContactActivity extends ManagedActivity implements
         final int accountMainColor = ColorManager.getInstance().getAccountPainter().getAccountMainColor(account);
 
         contactTitleView = findViewById(R.id.contact_title_expanded);
-        findViewById(R.id.status_icon).setVisibility(View.GONE);
+        findViewById(R.id.ivStatus).setVisibility(View.GONE);
         contactTitleView.setBackgroundColor(accountMainColor);
         TextView contactNameView = (TextView) findViewById(R.id.name);
         contactNameView.setVisibility(View.INVISIBLE);
@@ -211,4 +211,7 @@ public class ContactActivity extends ManagedActivity implements
     public void onVCardReceived() {
         ContactTitleInflater.updateTitle(contactTitleView, this, bestContact);
     }
+
+    @Override
+    public void registerVCardFragment(ContactVcardViewerFragment fragment) {}
 }

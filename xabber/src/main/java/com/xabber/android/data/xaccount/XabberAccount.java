@@ -18,24 +18,31 @@ public class XabberAccount {
     private String firstName;
     private String lastName;
     private String registerDate;
+    private String language;
     private List<XMPPUser> xmppUsers;
     private List<EmailDTO> emails;
     private List<SocialBindingDTO> socialBindings;
     private String token;
+    private String phone;
+    private boolean needToVerifyPhone;
 
     public XabberAccount(int id, String accountStatus, String username, String firstName,
-                         String lastName, String registerDate, List<XMPPUser> xmppUsers,
-                         List<EmailDTO> emails, List<SocialBindingDTO> socialBindings, String token) {
+                         String lastName, String registerDate, String language, List<XMPPUser> xmppUsers,
+                         List<EmailDTO> emails, List<SocialBindingDTO> socialBindings, String token,
+                         boolean needToVerifyPhone, String phone) {
         this.id = id;
         this.accountStatus = accountStatus;
         this.username = username;
         this.firstName = firstName;
         this.lastName = lastName;
         this.registerDate = registerDate;
+        this.language = language;
         this.xmppUsers = xmppUsers;
         this.emails = emails;
         this.socialBindings = socialBindings;
         this.token = token;
+        this.needToVerifyPhone = needToVerifyPhone;
+        this.phone = phone;
     }
 
     public String getAccountStatus() {
@@ -62,6 +69,10 @@ public class XabberAccount {
         return registerDate;
     }
 
+    public String getLanguage() {
+        return language;
+    }
+
     public List<XMPPUser> getXmppUsers() {
         return xmppUsers;
     }
@@ -76,5 +87,13 @@ public class XabberAccount {
 
     public String getToken() {
         return token;
+    }
+
+    public boolean isNeedToVerifyPhone() {
+        return needToVerifyPhone;
+    }
+
+    public String getPhone() {
+        return phone;
     }
 }

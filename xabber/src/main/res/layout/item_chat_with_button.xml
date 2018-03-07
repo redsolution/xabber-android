@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="64dp"
+    android:elevation="1dp">
+
+    <TextView
+        android:id="@+id/tvAction"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingRight="12dp"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:text="@string/archive_chat"
+        android:textAllCaps="true"
+        android:gravity="right|center"
+        android:drawableRight="@drawable/ic_arcived"
+        android:drawablePadding="12dp"
+        android:background="?attr/action_with_chat_background"
+        android:visibility="gone"
+        />
+
+    <TextView
+        android:id="@+id/tvActionLeft"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingLeft="12dp"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:text="@string/archive_chat"
+        android:textAllCaps="true"
+        android:gravity="left|center"
+        android:drawableLeft="@drawable/ic_arcived"
+        android:drawablePadding="12dp"
+        android:background="?attr/action_with_chat_background"
+        android:visibility="gone"
+        />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="?attr/contact_list_contact_background"
+        >
+
+        <include layout="@layout/account_color_indicator"/>
+
+        <include layout="@layout/avatar_view"/>
+
+        <ImageView
+            android:id="@+id/ivOnlyStatus"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:src="@drawable/ic_status"
+            android:layout_marginLeft="10dp"
+            android:layout_centerVertical="true"
+            android:visibility="gone"
+            />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:layout_marginRight="8dp"
+            android:layout_toRightOf="@id/avatarView"
+            android:layout_toLeftOf="@id/tvTime"
+            >
+
+            <TextView
+                android:id="@+id/tvContactName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:singleLine="true"
+                android:drawablePadding="4dp"
+                android:textSize="14sp"
+                android:textColor="?attr/contact_list_contact_name_text_color"
+                android:fontFamily="sans-serif-medium"
+                android:text="Erik Walton"
+                />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvOutgoingMessage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_toRightOf="@id/avatarView"
+            android:layout_marginBottom="12dp"
+            android:text="@string/sender_is_you"
+            android:textColor="@color/green_500" />
+
+        <github.ankushsachdeva.emojicon.EmojiconTextView
+            android:id="@+id/tvMessageText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_toRightOf="@id/tvOutgoingMessage"
+            android:layout_toLeftOf="@+id/tvUnreadCount"
+            android:layout_marginBottom="12dp"
+            android:layout_marginRight="8dp"
+            android:singleLine="true"
+            android:textSize="14sp"
+            android:textColor="?attr/contact_list_contact_second_line_text_color"
+            android:text="Hello. How are you?"
+            />
+
+        <TextView
+            android:id="@+id/tvTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginTop="12dp"
+            android:layout_marginRight="8dp"
+            android:textSize="10sp"
+            android:text="12:30"
+            />
+
+        <ImageView
+            android:id="@+id/ivMessageStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="12dp"
+            android:layout_marginRight="8dp"
+            android:src="@drawable/ic_message_delivered_14dp"
+            />
+
+        <TextView
+            android:id="@+id/tvUnreadCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="12dp"
+            android:layout_marginRight="8dp"
+            android:paddingTop="0dp"
+            android:paddingBottom="1dp"
+            android:paddingRight="5dp"
+            android:paddingLeft="5dp"
+            android:background="@drawable/rounded_background_green"
+            android:textColor="@color/white"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:text="1"
+            />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:layout_alignParentBottom="true"
+            android:layout_toRightOf="@+id/ivAvatar"
+            android:background="?attr/contact_list_subgroup_separator"
+            />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/buttonView"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:clickable="true"
+        android:focusable="true"
+        >
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="64dp"
+            android:background="?attr/half_transparent_background"
+            />
+
+        <Button
+            android:id="@+id/btnListAction"
+            android:layout_width="match_parent"
+            android:layout_height="64dp"
+            android:text="@string/show_all_chats"
+            android:textColor="@color/grey_600"
+            android:layout_centerHorizontal="true"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            />
+
+    </RelativeLayout>
+
+    <include layout="@layout/offline_shadow" />
+
+</FrameLayout>

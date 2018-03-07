@@ -18,7 +18,6 @@ import android.database.Cursor;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
-import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.account.AccountItem;
@@ -29,9 +28,12 @@ import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.database.sqlite.RoomTable;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.ChatAction;
+import com.xabber.android.data.message.ChatData;
 import com.xabber.android.data.message.MessageManager;
+import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.notification.EntityNotificationProvider;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.RosterManager;
@@ -108,6 +110,15 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
                                 if (RoomTable.needJoin(cursor)) {
                                     needJoins.add(roomChat);
                                 }
+
+                                // set unread and archived data to room chats
+                                ChatData chatData = ChatManager.getInstance().loadChatDataFromRealm(roomChat);
+                                if (chatData != null) {
+                                    roomChat.setUnreadMessageCount(chatData.getUnreadCount());
+                                    roomChat.setArchived(chatData.isArchived(), false);
+                                    roomChat.setNotificationState(chatData.getNotificationState(), false);
+                                }
+
                                 roomChats.add(roomChat);
 
 

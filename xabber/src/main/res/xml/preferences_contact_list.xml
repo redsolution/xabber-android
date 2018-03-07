@@ -20,6 +20,12 @@
             />
 
         <CheckBoxPreference
+            android:title="@string/contacts_show_messages"
+            android:key="@string/contacts_show_messages_key"
+            android:defaultValue="@bool/contacts_show_messages_default"
+            />
+
+        <CheckBoxPreference
             android:title="@string/contacts_show_accounts"
             android:key="@string/contacts_show_accounts_key"
             android:defaultValue="@bool/contacts_show_accounts_default"
@@ -29,25 +35,6 @@
             android:title="@string/contacts_show_groups"
             android:key="@string/contacts_show_groups_key"
             android:defaultValue="@bool/contacts_show_groups_default"
-            />
-
-        <CheckBoxPreference
-            android:title="@string/contacts_show_panel"
-            android:key="@string/contacts_show_panel_key"
-            android:defaultValue="@bool/contacts_show_panel_default"
-            />
-
-        <CheckBoxPreference
-            android:title="@string/contacts_show_active_chats"
-            android:key="@string/contacts_show_active_chats_key"
-            android:defaultValue="@bool/contacts_show_active_chats_default"
-            />
-
-        <CheckBoxPreference
-            android:title="@string/contacts_stay_active_chats"
-            android:key="@string/contacts_stay_active_chats_key"
-            android:defaultValue="@bool/contacts_stay_active_chats_default"
-            android:dependency="@string/contacts_show_active_chats_key"
             />
 
     </PreferenceCategory>

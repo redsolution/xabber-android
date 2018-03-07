@@ -268,6 +268,7 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
             incomingMessage.messageBalloon.setVisibility(View.GONE);
             incomingMessage.messageTime.setVisibility(View.GONE);
             incomingMessage.avatar.setVisibility(View.GONE);
+            incomingMessage.avatarBackground.setVisibility(View.GONE);
             LogManager.w(this, "Empty message! Hidden, but need to correct");
         } else {
             incomingMessage.messageBalloon.setVisibility(View.VISIBLE);
@@ -535,6 +536,7 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
             final Resourcepart resource = messageItem.getResource();
 
             message.avatar.setVisibility(View.VISIBLE);
+            message.avatarBackground.setVisibility(View.VISIBLE);
             if ((isMUC && MUCManager.getInstance().getNickname(account, user.getJid().asEntityBareJidIfPossible()).equals(resource))) {
                 message.avatar.setImageDrawable(AvatarManager.getInstance().getAccountAvatar(account));
             } else {
@@ -555,6 +557,7 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
             }
         } else {
             message.avatar.setVisibility(View.GONE);
+            message.avatarBackground.setVisibility(View.GONE);
         }
     }
 
@@ -667,10 +670,12 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
     private static class IncomingMessage extends Message {
 
         public ImageView avatar;
+        public ImageView avatarBackground;
 
         IncomingMessage(View itemView, MessageClickListener listener, @StyleRes int appearance) {
             super(itemView, listener, appearance);
             avatar = (ImageView) itemView.findViewById(R.id.avatar);
+            avatarBackground = (ImageView) itemView.findViewById(R.id.avatarBackground);
         }
     }
 

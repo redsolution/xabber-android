@@ -333,13 +333,13 @@ public class ChatStateManager implements OnDisconnectListener,
                                 }
                                 chatStates.remove(account.toString(), bareUserJid.toString(), resource);
                                 removeCallback(account, bareUserJid.getBareJid(), resource);
-                                RosterManager.onContactChanged(account, bareUserJid);
+                                RosterManager.onChatStateChanged(account, bareUserJid);
                             }
                         };
                         handler.postDelayed(runnable, REMOVE_STATE_DELAY);
                         stateCleaners.put(account.toString(), bareUserJid.toString(), resource, runnable);
                     }
-                    RosterManager.onContactChanged(account, bareUserJid);
+                    RosterManager.onChatStateChanged(account, bareUserJid);
                     support = true;
                     break;
                 }

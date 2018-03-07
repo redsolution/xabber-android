@@ -75,6 +75,7 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
 
     public interface Listener {
         void onVCardReceived();
+        void registerVCardFragment(ContactVcardViewerFragment fragment);
     }
 
     public static ContactVcardViewerFragment newInstance(AccountJid account, UserJid user) {
@@ -100,6 +101,7 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
         super.onAttach(activity);
 
         listener = (Listener) activity;
+        listener.registerVCardFragment(this);
     }
 
     @Override

@@ -94,7 +94,7 @@ public class OccupantListAdapter extends BaseAdapter implements
             view = convertView;
         }
         final Occupant occupant = (Occupant) getItem(position);
-        final ImageView avatarView = (ImageView) view.findViewById(R.id.avatar);
+        final ImageView avatarView = (ImageView) view.findViewById(R.id.ivAvatar);
         avatarView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -117,7 +117,7 @@ public class OccupantListAdapter extends BaseAdapter implements
         final TextView statusTextView = (TextView) view
                 .findViewById(R.id.status);
         final ImageView statusModeView = (ImageView) view
-                .findViewById(R.id.status_icon);
+                .findViewById(R.id.ivStatus);
         if (MUCManager.getInstance().getNickname(account, room).equals(occupant.getNickname())) {
             avatarView.setImageDrawable(AvatarManager.getInstance() .getAccountAvatar(account));
         } else {
@@ -133,15 +133,18 @@ public class OccupantListAdapter extends BaseAdapter implements
         }
         affilationView.setImageLevel(occupant.getAffiliation().ordinal());
         nameView.setText(occupant.getNickname());
-        int textStyle;
+
+        String status;
         if (occupant.getRole() == MUCRole.moderator)
-            textStyle = R.style.OccupantList_Moderator;
+            status = activity.getString(R.string.muc_role_moderator);
         else if (occupant.getRole() == MUCRole.participant)
-            textStyle = R.style.OccupantList_Participant;
-        else
-            textStyle = R.style.OccupantList_Visitor;
-        nameView.setTextAppearance(activity, textStyle);
-        statusTextView.setText(occupant.getStatusText());
+            status = activity.getString(R.string.muc_role_participant);
+        else status = activity.getString(R.string.muc_role_visitor);
+
+        String statusText = occupant.getStatusText();
+        if (statusText != null && !statusText.isEmpty()) status = status + " • " + statusText;
+
+        statusTextView.setText(status);
         statusModeView.setImageLevel(occupant.getStatusMode().getStatusLevel());
         return view;
     }

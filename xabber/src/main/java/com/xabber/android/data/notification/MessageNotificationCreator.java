@@ -2,10 +2,10 @@ package com.xabber.android.data.notification;
 
 import android.app.ActivityManager;
 import android.app.PendingIntent;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
+import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -19,6 +19,7 @@ import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.roster.RosterManager;
+import com.xabber.android.receiver.NotificationCancelReceiver;
 import com.xabber.android.ui.activity.ChatActivity;
 import com.xabber.android.ui.activity.ContactListActivity;
 import com.xabber.android.ui.color.ColorManager;
@@ -73,7 +74,12 @@ public class MessageNotificationCreator {
             if (!SettingsManager.eventsInAppPreview()) showText = false;
         }
 
-        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(application);
+        NotificationCompat.Builder notificationBuilder;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+            notificationBuilder = new NotificationCompat.Builder(application,
+                NotificationManager.getInstance().createNotificationChannel());
+        else notificationBuilder = new NotificationCompat.Builder(application, "");
+
         notificationBuilder.setContentTitle(getTitle(message, messageCount));
         notificationBuilder.setContentText(getText(message, showText));
         notificationBuilder.setSubText(message.getAccount().toString());
@@ -91,6 +97,8 @@ public class MessageNotificationCreator {
 
         notificationBuilder.setCategory(NotificationCompat.CATEGORY_MESSAGE);
         notificationBuilder.setPriority(NotificationCompat.PRIORITY_HIGH);
+
+        notificationBuilder.setDeleteIntent(NotificationCancelReceiver.createPendingIntent());
 
         NotificationManager.addEffects(notificationBuilder, messageItem, isMUC, checkVibrateMode(), isAppInForeground);
 

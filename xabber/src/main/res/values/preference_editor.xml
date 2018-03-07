@@ -15,6 +15,7 @@
     <string name="contacts_show_accounts">Group by account\nGroup contacts in contact list by account</string>
     <string name="contacts_show_active_chats">Active chats on top\nDisplay active chats at the top of the contact list</string>
     <string name="contacts_show_avatars">Show avatars\nShows users\' avatars in contact list</string>
+    <string name="contacts_show_messages">Show messages\nShows users\' messages in contact list</string>
     <string name="contacts_show_empty_groups">Show empty groups\nShow groups with no online contacts</string>
     <string name="contacts_show_groups">Show groups\nShow groups in contact list</string>
     <string name="contacts_show_offline">Show offline contacts</string>

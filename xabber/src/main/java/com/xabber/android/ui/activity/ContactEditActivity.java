@@ -12,14 +12,23 @@ import android.view.MenuItem;
 import android.widget.EditText;
 
 import com.xabber.android.R;
+import com.xabber.android.data.Application;
+import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.intent.EntityIntentBuilder;
+import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
+import com.xabber.android.ui.dialog.BlockContactDialog;
+import com.xabber.android.ui.dialog.ChatExportDialogFragment;
+import com.xabber.android.ui.dialog.ChatHistoryClearDialog;
 import com.xabber.android.ui.dialog.ContactDeleteDialogFragment;
+import com.xabber.android.ui.helper.PermissionsRequester;
 
 public class ContactEditActivity extends ContactActivity implements Toolbar.OnMenuItemClickListener {
+
+    private static final int PERMISSIONS_REQUEST_EXPORT_CHAT = 27;
 
     public static Intent createIntent(Context context, AccountJid account, UserJid user) {
         return new EntityIntentBuilder(context, ContactEditActivity.class)
@@ -37,6 +46,7 @@ public class ContactEditActivity extends ContactActivity implements Toolbar.OnMe
             toolbar.inflateMenu(R.menu.toolbar_contact);
             toolbar.setOnMenuItemClickListener(this);
             toolbar.setOverflowIcon(getResources().getDrawable(R.drawable.ic_overflow_menu_white_24dp));
+            onCreateOptionsMenu(toolbar.getMenu());
         }
     }
 
@@ -44,7 +54,11 @@ public class ContactEditActivity extends ContactActivity implements Toolbar.OnMe
     public boolean onCreateOptionsMenu(Menu menu) {
         RosterContact rosterContact = RosterManager.getInstance().getRosterContact(getAccount(), getUser());
         if (rosterContact != null) {
+            menu.clear();
             getMenuInflater().inflate(R.menu.toolbar_contact, menu);
+
+            // request subscription
+            menu.findItem(R.id.action_request_subscription).setVisible(!rosterContact.isSubscribed());
         }
 
         return true;
@@ -58,6 +72,32 @@ public class ContactEditActivity extends ContactActivity implements Toolbar.OnMe
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.action_request_subscription:
+                try {
+                    PresenceManager.getInstance().requestSubscription(getAccount(), getUser());
+                } catch (NetworkException e) {
+                    Application.getInstance().onError(e);
+                }
+                return true;
+
+            case R.id.action_send_contact:
+                sendContact();
+                return true;
+
+            case R.id.action_clear_history:
+                ChatHistoryClearDialog.newInstance(getAccount(), getUser()).show(getFragmentManager(), ChatHistoryClearDialog.class.getSimpleName());
+                return true;
+
+            case R.id.action_export_chat:
+                if (PermissionsRequester.requestFileReadPermissionIfNeeded(this, PERMISSIONS_REQUEST_EXPORT_CHAT)) {
+                    ChatExportDialogFragment.newInstance(getAccount(), getUser()).show(getFragmentManager(), "CHAT_EXPORT");
+                }
+                return true;
+
+            case R.id.action_block_contact:
+                BlockContactDialog.newInstance(getAccount(), getUser()).show(getFragmentManager(), BlockContactDialog.class.getName());
+                return true;
+
             case R.id.action_edit_alias:
                 editAlias();
                 return true;
@@ -102,5 +142,16 @@ public class ContactEditActivity extends ContactActivity implements Toolbar.OnMe
         });
 
         builder.show();
+    }
+
+    private void sendContact() {
+        RosterContact rosterContact = RosterManager.getInstance().getRosterContact(getAccount(), getUser());
+        String text = rosterContact != null ? rosterContact.getName() + "\nxmpp:" + getUser().toString() : "xmpp:" + getUser().toString();
+
+        Intent sendIntent = new Intent();
+        sendIntent.setAction(Intent.ACTION_SEND);
+        sendIntent.putExtra(Intent.EXTRA_TEXT, text);
+        sendIntent.setType("text/plain");
+        startActivity(Intent.createChooser(sendIntent, getResources().getText(R.string.send_to)));
     }
 }

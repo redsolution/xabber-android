@@ -43,16 +43,15 @@ import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.util.StringUtils;
 import org.jivesoftware.smackx.delay.packet.DelayInformation;
 import org.jxmpp.jid.Jid;
-import org.jxmpp.jid.impl.JidCreate;
 import org.jxmpp.jid.parts.Resourcepart;
 
 import java.io.File;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 import io.realm.Realm;
 import io.realm.RealmChangeListener;
-import io.realm.RealmModel;
 import io.realm.RealmResults;
 import io.realm.Sort;
 
@@ -86,6 +85,10 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
      */
     private String threadId;
 
+    private int unreadMessageCount;
+    private boolean archived;
+    protected NotificationState notificationState;
+
     private boolean isPrivateMucChat;
     private boolean isPrivateMucChatAccepted;
 
@@ -104,6 +107,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         firstNotification = true;
         this.isPrivateMucChat = isPrivateMucChat;
         isPrivateMucChatAccepted = false;
+        notificationState = new NotificationState(NotificationState.NotificationMode.bydefault, 0);
 
         Application.getInstance().runOnUiThread(new Runnable() {
             @Override
@@ -210,8 +214,12 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     /**
      * @return Whether user should be notified about incoming messages in chat.
      */
-    protected boolean notifyAboutMessage() {
-        return SettingsManager.eventsOnChat();
+    public boolean notifyAboutMessage() {
+        switch (notificationState.getMode()) {
+            case enabled: return true;
+            case disabled: return false;
+            default: return SettingsManager.eventsOnChat();
+        }
     }
 
     abstract protected MessageItem createNewMessageItem(String text);
@@ -326,6 +334,20 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
             NotificationManager.getInstance().onMessageNotification(messageItem);
         }
 
+        // unread message count
+        if (!visible && action == null) {
+            if (incoming) increaseUnreadMessageCount();
+            else resetUnreadMessageCount();
+        }
+
+        // remove notifications if get outgoing message
+        if (!incoming)
+            NotificationManager.getInstance().removeMessageNotification(account, user);
+
+        // when getting new message, unarchive chat if chat not muted
+        if (this.notifyAboutMessage())
+            this.archived = false;
+
         return messageItem;
     }
 
@@ -373,7 +395,14 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
 
     private void updateLastMessage() {
         if (messages.isValid() && messages.isLoaded() && !messages.isEmpty()) {
-            lastMessage = MessageDatabaseManager.getInstance()
+            List<MessageItem> textMessages = MessageDatabaseManager.getInstance()
+                    .getRealmUiThread()
+                    .copyFromRealm(messages.where().isNull(MessageItem.Fields.ACTION).findAll());
+
+            if (!textMessages.isEmpty())
+                lastMessage = textMessages.get(textMessages.size() - 1);
+            else
+                lastMessage = MessageDatabaseManager.getInstance()
                     .getRealmUiThread()
                     .copyFromRealm(messages.last());
         } else {
@@ -570,5 +599,43 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     @Override
     public void onChange(RealmResults<MessageItem> messageItems) {
         updateLastMessage();
+    }
+
+    public int getUnreadMessageCount() {
+        return unreadMessageCount;
+    }
+
+    public void increaseUnreadMessageCount() {
+        this.unreadMessageCount++;
+        ChatManager.getInstance().saveOrUpdateChatDataToRealm(this);
+    }
+
+    public void resetUnreadMessageCount() {
+        this.unreadMessageCount = 0;
+        ChatManager.getInstance().saveOrUpdateChatDataToRealm(this);
+    }
+
+    public void setUnreadMessageCount(int unreadMessageCount) {
+        this.unreadMessageCount = unreadMessageCount;
+    }
+
+    public boolean isArchived() {
+        return archived;
+    }
+
+    public void setArchived(boolean archived, boolean needSaveToRealm) {
+        this.archived = archived;
+        if (needSaveToRealm) ChatManager.getInstance().saveOrUpdateChatDataToRealm(this);
+    }
+
+    public NotificationState getNotificationState() {
+        return notificationState;
+    }
+
+    public void setNotificationState(NotificationState notificationState, boolean needSaveToRealm) {
+        this.notificationState = notificationState;
+        if (notificationState.getMode() == NotificationState.NotificationMode.disabled && needSaveToRealm)
+            NotificationManager.getInstance().removeMessageNotification(account, user);
+        if (needSaveToRealm) ChatManager.getInstance().saveOrUpdateChatDataToRealm(this);
     }
 }

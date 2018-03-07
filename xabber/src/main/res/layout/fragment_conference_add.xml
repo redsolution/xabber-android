@@ -13,24 +13,43 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="4dp"
             android:text="@string/contact_account" />
-
-        <TextView
-            android:id="@+id/muc_account_jid"
+        
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="account@jabber.org"
-            android:padding="8dp"
-            android:singleLine="true"
-            android:gravity="center_vertical"
-            android:drawablePadding="8dp"
-            android:drawableLeft="@drawable/ic_avatar_1"
-            />
+            android:orientation="horizontal"
+            android:layout_marginLeft="4dp"
+            android:paddingBottom="8dp"
+            android:paddingTop="4dp">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/ivAvatar"
+                android:layout_width="42dp"
+                android:layout_height="42dp"
+                android:scaleType="centerCrop"
+                android:src="@color/green_500"
+                />
+
+            <TextView
+                android:id="@+id/muc_account_jid"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="account@jabber.org"
+                android:singleLine="true"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="8dp"
+                />
+
+        </LinearLayout>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="4dp"
+            android:layout_marginTop="10dp"
             android:text="@string/muc_room" />
 
         <TextView
@@ -39,12 +58,16 @@
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:text="room@conference.jabber.org"
-            android:padding="8dp"
+            android:layout_marginLeft="4dp"
+            android:paddingBottom="8dp"
+            android:paddingTop="4dp"
             android:singleLine="true" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="4dp"
+            android:layout_marginTop="10dp"
             android:text="@string/muc_nick" />
 
         <EditText
@@ -52,13 +75,15 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/muc_nick_hint"
-            android:paddingLeft="8dp"
+            android:paddingTop="4dp"
             android:imeOptions="flagNoExtractUi"
             android:singleLine="true" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="4dp"
+            android:layout_marginTop="10dp"
             android:text="@string/muc_password" />
 
         <EditText
@@ -67,7 +92,7 @@
             android:layout_height="wrap_content"
             android:hint="@string/muc_password_hint"
             android:inputType="textPassword"
-            android:paddingLeft="8dp"
+            android:paddingTop="4dp"
             android:imeOptions="flagNoExtractUi"
             android:singleLine="true" />
 

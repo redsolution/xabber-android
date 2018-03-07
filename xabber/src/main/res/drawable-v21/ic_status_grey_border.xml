@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<level-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:minLevel="0" android:maxLevel="0">
+        <shape
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:shape="oval">
+
+            <solid
+                android:color="#fdd835"/>
+
+            <stroke
+                android:width="@dimen/account_status_border"
+                android:color="?attr/bottom_navigation_background"/>
+
+            <size
+                android:width="@dimen/account_status"
+                android:height="@dimen/account_status"/>
+        </shape>
+    </item>
+    <item android:minLevel="1" android:maxLevel="1">
+        <shape
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:shape="oval">
+
+            <solid
+                android:color="#FF388E3C"/>
+
+            <stroke
+                android:width="@dimen/account_status_border"
+                android:color="?attr/bottom_navigation_background"/>
+
+            <size
+                android:width="@dimen/account_status"
+                android:height="@dimen/account_status"/>
+        </shape>
+    </item>
+    <item android:minLevel="2" android:maxLevel="2" >
+        <shape
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:shape="oval">
+
+            <solid
+                android:color="#FFFFA000"/>
+
+            <stroke
+                android:width="@dimen/account_status_border"
+                android:color="?attr/bottom_navigation_background"/>
+
+            <size
+                android:width="@dimen/account_status"
+                android:height="@dimen/account_status"/>
+        </shape>
+    </item>
+    <item android:minLevel="3" android:maxLevel="3" >
+        <shape
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:shape="oval">
+
+            <solid
+                android:color="#FF1976D2"/>
+
+            <stroke
+                android:width="@dimen/account_status_border"
+                android:color="?attr/bottom_navigation_background"/>
+
+            <size
+                android:width="@dimen/account_status"
+                android:height="@dimen/account_status"/>
+        </shape>
+    </item>
+    <item android:minLevel="4" android:maxLevel="4" >
+        <shape
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:shape="oval">
+
+            <solid
+                android:color="#FFD32F2F"/>
+
+            <stroke
+                android:width="@dimen/account_status_border"
+                android:color="?attr/bottom_navigation_background"/>
+
+            <size
+                android:width="@dimen/account_status"
+                android:height="@dimen/account_status"/>
+        </shape>
+    </item>
+    <item android:drawable="@drawable/ic_status_invisible_18dp" android:minLevel="5" android:maxLevel="5" />
+    <item android:minLevel="6" android:maxLevel="6" >
+        <shape
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:shape="oval">
+
+            <solid
+                android:color="#757575"/>
+
+            <stroke
+                android:width="@dimen/account_status_border"
+                android:color="?attr/bottom_navigation_background"/>
+
+            <size
+                android:width="@dimen/account_status"
+                android:height="@dimen/account_status"/>
+        </shape>
+    </item>
+    <item android:drawable="@drawable/ic_status_unsubscribed_18dp" android:minLevel="8" android:maxLevel="8" />
+</level-list>

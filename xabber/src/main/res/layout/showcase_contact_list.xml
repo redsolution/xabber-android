@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/showcaseView"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#BB000000"
+    android:focusable="true"
+    android:clickable="true"
+    android:elevation="8dp">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_centerInParent="true"
+        >
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginBottom="16dp">
+
+            <ImageView
+                android:layout_width="150dp"
+                android:layout_height="75dp"
+                android:layout_gravity="center_horizontal"
+                android:src="@drawable/ic_swipe_left"
+                android:layout_marginRight="75dp"
+                />
+
+            <ImageView
+                android:layout_width="150dp"
+                android:layout_height="75dp"
+                android:layout_gravity="center_horizontal"
+                android:src="@drawable/ic_swipe_right"
+                android:layout_marginLeft="70dp"
+                />
+
+        </RelativeLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/showcase_contact_list_text_1"
+            android:textColor="@color/grey_400"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            />
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btnGotIt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_margin="16dp"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:theme="@style/BlueButton"
+        android:text="@string/got_it"
+        />
+
+</RelativeLayout>

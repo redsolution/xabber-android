@@ -57,26 +57,60 @@
                     android:orientation="vertical"
                     android:paddingLeft="16dp">
 
-                    <TextView
-                        android:id="@+id/tvAccountName"
-                        android:layout_width="match_parent"
+                    <LinearLayout
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:ellipsize="marquee"
-                        android:lines="1"
-                        android:textColor="@color/green_700"
-                        android:textSize="18sp" />
+                        android:orientation="horizontal"
+                        >
+
+                        <TextView
+                            android:id="@+id/tvAccountName"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:singleLine="true"
+                            android:textColor="@color/green_700"
+                            android:textSize="18sp"
+                            />
+
+                        <TextView
+                            android:id="@+id/tvLanguage"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="8dp"
+                            android:paddingTop="0dp"
+                            android:paddingBottom="0dp"
+                            android:paddingLeft="6dp"
+                            android:paddingRight="6dp"
+                            android:singleLine="true"
+                            android:textColor="@color/white"
+                            android:textStyle="bold"
+                            android:textAllCaps="true"
+                            android:background="@drawable/rounded_background_grey"
+                            />
+
+                    </LinearLayout>
 
                     <TextView
                         android:id="@+id/tvAccountUsername"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:ellipsize="marquee"
-                        android:lines="1"
+                        android:singleLine="true"
                         android:text="@string/no_username"
                         android:textColor="@color/grey_500"
                         android:textSize="14sp" />
+
+                    <TextView
+                        android:id="@+id/tvPhoneNumber"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:singleLine="true"
+                        android:text="@string/no_phone"
+                        android:textColor="@color/grey_500"
+                        android:textSize="14sp" />
+
                 </LinearLayout>
             </LinearLayout>
 
@@ -132,8 +166,7 @@
                             android:id="@+id/tvLastSyncDate"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:ellipsize="marquee"
-                            android:lines="1"
+                            android:singleLine="true"
                             android:text="@string/last_sync_date"
                             android:textColor="@color/grey_500"
                             android:textSize="14sp" />

@@ -20,14 +20,13 @@
     android:gravity="center_vertical"
     android:background="@drawable/ripple_background">
 
-    <include layout="@layout/avatar"
-        android:layout_width="@dimen/avatar_size_toolbar"
-        android:layout_height="@dimen/avatar_size_toolbar"
-        android:layout_marginLeft="4dp"
-        android:layout_marginRight="4dp"
-        android:layout_marginTop="2dp"
+    <include layout="@layout/avatar_view_without_status"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_centerVertical="true"
         android:layout_alignParentLeft="true"
-        android:visibility="gone"
         />
 
     <CheckBox
@@ -52,7 +51,7 @@
         android:textColor="?android:attr/textColorPrimary"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:textStyle="bold"
-        android:layout_toRightOf="@id/avatar"
+        android:layout_toRightOf="@id/avatarView"
         android:layout_toLeftOf="@id/block_list_contact_checkbox"
         android:gravity="center_vertical"
         />

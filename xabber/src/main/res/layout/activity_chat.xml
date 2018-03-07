@@ -1,8 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<android.support.v4.view.ViewPager
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/pager"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-/>
+    android:orientation="vertical"
+    >
+
+    <android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/toolbar_default"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+
+        android:background="?attr/colorPrimary"
+        android:elevation="8dp"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:popupTheme="?attr/toolbar_popup_theme"
+        android:contentInsetLeft="0dp"
+        android:contentInsetStart="0dp"
+        app:contentInsetLeft="0dp"
+        app:contentInsetStart="0dp"
+        app:contentInsetStartWithNavigation="0dp"
+        >
+
+        <include
+            android:id="@+id/contact_title"
+            layout="@layout/contact_title"
+            />
+
+    </android.support.v7.widget.Toolbar>
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/pager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:overScrollMode="never"
+        android:layout_below="@id/toolbar_default"
+    />
+
+    <ViewStub
+        android:id="@+id/showcaseView"
+        android:inflatedId="@+id/showcaseView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout="@layout/showcase_chat_screen"
+        />
+
+</RelativeLayout>

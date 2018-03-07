@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<level-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:minLevel="0" android:maxLevel="0">
+        <shape android:shape="oval">
+            <solid android:color="@color/green_500"/>
+            <size android:width="@dimen/account_status_without_border" android:height="@dimen/account_status_without_border"/>
+        </shape>
+    </item>
+    <item android:minLevel="1" android:maxLevel="1">
+        <shape android:shape="oval">
+            <solid android:color="@color/orange_500"/>
+            <size android:width="@dimen/account_status_without_border" android:height="@dimen/account_status_without_border"/>
+        </shape>
+    </item>
+    <item android:minLevel="2" android:maxLevel="2">
+        <shape android:shape="oval">
+            <solid android:color="@color/red_500"/>
+            <size android:width="@dimen/account_status_without_border" android:height="@dimen/account_status_without_border"/>
+        </shape>
+    </item>
+    <item android:minLevel="3" android:maxLevel="3">
+        <shape android:shape="oval">
+            <solid android:color="@color/blue_500"/>
+            <size android:width="@dimen/account_status_without_border" android:height="@dimen/account_status_without_border"/>
+        </shape>
+    </item>
+    <item android:minLevel="4" android:maxLevel="4">
+        <shape android:shape="oval">
+            <solid android:color="@color/indigo_500"/>
+            <size android:width="@dimen/account_status_without_border" android:height="@dimen/account_status_without_border"/>
+        </shape>
+    </item>
+    <item android:minLevel="5" android:maxLevel="5">
+        <shape android:shape="oval">
+            <solid android:color="@color/blue_grey_500"/>
+            <size android:width="@dimen/account_status_without_border" android:height="@dimen/account_status_without_border"/>
+        </shape>
+    </item>
+    <item android:minLevel="6" android:maxLevel="6">
+        <shape android:shape="oval">
+            <solid android:color="@color/cyan_500"/>
+            <size android:width="@dimen/account_status_without_border" android:height="@dimen/account_status_without_border"/>
+        </shape>
+    </item>
+    <item android:minLevel="7" android:maxLevel="7">
+        <shape android:shape="oval">
+            <solid android:color="@color/teal_500"/>
+            <size android:width="@dimen/account_status_without_border" android:height="@dimen/account_status_without_border"/>
+        </shape>
+    </item>
+    <item android:minLevel="8" android:maxLevel="8">
+        <shape android:shape="oval">
+            <solid android:color="@color/purple_500"/>
+            <size android:width="@dimen/account_status_without_border" android:height="@dimen/account_status_without_border"/>
+        </shape>
+    </item>
+    <item android:minLevel="9" android:maxLevel="9">
+        <shape android:shape="oval">
+            <solid android:color="@color/dark_purple_500"/>
+            <size android:width="@dimen/account_status_without_border" android:height="@dimen/account_status_without_border"/>
+        </shape>
+    </item>
+    <item android:minLevel="10" android:maxLevel="10">
+        <shape android:shape="oval">
+            <solid android:color="@color/lime_500"/>
+            <size android:width="@dimen/account_status_without_border" android:height="@dimen/account_status_without_border"/>
+        </shape>
+    </item>
+    <item android:minLevel="11" android:maxLevel="11">
+        <shape android:shape="oval">
+            <solid android:color="@color/pink_500"/>
+            <size android:width="@dimen/account_status_without_border" android:height="@dimen/account_status_without_border"/>
+        </shape>
+    </item>
+    <item android:minLevel="12" android:maxLevel="12">
+        <shape android:shape="oval">
+            <solid android:color="@color/light_blue_500"/>
+            <size android:width="@dimen/account_status_without_border" android:height="@dimen/account_status_without_border"/>
+        </shape>
+    </item>
+    <item android:minLevel="13" android:maxLevel="13">
+        <shape android:shape="oval">
+            <solid android:color="@color/light_green_500"/>
+            <size android:width="@dimen/account_status_without_border" android:height="@dimen/account_status_without_border"/>
+        </shape>
+    </item>
+    <item android:minLevel="14" android:maxLevel="14">
+        <shape android:shape="oval">
+            <solid android:color="@color/deep_orange_500"/>
+            <size android:width="@dimen/account_status_without_border" android:height="@dimen/account_status_without_border"/>
+        </shape>
+    </item>
+    <item android:minLevel="15" android:maxLevel="15">
+        <shape android:shape="oval">
+            <solid android:color="@color/brown_500"/>
+            <size android:width="@dimen/account_status_without_border" android:height="@dimen/account_status_without_border"/>
+        </shape>
+    </item>
+    <item android:minLevel="16" android:maxLevel="16">
+        <shape android:shape="oval">
+            <solid android:color="@color/amber_500"/>
+            <size android:width="@dimen/account_status_without_border" android:height="@dimen/account_status_without_border"/>
+        </shape>
+    </item>
+
+</level-list>
