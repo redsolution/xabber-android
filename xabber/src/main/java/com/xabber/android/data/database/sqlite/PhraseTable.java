@@ -133,7 +133,7 @@ public class PhraseTable extends AbstractTable {
         return id;
     }
 
-    void remove(long id) {
+    public void remove(long id) {
         SQLiteDatabase db = databaseManager.getWritableDatabase();
         db.delete(NAME, Fields._ID + " = ?",
                 new String[]{String.valueOf(id)});

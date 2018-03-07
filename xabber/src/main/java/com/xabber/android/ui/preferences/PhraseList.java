@@ -20,6 +20,7 @@ import android.os.Bundle;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.database.sqlite.PhraseTable;
 import com.xabber.android.data.message.phrase.PhraseManager;
 import com.xabber.android.ui.activity.PreferenceSummaryHelperActivity;
 import com.xabber.android.ui.adapter.BaseListEditorAdapter;
@@ -67,7 +68,8 @@ public class PhraseList extends BaseListEditor<Integer> {
 
     @Override
     protected void removeItem(Integer actionWith) {
-        PhraseManager.getInstance().removePhrase(actionWith);
+        long id = PhraseManager.getInstance().removePhrase(actionWith);
+        PhraseTable.getInstance().remove(id);
     }
 
     @Override
