@@ -50,6 +50,7 @@ import java.util.Set;
 
 import io.realm.Realm;
 import io.realm.RealmObject;
+import io.realm.RealmResults;
 
 /**
  * Manage chat specific options.
@@ -210,6 +211,8 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
         } finally {
             cursor.close();
         }
+
+        clearUnusedNotificationStateFromRealm();
 
         Application.getInstance().runOnUiThread(new Runnable() {
             @Override
@@ -565,5 +568,21 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
 
         realm.close();
         return chatData;
+    }
+
+    public void clearUnusedNotificationStateFromRealm() {
+        Realm realm = RealmManager.getInstance().getNewRealm();
+        realm.beginTransaction();
+
+        RealmResults<NotificationStateRealm> results = realm.where(NotificationStateRealm.class).findAll();
+
+        for (NotificationStateRealm notificationState : results) {
+            ChatDataRealm chatDataRealm = realm.where(ChatDataRealm.class)
+                    .equalTo("notificationState.id", notificationState.getId()).findFirst();
+            if (chatDataRealm == null) notificationState.deleteFromRealm();
+        }
+
+        realm.commitTransaction();
+        realm.close();
     }
 }
