@@ -621,6 +621,11 @@ public class XabberAccountManager implements OnLoadListener {
 
         Realm realm = RealmManager.getInstance().getNewRealm();
         realm.beginTransaction();
+
+        List<SyncStateRealm> oldItems = realm.where(SyncStateRealm.class).findAll();
+        for (SyncStateRealm item : oldItems)
+            item.deleteFromRealm();
+
         List<SyncStateRealm> resultRealm = realm.copyToRealmOrUpdate(realmItems);
         realm.commitTransaction();
         realm.close();
