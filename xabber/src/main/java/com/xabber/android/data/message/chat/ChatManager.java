@@ -505,17 +505,28 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
         String accountJid = chat.getAccount().toString();
         String userJid = chat.getUser().toString();
 
-        ChatDataRealm chatRealm = new ChatDataRealm(accountJid, userJid);
+        Realm realm = RealmManager.getInstance().getNewRealm();
+        realm.beginTransaction();
+
+        ChatDataRealm chatRealm = realm.where(ChatDataRealm.class)
+                .equalTo("accountJid", accountJid)
+                .equalTo("userJid", userJid)
+                .findFirst();
+
+        if (chatRealm == null)
+            chatRealm = new ChatDataRealm(accountJid, userJid);
+
         chatRealm.setUnreadCount(chat.getUnreadMessageCount());
         chatRealm.setArchived(chat.isArchived());
 
-        NotificationStateRealm notificationStateRealm = new NotificationStateRealm();
+        NotificationStateRealm notificationStateRealm = chatRealm.getNotificationState();
+        if (notificationStateRealm == null)
+            notificationStateRealm = new NotificationStateRealm();
+
         notificationStateRealm.setMode(chat.getNotificationState().getMode());
         notificationStateRealm.setTimestamp(chat.getNotificationState().getTimestamp());
         chatRealm.setNotificationState(notificationStateRealm);
 
-        Realm realm = RealmManager.getInstance().getNewRealm();
-        realm.beginTransaction();
         RealmObject realmObject = realm.copyToRealmOrUpdate(chatRealm);
         realm.commitTransaction();
         realm.close();
