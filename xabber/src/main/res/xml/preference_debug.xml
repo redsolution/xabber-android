@@ -37,4 +37,9 @@
         android:defaultValue="@bool/debug_crash_reports_default"
         />
 
+    <Preference
+        android:key="@string/debug_download_all_messages_key"
+        android:title="@string/debug_download_all_messages_title">
+    </Preference>
+
 </PreferenceScreen>

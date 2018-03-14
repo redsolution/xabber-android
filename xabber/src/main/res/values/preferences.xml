@@ -384,6 +384,7 @@
     <bool name="debug_crash_reports_default">true</bool>
 
     <string name="debug_crash_reports_dialog_key">debug_crash_reports_dialog</string>
+    <string name="debug_download_all_messages_key">debug_download_all_messages_key</string>
 
 <!-- preference_about -->
     <string name="preference_about">@string/about_viewer</string>
