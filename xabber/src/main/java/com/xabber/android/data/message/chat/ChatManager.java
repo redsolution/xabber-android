@@ -505,9 +505,11 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
     }
 
     public void saveOrUpdateChatDataToRealm(AbstractChat chat) {
+        final long startTime = System.currentTimeMillis();
         String accountJid = chat.getAccount().toString();
         String userJid = chat.getUser().toString();
 
+        // TODO: 13.03.18 ANR - WRITE
         Realm realm = RealmManager.getInstance().getNewRealm();
         realm.beginTransaction();
 
@@ -533,6 +535,8 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
         RealmObject realmObject = realm.copyToRealmOrUpdate(chatRealm);
         realm.commitTransaction();
         realm.close();
+        LogManager.d("REALM", Thread.currentThread().getName()
+                + " save chat data: " + (System.currentTimeMillis() - startTime));
     }
 
     @Nullable
@@ -571,6 +575,8 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
     }
 
     public void clearUnusedNotificationStateFromRealm() {
+        final long startTime = System.currentTimeMillis();
+        // TODO: 13.03.18 ANR - WRITE
         Realm realm = RealmManager.getInstance().getNewRealm();
         realm.beginTransaction();
 
@@ -584,5 +590,7 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
 
         realm.commitTransaction();
         realm.close();
+        LogManager.d("REALM", Thread.currentThread().getName()
+                + " clear unused notif. state: " + (System.currentTimeMillis() - startTime));
     }
 }
