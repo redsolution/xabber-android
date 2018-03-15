@@ -504,37 +504,42 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
         scrollStates.clear();
     }
 
-    public void saveOrUpdateChatDataToRealm(AbstractChat chat) {
+    public void saveOrUpdateChatDataToRealm(final AbstractChat chat) {
         final long startTime = System.currentTimeMillis();
-        String accountJid = chat.getAccount().toString();
-        String userJid = chat.getUser().toString();
+        Application.getInstance().runInBackground(new Runnable() {
+            @Override
+            public void run() {
+                Realm realm = RealmManager.getInstance().getNewRealm();
+                realm.executeTransaction(new Realm.Transaction() {
+                    @Override
+                    public void execute(Realm realm) {
+                        String accountJid = chat.getAccount().toString();
+                        String userJid = chat.getUser().toString();
 
-        // TODO: 13.03.18 ANR - WRITE
-        Realm realm = RealmManager.getInstance().getNewRealm();
-        realm.beginTransaction();
+                        ChatDataRealm chatRealm = realm.where(ChatDataRealm.class)
+                                .equalTo("accountJid", accountJid)
+                                .equalTo("userJid", userJid)
+                                .findFirst();
 
-        ChatDataRealm chatRealm = realm.where(ChatDataRealm.class)
-                .equalTo("accountJid", accountJid)
-                .equalTo("userJid", userJid)
-                .findFirst();
+                        if (chatRealm == null)
+                            chatRealm = new ChatDataRealm(accountJid, userJid);
 
-        if (chatRealm == null)
-            chatRealm = new ChatDataRealm(accountJid, userJid);
+                        chatRealm.setUnreadCount(chat.getUnreadMessageCount());
+                        chatRealm.setArchived(chat.isArchived());
 
-        chatRealm.setUnreadCount(chat.getUnreadMessageCount());
-        chatRealm.setArchived(chat.isArchived());
+                        NotificationStateRealm notificationStateRealm = chatRealm.getNotificationState();
+                        if (notificationStateRealm == null)
+                            notificationStateRealm = new NotificationStateRealm();
 
-        NotificationStateRealm notificationStateRealm = chatRealm.getNotificationState();
-        if (notificationStateRealm == null)
-            notificationStateRealm = new NotificationStateRealm();
+                        notificationStateRealm.setMode(chat.getNotificationState().getMode());
+                        notificationStateRealm.setTimestamp(chat.getNotificationState().getTimestamp());
+                        chatRealm.setNotificationState(notificationStateRealm);
 
-        notificationStateRealm.setMode(chat.getNotificationState().getMode());
-        notificationStateRealm.setTimestamp(chat.getNotificationState().getTimestamp());
-        chatRealm.setNotificationState(notificationStateRealm);
-
-        RealmObject realmObject = realm.copyToRealmOrUpdate(chatRealm);
-        realm.commitTransaction();
-        realm.close();
+                        RealmObject realmObject = realm.copyToRealmOrUpdate(chatRealm);
+                    }
+                });
+            }
+        });
         LogManager.d("REALM", Thread.currentThread().getName()
                 + " save chat data: " + (System.currentTimeMillis() - startTime));
     }
