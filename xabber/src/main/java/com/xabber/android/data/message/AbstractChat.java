@@ -31,6 +31,7 @@ import com.xabber.android.data.extension.carbons.CarbonManager;
 import com.xabber.android.data.extension.cs.ChatStateManager;
 import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.extension.otr.OTRManager;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.notification.NotificationManager;
 
@@ -258,11 +259,15 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     }
 
     public void saveMessageItem(final MessageItem messageItem) {
+        final long startTime = System.currentTimeMillis();
+        // TODO: 12.03.18 ANR - WRITE (переписать без UI)
         MessageDatabaseManager.getInstance().getRealmUiThread()
                 .executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
                 realm.copyToRealm(messageItem);
+                LogManager.d("REALM", Thread.currentThread().getName()
+                        + " save message item: " + (System.currentTimeMillis() - startTime));
             }
         });
     }

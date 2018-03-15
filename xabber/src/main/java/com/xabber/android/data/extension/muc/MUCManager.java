@@ -90,7 +90,7 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
 
     @Override
     public void onLoad() {
-        Application.getInstance().runOnUiThread(new Runnable() {
+        Application.getInstance().runInBackground(new Runnable() {
             @Override
             public void run() {
 

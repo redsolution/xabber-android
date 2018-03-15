@@ -50,6 +50,7 @@ import java.util.Set;
 
 import io.realm.Realm;
 import io.realm.RealmObject;
+import io.realm.RealmResults;
 
 /**
  * Manage chat specific options.
@@ -210,6 +211,8 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
         } finally {
             cursor.close();
         }
+
+        clearUnusedNotificationStateFromRealm();
 
         Application.getInstance().runOnUiThread(new Runnable() {
             @Override
@@ -501,24 +504,44 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
         scrollStates.clear();
     }
 
-    public void saveOrUpdateChatDataToRealm(AbstractChat chat) {
-        String accountJid = chat.getAccount().toString();
-        String userJid = chat.getUser().toString();
+    public void saveOrUpdateChatDataToRealm(final AbstractChat chat) {
+        final long startTime = System.currentTimeMillis();
+        Application.getInstance().runInBackground(new Runnable() {
+            @Override
+            public void run() {
+                Realm realm = RealmManager.getInstance().getNewRealm();
+                realm.executeTransaction(new Realm.Transaction() {
+                    @Override
+                    public void execute(Realm realm) {
+                        String accountJid = chat.getAccount().toString();
+                        String userJid = chat.getUser().toString();
 
-        ChatDataRealm chatRealm = new ChatDataRealm(accountJid, userJid);
-        chatRealm.setUnreadCount(chat.getUnreadMessageCount());
-        chatRealm.setArchived(chat.isArchived());
+                        ChatDataRealm chatRealm = realm.where(ChatDataRealm.class)
+                                .equalTo("accountJid", accountJid)
+                                .equalTo("userJid", userJid)
+                                .findFirst();
 
-        NotificationStateRealm notificationStateRealm = new NotificationStateRealm();
-        notificationStateRealm.setMode(chat.getNotificationState().getMode());
-        notificationStateRealm.setTimestamp(chat.getNotificationState().getTimestamp());
-        chatRealm.setNotificationState(notificationStateRealm);
+                        if (chatRealm == null)
+                            chatRealm = new ChatDataRealm(accountJid, userJid);
 
-        Realm realm = RealmManager.getInstance().getNewRealm();
-        realm.beginTransaction();
-        RealmObject realmObject = realm.copyToRealmOrUpdate(chatRealm);
-        realm.commitTransaction();
-        realm.close();
+                        chatRealm.setUnreadCount(chat.getUnreadMessageCount());
+                        chatRealm.setArchived(chat.isArchived());
+
+                        NotificationStateRealm notificationStateRealm = chatRealm.getNotificationState();
+                        if (notificationStateRealm == null)
+                            notificationStateRealm = new NotificationStateRealm();
+
+                        notificationStateRealm.setMode(chat.getNotificationState().getMode());
+                        notificationStateRealm.setTimestamp(chat.getNotificationState().getTimestamp());
+                        chatRealm.setNotificationState(notificationStateRealm);
+
+                        RealmObject realmObject = realm.copyToRealmOrUpdate(chatRealm);
+                    }
+                });
+            }
+        });
+        LogManager.d("REALM", Thread.currentThread().getName()
+                + " save chat data: " + (System.currentTimeMillis() - startTime));
     }
 
     @Nullable
@@ -554,5 +577,25 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
 
         realm.close();
         return chatData;
+    }
+
+    public void clearUnusedNotificationStateFromRealm() {
+        final long startTime = System.currentTimeMillis();
+        // TODO: 13.03.18 ANR - WRITE
+        Realm realm = RealmManager.getInstance().getNewRealm();
+        realm.beginTransaction();
+
+        RealmResults<NotificationStateRealm> results = realm.where(NotificationStateRealm.class).findAll();
+
+        for (NotificationStateRealm notificationState : results) {
+            ChatDataRealm chatDataRealm = realm.where(ChatDataRealm.class)
+                    .equalTo("notificationState.id", notificationState.getId()).findFirst();
+            if (chatDataRealm == null) notificationState.deleteFromRealm();
+        }
+
+        realm.commitTransaction();
+        realm.close();
+        LogManager.d("REALM", Thread.currentThread().getName()
+                + " clear unused notif. state: " + (System.currentTimeMillis() - startTime));
     }
 }

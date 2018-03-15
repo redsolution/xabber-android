@@ -41,4 +41,8 @@ public class NotificationStateRealm extends RealmObject {
     public void setTimestamp(int timestamp) {
         this.timestamp = timestamp;
     }
+
+    public String getId() {
+        return id;
+    }
 }

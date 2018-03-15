@@ -10,8 +10,8 @@ android {
     defaultConfig {
         minSdkVersion 15
         targetSdkVersion 27
-        versionCode 465
-        versionName '2.2.1(465)'
+        versionCode 467
+        versionName '2.2.1(467)'
     }
 
     lintOptions {
@@ -128,14 +128,7 @@ def initFabricPropertiesIfNeeded() {
 
 def build_param = "${build}";
 
-if (build_param != "dev") {
-    //exclude dev
-    android.variantFilter { variant ->
-        if (variant.getFlavors().get(0).name.equals('dev')) {
-            variant.setIgnore(true);
-        }
-    }
-} else {
+if (build_param == "dev") {
     //exclude all but dev
     android.variantFilter { variant ->
         if (!variant.getFlavors().get(0).name.equals('dev')) {

@@ -50,7 +50,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.UUID;
 
 import io.realm.Realm;
 
@@ -252,7 +251,7 @@ public class RoomChat extends AbstractChat {
                 if (delay != null) {
                     notify = false;
                 }
-
+                final long startTime = System.currentTimeMillis();
                 Realm realm = MessageDatabaseManager.getInstance().getRealmUiThread();
                 final MessageItem sameMessage = realm
                         .where(MessageItem.class)
@@ -261,9 +260,11 @@ public class RoomChat extends AbstractChat {
 
                 // Server send our own message back
                 if (sameMessage != null) {
-                    realm.beginTransaction();
-                    sameMessage.setDelivered(true);
-                    realm.commitTransaction();
+//                    realm.beginTransaction();
+//                    sameMessage.setDelivered(true);
+//                    realm.commitTransaction();
+                    LogManager.d("REALM", Thread.currentThread().getName()
+                            + " save message delivered: " + (System.currentTimeMillis() - startTime));
                     return true;
                 }
 

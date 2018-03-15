@@ -17,6 +17,7 @@ import com.xabber.android.data.database.realm.SyncStateRealm;
 import com.xabber.android.data.database.realm.XMPPUserRealm;
 import com.xabber.android.data.database.realm.XabberAccountRealm;
 import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.utils.RetrofitErrorConverter;
 
@@ -619,11 +620,20 @@ public class XabberAccountManager implements OnLoadListener {
             realmItems.add(realmItem);
         }
 
+        // TODO: 13.03.18 ANR - WRITE
+        final long startTime = System.currentTimeMillis();
         Realm realm = RealmManager.getInstance().getNewRealm();
         realm.beginTransaction();
+
+        List<SyncStateRealm> oldItems = realm.where(SyncStateRealm.class).findAll();
+        for (SyncStateRealm item : oldItems)
+            item.deleteFromRealm();
+
         List<SyncStateRealm> resultRealm = realm.copyToRealmOrUpdate(realmItems);
         realm.commitTransaction();
         realm.close();
+        LogManager.d("REALM", Thread.currentThread().getName()
+                + " save sync state: " + (System.currentTimeMillis() - startTime));
 
         Log.d(LOG_TAG, resultRealm.size() + " syncState items was saved to Realm");
     }

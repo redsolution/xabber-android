@@ -2,6 +2,7 @@ package com.xabber.android.data.extension.capability;
 
 import com.xabber.android.data.database.RealmManager;
 import com.xabber.android.data.database.realm.DiscoveryInfoCache;
+import com.xabber.android.data.log.LogManager;
 
 import org.jivesoftware.smackx.caps.cache.EntityCapsPersistentCache;
 import org.jivesoftware.smackx.disco.packet.DiscoverInfo;
@@ -15,10 +16,12 @@ class EntityCapsCache implements EntityCapsPersistentCache {
 
     @Override
     public void addDiscoverInfoByNodePersistent(final String nodeVer, final DiscoverInfo info) {
+        final long startTime = System.currentTimeMillis();
         if (nodeVer == null || info == null) {
             return;
         }
 
+        // TODO: 13.03.18 ANR - WRITE
         Realm realm = RealmManager.getInstance().getNewRealm();
         realm.beginTransaction();
 
@@ -27,6 +30,9 @@ class EntityCapsCache implements EntityCapsPersistentCache {
 
         realm.commitTransaction();
         realm.close();
+        LogManager.d("REALM", Thread.currentThread().getName()
+                + " save discover info: " + (System.currentTimeMillis() - startTime));
+
     }
 
     @Override
@@ -50,6 +56,8 @@ class EntityCapsCache implements EntityCapsPersistentCache {
 
     @Override
     public void emptyCache() {
+        final long startTime = System.currentTimeMillis();
+        // TODO: 13.03.18 ANR - WRITE
         Realm realm = RealmManager.getInstance().getNewRealm();
 
         realm.beginTransaction();
@@ -59,5 +67,7 @@ class EntityCapsCache implements EntityCapsPersistentCache {
         realm.commitTransaction();
 
         realm.close();
+        LogManager.d("REALM", Thread.currentThread().getName()
+                + " delete discover cache: " + (System.currentTimeMillis() - startTime));
     }
 }

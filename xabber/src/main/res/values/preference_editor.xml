@@ -25,6 +25,7 @@
     <string name="debug_log">Debug log\nWrite messages to debug log (please restart application to apply changes)</string>
     <string name="debug_file_log_title">Write file log\nWrite debug log to local file (you can share it).</string>
     <string name="debug_log_files_title">Log files\nList of written log files.</string>
+    <string name="debug_download_all_messages_title">Download all messages from archive\nDebug function. May works with errors</string>
     <string name="debug_log_files_activity_title">Log files</string>
     <string name="debug_connection_errors_title">Show connection errors\nDisplay connection exceptions pop-ups</string>
     <string name="debug_crash_reports_title">Share crash and diagnostics data\nHelp app developers improve Xabber by allowing to share crash and diagnostics data with them (please restart application to apply changes).</string>
