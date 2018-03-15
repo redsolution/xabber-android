@@ -124,14 +124,16 @@ public class PhraseManager implements OnLoadListener {
     }
 
     /**
-     * Removes phrase from the local list. Returns its id so that it can also be removed from the database.
+     * Removes phrase.
      *
      * @param index
      */
-    public long removePhrase(int index) {
+    public void removePhrase(int index) {
         Phrase phrase = getPhrase(index);
-        phrases.remove(phrase);
-        return phrase.getId();
+        if (phrase != null) {
+            phrases.remove(phrase);  // remove from the local list
+            PhraseTable.getInstance().remove(phrase.getId());  // remove from database
+        }
     }
 
     private void writePhrase(final Phrase phrase, final String value,
