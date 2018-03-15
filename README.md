@@ -18,7 +18,7 @@ Xabber uses Gradle build system. The only specific thing is git submodule for ge
  
 **2. Build**
 
-You need to copy the file: `xabber-android/xabber/src/dev/google-services.json` to the `xabber-android/xabber` folder and copy the file `xabber-android/xabber/src/dev/res/values/social_keys.xml` to the folder `xabber-android/xabber/src/main/res/values/`.
+To build Xabber use **"dev"** productFlavour. Other flavours like "beta", "prod", "ru" and "vip" requare api keys that not represent in this repository.
 
 ## Translations [![Crowdin](https://d322cqt584bo4o.cloudfront.net/xabber/localized.svg)](https://crowdin.com/project/xabber)
 
