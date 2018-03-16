@@ -10,8 +10,8 @@ android {
     defaultConfig {
         minSdkVersion 15
         targetSdkVersion 27
-        versionCode 467
-        versionName '2.2.1(467)'
+        versionCode 468
+        versionName '2.2.1(468)'
     }
 
     lintOptions {
@@ -193,6 +193,15 @@ dependencies {
     }
 
     implementation group: 'org.bouncycastle', name: 'bcpkix-jdk15on', version: '1.58'
+
+    // leak canary
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.5.4'
+    releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.4'
+
+    // block canary
+    debugImplementation 'com.github.markzhai:blockcanary-android:1.5.0'
+    releaseCompile 'com.github.markzhai:blockcanary-no-op:1.5.0'
+
 }
 apply plugin: 'com.google.gms.google-services'
 

@@ -33,6 +33,8 @@ If you want to support Xabber development you can buy [Xabber VIP](https://play.
 
 [![Donate with PayPal](https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=G9AYTUSXCWRVL)
 
+[![Patreon](https://c5.patreon.com/external/logo/become_a_patron_button.png)](https://www.patreon.com/xabber)
+
 ## Feedback
 
 info [at] xabber.com
