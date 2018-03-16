@@ -129,7 +129,11 @@ public class PhraseManager implements OnLoadListener {
      * @param index
      */
     public void removePhrase(int index) {
-        phrases.remove(getPhrase(index));
+        Phrase phrase = getPhrase(index);
+        if (phrase != null) {
+            phrases.remove(phrase);  // remove from the local list
+            PhraseTable.getInstance().remove(phrase.getId());  // remove from database
+        }
     }
 
     private void writePhrase(final Phrase phrase, final String value,
