@@ -31,6 +31,7 @@
         <item name="chat_send_button_color">@array/account_500</item>
         <item name="chat_incoming_balloon">@array/account_50</item>
         <item name="chat_incoming_balloon_pressed">@array/account_100</item>
+        <item name="chat_unread_messages_background">@array/account_200</item>
 
         <item name="contact_list_background">@color/contact_list_background</item>
 
@@ -102,6 +103,7 @@
         <item name="chat_send_button_color">@array/account_400</item>
         <item name="chat_incoming_balloon">@array/account_chat_incoming_balloon</item>
         <item name="chat_incoming_balloon_pressed">@array/account_contact_list_subgroup_background_dark</item>
+        <item name="chat_unread_messages_background">@array/account_200</item>
 
         <item name="contact_list_background">@color/grey_800</item>
 

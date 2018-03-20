@@ -9,6 +9,7 @@
         <attr name="chat_send_button_color" format="reference" />
         <attr name="chat_incoming_balloon" format="reference" />
         <attr name="chat_incoming_balloon_pressed" format="reference" />
+        <attr name="chat_unread_messages_background" format="reference" />
 
         <attr name="contact_list_background" format="reference" />
 
