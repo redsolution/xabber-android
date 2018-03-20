@@ -346,7 +346,6 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         }
 
         chatMessageAdapter = new ChatMessageAdapter(getActivity(), messageItems, abstractChat, this);
-        chatMessageAdapter.setUnreadCount(abstractChat != null ? abstractChat.getUnreadMessageCount() : 0);
         realmRecyclerView.setAdapter(chatMessageAdapter);
         layoutManager.scrollToPosition(chatMessageAdapter.getItemCount() - 1);
 
@@ -387,6 +386,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         AbstractChat chat = getChat();
         if (chat != null) {
             scrollToFirstUnread(chat.getUnreadMessageCount());
+            showUnreadMessage(chat.getUnreadMessageCount());
             chat.resetUnreadMessageCount();
         }
 
@@ -890,7 +890,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
 
     private void sendMessage(String text) {
         MessageManager.getInstance().sendMessage(account, user, text);
-        chatMessageAdapter.setUnreadCount(0);
+        hideUnreadMessageIfNeed();
         scrollDown();
     }
 
@@ -1419,7 +1419,19 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         int pastVisibleItems = layoutManager.findLastVisibleItemPosition();
         boolean isBottom = pastVisibleItems >= chatMessageAdapter.getItemCount() - 1;
 
-        if (isBottom) btnScrollDown.setVisibility(View.GONE);
-        else btnScrollDown.setVisibility(View.VISIBLE);
+        if (isBottom) {
+            btnScrollDown.setVisibility(View.GONE);
+            hideUnreadMessageIfNeed();
+        } else btnScrollDown.setVisibility(View.VISIBLE);
+    }
+
+    private void showUnreadMessage(int count) {
+        chatMessageAdapter.setUnreadCount(count);
+        chatMessageAdapter.notifyDataSetChanged();
+    }
+
+    private void hideUnreadMessageIfNeed() {
+        if (chatMessageAdapter.setUnreadCount(0))
+            chatMessageAdapter.notifyDataSetChanged();
     }
 }

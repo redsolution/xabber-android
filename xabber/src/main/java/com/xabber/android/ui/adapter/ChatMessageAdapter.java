@@ -127,8 +127,11 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
         void onMessagesUpdated();
     }
 
-    public void setUnreadCount(int unreadCount) {
-        this.unreadCount = unreadCount;
+    public boolean setUnreadCount(int unreadCount) {
+        if (this.unreadCount != unreadCount) {
+            this.unreadCount = unreadCount;
+            return true;
+        } else return false;
     }
 
     public void addOrRemoveItemNeedOriginalText(String messageId) {
