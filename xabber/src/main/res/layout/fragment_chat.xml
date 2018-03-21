@@ -127,6 +127,20 @@
             />
     </LinearLayout>
 
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/btnScrollDown"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/input_layout"
+        android:layout_alignParentRight="true"
+        android:layout_margin="16dp"
+        android:backgroundTint="@color/white"
+        android:src="@drawable/ic_chevron_down"
+        app:borderWidth="0dp"
+        android:clickable="true"
+        android:visibility="gone"
+        />
+
     <ViewStub
         android:id="@+id/stubJoin"
         android:inflatedId="@+id/joinLayout"

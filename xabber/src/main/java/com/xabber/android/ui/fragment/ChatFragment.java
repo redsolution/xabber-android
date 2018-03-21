@@ -12,6 +12,7 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
@@ -156,6 +157,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
     private ViewStub stubJoin;
     private LinearLayout joinLayout;
     private LinearLayout actionJoin;
+    private FloatingActionButton btnScrollDown;
 
     boolean isInputEmpty = true;
     private boolean skipOnTextChanges = false;
@@ -224,6 +226,9 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
 
         View view = inflater.inflate(R.layout.fragment_chat, container, false);
 
+        btnScrollDown = view.findViewById(R.id.btnScrollDown);
+        btnScrollDown.setOnClickListener(this);
+
         sendButton = (ImageButton) view.findViewById(R.id.button_send_message);
         sendButton.setColorFilter(ColorManager.getInstance().getAccountPainter().getGreyMain());
 
@@ -284,6 +289,8 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
                 if (dy >= 0) {
                     toBeScrolled = false;
                 }
+
+                showScrollDownButtonIfNeed();
             }
         });
 
@@ -377,7 +384,11 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         showHideNotifyIfNeed();
 
         AbstractChat chat = getChat();
-        if (chat != null) chat.resetUnreadMessageCount();
+        if (chat != null) {
+            scrollToFirstUnread(chat.getUnreadMessageCount());
+            showUnreadMessage(chat.getUnreadMessageCount());
+            chat.resetUnreadMessageCount();
+        }
 
         showJoinButtonIfNeed();
     }
@@ -879,6 +890,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
 
     private void sendMessage(String text) {
         MessageManager.getInstance().sendMessage(account, user, text);
+        hideUnreadMessageIfNeed();
         scrollDown();
     }
 
@@ -891,6 +903,11 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
     private void scrollDown() {
         LogManager.i(this, "scrollDown");
         realmRecyclerView.scrollToPosition(chatMessageAdapter.getItemCount() - 1);
+    }
+
+    private void scrollToFirstUnread(int unreadCount) {
+        layoutManager.scrollToPositionWithOffset(
+                chatMessageAdapter.getItemCount() - unreadCount, 1);
     }
 
     private void updateSecurityButton() {
@@ -1078,6 +1095,9 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         if (v.getId() == R.id.actionJoin) {
             ((ChatActivity)getActivity()).onJoinConferenceClick();
             showJoinButtonIfNeed();
+        }
+        if (v.getId() == R.id.btnScrollDown) {
+            scrollDown();
         }
     }
 
@@ -1393,5 +1413,25 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
                 notifyLayout.setVisibility(View.GONE);
             }
         });
+    }
+
+    private void showScrollDownButtonIfNeed() {
+        int pastVisibleItems = layoutManager.findLastVisibleItemPosition();
+        boolean isBottom = pastVisibleItems >= chatMessageAdapter.getItemCount() - 1;
+
+        if (isBottom) {
+            btnScrollDown.setVisibility(View.GONE);
+            hideUnreadMessageIfNeed();
+        } else btnScrollDown.setVisibility(View.VISIBLE);
+    }
+
+    private void showUnreadMessage(int count) {
+        chatMessageAdapter.setUnreadCount(count);
+        chatMessageAdapter.notifyDataSetChanged();
+    }
+
+    private void hideUnreadMessageIfNeed() {
+        if (chatMessageAdapter.setUnreadCount(0))
+            chatMessageAdapter.notifyDataSetChanged();
     }
 }
