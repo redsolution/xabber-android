@@ -427,6 +427,12 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         }
     }
 
+    public Message createMessagePacket(String body, String stanzaId) {
+        Message message = createMessagePacket(body);
+        message.setStanzaId(stanzaId);
+        return message;
+    }
+
     /**
      * @return New message packet to be sent.
      */
@@ -496,7 +502,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
 
         Message message = null;
         if (text != null) {
-            message = createMessagePacket(text);
+            message = createMessagePacket(text, messageItem.getStanzaId());
         }
 
         if (message != null) {
@@ -536,8 +542,6 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         if (message == null) {
             messageItem.setError(true);
             messageItem.setErrorDescription("Internal error: message is null");
-        } else {
-            messageItem.setStanzaId(message.getStanzaId());
         }
 
         if (delayTimestamp != null) {

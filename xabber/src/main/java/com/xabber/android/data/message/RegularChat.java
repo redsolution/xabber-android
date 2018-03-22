@@ -20,14 +20,14 @@ import android.text.TextUtils;
 
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
-import com.xabber.android.data.extension.otr.SecurityLevel;
-import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.otr.OTRUnencryptedException;
+import com.xabber.android.data.extension.otr.SecurityLevel;
+import com.xabber.android.data.log.LogManager;
 
 import net.java.otr4j.OtrException;
 
@@ -44,6 +44,7 @@ import org.jxmpp.jid.parts.Domainpart;
 import org.jxmpp.jid.parts.Resourcepart;
 
 import java.util.Date;
+import java.util.UUID;
 
 /**
  * Represents normal chat.
@@ -135,16 +136,8 @@ public class RegularChat extends AbstractChat {
 
     @Override
     protected MessageItem createNewMessageItem(String text) {
-        return createMessageItem(
-                null,
-                text,
-                null,
-                null,
-                false,
-                false,
-                false,
-                false,
-                null);
+        return createMessageItem(null, text, null, null, false,
+                false, false, false, UUID.randomUUID().toString());
     }
 
     @Override
