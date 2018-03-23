@@ -17,7 +17,6 @@ package com.xabber.android.ui.adapter;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.annotation.Nullable;
@@ -57,7 +56,6 @@ import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.fragment.ChatFragment;
-import com.xabber.android.utils.ColorTransparentUtils;
 import com.xabber.android.utils.StringUtils;
 
 import org.jxmpp.jid.impl.JidCreate;
@@ -435,9 +433,8 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
         }
 
         // setup message as unread
-        String color = ColorTransparentUtils.convertIntoColor(R.color.blue_grey_100, 15);
         if (position >= getItemCount() - unreadCount)
-            holder.itemView.setBackgroundColor(Color.parseColor(color));
+            holder.itemView.setBackgroundColor(context.getResources().getColor(R.color.unread_messages_background));
         else holder.itemView.setBackgroundDrawable(null);
 
     }

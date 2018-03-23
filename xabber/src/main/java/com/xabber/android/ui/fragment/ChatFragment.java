@@ -907,7 +907,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
 
     private void scrollToFirstUnread(int unreadCount) {
         layoutManager.scrollToPositionWithOffset(
-                chatMessageAdapter.getItemCount() - unreadCount, 1);
+                chatMessageAdapter.getItemCount() - unreadCount, 200);
     }
 
     private void updateSecurityButton() {
