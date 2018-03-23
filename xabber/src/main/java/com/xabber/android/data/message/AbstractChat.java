@@ -51,6 +51,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+import javax.annotation.Nonnull;
+
 import io.realm.Realm;
 import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
@@ -376,6 +378,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
                 messageItem.setError(false);
                 messageItem.setIncoming(false);
                 messageItem.setInProgress(true);
+                messageItem.setStanzaId(UUID.randomUUID().toString());
                 realm.copyToRealm(messageItem);
             }
         });
@@ -429,7 +432,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
 
     public Message createMessagePacket(String body, String stanzaId) {
         Message message = createMessagePacket(body);
-        message.setStanzaId(stanzaId);
+        if (stanzaId != null) message.setStanzaId(stanzaId);
         return message;
     }
 
