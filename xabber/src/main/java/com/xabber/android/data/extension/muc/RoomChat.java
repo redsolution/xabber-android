@@ -15,6 +15,7 @@
 package com.xabber.android.data.extension.muc;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
@@ -25,7 +26,6 @@ import com.xabber.android.data.database.MessageDatabaseManager;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
-import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.ChatAction;
 import com.xabber.android.data.message.chat.ChatManager;
@@ -50,6 +50,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.UUID;
 
 import io.realm.Realm;
 
@@ -179,7 +180,8 @@ public class RoomChat extends AbstractChat {
 
     @Override
     protected MessageItem createNewMessageItem(String text) {
-        return createMessageItem(nickname, text, null, null, false, false, false, false, null);
+        return createMessageItem(nickname, text, null, null, false,
+                false, false, false, UUID.randomUUID().toString());
     }
 
     @Override
@@ -239,8 +241,6 @@ public class RoomChat extends AbstractChat {
             } else {
                 boolean notify = true;
                 String stanzaId = message.getStanzaId();
-                // disabling because new messages without stanza will be repeated
-                //if (stanzaId == null) stanzaId = UUID.randomUUID().toString();
 
                 DelayInformation delayInformation = DelayInformation.from(message);
                 Date delay = null;
@@ -251,24 +251,16 @@ public class RoomChat extends AbstractChat {
                 if (delay != null) {
                     notify = false;
                 }
-                final long startTime = System.currentTimeMillis();
-                Realm realm = MessageDatabaseManager.getInstance().getRealmUiThread();
-                final MessageItem sameMessage = realm
-                        .where(MessageItem.class)
-                        .equalTo(MessageItem.Fields.STANZA_ID, stanzaId)
-                        .findFirst();
 
-                // Server send our own message back
-                if (sameMessage != null) {
-//                    realm.beginTransaction();
-//                    sameMessage.setDelivered(true);
-//                    realm.commitTransaction();
-                    LogManager.d("REALM", Thread.currentThread().getName()
-                            + " save message delivered: " + (System.currentTimeMillis() - startTime));
+                String messageUId = getMessageIdIfInHistory(stanzaId, text);
+                if (messageUId != null) {
+                    if (isSelf(resource)) {
+                        markMessageAsDelivered(messageUId);
+                    }
                     return true;
                 }
 
-                if (isSelf(resource)) { // Own message from other client
+                if (isSelf(resource)) {
                     notify = false;
                 }
 
@@ -330,6 +322,36 @@ public class RoomChat extends AbstractChat {
             }
         }
         return true;
+    }
+
+    private void markMessageAsDelivered(final String messageUId) {
+        Application.getInstance().runInBackground(new Runnable() {
+            @Override
+            public void run() {
+                Realm realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
+                realm.executeTransaction(new Realm.Transaction() {
+                    @Override
+                    public void execute(Realm realm) {
+                        MessageItem message = realm.where(MessageItem.class)
+                                .equalTo(MessageItem.Fields.UNIQUE_ID, messageUId).findFirst();
+                        message.setDelivered(true);
+                    }
+                });
+            }
+        });
+    }
+
+    @Nullable
+    private String getMessageIdIfInHistory(String stanzaId, String body) {
+        if (stanzaId == null) return null;
+        Realm realm = MessageDatabaseManager.getInstance().getRealmUiThread();
+        MessageItem message = realm
+                .where(MessageItem.class)
+                .equalTo(MessageItem.Fields.TEXT, body)
+                .equalTo(MessageItem.Fields.STANZA_ID, stanzaId)
+                .findFirst();
+        if (message != null) return message.getUniqueId();
+        else return null;
     }
 
     /**

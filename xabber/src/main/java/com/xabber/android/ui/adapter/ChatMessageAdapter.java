@@ -435,8 +435,7 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
         }
 
         // setup message as unread
-        String color = ColorTransparentUtils.convertIntoColor(
-                ColorManager.getInstance().getUnreadMessageBackground(account), 40);
+        String color = ColorTransparentUtils.convertIntoColor(R.color.blue_grey_100, 15);
         if (position >= getItemCount() - unreadCount)
             holder.itemView.setBackgroundColor(Color.parseColor(color));
         else holder.itemView.setBackgroundDrawable(null);
