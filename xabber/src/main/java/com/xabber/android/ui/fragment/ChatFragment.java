@@ -1282,9 +1282,14 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
 
     public void playIncomingSound() {
         if (SettingsManager.eventsInChatSounds()) {
-            MediaPlayer mp = MediaPlayer.create(getActivity(), SettingsManager.eventsSound());
+            final MediaPlayer mp = MediaPlayer.create(getActivity(), SettingsManager.eventsSound());
             mp.start();
-            mp.release();
+            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mediaPlayer) {
+                    mp.release();
+                }
+            });
         }
     }
 
