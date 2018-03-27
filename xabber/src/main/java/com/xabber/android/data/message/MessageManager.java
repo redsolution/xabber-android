@@ -219,7 +219,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
      */
     public void addChat(AbstractChat chat) {
         if (getChat(chat.getAccount(), chat.getUser()) != null) {
-            throw new IllegalStateException();
+            return;
         }
         chats.put(chat.getAccount().toString(), chat.getUser().toString(), chat);
     }
