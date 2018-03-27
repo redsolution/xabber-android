@@ -189,29 +189,27 @@ public class RealmManager {
                             schema.get(XabberAccountRealm.class.getSimpleName())
                                     .addField("language", String.class);
 
-                            // do not delete
-                            oldVersion++;
-                            oldVersion++;
+                            oldVersion = 12;
                         }
 
-                        if (oldVersion == 11) {
-                            RealmObjectSchema accountRealmSchema =
-                                    schema.get(XabberAccountRealm.class.getSimpleName());
-
-                            if (!accountRealmSchema.hasField("phone")) {
-                                accountRealmSchema.addField("phone", String.class);
-                            }
-
-                            if (!accountRealmSchema.hasField("needToVerifyPhone")) {
-                                accountRealmSchema.addField("needToVerifyPhone", boolean.class);
-                            }
-
-                            oldVersion++;
-                        }
+                        addMissedFields(schema);
                     }
                 })
                 .modules(new RealmDatabaseModule())
                 .build();
+    }
+
+    private void addMissedFields(RealmSchema schema) {
+        RealmObjectSchema accountRealmSchema =
+                schema.get(XabberAccountRealm.class.getSimpleName());
+
+        if (!accountRealmSchema.hasField("phone")) {
+            accountRealmSchema.addField("phone", String.class);
+        }
+
+        if (!accountRealmSchema.hasField("needToVerifyPhone")) {
+            accountRealmSchema.addField("needToVerifyPhone", boolean.class);
+        }
     }
 
     /**
