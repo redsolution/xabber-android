@@ -158,6 +158,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
     private LinearLayout joinLayout;
     private LinearLayout actionJoin;
     private FloatingActionButton btnScrollDown;
+    private TextView tvNewReceivedCount;
 
     boolean isInputEmpty = true;
     private boolean skipOnTextChanges = false;
@@ -174,6 +175,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
     private RealmResults<SyncInfo> syncInfoResults;
     private RealmResults<MessageItem> messageItems;
     private boolean toBeScrolled;
+    private int newReceivedMessageCount = 0;
 
     private List<HashMap<String, String>> menuItems = null;
 
@@ -226,6 +228,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
 
         View view = inflater.inflate(R.layout.fragment_chat, container, false);
 
+        tvNewReceivedCount = view.findViewById(R.id.tvNewReceivedCount);
         btnScrollDown = view.findViewById(R.id.btnScrollDown);
         btnScrollDown.setOnClickListener(this);
 
@@ -703,6 +706,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         if (event.getAccount().equals(account) && event.getUser().equals(user)) {
             listener.playIncomingAnimation();
             playIncomingSound();
+            increaseNewReceivedMessageCountIfNeed();
         }
     }
 
@@ -903,6 +907,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
     private void scrollDown() {
         LogManager.i(this, "scrollDown");
         realmRecyclerView.scrollToPosition(chatMessageAdapter.getItemCount() - 1);
+        resetNewReceivedMessageCount();
     }
 
     private void scrollToFirstUnread(int unreadCount) {
@@ -1427,7 +1432,27 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         if (isBottom) {
             btnScrollDown.setVisibility(View.GONE);
             hideUnreadMessageIfNeed();
+            resetNewReceivedMessageCount();
         } else btnScrollDown.setVisibility(View.VISIBLE);
+    }
+
+    private void increaseNewReceivedMessageCountIfNeed() {
+        if (btnScrollDown.getVisibility() == View.VISIBLE) {
+            newReceivedMessageCount++;
+            updateNewReceivedMessageCounter();
+        }
+    }
+
+    private void resetNewReceivedMessageCount() {
+        newReceivedMessageCount = 0;
+        updateNewReceivedMessageCounter();
+    }
+
+    private void updateNewReceivedMessageCounter() {
+        tvNewReceivedCount.setText("+" + newReceivedMessageCount);
+        if (newReceivedMessageCount > 0)
+            tvNewReceivedCount.setVisibility(View.VISIBLE);
+        else tvNewReceivedCount.setVisibility(View.GONE);
     }
 
     private void showUnreadMessage(int count) {
