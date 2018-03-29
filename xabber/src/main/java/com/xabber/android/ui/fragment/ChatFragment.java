@@ -707,6 +707,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
             listener.playIncomingAnimation();
             playIncomingSound();
             increaseNewReceivedMessageCountIfNeed();
+            chatMessageAdapter.setUnreadCount(chatMessageAdapter.getUnreadCount() + 1);
         }
     }
 
@@ -907,12 +908,13 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
     private void scrollDown() {
         LogManager.i(this, "scrollDown");
         realmRecyclerView.scrollToPosition(chatMessageAdapter.getItemCount() - 1);
-        resetNewReceivedMessageCount();
     }
 
     private void scrollToFirstUnread(int unreadCount) {
         layoutManager.scrollToPositionWithOffset(
                 chatMessageAdapter.getItemCount() - unreadCount, 200);
+        showUnreadMessage(unreadCount);
+        resetNewReceivedMessageCount();
     }
 
     private void updateSecurityButton() {
@@ -1102,7 +1104,9 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
             showJoinButtonIfNeed();
         }
         if (v.getId() == R.id.btnScrollDown) {
-            scrollDown();
+            if (newReceivedMessageCount > 0)
+                scrollToFirstUnread(newReceivedMessageCount);
+            else scrollDown();
         }
     }
 
