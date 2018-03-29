@@ -1453,7 +1453,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
     }
 
     private void updateNewReceivedMessageCounter() {
-        tvNewReceivedCount.setText("+" + newReceivedMessageCount);
+        tvNewReceivedCount.setText(String.valueOf(newReceivedMessageCount));
         if (newReceivedMessageCount > 0)
             tvNewReceivedCount.setVisibility(View.VISIBLE);
         else tvNewReceivedCount.setVisibility(View.GONE);
