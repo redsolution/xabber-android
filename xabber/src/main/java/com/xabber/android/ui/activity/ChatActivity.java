@@ -561,7 +561,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         selectedPagePosition = position;
 
         if (selectedPagePosition == PAGE_POSITION_RECENT_CHATS) {
-            MessageManager.getInstance().removeVisibleChat();
+            //MessageManager.getInstance().removeVisibleChat();
         } else {
             if (isVisible) {
                 MessageManager.getInstance().setVisibleChat(MessageManager.getInstance().getOrCreateChat(account, user));
@@ -602,7 +602,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         }
     }
 
-    private void updateRecentChats() {
+    public void updateRecentChats() {
         if (recentChatFragment != null) {
             recentChatFragment.updateChats();
         }

@@ -1437,6 +1437,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
             btnScrollDown.setVisibility(View.GONE);
             hideUnreadMessageIfNeed();
             resetNewReceivedMessageCount();
+            resetUnreadMessageCount();
         } else btnScrollDown.setVisibility(View.VISIBLE);
     }
 
@@ -1444,6 +1445,20 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         if (btnScrollDown.getVisibility() == View.VISIBLE) {
             newReceivedMessageCount++;
             updateNewReceivedMessageCounter();
+            increaseUnreadMessageCount();
+        }
+    }
+
+    private void increaseUnreadMessageCount() {
+        AbstractChat chat = getChat();
+        if (chat != null) chat.increaseUnreadMessageCount();
+    }
+
+    private void resetUnreadMessageCount() {
+        AbstractChat chat = getChat();
+        if (chat != null && chat.getUnreadMessageCount() > 0) {
+            chat.resetUnreadMessageCount();
+            ((ChatActivity)getActivity()).updateRecentChats();
         }
     }
 
