@@ -31,7 +31,6 @@ import java.util.List;
 public class ExtDNSJavaResolver extends DNSResolver implements SmackInitializer {
 
     private static ExtDNSJavaResolver instance = new ExtDNSJavaResolver();
-    private String [] servers;
 
     public static DNSResolver getInstance() {
         return instance;
@@ -39,7 +38,6 @@ public class ExtDNSJavaResolver extends DNSResolver implements SmackInitializer 
 
     public ExtDNSJavaResolver() {
         super(false);
-        servers = getDNSServersListForOreo();
     }
 
     @Override
@@ -48,6 +46,8 @@ public class ExtDNSJavaResolver extends DNSResolver implements SmackInitializer 
         org.xbill.DNS.ResolverConfig.refresh();
 
         ExtLookup lookup;
+        String [] servers = getDNSServersListForOreo();
+
         try {
             lookup = new ExtLookup(name, Type.SRV);
             if (servers != null && servers.length > 0)
