@@ -349,7 +349,6 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
 
         chatMessageAdapter = new ChatMessageAdapter(getActivity(), messageItems, abstractChat, this);
         realmRecyclerView.setAdapter(chatMessageAdapter);
-        layoutManager.scrollToPosition(chatMessageAdapter.getItemCount() - 1);
 
         restoreInputState();
 
@@ -1314,7 +1313,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
     public void saveScrollState() {
         int position = layoutManager.findLastCompletelyVisibleItemPosition();
         AbstractChat chat = getChat();
-        if (chat != null) chat.setLastPosition(position);
+        if (chat != null && position > -1) chat.setLastPosition(position);
     }
 
     public void restoreScrollState() {

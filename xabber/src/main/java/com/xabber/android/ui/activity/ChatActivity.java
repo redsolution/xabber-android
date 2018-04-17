@@ -506,6 +506,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
 
         if (chatFragment != null) {
             chatFragment.saveInputState();
+            chatFragment.saveScrollState();
             chatFragment.setChat(chat.getAccount(), chat.getUser());
         }
 
