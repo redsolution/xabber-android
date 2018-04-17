@@ -388,7 +388,6 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
 
         AbstractChat chat = getChat();
         if (chat != null) {
-            scrollToFirstUnread(chat.getUnreadMessageCount());
             showUnreadMessage(chat.getUnreadMessageCount());
             chat.resetUnreadMessageCount();
         }
@@ -597,10 +596,6 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
                 }
             }
         });
-    }
-
-    public void saveScrollState() {
-        ChatManager.getInstance().setScrollState(account, user, layoutManager.onSaveInstanceState());
     }
 
     private void loadHistoryIfNeeded() {
@@ -1316,8 +1311,17 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         }
     }
 
+    public void saveScrollState() {
+        int position = layoutManager.findLastCompletelyVisibleItemPosition();
+        AbstractChat chat = getChat();
+        if (chat != null) chat.setLastPosition(position);
+    }
+
     public void restoreScrollState() {
-        layoutManager.onRestoreInstanceState(ChatManager.getInstance().getScrollState(account, user));
+        AbstractChat chat = getChat();
+        int position = 0;
+        if (chat != null) position = chat.getLastPosition();
+        if (position > 0) layoutManager.scrollToPosition(position);
     }
 
     @Override
