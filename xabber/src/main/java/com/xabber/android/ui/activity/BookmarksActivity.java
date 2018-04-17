@@ -31,6 +31,7 @@ import org.jivesoftware.smackx.bookmarks.BookmarkedConference;
 import org.jivesoftware.smackx.bookmarks.BookmarkedURL;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -176,9 +177,14 @@ public class BookmarksActivity extends ManagedActivity implements Toolbar.OnMenu
             bookmarksList.add(new BookmarkVO(url.getName(), url.getURL()));
         }
 
-        // conferences
-        List<BookmarkedConference> bookmarkedConferences =
-                BookmarksManager.getInstance().getConferencesFromBookmarks(accountItem.getAccount());
+        List<BookmarkedConference> bookmarkedConferences;
+        try {
+            bookmarkedConferences = BookmarksManager.getInstance().getConferencesFromBookmarks(accountItem.getAccount());
+        } catch (SmackException.NoResponseException | InterruptedException |
+                SmackException.NotConnectedException | XMPPException.XMPPErrorException e) {
+            LogManager.exception(this, e);
+            bookmarkedConferences = Collections.emptyList();
+        }
 
         for (int i = 0; i < bookmarkedConferences.size(); i++) {
             BookmarkedConference conference = bookmarkedConferences.get(i);
