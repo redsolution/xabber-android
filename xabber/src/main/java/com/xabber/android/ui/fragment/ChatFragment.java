@@ -175,7 +175,6 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
     private RealmResults<SyncInfo> syncInfoResults;
     private RealmResults<MessageItem> messageItems;
     private boolean toBeScrolled;
-    private int newReceivedMessageCount = 0;
 
     private List<HashMap<String, String>> menuItems = null;
 
@@ -389,7 +388,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         AbstractChat chat = getChat();
         if (chat != null) {
             showUnreadMessage(chat.getUnreadMessageCount());
-            chat.resetUnreadMessageCount();
+            updateNewReceivedMessageCounter(chat.getUnreadMessageCount());
         }
 
         showJoinButtonIfNeed();
@@ -701,7 +700,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         if (event.getAccount().equals(account) && event.getUser().equals(user)) {
             listener.playIncomingAnimation();
             playIncomingSound();
-            increaseNewReceivedMessageCountIfNeed();
+            increaseUnreadMessageCountIfNeed();
             chatMessageAdapter.setUnreadCount(chatMessageAdapter.getUnreadCount() + 1);
         }
     }
@@ -909,7 +908,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         layoutManager.scrollToPositionWithOffset(
                 chatMessageAdapter.getItemCount() - unreadCount, 200);
         showUnreadMessage(unreadCount);
-        resetNewReceivedMessageCount();
+        resetUnreadMessageCount();
     }
 
     private void updateSecurityButton() {
@@ -1099,8 +1098,9 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
             showJoinButtonIfNeed();
         }
         if (v.getId() == R.id.btnScrollDown) {
-            if (newReceivedMessageCount > 0)
-                scrollToFirstUnread(newReceivedMessageCount);
+            AbstractChat chat = getChat();
+            if (chat != null && chat.getUnreadMessageCount() > 0)
+                scrollToFirstUnread(chat.getUnreadMessageCount());
             else scrollDown();
         }
     }
@@ -1440,40 +1440,30 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         if (isBottom) {
             btnScrollDown.setVisibility(View.GONE);
             hideUnreadMessageIfNeed();
-            resetNewReceivedMessageCount();
             resetUnreadMessageCount();
         } else btnScrollDown.setVisibility(View.VISIBLE);
     }
 
-    private void increaseNewReceivedMessageCountIfNeed() {
-        if (btnScrollDown.getVisibility() == View.VISIBLE) {
-            newReceivedMessageCount++;
-            updateNewReceivedMessageCounter();
-            increaseUnreadMessageCount();
-        }
-    }
-
-    private void increaseUnreadMessageCount() {
+    private void increaseUnreadMessageCountIfNeed() {
         AbstractChat chat = getChat();
-        if (chat != null) chat.increaseUnreadMessageCount();
+        if (btnScrollDown.getVisibility() == View.VISIBLE && chat != null) {
+            chat.increaseUnreadMessageCount();
+            updateNewReceivedMessageCounter(chat.getUnreadMessageCount());
+        }
     }
 
     private void resetUnreadMessageCount() {
         AbstractChat chat = getChat();
-        if (chat != null && chat.getUnreadMessageCount() > 0) {
+        if (chat != null) {
             chat.resetUnreadMessageCount();
+            updateNewReceivedMessageCounter(0);
             ((ChatActivity)getActivity()).updateRecentChats();
         }
     }
 
-    private void resetNewReceivedMessageCount() {
-        newReceivedMessageCount = 0;
-        updateNewReceivedMessageCounter();
-    }
-
-    private void updateNewReceivedMessageCounter() {
-        tvNewReceivedCount.setText(String.valueOf(newReceivedMessageCount));
-        if (newReceivedMessageCount > 0)
+    private void updateNewReceivedMessageCounter(int count) {
+        tvNewReceivedCount.setText(String.valueOf(count));
+        if (count > 0)
             tvNewReceivedCount.setVisibility(View.VISIBLE);
         else tvNewReceivedCount.setVisibility(View.GONE);
     }
