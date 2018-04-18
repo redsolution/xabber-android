@@ -29,7 +29,7 @@ import io.realm.annotations.RealmModule;
 
 public class RealmManager {
     private static final String REALM_DATABASE_NAME = "realm_database.realm";
-    private static final int REALM_DATABASE_VERSION = 12;
+    private static final int REALM_DATABASE_VERSION = 13;
     private static final String LOG_TAG = RealmManager.class.getSimpleName();
     private final RealmConfiguration realmConfiguration;
 
@@ -193,6 +193,13 @@ public class RealmManager {
                         }
 
                         addMissedFields(schema);
+
+                        if (oldVersion == 12) {
+                            schema.get(ChatDataRealm.class.getSimpleName())
+                                    .addField("lastPosition", int.class);
+
+                            oldVersion++;
+                        }
                     }
                 })
                 .modules(new RealmDatabaseModule())

@@ -654,6 +654,11 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         return lastPosition;
     }
 
+    public void saveLastPosition(int lastPosition) {
+        this.lastPosition = lastPosition;
+        ChatManager.getInstance().saveOrUpdateChatDataToRealm(this);
+    }
+
     public void setLastPosition(int lastPosition) {
         this.lastPosition = lastPosition;
     }

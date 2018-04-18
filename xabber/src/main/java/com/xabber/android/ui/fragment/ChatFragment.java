@@ -1310,7 +1310,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
 
         if (position == -1) return;
         if (position == chatMessageAdapter.getItemCount() - 1) position = 0;
-        if (chat != null) chat.setLastPosition(position);
+        if (chat != null) chat.saveLastPosition(position);
     }
 
     public void restoreScrollState() {

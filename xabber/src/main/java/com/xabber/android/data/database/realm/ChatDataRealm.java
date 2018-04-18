@@ -22,6 +22,7 @@ public class ChatDataRealm extends RealmObject {
     private int unreadCount;
     private boolean archived;
     private NotificationStateRealm notificationState;
+    private int lastPosition;
 
     public ChatDataRealm(String accountJid, String userJid) {
         this.id = accountJid + "-" + userJid;
@@ -79,5 +80,13 @@ public class ChatDataRealm extends RealmObject {
 
     public void setNotificationState(NotificationStateRealm notificationState) {
         this.notificationState = notificationState;
+    }
+
+    public int getLastPosition() {
+        return lastPosition;
+    }
+
+    public void setLastPosition(int lastPosition) {
+        this.lastPosition = lastPosition;
     }
 }
