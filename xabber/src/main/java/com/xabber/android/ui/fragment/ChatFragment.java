@@ -157,7 +157,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
     private ViewStub stubJoin;
     private LinearLayout joinLayout;
     private LinearLayout actionJoin;
-    private FloatingActionButton btnScrollDown;
+    private RelativeLayout btnScrollDown;
     private TextView tvNewReceivedCount;
 
     boolean isInputEmpty = true;

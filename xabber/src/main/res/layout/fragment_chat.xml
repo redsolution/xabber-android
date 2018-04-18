@@ -128,14 +128,16 @@
     </LinearLayout>
 
     <RelativeLayout
+        android:id="@+id/btnScrollDown"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@id/input_layout"
         android:layout_alignParentRight="true"
+        android:clickable="true"
+        android:visibility="gone"
         >
 
         <android.support.design.widget.FloatingActionButton
-            android:id="@+id/btnScrollDown"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
@@ -143,8 +145,6 @@
             android:src="@drawable/ic_arrow_down"
             android:tint="?attr/chat_input_button_color"
             app:borderWidth="0dp"
-            android:clickable="true"
-            android:visibility="visible"
             />
 
         <TextView
