@@ -895,6 +895,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
                                 0), true);
                 setUpOptionsMenu(toolbar.getMenu());
                 updateToolbar();
+                updateRecentChats();
                 return true;
 
             case R.id.action_unmute_chat:
@@ -903,6 +904,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
                                 0), true);
                 setUpOptionsMenu(toolbar.getMenu());
                 updateToolbar();
+                updateRecentChats();
                 return true;
 
             /* conference specific options menu */
