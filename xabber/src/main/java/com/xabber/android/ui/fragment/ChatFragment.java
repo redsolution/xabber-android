@@ -384,12 +384,6 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
 
         showHideNotifyIfNeed();
 
-        AbstractChat chat = getChat();
-        if (chat != null) {
-            showUnreadMessage(chat.getUnreadMessageCount());
-            updateNewReceivedMessageCounter(chat.getUnreadMessageCount());
-        }
-
         showJoinButtonIfNeed();
     }
 
@@ -1313,14 +1307,27 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
     public void saveScrollState() {
         int position = layoutManager.findLastCompletelyVisibleItemPosition();
         AbstractChat chat = getChat();
-        if (chat != null && position > -1) chat.setLastPosition(position);
+
+        if (position == -1) return;
+        if (position == chatMessageAdapter.getItemCount() - 1) position = 0;
+        if (chat != null) chat.setLastPosition(position);
     }
 
     public void restoreScrollState() {
         AbstractChat chat = getChat();
-        int position = 0;
-        if (chat != null) position = chat.getLastPosition();
-        if (position > 0) layoutManager.scrollToPosition(position);
+        int position;
+        int unread;
+        if (chat != null) {
+            position = chat.getLastPosition();
+            unread = chat.getUnreadMessageCount();
+            if (position == 0 && unread > 0)
+                scrollToFirstUnread(unread);
+            else if (position > 0) {
+                layoutManager.scrollToPosition(position);
+                showUnreadMessage(unread);
+                updateNewReceivedMessageCounter(unread);
+            }
+        }
     }
 
     @Override
