@@ -44,10 +44,12 @@ public class ToolbarVO extends AbstractHeaderItem<ToolbarVO.ViewHolder> implemen
         void onStateSelected(ContactListPresenter.ChatListState state);
     }
 
-    public ToolbarVO(Context context, OnClickListener listener) {
+    public ToolbarVO(Context context, OnClickListener listener,
+                     ContactListPresenter.ChatListState currentChatsState) {
         this.id = UUID.randomUUID().toString();
         this.context = context;
         this.listener = listener;
+        this.currentChatsState = currentChatsState;
     }
 
     @Override
