@@ -1487,7 +1487,13 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
     }
 
     private void hideUnreadMessageBackground() {
-        if (chatMessageAdapter.setUnreadCount(0))
-            chatMessageAdapter.notifyDataSetChanged();
+        if (chatMessageAdapter.setUnreadCount(0)) {
+            realmRecyclerView.post(new Runnable() {
+                @Override
+                public void run() {
+                    chatMessageAdapter.notifyDataSetChanged();
+                }
+            });
+        }
     }
 }
