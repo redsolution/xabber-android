@@ -12,7 +12,6 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
@@ -293,6 +292,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
                 }
 
                 showScrollDownButtonIfNeed();
+                hideUnreadMessageCountIfNeed();
             }
         });
 
@@ -882,7 +882,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
 
     private void sendMessage(String text) {
         MessageManager.getInstance().sendMessage(account, user, text);
-        hideUnreadMessageIfNeed();
+        hideUnreadMessageBackground();
         scrollDown();
     }
 
@@ -901,7 +901,6 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         layoutManager.scrollToPositionWithOffset(
                 chatMessageAdapter.getItemCount() - unreadCount, 200);
         showUnreadMessage(unreadCount);
-        resetUnreadMessageCount();
     }
 
     private void updateSecurityButton() {
@@ -1445,9 +1444,17 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
 
         if (isBottom) {
             btnScrollDown.setVisibility(View.GONE);
-            hideUnreadMessageIfNeed();
-            resetUnreadMessageCount();
+            hideUnreadMessageBackground();
         } else btnScrollDown.setVisibility(View.VISIBLE);
+    }
+
+    private void hideUnreadMessageCountIfNeed() {
+        AbstractChat chat = getChat();
+        if (chat == null) return;
+        int pastVisibleItems = layoutManager.findLastVisibleItemPosition();
+        if (pastVisibleItems >= chatMessageAdapter.getItemCount() - chat.getUnreadMessageCount()) {
+            resetUnreadMessageCount();
+        }
     }
 
     private void increaseUnreadMessageCountIfNeed() {
@@ -1479,7 +1486,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         chatMessageAdapter.notifyDataSetChanged();
     }
 
-    private void hideUnreadMessageIfNeed() {
+    private void hideUnreadMessageBackground() {
         if (chatMessageAdapter.setUnreadCount(0))
             chatMessageAdapter.notifyDataSetChanged();
     }
