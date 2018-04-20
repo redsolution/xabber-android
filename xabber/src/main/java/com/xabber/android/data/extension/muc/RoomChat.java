@@ -31,6 +31,7 @@ import com.xabber.android.data.message.ChatAction;
 import com.xabber.android.data.message.NewIncomingMessageEvent;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.roster.RosterManager;
+import com.xabber.xmpp.sid.UniqStanzaHelper;
 
 import org.greenrobot.eventbus.EventBus;
 import org.jivesoftware.smack.packet.Message;
@@ -243,6 +244,9 @@ public class RoomChat extends AbstractChat {
             } else {
                 boolean notify = true;
                 String stanzaId = message.getStanzaId();
+
+                // Use stanza id from XEP-0359 if common stanza id is null
+                if (stanzaId == null) stanzaId = UniqStanzaHelper.getStanzaId(message);
 
                 DelayInformation delayInformation = DelayInformation.from(message);
                 Date delay = null;
