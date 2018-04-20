@@ -28,9 +28,12 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.ChatAction;
+import com.xabber.android.data.message.NewIncomingMessageEvent;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.roster.RosterManager;
+import com.xabber.xmpp.sid.UniqStanzaHelper;
 
+import org.greenrobot.eventbus.EventBus;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Message.Type;
 import org.jivesoftware.smack.packet.Presence;
@@ -242,6 +245,9 @@ public class RoomChat extends AbstractChat {
                 boolean notify = true;
                 String stanzaId = message.getStanzaId();
 
+                // Use stanza id from XEP-0359 if common stanza id is null
+                if (stanzaId == null) stanzaId = UniqStanzaHelper.getStanzaId(message);
+
                 DelayInformation delayInformation = DelayInformation.from(message);
                 Date delay = null;
                 if (delayInformation != null) {
@@ -265,7 +271,9 @@ public class RoomChat extends AbstractChat {
                 }
 
                 updateThreadId(message.getThread());
-                createAndSaveNewMessage(resource, text, null, delay, true, notify, false, false, stanzaId);
+                createAndSaveNewMessage(resource, text, null, delay, true, notify,
+                        false, false, stanzaId);
+                EventBus.getDefault().post(new NewIncomingMessageEvent(account, user));
             }
         } else if (stanza instanceof Presence) {
             Presence presence = (Presence) stanza;

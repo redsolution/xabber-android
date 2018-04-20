@@ -51,8 +51,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-import javax.annotation.Nonnull;
-
 import io.realm.Realm;
 import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
@@ -88,6 +86,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
      */
     private String threadId;
 
+    private int lastPosition;
     private int unreadMessageCount;
     private boolean archived;
     protected NotificationState notificationState;
@@ -649,5 +648,18 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         if (notificationState.getMode() == NotificationState.NotificationMode.disabled && needSaveToRealm)
             NotificationManager.getInstance().removeMessageNotification(account, user);
         if (needSaveToRealm) ChatManager.getInstance().saveOrUpdateChatDataToRealm(this);
+    }
+
+    public int getLastPosition() {
+        return lastPosition;
+    }
+
+    public void saveLastPosition(int lastPosition) {
+        this.lastPosition = lastPosition;
+        ChatManager.getInstance().saveOrUpdateChatDataToRealm(this);
+    }
+
+    public void setLastPosition(int lastPosition) {
+        this.lastPosition = lastPosition;
     }
 }

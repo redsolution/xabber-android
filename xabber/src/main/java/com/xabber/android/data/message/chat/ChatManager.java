@@ -16,7 +16,6 @@ package com.xabber.android.data.message.chat;
 
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Parcelable;
 import android.support.annotation.Nullable;
 
 import com.xabber.android.data.Application;
@@ -98,7 +97,6 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
     /**
      * chat scroll states - position of message list
      */
-    private final NestedMap<Parcelable> scrollStates;
 
     public static ChatManager getInstance() {
         if (instance == null) {
@@ -116,7 +114,6 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
         makeVibro = new NestedMap<>();
         notifyVisible = new NestedMap<>();
         suppress100 = new NestedMap<>();
-        scrollStates = new NestedMap<>();
     }
 
     @Override
@@ -492,18 +489,6 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
         });
     }
 
-    public Parcelable getScrollState(AccountJid account, UserJid user) {
-        return scrollStates.get(account.toString(), user.toString());
-    }
-
-    public void setScrollState(AccountJid account, UserJid user, Parcelable parcelable) {
-        scrollStates.put(account.toString(), user.toString(), parcelable);
-    }
-
-    public void clearScrollStates() {
-        scrollStates.clear();
-    }
-
     public void saveOrUpdateChatDataToRealm(final AbstractChat chat) {
         final long startTime = System.currentTimeMillis();
         Application.getInstance().runInBackground(new Runnable() {
@@ -524,6 +509,7 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
                         if (chatRealm == null)
                             chatRealm = new ChatDataRealm(accountJid, userJid);
 
+                        chatRealm.setLastPosition(chat.getLastPosition());
                         chatRealm.setUnreadCount(chat.getUnreadMessageCount());
                         chatRealm.setArchived(chat.isArchived());
 
@@ -572,7 +558,8 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
                     realmChat.getUserJid(),
                     realmChat.getUnreadCount(),
                     realmChat.isArchived(),
-                    notificationState);
+                    notificationState,
+                    realmChat.getLastPosition());
         }
 
         realm.close();

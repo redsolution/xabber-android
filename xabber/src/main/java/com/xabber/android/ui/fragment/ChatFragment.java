@@ -12,7 +12,6 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
@@ -157,7 +156,8 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
     private ViewStub stubJoin;
     private LinearLayout joinLayout;
     private LinearLayout actionJoin;
-    private FloatingActionButton btnScrollDown;
+    private RelativeLayout btnScrollDown;
+    private TextView tvNewReceivedCount;
 
     boolean isInputEmpty = true;
     private boolean skipOnTextChanges = false;
@@ -226,6 +226,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
 
         View view = inflater.inflate(R.layout.fragment_chat, container, false);
 
+        tvNewReceivedCount = view.findViewById(R.id.tvNewReceivedCount);
         btnScrollDown = view.findViewById(R.id.btnScrollDown);
         btnScrollDown.setOnClickListener(this);
 
@@ -291,6 +292,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
                 }
 
                 showScrollDownButtonIfNeed();
+                hideUnreadMessageCountIfNeed();
             }
         });
 
@@ -347,7 +349,6 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
 
         chatMessageAdapter = new ChatMessageAdapter(getActivity(), messageItems, abstractChat, this);
         realmRecyclerView.setAdapter(chatMessageAdapter);
-        layoutManager.scrollToPosition(chatMessageAdapter.getItemCount() - 1);
 
         restoreInputState();
 
@@ -382,13 +383,6 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         restoreScrollState();
 
         showHideNotifyIfNeed();
-
-        AbstractChat chat = getChat();
-        if (chat != null) {
-            scrollToFirstUnread(chat.getUnreadMessageCount());
-            showUnreadMessage(chat.getUnreadMessageCount());
-            chat.resetUnreadMessageCount();
-        }
 
         showJoinButtonIfNeed();
     }
@@ -596,10 +590,6 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         });
     }
 
-    public void saveScrollState() {
-        ChatManager.getInstance().setScrollState(account, user, layoutManager.onSaveInstanceState());
-    }
-
     private void loadHistoryIfNeeded() {
         AccountItem accountItem = AccountManager.getInstance().getAccount(this.account);
         if (accountItem == null) {
@@ -703,6 +693,8 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         if (event.getAccount().equals(account) && event.getUser().equals(user)) {
             listener.playIncomingAnimation();
             playIncomingSound();
+            increaseUnreadMessageCountIfNeed();
+            chatMessageAdapter.setUnreadCount(chatMessageAdapter.getUnreadCount() + 1);
         }
     }
 
@@ -890,7 +882,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
 
     private void sendMessage(String text) {
         MessageManager.getInstance().sendMessage(account, user, text);
-        hideUnreadMessageIfNeed();
+        hideUnreadMessageBackground();
         scrollDown();
     }
 
@@ -908,6 +900,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
     private void scrollToFirstUnread(int unreadCount) {
         layoutManager.scrollToPositionWithOffset(
                 chatMessageAdapter.getItemCount() - unreadCount, 200);
+        showUnreadMessage(unreadCount);
     }
 
     private void updateSecurityButton() {
@@ -1097,7 +1090,10 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
             showJoinButtonIfNeed();
         }
         if (v.getId() == R.id.btnScrollDown) {
-            scrollDown();
+            AbstractChat chat = getChat();
+            if (chat != null && chat.getUnreadMessageCount() > 0)
+                scrollToFirstUnread(chat.getUnreadMessageCount());
+            else scrollDown();
         }
     }
 
@@ -1307,8 +1303,30 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         }
     }
 
+    public void saveScrollState() {
+        int position = layoutManager.findLastCompletelyVisibleItemPosition();
+        AbstractChat chat = getChat();
+
+        if (position == -1) return;
+        if (position == chatMessageAdapter.getItemCount() - 1) position = 0;
+        if (chat != null) chat.saveLastPosition(position);
+    }
+
     public void restoreScrollState() {
-        layoutManager.onRestoreInstanceState(ChatManager.getInstance().getScrollState(account, user));
+        AbstractChat chat = getChat();
+        int position;
+        int unread;
+        if (chat != null) {
+            position = chat.getLastPosition();
+            unread = chat.getUnreadMessageCount();
+            if (position == 0 && unread > 0)
+                scrollToFirstUnread(unread);
+            else if (position > 0) {
+                layoutManager.scrollToPosition(position);
+                showUnreadMessage(unread);
+                updateNewReceivedMessageCounter(unread);
+            }
+        }
     }
 
     @Override
@@ -1426,8 +1444,41 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
 
         if (isBottom) {
             btnScrollDown.setVisibility(View.GONE);
-            hideUnreadMessageIfNeed();
+            hideUnreadMessageBackground();
         } else btnScrollDown.setVisibility(View.VISIBLE);
+    }
+
+    private void hideUnreadMessageCountIfNeed() {
+        AbstractChat chat = getChat();
+        if (chat == null) return;
+        int pastVisibleItems = layoutManager.findLastVisibleItemPosition();
+        if (pastVisibleItems >= chatMessageAdapter.getItemCount() - chat.getUnreadMessageCount()) {
+            resetUnreadMessageCount();
+        }
+    }
+
+    private void increaseUnreadMessageCountIfNeed() {
+        AbstractChat chat = getChat();
+        if (btnScrollDown.getVisibility() == View.VISIBLE && chat != null) {
+            chat.increaseUnreadMessageCount();
+            updateNewReceivedMessageCounter(chat.getUnreadMessageCount());
+        }
+    }
+
+    private void resetUnreadMessageCount() {
+        AbstractChat chat = getChat();
+        if (chat != null) {
+            chat.resetUnreadMessageCount();
+            updateNewReceivedMessageCounter(0);
+            ((ChatActivity)getActivity()).updateRecentChats();
+        }
+    }
+
+    private void updateNewReceivedMessageCounter(int count) {
+        tvNewReceivedCount.setText(String.valueOf(count));
+        if (count > 0)
+            tvNewReceivedCount.setVisibility(View.VISIBLE);
+        else tvNewReceivedCount.setVisibility(View.GONE);
     }
 
     private void showUnreadMessage(int count) {
@@ -1435,8 +1486,14 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         chatMessageAdapter.notifyDataSetChanged();
     }
 
-    private void hideUnreadMessageIfNeed() {
-        if (chatMessageAdapter.setUnreadCount(0))
-            chatMessageAdapter.notifyDataSetChanged();
+    private void hideUnreadMessageBackground() {
+        if (chatMessageAdapter.setUnreadCount(0)) {
+            realmRecyclerView.post(new Runnable() {
+                @Override
+                public void run() {
+                    chatMessageAdapter.notifyDataSetChanged();
+                }
+            });
+        }
     }
 }

@@ -127,20 +127,45 @@
             />
     </LinearLayout>
 
-    <android.support.design.widget.FloatingActionButton
+    <RelativeLayout
         android:id="@+id/btnScrollDown"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@id/input_layout"
         android:layout_alignParentRight="true"
-        android:layout_margin="16dp"
-        android:backgroundTint="?attr/chat_input_background"
-        android:src="@drawable/ic_arrow_down"
-        android:tint="?attr/chat_input_button_color"
-        app:borderWidth="0dp"
         android:clickable="true"
         android:visibility="gone"
-        />
+        >
+
+        <android.support.design.widget.FloatingActionButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:backgroundTint="?attr/chat_input_background"
+            android:src="@drawable/ic_arrow_down"
+            android:tint="?attr/chat_input_button_color"
+            app:borderWidth="0dp"
+            />
+
+        <TextView
+            android:id="@+id/tvNewReceivedCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            android:paddingTop="0dp"
+            android:paddingBottom="1dp"
+            android:paddingRight="5dp"
+            android:paddingLeft="5dp"
+            android:background="@drawable/rounded_background_green"
+            android:textColor="@color/white"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:elevation="6dp"
+            android:visibility="gone"
+            />
+
+    </RelativeLayout>
 
     <ViewStub
         android:id="@+id/stubJoin"
