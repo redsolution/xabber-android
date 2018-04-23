@@ -29,7 +29,7 @@ import io.realm.annotations.RealmModule;
 
 public class RealmManager {
     private static final String REALM_DATABASE_NAME = "realm_database.realm";
-    private static final int REALM_DATABASE_VERSION = 13;
+    private static final int REALM_DATABASE_VERSION = 14;
     private static final String LOG_TAG = RealmManager.class.getSimpleName();
     private final RealmConfiguration realmConfiguration;
 
@@ -197,6 +197,19 @@ public class RealmManager {
                         if (oldVersion == 12) {
                             schema.get(ChatDataRealm.class.getSimpleName())
                                     .addField("lastPosition", int.class);
+
+                            oldVersion++;
+                        }
+
+                        // Try to fix Realm migration issue
+                        if (oldVersion < 13) oldVersion = 13;
+
+                        if (oldVersion == 13) {
+                            RealmObjectSchema chatDataSchema =
+                                    schema.get(ChatDataRealm.class.getSimpleName());
+
+                            if (!chatDataSchema.hasField("lastPosition"))
+                                chatDataSchema.addField("lastPosition", int.class);
 
                             oldVersion++;
                         }
