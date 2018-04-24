@@ -64,7 +64,8 @@
   <string name="chats_hide_keyboard">Скрывать клавиатуру</string>
   <string name="chats_hide_keyboard_landscape">В ландшафтном режиме</string>
   <string name="chats_receipt">Уведомления о доставке сообщений\nОтправлять и получать уведомления о доставке сообщений</string>
-  <string name="chats_show_avatars">Аватары в сообщениях\nОтображать пользовательские изображения в каждом сообщении</string>
+  <string name="chats_show_avatars">Аватары в чате\nОтображать аватары в каждом сообщении чата</string>
+  <string name="chats_show_avatars_muc">Аватары в конференции\nОтображать аватары в каждом сообщении конференции</string>
   <string name="chats_show_status_change">Отображать изменения статуса</string>
   <string name="chats_show_status_change_muc">В конференциях</string>
   <string name="chats_state_notification">Уведомлять о наборе текста\nУведомлять собеседника о наборе текста</string>

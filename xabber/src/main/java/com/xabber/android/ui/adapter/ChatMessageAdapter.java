@@ -549,26 +549,27 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
     }
 
     private void setUpAvatar(MessageItem messageItem, IncomingMessage message) {
-        if (SettingsManager.chatsShowAvatars()) {
+        if (SettingsManager.chatsShowAvatars() && !isMUC) {
+            final UserJid user = messageItem.getUser();
+            message.avatar.setVisibility(View.VISIBLE);
+            message.avatarBackground.setVisibility(View.VISIBLE);
+            message.avatar.setImageDrawable(AvatarManager.getInstance().getUserAvatar(user, userName));
+
+        } else if (SettingsManager.chatsShowAvatarsMUC() && isMUC) {
             final AccountJid account = messageItem.getAccount();
             final UserJid user = messageItem.getUser();
             final Resourcepart resource = messageItem.getResource();
 
             message.avatar.setVisibility(View.VISIBLE);
             message.avatarBackground.setVisibility(View.VISIBLE);
-            if ((isMUC && MUCManager.getInstance().getNickname(account, user.getJid().asEntityBareJidIfPossible()).equals(resource))) {
+            if ((MUCManager.getInstance().getNickname(account, user.getJid().asEntityBareJidIfPossible()).equals(resource))) {
                 message.avatar.setImageDrawable(AvatarManager.getInstance().getAccountAvatar(account));
             } else {
-                if (isMUC) {
-                    if (resource.equals(Resourcepart.EMPTY)) {
-                        message.avatar.setImageDrawable(AvatarManager.getInstance().getRoomAvatar(user));
-                    } else {
-                        message.avatar.setImageDrawable(AvatarManager.getInstance()
-                                .generateDefaultAvatar(resource.toString(), resource.toString()));
-                    }
+                if (resource.equals(Resourcepart.EMPTY)) {
+                    message.avatar.setImageDrawable(AvatarManager.getInstance().getRoomAvatar(user));
                 } else {
-                    message.avatar.setImageDrawable(AvatarManager.getInstance().getUserAvatar(user,
-                            userName));
+                    message.avatar.setImageDrawable(AvatarManager.getInstance()
+                            .generateDefaultAvatar(resource.toString(), resource.toString()));
                 }
             }
         } else {
