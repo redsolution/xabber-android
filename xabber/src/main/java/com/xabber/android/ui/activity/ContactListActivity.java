@@ -662,7 +662,7 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
                 abstractContact.getUser())) {
             bitmap = AvatarManager.getInstance().getRoomBitmap(abstractContact.getUser());
         } else {
-            bitmap = AvatarManager.getInstance().getUserBitmap(abstractContact.getUser());
+            bitmap = AvatarManager.getInstance().getUserBitmap(abstractContact.getUser(), abstractContact.getName());
         }
         intent.putExtra(Intent.EXTRA_SHORTCUT_ICON,
                     AvatarManager.getInstance().createShortcutBitmap(bitmap));

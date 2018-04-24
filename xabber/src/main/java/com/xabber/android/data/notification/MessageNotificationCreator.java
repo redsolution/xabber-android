@@ -160,7 +160,7 @@ public class MessageNotificationCreator {
             if (MUCManager.getInstance().hasRoom(message.getAccount(), message.getUser().getJid().asEntityBareJidIfPossible())) {
                 return AvatarManager.getInstance().getRoomBitmap(message.getUser());
             } else {
-                return AvatarManager.getInstance().getUserBitmap(message.getUser());
+                return AvatarManager.getInstance().getUserBitmap(message.getUser(), message.getUser().getBareJid().toString());
             }
         }
         return null;

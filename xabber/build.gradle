@@ -182,6 +182,7 @@ dependencies {
     implementation 'org.greenrobot:eventbus:3.0.0'
 
     // ui
+    implementation 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1'
     implementation 'ru.egslava:MaskedEditText:1.0.5'
     implementation 'eu.davidea:flexible-adapter:5.0.0-rc4'
     implementation 'com.soundcloud.android:android-crop:1.0.1@aar'

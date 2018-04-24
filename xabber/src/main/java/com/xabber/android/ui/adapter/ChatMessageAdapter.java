@@ -58,7 +58,6 @@ import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.fragment.ChatFragment;
 import com.xabber.android.utils.StringUtils;
 
-import org.jxmpp.jid.impl.JidCreate;
 import org.jxmpp.jid.parts.Resourcepart;
 
 import java.util.ArrayList;
@@ -92,6 +91,7 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
      */
     private Listener listener;
 
+    private String userName;
     private AccountJid account;
     private UserJid user;
     private int prevItemCount;
@@ -106,6 +106,7 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
 
         account = chat.getAccount();
         user = chat.getUser();
+        userName = RosterManager.getInstance().getName(account, user);
 
         isMUC = MUCManager.getInstance().hasRoom(account, user.getJid().asEntityBareJidIfPossible());
         if (isMUC) {
@@ -562,15 +563,12 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
                     if (resource.equals(Resourcepart.EMPTY)) {
                         message.avatar.setImageDrawable(AvatarManager.getInstance().getRoomAvatar(user));
                     } else {
-                        try {
-                            message.avatar.setImageDrawable(AvatarManager.getInstance()
-                                    .getUserAvatar(UserJid.from(JidCreate.domainFullFrom(user.getJid().asDomainBareJid(), resource))));
-                        } catch (UserJid.UserJidCreateException e) {
-                            LogManager.exception(this, e);
-                        }
+                        message.avatar.setImageDrawable(AvatarManager.getInstance()
+                                .generateDefaultAvatar(resource.toString(), resource.toString()));
                     }
                 } else {
-                    message.avatar.setImageDrawable(AvatarManager.getInstance().getUserAvatar(user));
+                    message.avatar.setImageDrawable(AvatarManager.getInstance().getUserAvatar(user,
+                            userName));
                 }
             }
         } else {

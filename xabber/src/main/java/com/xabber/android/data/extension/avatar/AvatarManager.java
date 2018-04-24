@@ -25,19 +25,23 @@ import android.graphics.drawable.LayerDrawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.amulyakhare.textdrawable.TextDrawable;
+import com.amulyakhare.textdrawable.util.ColorGenerator;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
-import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.OnLowMemoryListener;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
+import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.database.sqlite.AvatarTable;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.vcard.VCardManager;
+import com.xabber.android.data.log.LogManager;
+import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.xmpp.vcardupdate.VCardUpdate;
 
@@ -302,10 +306,9 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
 
     @NonNull
     public Drawable getDefaultAccountAvatar(AccountJid account) {
-        Drawable[] layers = new Drawable[2];
-        layers[0] = new ColorDrawable(ColorManager.getInstance().getAccountPainter().getAccountMainColor(account));
-        layers[1] = application.getResources().getDrawable(R.drawable.ic_avatar_1);
-        return new LayerDrawable(layers);
+        String name = AccountManager.getInstance().getVerboseName(account);
+        int color = ColorManager.getInstance().getAccountPainter().getAccountMainColor(account);
+        return generateDefaultAvatar(account.getFullJid().asBareJid().toString(), name, color);
     }
 
     /**
@@ -314,12 +317,12 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
      * @param user
      * @return
      */
-    public Drawable getUserAvatar(UserJid user) {
+    public Drawable getUserAvatar(UserJid user, String name) {
         Bitmap value = getBitmap(user.getJid());
         if (value != null) {
             return new BitmapDrawable(application.getResources(), value);
         } else {
-            return getDefaultAvatarDrawable(userAvatarSet.getResourceId(user));
+            return generateDefaultAvatar(user.getBareJid().toString(), name);
         }
     }
 
@@ -332,18 +335,34 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
         return new LayerDrawable(layers);
     }
 
+    public Drawable generateDefaultAvatar(@NonNull String jid, @NonNull String name) {
+        return generateDefaultAvatar(jid, name, ColorGenerator.MATERIAL.getColor(jid));
+    }
+
+    public Drawable generateDefaultAvatar(@NonNull String jid, @NonNull String name, int color) {
+        String[] words = name.split("\\s+");
+        String chars = "";
+        for (int i = 0; i < words.length; i++) {
+            chars = chars + words[i].substring(0, 1);
+        }
+
+        return TextDrawable.builder()
+                .beginConfig().fontSize(60).bold().width(150).height(150).endConfig()
+                .buildRound(chars.toUpperCase(), color);
+    }
+
     /**
      * Gets bitmap with avatar for regular user.
      *
      * @param user
      * @return
      */
-    public Bitmap getUserBitmap(UserJid user) {
+    public Bitmap getUserBitmap(UserJid user, String name) {
         Bitmap value = getBitmap(user.getJid());
         if (value != null) {
             return value;
         } else {
-            return drawableToBitmap(getDefaultAvatarDrawable(userAvatarSet.getResourceId(user)));
+            return drawableToBitmap(generateDefaultAvatar(user.getBareJid().toString(), name));
         }
     }
 
@@ -353,10 +372,10 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
      * @param user
      * @return
      */
-    public Drawable getUserAvatarForContactList(UserJid user) {
+    public Drawable getUserAvatarForContactList(UserJid user, String name) {
         Drawable drawable = contactListDrawables.get(user.getJid());
         if (drawable == null) {
-            drawable = getUserAvatar(user);
+            drawable = getUserAvatar(user, name);
             contactListDrawables.put(user.getJid(), drawable);
         }
         return drawable;

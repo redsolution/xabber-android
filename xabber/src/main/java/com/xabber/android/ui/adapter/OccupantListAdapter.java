@@ -119,17 +119,11 @@ public class OccupantListAdapter extends BaseAdapter implements
         final ImageView statusModeView = (ImageView) view
                 .findViewById(R.id.ivStatus);
         if (MUCManager.getInstance().getNickname(account, room).equals(occupant.getNickname())) {
-            avatarView.setImageDrawable(AvatarManager.getInstance() .getAccountAvatar(account));
+            avatarView.setImageDrawable(AvatarManager.getInstance().getAccountAvatar(account));
         } else {
-            try {
-                avatarView.setImageDrawable(AvatarManager.getInstance()
-                        .getUserAvatar(UserJid.from(occupant.getJid())));
-            } catch (UserJid.UserJidCreateException e) {
-                LogManager.exception(this, e);
-                // set default avatar
-                avatarView.setImageDrawable(
-                        ContextCompat.getDrawable(parent.getContext(), R.drawable.ic_avatar_1));
-            }
+            avatarView.setImageDrawable(AvatarManager.getInstance()
+                    .generateDefaultAvatar(occupant.getJid().getResourceOrEmpty().toString(),
+                            occupant.getJid().getResourceOrEmpty().toString()));
         }
         affilationView.setImageLevel(occupant.getAffiliation().ordinal());
         nameView.setText(occupant.getNickname());
