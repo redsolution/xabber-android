@@ -18,10 +18,14 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
+import android.graphics.drawable.ScaleDrawable;
+import android.graphics.drawable.VectorDrawable;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -335,6 +339,17 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
         return new LayerDrawable(layers);
     }
 
+    public Drawable generateDefaultRoomAvatar(@NonNull String jid) {
+        Drawable[] layers = new Drawable[2];
+        layers[0] = new ColorDrawable(ColorGenerator.MATERIAL.getColor(jid));
+        layers[1] = application.getResources().getDrawable(R.drawable.ic_conference_white);
+
+        LayerDrawable layerDrawable = new LayerDrawable(layers);
+        layerDrawable.setLayerInset(1, 25, 25, 25, 30);
+
+        return layerDrawable;
+    }
+
     public Drawable generateDefaultAvatar(@NonNull String jid, @NonNull String name) {
         return generateDefaultAvatar(jid, name, ColorGenerator.MATERIAL.getColor(jid));
     }
@@ -391,7 +406,7 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
      * @return
      */
     public Drawable getRoomAvatar(UserJid user) {
-        return getDefaultAvatarDrawable(roomAvatarSet.getResourceId(user));
+        return generateDefaultRoomAvatar(user.getBareJid().toString());
     }
 
     /**
