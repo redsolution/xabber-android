@@ -342,9 +342,12 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
     public Drawable generateDefaultAvatar(@NonNull String jid, @NonNull String name, int color) {
         String[] words = name.split("\\s+");
         String chars = "";
-        for (int i = 0; i < words.length; i++) {
-            chars = chars + words[i].substring(0, 1);
-        }
+
+        if (words.length >= 1)
+            chars = chars + words[0].substring(0, 1);
+
+        if (words.length >= 2)
+            chars = chars + words[1].substring(0, 1);
 
         return TextDrawable.builder()
                 .beginConfig().fontSize(60).bold().width(150).height(150).endConfig()
