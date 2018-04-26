@@ -428,7 +428,12 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
      * @return
      */
     public Drawable getRoomAvatar(UserJid user) {
-        return generateDefaultRoomAvatar(user.getBareJid().toString());
+        Bitmap value = getBitmap(user.getJid());
+        if (value != null) {
+            return new BitmapDrawable(application.getResources(), value);
+        } else {
+            return generateDefaultRoomAvatar(user.getBareJid().toString());
+        }
     }
 
     /**
