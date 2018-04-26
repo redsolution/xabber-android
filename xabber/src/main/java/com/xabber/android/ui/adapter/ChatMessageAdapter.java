@@ -58,7 +58,6 @@ import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.fragment.ChatFragment;
 import com.xabber.android.utils.StringUtils;
 
-import org.jxmpp.jid.BareJid;
 import org.jxmpp.jid.parts.Resourcepart;
 
 import java.util.ArrayList;
@@ -570,21 +569,13 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
                     message.avatar.setImageDrawable(AvatarManager.getInstance().getRoomAvatar(user));
                 } else {
 
-                    BareJid room = user.getJid().asEntityBareJidIfPossible();
-
                     String nick = resource.toString();
                     UserJid userJid = null;
 
                     try {
-                        userJid = UserJid.from(user.getJid());
-                        BareJid bareJid = userJid.getBareJid();
-
-                        if (bareJid.equals(room))
-                            message.avatar.setImageDrawable(AvatarManager.getInstance()
-                                    .generateDefaultAvatar(nick, nick));
-                        else
-                            message.avatar.setImageDrawable(AvatarManager.getInstance()
-                                    .getOccupantAvatar(userJid, nick));
+                        userJid = UserJid.from(user.getJid().toString() + "/" + resource.toString());
+                        message.avatar.setImageDrawable(AvatarManager.getInstance()
+                                .getOccupantAvatar(userJid, nick));
 
                     } catch (UserJid.UserJidCreateException e) {
                         LogManager.exception(this, e);

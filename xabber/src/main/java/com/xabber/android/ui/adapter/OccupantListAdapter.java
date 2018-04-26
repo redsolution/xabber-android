@@ -33,7 +33,6 @@ import com.xabber.android.ui.activity.ContactActivity;
 import com.xabber.android.ui.activity.OccupantListActivity;
 
 import org.jivesoftware.smackx.muc.MUCRole;
-import org.jxmpp.jid.BareJid;
 import org.jxmpp.jid.EntityBareJid;
 import org.jxmpp.jid.impl.JidCreate;
 
@@ -130,14 +129,8 @@ public class OccupantListAdapter extends BaseAdapter implements
 
             try {
                 userJid = UserJid.from(occupant.getJid());
-                BareJid bareJid = userJid.getBareJid();
-
-                if (bareJid.equals(room))
-                    avatarView.setImageDrawable(AvatarManager.getInstance()
-                            .generateDefaultAvatar(nick, nick));
-                else
-                    avatarView.setImageDrawable(AvatarManager.getInstance()
-                        .getOccupantAvatar(userJid, nick));
+                avatarView.setImageDrawable(AvatarManager.getInstance()
+                    .getOccupantAvatar(userJid, nick));
 
             } catch (UserJid.UserJidCreateException e) {
                 LogManager.exception(this, e);
