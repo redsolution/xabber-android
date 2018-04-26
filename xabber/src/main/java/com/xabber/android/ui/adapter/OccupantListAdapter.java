@@ -16,7 +16,6 @@ package com.xabber.android.ui.adapter;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -24,16 +23,17 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.xabber.android.R;
-import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.muc.Occupant;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.ui.activity.ContactActivity;
 import com.xabber.android.ui.activity.OccupantListActivity;
 
 import org.jivesoftware.smackx.muc.MUCRole;
+import org.jxmpp.jid.BareJid;
 import org.jxmpp.jid.EntityBareJid;
 import org.jxmpp.jid.impl.JidCreate;
 
@@ -118,13 +118,35 @@ public class OccupantListAdapter extends BaseAdapter implements
                 .findViewById(R.id.status);
         final ImageView statusModeView = (ImageView) view
                 .findViewById(R.id.ivStatus);
+
+        // avatar
+
         if (MUCManager.getInstance().getNickname(account, room).equals(occupant.getNickname())) {
             avatarView.setImageDrawable(AvatarManager.getInstance().getAccountAvatar(account));
         } else {
-            avatarView.setImageDrawable(AvatarManager.getInstance()
-                    .generateDefaultAvatar(occupant.getJid().getResourceOrEmpty().toString(),
-                            occupant.getJid().getResourceOrEmpty().toString()));
+
+            String nick = occupant.getJid().getResourceOrEmpty().toString();
+            UserJid userJid = null;
+
+            try {
+                userJid = UserJid.from(occupant.getJid());
+                BareJid bareJid = userJid.getBareJid();
+
+                if (bareJid.equals(room))
+                    avatarView.setImageDrawable(AvatarManager.getInstance()
+                            .generateDefaultAvatar(nick, nick));
+                else
+                    avatarView.setImageDrawable(AvatarManager.getInstance()
+                        .getOccupantAvatar(userJid, nick));
+
+            } catch (UserJid.UserJidCreateException e) {
+                LogManager.exception(this, e);
+                avatarView.setImageDrawable(AvatarManager.getInstance()
+                        .generateDefaultAvatar(nick, nick));
+            }
+
         }
+
         affilationView.setImageLevel(occupant.getAffiliation().ordinal());
         nameView.setText(occupant.getNickname());
 

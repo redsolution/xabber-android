@@ -462,8 +462,13 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
      * @param user
      * @return
      */
-    public Drawable getOccupantAvatar(UserJid user) {
-        return getDefaultAvatarDrawable(userAvatarSet.getResourceId(user));
+    public Drawable getOccupantAvatar(UserJid user, String nick) {
+        Bitmap value = getBitmap(user.getJid());
+        if (value != null) {
+            return new BitmapDrawable(application.getResources(), value);
+        } else {
+            return generateDefaultAvatar(nick, nick);
+        }
     }
 
     /**
