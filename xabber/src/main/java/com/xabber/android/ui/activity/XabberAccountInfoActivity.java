@@ -122,7 +122,7 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
             if (XabberAccount.STATUS_NOT_CONFIRMED.equals(account.getAccountStatus())) {
                 showConfirmFragment();
             }
-            if (XabberAccount.STATUS_CONFIRMED.equals(account.getAccountStatus())) {
+            if (XabberAccount.STATUS_CONFIRMED.equals(account.getAccountStatus()) && BuildConfig.FLAVOR.equals("ru")) {
                 showPhoneConfirmFragment();
             }
             if (XabberAccount.STATUS_CONFIRMED.equals(account.getAccountStatus()) && !account.isNeedToVerifyPhone()) {
