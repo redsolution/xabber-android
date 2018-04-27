@@ -17,7 +17,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.xabber.android.R;
@@ -33,6 +32,7 @@ import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.NotificationState;
 import com.xabber.android.data.roster.AbstractContact;
+import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.ui.color.ColorManager;
 
 import java.io.File;
@@ -71,6 +71,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
     private final Date time;
     private final int messageStatus;
     private final String messageOwner;
+    private final String lastActivity;
     protected boolean archived;
 
     protected final ContactClickListener listener;
@@ -84,10 +85,10 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
     protected ContactVO(int accountColorIndicator, int accountColorIndicatorBack,
                         boolean showOfflineShadow, String name,
                         String status, int statusId, int statusLevel, Drawable avatar,
-                  int mucIndicatorLevel, UserJid userJid, AccountJid accountJid, int unreadCount,
-                  boolean mute, NotificationState.NotificationMode notificationMode, String messageText,
-                  boolean isOutgoing, Date time, int messageStatus, String messageOwner,
-                        boolean archived, ContactClickListener listener) {
+                        int mucIndicatorLevel, UserJid userJid, AccountJid accountJid, int unreadCount,
+                        boolean mute, NotificationState.NotificationMode notificationMode, String messageText,
+                        boolean isOutgoing, Date time, int messageStatus, String messageOwner,
+                        boolean archived, String lastActivity, ContactClickListener listener) {
         this.id = UUID.randomUUID().toString();
         this.accountColorIndicator = accountColorIndicator;
         this.accountColorIndicatorBack = accountColorIndicatorBack;
@@ -109,6 +110,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
         this.messageStatus = messageStatus;
         this.messageOwner = messageOwner;
         this.archived = archived;
+        this.lastActivity = lastActivity;
         this.listener = listener;
     }
 
@@ -153,6 +155,10 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
         String messageText;
         String statusText = contact.getStatusText().trim();
         int statusId = contact.getStatusMode().getStringID();
+
+        String lastActivity = "";
+        if (contact instanceof RosterContact)
+             lastActivity = ((RosterContact) contact).getLastActivity();
 
         MessageManager messageManager = MessageManager.getInstance();
         AbstractChat chat = messageManager.getOrCreateChat(contact.getAccount(), contact.getUser());
@@ -205,7 +211,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
                 showOfflineShadow, name, statusText, statusId,
                 statusLevel, avatar, mucIndicatorLevel, contact.getUser(), contact.getAccount(),
                 unreadCount, !chat.notifyAboutMessage(), mode, messageText, isOutgoing, time,
-                messageStatus, messageOwner, chat.isArchived(), listener);
+                messageStatus, messageOwner, chat.isArchived(), lastActivity, listener);
     }
 
     public static ArrayList<IFlexible> convert(Collection<AbstractContact> contacts, ContactClickListener listener) {
@@ -275,6 +281,10 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
         viewHolder.ivOnlyStatus.setImageLevel(getStatusLevel());
         if (viewHolder.tvStatus != null) viewHolder.tvStatus.setText(getStatus().isEmpty()
                 ? context.getString(getStatusId()) : getStatus());
+
+        if ((getStatusLevel() == 6 || (getMucIndicatorLevel() != 0 && getStatusLevel() != 1))
+                && !getLastActivity().isEmpty())
+            if (viewHolder.tvStatus != null) viewHolder.tvStatus.setText(getLastActivity());
 
         /** set up CONTACT/MUC NAME */
         viewHolder.tvContactName.setText(getName());
@@ -403,6 +413,10 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
 
     public boolean isShowOfflineShadow() {
         return showOfflineShadow;
+    }
+
+    public String getLastActivity() {
+        return lastActivity;
     }
 
     private int getThemeResource(Context context, int themeResourceId) {
