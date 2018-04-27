@@ -74,7 +74,8 @@
     <string name="chats_hide_keyboard">Hide keyboard</string>
     <string name="chats_hide_keyboard_landscape">In landscape mode</string>
     <string name="chats_receipt">Message delivery receipts\nSend and receive message delivery receipts</string>
-    <string name="chats_show_avatars">Avatars in messages\nShow avatars in each message</string>
+    <string name="chats_show_avatars">Avatars in chat\nShow avatars in each message inside chat</string>
+    <string name="chats_show_avatars_muc">Avatars in conference\nShow avatars in each message inside conference</string>
     <string name="chats_show_status_change">Show status changes</string>
     <string name="chats_show_status_change_muc">In conferences</string>
     <string name="chats_state_notification">Send typing notifications\nNotify the other user that you are typing a message to them</string>

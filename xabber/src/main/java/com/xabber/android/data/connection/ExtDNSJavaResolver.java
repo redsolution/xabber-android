@@ -1,12 +1,18 @@
 package com.xabber.android.data.connection;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.LinkProperties;
+import android.net.Network;
+
+import com.xabber.android.data.Application;
+
 import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.initializer.SmackInitializer;
 import org.jivesoftware.smack.util.DNSUtil;
 import org.jivesoftware.smack.util.dns.DNSResolver;
 import org.jivesoftware.smack.util.dns.HostAddress;
 import org.jivesoftware.smack.util.dns.SRVRecord;
-
 import org.xbill.DNS.ExtLookup;
 import org.xbill.DNS.ExtendedResolver;
 import org.xbill.DNS.Record;
@@ -40,9 +46,13 @@ public class ExtDNSJavaResolver extends DNSResolver implements SmackInitializer 
         org.xbill.DNS.ResolverConfig.refresh();
 
         ExtLookup lookup;
+        String [] servers = getDNSServersListForOreo();
+
         try {
             lookup = new ExtLookup(name, Type.SRV);
-            lookup.setResolver(new ExtendedResolver());
+            if (servers != null && servers.length > 0)
+                lookup.setResolver(new ExtendedResolver(servers));
+            else lookup.setResolver(new ExtendedResolver());
         } catch (TextParseException e) {
             throw new IllegalStateException(e);
         } catch (UnknownHostException e) {
@@ -82,6 +92,27 @@ public class ExtDNSJavaResolver extends DNSResolver implements SmackInitializer 
     public List<Exception> initialize() {
         setup();
         return null;
+    }
+
+    private String [] getDNSServersListForOreo() {
+        List<String> result = new ArrayList<>();
+
+        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.M)
+            return null;
+
+        ConnectivityManager connectivityManager =
+                (ConnectivityManager) Application.getInstance()
+                        .getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        if (connectivityManager == null) return result.toArray(new String[0]);
+        Network network = connectivityManager.getActiveNetwork();
+
+        LinkProperties linkProperties = connectivityManager.getLinkProperties(network);
+
+        for (InetAddress address : linkProperties.getDnsServers())
+            result.add(address.getHostAddress());
+
+        return result.toArray(new String[0]);
     }
 
 }

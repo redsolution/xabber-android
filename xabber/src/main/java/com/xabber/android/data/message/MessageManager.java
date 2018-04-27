@@ -192,6 +192,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
         RegularChat chat = new RegularChat(account, user, false);
         ChatData chatData = ChatManager.getInstance().loadChatDataFromRealm(chat);
         if (chatData != null) {
+            chat.setLastPosition(chatData.getLastPosition());
             chat.setUnreadMessageCount(chatData.getUnreadCount());
             chat.setArchived(chatData.isArchived(), false);
             chat.setNotificationState(chatData.getNotificationState(), false);
@@ -204,6 +205,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
         RegularChat chat = new RegularChat(account, UserJid.from(fullJid), true);
         ChatData chatData = ChatManager.getInstance().loadChatDataFromRealm(chat);
         if (chatData != null) {
+            chat.setLastPosition(chatData.getLastPosition());
             chat.setUnreadMessageCount(chatData.getUnreadCount());
             chat.setArchived(chatData.isArchived(), false);
             chat.setNotificationState(chatData.getNotificationState(), false);
@@ -219,7 +221,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
      */
     public void addChat(AbstractChat chat) {
         if (getChat(chat.getAccount(), chat.getUser()) != null) {
-            throw new IllegalStateException();
+            return;
         }
         chats.put(chat.getAccount().toString(), chat.getUser().toString(), chat);
     }

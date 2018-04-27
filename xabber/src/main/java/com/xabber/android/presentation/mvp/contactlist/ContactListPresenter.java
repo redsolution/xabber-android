@@ -348,7 +348,7 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
 
             // Remove empty groups, sort and apply structure.
             items.clear();
-            items.add(new ToolbarVO(context, this));
+            items.add(new ToolbarVO(context, this, currentChatsState));
             if (hasVisibleContacts) {
 
                 if (currentChatsState == ChatListState.recent) {

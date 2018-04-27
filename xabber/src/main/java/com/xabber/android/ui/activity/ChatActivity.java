@@ -62,7 +62,6 @@ import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.NewMessageEvent;
 import com.xabber.android.data.message.NotificationState;
 import com.xabber.android.data.message.RegularChat;
-import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.OnChatStateListener;
@@ -323,6 +322,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         LogManager.i(LOG_TAG, "onResume");
 
         updateToolbar();
+        updateRecentChats();
 
         isVisible = true;
 
@@ -498,19 +498,19 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     @Override
     protected void onStop() {
         super.onStop();
-        ChatManager.getInstance().clearScrollStates();
     }
 
     private void selectChatPage(BaseEntity chat, boolean smoothScroll) {
         account = chat.getAccount();
         user = chat.getUser();
 
-        chatViewerAdapter.selectChat(account, user);
-
         if (chatFragment != null) {
             chatFragment.saveInputState();
+            chatFragment.saveScrollState();
             chatFragment.setChat(chat.getAccount(), chat.getUser());
         }
+
+        chatViewerAdapter.selectChat(account, user);
 
         selectPage(ChatViewerAdapter.PAGE_POSITION_CHAT, smoothScroll);
 
@@ -560,7 +560,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         selectedPagePosition = position;
 
         if (selectedPagePosition == PAGE_POSITION_RECENT_CHATS) {
-            MessageManager.getInstance().removeVisibleChat();
+            //MessageManager.getInstance().removeVisibleChat();
         } else {
             if (isVisible) {
                 MessageManager.getInstance().setVisibleChat(MessageManager.getInstance().getOrCreateChat(account, user));
@@ -601,7 +601,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         }
     }
 
-    private void updateRecentChats() {
+    public void updateRecentChats() {
         if (recentChatFragment != null) {
             recentChatFragment.updateChats();
         }
@@ -894,6 +894,8 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
                         new NotificationState(NotificationState.NotificationMode.disabled,
                                 0), true);
                 setUpOptionsMenu(toolbar.getMenu());
+                updateToolbar();
+                updateRecentChats();
                 return true;
 
             case R.id.action_unmute_chat:
@@ -901,6 +903,8 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
                         new NotificationState(NotificationState.NotificationMode.enabled,
                                 0), true);
                 setUpOptionsMenu(toolbar.getMenu());
+                updateToolbar();
+                updateRecentChats();
                 return true;
 
             /* conference specific options menu */

@@ -354,6 +354,11 @@ public class SettingsManager implements OnInitializedListener,
                 R.bool.chats_show_avatars_default);
     }
 
+    public static boolean chatsShowAvatarsMUC() {
+        return getBoolean(R.string.chats_show_avatars_muc_key,
+                R.bool.chats_show_avatars_muc_default);
+    }
+
     public static boolean chatsSendByEnter() {
         return getBoolean(R.string.chats_send_by_enter_key,
                 R.bool.chats_send_by_enter_default);

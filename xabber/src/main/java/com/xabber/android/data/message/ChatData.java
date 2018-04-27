@@ -12,15 +12,17 @@ public class ChatData {
     private int unreadCount;
     private boolean archived;
     private NotificationState notificationState;
+    private int lastPosition;
 
     public ChatData(String subject, String accountJid, String userJid, int unreadCount,
-                    boolean archived, NotificationState notificationState) {
+                    boolean archived, NotificationState notificationState, int lastPosition) {
         this.subject = subject;
         this.accountJid = accountJid;
         this.userJid = userJid;
         this.unreadCount = unreadCount;
         this.archived = archived;
         this.notificationState = notificationState;
+        this.lastPosition = lastPosition;
     }
 
     public String getSubject() {
@@ -69,5 +71,13 @@ public class ChatData {
 
     public void setNotificationState(NotificationState notificationState) {
         this.notificationState = notificationState;
+    }
+
+    public int getLastPosition() {
+        return lastPosition;
+    }
+
+    public void setLastPosition(int lastPosition) {
+        this.lastPosition = lastPosition;
     }
 }

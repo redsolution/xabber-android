@@ -17,6 +17,11 @@
         android:key="@string/chats_show_avatars_key"
         android:title="@string/chats_show_avatars"
         />
+    <CheckBoxPreference
+        android:defaultValue="@bool/chats_show_avatars_muc_default"
+        android:key="@string/chats_show_avatars_muc_key"
+        android:title="@string/chats_show_avatars_muc"
+        />
     <ListPreference
         android:defaultValue="@string/chats_show_status_change_default"
         android:entries="@array/chats_show_status_change_entries"

@@ -155,6 +155,7 @@
         <activity
             android:name=".ui.activity.ContactAddActivity"
             android:label="@string/contact_add"
+            android:windowSoftInputMode="adjustPan"
             android:parentActivityName=".ui.activity.AccountListActivity">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->

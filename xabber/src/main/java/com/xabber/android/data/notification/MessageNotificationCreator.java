@@ -157,10 +157,11 @@ public class MessageNotificationCreator {
 
     private android.graphics.Bitmap getLargeIcon(MessageNotification message) {
         if (isFromOneContact()) {
+            String name = RosterManager.getInstance().getName(message.getAccount(), message.getUser());
             if (MUCManager.getInstance().hasRoom(message.getAccount(), message.getUser().getJid().asEntityBareJidIfPossible())) {
                 return AvatarManager.getInstance().getRoomBitmap(message.getUser());
             } else {
-                return AvatarManager.getInstance().getUserBitmap(message.getUser());
+                return AvatarManager.getInstance().getUserBitmap(message.getUser(), name);
             }
         }
         return null;

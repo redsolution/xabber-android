@@ -28,6 +28,7 @@ import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.database.sqlite.RoomTable;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.ChatAction;
@@ -114,6 +115,7 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
                                 // set unread and archived data to room chats
                                 ChatData chatData = ChatManager.getInstance().loadChatDataFromRealm(roomChat);
                                 if (chatData != null) {
+                                    roomChat.setLastPosition(chatData.getLastPosition());
                                     roomChat.setUnreadMessageCount(chatData.getUnreadCount());
                                     roomChat.setArchived(chatData.isArchived(), false);
                                     roomChat.setNotificationState(chatData.getNotificationState(), false);
@@ -385,6 +387,7 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
                             removeAuthorizationError(account, room);
                             try {
                                 RosterManager.onContactChanged(account, UserJid.from(room));
+                                VCardManager.getInstance().request(account, room);
                             } catch (UserJid.UserJidCreateException e) {
                                 LogManager.exception(this, e);
                             }

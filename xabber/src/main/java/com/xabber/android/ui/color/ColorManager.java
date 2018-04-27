@@ -19,6 +19,7 @@ public class ColorManager {
 
     private static ColorManager instance = null;
     private ColorStateList[] chatIncomingBalloonColorStateLists;
+    private int[] unreadMessagesBackground;
     private int themeId;
     private AccountPainter accountPainter;
 
@@ -71,6 +72,7 @@ public class ColorManager {
 
         int[] chatIncomingBalloonColors = resources.getIntArray(getThemeResource(context, R.attr.chat_incoming_balloon));
         int[] chatIncomingBalloonPressedColors = resources.getIntArray(getThemeResource(context, R.attr.chat_incoming_balloon_pressed));
+        unreadMessagesBackground = resources.getIntArray(getThemeResource(context, R.attr.chat_unread_messages_background));
 
         final int length = chatIncomingBalloonColors.length;
 
@@ -126,6 +128,10 @@ public class ColorManager {
 
     public ColorStateList getChatIncomingBalloonColorsStateList(AccountJid account) {
         return chatIncomingBalloonColorStateLists[getAccountColorLevel(account)];
+    }
+
+    public int getUnreadMessageBackground(AccountJid account) {
+        return unreadMessagesBackground[getAccountColorLevel(account)];
     }
 
     private static int getAccountColorLevel(AccountJid account) {

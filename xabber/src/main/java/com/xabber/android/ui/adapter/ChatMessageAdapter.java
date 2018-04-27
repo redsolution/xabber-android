@@ -58,7 +58,6 @@ import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.fragment.ChatFragment;
 import com.xabber.android.utils.StringUtils;
 
-import org.jxmpp.jid.impl.JidCreate;
 import org.jxmpp.jid.parts.Resourcepart;
 
 import java.util.ArrayList;
@@ -92,10 +91,12 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
      */
     private Listener listener;
 
+    private String userName;
     private AccountJid account;
     private UserJid user;
     private int prevItemCount;
     private List<String> itemsNeedOriginalText;
+    private int unreadCount = 0;
 
     public ChatMessageAdapter(Context context, RealmResults<MessageItem> messageItems, AbstractChat chat, ChatFragment chatFragment) {
         super(context, messageItems, true);
@@ -105,6 +106,7 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
 
         account = chat.getAccount();
         user = chat.getUser();
+        userName = RosterManager.getInstance().getName(account, user);
 
         isMUC = MUCManager.getInstance().hasRoom(account, user.getJid().asEntityBareJidIfPossible());
         if (isMUC) {
@@ -122,6 +124,17 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
     public interface Listener {
         void onMessageNumberChanged(int prevItemCount);
         void onMessagesUpdated();
+    }
+
+    public boolean setUnreadCount(int unreadCount) {
+        if (this.unreadCount != unreadCount) {
+            this.unreadCount = unreadCount;
+            return true;
+        } else return false;
+    }
+
+    public int getUnreadCount() {
+        return unreadCount;
     }
 
     public void addOrRemoveItemNeedOriginalText(String messageId) {
@@ -423,6 +436,12 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
                 setUpOutgoingMessage((Message) holder, messageItem);
                 break;
         }
+
+        // setup message as unread
+        if (position >= getItemCount() - unreadCount)
+            holder.itemView.setBackgroundColor(context.getResources().getColor(R.color.unread_messages_background));
+        else holder.itemView.setBackgroundDrawable(null);
+
     }
 
     @Override
@@ -530,29 +549,39 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
     }
 
     private void setUpAvatar(MessageItem messageItem, IncomingMessage message) {
-        if (SettingsManager.chatsShowAvatars()) {
+        if (SettingsManager.chatsShowAvatars() && !isMUC) {
+            final UserJid user = messageItem.getUser();
+            message.avatar.setVisibility(View.VISIBLE);
+            message.avatarBackground.setVisibility(View.VISIBLE);
+            message.avatar.setImageDrawable(AvatarManager.getInstance().getUserAvatar(user, userName));
+
+        } else if (SettingsManager.chatsShowAvatarsMUC() && isMUC) {
             final AccountJid account = messageItem.getAccount();
             final UserJid user = messageItem.getUser();
             final Resourcepart resource = messageItem.getResource();
 
             message.avatar.setVisibility(View.VISIBLE);
             message.avatarBackground.setVisibility(View.VISIBLE);
-            if ((isMUC && MUCManager.getInstance().getNickname(account, user.getJid().asEntityBareJidIfPossible()).equals(resource))) {
+            if ((MUCManager.getInstance().getNickname(account, user.getJid().asEntityBareJidIfPossible()).equals(resource))) {
                 message.avatar.setImageDrawable(AvatarManager.getInstance().getAccountAvatar(account));
             } else {
-                if (isMUC) {
-                    if (resource.equals(Resourcepart.EMPTY)) {
-                        message.avatar.setImageDrawable(AvatarManager.getInstance().getRoomAvatar(user));
-                    } else {
-                        try {
-                            message.avatar.setImageDrawable(AvatarManager.getInstance()
-                                    .getUserAvatar(UserJid.from(JidCreate.domainFullFrom(user.getJid().asDomainBareJid(), resource))));
-                        } catch (UserJid.UserJidCreateException e) {
-                            LogManager.exception(this, e);
-                        }
-                    }
+                if (resource.equals(Resourcepart.EMPTY)) {
+                    message.avatar.setImageDrawable(AvatarManager.getInstance().getRoomAvatar(user));
                 } else {
-                    message.avatar.setImageDrawable(AvatarManager.getInstance().getUserAvatar(user));
+
+                    String nick = resource.toString();
+                    UserJid userJid = null;
+
+                    try {
+                        userJid = UserJid.from(user.getJid().toString() + "/" + resource.toString());
+                        message.avatar.setImageDrawable(AvatarManager.getInstance()
+                                .getOccupantAvatar(userJid, nick));
+
+                    } catch (UserJid.UserJidCreateException e) {
+                        LogManager.exception(this, e);
+                        message.avatar.setImageDrawable(AvatarManager.getInstance()
+                                .generateDefaultAvatar(nick, nick));
+                    }
                 }
             }
         } else {

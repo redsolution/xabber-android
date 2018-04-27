@@ -392,6 +392,8 @@
 
     <color name="patreon_coral">#F96854</color>
 
+    <color name="unread_messages_background">#66cfd8dc</color>
+
     <color name="bottom_navigation_background">#eeeeee</color>
     <color name="status_color_in_contact_list_online">#FF388E3C</color>
     <color name="status_color_in_contact_list">#96616161</color>

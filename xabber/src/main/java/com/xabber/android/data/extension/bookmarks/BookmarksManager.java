@@ -126,17 +126,15 @@ public class BookmarksManager {
     }
 
     @NonNull
-    public List<BookmarkedConference> getConferencesFromBookmarks(AccountJid accountJid) {
+    public List<BookmarkedConference> getConferencesFromBookmarks(AccountJid accountJid)
+            throws SmackException.NoResponseException, SmackException.NotConnectedException,
+            InterruptedException, XMPPException.XMPPErrorException {
+
         AccountItem accountItem = AccountManager.getInstance().getAccount(accountJid);
         List<BookmarkedConference> conferences = Collections.emptyList();
         if (accountItem != null) {
             BookmarkManager bookmarkManager = BookmarkManager.getBookmarkManager(accountItem.getConnection());
-            try {
-                conferences = bookmarkManager.getBookmarkedConferences();
-            } catch (SmackException.NoResponseException | InterruptedException |
-                    SmackException.NotConnectedException | XMPPException.XMPPErrorException e) {
-                LogManager.exception(this, e);
-            }
+            conferences = bookmarkManager.getBookmarkedConferences();
         }
         return conferences;
     }
@@ -188,7 +186,16 @@ public class BookmarksManager {
     public void onAuthorized(AccountJid account) {
         cleanCache(account);
 
-        List<BookmarkedConference> conferences = getConferencesFromBookmarks(account);
+        List<BookmarkedConference> conferences;
+
+        try {
+            conferences = getConferencesFromBookmarks(account);
+        } catch (SmackException.NoResponseException | InterruptedException |
+                SmackException.NotConnectedException | XMPPException.XMPPErrorException e) {
+            LogManager.exception(this, e);
+            return;
+        }
+
         if (!conferences.isEmpty()) {
             for (BookmarkedConference conference : conferences) {
                 if (!MUCManager.getInstance().hasRoom(account, conference.getJid())) {

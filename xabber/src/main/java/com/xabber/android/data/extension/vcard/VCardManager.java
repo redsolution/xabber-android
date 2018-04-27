@@ -17,7 +17,6 @@ package com.xabber.android.data.extension.vcard;
 import android.database.Cursor;
 
 import com.xabber.android.data.Application;
-import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.SettingsManager;
@@ -33,6 +32,7 @@ import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.muc.MUCManager;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.roster.OnRosterChangedListener;
 import com.xabber.android.data.roster.OnRosterReceivedListener;
 import com.xabber.android.data.roster.PresenceManager;
@@ -335,8 +335,8 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
             return;
         }
 
-        final org.jivesoftware.smackx.vcardtemp.VCardManager vCardManager
-                = org.jivesoftware.smackx.vcardtemp.VCardManager.getInstanceFor(accountItem.getConnection());
+        final CustomVCardManager vCardManager
+                = CustomVCardManager.getInstanceFor(accountItem.getConnection());
 
         if (!accountItem.getConnection().isAuthenticated()) {
             onVCardFailed(account, srcUser);
@@ -357,7 +357,7 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
         if (entityBareJid != null) {
             vCardRequests.add(srcUser);
             try {
-                vCard = vCardManager.loadVCard(entityBareJid);
+                vCard = vCardManager.loadVCard(srcUser);
             } catch (SmackException.NoResponseException | SmackException.NotConnectedException e) {
                 LogManager.exception(this, e);
                 LogManager.w(this, "Error getting vCard: " + e.getMessage());
@@ -401,7 +401,7 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
         }
 
         final AbstractXMPPConnection xmppConnection = accountItem.getConnection();
-        final org.jivesoftware.smackx.vcardtemp.VCardManager vCardManager = org.jivesoftware.smackx.vcardtemp.VCardManager.getInstanceFor(xmppConnection);
+        final CustomVCardManager vCardManager = CustomVCardManager.getInstanceFor(xmppConnection);
 
         Application.getInstance().runInBackgroundUserRequest(new Runnable() {
             @Override
