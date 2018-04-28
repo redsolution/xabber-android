@@ -197,7 +197,7 @@ public class StringUtils {
             }
             if (timeAgo < 7200) {
                 time = TimeUnit.SECONDS.toHours(timeAgo);
-                return Application.getInstance().getString(R.string.last_seen_hours, String.valueOf(time));
+                return Application.getInstance().getString(R.string.last_seen_hours);
             }
 
             String sTime;

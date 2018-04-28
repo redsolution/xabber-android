@@ -112,4 +112,11 @@
   <string name="no_messages">Нет сообщений</string>
   <string name="show_all_chats">Показать все чаты</string>
   <string name="showcase_contact_list_text_1">Смахните влево или вправо чтобы поместить чат в архив</string>
+
+  <string name="last_seen_now">был(а) в сети только что</string>
+  <string name="last_seen_minutes">был(а) в сети %1$s минут назад</string>
+  <string name="last_seen_hours">был(а) в сети час назад</string>
+  <string name="last_seen_today">был(а) в сети в %1$s</string>
+  <string name="last_seen_yesterday">был(а) в сети вчера в %1$s</string>
+  <string name="last_seen_date">был(а) в сети %1$s</string>
 </resources>
