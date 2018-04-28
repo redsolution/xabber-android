@@ -34,6 +34,7 @@ import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.capability.CapabilitiesManager;
 import com.xabber.android.data.extension.captcha.Captcha;
 import com.xabber.android.data.extension.captcha.CaptchaManager;
+import com.xabber.android.data.extension.iqlast.LastActivityInteractor;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.muc.Occupant;
 import com.xabber.android.data.log.LogManager;
@@ -220,6 +221,9 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
         if (presence.isAvailable()) {
             CapabilitiesManager.getInstance().onPresence(account, presence);
         }
+
+        if (presence.getType() == Presence.Type.unavailable)
+            LastActivityInteractor.getInstance().setLastActivityTimeNow(account, from.getBareUserJid());
 
         for (OnStatusChangeListener listener : Application.getInstance().getManagers(OnStatusChangeListener.class)) {
                 listener.onStatusChanged(account, from,

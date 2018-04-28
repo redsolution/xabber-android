@@ -20,6 +20,8 @@ import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.NestedMap;
 import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.extension.iqlast.LastActivityInteractor;
+import com.xabber.android.utils.StringUtils;
 
 import java.lang.ref.WeakReference;
 import java.util.Collection;
@@ -134,5 +136,9 @@ public class RosterContact extends AbstractContact {
 
     void setEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+
+    public String getLastActivity() {
+        return StringUtils.getLastActivityString(LastActivityInteractor.getInstance().getLastActivity(getUser()));
     }
 }
