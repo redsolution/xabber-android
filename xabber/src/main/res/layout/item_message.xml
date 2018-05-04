@@ -44,4 +44,7 @@
         android:adjustViewBounds="true"
         />
 
+    <include layout="@layout/item_file_message"
+        android:visibility="gone" android:id="@+id/fileLayout"/>
+
 </merge>

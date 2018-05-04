@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="72dp"
+    android:paddingLeft="8dp"
+    android:paddingRight="16dp"
+    >
+
+    <ImageView
+        android:id="@+id/ivFileIcon"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_centerVertical="true"
+        android:src="@drawable/ic_file"
+        android:background="@drawable/round_shape"
+        android:paddingRight="11dp"
+        android:paddingLeft="11dp"
+        android:tint="@color/grey_700"
+        />
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@id/ivFileIcon"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        >
+
+        <TextView
+            android:id="@+id/tvFileName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:ellipsize="middle"
+            android:text="Undefined file"
+            android:layout_marginLeft="4dp"
+            android:textColor="@color/grey_700"
+            android:textStyle="bold"
+            />
+
+        <TextView
+            android:id="@+id/tvFileSize"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0 bytes"
+            android:layout_marginLeft="4dp"
+            android:textColor="@color/grey_700"
+            />
+
+    </LinearLayout>
+
+</RelativeLayout>
