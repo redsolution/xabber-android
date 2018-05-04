@@ -16,6 +16,7 @@ package com.xabber.android.data.message;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
@@ -30,6 +31,8 @@ import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.carbons.CarbonManager;
 import com.xabber.android.data.extension.cs.ChatStateManager;
 import com.xabber.android.data.extension.file.FileManager;
+import com.xabber.android.data.extension.httpfileupload.ExtendedFormField;
+import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.ChatManager;
@@ -43,6 +46,7 @@ import org.jivesoftware.smack.packet.Message.Type;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.util.StringUtils;
 import org.jivesoftware.smackx.delay.packet.DelayInformation;
+import org.jivesoftware.smackx.xdata.packet.DataForm;
 import org.jxmpp.jid.Jid;
 import org.jxmpp.jid.parts.Resourcepart;
 
@@ -448,6 +452,33 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     }
 
     /**
+     * Send stanza with XEP-0221
+     */
+    public Message createFileMessagePacket(String stanzaId, String label, String url,
+                                           int height, int width, String type) {
+
+        Message message = new Message();
+        message.setTo(getTo());
+        message.setType(getType());
+        message.setThread(threadId);
+        if (stanzaId != null) message.setStanzaId(stanzaId);
+
+        DataForm dataForm = new DataForm(DataForm.Type.form);
+        ExtendedFormField formField = new ExtendedFormField("media");
+        formField.setLabel(label);
+        formField.setMedia(
+                new ExtendedFormField.Media(String.valueOf(height),String.valueOf(width),
+                        new ExtendedFormField.Uri(type, url)));
+
+        dataForm.addField(formField);
+        message.addExtension(dataForm);
+        message.setBody(url);
+
+        Log.d("XEP-0221", message.toXML().toString());
+        return message;
+    }
+
+    /**
      * Prepare text to be send.
      *
      * @return <code>null</code> if text shouldn't be send.
@@ -503,7 +534,20 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         }
 
         Message message = null;
-        if (text != null) {
+
+        // TODO: 04.05.18 определение того, является ли сообщение файлом должно осуществляться по полю в классе MessageItem
+        if (messageItem.getFilePath() != null) {
+            HttpFileUploadManager.ImageSize imageSize =
+                    HttpFileUploadManager.getImageSizes(messageItem.getFilePath());
+
+            String type = HttpFileUploadManager.getMimeType(messageItem.getFilePath());
+
+            String name = HttpFileUploadManager.getFileName(messageItem.getFilePath());
+
+            message = createFileMessagePacket(messageItem.getStanzaId(),
+                    name, text, imageSize.getHeight(), imageSize.getWidth(), type);
+
+        } else if (text != null) {
             message = createMessagePacket(text, messageItem.getStanzaId());
         }
 
