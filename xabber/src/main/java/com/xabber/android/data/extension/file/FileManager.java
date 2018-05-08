@@ -86,7 +86,7 @@ public class FileManager {
         return true;
     }
 
-    private static boolean isImageUrl(String text) {
+    public static boolean isImageUrl(String text) {
         if (text == null) {
             return false;
         }

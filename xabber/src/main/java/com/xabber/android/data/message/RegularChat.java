@@ -20,6 +20,7 @@ import android.text.TextUtils;
 
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
+import com.xabber.android.data.database.messagerealm.Attachment;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
@@ -45,6 +46,8 @@ import org.jxmpp.jid.parts.Resourcepart;
 
 import java.util.Date;
 import java.util.UUID;
+
+import io.realm.RealmList;
 
 /**
  * Represents normal chat.
@@ -197,16 +200,19 @@ public class RegularChat extends AbstractChat {
             if (text == null || text.trim().equals(""))
                 return true;
 
-            createAndSaveNewMessage(
-                    resource,
-                    text,
-                    null,
-                    getDelayStamp(message),
-                    true,
-                    true,
-                    encrypted,
-                    isOfflineMessage(account.getFullJid().getDomain(), packet),
+            RealmList<Attachment> attachments = parseFileMessage(packet);
+
+            // create message with file-attachments
+            if (attachments.size() > 0)
+                createAndSaveFileMessage(resource, text, null, getDelayStamp(message), true,
+                        true, encrypted, isOfflineMessage(account.getFullJid().getDomain(), packet),
+                        packet.getStanzaId(), attachments);
+
+                // create message without attachments
+            else createAndSaveNewMessage(resource, text, null, getDelayStamp(message), true,
+                    true, encrypted, isOfflineMessage(account.getFullJid().getDomain(), packet),
                     packet.getStanzaId());
+
             EventBus.getDefault().post(new NewIncomingMessageEvent(account, user));
         }
         return true;
