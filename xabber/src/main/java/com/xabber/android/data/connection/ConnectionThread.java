@@ -17,9 +17,9 @@ package com.xabber.android.data.connection;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountErrorEvent;
 import com.xabber.android.data.account.AccountItem;
+import com.xabber.android.data.extension.httpfileupload.CustomDataProvider;
 import com.xabber.android.data.log.AndroidLoggingHandler;
 import com.xabber.android.data.log.LogManager;
 
@@ -27,11 +27,11 @@ import org.greenrobot.eventbus.EventBus;
 import org.jivesoftware.smack.AbstractXMPPConnection;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
+import org.jivesoftware.smack.provider.ProviderManager;
 import org.jivesoftware.smack.sasl.SASLErrorException;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.util.DNSUtil;
-import org.jivesoftware.smack.util.dns.dnsjava.DNSJavaResolver;
-import org.jivesoftware.smack.util.dns.minidns.MiniDnsResolver;
+import org.jivesoftware.smackx.xdata.packet.DataForm;
 
 import java.io.IOException;
 import java.util.logging.Level;
@@ -133,6 +133,11 @@ class ConnectionThread {
 
             if (!connection.isAuthenticated()) {
                 connection.login();
+
+                // can be a cause of strange Smack behavior
+                // not authorization or not receiving a iq's
+                ProviderManager.addExtensionProvider(DataForm.ELEMENT,
+                        DataForm.NAMESPACE, new CustomDataProvider());
             } else {
                 LogManager.i(this, "Already authenticated");
             }

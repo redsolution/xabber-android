@@ -42,7 +42,6 @@ import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.capability.CapabilitiesManager;
 import com.xabber.android.data.extension.carbons.CarbonManager;
 import com.xabber.android.data.extension.cs.ChatStateManager;
-import com.xabber.android.data.extension.httpfileupload.CustomDataProvider;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.mam.MamManager;
 import com.xabber.android.data.extension.muc.MUCManager;
@@ -65,7 +64,6 @@ import com.xabber.android.utils.AppBlockCanaryContext;
 
 import org.jivesoftware.smack.provider.ProviderFileLoader;
 import org.jivesoftware.smack.provider.ProviderManager;
-import org.jivesoftware.smackx.xdata.packet.DataForm;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -207,8 +205,6 @@ public class Application extends android.app.Application {
 
     private void onLoad() {
         ProviderManager.addLoader(new ProviderFileLoader(getResources().openRawResource(R.raw.smack)));
-        ProviderManager.addExtensionProvider(DataForm.ELEMENT,
-                DataForm.NAMESPACE, new CustomDataProvider());
 
         for (OnLoadListener listener : getManagers(OnLoadListener.class)) {
             LogManager.i(listener, "onLoad");
