@@ -23,6 +23,7 @@ import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.connection.StanzaSender;
 import com.xabber.android.data.database.MessageDatabaseManager;
+import com.xabber.android.data.database.messagerealm.Attachment;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.database.messagerealm.SyncInfo;
 import com.xabber.android.data.entity.AccountJid;
@@ -57,6 +58,7 @@ import java.util.UUID;
 
 import io.realm.Realm;
 import io.realm.RealmChangeListener;
+import io.realm.RealmList;
 import io.realm.RealmResults;
 import io.realm.Sort;
 
@@ -369,13 +371,27 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         realm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
+                Attachment attachment = new Attachment();
+                attachment.setFilePath(file.getPath());
+                attachment.setFileSize(file.length());
+                attachment.setTitle(file.getName());
+                attachment.setIsImage(FileManager.fileIsImage(file));
+                attachment.setMimeType(HttpFileUploadManager.getMimeType(file.getPath()));
+
+                if (attachment.isImage()) {
+                    HttpFileUploadManager.ImageSize imageSize =
+                            HttpFileUploadManager.getImageSizes(file.getPath());
+                    attachment.setImageHeight(imageSize.getHeight());
+                    attachment.setImageWidth(imageSize.getWidth());
+                }
+
+                RealmList<Attachment> attachments = new RealmList<>();
+                attachments.add(attachment);
+
                 MessageItem messageItem = new MessageItem(messageId);
                 messageItem.setAccount(account);
                 messageItem.setUser(user);
-                messageItem.setText(file.getName());
-                messageItem.setFilePath(file.getPath());
-                messageItem.setFileSize(file.length());
-                messageItem.setIsImage(FileManager.fileIsImage(file));
+                messageItem.setAttachments(attachments);
                 messageItem.setTimestamp(System.currentTimeMillis());
                 messageItem.setRead(true);
                 messageItem.setSent(true);
@@ -536,17 +552,15 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
 
         Message message = null;
 
-        // TODO: 04.05.18 определение того, является ли сообщение файлом должно осуществляться по полю в классе MessageItem
-        if (messageItem.getFilePath() != null) {
-            HttpFileUploadManager.ImageSize imageSize =
-                    HttpFileUploadManager.getImageSizes(messageItem.getFilePath());
+        if (messageItem.haveAttachments()) {
+            Attachment attachment = messageItem.getAttachments().get(0);
 
-            String type = HttpFileUploadManager.getMimeType(messageItem.getFilePath());
-
-            String name = HttpFileUploadManager.getFileName(messageItem.getFilePath());
+            Integer height = attachment.getImageHeight();
+            Integer width = attachment.getImageWidth();
 
             message = createFileMessagePacket(messageItem.getStanzaId(),
-                    name, text, imageSize.getHeight(), imageSize.getWidth(), type);
+                    attachment.getTitle(), text, height != null ? height : 0,
+                    width != null ? width : 0, attachment.getMimeType());
 
         } else if (text != null) {
             message = createMessagePacket(text, messageItem.getStanzaId());
