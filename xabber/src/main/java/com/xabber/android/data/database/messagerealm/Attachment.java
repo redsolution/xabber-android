@@ -19,6 +19,7 @@ public class Attachment extends RealmObject {
         public static final String IS_IMAGE = "isImage";
         public static final String IMAGE_WIDTH = "imageWidth";
         public static final String IMAGE_HEIGHT = "imageHeight";
+        public static final String DURATION = "duration";
         public static final String MIME_TYPE = "mimeType";
     }
 
@@ -49,6 +50,9 @@ public class Attachment extends RealmObject {
     private Long fileSize;
 
     private String mimeType;
+
+    /** Duration in seconds */
+    private Long duration;
 
     public Attachment() {
         this.uniqueId = UUID.randomUUID().toString();
@@ -122,5 +126,13 @@ public class Attachment extends RealmObject {
 
     public void setMimeType(String mimeType) {
         this.mimeType = mimeType;
+    }
+
+    public Long getDuration() {
+        return duration;
+    }
+
+    public void setDuration(Long duration) {
+        this.duration = duration;
     }
 }

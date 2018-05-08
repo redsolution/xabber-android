@@ -272,6 +272,7 @@ public class MessageDatabaseManager {
                                     .addField("isImage", boolean.class)
                                     .addField("imageWidth", Integer.class)
                                     .addField("imageHeight", Integer.class)
+                                    .addField("duration", Long.class)
                                     .addField("mimeType", String.class);
 
                             schema.get(MessageItem.class.getSimpleName())

@@ -290,7 +290,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         if (uri != null) {
             attachment.setMimeType(uri.getType());
             attachment.setFileSize(uri.getSize());
-            //attachment.setDuration(uri.getDuration());
+            attachment.setDuration(uri.getDuration());
             attachment.setFileUrl(uri.getUri());
             attachment.setIsImage(FileManager.isImageUrl(uri.getUri()));
         }
