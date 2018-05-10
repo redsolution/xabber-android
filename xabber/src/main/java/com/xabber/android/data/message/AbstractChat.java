@@ -426,6 +426,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
                 attachment.setTitle(file.getName());
                 attachment.setIsImage(FileManager.fileIsImage(file));
                 attachment.setMimeType(HttpFileUploadManager.getMimeType(file.getPath()));
+                attachment.setDuration((long) 0);
 
                 if (attachment.isImage()) {
                     HttpFileUploadManager.ImageSize imageSize =
