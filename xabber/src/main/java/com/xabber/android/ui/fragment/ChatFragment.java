@@ -1258,10 +1258,10 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
     }
 
     @Override
-    public void onMessageImageClick(View caller, int position) {
+    public void onMessageFileClick(View caller, int position) {
         MessageItem messageItem = chatMessageAdapter.getMessageItem(position);
         if (messageItem == null) {
-            LogManager.w(LOG_TAG, "onMessageImageClick: null message item. Position: " + position);
+            LogManager.w(LOG_TAG, "onMessageFileClick: null message item. Position: " + position);
             return;
         }
 

@@ -45,6 +45,7 @@
         />
 
     <include layout="@layout/item_file_message"
-        android:visibility="gone" android:id="@+id/fileLayout"/>
+        android:visibility="gone" android:id="@+id/fileLayout"
+        android:clickable="true" android:focusable="true"/>
 
 </merge>

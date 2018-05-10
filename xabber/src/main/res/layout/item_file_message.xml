@@ -6,6 +6,7 @@
     android:layout_height="58dp"
     android:paddingLeft="8dp"
     android:paddingRight="8dp"
+    android:background="?android:attr/selectableItemBackground"
     >
 
     <ImageView

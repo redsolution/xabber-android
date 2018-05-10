@@ -716,6 +716,7 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
             tvFileName = (TextView) itemView.findViewById(R.id.tvFileName);
             tvFileSize = (TextView) itemView.findViewById(R.id.tvFileSize);
 
+            fileLayout.setOnClickListener(this);
             itemView.setOnClickListener(this);
             messageImage.setOnClickListener(this);
         }
@@ -728,8 +729,8 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
                 return;
             }
 
-            if (v.getId() == R.id.message_image) {
-                onClickListener.onMessageImageClick(itemView, adapterPosition);
+            if (v.getId() == R.id.message_image || v.getId() == R.id.fileLayout) {
+                onClickListener.onMessageFileClick(itemView, adapterPosition);
             } else {
                 onClickListener.onMessageClick(messageBalloon, adapterPosition);
             }
@@ -737,7 +738,7 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
 
         public interface MessageClickListener {
             void onMessageClick(View caller, int position);
-            void onMessageImageClick(View caller, int position);
+            void onMessageFileClick(View caller, int position);
         }
 
     }
