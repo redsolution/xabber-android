@@ -167,7 +167,9 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
         if (lastMessage == null) {
             messageText = statusText;
         } else {
-            if (lastMessage.getFilePath() != null) {
+            if (lastMessage.haveAttachments() && lastMessage.getAttachments().size() > 0) {
+                messageText = "File: " + lastMessage.getAttachments().get(0).getTitle();
+            } else if (lastMessage.getFilePath() != null) {
                 messageText = new File(lastMessage.getFilePath()).getName();
             } else {
                 messageText = lastMessage.getText().trim();
