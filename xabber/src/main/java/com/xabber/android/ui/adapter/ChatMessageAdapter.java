@@ -163,42 +163,56 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
                 context.getResources().getColorStateList(R.color.outgoing_message_color_state_dark), R.drawable.message_outgoing_states);
     }
 
-    private void setUpImage(Attachment attachment, final Message messageHolder) {
-        if (!attachment.isImage() || !SettingsManager.connectionLoadImages()) {
-            return;
-        }
+    private void prepareImage(MessageItem messageItem, final Message messageHolder) {
+        String filePath = messageItem.getFilePath();
+        Integer imageWidth = messageItem.getImageWidth();
+        Integer imageHeight = messageItem.getImageHeight();
+        String imageUrl = messageItem.getText();
+        final String uniqueId = messageItem.getUniqueId();
+        setUpImage(filePath, imageUrl, uniqueId, imageWidth, imageHeight, messageHolder);
+    }
 
-        if (attachment.getFilePath() != null) {
-            boolean result = FileManager.loadImageFromFile(context, attachment.getFilePath(), messageHolder.messageImage);
+    private void prepareImage(Attachment attachment, final Message messageHolder) {
+        String filePath = attachment.getFilePath();
+        Integer imageWidth = attachment.getImageWidth();
+        Integer imageHeight = attachment.getImageHeight();
+        String imageUrl = attachment.getFileUrl();
+        final String uniqueId = attachment.getUniqueId();
+        setUpImage(filePath, imageUrl, uniqueId, imageWidth, imageHeight, messageHolder);
+    }
+
+    private void setUpImage(String imagePath, String imageUrl, final String uniqueId, Integer imageWidth,
+                            Integer imageHeight, final Message messageHolder) {
+
+        if (!SettingsManager.connectionLoadImages()) return;
+
+        if (imagePath != null) {
+            boolean result = FileManager.loadImageFromFile(context, imagePath, messageHolder.messageImage);
 
             if (result) {
                 messageHolder.messageImage.setVisibility(View.VISIBLE);
                 messageHolder.messageText.setVisibility(View.GONE);
             } else {
-//                final String uniqueId = messageItem.getUniqueId();
-//                final Realm realm = MessageDatabaseManager.getInstance().getRealmUiThread();
-//                realm.executeTransactionAsync(new Realm.Transaction() {
-//                    @Override
-//                    public void execute(Realm realm) {
-//                        MessageItem first = realm.where(MessageItem.class)
-//                                .equalTo(MessageItem.Fields.UNIQUE_ID, uniqueId)
-//                                .findFirst();
-//                        if (first != null) {
-//                            first.setFilePath(null);
-//                        }
-//                    }
-//                });
+                final Realm realm = MessageDatabaseManager.getInstance().getRealmUiThread();
+                realm.executeTransactionAsync(new Realm.Transaction() {
+                    @Override
+                    public void execute(Realm realm) {
+                        MessageItem first = realm.where(MessageItem.class)
+                                .equalTo(MessageItem.Fields.UNIQUE_ID, uniqueId)
+                                .findFirst();
+                        if (first != null) {
+                            first.setFilePath(null);
+                        }
+                    }
+                });
             }
         } else {
             final ViewGroup.LayoutParams layoutParams = messageHolder.messageImage.getLayoutParams();
 
-            Integer imageWidth = attachment.getImageWidth();
-            Integer imageHeight = attachment.getImageHeight();
-
             if (imageWidth != null && imageHeight != null) {
                 FileManager.scaleImage(layoutParams, imageHeight, imageWidth);
                 Glide.with(context)
-                        .load(attachment.getFileUrl())
+                        .load(imageUrl)
                         .listener(new RequestListener<String, GlideDrawable>() {
                             @Override
                             public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
@@ -217,10 +231,9 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
                 messageHolder.messageImage.setVisibility(View.VISIBLE);
                 messageHolder.messageText.setVisibility(View.GONE);
             } else {
-                final String uniqueId = attachment.getUniqueId();
 
                 Glide.with(context)
-                        .load(attachment.getFileUrl())
+                        .load(imageUrl)
                         .asBitmap()
                         .into(new SimpleTarget<Bitmap>() {
                             @Override
@@ -279,8 +292,10 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
         if (messageItem.haveAttachments()) {
             Attachment attachment = messageItem.getAttachments().get(0);
             if (attachment.isImage())
-                setUpImage(attachment, messageHolder);
+                prepareImage(attachment, messageHolder);
             else setUpFile(attachment, messageHolder);
+        } else if (messageItem.isImage()) {
+            prepareImage(messageItem, messageHolder);
         }
     }
 
