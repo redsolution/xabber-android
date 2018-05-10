@@ -520,8 +520,8 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     /**
      * Send stanza with XEP-0221
      */
-    public Message createFileMessagePacket(String stanzaId, String label, String url,
-                                           int height, int width, String type) {
+    public Message createFileMessagePacket(String stanzaId, String label, String url, int height,
+                                           int width, String type, long size, long duration) {
 
         Message message = new Message();
         message.setTo(getTo());
@@ -532,9 +532,13 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         DataForm dataForm = new DataForm(DataForm.Type.form);
         ExtendedFormField formField = new ExtendedFormField("media");
         formField.setLabel(label);
+
+        ExtendedFormField.Uri uri = new ExtendedFormField.Uri(type, url);
+        uri.setSize(size);
+        uri.setDuration(duration);
+
         formField.setMedia(
-                new ExtendedFormField.Media(String.valueOf(height),String.valueOf(width),
-                        new ExtendedFormField.Uri(type, url)));
+                new ExtendedFormField.Media(String.valueOf(height),String.valueOf(width), uri));
 
         dataForm.addField(formField);
         message.addExtension(dataForm);
@@ -609,7 +613,8 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
 
             message = createFileMessagePacket(messageItem.getStanzaId(),
                     attachment.getTitle(), text, height != null ? height : 0,
-                    width != null ? width : 0, attachment.getMimeType());
+                    width != null ? width : 0, attachment.getMimeType(),
+                    attachment.getFileSize(), attachment.getDuration());
 
         } else if (text != null) {
             message = createMessagePacket(text, messageItem.getStanzaId());
