@@ -3,9 +3,9 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="wrap_content"
-    android:layout_height="72dp"
+    android:layout_height="58dp"
     android:paddingLeft="8dp"
-    android:paddingRight="16dp"
+    android:paddingRight="8dp"
     >
 
     <ImageView
