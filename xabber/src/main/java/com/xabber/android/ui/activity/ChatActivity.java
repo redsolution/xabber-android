@@ -72,6 +72,7 @@ import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.adapter.ChatViewerAdapter;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.color.StatusBarPainter;
+import com.xabber.android.ui.dialog.AttachDialog;
 import com.xabber.android.ui.dialog.BlockContactDialog;
 import com.xabber.android.ui.dialog.ContactDeleteDialogFragment;
 import com.xabber.android.ui.fragment.ChatFragment;
@@ -1035,5 +1036,10 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
                 }
             });
         }
+    }
+
+    public void showAttachDialog() {
+        AttachDialog dialog = AttachDialog.newInstance();
+        dialog.show(getSupportFragmentManager(), "attach_fragment");
     }
 }

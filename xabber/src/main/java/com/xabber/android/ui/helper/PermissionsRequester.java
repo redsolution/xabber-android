@@ -23,6 +23,10 @@ public class PermissionsRequester {
         return checkAndRequestPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, fragment, requestCode);
     }
 
+    public static boolean hasFileReadPermission() {
+        return checkPermission(Manifest.permission.READ_EXTERNAL_STORAGE);
+    }
+
     private static boolean checkAndRequestPermission(String permission, Activity activity, int requestCode) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             return true;

@@ -723,7 +723,8 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         }
 
         if (PermissionsRequester.requestFileReadPermissionIfNeeded(this, PERMISSIONS_REQUEST_ATTACH_FILE)) {
-            startFileSelection();
+            ((ChatActivity)getActivity()).showAttachDialog();
+            //startFileSelection();
         }
     }
 
