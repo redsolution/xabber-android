@@ -106,6 +106,7 @@
     <string name="http_file_upload_slot_error">Could not upload file. Too large?</string>
     <string name="no_permission_to_read_files">No permission to read files</string>
     <string name="no_permission_to_write_files">No permission to write files</string>
+    <string name="no_permission_to_camera">No permission for camera</string>
     <string name="error_description_title">Error description:</string>
     <string name="message_status_sent">Sent</string>
     <string name="message_status_delivered">Delivered</string>

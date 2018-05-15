@@ -11,6 +11,8 @@ import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
@@ -19,6 +21,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.Spannable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -54,6 +57,7 @@ import com.xabber.android.data.extension.attention.AttentionManager;
 import com.xabber.android.data.extension.capability.CapabilitiesManager;
 import com.xabber.android.data.extension.capability.ClientInfo;
 import com.xabber.android.data.extension.cs.ChatStateManager;
+import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.extension.file.FileUtils;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.httpfileupload.HttpUploadListener;
@@ -86,6 +90,7 @@ import com.xabber.android.ui.adapter.ChatMessageAdapter;
 import com.xabber.android.ui.adapter.CustomMessageMenuAdapter;
 import com.xabber.android.ui.adapter.ResourceAdapter;
 import com.xabber.android.ui.color.ColorManager;
+import com.xabber.android.ui.dialog.AttachDialog;
 import com.xabber.android.ui.dialog.ChatExportDialogFragment;
 import com.xabber.android.ui.dialog.ChatHistoryClearDialog;
 import com.xabber.android.ui.helper.PermissionsRequester;
@@ -100,9 +105,13 @@ import org.jxmpp.jid.impl.JidCreate;
 import org.jxmpp.jid.parts.Resourcepart;
 import org.jxmpp.stringprep.XmppStringprepException;
 
+import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -116,21 +125,25 @@ import io.realm.Sort;
 public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickListener,
         View.OnClickListener, Toolbar.OnMenuItemClickListener,
         ChatMessageAdapter.Message.MessageClickListener, HttpUploadListener,
-        ChatMessageAdapter.Listener, AdapterView.OnItemClickListener, PopupWindow.OnDismissListener {
+        ChatMessageAdapter.Listener, AdapterView.OnItemClickListener, PopupWindow.OnDismissListener,
+        AttachDialog.Listener {
 
     public static final String ARGUMENT_ACCOUNT = "ARGUMENT_ACCOUNT";
     public static final String ARGUMENT_USER = "ARGUMENT_USER";
 
     private static final String SAVE_ACCOUNT = "com.xabber.android.ui.fragment.ARGUMENT_ACCOUNT";
     private static final String SAVE_USER = "com.xabber.android.ui.fragment.ARGUMENT_USER";
+    private static final String SAVE_CURRENT_PICTURE_PATH = "com.xabber.android.ui.fragment.ARGUMENT_CURRENT_PICTURE_PATH";
     private static final String LOG_TAG = ChatFragment.class.getSimpleName();
 
     private final long STOP_TYPING_DELAY = 4000; // in ms
 
-    public static final int FILE_SELECT_ACTIVITY_REQUEST_CODE = 23;
-    private static final int PERMISSIONS_REQUEST_ATTACH_FILE = 24;
-    private static final int PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 26;
-    private static final int PERMISSIONS_REQUEST_EXPORT_CHAT = 27;
+    public static final int FILE_SELECT_ACTIVITY_REQUEST_CODE = 11;
+    private static final int REQUEST_IMAGE_CAPTURE = 12;
+
+    private static final int PERMISSIONS_REQUEST_ATTACH_FILE = 21;
+    private static final int PERMISSIONS_REQUEST_EXPORT_CHAT = 22;
+    private static final int PERMISSIONS_REQUEST_CAMERA = 23;
 
     private AccountJid account;
     private UserJid user;
@@ -180,6 +193,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
     private int checkedResource; // use only for alert dialog
 
     private Intent notifyIntent;
+    private String currentPicturePath;
 
     public static ChatFragment newInstance(AccountJid account, UserJid user) {
         ChatFragment fragment = new ChatFragment();
@@ -215,6 +229,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         if (savedInstanceState != null) {
             account = savedInstanceState.getParcelable(SAVE_ACCOUNT);
             user = savedInstanceState.getParcelable(SAVE_USER);
+            currentPicturePath = savedInstanceState.getString(SAVE_CURRENT_PICTURE_PATH);
         }
 
         LogManager.i(this, "onCreate " + user);
@@ -409,6 +424,9 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
 
         outState.putParcelable(SAVE_ACCOUNT, account);
         outState.putParcelable(SAVE_USER, user);
+        if (!TextUtils.isEmpty(currentPicturePath)) {
+            outState.putString(SAVE_CURRENT_PICTURE_PATH, currentPicturePath);
+        }
     }
 
     @Override
@@ -724,13 +742,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
 
         if (PermissionsRequester.requestFileReadPermissionIfNeeded(this, PERMISSIONS_REQUEST_ATTACH_FILE)) {
             ((ChatActivity)getActivity()).showAttachDialog();
-            //startFileSelection();
         }
-    }
-
-    private void startFileSelection() {
-        Intent intent = (new Intent(Intent.ACTION_GET_CONTENT).setType("*/*").addCategory(Intent.CATEGORY_OPENABLE));
-        startActivityForResult(intent, FILE_SELECT_ACTIVITY_REQUEST_CODE);
     }
 
     @Override
@@ -738,19 +750,25 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         switch (requestCode) {
-            case PERMISSIONS_REQUEST_ATTACH_FILE :
+            case PERMISSIONS_REQUEST_ATTACH_FILE:
                 if (PermissionsRequester.isPermissionGranted(grantResults)) {
-                    startFileSelection();
+                    onFilesClick();
                 } else {
                     onNoReadPermissionError();
                 }
                 break;
-            case PERMISSIONS_REQUEST_EXPORT_CHAT :
+
+            case PERMISSIONS_REQUEST_EXPORT_CHAT:
                 if (PermissionsRequester.isPermissionGranted(grantResults)) {
                     showExportChatDialog();
                 } else {
                     onNoWritePermissionError();
                 }
+                break;
+
+            case PERMISSIONS_REQUEST_CAMERA:
+                if (PermissionsRequester.hasCameraPermission()) startCamera();
+                else onNoCameraPermissionError();
                 break;
         }
     }
@@ -763,27 +781,123 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         Toast.makeText(getActivity(), R.string.no_permission_to_read_files, Toast.LENGTH_SHORT).show();
     }
 
+    private void onNoCameraPermissionError() {
+        Toast.makeText(getActivity(), R.string.no_permission_to_read_files, Toast.LENGTH_SHORT).show();
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent result) {
-        if (requestCode != FILE_SELECT_ACTIVITY_REQUEST_CODE) {
-            return;
-        }
-
         if (resultCode != Activity.RESULT_OK) {
             return;
         }
 
-        final Uri fileUri = result.getData();
-        final String path = FileUtils.getPath(getActivity(), fileUri);
+        switch (requestCode) {
+            case REQUEST_IMAGE_CAPTURE:
+                addMediaToGallery(currentPicturePath);
+                uploadFile(currentPicturePath);
+                break;
 
-        LogManager.i(this, String.format("File uri: %s, path: %s", fileUri, path));
+            case FILE_SELECT_ACTIVITY_REQUEST_CODE:
+                final Uri fileUri = result.getData();
+                final String path = FileUtils.getPath(getActivity(), fileUri);
 
-        if (path == null) {
-            Toast.makeText(getActivity(), R.string.could_not_get_path_to_file, Toast.LENGTH_SHORT).show();
-            return;
+                LogManager.i(this, String.format("File uri: %s, path: %s", fileUri, path));
+
+                if (path == null) {
+                    Toast.makeText(getActivity(), R.string.could_not_get_path_to_file, Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                uploadFile(path);
+                break;
+        }
+    }
+
+    @Override
+    public void onRecentPhotosSend(List<String> paths) {
+        for (String path : paths) {
+            uploadFile(path);
+        }
+    }
+
+    @Override
+    public void onGalleryClick() {
+        Intent intent = (new Intent(Intent.ACTION_GET_CONTENT).setType("image/*").addCategory(Intent.CATEGORY_OPENABLE));
+        startActivityForResult(intent, FILE_SELECT_ACTIVITY_REQUEST_CODE);
+    }
+
+    @Override
+    public void onFilesClick() {
+        Intent intent = (new Intent(Intent.ACTION_GET_CONTENT).setType("*/*").addCategory(Intent.CATEGORY_OPENABLE));
+        startActivityForResult(intent, FILE_SELECT_ACTIVITY_REQUEST_CODE);
+    }
+
+    @Override
+    public void onCameraClick() {
+        if (PermissionsRequester.hasCameraPermission())
+            startCamera();
+        else PermissionsRequester.requestCameraPermissionIfNeeded(getActivity());
+    }
+
+    private void startCamera() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        File image = generatePicturePath();
+        if (image != null) {
+            takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, FileManager.getFileUri(image));
+            currentPicturePath = image.getAbsolutePath();
+        }
+        startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+    }
+
+    private static File generatePicturePath() {
+        try {
+            File storageDir = getAlbumDir();
+            String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(new Date());
+            return new File(storageDir, "IMG_" + timeStamp + ".jpg");
+        } catch (Exception e) {
+            LogManager.exception(LOG_TAG, e);
+        }
+        return null;
+    }
+
+    private static File getAlbumDir() {
+        File storageDir = null;
+        if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
+            storageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
+                    Application.getInstance().getString(R.string.application_title_short));
+            if (!storageDir.mkdirs()) {
+                if (!storageDir.exists()){
+                    LogManager.w(LOG_TAG, "failed to create directory");
+                    return null;
+                }
+            }
+        } else {
+            LogManager.w(LOG_TAG, "External storage is not mounted READ/WRITE.");
         }
 
-        uploadFile(path);
+        return storageDir;
+    }
+
+    private static void addMediaToGallery(String fromPath) {
+        if (fromPath == null) {
+            return;
+        }
+        File f = new File(fromPath);
+        Uri contentUri = Uri.fromFile(f);
+        addMediaToGallery(contentUri);
+    }
+
+    private static void addMediaToGallery(Uri uri) {
+        if (uri == null) {
+            return;
+        }
+        try {
+            Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+            mediaScanIntent.setData(uri);
+            Application.getInstance().sendBroadcast(mediaScanIntent);
+        } catch (Exception e) {
+            LogManager.exception(LOG_TAG, e);
+        }
     }
 
     private void uploadFile(String path) {

@@ -1039,7 +1039,9 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     }
 
     public void showAttachDialog() {
-        AttachDialog dialog = AttachDialog.newInstance();
-        dialog.show(getSupportFragmentManager(), "attach_fragment");
+        if (chatFragment != null) {
+            AttachDialog dialog = AttachDialog.newInstance(chatFragment);
+            dialog.show(getSupportFragmentManager(), "attach_fragment");
+        }
     }
 }
