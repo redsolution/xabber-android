@@ -815,9 +815,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
 
     @Override
     public void onRecentPhotosSend(List<String> paths) {
-        for (String path : paths) {
-            uploadFile(path);
-        }
+        uploadFiles(paths);
     }
 
     @Override
@@ -901,7 +899,13 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
     }
 
     private void uploadFile(String path) {
-        HttpFileUploadManager.getInstance().uploadFile(account, user, path);
+        List<String> paths = new ArrayList<>();
+        paths.add(path);
+        HttpFileUploadManager.getInstance().uploadFile(account, user, paths);
+    }
+
+    private void uploadFiles(List<String> paths) {
+        HttpFileUploadManager.getInstance().uploadFile(account, user, paths);
     }
 
     private void changeEmojiKeyboardIcon(ImageView iconToBeChanged, int drawableResourceId){

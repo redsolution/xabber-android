@@ -29,6 +29,7 @@ import java.io.File;
 import java.io.IOException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -72,16 +73,42 @@ public class HttpFileUploadManager {
         return uploadServers.containsKey(account);
     }
 
-    public void uploadFile(final AccountJid account, final UserJid user, final String filePath) {
+    public void uploadFile(final AccountJid account, final UserJid user, final List<String> filePaths) {
         final Jid uploadServerUrl = uploadServers.get(account);
         if (uploadServerUrl == null) {
             return;
         }
 
+        // create fileMessage with files
+        List<File> files = new ArrayList<>();
+        for (String filePath : filePaths) {
+            files.add(new File(filePath));
+        }
+        final String fileMessageId = MessageManager.getInstance().createFileMessage(account, user, files);
+
+        List<String> fileUrls = new ArrayList<>();
+        requestNextFileSlotOrComplete(filePaths, uploadServerUrl, account, user, fileUrls, fileMessageId);
+    }
+
+    private void completeUploading(AccountJid account, UserJid user, String fileMessageId, List<String> fileUrls) {
+        MessageManager.getInstance().updateFileMessage(account, user, fileMessageId, fileUrls);
+    }
+
+    private void requestNextFileSlotOrComplete(final List<String> filePaths, final Jid uploadServerUrl,
+                                               final AccountJid account, final UserJid user,
+                                               final List<String> fileUrls, final String fileMessageId) {
         AccountItem accountItem = AccountManager.getInstance().getAccount(account);
         if (accountItem == null) {
             return;
         }
+
+        if (filePaths.size() <= 0) {
+            completeUploading(account, user, fileMessageId, fileUrls);
+            return;
+        }
+
+        String filePath = filePaths.get(0);
+        filePaths.remove(0);
 
         final File file = new File(filePath);
 
@@ -98,58 +125,7 @@ public class HttpFileUploadManager {
                         return;
                     }
 
-                    uploadFileToSlot(account, (Slot) packet);
-                }
-
-                private void uploadFileToSlot(final AccountJid account, final Slot slot) {
-                    SSLSocketFactory sslSocketFactory = null;
-                    MemorizingTrustManager mtm = CertificateManager.getInstance().getNewFileUploadManager(account);
-
-                    final SSLContext sslContext;
-                    try {
-                        sslContext = SSLContext.getInstance("SSL");
-                        sslContext.init(null, new X509TrustManager[]{mtm}, new java.security.SecureRandom());
-                        sslSocketFactory = sslContext.getSocketFactory();
-                    } catch (NoSuchAlgorithmException | KeyManagementException e) {
-                        return;
-                    }
-
-                    OkHttpClient client = new OkHttpClient().newBuilder()
-                            .sslSocketFactory(sslSocketFactory)
-                            .hostnameVerifier(mtm.wrapHostnameVerifier(new org.apache.http.conn.ssl.StrictHostnameVerifier()))
-                            .writeTimeout(5, TimeUnit.MINUTES)
-                            .connectTimeout(5, TimeUnit.MINUTES)
-                            .readTimeout(5, TimeUnit.MINUTES)
-                            .build();
-
-
-                    Request request = new Request.Builder()
-                            .url(slot.getPutUrl())
-                            .put(RequestBody.create(CONTENT_TYPE, file))
-                            .build();
-
-                    final String fileMessageId;
-                    fileMessageId = MessageManager.getInstance().createFileMessage(account, user, file);
-
-                    LogManager.i(HttpFileUploadManager.this, "starting upload file to " + slot.getPutUrl() + " size " + file.length());
-                    client.newCall(request).enqueue(new Callback() {
-                        @Override
-                        public void onFailure(Call call, IOException e) {
-                            LogManager.i(HttpFileUploadManager.this, "onFailure " + e.getMessage());
-                            MessageManager.getInstance().updateMessageWithError(fileMessageId, e.toString());
-                        }
-
-                        @Override
-                        public void onResponse(Call call, Response response) throws IOException {
-                            LogManager.i(HttpFileUploadManager.this, "onResponse " + response.isSuccessful() + " " + response.body().string());
-                            if (response.isSuccessful()) {
-                                MessageManager.getInstance().updateFileMessage(account, user, fileMessageId, slot.getGetUrl());
-                            } else {
-                                MessageManager.getInstance().updateMessageWithError(fileMessageId, response.message());
-                            }
-                        }
-                    });
-
+                    uploadFileToSlot(account, user, (Slot) packet, file, filePaths, uploadServerUrl, fileUrls, fileMessageId);
                 }
 
             }, new ExceptionCallback() {
@@ -163,6 +139,60 @@ public class HttpFileUploadManager {
         } catch (SmackException.NotConnectedException | InterruptedException e) {
             LogManager.exception(this, e);
         }
+    }
+
+    private void uploadFileToSlot(final AccountJid account, final UserJid user, final Slot slot,
+                                  final File file, final List<String> filePaths, final Jid uploadServerUrl,
+                                  final List<String> fileUrls, final String fileMessageId) {
+
+        SSLSocketFactory sslSocketFactory = null;
+        MemorizingTrustManager mtm = CertificateManager.getInstance().getNewFileUploadManager(account);
+
+        final SSLContext sslContext;
+        try {
+            sslContext = SSLContext.getInstance("SSL");
+            sslContext.init(null, new X509TrustManager[]{mtm}, new java.security.SecureRandom());
+            sslSocketFactory = sslContext.getSocketFactory();
+        } catch (NoSuchAlgorithmException | KeyManagementException e) {
+            return;
+        }
+
+        OkHttpClient client = new OkHttpClient().newBuilder()
+                .sslSocketFactory(sslSocketFactory)
+                .hostnameVerifier(mtm.wrapHostnameVerifier(new org.apache.http.conn.ssl.StrictHostnameVerifier()))
+                .writeTimeout(5, TimeUnit.MINUTES)
+                .connectTimeout(5, TimeUnit.MINUTES)
+                .readTimeout(5, TimeUnit.MINUTES)
+                .build();
+
+
+        Request request = new Request.Builder()
+                .url(slot.getPutUrl())
+                .put(RequestBody.create(CONTENT_TYPE, file))
+                .build();
+
+        LogManager.i(HttpFileUploadManager.this, "starting upload file to " + slot.getPutUrl() + " size " + file.length());
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                LogManager.i(HttpFileUploadManager.this, "onFailure " + e.getMessage());
+                // TODO: 17.05.18 обработка ошибок
+                //MessageManager.getInstance().updateMessageWithError(fileMessageId, e.toString());
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                LogManager.i(HttpFileUploadManager.this, "onResponse " + response.isSuccessful() + " " + response.body().string());
+                if (response.isSuccessful()) {
+                    fileUrls.add(slot.getGetUrl());
+                    requestNextFileSlotOrComplete(filePaths, uploadServerUrl, account, user, fileUrls, fileMessageId);
+                } else {
+                    // TODO: 17.05.18 обработка ошибок
+                    //MessageManager.getInstance().updateMessageWithError(fileMessageId, response.message());
+                }
+            }
+        });
+
     }
 
     private void discoverSupport(AccountJid account, XMPPConnection xmppConnection) throws SmackException.NotConnectedException,

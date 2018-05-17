@@ -86,7 +86,9 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.jxmpp.stringprep.XmppStringprepException;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import static com.xabber.android.ui.adapter.ChatViewerAdapter.PAGE_POSITION_CHAT_INFO;
 import static com.xabber.android.ui.adapter.ChatViewerAdapter.PAGE_POSITION_RECENT_CHATS;
@@ -379,7 +381,9 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         }
 
         if (PermissionsRequester.requestFileReadPermissionIfNeeded(this, PERMISSIONS_REQUEST_ATTACH_FILE)) {
-            HttpFileUploadManager.getInstance().uploadFile(account, user, path);
+            List<String> paths = new ArrayList<>();
+            paths.add(path);
+            HttpFileUploadManager.getInstance().uploadFile(account, user, paths);
         }
     }
 
