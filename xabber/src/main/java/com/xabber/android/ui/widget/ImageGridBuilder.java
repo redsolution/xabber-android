@@ -8,8 +8,9 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.xabber.android.R;
+import com.xabber.android.data.database.messagerealm.Attachment;
 
-import java.util.List;
+import io.realm.RealmList;
 
 public class ImageGridBuilder {
 
@@ -17,11 +18,11 @@ public class ImageGridBuilder {
         return LayoutInflater.from(parent.getContext()).inflate(getLayoutResource(imageCount), parent, false);
     }
 
-    public void bindView(View view, List<String> imageUrls) {
+    public void bindView(View view, RealmList<Attachment> attachments) {
         TextView tvCounter = view.findViewById(R.id.tvCounter);
         int index = 0;
         loop:
-        for (String url : imageUrls) {
+        for (Attachment attachment : attachments) {
             if (index > 5)
                 break loop;
 
@@ -29,7 +30,7 @@ public class ImageGridBuilder {
             if (imageView != null) {
 
                 Glide.with(view.getContext())
-                        .load(url)
+                        .load(attachment.getFileUrl())
                         .centerCrop()
                         .placeholder(R.drawable.ic_recent_image_placeholder)
                         .error(R.drawable.ic_recent_image_placeholder)
@@ -39,8 +40,8 @@ public class ImageGridBuilder {
         }
 
         if (tvCounter != null) {
-            if (imageUrls.size() > 6) {
-                tvCounter.setText("+" + (imageUrls.size() - 6));
+            if (attachments.size() > 6) {
+                tvCounter.setText("+" + (attachments.size() - 6));
                 tvCounter.setVisibility(View.VISIBLE);
             } else tvCounter.setVisibility(View.GONE);
         }
