@@ -196,7 +196,7 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
 
         if (imageAttachments.size() > 0) {
             View imageGridView = gridBuilder.inflateView(messageHolder.imageGridContainer, imageAttachments.size());
-            gridBuilder.bindView(imageGridView, imageAttachments);
+            gridBuilder.bindView(imageGridView, imageAttachments, messageHolder);
 
             messageHolder.imageGridContainer.addView(imageGridView);
             messageHolder.imageGridContainer.setVisibility(View.VISIBLE);
@@ -763,16 +763,39 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
                 return;
             }
 
-            if (v.getId() == R.id.message_image || v.getId() == R.id.fileLayout) {
-                onClickListener.onMessageFileClick(itemView, adapterPosition);
-            } else {
-                onClickListener.onMessageClick(messageBalloon, adapterPosition);
+            switch (v.getId()) {
+                case R.id.ivImage0:
+                    onClickListener.onAttachmentClick(adapterPosition, 0);
+                    break;
+                case R.id.ivImage1:
+                    onClickListener.onAttachmentClick(adapterPosition, 1);
+                    break;
+                case R.id.ivImage2:
+                    onClickListener.onAttachmentClick(adapterPosition, 2);
+                    break;
+                case R.id.ivImage3:
+                    onClickListener.onAttachmentClick(adapterPosition, 3);
+                    break;
+                case R.id.ivImage4:
+                    onClickListener.onAttachmentClick(adapterPosition, 4);
+                    break;
+                case R.id.ivImage5:
+                    onClickListener.onAttachmentClick(adapterPosition, 5);
+                    break;
+                case R.id.message_image:
+                case R.id.fileLayout:
+                    onClickListener.onMessageFileClick(itemView, adapterPosition);
+                    break;
+                default:
+                    onClickListener.onMessageClick(messageBalloon, adapterPosition);
+                    break;
             }
         }
 
         public interface MessageClickListener {
             void onMessageClick(View caller, int position);
             void onMessageFileClick(View caller, int position);
+            void onAttachmentClick(int position, int attachmentNumber);
         }
 
     }

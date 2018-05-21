@@ -18,7 +18,7 @@ public class ImageGridBuilder {
         return LayoutInflater.from(parent.getContext()).inflate(getLayoutResource(imageCount), parent, false);
     }
 
-    public void bindView(View view, RealmList<Attachment> attachments) {
+    public void bindView(View view, RealmList<Attachment> attachments, View.OnClickListener clickListener) {
         TextView tvCounter = view.findViewById(R.id.tvCounter);
         int index = 0;
         loop:
@@ -35,6 +35,8 @@ public class ImageGridBuilder {
                         .placeholder(R.drawable.ic_recent_image_placeholder)
                         .error(R.drawable.ic_recent_image_placeholder)
                         .into(imageView);
+
+                imageView.setOnClickListener(clickListener);
             }
             index++;
         }

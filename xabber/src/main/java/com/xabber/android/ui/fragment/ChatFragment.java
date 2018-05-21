@@ -48,6 +48,7 @@ import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
+import com.xabber.android.data.database.messagerealm.Attachment;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.database.messagerealm.SyncInfo;
 import com.xabber.android.data.entity.AccountJid;
@@ -1392,6 +1393,31 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
             // possible if image was not sent and don't have URL yet.
         } catch (ActivityNotFoundException e) {
             LogManager.exception(LOG_TAG, e);
+        }
+    }
+
+    @Override
+    public void onAttachmentClick(int position, int attachmentNumber) {
+        MessageItem messageItem = chatMessageAdapter.getMessageItem(position);
+        if (messageItem == null) {
+            LogManager.w(LOG_TAG, "onMessageFileClick: null message item. Position: " + position);
+            return;
+        }
+
+        if (messageItem.haveAttachments()) {
+            Attachment attachment = messageItem.getAttachments().get(attachmentNumber);
+            if (attachment == null) return;
+
+            String uri = attachment.getFileUrl();
+
+            Intent i = new Intent(Intent.ACTION_VIEW);
+            i.setData(Uri.parse(uri));
+            try {
+                startActivity(i);
+                // possible if image was not sent and don't have URL yet.
+            } catch (ActivityNotFoundException e) {
+                LogManager.exception(LOG_TAG, e);
+            }
         }
     }
 
