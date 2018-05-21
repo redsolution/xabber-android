@@ -1,5 +1,6 @@
 package com.xabber.android.ui.widget;
 
+import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -7,9 +8,17 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.target.Target;
 import com.xabber.android.R;
+import com.xabber.android.data.database.MessageDatabaseManager;
 import com.xabber.android.data.database.messagerealm.Attachment;
+import com.xabber.android.data.extension.file.FileManager;
 
+import io.realm.Realm;
 import io.realm.RealmList;
 
 public class ImageGridBuilder {
@@ -19,33 +28,123 @@ public class ImageGridBuilder {
     }
 
     public void bindView(View view, RealmList<Attachment> attachments, View.OnClickListener clickListener) {
-        TextView tvCounter = view.findViewById(R.id.tvCounter);
-        int index = 0;
-        loop:
-        for (Attachment attachment : attachments) {
-            if (index > 5)
-                break loop;
 
-            ImageView imageView = getImageView(view, index);
-            if (imageView != null) {
+        if (attachments.size() == 1) {
+            bindOneImage(attachments.get(0), view, getImageView(view, 0));
+        } else {
+            TextView tvCounter = view.findViewById(R.id.tvCounter);
+            int index = 0;
+            loop:
+            for (Attachment attachment : attachments) {
+                if (index > 5)
+                    break loop;
 
-                Glide.with(view.getContext())
-                        .load(attachment.getFileUrl())
-                        .centerCrop()
-                        .placeholder(R.drawable.ic_recent_image_placeholder)
-                        .error(R.drawable.ic_recent_image_placeholder)
-                        .into(imageView);
-
-                imageView.setOnClickListener(clickListener);
+                ImageView imageView = getImageView(view, index);
+                if (imageView != null) {
+                    bindImage(attachment, view, imageView);
+                    imageView.setOnClickListener(clickListener);
+                }
+                index++;
             }
-            index++;
-        }
 
-        if (tvCounter != null) {
-            if (attachments.size() > 6) {
-                tvCounter.setText("+" + (attachments.size() - 6));
-                tvCounter.setVisibility(View.VISIBLE);
-            } else tvCounter.setVisibility(View.GONE);
+            if (tvCounter != null) {
+                if (attachments.size() > 6) {
+                    tvCounter.setText("+" + (attachments.size() - 6));
+                    tvCounter.setVisibility(View.VISIBLE);
+                } else tvCounter.setVisibility(View.GONE);
+            }
+        }
+    }
+
+    private void bindImage(Attachment attachment, View parent, ImageView imageView) {
+        String uri = attachment.getFilePath();
+        if (uri == null || uri.isEmpty())
+            uri = attachment.getFileUrl();
+
+        Glide.with(parent.getContext())
+                .load(uri)
+                .centerCrop()
+                .placeholder(R.drawable.ic_recent_image_placeholder)
+                .error(R.drawable.ic_recent_image_placeholder)
+                .into(imageView);
+    }
+
+    private void bindOneImage(final Attachment attachment, View parent, final ImageView imageView) {
+        String imagePath = attachment.getFilePath();
+        String imageUrl = attachment.getFileUrl();
+        Integer imageWidth = attachment.getImageWidth();
+        Integer imageHeight = attachment.getImageHeight();
+        final String uniqId = attachment.getUniqueId();
+
+        if (imagePath != null) {
+            boolean result = FileManager.loadImageFromFile(parent.getContext(), imagePath, imageView);
+
+            if (!result) {
+                final Realm realm = MessageDatabaseManager.getInstance().getRealmUiThread();
+                realm.executeTransactionAsync(new Realm.Transaction() {
+                    @Override
+                    public void execute(Realm realm) {
+                        Attachment first = realm.where(Attachment.class)
+                                .equalTo(Attachment.Fields.UNIQUE_ID, uniqId)
+                                .findFirst();
+                        if (first != null) {
+                            first.setFilePath(null);
+                        }
+                    }
+                });
+            }
+        } else {
+            final ViewGroup.LayoutParams layoutParams = imageView.getLayoutParams();
+
+            if (imageWidth != null && imageHeight != null) {
+                FileManager.scaleImage(layoutParams, imageHeight, imageWidth);
+                Glide.with(parent.getContext())
+                        .load(imageUrl)
+                        .listener(new RequestListener<String, GlideDrawable>() {
+                            @Override
+                            public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                                return true;
+                            }
+
+                            @Override
+                            public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                                return false;
+                            }
+                        })
+                        .into(imageView);
+            } else {
+
+                Glide.with(parent.getContext())
+                        .load(imageUrl)
+                        .asBitmap()
+                        .into(new SimpleTarget<Bitmap>() {
+                            @Override
+                            public void onResourceReady(final Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                                final int width = resource.getWidth();
+                                final int height = resource.getHeight();
+
+                                if (width <= 0 || height <= 0) {
+                                    return;
+                                }
+
+                                final Realm realm = MessageDatabaseManager.getInstance().getRealmUiThread();
+                                realm.executeTransactionAsync(new Realm.Transaction() {
+                                    @Override
+                                    public void execute(Realm realm) {
+                                        Attachment first = realm.where(Attachment.class)
+                                                .equalTo(Attachment.Fields.UNIQUE_ID, uniqId)
+                                                .findFirst();
+                                        if (first != null) {
+                                            first.setImageWidth(width);
+                                            first.setImageHeight(height);
+                                        }
+                                    }
+                                });
+                                FileManager.scaleImage(layoutParams, height, width);
+                                imageView.setImageBitmap(resource);
+                            }
+                        });
+            }
         }
     }
 
