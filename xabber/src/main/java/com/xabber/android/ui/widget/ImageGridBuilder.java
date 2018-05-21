@@ -30,7 +30,9 @@ public class ImageGridBuilder {
     public void bindView(View view, RealmList<Attachment> attachments, View.OnClickListener clickListener) {
 
         if (attachments.size() == 1) {
-            bindOneImage(attachments.get(0), view, getImageView(view, 0));
+            ImageView imageView = getImageView(view, 0);
+            bindOneImage(attachments.get(0), view, imageView);
+            imageView.setOnClickListener(clickListener);
         } else {
             TextView tvCounter = view.findViewById(R.id.tvCounter);
             int index = 0;
