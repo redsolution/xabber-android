@@ -9,8 +9,10 @@ import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.CertificateManager;
 import com.xabber.android.data.connection.ConnectionItem;
+import com.xabber.android.data.database.messagerealm.Attachment;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.xmpp.httpfileupload.Slot;
@@ -22,6 +24,8 @@ import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
+import org.jivesoftware.smackx.xdata.FormField;
+import org.jivesoftware.smackx.xdata.packet.DataForm;
 import org.jxmpp.jid.DomainBareJid;
 import org.jxmpp.jid.Jid;
 
@@ -41,6 +45,7 @@ import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.X509TrustManager;
 
 import de.duenndns.ssl.MemorizingTrustManager;
+import io.realm.RealmList;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.MediaType;
@@ -298,5 +303,43 @@ public class HttpFileUploadManager {
     public static String getFileName(String path) {
         File file = new File(path);
         return file.getName();
+    }
+
+    public static RealmList<Attachment> parseFileMessage(Stanza packet) {
+        RealmList<Attachment> attachments = new RealmList<>();
+
+        DataForm dataForm = DataForm.from(packet);
+        if (dataForm != null) {
+
+            List<FormField> fields = dataForm.getFields();
+            for (FormField field : fields) {
+                if (field instanceof ExtendedFormField) {
+                    ExtendedFormField.Media media = ((ExtendedFormField)field).getMedia();
+                    attachments.add(mediaToAttachment(media, field.getLabel()));
+                }
+            }
+        }
+        return attachments;
+    }
+
+    private static Attachment mediaToAttachment(ExtendedFormField.Media media, String title) {
+        Attachment attachment = new Attachment();
+        attachment.setTitle(title);
+
+        if (media.getWidth() != null && !media.getWidth().isEmpty())
+            attachment.setImageWidth(Integer.valueOf(media.getWidth()));
+
+        if (media.getHeight() != null && !media.getHeight().isEmpty())
+            attachment.setImageHeight(Integer.valueOf(media.getHeight()));
+
+        ExtendedFormField.Uri uri = media.getUri();
+        if (uri != null) {
+            attachment.setMimeType(uri.getType());
+            attachment.setFileSize(uri.getSize());
+            attachment.setDuration(uri.getDuration());
+            attachment.setFileUrl(uri.getUri());
+            attachment.setIsImage(FileManager.isImageUrl(uri.getUri()));
+        }
+        return attachment;
     }
 }

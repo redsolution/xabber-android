@@ -27,6 +27,7 @@ import com.xabber.android.data.database.messagerealm.Attachment;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.ChatAction;
 import com.xabber.android.data.message.NewIncomingMessageEvent;
@@ -274,7 +275,7 @@ public class RoomChat extends AbstractChat {
 
                 updateThreadId(message.getThread());
 
-                RealmList<Attachment> attachments = parseFileMessage(stanza);
+                RealmList<Attachment> attachments = HttpFileUploadManager.parseFileMessage(stanza);
 
                 // create message with file-attachments
                 if (attachments.size() > 0)

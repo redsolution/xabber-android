@@ -47,7 +47,6 @@ import org.jivesoftware.smack.packet.Message.Type;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.util.StringUtils;
 import org.jivesoftware.smackx.delay.packet.DelayInformation;
-import org.jivesoftware.smackx.xdata.FormField;
 import org.jivesoftware.smackx.xdata.packet.DataForm;
 import org.jxmpp.jid.Jid;
 import org.jxmpp.jid.parts.Resourcepart;
@@ -276,27 +275,6 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         EventBus.getDefault().post(new NewMessageEvent());
     }
 
-    private Attachment mediaToAttachment(ExtendedFormField.Media media, String title) {
-        Attachment attachment = new Attachment();
-        attachment.setTitle(title);
-
-        if (media.getWidth() != null && !media.getWidth().isEmpty())
-            attachment.setImageWidth(Integer.valueOf(media.getWidth()));
-
-        if (media.getHeight() != null && !media.getHeight().isEmpty())
-            attachment.setImageHeight(Integer.valueOf(media.getHeight()));
-
-        ExtendedFormField.Uri uri = media.getUri();
-        if (uri != null) {
-            attachment.setMimeType(uri.getType());
-            attachment.setFileSize(uri.getSize());
-            attachment.setDuration(uri.getDuration());
-            attachment.setFileUrl(uri.getUri());
-            attachment.setIsImage(FileManager.isImageUrl(uri.getUri()));
-        }
-        return attachment;
-    }
-
     public void saveMessageItem(final MessageItem messageItem) {
         final long startTime = System.currentTimeMillis();
         // TODO: 12.03.18 ANR - WRITE (переписать без UI)
@@ -393,23 +371,6 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
             this.archived = false;
 
         return messageItem;
-    }
-
-    protected RealmList<Attachment> parseFileMessage(Stanza packet) {
-        RealmList<Attachment> attachments = new RealmList<>();
-
-        DataForm dataForm = DataForm.from(packet);
-        if (dataForm != null) {
-
-            List<FormField> fields = dataForm.getFields();
-            for (FormField field : fields) {
-                if (field.getVariable().equals("media") && field instanceof ExtendedFormField) {
-                    ExtendedFormField.Media media = ((ExtendedFormField)field).getMedia();
-                    attachments.add(mediaToAttachment(media, field.getLabel()));
-                }
-            }
-        }
-        return attachments;
     }
 
     public String newFileMessage(final List<File> files) {

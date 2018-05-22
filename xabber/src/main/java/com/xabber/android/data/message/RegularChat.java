@@ -24,6 +24,7 @@ import com.xabber.android.data.database.messagerealm.Attachment;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.otr.OTRUnencryptedException;
@@ -200,7 +201,7 @@ public class RegularChat extends AbstractChat {
             if (text == null || text.trim().equals(""))
                 return true;
 
-            RealmList<Attachment> attachments = parseFileMessage(packet);
+            RealmList<Attachment> attachments = HttpFileUploadManager.parseFileMessage(packet);
 
             // create message with file-attachments
             if (attachments.size() > 0)
