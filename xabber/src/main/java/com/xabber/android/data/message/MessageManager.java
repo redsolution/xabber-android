@@ -42,6 +42,7 @@ import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.captcha.Captcha;
 import com.xabber.android.data.extension.captcha.CaptchaManager;
 import com.xabber.android.data.extension.carbons.CarbonManager;
+import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.muc.RoomChat;
 import com.xabber.android.data.log.LogManager;
@@ -679,6 +680,11 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
                     newMessageItem.setStanzaId(message.getStanzaId());
                     newMessageItem.setSent(true);
                     newMessageItem.setForwarded(true);
+
+                    RealmList<Attachment> attachments = HttpFileUploadManager.parseFileMessage(message);
+                    if (attachments.size() > 0)
+                        newMessageItem.setAttachments(attachments);
+
                     realm.copyToRealm(newMessageItem);
                     LogManager.d("REALM", Thread.currentThread().getName()
                             + " save carbons message: " + (System.currentTimeMillis() - startTime));
