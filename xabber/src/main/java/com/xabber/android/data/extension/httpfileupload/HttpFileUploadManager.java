@@ -60,6 +60,7 @@ public class HttpFileUploadManager {
     private static HttpFileUploadManager instance;
 
     private static final MediaType CONTENT_TYPE = MediaType.parse("application/octet-stream");
+    private static final String LOG_TAG = HttpFileUploadManager.class.getSimpleName();
 
     private Map<AccountJid, Jid> uploadServers = new ConcurrentHashMap<>();
 
@@ -326,11 +327,16 @@ public class HttpFileUploadManager {
         Attachment attachment = new Attachment();
         attachment.setTitle(title);
 
-        if (media.getWidth() != null && !media.getWidth().isEmpty())
-            attachment.setImageWidth(Integer.valueOf(media.getWidth()));
+        try {
+            if (media.getWidth() != null && !media.getWidth().isEmpty())
+                attachment.setImageWidth(Integer.valueOf(media.getWidth()));
 
-        if (media.getHeight() != null && !media.getHeight().isEmpty())
-            attachment.setImageHeight(Integer.valueOf(media.getHeight()));
+            if (media.getHeight() != null && !media.getHeight().isEmpty())
+                attachment.setImageHeight(Integer.valueOf(media.getHeight()));
+
+        } catch (NumberFormatException e) {
+            LogManager.exception(LOG_TAG, e);
+        }
 
         ExtendedFormField.Uri uri = media.getUri();
         if (uri != null) {
