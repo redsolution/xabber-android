@@ -44,7 +44,10 @@ public class ExtendedFormField extends FormField {
         for (Option option : getOptions()) {
             buf.append(option.toXML());
         }
-        buf.append(getMedia().toXML());
+
+        if (media != null)
+            buf.append(media.toXML());
+
         buf.closeElement(this);
         return buf;
     }
@@ -154,7 +157,8 @@ public class ExtendedFormField extends FormField {
             xml.rightAngleBracket();
 
             // Add element
-            xml.append(getUri().toXML());
+            if (uri != null)
+                xml.append(uri.toXML());
 
             xml.closeElement(this);
             return xml;
