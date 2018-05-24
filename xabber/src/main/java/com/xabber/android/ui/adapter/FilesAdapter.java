@@ -15,10 +15,16 @@ import io.realm.RealmList;
 
 public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.FileViewHolder> {
 
-    RealmList<Attachment> items;
+    private RealmList<Attachment> items;
+    private FileListListener listener;
 
-    public FilesAdapter(RealmList<Attachment> items) {
+    interface FileListListener {
+        void onFileClick(int position);
+    }
+
+    public FilesAdapter(RealmList<Attachment> items, FileListListener listener) {
         this.items = items;
+        this.listener = listener;
     }
 
     @Override
@@ -28,12 +34,19 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.FileViewHold
     }
 
     @Override
-    public void onBindViewHolder(FileViewHolder holder, int position) {
+    public void onBindViewHolder(FileViewHolder holder, final int position) {
         Attachment attachment = items.get(position);
 
         holder.tvFileName.setText(attachment.getTitle());
         Long size = attachment.getFileSize();
         holder.tvFileSize.setText(FileUtils.byteCountToDisplaySize(size != null ? size : 0));
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listener.onFileClick(position);
+            }
+        });
     }
 
     @Override

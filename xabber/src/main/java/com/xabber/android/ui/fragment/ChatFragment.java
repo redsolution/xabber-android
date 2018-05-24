@@ -120,6 +120,7 @@ import java.util.TimerTask;
 import github.ankushsachdeva.emojicon.EmojiconGridView;
 import github.ankushsachdeva.emojicon.EmojiconsPopup;
 import github.ankushsachdeva.emojicon.emoji.Emojicon;
+import io.realm.RealmList;
 import io.realm.RealmResults;
 import io.realm.Sort;
 
@@ -1391,36 +1392,52 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
                 .setPositiveButton("Ok", null)
                 .show();
     }
-
+    
     @Override
-    public void onMessageFileClick(View caller, int position) {
-        MessageItem messageItem = chatMessageAdapter.getMessageItem(position);
+    public void onFileClick(int messagePosition, int attachmentPosition) {
+        MessageItem messageItem = chatMessageAdapter.getMessageItem(messagePosition);
         if (messageItem == null) {
-            LogManager.w(LOG_TAG, "onMessageFileClick: null message item. Position: " + position);
-            return;
-        }
-
-
-        Intent i = new Intent(Intent.ACTION_VIEW);
-        i.setData(Uri.parse(messageItem.getText()));
-        try {
-            startActivity(i);
-            // possible if image was not sent and don't have URL yet.
-        } catch (ActivityNotFoundException e) {
-            LogManager.exception(LOG_TAG, e);
-        }
-    }
-
-    @Override
-    public void onAttachmentClick(int position, int attachmentNumber) {
-        MessageItem messageItem = chatMessageAdapter.getMessageItem(position);
-        if (messageItem == null) {
-            LogManager.w(LOG_TAG, "onMessageFileClick: null message item. Position: " + position);
+            LogManager.w(LOG_TAG, "onMessageFileClick: null message item. Position: " + messagePosition);
             return;
         }
 
         if (messageItem.haveAttachments()) {
-            Attachment attachment = messageItem.getAttachments().get(attachmentNumber);
+            RealmList<Attachment> fileAttachments = new RealmList<>();
+            for (Attachment attachment : messageItem.getAttachments()) {
+                if (!attachment.isImage()) fileAttachments.add(attachment);
+            }
+
+            Attachment attachment = fileAttachments.get(attachmentPosition);
+            if (attachment == null) return;
+
+            String uri = attachment.getFileUrl();
+
+            Intent i = new Intent(Intent.ACTION_VIEW);
+            i.setData(Uri.parse(uri));
+            try {
+                startActivity(i);
+                // possible if file was not sent and don't have URL yet.
+            } catch (ActivityNotFoundException e) {
+                LogManager.exception(LOG_TAG, e);
+            }
+        }
+    }
+
+    @Override
+    public void onImageClick(int messagePosition, int attachmentPosition) {
+        MessageItem messageItem = chatMessageAdapter.getMessageItem(messagePosition);
+        if (messageItem == null) {
+            LogManager.w(LOG_TAG, "onMessageFileClick: null message item. Position: " + messagePosition);
+            return;
+        }
+
+        if (messageItem.haveAttachments()) {
+            RealmList<Attachment> imageAttachments = new RealmList<>();
+            for (Attachment attachment : messageItem.getAttachments()) {
+                if (attachment.isImage()) imageAttachments.add(attachment);
+            }
+
+            Attachment attachment = imageAttachments.get(attachmentPosition);
             if (attachment == null) return;
 
             String uri = attachment.getFileUrl();

@@ -213,7 +213,7 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
         if (fileAttachments.size() > 0) {
             RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(context);
             messageHolder.rvFileList.setLayoutManager(layoutManager);
-            FilesAdapter adapter = new FilesAdapter(fileAttachments);
+            FilesAdapter adapter = new FilesAdapter(fileAttachments, messageHolder);
             messageHolder.rvFileList.setAdapter(adapter);
             messageHolder.messageText.setVisibility(View.GONE);
             messageHolder.fileLayout.setVisibility(View.VISIBLE);
@@ -708,7 +708,8 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
         }
     }
 
-    public static abstract class Message extends BasicMessage implements View.OnClickListener {
+    public static abstract class Message extends BasicMessage implements View.OnClickListener,
+            FilesAdapter.FileListListener {
 
         private static final String LOG_TAG = Message.class.getSimpleName();
         TextView messageTime;
@@ -751,6 +752,17 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
         }
 
         @Override
+        public void onFileClick(int attachmentPosition) {
+            int messagePosition = getAdapterPosition();
+            if (messagePosition == RecyclerView.NO_POSITION) {
+                LogManager.w(LOG_TAG, "onClick: no position");
+                return;
+            }
+
+            onClickListener.onFileClick(messagePosition, attachmentPosition);
+        }
+
+        @Override
         public void onClick(View v) {
             int adapterPosition = getAdapterPosition();
             if (adapterPosition == RecyclerView.NO_POSITION) {
@@ -760,27 +772,24 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
 
             switch (v.getId()) {
                 case R.id.ivImage0:
-                    onClickListener.onAttachmentClick(adapterPosition, 0);
+                    onClickListener.onImageClick(adapterPosition, 0);
                     break;
                 case R.id.ivImage1:
-                    onClickListener.onAttachmentClick(adapterPosition, 1);
+                    onClickListener.onImageClick(adapterPosition, 1);
                     break;
                 case R.id.ivImage2:
-                    onClickListener.onAttachmentClick(adapterPosition, 2);
+                    onClickListener.onImageClick(adapterPosition, 2);
                     break;
                 case R.id.ivImage3:
-                    onClickListener.onAttachmentClick(adapterPosition, 3);
+                    onClickListener.onImageClick(adapterPosition, 3);
                     break;
                 case R.id.ivImage4:
-                    onClickListener.onAttachmentClick(adapterPosition, 4);
+                    onClickListener.onImageClick(adapterPosition, 4);
                     break;
                 case R.id.ivImage5:
-                    onClickListener.onAttachmentClick(adapterPosition, 5);
+                    onClickListener.onImageClick(adapterPosition, 5);
                     break;
                 case R.id.message_image:
-                case R.id.fileLayout:
-                    onClickListener.onMessageFileClick(itemView, adapterPosition);
-                    break;
                 default:
                     onClickListener.onMessageClick(messageBalloon, adapterPosition);
                     break;
@@ -789,8 +798,8 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
 
         public interface MessageClickListener {
             void onMessageClick(View caller, int position);
-            void onMessageFileClick(View caller, int position);
-            void onAttachmentClick(int position, int attachmentNumber);
+            void onImageClick(int messagePosition, int attachmentPosition);
+            void onFileClick(int messagePosition, int attachmentPosition);
         }
 
     }
