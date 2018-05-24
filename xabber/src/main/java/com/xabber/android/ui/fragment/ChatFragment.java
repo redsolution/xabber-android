@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
+import android.support.v4.content.FileProvider;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
@@ -1410,10 +1411,19 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
             Attachment attachment = fileAttachments.get(attachmentPosition);
             if (attachment == null) return;
 
-            String uri = attachment.getFileUrl();
-
             Intent i = new Intent(Intent.ACTION_VIEW);
-            i.setData(Uri.parse(uri));
+            if (attachment.getFilePath() != null) {
+                String path = attachment.getFilePath();
+                i.setDataAndType(FileProvider.getUriForFile(getActivity(),
+                        getActivity().getApplicationContext().getPackageName()
+                                + ".provider", new File(path)), attachment.getMimeType());
+                i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+            } else {
+                String uri = attachment.getFileUrl();
+                i.setData(Uri.parse(uri));
+            }
+
             try {
                 startActivity(i);
                 // possible if file was not sent and don't have URL yet.
@@ -1440,10 +1450,19 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
             Attachment attachment = imageAttachments.get(attachmentPosition);
             if (attachment == null) return;
 
-            String uri = attachment.getFileUrl();
-
             Intent i = new Intent(Intent.ACTION_VIEW);
-            i.setData(Uri.parse(uri));
+            if (attachment.getFilePath() != null) {
+                String path = attachment.getFilePath();
+                i.setDataAndType(FileProvider.getUriForFile(getActivity(),
+                        getActivity().getApplicationContext().getPackageName()
+                                + ".provider", new File(path)), attachment.getMimeType());
+                i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+            } else {
+                String uri = attachment.getFileUrl();
+                i.setData(Uri.parse(uri));
+            }
+
             try {
                 startActivity(i);
                 // possible if image was not sent and don't have URL yet.
