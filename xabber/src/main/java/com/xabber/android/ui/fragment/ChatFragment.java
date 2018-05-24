@@ -799,17 +799,30 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
                 break;
 
             case FILE_SELECT_ACTIVITY_REQUEST_CODE:
-                final Uri fileUri = result.getData();
-                final String path = FileUtils.getPath(getActivity(), fileUri);
+                ClipData clipData = null;
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN) {
+                    clipData = result.getClipData();
+                }
 
-                LogManager.i(this, String.format("File uri: %s, path: %s", fileUri, path));
+                final List<String> paths = new ArrayList<>();
+                if (clipData != null) {
+                    for (int i = 0; i < clipData.getItemCount(); i++) {
+                        ClipData.Item item = clipData.getItemAt(i);
+                        Uri uri = item.getUri();
+                        paths.add(FileUtils.getPath(getActivity(), uri));
+                    }
+                } else {
+                    Uri fileUri = result.getData();
+                    String path = FileUtils.getPath(getActivity(), fileUri);
+                    if (path != null) paths.add(path);
+                }
 
-                if (path == null) {
+                if (paths.size() == 0) {
                     Toast.makeText(getActivity(), R.string.could_not_get_path_to_file, Toast.LENGTH_SHORT).show();
                     return;
                 }
 
-                uploadFile(path);
+                uploadFiles(paths);
                 break;
         }
     }
@@ -822,12 +835,14 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
     @Override
     public void onGalleryClick() {
         Intent intent = (new Intent(Intent.ACTION_GET_CONTENT).setType("image/*").addCategory(Intent.CATEGORY_OPENABLE));
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
         startActivityForResult(intent, FILE_SELECT_ACTIVITY_REQUEST_CODE);
     }
 
     @Override
     public void onFilesClick() {
         Intent intent = (new Intent(Intent.ACTION_GET_CONTENT).setType("*/*").addCategory(Intent.CATEGORY_OPENABLE));
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
         startActivityForResult(intent, FILE_SELECT_ACTIVITY_REQUEST_CODE);
     }
 
