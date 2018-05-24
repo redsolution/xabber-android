@@ -22,6 +22,7 @@ import android.os.Build;
 import android.support.annotation.Nullable;
 import android.support.annotation.StyleRes;
 import android.support.v4.graphics.drawable.DrawableCompat;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -61,7 +62,6 @@ import com.xabber.android.ui.fragment.ChatFragment;
 import com.xabber.android.ui.widget.ImageGridBuilder;
 import com.xabber.android.utils.StringUtils;
 
-import org.apache.commons.io.FileUtils;
 import org.jxmpp.jid.parts.Resourcepart;
 
 import java.util.ArrayList;
@@ -211,14 +211,12 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
         }
 
         if (fileAttachments.size() > 0) {
-            Attachment attachment = fileAttachments.get(0);
-
-            Long size = attachment.getFileSize();
-            messageHolder.tvFileSize.setText(FileUtils.byteCountToDisplaySize(size != null ? size : 0));
-            messageHolder.tvFileName.setText(attachment.getTitle());
-
-            messageHolder.fileLayout.setVisibility(View.VISIBLE);
+            RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(context);
+            messageHolder.rvFileList.setLayoutManager(layoutManager);
+            FilesAdapter adapter = new FilesAdapter(fileAttachments);
+            messageHolder.rvFileList.setAdapter(adapter);
             messageHolder.messageText.setVisibility(View.GONE);
+            messageHolder.fileLayout.setVisibility(View.VISIBLE);
         }
     }
 
@@ -725,8 +723,7 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
         ImageView ivEncrypted;
 
         View fileLayout;
-        TextView tvFileName;
-        TextView tvFileSize;
+        RecyclerView rvFileList;
 
         FrameLayout imageGridContainer;
 
@@ -745,12 +742,10 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
             ivEncrypted = (ImageView) itemView.findViewById(R.id.message_encrypted_icon);
 
             fileLayout = itemView.findViewById(R.id.fileLayout);
-            tvFileName = (TextView) itemView.findViewById(R.id.tvFileName);
-            tvFileSize = (TextView) itemView.findViewById(R.id.tvFileSize);
+            rvFileList = itemView.findViewById(R.id.rvFileList);
 
             imageGridContainer = itemView.findViewById(R.id.imageGridContainer);
 
-            fileLayout.setOnClickListener(this);
             itemView.setOnClickListener(this);
             messageImage.setOnClickListener(this);
         }
