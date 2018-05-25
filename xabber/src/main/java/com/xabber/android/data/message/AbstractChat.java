@@ -47,7 +47,6 @@ import org.jivesoftware.smack.packet.Message.Type;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.util.StringUtils;
 import org.jivesoftware.smackx.delay.packet.DelayInformation;
-import org.jivesoftware.smackx.xdata.FormField;
 import org.jivesoftware.smackx.xdata.packet.DataForm;
 import org.jxmpp.jid.Jid;
 import org.jxmpp.jid.parts.Resourcepart;
@@ -276,27 +275,6 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         EventBus.getDefault().post(new NewMessageEvent());
     }
 
-    private Attachment mediaToAttachment(ExtendedFormField.Media media, String title) {
-        Attachment attachment = new Attachment();
-        attachment.setTitle(title);
-
-        if (media.getWidth() != null && !media.getWidth().isEmpty())
-            attachment.setImageWidth(Integer.valueOf(media.getWidth()));
-
-        if (media.getHeight() != null && !media.getHeight().isEmpty())
-            attachment.setImageHeight(Integer.valueOf(media.getHeight()));
-
-        ExtendedFormField.Uri uri = media.getUri();
-        if (uri != null) {
-            attachment.setMimeType(uri.getType());
-            attachment.setFileSize(uri.getSize());
-            attachment.setDuration(uri.getDuration());
-            attachment.setFileUrl(uri.getUri());
-            attachment.setIsImage(FileManager.isImageUrl(uri.getUri()));
-        }
-        return attachment;
-    }
-
     public void saveMessageItem(final MessageItem messageItem) {
         final long startTime = System.currentTimeMillis();
         // TODO: 12.03.18 ANR - WRITE (переписать без UI)
@@ -395,52 +373,38 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         return messageItem;
     }
 
-    protected RealmList<Attachment> parseFileMessage(Stanza packet) {
-        RealmList<Attachment> attachments = new RealmList<>();
-
-        DataForm dataForm = DataForm.from(packet);
-        if (dataForm != null) {
-
-            List<FormField> fields = dataForm.getFields();
-            for (FormField field : fields) {
-                if (field.getVariable().equals("media") && field instanceof ExtendedFormField) {
-                    ExtendedFormField.Media media = ((ExtendedFormField)field).getMedia();
-                    attachments.add(mediaToAttachment(media, field.getLabel()));
-                }
-            }
-        }
-        return attachments;
-    }
-
-    public String newFileMessage(final File file) {
-        Realm realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
+    public String newFileMessage(final List<File> files) {
+        Realm realm = MessageDatabaseManager.getInstance().getRealmUiThread();
 
         final String messageId = UUID.randomUUID().toString();
 
         realm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-                Attachment attachment = new Attachment();
-                attachment.setFilePath(file.getPath());
-                attachment.setFileSize(file.length());
-                attachment.setTitle(file.getName());
-                attachment.setIsImage(FileManager.fileIsImage(file));
-                attachment.setMimeType(HttpFileUploadManager.getMimeType(file.getPath()));
-                attachment.setDuration((long) 0);
-
-                if (attachment.isImage()) {
-                    HttpFileUploadManager.ImageSize imageSize =
-                            HttpFileUploadManager.getImageSizes(file.getPath());
-                    attachment.setImageHeight(imageSize.getHeight());
-                    attachment.setImageWidth(imageSize.getWidth());
-                }
 
                 RealmList<Attachment> attachments = new RealmList<>();
-                attachments.add(attachment);
+                for (File file : files) {
+                    Attachment attachment = new Attachment();
+                    attachment.setFilePath(file.getPath());
+                    attachment.setFileSize(file.length());
+                    attachment.setTitle(file.getName());
+                    attachment.setIsImage(FileManager.fileIsImage(file));
+                    attachment.setMimeType(HttpFileUploadManager.getMimeType(file.getPath()));
+                    attachment.setDuration((long) 0);
+
+                    if (attachment.isImage()) {
+                        HttpFileUploadManager.ImageSize imageSize =
+                                HttpFileUploadManager.getImageSizes(file.getPath());
+                        attachment.setImageHeight(imageSize.getHeight());
+                        attachment.setImageWidth(imageSize.getWidth());
+                    }
+                    attachments.add(attachment);
+                }
 
                 MessageItem messageItem = new MessageItem(messageId);
                 messageItem.setAccount(account);
                 messageItem.setUser(user);
+                messageItem.setText("Sending files..");
                 messageItem.setAttachments(attachments);
                 messageItem.setTimestamp(System.currentTimeMillis());
                 messageItem.setRead(true);
@@ -452,9 +416,6 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
                 realm.copyToRealm(messageItem);
             }
         });
-
-
-        realm.close();
 
         return messageId;
     }
@@ -521,8 +482,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     /**
      * Send stanza with XEP-0221
      */
-    public Message createFileMessagePacket(String stanzaId, String label, String url, int height,
-                                           int width, String type, long size, long duration) {
+    public Message createFileMessagePacket(String stanzaId, RealmList<Attachment> attachments, String body) {
 
         Message message = new Message();
         message.setTo(getTo());
@@ -531,19 +491,25 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         if (stanzaId != null) message.setStanzaId(stanzaId);
 
         DataForm dataForm = new DataForm(DataForm.Type.form);
-        ExtendedFormField formField = new ExtendedFormField("media");
-        formField.setLabel(label);
 
-        ExtendedFormField.Uri uri = new ExtendedFormField.Uri(type, url);
-        uri.setSize(size);
-        uri.setDuration(duration);
+        int i = 1;
+        for (Attachment attachment : attachments) {
+            ExtendedFormField formField = new ExtendedFormField("media" + i);
+            i++;
+            formField.setLabel(attachment.getTitle());
 
-        formField.setMedia(
-                new ExtendedFormField.Media(String.valueOf(height),String.valueOf(width), uri));
+            ExtendedFormField.Uri uri = new ExtendedFormField.Uri(attachment.getMimeType(), attachment.getFileUrl());
+            uri.setSize(attachment.getFileSize());
+            uri.setDuration(attachment.getDuration());
 
-        dataForm.addField(formField);
+            formField.setMedia(
+                    new ExtendedFormField.Media(String.valueOf(attachment.getImageHeight()),
+                            String.valueOf(attachment.getImageWidth()), uri));
+
+            dataForm.addField(formField);
+        }
         message.addExtension(dataForm);
-        message.setBody(url);
+        message.setBody(body);
 
         Log.d("XEP-0221", message.toXML().toString());
         return message;
@@ -607,15 +573,8 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         Message message = null;
 
         if (messageItem.haveAttachments()) {
-            Attachment attachment = messageItem.getAttachments().get(0);
-
-            Integer height = attachment.getImageHeight();
-            Integer width = attachment.getImageWidth();
-
             message = createFileMessagePacket(messageItem.getStanzaId(),
-                    attachment.getTitle(), text, height != null ? height : 0,
-                    width != null ? width : 0, attachment.getMimeType(),
-                    attachment.getFileSize(), attachment.getDuration());
+                    messageItem.getAttachments(), text);
 
         } else if (text != null) {
             message = createMessagePacket(text, messageItem.getStanzaId());

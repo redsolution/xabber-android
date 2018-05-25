@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="oval">
+            <solid android:color="#50000000"/>
+            <stroke android:width="2dp" android:color="@color/white"/>
+        </shape>
+    </item>
+
+    <item
+        android:drawable="@drawable/ic_done_transparent"
+        android:left="2dp"
+        android:right="2dp"
+        android:top="2dp"
+        android:bottom="2dp"
+        />
+</layer-list>

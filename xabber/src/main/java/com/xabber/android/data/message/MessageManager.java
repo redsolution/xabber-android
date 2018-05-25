@@ -33,6 +33,7 @@ import com.xabber.android.data.connection.StanzaSender;
 import com.xabber.android.data.connection.listeners.OnDisconnectListener;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.database.MessageDatabaseManager;
+import com.xabber.android.data.database.messagerealm.Attachment;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
@@ -41,6 +42,7 @@ import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.captcha.Captcha;
 import com.xabber.android.data.extension.captcha.CaptchaManager;
 import com.xabber.android.data.extension.carbons.CarbonManager;
+import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.muc.RoomChat;
 import com.xabber.android.data.log.LogManager;
@@ -74,6 +76,7 @@ import java.util.Date;
 import java.util.List;
 
 import io.realm.Realm;
+import io.realm.RealmList;
 import io.realm.RealmResults;
 
 /**
@@ -268,14 +271,14 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
             chat.sendMessages();
     }
 
-    public String createFileMessage(AccountJid account, UserJid user, File file) {
+    public String createFileMessage(AccountJid account, UserJid user, List<File> files) {
         AbstractChat chat = getOrCreateChat(account, user);
 
         chat.openChat();
-        return chat.newFileMessage(file);
+        return chat.newFileMessage(files);
     }
 
-    public void updateFileMessage(AccountJid account, UserJid user, final String messageId, final String url) {
+    public void updateFileMessage(AccountJid account, UserJid user, final String messageId, final List<String> urls) {
         final AbstractChat chat = getChat(account, user);
         if (chat == null) {
             return;
@@ -291,7 +294,14 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
                         .findFirst();
 
                 if (messageItem != null) {
-                    messageItem.setText(url);
+                    RealmList<Attachment> attachments = messageItem.getAttachments();
+                    int i = 0;
+                    for (Attachment attachment : attachments) {
+                        attachment.setFileUrl(urls.get(i));
+                        i++;
+                    }
+
+                    messageItem.setText(urls.get(0));
                     messageItem.setSent(false);
                     messageItem.setInProgress(false);
                 }
@@ -670,6 +680,11 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
                     newMessageItem.setStanzaId(message.getStanzaId());
                     newMessageItem.setSent(true);
                     newMessageItem.setForwarded(true);
+
+                    RealmList<Attachment> attachments = HttpFileUploadManager.parseFileMessage(message);
+                    if (attachments.size() > 0)
+                        newMessageItem.setAttachments(attachments);
+
                     realm.copyToRealm(newMessageItem);
                     LogManager.d("REALM", Thread.currentThread().getName()
                             + " save carbons message: " + (System.currentTimeMillis() - startTime));

@@ -72,6 +72,7 @@ import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.adapter.ChatViewerAdapter;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.color.StatusBarPainter;
+import com.xabber.android.ui.dialog.AttachDialog;
 import com.xabber.android.ui.dialog.BlockContactDialog;
 import com.xabber.android.ui.dialog.ContactDeleteDialogFragment;
 import com.xabber.android.ui.fragment.ChatFragment;
@@ -85,7 +86,9 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.jxmpp.stringprep.XmppStringprepException;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import static com.xabber.android.ui.adapter.ChatViewerAdapter.PAGE_POSITION_CHAT_INFO;
 import static com.xabber.android.ui.adapter.ChatViewerAdapter.PAGE_POSITION_RECENT_CHATS;
@@ -378,7 +381,9 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         }
 
         if (PermissionsRequester.requestFileReadPermissionIfNeeded(this, PERMISSIONS_REQUEST_ATTACH_FILE)) {
-            HttpFileUploadManager.getInstance().uploadFile(account, user, path);
+            List<String> paths = new ArrayList<>();
+            paths.add(path);
+            HttpFileUploadManager.getInstance().uploadFile(account, user, paths);
         }
     }
 
@@ -1034,6 +1039,13 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
                     showShowcase(false);
                 }
             });
+        }
+    }
+
+    public void showAttachDialog() {
+        if (chatFragment != null) {
+            AttachDialog dialog = AttachDialog.newInstance(chatFragment);
+            dialog.show(getSupportFragmentManager(), "attach_fragment");
         }
     }
 }
