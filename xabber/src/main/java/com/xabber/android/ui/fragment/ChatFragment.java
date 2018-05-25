@@ -87,6 +87,7 @@ import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.activity.ChatActivity;
 import com.xabber.android.ui.activity.ContactActivity;
 import com.xabber.android.ui.activity.ContactEditActivity;
+import com.xabber.android.ui.activity.ImageViewerActivity;
 import com.xabber.android.ui.activity.QuestionActivity;
 import com.xabber.android.ui.adapter.ChatMessageAdapter;
 import com.xabber.android.ui.adapter.CustomMessageMenuAdapter;
@@ -1442,29 +1443,9 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         }
 
         if (messageItem.haveAttachments()) {
-            RealmList<Attachment> imageAttachments = new RealmList<>();
-            for (Attachment attachment : messageItem.getAttachments()) {
-                if (attachment.isImage()) imageAttachments.add(attachment);
-            }
-
-            Attachment attachment = imageAttachments.get(attachmentPosition);
-            if (attachment == null) return;
-
-            Intent i = new Intent(Intent.ACTION_VIEW);
-            if (attachment.getFilePath() != null) {
-                String path = attachment.getFilePath();
-                i.setDataAndType(FileProvider.getUriForFile(getActivity(),
-                        getActivity().getApplicationContext().getPackageName()
-                                + ".provider", new File(path)), attachment.getMimeType());
-                i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-
-            } else {
-                String uri = attachment.getFileUrl();
-                i.setData(Uri.parse(uri));
-            }
-
             try {
-                startActivity(i);
+                startActivity(ImageViewerActivity.createIntent(getActivity(),
+                        messageItem.getUniqueId(), attachmentPosition));
                 // possible if image was not sent and don't have URL yet.
             } catch (ActivityNotFoundException e) {
                 LogManager.exception(LOG_TAG, e);

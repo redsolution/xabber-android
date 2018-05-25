@@ -504,6 +504,14 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.xabber.android.ui.activity.AccountActivity" />
         </activity>
+        <activity android:name=".ui.activity.ImageViewerActivity"
+            android:theme="@style/ThemeDark"
+            android:parentActivityName=".ui.activity.ChatActivity">
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.xabber.android.ui.activity.ChatActivity" />
+        </activity>
         <activity android:name=".ui.activity.IntroActivity"
             android:theme="@style/ThemeDark"/>
         <activity android:name=".ui.activity.TutorialActivity"
