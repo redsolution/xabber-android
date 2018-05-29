@@ -144,11 +144,6 @@ public class DownloadService extends IntentService {
 
                     int downloadedBytes = 0;
                     while ((r = response.body().byteStream().read(buffer)) > 0) {
-                        try {
-                            TimeUnit.MILLISECONDS.sleep(200);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
                         fos.write(buffer, 0, r);
                         downloadedBytes += r;
                         int progress = (int) Math.round((double) downloadedBytes / (double) fileSize * 100.d);
