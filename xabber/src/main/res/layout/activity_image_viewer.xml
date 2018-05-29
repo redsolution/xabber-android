@@ -23,4 +23,33 @@
         android:layout_below="@id/toolbar_default"
         />
 
+    <ProgressBar
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:id="@+id/progressBar"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:indeterminate="false"
+        android:max="100"
+        android:progress="50"
+        android:progressDrawable="@drawable/circular_progress_bar"
+        android:background="@drawable/round_shape"
+        android:backgroundTint="#7F000000"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:visibility="gone"
+        />
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/ivCancelDownload"
+        android:src="@drawable/ic_close"
+        android:tint="@color/white"
+        android:background="@drawable/ripple_background_circle"
+        android:padding="16dp"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:visibility="gone"
+        />
+
 </RelativeLayout>
