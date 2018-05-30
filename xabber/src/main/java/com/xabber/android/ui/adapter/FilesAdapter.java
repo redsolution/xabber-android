@@ -4,6 +4,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.xabber.android.R;
@@ -40,6 +41,7 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.FileViewHold
         holder.tvFileName.setText(attachment.getTitle());
         Long size = attachment.getFileSize();
         holder.tvFileSize.setText(FileUtils.byteCountToDisplaySize(size != null ? size : 0));
+        holder.ivDownloadedIcon.setVisibility(attachment.getFilePath() != null ? View.VISIBLE : View.GONE);
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -58,11 +60,13 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.FileViewHold
 
         final TextView tvFileName;
         final TextView tvFileSize;
+        final ImageView ivDownloadedIcon;
 
         public FileViewHolder(View itemView) {
             super(itemView);
             tvFileName = itemView.findViewById(R.id.tvFileName);
             tvFileSize = itemView.findViewById(R.id.tvFileSize);
+            ivDownloadedIcon = itemView.findViewById(R.id.ivDownloadedIcon);
         }
 
     }

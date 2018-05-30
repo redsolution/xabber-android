@@ -21,6 +21,18 @@
         android:tint="@color/grey_700"
         />
 
+    <ImageView
+        android:id="@+id/ivDownloadedIcon"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_toRightOf="@id/ivFileIcon"
+        android:layout_alignBottom="@id/ivFileIcon"
+        android:layout_marginLeft="-15dp"
+        android:src="@drawable/ic_done"
+        android:tint="@color/grey_700"
+        android:visibility="gone"
+        />
+
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="wrap_content"
