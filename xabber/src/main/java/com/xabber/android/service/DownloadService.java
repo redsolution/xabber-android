@@ -26,8 +26,6 @@ import javax.net.ssl.X509TrustManager;
 
 import de.duenndns.ssl.MemorizingTrustManager;
 import io.realm.Realm;
-import okhttp3.Call;
-import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -52,6 +50,7 @@ public class DownloadService extends IntentService {
 
     private ResultReceiver receiver;
     private String attachmentId;
+    private boolean needStop = false;
 
     public DownloadService() {
         super(SERVICE_NAME);
@@ -78,7 +77,7 @@ public class DownloadService extends IntentService {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        publishError("Downloading aborted");
+        needStop = true;
     }
 
     private static OkHttpClient createHttpClient(AccountJid accountJid) {
@@ -109,54 +108,62 @@ public class DownloadService extends IntentService {
 
     private void requestFileDownload(final String fileName, final long fileSize, String url, OkHttpClient client) {
         Request request = new Request.Builder().url(url).build();
-        client.newCall(request).enqueue(new Callback() {
-            public void onFailure(Call call, IOException e) {
-                Log.d(LOG_TAG, "download onFailure " + e.getMessage());
-                publishError(e.getMessage());
+        try {
+            Response response = client.newCall(request).execute();
+            if (!response.isSuccessful()) {
+                Log.d(LOG_TAG, "download onFailure " + response.toString());
+                publishError(response.toString());
+                return;
             }
 
-            public void onResponse(Call call, Response response) throws IOException {
-                if (!response.isSuccessful()) {
-                    Log.d(LOG_TAG, "download onFailure " + response.toString());
-                    publishError(response.toString());
+            // create dir
+            File directory = new File(getDownloadDirPath());
+            if (!directory.exists())
+                if (!directory.mkdir()) {
+                    publishError("Directory not created");
                     return;
                 }
 
-                // create dir
-                File directory = new File(getDownloadDirPath());
-                directory.mkdirs();
+            // create file
+            String filePath = directory.getPath() + File.separator + fileName;
+            File file = new File(filePath);
 
-                // create file
-                String filePath = directory.getPath() + File.separator + fileName;
-                File file = new File(filePath);
+            if (file.exists()) {
+                publishError("File with same name already exist");
+                return;
+            }
 
-                if (file.exists()) {
-                    publishError("File with same name already exist");
-                    return;
-                }
+            if (file.createNewFile()) {
 
-                if (file.createNewFile()) {
+                // download
+                FileOutputStream fos = new FileOutputStream(file);
+                byte [] buffer = new byte [8192];
+                int r;
 
-                    // download
-                    FileOutputStream fos = new FileOutputStream(file);
-                    byte [] buffer = new byte [8192];
-                    int r;
-
-                    int downloadedBytes = 0;
-                    while ((r = response.body().byteStream().read(buffer)) > 0) {
+                int downloadedBytes = 0;
+                while ((r = response.body().byteStream().read(buffer)) > 0) {
+                    if (!needStop) {
                         fos.write(buffer, 0, r);
                         downloadedBytes += r;
-                        int progress = (int) Math.round((double) downloadedBytes / (double) fileSize * 100.d);
-                        publishProgress(progress);
+                        publishProgress(downloadedBytes, fileSize);
+                    } else {
+                        fos.close();
+                        file.delete();
+                        publishError("Download aborted");
+                        return;
                     }
-                    fos.close();
+                }
+                fos.flush();
+                fos.close();
 
-                    // save path to realm
-                    saveAttachmentPathToRealm(file.getPath());
+                // save path to realm
+                saveAttachmentPathToRealm(file.getPath());
+            } else publishError("File not created");
 
-                } else publishError("File not created");
-            }
-        });
+        } catch (IOException e) {
+            Log.d(LOG_TAG, "download onFailure " + e.getMessage());
+            publishError(e.getMessage());
+        }
     }
 
     private void saveAttachmentPathToRealm(final String path) {
@@ -171,7 +178,8 @@ public class DownloadService extends IntentService {
         });
     }
 
-    private void publishProgress(int progress) {
+    private void publishProgress(long downloadedBytes, long fileSize) {
+        int progress = (int) Math.round((double) downloadedBytes / (double) fileSize * 100.d);
         Bundle resultData = new Bundle();
         resultData.putInt(KEY_PROGRESS, progress);
         receiver.send(UPDATE_PROGRESS_CODE, resultData);

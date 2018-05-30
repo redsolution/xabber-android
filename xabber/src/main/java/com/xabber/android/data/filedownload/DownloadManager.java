@@ -62,7 +62,6 @@ public class DownloadManager {
     }
 
     public void cancelDownload(Context context) {
-        // TODO: 29.05.18 not working
         Intent intent = new Intent(context, DownloadService.class);
         context.stopService(intent);
     }
