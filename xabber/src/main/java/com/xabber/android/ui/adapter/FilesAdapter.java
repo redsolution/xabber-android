@@ -41,7 +41,7 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.FileViewHold
         holder.tvFileName.setText(attachment.getTitle());
         Long size = attachment.getFileSize();
         holder.tvFileSize.setText(FileUtils.byteCountToDisplaySize(size != null ? size : 0));
-        holder.ivDownloadedIcon.setVisibility(attachment.getFilePath() != null ? View.VISIBLE : View.GONE);
+        holder.ivFileIcon.setImageResource(attachment.getFilePath() != null ? R.drawable.ic_file : R.drawable.ic_download);
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -60,13 +60,13 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.FileViewHold
 
         final TextView tvFileName;
         final TextView tvFileSize;
-        final ImageView ivDownloadedIcon;
+        final ImageView ivFileIcon;
 
         public FileViewHolder(View itemView) {
             super(itemView);
             tvFileName = itemView.findViewById(R.id.tvFileName);
             tvFileSize = itemView.findViewById(R.id.tvFileSize);
-            ivDownloadedIcon = itemView.findViewById(R.id.ivDownloadedIcon);
+            ivFileIcon = itemView.findViewById(R.id.ivFileIcon);
         }
 
     }
