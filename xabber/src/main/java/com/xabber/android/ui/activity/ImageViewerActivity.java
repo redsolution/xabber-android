@@ -190,18 +190,27 @@ public class ImageViewerActivity extends AppCompatActivity implements Toolbar.On
             .doOnNext(new Action1<DownloadManager.ProgressData>() {
                 @Override
                 public void call(DownloadManager.ProgressData progressData) {
-                    if (progressData.isCompleted()) {
-                        showProgress(false);
-                        updateToolbar();
-                    } else if (progressData.getError() != null) {
-                        showProgress(false);
-                        showToast(progressData.getError());
-                    } else {
-                        progressBar.setProgress(progressData.getProgress());
-                        showProgress(true);
-                    }
+                    onProgressUpdated(progressData);
                 }
             }).subscribe());
+    }
+
+    private void onProgressUpdated(DownloadManager.ProgressData progressData) {
+        int position = viewPager.getCurrentItem();
+        Attachment attachment = imageAttachments.get(position);
+
+        if (progressData.getAttachmentId().equals(attachment.getUniqueId())) {
+            if (progressData.isCompleted()) {
+                showProgress(false);
+                updateToolbar();
+            } else if (progressData.getError() != null) {
+                showProgress(false);
+                showToast(progressData.getError());
+            } else {
+                progressBar.setProgress(progressData.getProgress());
+                showProgress(true);
+            }
+        } else showProgress(false);
     }
 
     private void showToast(String text) {

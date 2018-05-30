@@ -24,6 +24,7 @@ public class DownloadManager {
 
     private PublishSubject<ProgressData> progressSubscribe = PublishSubject.create();
     private boolean isDownloading;
+    private String attachmentId;
 
     public static DownloadManager getInstance() {
         if (instance == null) instance = new DownloadManager();
@@ -37,7 +38,7 @@ public class DownloadManager {
     public void downloadFile(Attachment attachment, AccountJid accountJid, Context context) {
 
         if (isDownloading) {
-            progressSubscribe.onNext(new ProgressData(0, "Downloading already started", false));
+            progressSubscribe.onNext(new ProgressData(0, "Downloading already started", false, attachmentId));
             return;
         }
 
@@ -46,10 +47,11 @@ public class DownloadManager {
         // check space
         if (attachment.getFileSize() >= getAvailableSpace()) {
             Log.d(LOG_TAG, "Not enough space for downloading");
-            progressSubscribe.onNext(new ProgressData(0, "Not enough space for downloading", false));
+            progressSubscribe.onNext(new ProgressData(0, "Not enough space for downloading", false, attachmentId));
             return;
         }
 
+        attachmentId = attachment.getUniqueId();
         Intent intent = new Intent(context, DownloadService.class);
         intent.putExtra(DownloadService.KEY_RECEIVER, new DownloadReceiver(new Handler()));
         intent.putExtra(DownloadService.KEY_ATTACHMENT_ID, attachment.getUniqueId());
@@ -83,15 +85,15 @@ public class DownloadManager {
             switch (resultCode) {
                 case DownloadService.UPDATE_PROGRESS_CODE:
                     int currentProgress = resultData.getInt(DownloadService.KEY_PROGRESS);
-                    progressSubscribe.onNext(new ProgressData(currentProgress, null, false));
+                    progressSubscribe.onNext(new ProgressData(currentProgress, null, false, attachmentId));
                     break;
                 case DownloadService.ERROR_CODE:
                     String error = resultData.getString(DownloadService.KEY_ERROR);
-                    progressSubscribe.onNext(new ProgressData(0, error, false));
+                    progressSubscribe.onNext(new ProgressData(0, error, false, attachmentId));
                     isDownloading = false;
                     break;
                 case DownloadService.COMPLETE_CODE:
-                    progressSubscribe.onNext(new ProgressData(100, null, true));
+                    progressSubscribe.onNext(new ProgressData(100, null, true, attachmentId));
                     isDownloading = false;
                     break;
             }
@@ -102,11 +104,13 @@ public class DownloadManager {
         final int progress;
         final String error;
         final boolean completed;
+        final String attachmentId;
 
-        public ProgressData(int progress, String error, boolean completed) {
+        public ProgressData(int progress, String error, boolean completed, String attachmentId) {
             this.progress = progress;
             this.error = error;
             this.completed = completed;
+            this.attachmentId = attachmentId;
         }
 
         public int getProgress() {
@@ -119,6 +123,10 @@ public class DownloadManager {
 
         public boolean isCompleted() {
             return completed;
+        }
+
+        public String getAttachmentId() {
+            return attachmentId;
         }
     }
 
