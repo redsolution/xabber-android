@@ -149,6 +149,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
     private static final int PERMISSIONS_REQUEST_ATTACH_FILE = 21;
     private static final int PERMISSIONS_REQUEST_EXPORT_CHAT = 22;
     private static final int PERMISSIONS_REQUEST_CAMERA = 23;
+    private static final int PERMISSIONS_REQUEST_DOWNLOAD_FILE = 24;
 
     private AccountJid account;
     private UserJid user;
@@ -199,6 +200,9 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
 
     private Intent notifyIntent;
     private String currentPicturePath;
+
+    private int clickedAttachmentPos;
+    private int clickedMessagePos;
 
     public static ChatFragment newInstance(AccountJid account, UserJid user) {
         ChatFragment fragment = new ChatFragment();
@@ -756,24 +760,26 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
 
         switch (requestCode) {
             case PERMISSIONS_REQUEST_ATTACH_FILE:
-                if (PermissionsRequester.isPermissionGranted(grantResults)) {
-                    onFilesClick();
-                } else {
-                    onNoReadPermissionError();
-                }
+                if (PermissionsRequester.isPermissionGranted(grantResults))
+                    ((ChatActivity)getActivity()).showAttachDialog();
+                else onNoReadPermissionError();
                 break;
 
             case PERMISSIONS_REQUEST_EXPORT_CHAT:
-                if (PermissionsRequester.isPermissionGranted(grantResults)) {
-                    showExportChatDialog();
-                } else {
-                    onNoWritePermissionError();
-                }
+                if (PermissionsRequester.isPermissionGranted(grantResults)) showExportChatDialog();
+                else onNoWritePermissionError();
                 break;
 
             case PERMISSIONS_REQUEST_CAMERA:
-                if (PermissionsRequester.hasCameraPermission()) startCamera();
+                if (PermissionsRequester.isPermissionGranted(grantResults))
+                    startCamera();
                 else onNoCameraPermissionError();
+                break;
+
+            case PERMISSIONS_REQUEST_DOWNLOAD_FILE:
+                if (PermissionsRequester.isPermissionGranted(grantResults))
+                    openFileOrDownload(clickedMessagePos, clickedAttachmentPos);
+                else onNoWritePermissionError();
                 break;
         }
     }
@@ -787,7 +793,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
     }
 
     private void onNoCameraPermissionError() {
-        Toast.makeText(getActivity(), R.string.no_permission_to_read_files, Toast.LENGTH_SHORT).show();
+        Toast.makeText(getActivity(), R.string.no_permission_to_camera, Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -852,9 +858,8 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
 
     @Override
     public void onCameraClick() {
-        if (PermissionsRequester.hasCameraPermission())
-            startCamera();
-        else PermissionsRequester.requestCameraPermissionIfNeeded(getActivity());
+        if (PermissionsRequester.requestCameraPermissionIfNeeded(this,
+                PERMISSIONS_REQUEST_CAMERA)) startCamera();
     }
 
     private void startCamera() {
@@ -1408,6 +1413,14 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
 
     @Override
     public void onFileClick(int messagePosition, int attachmentPosition) {
+        clickedAttachmentPos = attachmentPosition;
+        clickedMessagePos = messagePosition;
+        if (PermissionsRequester.requestFileWritePermissionIfNeeded(
+                this, PERMISSIONS_REQUEST_DOWNLOAD_FILE))
+            openFileOrDownload(messagePosition, attachmentPosition);
+    }
+
+    private void openFileOrDownload(int messagePosition, int attachmentPosition) {
         MessageItem messageItem = chatMessageAdapter.getMessageItem(messagePosition);
         if (messageItem == null) {
             LogManager.w(LOG_TAG, "onMessageFileClick: null message item. Position: " + messagePosition);

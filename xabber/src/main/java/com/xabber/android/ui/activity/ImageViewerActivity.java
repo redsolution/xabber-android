@@ -26,6 +26,7 @@ import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.filedownload.DownloadManager;
 import com.xabber.android.ui.fragment.ImageViewerFragment;
+import com.xabber.android.ui.helper.PermissionsRequester;
 
 import io.realm.Realm;
 import io.realm.RealmList;
@@ -36,6 +37,7 @@ public class ImageViewerActivity extends AppCompatActivity implements Toolbar.On
 
     private static final String MESSAGE_ID = "MESSAGE_ID";
     private static final String ATTACHMENT_POSITION = "ATTACHMENT_POSITION";
+    private static final int PERMISSIONS_REQUEST_DOWNLOAD_FILE = 24;
 
     private AccountJid accountJid;
     private RealmList<Attachment> imageAttachments = new RealmList<>();
@@ -156,6 +158,21 @@ public class ImageViewerActivity extends AppCompatActivity implements Toolbar.On
         return true;
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        switch (requestCode) {
+            case PERMISSIONS_REQUEST_DOWNLOAD_FILE:
+                if (PermissionsRequester.isPermissionGranted(grantResults)) {
+                    downloadImage();
+                } else {
+                    onNoWritePermissionError();
+                }
+                break;
+        }
+    }
+
     private void updateToolbar() {
         int current = 0, total = 0;
         if (viewPager != null) current = viewPager.getCurrentItem() + 1;
@@ -172,6 +189,11 @@ public class ImageViewerActivity extends AppCompatActivity implements Toolbar.On
     }
 
     private void onImageDownloadClick() {
+        if (PermissionsRequester.requestFileWritePermissionIfNeeded(
+                this, PERMISSIONS_REQUEST_DOWNLOAD_FILE)) downloadImage();
+    }
+
+    private void downloadImage() {
         int position = viewPager.getCurrentItem();
         Attachment attachment = imageAttachments.get(position);
         DownloadManager.getInstance().downloadFile(attachment, accountJid, this);
@@ -225,5 +247,9 @@ public class ImageViewerActivity extends AppCompatActivity implements Toolbar.On
             progressBar.setVisibility(View.GONE);
             ivCancelDownload.setVisibility(View.GONE);
         }
+    }
+
+    private void onNoWritePermissionError() {
+        Toast.makeText(this, R.string.no_permission_to_write_files, Toast.LENGTH_SHORT).show();
     }
 }

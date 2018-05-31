@@ -25,9 +25,12 @@ public class PermissionsRequester {
         return checkAndRequestPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, fragment, requestCode);
     }
 
-    public static boolean requestCameraPermissionIfNeeded(Activity activity) {
-        return checkAndRequestPermission(Manifest.permission.CAMERA, activity,
-                REQUEST_PERMISSION_CAMERA);
+    public static boolean requestFileWritePermissionIfNeeded(Activity activity, int requestCode) {
+        return checkAndRequestPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, activity, requestCode);
+    }
+
+    public static boolean requestCameraPermissionIfNeeded(Fragment fragment, int requestCode) {
+        return checkAndRequestPermission(Manifest.permission.CAMERA, fragment, requestCode);
     }
 
     public static boolean hasFileReadPermission() {
