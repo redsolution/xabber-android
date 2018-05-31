@@ -75,6 +75,7 @@ import com.xabber.android.data.extension.muc.RoomState;
 import com.xabber.android.data.extension.otr.AuthAskEvent;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.otr.SecurityLevel;
+import com.xabber.android.data.filedownload.DownloadManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
@@ -1412,25 +1413,22 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
             Attachment attachment = fileAttachments.get(attachmentPosition);
             if (attachment == null) return;
 
-            Intent i = new Intent(Intent.ACTION_VIEW);
             if (attachment.getFilePath() != null) {
+                Intent i = new Intent(Intent.ACTION_VIEW);
                 String path = attachment.getFilePath();
                 i.setDataAndType(FileProvider.getUriForFile(getActivity(),
                         getActivity().getApplicationContext().getPackageName()
                                 + ".provider", new File(path)), attachment.getMimeType());
                 i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
-            } else {
-                String uri = attachment.getFileUrl();
-                i.setData(Uri.parse(uri));
-            }
+                try {
+                    startActivity(i);
+                    // possible if file was not sent and don't have URL yet.
+                } catch (ActivityNotFoundException e) {
+                    LogManager.exception(LOG_TAG, e);
+                }
 
-            try {
-                startActivity(i);
-                // possible if file was not sent and don't have URL yet.
-            } catch (ActivityNotFoundException e) {
-                LogManager.exception(LOG_TAG, e);
-            }
+            } else DownloadManager.getInstance().downloadFile(attachment, getAccount(), getActivity());
         }
     }
 
