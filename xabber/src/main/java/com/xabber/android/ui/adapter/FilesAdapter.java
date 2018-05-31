@@ -26,6 +26,7 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.FileViewHold
 
     interface FileListListener {
         void onFileClick(int position);
+        void onDownloadCancel();
     }
 
     public FilesAdapter(RealmList<Attachment> items, FileListListener listener) {
@@ -55,6 +56,13 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.FileViewHold
             @Override
             public void onClick(View v) {
                 listener.onFileClick(position);
+            }
+        });
+
+        holder.ivCancelDownload.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listener.onDownloadCancel();
             }
         });
 

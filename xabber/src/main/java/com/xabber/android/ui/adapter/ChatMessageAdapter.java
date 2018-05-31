@@ -763,6 +763,11 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
         }
 
         @Override
+        public void onDownloadCancel() {
+            onClickListener.onDownloadCancel();
+        }
+
+        @Override
         public void onClick(View v) {
             int adapterPosition = getAdapterPosition();
             if (adapterPosition == RecyclerView.NO_POSITION) {
@@ -800,6 +805,7 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
             void onMessageClick(View caller, int position);
             void onImageClick(int messagePosition, int attachmentPosition);
             void onFileClick(int messagePosition, int attachmentPosition);
+            void onDownloadCancel();
         }
 
     }

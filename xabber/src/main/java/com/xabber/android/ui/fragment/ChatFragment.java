@@ -1395,7 +1395,12 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
                 .setPositiveButton("Ok", null)
                 .show();
     }
-    
+
+    @Override
+    public void onDownloadCancel() {
+        DownloadManager.getInstance().cancelDownload(getActivity());
+    }
+
     @Override
     public void onFileClick(int messagePosition, int attachmentPosition) {
         MessageItem messageItem = chatMessageAdapter.getMessageItem(messagePosition);
