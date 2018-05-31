@@ -1402,6 +1402,11 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
     }
 
     @Override
+    public void onDownloadError(String error) {
+        Toast.makeText(getActivity(), error, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
     public void onFileClick(int messagePosition, int attachmentPosition) {
         MessageItem messageItem = chatMessageAdapter.getMessageItem(messagePosition);
         if (messageItem == null) {

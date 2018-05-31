@@ -27,6 +27,7 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.FileViewHold
     interface FileListListener {
         void onFileClick(int position);
         void onDownloadCancel();
+        void onDownloadError(String error);
     }
 
     public FilesAdapter(RealmList<Attachment> items, FileListListener listener) {
@@ -126,7 +127,7 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.FileViewHold
                     showProgress(false);
                 } else if (progressData.getError() != null) {
                     showProgress(false);
-                    // show error
+                    listener.onDownloadError(progressData.getError());
                 } else {
                     progressBar.setProgress(progressData.getProgress());
                     showProgress(true);
