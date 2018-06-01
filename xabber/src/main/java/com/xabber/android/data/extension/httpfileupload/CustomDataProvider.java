@@ -74,7 +74,13 @@ public class CustomDataProvider extends ExtensionElementProvider<DataForm> {
     private static ExtendedFormField parseField(XmlPullParser parser) throws XmlPullParserException, IOException {
         final int initialDepth = parser.getDepth();
         final String var = parser.getAttributeValue("", "var");
-        final FormField.Type type = FormField.Type.fromString(parser.getAttributeValue("", "type"));
+
+        FormField.Type type;
+        try {
+            type = FormField.Type.fromString(parser.getAttributeValue("", "type"));
+        } catch (IllegalArgumentException e) {
+            type = FormField.Type.fixed;
+        }
 
         final ExtendedFormField formField;
         if (type == FormField.Type.fixed) {
