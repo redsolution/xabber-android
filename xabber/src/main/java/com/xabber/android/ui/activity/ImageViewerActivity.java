@@ -186,6 +186,7 @@ public class ImageViewerActivity extends AppCompatActivity implements Toolbar.On
         Attachment attachment = imageAttachments.get(position);
         String filePath = attachment.getFilePath();
         menu.findItem(R.id.action_download_image).setVisible(filePath == null);
+        menu.findItem(R.id.action_done).setVisible(filePath != null);
     }
 
     private void onImageDownloadClick() {
