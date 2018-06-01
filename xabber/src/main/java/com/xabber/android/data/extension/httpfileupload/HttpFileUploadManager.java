@@ -2,6 +2,7 @@ package com.xabber.android.data.extension.httpfileupload;
 
 
 import android.graphics.BitmapFactory;
+import android.webkit.MimeTypeMap;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
@@ -261,44 +262,10 @@ public class HttpFileUploadManager {
 
 
     public static String getMimeType(String path) {
-        if (path.contains(".doc") || path.contains(".docx")) {
-            // Word document
-            return "application/msword";
-        } else if(path.contains(".pdf")) {
-            // PDF file
-            return "application/pdf";
-        } else if(path.contains(".ppt") || path.contains(".pptx")) {
-            // Powerpoint file
-            return "application/vnd.ms-powerpoint";
-        } else if(path.contains(".xls") || path.contains(".xlsx")) {
-            // Excel file
-            return "application/vnd.ms-excel";
-        } else if(path.contains(".zip") || path.contains(".rar")) {
-            // WAV audio file
-            return "application/x-wav";
-        } else if(path.contains(".rtf")) {
-            // RTF file
-            return "application/rtf";
-        } else if(path.contains(".wav") || path.contains(".mp3")) {
-            // WAV audio file
-            return "audio/x-wav";
-        } else if(path.contains(".gif")) {
-            // GIF file
-            return "image/gif";
-        } else if(path.contains(".jpg") || path.contains(".jpeg") || path.contains(".png")) {
-            // JPG file
-            return "image/jpeg";
-        } else if(path.contains(".txt")) {
-            // Text file
-            return "text/plain";
-        } else if(path.contains(".3gp") || path.contains(".mpg") || path.contains(".mpeg")
-                || path.contains(".mpe") || path.contains(".mp4") || path.contains(".avi")) {
-            // Video files
-            return "video/*";
-        } else {
-            // any other file
-            return "*/*";
-        }
+        String extension = path.substring(path.lastIndexOf(".")).substring(1);
+        String type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+        if (type == null || type.isEmpty()) type = "*/*";
+        return type;
     }
 
     public static String getFileName(String path) {
