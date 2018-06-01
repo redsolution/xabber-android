@@ -12,6 +12,7 @@ import android.widget.TextView;
 import com.xabber.android.R;
 import com.xabber.android.data.database.messagerealm.Attachment;
 import com.xabber.android.data.filedownload.DownloadManager;
+import com.xabber.android.data.filedownload.FileCategory;
 
 import org.apache.commons.io.FileUtils;
 
@@ -51,7 +52,9 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.FileViewHold
         holder.tvFileName.setText(attachment.getTitle());
         Long size = attachment.getFileSize();
         holder.tvFileSize.setText(FileUtils.byteCountToDisplaySize(size != null ? size : 0));
-        holder.ivFileIcon.setImageResource(attachment.getFilePath() != null ? R.drawable.ic_file : R.drawable.ic_download);
+        holder.ivFileIcon.setImageResource(attachment.getFilePath() != null
+                ? getFileIconByCategory(FileCategory.determineFileCategory(attachment.getMimeType()))
+                : R.drawable.ic_download);
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -80,11 +83,32 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.FileViewHold
         });
     }
 
-
-
     @Override
     public int getItemCount() {
         return items.size();
+    }
+
+    private int getFileIconByCategory(FileCategory category) {
+        switch (category) {
+            case image:
+                return R.drawable.ic_image;
+            case audio:
+                return R.drawable.ic_audio;
+            case video:
+                return R.drawable.ic_video;
+            case document:
+                return R.drawable.ic_document;
+            case pdf:
+                return R.drawable.ic_pdf;
+            case table:
+                return R.drawable.ic_table;
+            case presentation:
+                return R.drawable.ic_presentation;
+            case archive:
+                return R.drawable.ic_archive;
+            default:
+                return R.drawable.ic_file;
+        }
     }
 
     class FileViewHolder extends RecyclerView.ViewHolder {
