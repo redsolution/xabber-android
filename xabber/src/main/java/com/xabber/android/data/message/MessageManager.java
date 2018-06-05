@@ -299,7 +299,13 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
                         i++;
                     }
 
-                    messageItem.setText(urls.get(0));
+                    StringBuilder strBuilder = new StringBuilder();
+                    for (String url : urls) {
+                        strBuilder.append(url);
+                        strBuilder.append(" ");
+                    }
+
+                    messageItem.setText(strBuilder.toString());
                     messageItem.setSent(false);
                     messageItem.setInProgress(false);
                 }
