@@ -72,20 +72,19 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
 
     private static ContactListPresenter instance;
     private ContactListView view;
-    private Context context;
+
     private StructureBuilder structureBuilder;
 
     private String filterString = null;
     protected Locale locale = Locale.getDefault();
     private ChatListState currentChatsState = ChatListState.recent;
 
-    public static ContactListPresenter getInstance(Context context) {
-        if (instance == null) instance = new ContactListPresenter(context);
+    public static ContactListPresenter getInstance() {
+        if (instance == null) instance = new ContactListPresenter();
         return instance;
     }
 
-    public ContactListPresenter(Context context) {
-        this.context = context;
+    public ContactListPresenter() {
         structureBuilder = new StructureBuilder(this);
     }
 
@@ -348,7 +347,7 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
 
             // Remove empty groups, sort and apply structure.
             items.clear();
-            items.add(new ToolbarVO(context, this, currentChatsState));
+            items.add(new ToolbarVO(Application.getInstance().getApplicationContext(), this, currentChatsState));
             if (hasVisibleContacts) {
 
                 if (currentChatsState == ChatListState.recent) {
@@ -382,7 +381,7 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
                             } else {
                                 AccountWithButtonsVO account = AccountWithButtonsVO.convert(rosterAccount, this);
                                 ButtonVO button = ButtonVO.convert(rosterAccount,
-                                        context.getString(R.string.contact_add), ButtonVO.ACTION_ADD_CONTACT);
+                                        Application.getInstance().getApplicationContext().getString(R.string.contact_add), ButtonVO.ACTION_ADD_CONTACT);
                                 account.addSubItem(button);
                                 items.add(account);
                             }
@@ -401,7 +400,7 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
             final ArrayList<AbstractContact> baseEntities = getSearchResults(rosterContacts, comparator, abstractChats);
             items.clear();
 
-            items.add(new CategoryVO(context.getString(R.string.category_title_contacts)));
+            items.add(new CategoryVO(Application.getInstance().getApplicationContext().getString(R.string.category_title_contacts)));
             items.addAll(SettingsManager.contactsShowMessages()
                     ? ExtContactVO.convert(baseEntities, this)
                     : ContactVO.convert(baseEntities, this));
@@ -414,9 +413,9 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
         if (view != null) {
             if (items.size() == 1 && (filterString == null || filterString.isEmpty())) {
                 if (currentChatsState == ChatListState.unread)
-                    view.showPlaceholder(context.getString(R.string.placeholder_no_unread));
+                    view.showPlaceholder(Application.getInstance().getApplicationContext().getString(R.string.placeholder_no_unread));
                 if (currentChatsState == ChatListState.archived)
-                    view.showPlaceholder(context.getString(R.string.placeholder_no_archived));
+                    view.showPlaceholder(Application.getInstance().getApplicationContext().getString(R.string.placeholder_no_archived));
             } else view.hidePlaceholder();
             view.updateItems(items);
         }
