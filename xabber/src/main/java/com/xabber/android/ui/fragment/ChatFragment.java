@@ -1471,6 +1471,15 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
             } catch (ActivityNotFoundException e) {
                 LogManager.exception(LOG_TAG, e);
             }
+        } else {
+            Intent i = new Intent(Intent.ACTION_VIEW);
+            i.setData(Uri.parse(messageItem.getText()));
+            try {
+                startActivity(i);
+                // possible if image was not sent and don't have URL yet.
+            } catch (ActivityNotFoundException e) {
+                LogManager.exception(LOG_TAG, e);
+            }
         }
     }
 

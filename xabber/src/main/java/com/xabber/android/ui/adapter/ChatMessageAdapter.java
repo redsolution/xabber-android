@@ -800,6 +800,8 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
                     onClickListener.onImageClick(adapterPosition, 5);
                     break;
                 case R.id.message_image:
+                    onClickListener.onImageClick(adapterPosition, 0);
+                    break;
                 default:
                     onClickListener.onMessageClick(messageBalloon, adapterPosition);
                     break;
