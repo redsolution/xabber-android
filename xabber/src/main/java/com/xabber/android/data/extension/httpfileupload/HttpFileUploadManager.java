@@ -81,10 +81,6 @@ public class HttpFileUploadManager {
     }
 
     public void uploadFile(final AccountJid account, final UserJid user, final List<String> filePaths) {
-        final Jid uploadServerUrl = uploadServers.get(account);
-        if (uploadServerUrl == null) {
-            return;
-        }
 
         // create fileMessage with files
         List<File> files = new ArrayList<>();
@@ -92,6 +88,12 @@ public class HttpFileUploadManager {
             files.add(new File(filePath));
         }
         final String fileMessageId = MessageManager.getInstance().createFileMessage(account, user, files);
+
+        final Jid uploadServerUrl = uploadServers.get(account);
+        if (uploadServerUrl == null) {
+            onError(fileMessageId, "Upload server not found");
+            return;
+        }
 
         List<String> fileUrls = new ArrayList<>();
         requestNextFileSlotOrComplete(filePaths, uploadServerUrl, account, user, fileUrls, fileMessageId);
@@ -106,6 +108,7 @@ public class HttpFileUploadManager {
                                                final List<String> fileUrls, final String fileMessageId) {
         AccountItem accountItem = AccountManager.getInstance().getAccount(account);
         if (accountItem == null) {
+            onError(fileMessageId, "Account not found");
             return;
         }
 
@@ -129,6 +132,7 @@ public class HttpFileUploadManager {
                 @Override
                 public void processStanza(Stanza packet) throws SmackException.NotConnectedException, InterruptedException {
                     if (!(packet instanceof Slot)) {
+                        onError(fileMessageId, "Upload slot not found");
                         return;
                     }
 
@@ -138,12 +142,14 @@ public class HttpFileUploadManager {
             }, new ExceptionCallback() {
                 @Override
                 public void processException(Exception exception) {
+                    onError(fileMessageId, exception);
                     LogManager.i(this, "On HTTP file upload slot error");
                     LogManager.exception(this, exception);
                     Application.getInstance().onError(R.string.http_file_upload_slot_error);
                 }
             });
         } catch (SmackException.NotConnectedException | InterruptedException e) {
+            onError(fileMessageId, e);
             LogManager.exception(this, e);
         }
     }
@@ -161,6 +167,7 @@ public class HttpFileUploadManager {
             sslContext.init(null, new X509TrustManager[]{mtm}, new java.security.SecureRandom());
             sslSocketFactory = sslContext.getSocketFactory();
         } catch (NoSuchAlgorithmException | KeyManagementException e) {
+            onError(fileMessageId, e);
             return;
         }
 
@@ -183,8 +190,7 @@ public class HttpFileUploadManager {
             @Override
             public void onFailure(Call call, IOException e) {
                 LogManager.i(HttpFileUploadManager.this, "onFailure " + e.getMessage());
-                // TODO: 17.05.18 обработка ошибок
-                //MessageManager.getInstance().updateMessageWithError(fileMessageId, e.toString());
+                onError(fileMessageId, e);
             }
 
             @Override
@@ -194,8 +200,7 @@ public class HttpFileUploadManager {
                     fileUrls.add(slot.getGetUrl());
                     requestNextFileSlotOrComplete(filePaths, uploadServerUrl, account, user, fileUrls, fileMessageId);
                 } else {
-                    // TODO: 17.05.18 обработка ошибок
-                    //MessageManager.getInstance().updateMessageWithError(fileMessageId, response.message());
+                    onError(fileMessageId, response.message());
                 }
             }
         });
@@ -268,11 +273,6 @@ public class HttpFileUploadManager {
         return type;
     }
 
-    public static String getFileName(String path) {
-        File file = new File(path);
-        return file.getName();
-    }
-
     public static RealmList<Attachment> parseFileMessage(Stanza packet) {
         RealmList<Attachment> attachments = new RealmList<>();
 
@@ -314,5 +314,19 @@ public class HttpFileUploadManager {
             attachment.setIsImage(FileManager.isImageUrl(uri.getUri()));
         }
         return attachment;
+    }
+
+    private void onError(String fileMessageId, Throwable exception) {
+        MessageManager.getInstance().updateMessageWithError(fileMessageId, exception.toString());
+        LogManager.i(this, "On HTTP file upload error");
+        LogManager.exception(this, exception);
+        Application.getInstance().onError(R.string.http_file_upload_slot_error);
+    }
+
+    private void onError(String fileMessageId, String errorDescription) {
+        MessageManager.getInstance().updateMessageWithError(fileMessageId, errorDescription);
+        LogManager.i(this, "On HTTP file upload error");
+        LogManager.e(this, errorDescription);
+        Application.getInstance().onError(R.string.http_file_upload_slot_error);
     }
 }
