@@ -277,9 +277,8 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
 
     public void saveMessageItem(final MessageItem messageItem) {
         final long startTime = System.currentTimeMillis();
-        // TODO: 12.03.18 ANR - WRITE (переписать без UI)
         MessageDatabaseManager.getInstance().getRealmUiThread()
-                .executeTransaction(new Realm.Transaction() {
+                .executeTransactionAsync(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
                 realm.copyToRealm(messageItem);

@@ -255,20 +255,18 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
     private void sendMessage(final String text, final AbstractChat chat) {
         final long startTime = System.currentTimeMillis();
 
-        MessageDatabaseManager.getInstance()
-                // TODO: 13.03.18 ANR - WRITE
-                .getRealmUiThread().executeTransaction(new Realm.Transaction() {
+        MessageDatabaseManager.getInstance().getRealmUiThread()
+                .executeTransactionAsync(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
                 MessageItem newMessageItem = chat.createNewMessageItem(text);
                 realm.copyToRealm(newMessageItem);
                 LogManager.d("REALM", Thread.currentThread().getName()
                         + " save message before sending: " + (System.currentTimeMillis() - startTime));
-
+                if (chat.canSendMessage())
+                    chat.sendMessages();
             }
         });
-        if (chat.canSendMessage())
-            chat.sendMessages();
     }
 
     public String createFileMessage(AccountJid account, UserJid user, List<File> files) {
@@ -469,9 +467,8 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
     public void clearHistory(final AccountJid account, final UserJid user) {
         final long startTime = System.currentTimeMillis();
 
-        MessageDatabaseManager.getInstance()
-                // TODO: 13.03.18 ANR
-                .getRealmUiThread().executeTransactionAsync(new Realm.Transaction() {
+        MessageDatabaseManager.getInstance().getRealmUiThread()
+                .executeTransactionAsync(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
                 realm.where(MessageItem.class)
@@ -671,9 +668,10 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
             }
 
             final AbstractChat finalChat = chat;
-            // TODO: 12.03.18 ANR - WRITE (переписать без UI)
+
             final long startTime = System.currentTimeMillis();
-            MessageDatabaseManager.getInstance().getRealmUiThread().executeTransaction(new Realm.Transaction() {
+            MessageDatabaseManager.getInstance().getRealmUiThread()
+                    .executeTransactionAsync(new Realm.Transaction() {
                 @Override
                 public void execute(Realm realm) {
                     MessageItem newMessageItem = finalChat.createNewMessageItem(body);
@@ -688,9 +686,10 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
                     realm.copyToRealm(newMessageItem);
                     LogManager.d("REALM", Thread.currentThread().getName()
                             + " save carbons message: " + (System.currentTimeMillis() - startTime));
+
+                    EventBus.getDefault().post(new NewMessageEvent());
                 }
             });
-            EventBus.getDefault().post(new NewMessageEvent());
             return;
         }
 
