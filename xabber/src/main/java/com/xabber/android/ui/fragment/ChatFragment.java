@@ -832,6 +832,11 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
                     return;
                 }
 
+                if (paths.size() > 10) {
+                    Toast.makeText(getActivity(), R.string.too_many_files_at_once, Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 uploadFiles(paths);
                 break;
         }

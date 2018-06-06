@@ -47,7 +47,7 @@ public class RecentImagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     public interface Listener {
         void onRecentImagesSelected();
-
+        void tooManyFilesSelected();
     }
 
     public RecentImagesAdapter(@NonNull Listener listener) {
@@ -87,7 +87,12 @@ public class RecentImagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
-                    selectedImagePaths.add(path);
+                    if (selectedImagePaths.size() < 10)
+                        selectedImagePaths.add(path);
+                    else {
+                        buttonView.setChecked(false);
+                        listener.tooManyFilesSelected();
+                    }
                 } else {
                     selectedImagePaths.remove(path);
                 }
