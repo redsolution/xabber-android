@@ -1,5 +1,7 @@
 package com.xabber.android.ui.activity;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,6 +14,7 @@ import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Spannable;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -155,6 +158,10 @@ public class ImageViewerActivity extends AppCompatActivity implements Toolbar.On
             case R.id.action_download_image:
                 onImageDownloadClick();
                 break;
+
+            case R.id.action_copy_link:
+                onCopyLinkClick();
+                break;
         }
         return true;
     }
@@ -188,6 +195,16 @@ public class ImageViewerActivity extends AppCompatActivity implements Toolbar.On
         String filePath = attachment.getFilePath();
         menu.findItem(R.id.action_download_image).setVisible(filePath == null);
         menu.findItem(R.id.action_done).setVisible(filePath != null);
+    }
+
+    private void onCopyLinkClick() {
+        int position = viewPager.getCurrentItem();
+        Attachment attachment = imageAttachments.get(position);
+        String url = attachment.getFileUrl();
+
+        ClipboardManager clipboardManager = ((ClipboardManager) this.getSystemService(Context.CLIPBOARD_SERVICE));
+        if (clipboardManager != null) clipboardManager.setPrimaryClip(ClipData.newPlainText(url, url));
+        Toast.makeText(this, R.string.toast_link_copied, Toast.LENGTH_SHORT).show();
     }
 
     private void onImageDownloadClick() {
