@@ -250,7 +250,8 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
     @Override
     public void onInitialized() {
         application.addUIListener(OnAccountChangedListener.class, this);
-        updateMessageNotification(null);
+        //updateMessageNotification(null);
+        updatePersistentNotification();
     }
 
     /**
@@ -626,7 +627,8 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
     @Override
     public void run() {
         handler.removeCallbacks(this);
-        updateMessageNotification(null);
+        //updateMessageNotification(null);
+        updatePersistentNotification();
     }
 
     public Notification getPersistentNotification() {
