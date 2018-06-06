@@ -1442,6 +1442,12 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
             if (attachment == null) return;
 
             if (attachment.getFilePath() != null) {
+                File file = new File(attachment.getFilePath());
+                if (!file.exists()) {
+                    MessageManager.setAttachmentLocalPathToNull(attachment.getUniqueId());
+                    return;
+                }
+
                 Intent i = new Intent(Intent.ACTION_VIEW);
                 String path = attachment.getFilePath();
                 i.setDataAndType(FileProvider.getUriForFile(getActivity(),

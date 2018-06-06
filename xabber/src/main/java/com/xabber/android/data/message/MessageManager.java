@@ -889,4 +889,19 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
                     removeMessageNotification(chat.getAccount(), chat.getUser());
         }
     }
+
+    public static void setAttachmentLocalPathToNull(final String uniqId) {
+        final Realm realm = MessageDatabaseManager.getInstance().getRealmUiThread();
+        realm.executeTransactionAsync(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                Attachment first = realm.where(Attachment.class)
+                        .equalTo(Attachment.Fields.UNIQUE_ID, uniqId)
+                        .findFirst();
+                if (first != null) {
+                    first.setFilePath(null);
+                }
+            }
+        });
+    }
 }

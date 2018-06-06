@@ -17,6 +17,7 @@ import com.xabber.android.R;
 import com.xabber.android.data.database.MessageDatabaseManager;
 import com.xabber.android.data.database.messagerealm.Attachment;
 import com.xabber.android.data.extension.file.FileManager;
+import com.xabber.android.data.message.MessageManager;
 
 import io.realm.Realm;
 import io.realm.RealmList;
@@ -82,18 +83,7 @@ public class ImageGridBuilder {
             boolean result = FileManager.loadImageFromFile(parent.getContext(), imagePath, imageView);
 
             if (!result) {
-                final Realm realm = MessageDatabaseManager.getInstance().getRealmUiThread();
-                realm.executeTransactionAsync(new Realm.Transaction() {
-                    @Override
-                    public void execute(Realm realm) {
-                        Attachment first = realm.where(Attachment.class)
-                                .equalTo(Attachment.Fields.UNIQUE_ID, uniqId)
-                                .findFirst();
-                        if (first != null) {
-                            first.setFilePath(null);
-                        }
-                    }
-                });
+                MessageManager.setAttachmentLocalPathToNull(uniqId);
             }
         } else {
             final ViewGroup.LayoutParams layoutParams = imageView.getLayoutParams();
