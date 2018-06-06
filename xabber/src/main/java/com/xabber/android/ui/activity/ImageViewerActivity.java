@@ -110,7 +110,8 @@ public class ImageViewerActivity extends AppCompatActivity implements Toolbar.On
             @Override
             public Fragment getItem(int position) {
                 Attachment attachment = imageAttachments.get(position);
-                return ImageViewerFragment.newInstance(attachment.getFilePath(), attachment.getFileUrl());
+                return ImageViewerFragment.newInstance(attachment.getFilePath(),
+                        attachment.getFileUrl(), attachment.getUniqueId());
             }
 
             @Override

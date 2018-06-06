@@ -15,20 +15,23 @@ import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.xabber.android.R;
+import com.xabber.android.data.message.MessageManager;
 
 public class ImageViewerFragment extends Fragment {
 
     private static final String IMAGE_PATH = "IMAGE_PATH";
     private static final String IMAGE_URL = "IMAGE_URL";
+    private static final String ATTACHMENT_ID = "ATTACHMENT_ID";
 
     private ImageView ivPhoto;
     private ProgressBar progressBar;
 
-    public static ImageViewerFragment newInstance(String imagePath, String imageUrl) {
+    public static ImageViewerFragment newInstance(String imagePath, String imageUrl, String attachmentId) {
         ImageViewerFragment fragment = new ImageViewerFragment();
         Bundle args = new Bundle();
         args.putString(IMAGE_PATH, imagePath);
         args.putString(IMAGE_URL, imageUrl);
+        args.putString(ATTACHMENT_ID, attachmentId);
         fragment.setArguments(args);
         return fragment;
     }
@@ -47,9 +50,15 @@ public class ImageViewerFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         // get params
-        String uri = getArguments().getString(IMAGE_PATH);
-        if (uri == null)
-            uri = getArguments().getString(IMAGE_URL);
+        Bundle args = getArguments();
+        if (args == null) return;
+
+        String source;
+        String uri = args.getString(IMAGE_URL);
+        final String path = args.getString(IMAGE_PATH);
+        if (path != null) source = path;
+        else source = uri;
+        final String attachmentId = args.getString(ATTACHMENT_ID);
 
         // find views
         ivPhoto = view.findViewById(R.id.ivPhoto);
@@ -57,12 +66,13 @@ public class ImageViewerFragment extends Fragment {
 
         // setup image
         progressBar.setVisibility(View.VISIBLE);
-        Glide.with(getActivity()).load(uri)
+        Glide.with(getActivity()).load(source)
             .listener(new RequestListener<String, GlideDrawable>() {
                 @Override
                 public boolean onException(Exception e, String model, Target<GlideDrawable> target,
                                            boolean isFirstResource) {
                     showError(e.toString());
+                    if (path != null) MessageManager.setAttachmentLocalPathToNull(attachmentId);
                     progressBar.setVisibility(View.GONE);
                     return false;
                 }
