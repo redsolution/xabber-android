@@ -14,7 +14,6 @@ import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.Spannable;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -38,6 +37,7 @@ import rx.subscriptions.CompositeSubscription;
 
 public class ImageViewerActivity extends AppCompatActivity implements Toolbar.OnMenuItemClickListener {
 
+    private static final String IMAGE_URL = "IMAGE_URL";
     private static final String MESSAGE_ID = "MESSAGE_ID";
     private static final String ATTACHMENT_POSITION = "ATTACHMENT_POSITION";
     private static final int PERMISSIONS_REQUEST_DOWNLOAD_FILE = 24;
@@ -61,6 +61,16 @@ public class ImageViewerActivity extends AppCompatActivity implements Toolbar.On
         return intent;
     }
 
+    @NonNull
+    public static Intent createIntent(Context context, String id, String url) {
+        Intent intent = new Intent(context, ImageViewerActivity.class);
+        Bundle args = new Bundle();
+        args.putString(MESSAGE_ID, id);
+        args.putString(IMAGE_URL, url);
+        intent.putExtras(args);
+        return intent;
+    }
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,6 +79,12 @@ public class ImageViewerActivity extends AppCompatActivity implements Toolbar.On
         // get params
         Intent intent = getIntent();
         Bundle args = intent.getExtras();
+        if (args == null) {
+            finish();
+            return;
+        }
+
+        String imageUrl = args.getString(IMAGE_URL);
         String messageId = args.getString(MESSAGE_ID);
         int imagePosition = args.getInt(ATTACHMENT_POSITION);
 
@@ -89,10 +105,17 @@ public class ImageViewerActivity extends AppCompatActivity implements Toolbar.On
         MessageItem messageItem = realm.where(MessageItem.class)
                 .equalTo(MessageItem.Fields.UNIQUE_ID, messageId)
                 .findFirst();
-        RealmList<Attachment> attachments = messageItem.getAttachments();
 
-        for (Attachment attachment : attachments) {
-            if (attachment.isImage()) imageAttachments.add(attachment);
+        if (imageUrl != null) {
+            Attachment attachment = new Attachment();
+            attachment.setFileUrl(imageUrl);
+            imageAttachments.add(attachment);
+        } else {
+            RealmList<Attachment> attachments = messageItem.getAttachments();
+
+            for (Attachment attachment : attachments) {
+                if (attachment.isImage()) imageAttachments.add(attachment);
+            }
         }
 
         // get account jid
@@ -193,7 +216,8 @@ public class ImageViewerActivity extends AppCompatActivity implements Toolbar.On
         int position = viewPager.getCurrentItem();
         Attachment attachment = imageAttachments.get(position);
         String filePath = attachment.getFilePath();
-        menu.findItem(R.id.action_download_image).setVisible(filePath == null);
+        Long size = attachment.getFileSize();
+        menu.findItem(R.id.action_download_image).setVisible(filePath == null && size != null);
         menu.findItem(R.id.action_done).setVisible(filePath != null);
     }
 
