@@ -1417,6 +1417,43 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
     }
 
     @Override
+    public void onFileLongClick(final int messagePosition, final int attachmentPosition, View caller) {
+        PopupMenu popupMenu = new PopupMenu(getActivity(), caller);
+        popupMenu.inflate(R.menu.menu_file_attachment);
+        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.action_copy_link:
+                        onCopyFileLink(messagePosition, attachmentPosition);
+                }
+                return true;
+            }
+        });
+        popupMenu.show();
+    }
+
+    private void onCopyFileLink(int messagePosition, int attachmentPosition) {
+        MessageItem messageItem = chatMessageAdapter.getMessageItem(messagePosition);
+        if (messageItem == null) return;
+
+        RealmList<Attachment> fileAttachments = new RealmList<>();
+        for (Attachment attachment : messageItem.getAttachments()) {
+            if (!attachment.isImage()) fileAttachments.add(attachment);
+        }
+
+        Attachment attachment = fileAttachments.get(attachmentPosition);
+        if (attachment == null) return;
+        String url = attachment.getFileUrl();
+
+        ClipboardManager clipboardManager = ((ClipboardManager)
+                getActivity().getSystemService(Context.CLIPBOARD_SERVICE));
+        if (clipboardManager != null)
+            clipboardManager.setPrimaryClip(ClipData.newPlainText(url, url));
+        Toast.makeText(getActivity(), R.string.toast_link_copied, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
     public void onFileClick(int messagePosition, int attachmentPosition) {
         clickedAttachmentPos = attachmentPosition;
         clickedMessagePos = messagePosition;
