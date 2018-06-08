@@ -15,7 +15,6 @@ import com.xabber.android.data.database.messagerealm.Attachment;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.file.FileManager;
-import com.xabber.android.data.extension.file.FileUtils;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.xmpp.httpfileupload.Slot;
@@ -337,12 +336,14 @@ public class HttpFileUploadManager {
     }
 
     private void onError(String fileMessageId, Throwable exception) {
+        MessageManager.getInstance().updateMessageWithError(fileMessageId, exception.toString());
         LogManager.i(this, "On HTTP file upload error");
         LogManager.exception(this, exception);
         Application.getInstance().onError(R.string.http_file_upload_slot_error);
     }
 
     private void onError(String fileMessageId, String errorDescription) {
+        MessageManager.getInstance().updateMessageWithError(fileMessageId, errorDescription);
         LogManager.i(this, "On HTTP file upload error");
         LogManager.e(this, errorDescription);
         Application.getInstance().onError(R.string.http_file_upload_slot_error);

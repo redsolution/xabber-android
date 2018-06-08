@@ -15,6 +15,7 @@
 package com.xabber.android.data.message;
 
 import android.os.Environment;
+import android.os.Looper;
 import android.support.annotation.Nullable;
 
 import com.xabber.android.R;
@@ -317,24 +318,35 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
     }
 
     public void updateMessageWithError(final String messageId, final String errorDescription) {
-        Realm realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
-
-        realm.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                MessageItem messageItem = realm.where(MessageItem.class)
-                        .equalTo(MessageItem.Fields.UNIQUE_ID, messageId)
-                        .findFirst();
-
-                if (messageItem != null) {
-                    messageItem.setError(true);
-                    messageItem.setErrorDescription(errorDescription);
-                    messageItem.setInProgress(false);
+        if (Looper.myLooper() == Looper.getMainLooper()) {
+            Realm realm = MessageDatabaseManager.getInstance().getRealmUiThread();
+            realm.executeTransactionAsync(new Realm.Transaction() {
+                @Override
+                public void execute(Realm realm) {
+                    updateMessageWithError(realm, messageId, errorDescription);
                 }
-            }
-        });
+            });
+        } else {
+            Realm realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
+            realm.executeTransaction(new Realm.Transaction() {
+                @Override
+                public void execute(Realm realm) {
+                    updateMessageWithError(realm, messageId, errorDescription);
+                }
+            });
+        }
+    }
 
-        realm.close();
+    private void updateMessageWithError(Realm realm, final String messageId, final String errorDescription) {
+        MessageItem messageItem = realm.where(MessageItem.class)
+                .equalTo(MessageItem.Fields.UNIQUE_ID, messageId)
+                .findFirst();
+
+        if (messageItem != null) {
+            messageItem.setError(true);
+            messageItem.setErrorDescription(errorDescription);
+            messageItem.setInProgress(false);
+        }
     }
 
     /**
