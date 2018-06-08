@@ -7,6 +7,7 @@ package com.xabber.android.presentation.ui.contactlist.viewobjects;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.text.Html;
 import android.view.View;
 
 import com.xabber.android.R;
@@ -95,7 +96,7 @@ public class ExtContactVO extends ContactVO {
                 viewHolder.tvMessageText.
                         setTypeface(viewHolder.tvMessageText.getTypeface(), Typeface.ITALIC);
             } else {
-                viewHolder.tvMessageText.setText(text);
+                viewHolder.tvMessageText.setText(Html.fromHtml(text));
                 viewHolder.tvMessageText.setTypeface(Typeface.DEFAULT);
             }
         }
