@@ -135,4 +135,5 @@
     <string name="action_download">Download</string>
     <string name="action_image_saved">Image saved</string>
     <string name="toast_link_copied">Link copied to clipboard</string>
+    <string name="toast_could_not_open_file">Could not open file</string>
 </resources>

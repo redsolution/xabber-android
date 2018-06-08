@@ -1494,9 +1494,9 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
 
                 try {
                     startActivity(i);
-                    // possible if file was not sent and don't have URL yet.
                 } catch (ActivityNotFoundException e) {
                     LogManager.exception(LOG_TAG, e);
+                    Toast.makeText(getActivity(), R.string.toast_could_not_open_file, Toast.LENGTH_SHORT).show();
                 }
 
             } else DownloadManager.getInstance().downloadFile(attachment, getAccount(), getActivity());
