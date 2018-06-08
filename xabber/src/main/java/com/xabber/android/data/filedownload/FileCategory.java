@@ -51,4 +51,27 @@ public enum FileCategory {
             return FileCategory.file;
         }
     }
+
+    public static String getCategoryName(FileCategory category, boolean withHtml) {
+        switch (category) {
+            case image:
+                return withHtml ? "<font color='#1565c0'>Image:</font> " : "Image: ";
+            case audio:
+                return withHtml ? "<font color='#1565c0'>Audio:</font> " : "Audio: ";
+            case video:
+                return withHtml ? "<font color='#1565c0'>Video:</font> " : "Video: ";
+            case document:
+                return withHtml ? "<font color='#1565c0'>Document:</font> " : "Document: ";
+            case pdf:
+                return withHtml ? "<font color='#1565c0'>PDF:</font> " : "PDF: ";
+            case table:
+                return withHtml ? "<font color='#1565c0'>Table:</font> " : "Table: ";
+            case presentation:
+                return withHtml ? "<font color='#1565c0'>Presentation:</font> " : "Presentation: ";
+            case archive:
+                return withHtml ? "<font color='#1565c0'>Archive:</font> " : "Archive: ";
+            default:
+                return withHtml ? "<font color='#1565c0'>File:</font> " : "File: ";
+        }
+    }
 }

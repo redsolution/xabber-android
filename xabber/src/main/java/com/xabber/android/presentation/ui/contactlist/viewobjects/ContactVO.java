@@ -172,7 +172,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
             if (lastMessage.haveAttachments() && lastMessage.getAttachments().size() > 0) {
                 Attachment attachment = lastMessage.getAttachments().get(0);
                 FileCategory category = FileCategory.determineFileCategory(attachment.getMimeType());
-                messageText = getCategoryName(category) + attachment.getTitle();
+                messageText = FileCategory.getCategoryName(category, true) + attachment.getTitle();
             } else if (lastMessage.getFilePath() != null) {
                 messageText = new File(lastMessage.getFilePath()).getName();
             } else {
@@ -520,28 +520,5 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
     /** Use only in RecentChatFragment for dynamic update item */
     public void setArchived(boolean archived) {
         this.archived = archived;
-    }
-
-    private static String getCategoryName(FileCategory category) {
-        switch (category) {
-            case image:
-                return "<font color='#1565c0'>Image:</font> ";
-            case audio:
-                return "<font color='#1565c0'>Audio:</font> ";
-            case video:
-                return "<font color='#1565c0'>Video:</font> ";
-            case document:
-                return "<font color='#1565c0'>Document:</font> ";
-            case pdf:
-                return "<font color='#1565c0'>PDF:</font> ";
-            case table:
-                return "<font color='#1565c0'>Table:</font> ";
-            case presentation:
-                return "<font color='#1565c0'>Presentation:</font> ";
-            case archive:
-                return "<font color='#1565c0'>Archive:</font> ";
-            default:
-                return "<font color='#1565c0'>File:</font> ";
-        }
     }
 }

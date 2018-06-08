@@ -187,7 +187,7 @@ public class RoomChat extends AbstractChat {
     @Override
     protected MessageItem createNewMessageItem(String text) {
         return createMessageItem(nickname, text, null, null, false,
-                false, false, false, UUID.randomUUID().toString());
+                false, false, false, UUID.randomUUID().toString(), null);
     }
 
     @Override
