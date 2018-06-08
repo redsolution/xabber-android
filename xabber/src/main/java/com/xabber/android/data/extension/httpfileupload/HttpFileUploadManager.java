@@ -2,6 +2,7 @@ package com.xabber.android.data.extension.httpfileupload;
 
 
 import android.graphics.BitmapFactory;
+import android.os.Environment;
 import android.webkit.MimeTypeMap;
 
 import com.xabber.android.R;
@@ -14,6 +15,7 @@ import com.xabber.android.data.database.messagerealm.Attachment;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.file.FileManager;
+import com.xabber.android.data.extension.file.FileUtils;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.xmpp.httpfileupload.Slot;
@@ -60,6 +62,8 @@ public class HttpFileUploadManager {
 
     private static HttpFileUploadManager instance;
 
+    private static final String XABBER_COMPRESSED_DIR = "Xabber Compressed";
+    private static final int MAX_SIZE_PIXELS = 1280;
     private static final MediaType CONTENT_TYPE = MediaType.parse("application/octet-stream");
     private static final String LOG_TAG = HttpFileUploadManager.class.getSimpleName();
 
@@ -100,6 +104,12 @@ public class HttpFileUploadManager {
     }
 
     private void completeUploading(AccountJid account, UserJid user, String fileMessageId, List<String> fileUrls) {
+        File file = new File(getCompressedDirPath());
+        try {
+            org.apache.commons.io.FileUtils.deleteDirectory(file);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         MessageManager.getInstance().updateFileMessage(account, user, fileMessageId, fileUrls);
     }
 
@@ -120,7 +130,17 @@ public class HttpFileUploadManager {
         String filePath = filePaths.get(0);
         filePaths.remove(0);
 
-        final File file = new File(filePath);
+        File uncompressedFile = new File(filePath);
+        final File file;
+
+        // compress image
+        if (FileManager.fileIsImage(uncompressedFile)) {
+            file = ImageCompressor.compressImage(uncompressedFile, MAX_SIZE_PIXELS, getCompressedDirPath());
+            if (file == null) {
+                onError(fileMessageId, "Cannot compress image");
+                return;
+            }
+        } else file = uncompressedFile;
 
         final com.xabber.xmpp.httpfileupload.Request httpFileUpload = new com.xabber.xmpp.httpfileupload.Request();
         httpFileUpload.setFilename(file.getName());
@@ -317,16 +337,19 @@ public class HttpFileUploadManager {
     }
 
     private void onError(String fileMessageId, Throwable exception) {
-        MessageManager.getInstance().updateMessageWithError(fileMessageId, exception.toString());
         LogManager.i(this, "On HTTP file upload error");
         LogManager.exception(this, exception);
         Application.getInstance().onError(R.string.http_file_upload_slot_error);
     }
 
     private void onError(String fileMessageId, String errorDescription) {
-        MessageManager.getInstance().updateMessageWithError(fileMessageId, errorDescription);
         LogManager.i(this, "On HTTP file upload error");
         LogManager.e(this, errorDescription);
         Application.getInstance().onError(R.string.http_file_upload_slot_error);
+    }
+
+    private static String getCompressedDirPath() {
+        return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath()
+                + File.separator + XABBER_COMPRESSED_DIR;
     }
 }
