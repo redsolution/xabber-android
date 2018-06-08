@@ -61,7 +61,7 @@ public class HttpFileUploadManager {
 
     private static HttpFileUploadManager instance;
 
-    private static final String XABBER_COMPRESSED_DIR = "Xabber Compressed";
+    private static final String XABBER_COMPRESSED_DIR = "Xabber/temp";
     private static final int MAX_SIZE_PIXELS = 1280;
     private static final MediaType CONTENT_TYPE = MediaType.parse("application/octet-stream");
     private static final String LOG_TAG = HttpFileUploadManager.class.getSimpleName();
