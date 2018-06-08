@@ -675,6 +675,7 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
         @SuppressLint("WrongConstant") NotificationChannel channel =
                 new NotificationChannel(channelId, channelName,
                         android.app.NotificationManager.IMPORTANCE_NONE);
+        channel.setShowBadge(false);
         android.app.NotificationManager service = (android.app.NotificationManager)
                 Application.getInstance().getSystemService(Context.NOTIFICATION_SERVICE);
         if (service != null) service.createNotificationChannel(channel);
