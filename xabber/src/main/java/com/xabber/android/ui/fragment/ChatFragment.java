@@ -931,11 +931,11 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
     private void uploadFile(String path) {
         List<String> paths = new ArrayList<>();
         paths.add(path);
-        HttpFileUploadManager.getInstance().uploadFile(account, user, paths);
+        HttpFileUploadManager.getInstance().uploadFile(account, user, paths, getActivity());
     }
 
     private void uploadFiles(List<String> paths) {
-        HttpFileUploadManager.getInstance().uploadFile(account, user, paths);
+        HttpFileUploadManager.getInstance().uploadFile(account, user, paths, getActivity());
     }
 
     private void changeEmojiKeyboardIcon(ImageView iconToBeChanged, int drawableResourceId){

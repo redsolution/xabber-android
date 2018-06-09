@@ -48,6 +48,7 @@ public class DownloadManager {
         if (attachment.getFileSize() >= getAvailableSpace()) {
             Log.d(LOG_TAG, "Not enough space for downloading");
             progressSubscribe.onNext(new ProgressData(0, "Not enough space for downloading", false, attachmentId));
+            isDownloading = false;
             return;
         }
 

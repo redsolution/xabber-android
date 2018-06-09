@@ -421,6 +421,7 @@
 
         <service android:name=".service.XabberService" />
         <service android:name=".service.DownloadService" />
+        <service android:name=".service.UploadService" />
 
         <receiver android:name=".receiver.BootReceiver">
             <intent-filter>

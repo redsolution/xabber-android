@@ -9,8 +9,9 @@ import java.io.FileOutputStream;
 public class ImageCompressor {
 
     private static final int IMAGE_QUALITY = 90;
+    private static final int MAX_SIZE_PIXELS = 1280;
 
-    public static File compressImage(final File file, int maxSizePixels, String pathToCompressed) {
+    public static File compressImage(final File file, String outputDirectory) {
         String path = file.getPath();
         String format = path.substring(path.lastIndexOf(".")).substring(1);
         Bitmap source = BitmapFactory.decodeFile(file.getPath());
@@ -35,18 +36,18 @@ public class ImageCompressor {
 
         // resize image
         Bitmap resizedBmp;
-        if (source.getHeight() > maxSizePixels || source.getWidth() > maxSizePixels) {
-            resizedBmp = resizeBitmap(source, maxSizePixels);
+        if (source.getHeight() > MAX_SIZE_PIXELS || source.getWidth() > MAX_SIZE_PIXELS) {
+            resizedBmp = resizeBitmap(source, MAX_SIZE_PIXELS);
         } else  {
             resizedBmp = source;
         }
 
         // create directory if not exist
-        File directory = new File(pathToCompressed);
+        File directory = new File(outputDirectory);
         directory.mkdirs();
 
         // compress image
-        File result = new File(pathToCompressed, file.getName());
+        File result = new File(outputDirectory, file.getName());
         FileOutputStream fOut;
         try {
             fOut = new FileOutputStream(result);

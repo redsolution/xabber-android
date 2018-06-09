@@ -374,7 +374,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     }
 
     public String newFileMessage(final List<File> files) {
-        Realm realm = MessageDatabaseManager.getInstance().getRealmUiThread();
+        Realm realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
 
         final String messageId = UUID.randomUUID().toString();
 
