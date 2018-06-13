@@ -58,6 +58,7 @@ public class UploadService extends IntentService {
     public final static String KEY_USER_JID = "user_jid";
     public final static String KEY_FILE_PATHS = "file_paths";
     public final static String KEY_UPLOAD_SERVER_URL = "upload_server_url";
+    public final static String KEY_FILE_COUNT = "file_count";
     public final static String KEY_PROGRESS = "progress";
     public final static String KEY_ERROR = "error";
     public final static String KEY_MESSAGE_ID = "message_id";
@@ -166,9 +167,9 @@ public class UploadService extends IntentService {
     }
 
     private void publishProgress(String fileMessageId, int uploadedFiles, int fileCount) {
-        int progress = (int) Math.round((double) uploadedFiles / (double) fileCount * 100.d);
         Bundle resultData = new Bundle();
-        resultData.putInt(KEY_PROGRESS, progress);
+        resultData.putInt(KEY_PROGRESS, uploadedFiles);
+        resultData.putInt(KEY_FILE_COUNT, fileCount);
         resultData.putString(KEY_MESSAGE_ID, fileMessageId);
         receiver.send(UPDATE_PROGRESS_CODE, resultData);
     }

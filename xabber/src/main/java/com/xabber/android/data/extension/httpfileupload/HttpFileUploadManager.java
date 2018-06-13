@@ -15,9 +15,7 @@ import com.xabber.android.data.database.messagerealm.Attachment;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.file.FileManager;
-
 import com.xabber.android.data.log.LogManager;
-
 import com.xabber.android.service.UploadService;
 
 import org.jivesoftware.smack.SmackException;
@@ -68,7 +66,7 @@ public class HttpFileUploadManager {
                            final List<String> filePaths, Context context) {
 
         if (isUploading) {
-            progressSubscribe.onNext(new ProgressData(0, "Uploading already started",
+            progressSubscribe.onNext(new ProgressData(0, 0, "Uploading already started",
                     false, null));
             return;
         }
@@ -77,7 +75,7 @@ public class HttpFileUploadManager {
 
         final Jid uploadServerUrl = uploadServers.get(account);
         if (uploadServerUrl == null) {
-            progressSubscribe.onNext(new ProgressData(0,
+            progressSubscribe.onNext(new ProgressData(0, 0,
                     "Downloading already started", false, null));
             isUploading = false;
             return;
@@ -213,19 +211,20 @@ public class HttpFileUploadManager {
             super.onReceiveResult(resultCode, resultData);
 
             int currentProgress = resultData.getInt(UploadService.KEY_PROGRESS);
+            int fileCount = resultData.getInt(UploadService.KEY_FILE_COUNT);
             String messageId = resultData.getString(UploadService.KEY_MESSAGE_ID);
             String error = resultData.getString(UploadService.KEY_ERROR);
 
             switch (resultCode) {
                 case UploadService.UPDATE_PROGRESS_CODE:
-                    progressSubscribe.onNext(new ProgressData(currentProgress, null, false, messageId));
+                    progressSubscribe.onNext(new ProgressData(fileCount, currentProgress, null, false, messageId));
                     break;
                 case UploadService.ERROR_CODE:
-                    progressSubscribe.onNext(new ProgressData(0, error, false, messageId));
+                    progressSubscribe.onNext(new ProgressData(fileCount, 0, error, false, messageId));
                     isUploading = false;
                     break;
                 case UploadService.COMPLETE_CODE:
-                    progressSubscribe.onNext(new ProgressData(100, null, true, messageId));
+                    progressSubscribe.onNext(new ProgressData(fileCount, 100, null, true, messageId));
                     isUploading = false;
                     break;
             }
@@ -233,12 +232,14 @@ public class HttpFileUploadManager {
     }
 
     public class ProgressData {
+        final int fileCount;
         final int progress;
         final String error;
         final boolean completed;
         final String messageId;
 
-        public ProgressData(int progress, String error, boolean completed, String messageId) {
+        public ProgressData(int fileCount, int progress, String error, boolean completed, String messageId) {
+            this.fileCount = fileCount;
             this.progress = progress;
             this.error = error;
             this.completed = completed;
@@ -260,6 +261,10 @@ public class HttpFileUploadManager {
 
         public String getMessageId() {
             return messageId;
+        }
+
+        public int getFileCount() {
+            return fileCount;
         }
     }
 }
