@@ -91,6 +91,11 @@ public class HttpFileUploadManager {
         context.startService(intent);
     }
 
+    public void cancelUpload(Context context) {
+        Intent intent = new Intent(context, UploadService.class);
+        context.stopService(intent);
+    }
+
     private void discoverSupport(AccountJid account, XMPPConnection xmppConnection) throws SmackException.NotConnectedException,
             XMPPException.XMPPErrorException, SmackException.NoResponseException, InterruptedException {
 

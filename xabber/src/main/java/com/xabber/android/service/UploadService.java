@@ -68,6 +68,7 @@ public class UploadService extends IntentService {
     public static final int COMPLETE_CODE = 2234;
 
     private ResultReceiver receiver;
+    private boolean needStop = false;
 
     public UploadService() {
         super(SERVICE_NAME);
@@ -83,6 +84,12 @@ public class UploadService extends IntentService {
         CharSequence uploadServerUrl = intent.getCharSequenceExtra(KEY_UPLOAD_SERVER_URL);
 
         startWork(account, user, filePaths, uploadServerUrl);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        needStop = true;
     }
 
     private void startWork(AccountJid account, UserJid user, List<String> filePaths, CharSequence uploadServerUrl) {
@@ -112,6 +119,11 @@ public class UploadService extends IntentService {
 
         List<String> uploadedFilesUrls = new ArrayList<>();
         for (String filePath : filePaths) {
+            if (needStop) {
+                stopWork(fileMessageId);
+                return;
+            }
+
             try {
                 File uncompressedFile = new File(filePath);
                 final File file;
@@ -141,25 +153,34 @@ public class UploadService extends IntentService {
             publishProgress(fileMessageId, uploadedFilesUrls.size(), filePaths.size());
         }
 
-        // remove temporary files
-        try {
-            File tempDirectory = new File(getCompressedDirPath());
-            org.apache.commons.io.FileUtils.deleteDirectory(tempDirectory);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        removeTempDirectory();
 
         // check that files are uploaded
         if (uploadedFilesUrls.size() == 0) {
             String error = "Could not upload any files";
             setErrorForMessage(fileMessageId, error);
-            publishError(error, fileMessageId);
+            publishError(fileMessageId, error);
             return;
         }
 
         // save results to Realm and send message
         MessageManager.getInstance().updateFileMessage(account, user, fileMessageId, uploadedFilesUrls);
         publishCompleted(fileMessageId);
+    }
+
+    private void removeTempDirectory() {
+        try {
+            File tempDirectory = new File(getCompressedDirPath());
+            org.apache.commons.io.FileUtils.deleteDirectory(tempDirectory);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void stopWork(String messageId) {
+        removeTempDirectory();
+        publishError(messageId, "Uploading aborted");
+        MessageManager.getInstance().removeMessage(messageId);
     }
 
     private void setErrorForMessage(String fileMessageId, String error) {

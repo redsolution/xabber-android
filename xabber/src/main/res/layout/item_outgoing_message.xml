@@ -68,7 +68,7 @@
         <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/ivCancelDownload"
+            android:id="@+id/ivCancelUpload"
             android:src="@drawable/ic_close"
             android:tint="@color/white"
             android:background="@drawable/ripple_background_circle"

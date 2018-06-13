@@ -711,7 +711,7 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
 
     private static void setUpProgress(Context context, OutgoingMessage holder,
                                       HttpFileUploadManager.ProgressData progressData) {
-        if (progressData != null && progressData.getMessageId().equals(holder.messageId)) {
+        if (progressData != null && holder.messageId.equals(progressData.getMessageId())) {
             if (progressData.isCompleted()) {
                 showProgress(holder, false);
             } else if (progressData.getError() != null) {
@@ -730,11 +730,11 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
     private static void showProgress(OutgoingMessage holder, boolean show) {
         if (show) {
             if (holder.uploadProgressBar != null) holder.uploadProgressBar.setVisibility(View.VISIBLE);
-            if (holder.ivCancelDownload != null) holder.ivCancelDownload.setVisibility(View.VISIBLE);
+            if (holder.ivCancelUpload != null) holder.ivCancelUpload.setVisibility(View.VISIBLE);
             if (holder.messageFileInfo != null) holder.messageFileInfo.setVisibility(View.VISIBLE);
         } else {
             if (holder.uploadProgressBar != null) holder.uploadProgressBar.setVisibility(View.GONE);
-            if (holder.ivCancelDownload != null) holder.ivCancelDownload.setVisibility(View.GONE);
+            if (holder.ivCancelUpload != null) holder.ivCancelUpload.setVisibility(View.GONE);
             if (holder.messageFileInfo != null) holder.messageFileInfo.setVisibility(View.GONE);
         }
     }
@@ -780,14 +780,15 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
         private CompositeSubscription subscriptions = new CompositeSubscription();
         String messageId;
         final ProgressBar uploadProgressBar;
-        final ImageButton ivCancelDownload;
+        final ImageButton ivCancelUpload;
 
         public Message(View itemView, MessageClickListener onClickListener, @StyleRes int appearance) {
             super(itemView, appearance);
             this.onClickListener = onClickListener;
 
             uploadProgressBar = itemView.findViewById(R.id.uploadProgressBar);
-            ivCancelDownload = itemView.findViewById(R.id.ivCancelDownload);
+            ivCancelUpload = itemView.findViewById(R.id.ivCancelUpload);
+            if (ivCancelUpload != null) ivCancelUpload.setOnClickListener(this);
 
             messageTime = (TextView) itemView.findViewById(R.id.message_time);
             messageHeader = (TextView) itemView.findViewById(R.id.message_header);
@@ -869,6 +870,9 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
                 case R.id.message_image:
                     onClickListener.onImageClick(adapterPosition, 0);
                     break;
+                case R.id.ivCancelUpload:
+                    onClickListener.onUploadCancel();
+                    break;
                 default:
                     onClickListener.onMessageClick(messageBalloon, adapterPosition);
                     break;
@@ -881,6 +885,7 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
             void onFileClick(int messagePosition, int attachmentPosition);
             void onFileLongClick(int messagePosition, int attachmentPosition, View caller);
             void onDownloadCancel();
+            void onUploadCancel();
             void onDownloadError(String error);
         }
 

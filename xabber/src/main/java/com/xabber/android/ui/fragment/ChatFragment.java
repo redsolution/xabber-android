@@ -1412,6 +1412,11 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
     }
 
     @Override
+    public void onUploadCancel() {
+        HttpFileUploadManager.getInstance().cancelUpload(getActivity());
+    }
+
+    @Override
     public void onDownloadError(String error) {
         Toast.makeText(getActivity(), error, Toast.LENGTH_SHORT).show();
     }
