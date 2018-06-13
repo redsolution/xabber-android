@@ -10,6 +10,7 @@ import android.os.ResultReceiver;
 import android.support.annotation.Nullable;
 import android.webkit.MimeTypeMap;
 
+import com.xabber.android.data.Application;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.database.messagerealm.Attachment;
 import com.xabber.android.data.entity.AccountJid;
@@ -76,7 +77,7 @@ public class HttpFileUploadManager {
         final Jid uploadServerUrl = uploadServers.get(account);
         if (uploadServerUrl == null) {
             progressSubscribe.onNext(new ProgressData(0, 0,
-                    "Downloading already started", false, null));
+                    "Upload server not found", false, null));
             isUploading = false;
             return;
         }
