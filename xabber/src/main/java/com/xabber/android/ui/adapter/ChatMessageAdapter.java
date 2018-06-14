@@ -480,7 +480,8 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
             return;
         }
 
-        ((Message)holder).messageId = messageItem.getUniqueId();
+        if (holder instanceof Message)
+            ((Message)holder).messageId = messageItem.getUniqueId();
 
         switch (viewType) {
             case VIEW_TYPE_HINT:
