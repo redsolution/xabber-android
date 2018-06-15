@@ -118,6 +118,7 @@ public class UploadService extends IntentService {
         final String fileMessageId = MessageManager.getInstance().createFileMessage(account, user, files);
 
         List<String> uploadedFilesUrls = new ArrayList<>();
+        List<String> notUploadedFilesUrls = new ArrayList<>();
         for (String filePath : filePaths) {
             if (needStop) {
                 stopWork(fileMessageId);
@@ -147,6 +148,7 @@ public class UploadService extends IntentService {
                 else throw new Exception("Upload failed: " + response.message());
 
             } catch (Exception e) {
+                notUploadedFilesUrls.add(filePath);
                 publishError(fileMessageId, e.toString());
             }
 
@@ -164,7 +166,8 @@ public class UploadService extends IntentService {
         }
 
         // save results to Realm and send message
-        MessageManager.getInstance().updateFileMessage(account, user, fileMessageId, uploadedFilesUrls);
+        MessageManager.getInstance().updateFileMessage(account, user, fileMessageId,
+                uploadedFilesUrls, notUploadedFilesUrls);
         publishCompleted(fileMessageId);
     }
 

@@ -277,7 +277,8 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
         return chat.newFileMessage(files);
     }
 
-    public void updateFileMessage(AccountJid account, UserJid user, final String messageId, final List<String> urls) {
+    public void updateFileMessage(AccountJid account, UserJid user, final String messageId,
+                                  final List<String> urls, final List<String> notUploadedFilesUrls) {
         final AbstractChat chat = getChat(account, user);
         if (chat == null) {
             return;
@@ -294,6 +295,17 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
 
                 if (messageItem != null) {
                     RealmList<Attachment> attachments = messageItem.getAttachments();
+
+                    // remove attachments that not uploaded
+                    for (String file : notUploadedFilesUrls) {
+                        for (Attachment attachment : attachments) {
+                            if (file.equals(attachment.getFilePath())) {
+                                attachments.remove(attachment);
+                                break;
+                            }
+                        }
+                    }
+
                     int i = 0;
                     for (Attachment attachment : attachments) {
                         attachment.setFileUrl(urls.get(i));
