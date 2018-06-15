@@ -24,10 +24,12 @@ import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionState;
+import com.xabber.android.data.database.messagerealm.Attachment;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.muc.MUCManager;
+import com.xabber.android.data.filedownload.FileCategory;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.NotificationState;
@@ -168,7 +170,9 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
             messageText = statusText;
         } else {
             if (lastMessage.haveAttachments() && lastMessage.getAttachments().size() > 0) {
-                messageText = "File: " + lastMessage.getAttachments().get(0).getTitle();
+                Attachment attachment = lastMessage.getAttachments().get(0);
+                FileCategory category = FileCategory.determineFileCategory(attachment.getMimeType());
+                messageText = FileCategory.getCategoryName(category, true) + attachment.getTitle();
             } else if (lastMessage.getFilePath() != null) {
                 messageText = new File(lastMessage.getFilePath()).getName();
             } else {

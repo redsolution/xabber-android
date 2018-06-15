@@ -15,6 +15,7 @@
 package com.xabber.android.data.message;
 
 import android.os.Environment;
+import android.os.Looper;
 import android.support.annotation.Nullable;
 
 import com.xabber.android.R;
@@ -255,20 +256,18 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
     private void sendMessage(final String text, final AbstractChat chat) {
         final long startTime = System.currentTimeMillis();
 
-        MessageDatabaseManager.getInstance()
-                // TODO: 13.03.18 ANR - WRITE
-                .getRealmUiThread().executeTransaction(new Realm.Transaction() {
+        MessageDatabaseManager.getInstance().getRealmUiThread()
+                .executeTransactionAsync(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
                 MessageItem newMessageItem = chat.createNewMessageItem(text);
                 realm.copyToRealm(newMessageItem);
                 LogManager.d("REALM", Thread.currentThread().getName()
                         + " save message before sending: " + (System.currentTimeMillis() - startTime));
-
+                if (chat.canSendMessage())
+                    chat.sendMessages();
             }
         });
-        if (chat.canSendMessage())
-            chat.sendMessages();
     }
 
     public String createFileMessage(AccountJid account, UserJid user, List<File> files) {
@@ -301,7 +300,13 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
                         i++;
                     }
 
-                    messageItem.setText(urls.get(0));
+                    StringBuilder strBuilder = new StringBuilder();
+                    for (String url : urls) {
+                        strBuilder.append(url);
+                        strBuilder.append(" ");
+                    }
+
+                    messageItem.setText(strBuilder.toString());
                     messageItem.setSent(false);
                     messageItem.setInProgress(false);
                 }
@@ -313,24 +318,35 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
     }
 
     public void updateMessageWithError(final String messageId, final String errorDescription) {
-        Realm realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
-
-        realm.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                MessageItem messageItem = realm.where(MessageItem.class)
-                        .equalTo(MessageItem.Fields.UNIQUE_ID, messageId)
-                        .findFirst();
-
-                if (messageItem != null) {
-                    messageItem.setError(true);
-                    messageItem.setErrorDescription(errorDescription);
-                    messageItem.setInProgress(false);
+        if (Looper.myLooper() == Looper.getMainLooper()) {
+            Realm realm = MessageDatabaseManager.getInstance().getRealmUiThread();
+            realm.executeTransactionAsync(new Realm.Transaction() {
+                @Override
+                public void execute(Realm realm) {
+                    updateMessageWithError(realm, messageId, errorDescription);
                 }
-            }
-        });
+            });
+        } else {
+            Realm realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
+            realm.executeTransaction(new Realm.Transaction() {
+                @Override
+                public void execute(Realm realm) {
+                    updateMessageWithError(realm, messageId, errorDescription);
+                }
+            });
+        }
+    }
 
-        realm.close();
+    private void updateMessageWithError(Realm realm, final String messageId, final String errorDescription) {
+        MessageItem messageItem = realm.where(MessageItem.class)
+                .equalTo(MessageItem.Fields.UNIQUE_ID, messageId)
+                .findFirst();
+
+        if (messageItem != null) {
+            messageItem.setError(true);
+            messageItem.setErrorDescription(errorDescription);
+            messageItem.setInProgress(false);
+        }
     }
 
     /**
@@ -469,9 +485,8 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
     public void clearHistory(final AccountJid account, final UserJid user) {
         final long startTime = System.currentTimeMillis();
 
-        MessageDatabaseManager.getInstance()
-                // TODO: 13.03.18 ANR
-                .getRealmUiThread().executeTransactionAsync(new Realm.Transaction() {
+        MessageDatabaseManager.getInstance().getRealmUiThread()
+                .executeTransactionAsync(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
                 realm.where(MessageItem.class)
@@ -671,9 +686,10 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
             }
 
             final AbstractChat finalChat = chat;
-            // TODO: 12.03.18 ANR - WRITE (переписать без UI)
+
             final long startTime = System.currentTimeMillis();
-            MessageDatabaseManager.getInstance().getRealmUiThread().executeTransaction(new Realm.Transaction() {
+            MessageDatabaseManager.getInstance().getRealmUiThread()
+                    .executeTransactionAsync(new Realm.Transaction() {
                 @Override
                 public void execute(Realm realm) {
                     MessageItem newMessageItem = finalChat.createNewMessageItem(body);
@@ -688,9 +704,10 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
                     realm.copyToRealm(newMessageItem);
                     LogManager.d("REALM", Thread.currentThread().getName()
                             + " save carbons message: " + (System.currentTimeMillis() - startTime));
+
+                    EventBus.getDefault().post(new NewMessageEvent());
                 }
             });
-            EventBus.getDefault().post(new NewMessageEvent());
             return;
         }
 
@@ -883,5 +900,20 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
             NotificationManager.getInstance().
                     removeMessageNotification(chat.getAccount(), chat.getUser());
         }
+    }
+
+    public static void setAttachmentLocalPathToNull(final String uniqId) {
+        final Realm realm = MessageDatabaseManager.getInstance().getRealmUiThread();
+        realm.executeTransactionAsync(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                Attachment first = realm.where(Attachment.class)
+                        .equalTo(Attachment.Fields.UNIQUE_ID, uniqId)
+                        .findFirst();
+                if (first != null) {
+                    first.setFilePath(null);
+                }
+            }
+        });
     }
 }

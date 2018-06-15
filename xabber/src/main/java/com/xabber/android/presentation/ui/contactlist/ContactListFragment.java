@@ -187,7 +187,7 @@ public class ContactListFragment extends Fragment implements ContactListView,
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        presenter = ContactListPresenter.getInstance(getActivity());
+        presenter = ContactListPresenter.getInstance();
         ((ContactListActivity)getActivity()).setStatusBarColor();
     }
 

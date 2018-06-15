@@ -2,31 +2,66 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="58dp"
     android:paddingLeft="8dp"
     android:paddingRight="8dp"
     android:background="?android:attr/selectableItemBackground"
     >
 
-    <ImageView
-        android:id="@+id/ivFileIcon"
+    <RelativeLayout
+        android:id="@+id/iconLayout"
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_centerVertical="true"
-        android:src="@drawable/ic_file"
-        android:background="@drawable/round_shape"
-        android:paddingRight="11dp"
-        android:paddingLeft="11dp"
-        android:tint="@color/grey_700"
-        />
+        >
+
+        <ImageView
+            android:id="@+id/ivFileIcon"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_file"
+            android:background="@drawable/round_shape"
+            android:paddingRight="11dp"
+            android:paddingLeft="11dp"
+            android:tint="@color/grey_700"
+            />
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_centerVertical="true"
+            android:indeterminate="false"
+            android:max="100"
+            android:progress="50"
+            android:progressDrawable="@drawable/circular_progress_bar"
+            android:background="@drawable/round_shape_transparent"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:visibility="gone"
+            />
+
+        <ImageButton
+            android:id="@+id/ivCancelDownload"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/ic_close"
+            android:tint="@color/white"
+            android:background="@drawable/ripple_background_circle"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:visibility="gone"
+            />
+
+    </RelativeLayout>
 
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:layout_toRightOf="@id/ivFileIcon"
+        android:layout_toRightOf="@id/iconLayout"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
         >

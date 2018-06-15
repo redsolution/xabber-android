@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.xabber.android.R;
 import com.xabber.android.ui.adapter.RecentImagesAdapter;
@@ -84,6 +85,11 @@ public class AttachDialog extends BottomSheetDialogFragment implements RecentIma
             attachSendButtonText.setVisibility(View.INVISIBLE);
             attachSendButtonIcon.setImageResource(R.drawable.ic_down_circle);
         }
+    }
+
+    @Override
+    public void tooManyFilesSelected() {
+        Toast.makeText(getActivity(), R.string.too_many_files_at_once, Toast.LENGTH_SHORT).show();
     }
 
     @Override

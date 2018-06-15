@@ -28,6 +28,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -49,6 +50,7 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.file.FileManager;
+import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.muc.RoomContact;
 import com.xabber.android.data.extension.otr.OTRManager;
@@ -72,6 +74,8 @@ import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmRecyclerViewAdapter;
 import io.realm.RealmResults;
+import rx.functions.Action1;
+import rx.subscriptions.CompositeSubscription;
 
 
 public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, ChatMessageAdapter.BasicMessage> {
@@ -466,7 +470,7 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
     }
 
     @Override
-    public void onBindViewHolder(BasicMessage holder, int position) {
+    public void onBindViewHolder(final BasicMessage holder, int position) {
         final int viewType = getItemViewType(position);
 
         MessageItem messageItem = getMessageItem(position);
@@ -475,6 +479,9 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
             LogManager.w(LOG_TAG, "onBindViewHolder Null message item. Position: " + position);
             return;
         }
+
+        if (holder instanceof Message)
+            ((Message)holder).messageId = messageItem.getUniqueId();
 
         switch (viewType) {
             case VIEW_TYPE_HINT:
@@ -509,6 +516,19 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
             holder.itemView.setBackgroundColor(context.getResources().getColor(R.color.unread_messages_background));
         else holder.itemView.setBackgroundDrawable(null);
 
+        if (holder instanceof OutgoingMessage) {
+            holder.itemView.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
+                @Override
+                public void onViewAttachedToWindow(View view) {
+                    ((Message) holder).subscribeForUploadProgress(context);
+                }
+
+                @Override
+                public void onViewDetachedFromWindow(View v) {
+                    ((Message) holder).unsubscribeAll();
+                }
+            });
+        }
     }
 
     @Override
@@ -690,6 +710,36 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
         return null;
     }
 
+    private static void setUpProgress(Context context, OutgoingMessage holder,
+                                      HttpFileUploadManager.ProgressData progressData) {
+        if (progressData != null && holder.messageId.equals(progressData.getMessageId())) {
+            if (progressData.isCompleted()) {
+                showProgress(holder, false);
+            } else if (progressData.getError() != null) {
+                showProgress(holder, false);
+                holder.onClickListener.onDownloadError(progressData.getError());
+            } else {
+                if (holder.uploadProgressBar != null) holder.uploadProgressBar.setProgress(progressData.getProgress());
+                if (holder.messageFileInfo != null)
+                    holder.messageFileInfo.setText(context.getString(R.string.uploaded_files_count,
+                            progressData.getProgress() + "/" + progressData.getFileCount()));
+                showProgress(holder, true);
+            }
+        } else showProgress(holder, false);
+    }
+
+    private static void showProgress(OutgoingMessage holder, boolean show) {
+        if (show) {
+            if (holder.uploadProgressBar != null) holder.uploadProgressBar.setVisibility(View.VISIBLE);
+            if (holder.ivCancelUpload != null) holder.ivCancelUpload.setVisibility(View.VISIBLE);
+            if (holder.messageFileInfo != null) holder.messageFileInfo.setVisibility(View.VISIBLE);
+        } else {
+            if (holder.uploadProgressBar != null) holder.uploadProgressBar.setVisibility(View.GONE);
+            if (holder.ivCancelUpload != null) holder.ivCancelUpload.setVisibility(View.GONE);
+            if (holder.messageFileInfo != null) holder.messageFileInfo.setVisibility(View.GONE);
+        }
+    }
+
     static class BasicMessage extends RecyclerView.ViewHolder {
 
         TextView messageText;
@@ -728,9 +778,18 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
 
         FrameLayout imageGridContainer;
 
+        private CompositeSubscription subscriptions = new CompositeSubscription();
+        String messageId;
+        final ProgressBar uploadProgressBar;
+        final ImageButton ivCancelUpload;
+
         public Message(View itemView, MessageClickListener onClickListener, @StyleRes int appearance) {
             super(itemView, appearance);
             this.onClickListener = onClickListener;
+
+            uploadProgressBar = itemView.findViewById(R.id.uploadProgressBar);
+            ivCancelUpload = itemView.findViewById(R.id.ivCancelUpload);
+            if (ivCancelUpload != null) ivCancelUpload.setOnClickListener(this);
 
             messageTime = (TextView) itemView.findViewById(R.id.message_time);
             messageHeader = (TextView) itemView.findViewById(R.id.message_header);
@@ -763,6 +822,26 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
         }
 
         @Override
+        public void onFileLongClick(int attachmentPosition, View caller) {
+            int messagePosition = getAdapterPosition();
+            if (messagePosition == RecyclerView.NO_POSITION) {
+                LogManager.w(LOG_TAG, "onClick: no position");
+                return;
+            }
+            onClickListener.onFileLongClick(messagePosition, attachmentPosition, caller);
+        }
+
+        @Override
+        public void onDownloadCancel() {
+            onClickListener.onDownloadCancel();
+        }
+
+        @Override
+        public void onDownloadError(String error) {
+            onClickListener.onDownloadError(error);
+        }
+
+        @Override
         public void onClick(View v) {
             int adapterPosition = getAdapterPosition();
             if (adapterPosition == RecyclerView.NO_POSITION) {
@@ -790,6 +869,11 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
                     onClickListener.onImageClick(adapterPosition, 5);
                     break;
                 case R.id.message_image:
+                    onClickListener.onImageClick(adapterPosition, 0);
+                    break;
+                case R.id.ivCancelUpload:
+                    onClickListener.onUploadCancel();
+                    break;
                 default:
                     onClickListener.onMessageClick(messageBalloon, adapterPosition);
                     break;
@@ -800,8 +884,25 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
             void onMessageClick(View caller, int position);
             void onImageClick(int messagePosition, int attachmentPosition);
             void onFileClick(int messagePosition, int attachmentPosition);
+            void onFileLongClick(int messagePosition, int attachmentPosition, View caller);
+            void onDownloadCancel();
+            void onUploadCancel();
+            void onDownloadError(String error);
         }
 
+        public void unsubscribeAll() {
+            subscriptions.clear();
+        }
+
+        public void subscribeForUploadProgress(final Context context) {
+            subscriptions.add(HttpFileUploadManager.getInstance().subscribeForProgress()
+                .doOnNext(new Action1<HttpFileUploadManager.ProgressData>() {
+                    @Override
+                    public void call(HttpFileUploadManager.ProgressData progressData) {
+                        setUpProgress(context, (OutgoingMessage) Message.this, progressData);
+                    }
+                }).subscribe());
+        }
     }
 
     private static class IncomingMessage extends Message {

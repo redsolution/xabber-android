@@ -75,6 +75,7 @@ import com.xabber.android.data.extension.muc.RoomState;
 import com.xabber.android.data.extension.otr.AuthAskEvent;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.otr.SecurityLevel;
+import com.xabber.android.data.filedownload.DownloadManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
@@ -87,6 +88,7 @@ import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.activity.ChatActivity;
 import com.xabber.android.ui.activity.ContactActivity;
 import com.xabber.android.ui.activity.ContactEditActivity;
+import com.xabber.android.ui.activity.ImageViewerActivity;
 import com.xabber.android.ui.activity.QuestionActivity;
 import com.xabber.android.ui.adapter.ChatMessageAdapter;
 import com.xabber.android.ui.adapter.CustomMessageMenuAdapter;
@@ -147,6 +149,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
     private static final int PERMISSIONS_REQUEST_ATTACH_FILE = 21;
     private static final int PERMISSIONS_REQUEST_EXPORT_CHAT = 22;
     private static final int PERMISSIONS_REQUEST_CAMERA = 23;
+    private static final int PERMISSIONS_REQUEST_DOWNLOAD_FILE = 24;
 
     private AccountJid account;
     private UserJid user;
@@ -197,6 +200,9 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
 
     private Intent notifyIntent;
     private String currentPicturePath;
+
+    private int clickedAttachmentPos;
+    private int clickedMessagePos;
 
     public static ChatFragment newInstance(AccountJid account, UserJid user) {
         ChatFragment fragment = new ChatFragment();
@@ -754,24 +760,26 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
 
         switch (requestCode) {
             case PERMISSIONS_REQUEST_ATTACH_FILE:
-                if (PermissionsRequester.isPermissionGranted(grantResults)) {
-                    onFilesClick();
-                } else {
-                    onNoReadPermissionError();
-                }
+                if (PermissionsRequester.isPermissionGranted(grantResults))
+                    ((ChatActivity)getActivity()).showAttachDialog();
+                else onNoReadPermissionError();
                 break;
 
             case PERMISSIONS_REQUEST_EXPORT_CHAT:
-                if (PermissionsRequester.isPermissionGranted(grantResults)) {
-                    showExportChatDialog();
-                } else {
-                    onNoWritePermissionError();
-                }
+                if (PermissionsRequester.isPermissionGranted(grantResults)) showExportChatDialog();
+                else onNoWritePermissionError();
                 break;
 
             case PERMISSIONS_REQUEST_CAMERA:
-                if (PermissionsRequester.hasCameraPermission()) startCamera();
+                if (PermissionsRequester.isPermissionGranted(grantResults))
+                    startCamera();
                 else onNoCameraPermissionError();
+                break;
+
+            case PERMISSIONS_REQUEST_DOWNLOAD_FILE:
+                if (PermissionsRequester.isPermissionGranted(grantResults))
+                    openFileOrDownload(clickedMessagePos, clickedAttachmentPos);
+                else onNoWritePermissionError();
                 break;
         }
     }
@@ -785,7 +793,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
     }
 
     private void onNoCameraPermissionError() {
-        Toast.makeText(getActivity(), R.string.no_permission_to_read_files, Toast.LENGTH_SHORT).show();
+        Toast.makeText(getActivity(), R.string.no_permission_to_camera, Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -824,6 +832,11 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
                     return;
                 }
 
+                if (paths.size() > 10) {
+                    Toast.makeText(getActivity(), R.string.too_many_files_at_once, Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 uploadFiles(paths);
                 break;
         }
@@ -850,9 +863,8 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
 
     @Override
     public void onCameraClick() {
-        if (PermissionsRequester.hasCameraPermission())
-            startCamera();
-        else PermissionsRequester.requestCameraPermissionIfNeeded(getActivity());
+        if (PermissionsRequester.requestCameraPermissionIfNeeded(this,
+                PERMISSIONS_REQUEST_CAMERA)) startCamera();
     }
 
     private void startCamera() {
@@ -919,11 +931,11 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
     private void uploadFile(String path) {
         List<String> paths = new ArrayList<>();
         paths.add(path);
-        HttpFileUploadManager.getInstance().uploadFile(account, user, paths);
+        HttpFileUploadManager.getInstance().uploadFile(account, user, paths, getActivity());
     }
 
     private void uploadFiles(List<String> paths) {
-        HttpFileUploadManager.getInstance().uploadFile(account, user, paths);
+        HttpFileUploadManager.getInstance().uploadFile(account, user, paths, getActivity());
     }
 
     private void changeEmojiKeyboardIcon(ImageView iconToBeChanged, int drawableResourceId){
@@ -1393,9 +1405,69 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
                 .setPositiveButton("Ok", null)
                 .show();
     }
-    
+
+    @Override
+    public void onDownloadCancel() {
+        DownloadManager.getInstance().cancelDownload(getActivity());
+    }
+
+    @Override
+    public void onUploadCancel() {
+        HttpFileUploadManager.getInstance().cancelUpload(getActivity());
+    }
+
+    @Override
+    public void onDownloadError(String error) {
+        Toast.makeText(getActivity(), error, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onFileLongClick(final int messagePosition, final int attachmentPosition, View caller) {
+        PopupMenu popupMenu = new PopupMenu(getActivity(), caller);
+        popupMenu.inflate(R.menu.menu_file_attachment);
+        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.action_copy_link:
+                        onCopyFileLink(messagePosition, attachmentPosition);
+                }
+                return true;
+            }
+        });
+        popupMenu.show();
+    }
+
+    private void onCopyFileLink(int messagePosition, int attachmentPosition) {
+        MessageItem messageItem = chatMessageAdapter.getMessageItem(messagePosition);
+        if (messageItem == null) return;
+
+        RealmList<Attachment> fileAttachments = new RealmList<>();
+        for (Attachment attachment : messageItem.getAttachments()) {
+            if (!attachment.isImage()) fileAttachments.add(attachment);
+        }
+
+        Attachment attachment = fileAttachments.get(attachmentPosition);
+        if (attachment == null) return;
+        String url = attachment.getFileUrl();
+
+        ClipboardManager clipboardManager = ((ClipboardManager)
+                getActivity().getSystemService(Context.CLIPBOARD_SERVICE));
+        if (clipboardManager != null)
+            clipboardManager.setPrimaryClip(ClipData.newPlainText(url, url));
+        Toast.makeText(getActivity(), R.string.toast_link_copied, Toast.LENGTH_SHORT).show();
+    }
+
     @Override
     public void onFileClick(int messagePosition, int attachmentPosition) {
+        clickedAttachmentPos = attachmentPosition;
+        clickedMessagePos = messagePosition;
+        if (PermissionsRequester.requestFileWritePermissionIfNeeded(
+                this, PERMISSIONS_REQUEST_DOWNLOAD_FILE))
+            openFileOrDownload(messagePosition, attachmentPosition);
+    }
+
+    private void openFileOrDownload(int messagePosition, int attachmentPosition) {
         MessageItem messageItem = chatMessageAdapter.getMessageItem(messagePosition);
         if (messageItem == null) {
             LogManager.w(LOG_TAG, "onMessageFileClick: null message item. Position: " + messagePosition);
@@ -1411,25 +1483,28 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
             Attachment attachment = fileAttachments.get(attachmentPosition);
             if (attachment == null) return;
 
-            Intent i = new Intent(Intent.ACTION_VIEW);
             if (attachment.getFilePath() != null) {
+                File file = new File(attachment.getFilePath());
+                if (!file.exists()) {
+                    MessageManager.setAttachmentLocalPathToNull(attachment.getUniqueId());
+                    return;
+                }
+
+                Intent i = new Intent(Intent.ACTION_VIEW);
                 String path = attachment.getFilePath();
                 i.setDataAndType(FileProvider.getUriForFile(getActivity(),
                         getActivity().getApplicationContext().getPackageName()
                                 + ".provider", new File(path)), attachment.getMimeType());
                 i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
-            } else {
-                String uri = attachment.getFileUrl();
-                i.setData(Uri.parse(uri));
-            }
+                try {
+                    startActivity(i);
+                } catch (ActivityNotFoundException e) {
+                    LogManager.exception(LOG_TAG, e);
+                    Toast.makeText(getActivity(), R.string.toast_could_not_open_file, Toast.LENGTH_SHORT).show();
+                }
 
-            try {
-                startActivity(i);
-                // possible if file was not sent and don't have URL yet.
-            } catch (ActivityNotFoundException e) {
-                LogManager.exception(LOG_TAG, e);
-            }
+            } else DownloadManager.getInstance().downloadFile(attachment, getAccount(), getActivity());
         }
     }
 
@@ -1442,29 +1517,17 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         }
 
         if (messageItem.haveAttachments()) {
-            RealmList<Attachment> imageAttachments = new RealmList<>();
-            for (Attachment attachment : messageItem.getAttachments()) {
-                if (attachment.isImage()) imageAttachments.add(attachment);
-            }
-
-            Attachment attachment = imageAttachments.get(attachmentPosition);
-            if (attachment == null) return;
-
-            Intent i = new Intent(Intent.ACTION_VIEW);
-            if (attachment.getFilePath() != null) {
-                String path = attachment.getFilePath();
-                i.setDataAndType(FileProvider.getUriForFile(getActivity(),
-                        getActivity().getApplicationContext().getPackageName()
-                                + ".provider", new File(path)), attachment.getMimeType());
-                i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-
-            } else {
-                String uri = attachment.getFileUrl();
-                i.setData(Uri.parse(uri));
-            }
-
             try {
-                startActivity(i);
+                startActivity(ImageViewerActivity.createIntent(getActivity(),
+                        messageItem.getUniqueId(), attachmentPosition));
+                // possible if image was not sent and don't have URL yet.
+            } catch (ActivityNotFoundException e) {
+                LogManager.exception(LOG_TAG, e);
+            }
+        } else {
+            try {
+                startActivity(ImageViewerActivity.createIntent(getActivity(),
+                        messageItem.getUniqueId(), messageItem.getText()));
                 // possible if image was not sent and don't have URL yet.
             } catch (ActivityNotFoundException e) {
                 LogManager.exception(LOG_TAG, e);

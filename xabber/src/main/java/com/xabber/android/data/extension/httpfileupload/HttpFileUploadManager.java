@@ -1,25 +1,25 @@
 package com.xabber.android.data.extension.httpfileupload;
 
-
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.BitmapFactory;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Parcelable;
+import android.os.ResultReceiver;
+import android.support.annotation.Nullable;
+import android.webkit.MimeTypeMap;
 
-import com.xabber.android.R;
 import com.xabber.android.data.Application;
-import com.xabber.android.data.account.AccountItem;
-import com.xabber.android.data.account.AccountManager;
-import com.xabber.android.data.connection.CertificateManager;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.database.messagerealm.Attachment;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.message.MessageManager;
-import com.xabber.xmpp.httpfileupload.Slot;
+import com.xabber.android.service.UploadService;
 
-import org.jivesoftware.smack.ExceptionCallback;
 import org.jivesoftware.smack.SmackException;
-import org.jivesoftware.smack.StanzaListener;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Stanza;
@@ -30,175 +30,71 @@ import org.jxmpp.jid.DomainBareJid;
 import org.jxmpp.jid.Jid;
 
 import java.io.File;
-import java.io.IOException;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
 
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.X509TrustManager;
-
-import de.duenndns.ssl.MemorizingTrustManager;
 import io.realm.RealmList;
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
-
+import rx.subjects.PublishSubject;
 
 public class HttpFileUploadManager {
 
-    private static HttpFileUploadManager instance;
-
-    private static final MediaType CONTENT_TYPE = MediaType.parse("application/octet-stream");
     private static final String LOG_TAG = HttpFileUploadManager.class.getSimpleName();
 
+    private static HttpFileUploadManager instance;
     private Map<AccountJid, Jid> uploadServers = new ConcurrentHashMap<>();
+    private PublishSubject<ProgressData> progressSubscribe = PublishSubject.create();
+    private boolean isUploading;
 
     public static HttpFileUploadManager getInstance() {
         if (instance == null) {
             instance = new HttpFileUploadManager();
         }
-
         return instance;
     }
 
-    private HttpFileUploadManager() {
+    public PublishSubject<ProgressData> subscribeForProgress() {
+        return progressSubscribe;
     }
 
     public boolean isFileUploadSupported(AccountJid account) {
         return uploadServers.containsKey(account);
     }
 
-    public void uploadFile(final AccountJid account, final UserJid user, final List<String> filePaths) {
+    public void uploadFile(final AccountJid account, final UserJid user,
+                           final List<String> filePaths, Context context) {
+
+        if (isUploading) {
+            progressSubscribe.onNext(new ProgressData(0, 0, "Uploading already started",
+                    false, null));
+            return;
+        }
+
+        isUploading = true;
+
         final Jid uploadServerUrl = uploadServers.get(account);
         if (uploadServerUrl == null) {
+            progressSubscribe.onNext(new ProgressData(0, 0,
+                    "Upload server not found", false, null));
+            isUploading = false;
             return;
         }
 
-        // create fileMessage with files
-        List<File> files = new ArrayList<>();
-        for (String filePath : filePaths) {
-            files.add(new File(filePath));
-        }
-        final String fileMessageId = MessageManager.getInstance().createFileMessage(account, user, files);
+        Intent intent = new Intent(context, UploadService.class);
+        intent.putExtra(UploadService.KEY_RECEIVER, new UploadReceiver(new Handler()));
+        intent.putExtra(UploadService.KEY_ACCOUNT_JID, (Parcelable) account);
+        intent.putExtra(UploadService.KEY_USER_JID, user);
+        intent.putStringArrayListExtra(UploadService.KEY_FILE_PATHS, (ArrayList<String>) filePaths);
+        intent.putExtra(UploadService.KEY_UPLOAD_SERVER_URL, (CharSequence) uploadServerUrl);
 
-        List<String> fileUrls = new ArrayList<>();
-        requestNextFileSlotOrComplete(filePaths, uploadServerUrl, account, user, fileUrls, fileMessageId);
+        context.startService(intent);
     }
 
-    private void completeUploading(AccountJid account, UserJid user, String fileMessageId, List<String> fileUrls) {
-        MessageManager.getInstance().updateFileMessage(account, user, fileMessageId, fileUrls);
-    }
-
-    private void requestNextFileSlotOrComplete(final List<String> filePaths, final Jid uploadServerUrl,
-                                               final AccountJid account, final UserJid user,
-                                               final List<String> fileUrls, final String fileMessageId) {
-        AccountItem accountItem = AccountManager.getInstance().getAccount(account);
-        if (accountItem == null) {
-            return;
-        }
-
-        if (filePaths.size() <= 0) {
-            completeUploading(account, user, fileMessageId, fileUrls);
-            return;
-        }
-
-        String filePath = filePaths.get(0);
-        filePaths.remove(0);
-
-        final File file = new File(filePath);
-
-        final com.xabber.xmpp.httpfileupload.Request httpFileUpload = new com.xabber.xmpp.httpfileupload.Request();
-        httpFileUpload.setFilename(file.getName());
-        httpFileUpload.setSize(String.valueOf(file.length()));
-        httpFileUpload.setTo(uploadServerUrl);
-
-        try {
-            accountItem.getConnection().sendIqWithResponseCallback(httpFileUpload, new StanzaListener() {
-                @Override
-                public void processStanza(Stanza packet) throws SmackException.NotConnectedException, InterruptedException {
-                    if (!(packet instanceof Slot)) {
-                        return;
-                    }
-
-                    uploadFileToSlot(account, user, (Slot) packet, file, filePaths, uploadServerUrl, fileUrls, fileMessageId);
-                }
-
-            }, new ExceptionCallback() {
-                @Override
-                public void processException(Exception exception) {
-                    LogManager.i(this, "On HTTP file upload slot error");
-                    LogManager.exception(this, exception);
-                    Application.getInstance().onError(R.string.http_file_upload_slot_error);
-                }
-            });
-        } catch (SmackException.NotConnectedException | InterruptedException e) {
-            LogManager.exception(this, e);
-        }
-    }
-
-    private void uploadFileToSlot(final AccountJid account, final UserJid user, final Slot slot,
-                                  final File file, final List<String> filePaths, final Jid uploadServerUrl,
-                                  final List<String> fileUrls, final String fileMessageId) {
-
-        SSLSocketFactory sslSocketFactory = null;
-        MemorizingTrustManager mtm = CertificateManager.getInstance().getNewFileUploadManager(account);
-
-        final SSLContext sslContext;
-        try {
-            sslContext = SSLContext.getInstance("SSL");
-            sslContext.init(null, new X509TrustManager[]{mtm}, new java.security.SecureRandom());
-            sslSocketFactory = sslContext.getSocketFactory();
-        } catch (NoSuchAlgorithmException | KeyManagementException e) {
-            return;
-        }
-
-        OkHttpClient client = new OkHttpClient().newBuilder()
-                .sslSocketFactory(sslSocketFactory)
-                .hostnameVerifier(mtm.wrapHostnameVerifier(new org.apache.http.conn.ssl.StrictHostnameVerifier()))
-                .writeTimeout(5, TimeUnit.MINUTES)
-                .connectTimeout(5, TimeUnit.MINUTES)
-                .readTimeout(5, TimeUnit.MINUTES)
-                .build();
-
-
-        Request request = new Request.Builder()
-                .url(slot.getPutUrl())
-                .put(RequestBody.create(CONTENT_TYPE, file))
-                .build();
-
-        LogManager.i(HttpFileUploadManager.this, "starting upload file to " + slot.getPutUrl() + " size " + file.length());
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                LogManager.i(HttpFileUploadManager.this, "onFailure " + e.getMessage());
-                // TODO: 17.05.18 обработка ошибок
-                //MessageManager.getInstance().updateMessageWithError(fileMessageId, e.toString());
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                LogManager.i(HttpFileUploadManager.this, "onResponse " + response.isSuccessful() + " " + response.body().string());
-                if (response.isSuccessful()) {
-                    fileUrls.add(slot.getGetUrl());
-                    requestNextFileSlotOrComplete(filePaths, uploadServerUrl, account, user, fileUrls, fileMessageId);
-                } else {
-                    // TODO: 17.05.18 обработка ошибок
-                    //MessageManager.getInstance().updateMessageWithError(fileMessageId, response.message());
-                }
-            }
-        });
-
+    public void cancelUpload(Context context) {
+        Intent intent = new Intent(context, UploadService.class);
+        context.stopService(intent);
     }
 
     private void discoverSupport(AccountJid account, XMPPConnection xmppConnection) throws SmackException.NotConnectedException,
@@ -261,49 +157,10 @@ public class HttpFileUploadManager {
 
 
     public static String getMimeType(String path) {
-        if (path.contains(".doc") || path.contains(".docx")) {
-            // Word document
-            return "application/msword";
-        } else if(path.contains(".pdf")) {
-            // PDF file
-            return "application/pdf";
-        } else if(path.contains(".ppt") || path.contains(".pptx")) {
-            // Powerpoint file
-            return "application/vnd.ms-powerpoint";
-        } else if(path.contains(".xls") || path.contains(".xlsx")) {
-            // Excel file
-            return "application/vnd.ms-excel";
-        } else if(path.contains(".zip") || path.contains(".rar")) {
-            // WAV audio file
-            return "application/x-wav";
-        } else if(path.contains(".rtf")) {
-            // RTF file
-            return "application/rtf";
-        } else if(path.contains(".wav") || path.contains(".mp3")) {
-            // WAV audio file
-            return "audio/x-wav";
-        } else if(path.contains(".gif")) {
-            // GIF file
-            return "image/gif";
-        } else if(path.contains(".jpg") || path.contains(".jpeg") || path.contains(".png")) {
-            // JPG file
-            return "image/jpeg";
-        } else if(path.contains(".txt")) {
-            // Text file
-            return "text/plain";
-        } else if(path.contains(".3gp") || path.contains(".mpg") || path.contains(".mpeg")
-                || path.contains(".mpe") || path.contains(".mp4") || path.contains(".avi")) {
-            // Video files
-            return "video/*";
-        } else {
-            // any other file
-            return "*/*";
-        }
-    }
-
-    public static String getFileName(String path) {
-        File file = new File(path);
-        return file.getName();
+        String extension = path.substring(path.lastIndexOf(".")).substring(1);
+        String type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+        if (type == null || type.isEmpty()) type = "*/*";
+        return type;
     }
 
     public static RealmList<Attachment> parseFileMessage(Stanza packet) {
@@ -347,5 +204,73 @@ public class HttpFileUploadManager {
             attachment.setIsImage(FileManager.isImageUrl(uri.getUri()));
         }
         return attachment;
+    }
+
+    public class UploadReceiver extends ResultReceiver {
+
+        public UploadReceiver(Handler handler) {
+            super(handler);
+        }
+
+        @Override
+        protected void onReceiveResult(int resultCode, Bundle resultData) {
+            super.onReceiveResult(resultCode, resultData);
+
+            int currentProgress = resultData.getInt(UploadService.KEY_PROGRESS);
+            int fileCount = resultData.getInt(UploadService.KEY_FILE_COUNT);
+            String messageId = resultData.getString(UploadService.KEY_MESSAGE_ID);
+            String error = resultData.getString(UploadService.KEY_ERROR);
+
+            switch (resultCode) {
+                case UploadService.UPDATE_PROGRESS_CODE:
+                    progressSubscribe.onNext(new ProgressData(fileCount, currentProgress, null, false, messageId));
+                    break;
+                case UploadService.ERROR_CODE:
+                    progressSubscribe.onNext(new ProgressData(fileCount, 0, error, false, messageId));
+                    isUploading = false;
+                    break;
+                case UploadService.COMPLETE_CODE:
+                    progressSubscribe.onNext(new ProgressData(fileCount, 100, null, true, messageId));
+                    isUploading = false;
+                    break;
+            }
+        }
+    }
+
+    public class ProgressData {
+        final int fileCount;
+        final int progress;
+        final String error;
+        final boolean completed;
+        final String messageId;
+
+        public ProgressData(int fileCount, int progress, String error, boolean completed, String messageId) {
+            this.fileCount = fileCount;
+            this.progress = progress;
+            this.error = error;
+            this.completed = completed;
+            this.messageId = messageId;
+        }
+
+        public int getProgress() {
+            return progress;
+        }
+
+        @Nullable
+        public String getError() {
+            return error;
+        }
+
+        public boolean isCompleted() {
+            return completed;
+        }
+
+        public String getMessageId() {
+            return messageId;
+        }
+
+        public int getFileCount() {
+            return fileCount;
+        }
     }
 }

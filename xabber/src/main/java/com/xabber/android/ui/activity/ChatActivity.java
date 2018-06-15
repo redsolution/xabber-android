@@ -383,7 +383,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         if (PermissionsRequester.requestFileReadPermissionIfNeeded(this, PERMISSIONS_REQUEST_ATTACH_FILE)) {
             List<String> paths = new ArrayList<>();
             paths.add(path);
-            HttpFileUploadManager.getInstance().uploadFile(account, user, paths);
+            HttpFileUploadManager.getInstance().uploadFile(account, user, paths, this);
         }
     }
 

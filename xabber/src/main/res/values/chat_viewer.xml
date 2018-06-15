@@ -114,6 +114,7 @@
     <string name="message_status_error">Error</string>
     <string name="message_status_forwarded">Sent from another device </string>
     <string name="message_status_not_sent">Sending</string>
+    <string name="too_many_files_at_once">You cannot send more than 10 items at once</string>
 
     <string name="toast_no_history">There are no more messages in the history</string>
 
@@ -129,4 +130,12 @@
 
     <string name="showcase_chat_text_1">Swipe right to open recent chats</string>
     <string name="showcase_chat_text_2">Swipe left to open contact information</string>
+
+    <string name="action_copy_link">Copy link</string>
+    <string name="action_download">Download</string>
+    <string name="action_image_saved">Image saved</string>
+    <string name="toast_link_copied">Link copied to clipboard</string>
+    <string name="toast_could_not_open_file">Could not open file</string>
+
+    <string name="uploaded_files_count">Uploading.. %s</string>
 </resources>
