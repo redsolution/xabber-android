@@ -92,17 +92,6 @@ public class ImageGridBuilder {
                 FileManager.scaleImage(layoutParams, imageHeight, imageWidth);
                 Glide.with(parent.getContext())
                         .load(imageUrl)
-                        .listener(new RequestListener<String, GlideDrawable>() {
-                            @Override
-                            public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
-                                return true;
-                            }
-
-                            @Override
-                            public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
-                                return false;
-                            }
-                        })
                         .into(imageView);
             } else {
 

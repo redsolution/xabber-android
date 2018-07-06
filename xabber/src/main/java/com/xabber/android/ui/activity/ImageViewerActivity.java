@@ -32,6 +32,7 @@ import com.xabber.android.ui.helper.PermissionsRequester;
 
 import io.realm.Realm;
 import io.realm.RealmList;
+import rx.Observable;
 import rx.functions.Action1;
 import rx.subscriptions.CompositeSubscription;
 
@@ -50,6 +51,7 @@ public class ImageViewerActivity extends AppCompatActivity implements Toolbar.On
     private ImageView ivCancelDownload;
 
     private CompositeSubscription subscriptions = new CompositeSubscription();
+    private CompositeSubscription attachmentStateSubscription = new CompositeSubscription();
 
     @NonNull
     public static Intent createIntent(Context context, String id, int position) {
@@ -154,11 +156,14 @@ public class ImageViewerActivity extends AppCompatActivity implements Toolbar.On
             @Override
             public void onPageSelected(int position) {
                 updateToolbar();
+                unsubscribeAttachmentState();
+                subscribeForAttachment(imageAttachments.get(position));
             }
 
             @Override
             public void onPageScrollStateChanged(int state) { }
         });
+        if (imageAttachments.size() > imagePosition) subscribeForAttachment(imageAttachments.get(imagePosition));
     }
 
     @Override
@@ -248,6 +253,7 @@ public class ImageViewerActivity extends AppCompatActivity implements Toolbar.On
 
     private void unsubscribeAll() {
         subscriptions.clear();
+        unsubscribeAttachmentState();
     }
 
     private void subscribeForDownloadProgress() {
@@ -294,5 +300,24 @@ public class ImageViewerActivity extends AppCompatActivity implements Toolbar.On
 
     private void onNoWritePermissionError() {
         Toast.makeText(this, R.string.no_permission_to_write_files, Toast.LENGTH_SHORT).show();
+    }
+
+    private void subscribeForAttachment(Attachment attachment) {
+        if (attachment == null) return;
+        Realm realm = MessageDatabaseManager.getInstance().getRealmUiThread();
+        Observable<Attachment> observable = realm.where(Attachment.class)
+                .equalTo(Attachment.Fields.UNIQUE_ID, attachment.getUniqueId())
+                .findFirst().asObservable();
+
+        attachmentStateSubscription.add(observable.doOnNext(new Action1<Attachment>() {
+            @Override
+            public void call(Attachment attachment) {
+                updateToolbar();
+            }
+        }).subscribe());
+    }
+
+    private void unsubscribeAttachmentState() {
+        attachmentStateSubscription.clear();
     }
 }
