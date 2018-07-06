@@ -822,13 +822,8 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
         }
 
         @Override
-        public void onFileLongClick(int attachmentPosition, View caller) {
-            int messagePosition = getAdapterPosition();
-            if (messagePosition == RecyclerView.NO_POSITION) {
-                LogManager.w(LOG_TAG, "onClick: no position");
-                return;
-            }
-            onClickListener.onFileLongClick(messagePosition, attachmentPosition, caller);
+        public void onFileLongClick(Attachment attachment, View caller) {
+            onClickListener.onFileLongClick(attachment, caller);
         }
 
         @Override
@@ -884,7 +879,7 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
             void onMessageClick(View caller, int position);
             void onImageClick(int messagePosition, int attachmentPosition);
             void onFileClick(int messagePosition, int attachmentPosition);
-            void onFileLongClick(int messagePosition, int attachmentPosition, View caller);
+            void onFileLongClick(Attachment attachment, View caller);
             void onDownloadCancel();
             void onUploadCancel();
             void onDownloadError(String error);

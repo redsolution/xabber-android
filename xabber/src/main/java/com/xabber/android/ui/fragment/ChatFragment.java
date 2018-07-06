@@ -145,6 +145,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
 
     public static final int FILE_SELECT_ACTIVITY_REQUEST_CODE = 11;
     private static final int REQUEST_IMAGE_CAPTURE = 12;
+    public static final int SHARE_ACTIVITY_REQUEST_CODE = 25;
 
     private static final int PERMISSIONS_REQUEST_ATTACH_FILE = 21;
     private static final int PERMISSIONS_REQUEST_EXPORT_CHAT = 22;
@@ -1422,7 +1423,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
     }
 
     @Override
-    public void onFileLongClick(final int messagePosition, final int attachmentPosition, View caller) {
+    public void onFileLongClick(final Attachment attachment, View caller) {
         PopupMenu popupMenu = new PopupMenu(getActivity(), caller);
         popupMenu.inflate(R.menu.menu_file_attachment);
         popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
@@ -1430,7 +1431,11 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
             public boolean onMenuItemClick(MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.action_copy_link:
-                        onCopyFileLink(messagePosition, attachmentPosition);
+                        onCopyFileLink(attachment);
+                        break;
+                    case R.id.action_share:
+                        onShareClick(attachment);
+                        break;
                 }
                 return true;
             }
@@ -1438,16 +1443,22 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         popupMenu.show();
     }
 
-    private void onCopyFileLink(int messagePosition, int attachmentPosition) {
-        MessageItem messageItem = chatMessageAdapter.getMessageItem(messagePosition);
-        if (messageItem == null) return;
+    private void onShareClick(Attachment attachment) {
+        if (attachment == null) return;
+        String path = attachment.getFilePath();
 
-        RealmList<Attachment> fileAttachments = new RealmList<>();
-        for (Attachment attachment : messageItem.getAttachments()) {
-            if (!attachment.isImage()) fileAttachments.add(attachment);
+        if (path != null) {
+            File file = new File(path);
+            if (file.exists()) {
+                startActivityForResult(FileManager.getIntentForShareFile(file),
+                        SHARE_ACTIVITY_REQUEST_CODE);
+                return;
+            }
         }
+        Toast.makeText(getActivity(), R.string.FILE_NOT_FOUND, Toast.LENGTH_SHORT).show();
+    }
 
-        Attachment attachment = fileAttachments.get(attachmentPosition);
+    private void onCopyFileLink(Attachment attachment) {
         if (attachment == null) return;
         String url = attachment.getFileUrl();
 

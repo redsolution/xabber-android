@@ -27,7 +27,7 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.FileViewHold
 
     interface FileListListener {
         void onFileClick(int position);
-        void onFileLongClick(int position, View caller);
+        void onFileLongClick(Attachment attachment, View caller);
         void onDownloadCancel();
         void onDownloadError(String error);
     }
@@ -67,7 +67,8 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.FileViewHold
         holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                listener.onFileLongClick(position, v);
+                if (items.size() > position)
+                    listener.onFileLongClick(items.get(position), v);
                 return true;
             }
         });
