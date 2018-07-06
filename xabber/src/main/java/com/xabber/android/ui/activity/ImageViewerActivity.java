@@ -26,9 +26,12 @@ import com.xabber.android.data.database.MessageDatabaseManager;
 import com.xabber.android.data.database.messagerealm.Attachment;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.filedownload.DownloadManager;
 import com.xabber.android.ui.fragment.ImageViewerFragment;
 import com.xabber.android.ui.helper.PermissionsRequester;
+
+import java.io.File;
 
 import io.realm.Realm;
 import io.realm.RealmList;
@@ -42,6 +45,7 @@ public class ImageViewerActivity extends AppCompatActivity implements Toolbar.On
     private static final String MESSAGE_ID = "MESSAGE_ID";
     private static final String ATTACHMENT_POSITION = "ATTACHMENT_POSITION";
     private static final int PERMISSIONS_REQUEST_DOWNLOAD_FILE = 24;
+    public static final int SHARE_ACTIVITY_REQUEST_CODE = 25;
 
     private AccountJid accountJid;
     private RealmList<Attachment> imageAttachments = new RealmList<>();
@@ -190,6 +194,10 @@ public class ImageViewerActivity extends AppCompatActivity implements Toolbar.On
             case R.id.action_copy_link:
                 onCopyLinkClick();
                 break;
+
+            case R.id.action_share:
+                onShareClick();
+                break;
         }
         return true;
     }
@@ -224,6 +232,22 @@ public class ImageViewerActivity extends AppCompatActivity implements Toolbar.On
         Long size = attachment.getFileSize();
         menu.findItem(R.id.action_download_image).setVisible(filePath == null && size != null);
         menu.findItem(R.id.action_done).setVisible(filePath != null);
+    }
+
+    private void onShareClick() {
+        int position = viewPager.getCurrentItem();
+        Attachment attachment = imageAttachments.get(position);
+        String path = attachment.getFilePath();
+
+        if (path != null) {
+            File file = new File(path);
+            if (file.exists()) {
+                startActivityForResult(FileManager.getIntentForShareFile(file),
+                        SHARE_ACTIVITY_REQUEST_CODE);
+                return;
+            }
+        }
+        Toast.makeText(this, R.string.FILE_NOT_FOUND, Toast.LENGTH_SHORT).show();
     }
 
     private void onCopyLinkClick() {

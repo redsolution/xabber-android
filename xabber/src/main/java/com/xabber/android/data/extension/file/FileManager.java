@@ -1,6 +1,7 @@
 package com.xabber.android.data.extension.file;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.BitmapFactory;
 import android.media.ExifInterface;
@@ -15,6 +16,7 @@ import com.xabber.android.BuildConfig;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.database.messagerealm.MessageItem;
+import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.log.LogManager;
 
 import java.io.BufferedOutputStream;
@@ -263,6 +265,14 @@ public class FileManager {
                 ".jpg",         /* suffix */
                 Application.getInstance().getExternalFilesDir(null)      /* directory */
         );
+    }
+
+    public static Intent getIntentForShareFile(File file) {
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.putExtra(Intent.EXTRA_STREAM, getFileUri(file));
+        intent.setType(HttpFileUploadManager.getMimeType(file.getPath()));
+        intent.putExtra(Intent.EXTRA_TEXT, file.getName());
+        return intent;
     }
 
 }

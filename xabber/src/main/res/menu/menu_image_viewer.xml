@@ -3,9 +3,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item android:id="@+id/action_copy_link"
-        android:orderInCategory="90"
+        android:orderInCategory="80"
         android:title="@string/action_copy_link"
         android:icon="@drawable/ic_link"
+        app:showAsAction="always"
+        />
+
+    <item android:id="@+id/action_share"
+        android:orderInCategory="90"
+        android:title="@string/share"
+        android:icon="@drawable/ic_share"
         app:showAsAction="always"
         />
 
