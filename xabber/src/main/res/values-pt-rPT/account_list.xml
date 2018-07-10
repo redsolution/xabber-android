@@ -5,7 +5,6 @@
   <string name="account_add">Adicionar conta</string>
   <string name="account_register">Registar nova conta</string>
   <string name="account_delete">Eliminar conta</string>
-  <string name="account_editor">Editar conta</string>
   <string name="account_state_registration">A registar</string>
   <string name="account_state_authentication">A autorizar</string>
   <string name="account_state_connected">On-line</string>

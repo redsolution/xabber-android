@@ -5,7 +5,6 @@
   <string name="cache_clear_warning">Deseja remover o histórico das conversações e outros dados locais? \nOs dados da conta e dos contactos não serão afetados. A aplicação irá fechar.</string>
   <string name="chats_send_by_enter">Enviar com Enter\nA mensagem pode ser enviada ao pressionar a tecla \"Enter\"</string>
   <string name="connection_go_away">Ausência automática\nDefine automaticamente o estado como ausente ao bloquear o ecrã</string>
-  <string name="contacts_order">Ordenar contactos\nDefine a ordem pela qual os contactos são exibidos</string>
   <string name="contacts_order_alphabet">Alfabeticamente</string>
   <string name="contacts_order_status">Por estado</string>
   <string name="contacts_show_accounts">Agrupar por conta\nAgrupa os contactos da lista de contactos por conta</string>
@@ -20,13 +19,9 @@
   <string name="debug_connection_errors_title">Mostrar erros de ligação\nExibe as janelas de exceções de ligação</string>
   <string name="events_lightning">Luz de notificação\nPiscar o LED quando com notificação</string>
   <string name="events_persistent">Ícone na barra de tarefas\nMostra uma notificação persistente. Esta opção impede que o Android carregue a aplicação a partir da memória</string>
-  <string name="events_sound">Som de notificação\nEscolha uma som de notificação</string>
-  <string name="events_vibro">Vibrar\nVibra com notificação</string>
-  <string name="interface_theme">Tema\nDefinições do tema</string>
   <string name="interface_theme_dark">Escuro</string>
   <string name="interface_theme_light">Claro</string>
   <string name="interface_theme_normal">Predefinição</string>
-  <string name="interface_smiles">Ícones de expressão\nDefinições dos ícones de expressão (anteriormente conhecidos como sorrisos)</string>
   <string name="interface_smiles_android">Ícones de expressão de Android</string>
   <string name="interface_smiles_none">Sem ícones de expressão gráficos</string>
   <string name="preference_connection">Definições de ligação\nDefinições de ligação</string>
@@ -37,16 +32,13 @@
   <string name="preference_interface">Definições de tema\nDefinições de aparência</string>
   <string name="about_viewer">Sobre</string>
   <string name="chats_show_background">Mostrar fundo\nAo desativar pode melhorar o desempenho</string>
-  <string name="chats_font_size">Tamanho da letra\nTamanho do texto de mensagem</string>
   <string name="chats_font_size_large">Grande</string>
   <string name="chats_font_size_normal">Normal</string>
   <string name="chats_font_size_small">Pequena</string>
   <string name="chats_font_size_xlarge">Muito grande</string>
-  <string name="chats_hide_keyboard">Ocultar teclado\nOculta o teclado virtual depois de enviar a mensagem</string>
   <string name="chats_hide_keyboard_landscape">Na horizontal</string>
   <string name="chats_receipt">Recibo da entrega de mensagem\nEnvia e recebe os recibos da entrega de mensagem</string>
   <string name="chats_show_avatars">Avatares nas mensagens\nMostra os avatares em cada mensagem</string>
-  <string name="chats_show_status_change">Mostrar alterações de estado\nMostra as mensagens sobre as alterações dos estados</string>
   <string name="chats_show_status_change_muc">Em conferências</string>
   <string name="chats_state_notification">Enviar notificações de escrita\nNotifica o outro utilizador que está a escrever</string>
   <string name="connection_adjust_priority">Ajustar prioridades\nDefine a prioridade de acordo com o estado selecionado. A prioridade da conta será substituída.</string>
@@ -64,7 +56,6 @@
   <string name="events_message_chat">Apenas conversações</string>
   <string name="events_message_chat_and_muc">Conversações e conferências</string>
   <string name="events_message_none">Não notificar</string>
-  <string name="events_show_text">Mostrar mensagem na notificação\nMostra o texto da mensagem na área de notificação</string>
   <string name="events_visible_chat">Notificar na conversa atual\nNotificar ao receber mensagens na conversação atual</string>
   <string name="events_suppress_100">Suprimir algumas mensagens de estado\nNão receber mensagens \"Esta conferência não é anónima\"</string>
   <string name="negative_priotiry_summary">%s (não receberá mensagens de qualquer conversação)</string>

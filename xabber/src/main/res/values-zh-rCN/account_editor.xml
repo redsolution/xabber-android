@@ -73,6 +73,15 @@
   <string name="account_color_name_teal">深青色</string>
   <string name="account_color_name_blue_grey">蓝灰色</string>
   <string name="account_color_name_cyan">青色</string>
+  <string name="account_color_name_deep_purple">深紫色</string>
+  <string name="account_color_name_lime">青柠色</string>
+  <string name="account_color_name_pink">粉色</string>
+  <string name="account_color_name_purple">紫色</string>
+  <string name="account_color_name_light_blue">淡蓝色</string>
+  <string name="account_color_name_light_green">淡绿色</string>
+  <string name="account_color_name_amber">琥珀色</string>
+  <string name="account_color_name_deep_orange">深橙色</string>
+  <string name="account_color_name_brown">棕色</string>
   <string name="account_connection_settings">连接设置</string>
   <string name="blocked_contacts">屏蔽的联系人</string>
   <string name="blocked_contacts_unknown">不能确定是否支持屏蔽联系人。</string>
@@ -95,4 +104,9 @@
   <string name="account_mam_sync_none">不加载任何人的历史记录</string>
   <string name="account_clear_history_on_exit_title">退出时清除历史记录</string>
   <string name="account_clear_history_on_exit_summary">在退出 Xabber 之前从设备中删除所有聊天消息。</string>
+  <string name="account_bookmarks">书签</string>
+  <string name="account_bookmarks_summary">此帐户的书签列表</string>
+  <string name="account_sync">同步</string>
+  <string name="account_sync_summary">与 Xabber 帐户同步</string>
+  <string name="bookmark_not_supported">服务器不支持书签。</string>
 </resources>

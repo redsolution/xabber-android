@@ -5,7 +5,6 @@
   <string name="account_add">Додај налог</string>
   <string name="account_register">Региструј нови налог</string>
   <string name="account_delete">Обриши налог</string>
-  <string name="account_editor">Уреди налог</string>
   <string name="account_state_registration">Региструјем</string>
   <string name="account_state_authentication">Пријављујем се</string>
   <string name="account_state_connected">Повезан</string>

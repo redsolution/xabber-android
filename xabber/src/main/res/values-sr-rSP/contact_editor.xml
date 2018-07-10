@@ -19,6 +19,8 @@
   <string name="error_during_image_processing">Грешка током обраде слике</string>
   <string name="account_settings">Поставке налога</string>
   <string name="account_user_info">Подаци о налогу</string>
+  <string name="account_server_info">Подаци о серверу</string>
+  <string name="account_server_info_description">Списак могућности сервера</string>
   <string name="conference_private_chat_invitation">%1$s са %2$s жели да почне приватно ћаскање са вама</string>
   <string name="accept_muc_private_chat">Прихвати</string>
   <string name="block_muc_private_chat">Блокирај</string>

@@ -10,6 +10,8 @@
   <string name="chat_input_hint">овде унесите вашу поруку</string>
   <string name="chat_send">Пошаљи</string>
   <string name="clear_history">Очисти историјат</string>
+  <string name="clear_chat_history_dialog_button">Очисти</string>
+  <string name="clear_chat_history_dialog_message">Желите ли заиста да очистите сав историјат ћаскања са %s?</string>
   <string name="contact_is_offline">Прималац је ван везе. Поруке које пошаљете биће испоручене када се врати на везу.</string>
   <string name="ENTRY_IS_NOT_AVAILABLE">Контакт није доступан</string>
   <string name="FILE_NOT_FOUND">Фајл није нађен</string>
@@ -57,7 +59,6 @@
   <string name="chat_state_composing">Куца&#8230;</string>
   <string name="chat_state_paused">Уноси текст&#8230;</string>
   <string name="chat_typed">откуцано %s</string>
-  <string name="export_chat">Извези ћаскање</string>
   <string name="export_chat_done">Историјат је извезен на СД картицу</string>
   <string name="export_chat_mask">%2$s за %1$s.html</string>
   <string name="export_chat_send">Пошаљи након извоза</string>
@@ -76,7 +77,6 @@
   <string name="otr_verify_fingerprint">Провери помоћу отиска</string>
   <string name="otr_verify_question">Провери помоћу питања</string>
   <string name="otr_verify_secret">Провери помоћу заједничке тајне</string>
-  <string name="recent_chats">Недавне преписке</string>
   <string name="under_construction">У изградњи</string>
   <string name="under_construction_message">Овај екран је у изградњи</string>
   <string name="chat_events_show_text_global">Користи опште поставке</string>

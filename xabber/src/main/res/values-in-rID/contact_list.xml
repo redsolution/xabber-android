@@ -40,7 +40,7 @@
   <string name="request_subscription">Permohonan berlangganan</string>
   <string name="XMPP_EXCEPTION">Kesalahan jaringan</string>
   <string name="application_state_closing">Menyimpan perubahan...\nAplikasi akan segera ditutup.</string>
-  <string name="certificate_confirmation">%1$s\nApakah Anda benar-benar mempercayai sertifikat dengan sidik jari sha1: %2$s? Apakah Anda tidak ingin diberi tahu tentang masalah dengan sertifikat ini?</string>
+  <string name="certificate_confirmation">%1$s.\nIssuer menggunakan sidik jari terdeprekasi (SHA-1) yang tidak dapat dipercaya: %2$s? Apakah Anda ingin menerima pemberitahuan tentang masalah dengan sertifikat ini?</string>
   <string name="certificate_details">\n\nDiajukan kepada:\nNama Umum (NU): %1$s\nOrganisasi (O): %2$s\nUnit Organisasi (UO): %3$s\nNomor seri: %4$s\n\nDiajukan oleh:\nNama Umum (NU): %5$s\nOrganisasi (O): %6$s\nUnit Organisasu (UO): %7$s\n\nValiditas:\nDiajukan pada: %8$s\nBerakhir pada: %9$s.</string>
   <string name="certificate_invalid_chane">Verifikasi rantai tanda tangan gagal</string>
   <string name="certificate_invalid_target">Verifikasi tujuan gagal</string>
@@ -82,9 +82,15 @@
   <string name="send_log_file">Kirim</string>
   <string name="intro_welcome">Selamat datang di Xabber</string>
   <string name="intro_xabber_description">Klien XMPP sumber terbuka untuk Android</string>
-  <string name="intro_have_account">Saya punya akun XMPP</string>
+  <string name="intro_have_account">Login XMPP</string>
   <string name="intro_register_account">Daftar akun XMPP</string>
-  <string name="intro_create_xabber_account">Buat akun Xabber</string>
+  <string name="intro_create_xabber_account">Gunakan akun Xabber</string>
+  <string name="intro_use_third_party_accounts">gunakan akun XMPP pihak ketiga</string>
   <string name="intro_faq">Jika Anda tidak memiliki akun XMPP, silakan <a href="https://www.xabber.com/faq/">baca S.S.D. kami</a> untuk membuatnya.</string>
   <string name="intro_web_search_register_xmpp">Daftar akun XMPP</string>
+  <string name="synchronize_bookmarks">Sinkronkan marka</string>
+  <string name="remove_all_bookmarks">Hapus semua</string>
+  <string name="remove_selected_bookmarks">Hapus yang ditandai</string>
+  <string name="remove_all_bookmarks_confirm">Anda yakin ingin menghapus semua penanda dari akun %1$s?</string>
+  <string name="remove_selected_bookmarks_confirm">Anda yakin ingin menghapus penanda terpilih dari akun %1$s?</string>
 </resources>

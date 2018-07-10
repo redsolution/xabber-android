@@ -17,7 +17,7 @@
   <string name="account_type_helps_xmpp">Jika anda ingin mempelajari XMPP (Jabber) lebih lanjut, kunjungi: https://xmpp.org</string>
   <string name="account_user_name">Nama pengguna</string>
   <string name="EMPTY_SERVER_NAME">Nama server belum ditentukan</string>
-  <string name="EMPTY_USER_NAME">Nama pengguna belum diisi</string>
+  <string name="EMPTY_USER_NAME">Nama pengguna belum ditentukan</string>
   <string name="CONFIRM_PASSWORD">Kata sandi tidak cocok</string>
   <string name="account_archive_mode">Simpan riwayat pesan</string>
   <string name="account_archive_mode_available">Di server bila tersedia</string>
@@ -27,9 +27,9 @@
   <string name="account_archive_mode_unread">Simpan lokal hanya pesan yang belum terkirim dan belum dibaca</string>
   <string name="account_compression_summary">Centang untuk mengaktifkan kompresi data</string>
   <string name="account_custom">Custom host</string>
-  <string name="account_custom_summary">Gunakan pengaturan khusus host sebagai ganti data SRV</string>
+  <string name="account_custom_summary">Gunakan pengaturan custom host sebagai ganti rekaman SRV</string>
   <string name="account_enabled_summary">Sentuh untuk mengaktifkan akun</string>
-  <string name="account_invalid_port">Isian Port harus berupa angka (default: 5222)</string>
+  <string name="account_invalid_port">Port harus berupa angka (default: 5222)</string>
   <string name="account_invalid_port_range">Port harus antara 1 dan 65535 (default: 5222)</string>
   <string name="account_invalid_priority">Nilai prioritas harus angka antara -128 dan 127 (default: 0)</string>
   <string name="account_oauth">Otorisasi</string>
@@ -71,8 +71,17 @@
   <string name="account_color_name_blue">Biru</string>
   <string name="account_color_name_indigo">Ungu</string>
   <string name="account_color_name_teal">Hijau kebiruan</string>
-  <string name="account_color_name_blue_grey">Abu-abu kebiruan</string>
+  <string name="account_color_name_blue_grey">Biru-abu</string>
   <string name="account_color_name_cyan">Biru kehijauan</string>
+  <string name="account_color_name_deep_purple">Ungu tua</string>
+  <string name="account_color_name_lime">Lemon</string>
+  <string name="account_color_name_pink">Merah muda</string>
+  <string name="account_color_name_purple">Ungu</string>
+  <string name="account_color_name_light_blue">Biru muda</string>
+  <string name="account_color_name_light_green">Hijau muda</string>
+  <string name="account_color_name_amber">Kuning ambar</string>
+  <string name="account_color_name_deep_orange">Jingga tua</string>
+  <string name="account_color_name_brown">Cokelat</string>
   <string name="account_connection_settings">Pengaturan koneksi</string>
   <string name="blocked_contacts">Kontak terblokir</string>
   <string name="blocked_contacts_unknown">Dukungan pemblokiran belum diatur.</string>
@@ -95,4 +104,9 @@
   <string name="account_mam_sync_none">Jangan muat riwayat apa pun</string>
   <string name="account_clear_history_on_exit_title">Bersihkan riwayat saat keluar</string>
   <string name="account_clear_history_on_exit_summary">Hapus semua obrolan dari perangkat sebelum meninggalkan Xabber.</string>
+  <string name="account_bookmarks">Penanda</string>
+  <string name="account_bookmarks_summary">Daftar penanda pada akun ini</string>
+  <string name="account_sync">Sinkronisasi</string>
+  <string name="account_sync_summary">Sinkronisasi ke akun Xabber</string>
+  <string name="bookmark_not_supported">Server tidak mendukung penanda.</string>
 </resources>
