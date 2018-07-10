@@ -77,11 +77,11 @@
   <string name="blocked_contacts_unknown">Не вдалося визначити підтримку блокування контактів.</string>
   <string name="blocked_contacts_not_supported">Блокування не підтримується сервером.</string>
   <string name="blocked_contacts_empty">Немає заблокованих контактів.</string>
-  <many name="blocked_contacts_number">
+  <plurals name="blocked_contacts_number">
     <item quantity="one">%d контакт заблоковано.</item>
     <item quantity="few">%d контакти заблоковано.</item>
     <item quantity="other">%d контактів заблоковано.</item>
-  </many>
+  </plurals>
   <string name="account_chat_history">Історія чату</string>
   <string name="account_history_options_summary">Налаштування зберігання історії повідомлень</string>
   <string name="account_chat_history_unknown">Підтримка зберігання історії сервером ще не визначена</string>

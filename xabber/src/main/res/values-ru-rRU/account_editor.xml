@@ -87,11 +87,11 @@
   <string name="blocked_contacts_unknown">Поддержка блокировки контактов ещё не определена.</string>
   <string name="blocked_contacts_not_supported">Блокировка контактов не поддерживается сервером.</string>
   <string name="blocked_contacts_empty">Нет заблокированных контактов.</string>
-  <many name="blocked_contacts_number">
+  <plurals name="blocked_contacts_number">
     <item quantity="one">%d контакт заблокирован.</item>
     <item quantity="few">%d контакта заблокировано.</item>
     <item quantity="other">%d контактов заблокировано.</item>
-  </many>
+  </plurals>
   <string name="account_chat_history">История сообщений</string>
   <string name="account_history_options_summary">Настройки хранения истории сообщений</string>
   <string name="account_chat_history_unknown">Поддержка хранения истории сервером ещё не определена</string>

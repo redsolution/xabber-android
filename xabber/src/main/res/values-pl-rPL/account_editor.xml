@@ -87,11 +87,11 @@
   <string name="blocked_contacts_unknown">Nie można ustalić obsługi blokowania kontaktów.</string>
   <string name="blocked_contacts_not_supported">Blokowanie nie jest obsługiwane przez serwer.</string>
   <string name="blocked_contacts_empty">Brak zablokowanych kontaktów.</string>
-  <many name="blocked_contacts_number">
+  <plurals name="blocked_contacts_number">
     <item quantity="one">%d kontakt zablokowany.</item>
     <item quantity="few">%d kontaktów zablokowanych.</item>
     <item quantity="other">%d kontaktów zablokowanych.</item>
-  </many>
+  </plurals>
   <string name="account_chat_history">Historia czatu</string>
   <string name="account_history_options_summary">Opcje przechowywania wiadomości czatu</string>
   <string name="account_chat_history_unknown">Wsparcie dla przechowywania historii czatu w magazynie serwera nie jest jeszcze ustalone</string>
