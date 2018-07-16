@@ -540,6 +540,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
                 realm.beginTransaction();
 
                 for (final MessageItem messageItem : messagesToSend) {
+                    if (messageItem.isInProgress()) continue;
                     if (!sendMessage(messageItem)) {
                         break;
                     }
