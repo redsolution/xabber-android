@@ -1359,7 +1359,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
                             .setPrimaryClip(ClipData.newPlainText(spannable, spannable));
                     break;
                 case "action_message_appeal":
-                    setInputTextAtCursor(clickedMessageItem.getResource().toString() + ", ");
+                    mentionUser(clickedMessageItem.getResource().toString());
                     break;
                 case "action_message_quote":
                     setInputTextAtCursor("> " + clickedMessageItem.getText() + "\n");
@@ -1397,6 +1397,10 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
     @Override
     public void onDismiss() {
         menuItems = null;
+    }
+
+    public void mentionUser(String username) {
+        setInputTextAtCursor(username + ", ");
     }
 
     private void showError(String message) {

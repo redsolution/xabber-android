@@ -78,6 +78,7 @@ import com.xabber.android.ui.dialog.BlockContactDialog;
 import com.xabber.android.ui.dialog.ContactDeleteDialogFragment;
 import com.xabber.android.ui.fragment.ChatFragment;
 import com.xabber.android.ui.fragment.ContactVcardViewerFragment;
+import com.xabber.android.ui.fragment.OccupantListFragment;
 import com.xabber.android.ui.fragment.RecentChatFragment;
 import com.xabber.android.ui.helper.NewContactTitleInflater;
 import com.xabber.android.ui.helper.PermissionsRequester;
@@ -106,7 +107,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         ChatFragment.ChatViewerFragmentListener, OnBlockedListChangedListener,
         RecentChatFragment.Listener, ChatViewerAdapter.FinishUpdateListener,
         ContactVcardViewerFragment.Listener, Toolbar.OnMenuItemClickListener,
-        UpdateBackpressure.UpdatableObject {
+        UpdateBackpressure.UpdatableObject, OccupantListFragment.Listener {
 
     private static final String LOG_TAG = ChatActivity.class.getSimpleName();
 
@@ -979,6 +980,12 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
             shakeAnimation = AnimationUtils.loadAnimation(this, R.anim.shake);
         }
         toolbar.findViewById(R.id.name_holder).startAnimation(shakeAnimation);
+    }
+
+    @Override
+    public void onOccupantClick(String username) {
+        selectPage(ChatViewerAdapter.PAGE_POSITION_CHAT, true);
+        if (chatFragment != null) chatFragment.mentionUser(username);
     }
 
     private NotificationState.NotificationMode getNotifMode() {

@@ -1,9 +1,9 @@
 package com.xabber.android.ui.fragment;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,16 +16,12 @@ import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.message.AbstractChat;
-import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
-import com.xabber.android.ui.activity.ChatActivity;
 import com.xabber.android.ui.adapter.OccupantListAdapter;
 
 import org.jxmpp.jid.EntityBareJid;
-import org.jxmpp.jid.impl.JidCreate;
 
 import java.util.Collection;
 
@@ -42,6 +38,13 @@ public class OccupantListFragment extends Fragment implements AdapterView.OnItem
     private AccountJid account;
     private EntityBareJid room;
     private OccupantListAdapter listAdapter;
+
+    @Nullable
+    private Listener listener;
+
+    public interface Listener {
+        void onOccupantClick(String username);
+    }
 
     public static OccupantListFragment newInstance(AccountJid account, UserJid room) {
         OccupantListFragment fragment = new OccupantListFragment();
@@ -116,25 +119,38 @@ public class OccupantListFragment extends Fragment implements AdapterView.OnItem
         com.xabber.android.data.extension.muc.Occupant occupant
                 = (com.xabber.android.data.extension.muc.Occupant) listAdapter.getItem(position);
         LogManager.i(this, occupant.getNickname().toString());
+        if (listener != null) listener.onOccupantClick(occupant.getNickname().toString());
 
-        UserJid occupantFullJid = null;
-        try {
-            occupantFullJid = UserJid.from(JidCreate.entityFullFrom(room, occupant.getNickname()));
-        } catch (UserJid.UserJidCreateException e) {
-            LogManager.exception(this, e);
-            return;
-        }
+//        UserJid occupantFullJid = null;
+//        try {
+//            occupantFullJid = UserJid.from(JidCreate.entityFullFrom(room, occupant.getNickname()));
+//        } catch (UserJid.UserJidCreateException e) {
+//            LogManager.exception(this, e);
+//            return;
+//        }
+//
+//        final AbstractChat mucPrivateChat;
+//        try {
+//            mucPrivateChat = MessageManager.getInstance()
+//                    .getOrCreatePrivateMucChat(account, occupantFullJid.getJid().asFullJidIfPossible());
+//        } catch (UserJid.UserJidCreateException e) {
+//            LogManager.exception(this, e);
+//            return;
+//        }
+//        mucPrivateChat.setIsPrivateMucChatAccepted(true);
+//
+//        startActivity(ChatActivity.createSpecificChatIntent(getActivity(), account, occupantFullJid));
+    }
 
-        final AbstractChat mucPrivateChat;
-        try {
-            mucPrivateChat = MessageManager.getInstance()
-                    .getOrCreatePrivateMucChat(account, occupantFullJid.getJid().asFullJidIfPossible());
-        } catch (UserJid.UserJidCreateException e) {
-            LogManager.exception(this, e);
-            return;
-        }
-        mucPrivateChat.setIsPrivateMucChatAccepted(true);
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        listener = (Listener) activity;
+    }
 
-        startActivity(ChatActivity.createSpecificChatIntent(getActivity(), account, occupantFullJid));
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        listener = null;
     }
 }
