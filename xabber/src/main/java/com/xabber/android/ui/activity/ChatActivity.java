@@ -69,6 +69,7 @@ import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
+import com.xabber.android.presentation.mvp.contactlist.UpdateBackpressure;
 import com.xabber.android.ui.adapter.ChatViewerAdapter;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.color.StatusBarPainter;
@@ -104,7 +105,8 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         OnAccountChangedListener, OnChatStateListener, ViewPager.OnPageChangeListener,
         ChatFragment.ChatViewerFragmentListener, OnBlockedListChangedListener,
         RecentChatFragment.Listener, ChatViewerAdapter.FinishUpdateListener,
-        ContactVcardViewerFragment.Listener, Toolbar.OnMenuItemClickListener {
+        ContactVcardViewerFragment.Listener, Toolbar.OnMenuItemClickListener,
+        UpdateBackpressure.UpdatableObject {
 
     private static final String LOG_TAG = ChatActivity.class.getSimpleName();
 
@@ -126,6 +128,8 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     private static final String SAVE_SELECTED_ACCOUNT = "com.xabber.android.ui.activity.ChatActivity.SAVE_SELECTED_ACCOUNT";
     private static final String SAVE_SELECTED_USER = "com.xabber.android.ui.activity.ChatActivity.SAVE_SELECTED_USER";
     private static final String SAVE_EXIT_ON_SEND = "com.xabber.android.ui.activity.ChatActivity.SAVE_EXIT_ON_SEND";
+
+    private UpdateBackpressure updateBackpressure;
 
     ChatViewerAdapter chatViewerAdapter;
     ViewPager viewPager;
@@ -271,6 +275,8 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
 
         setContentView(R.layout.activity_chat);
         getWindow().setBackgroundDrawable(null);
+
+        updateBackpressure = new UpdateBackpressure(this);
 
         contactTitleView = findViewById(R.id.contact_title);
         contactTitleView.setOnClickListener(new View.OnClickListener() {
@@ -492,6 +498,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     @Override
     protected void onPause() {
         super.onPause();
+        updateBackpressure.removeRefreshRequests();
         Application.getInstance().removeUIListener(OnChatStateListener.class, this);
         Application.getInstance().removeUIListener(OnContactChangedListener.class, this);
         Application.getInstance().removeUIListener(OnAccountChangedListener.class, this);
@@ -530,24 +537,27 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         viewPager.setCurrentItem(position, smoothScroll);
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onNewMessageEvent(NewMessageEvent event) {
-        updateRecentChats();
-    }
-
     @Override
-    public void onContactsChanged(Collection<RosterContact> entities) {
-        updateToolbar();
-        updateChat();
-        updateRecentChats();
-    }
-
-    @Override
-    public void onAccountsChanged(Collection<AccountJid> accounts) {
+    public void update() {
         updateToolbar();
         updateChat();
         updateRecentChats();
         updateStatusBar();
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onNewMessageEvent(NewMessageEvent event) {
+        updateBackpressure.refreshRequest();
+    }
+
+    @Override
+    public void onContactsChanged(Collection<RosterContact> entities) {
+        updateBackpressure.refreshRequest();
+    }
+
+    @Override
+    public void onAccountsChanged(Collection<AccountJid> accounts) {
+        updateBackpressure.refreshRequest();
     }
 
     @Override
