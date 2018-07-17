@@ -8,11 +8,15 @@ import java.util.Date;
  * Created by valery.miller on 09.02.18.
  */
 
-public class StructureBuilder implements Runnable {
+public class UpdateBackpressure implements Runnable {
 
     private static final long REFRESH_INTERVAL = 1000;
 
-    private ContactListPresenter presenter;
+    public interface UpdatableObject {
+        void update();
+    }
+
+    private UpdatableObject updatableObject;
 
     /**
      * Handler for deferred refresh.
@@ -39,8 +43,8 @@ public class StructureBuilder implements Runnable {
      */
     private Date nextRefresh;
 
-    public StructureBuilder(ContactListPresenter presenter) {
-        this.presenter = presenter;
+    public UpdateBackpressure(UpdatableObject updatableObject) {
+        this.updatableObject = updatableObject;
         handler = new Handler();
         refreshLock = new Object();
         refreshRequested = false;
@@ -88,7 +92,7 @@ public class StructureBuilder implements Runnable {
             handler.removeCallbacks(this);
         }
 
-        presenter.buildStructure();
+        updatableObject.update();
 
         synchronized (refreshLock) {
             nextRefresh = new Date(new Date().getTime() + REFRESH_INTERVAL);
