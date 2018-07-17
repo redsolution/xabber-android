@@ -702,7 +702,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     @Override
     public void onBlockedListChanged(AccountJid account) {
         // if chat of blocked contact is currently opened, it should be closed
-        final Collection<UserJid> blockedContacts = BlockingManager.getInstance().getBlockedContacts(account);
+        final Collection<UserJid> blockedContacts = BlockingManager.getInstance().getCachedBlockedContacts(account);
         if (blockedContacts.contains(user)) {
             close();
         }
