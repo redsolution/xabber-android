@@ -119,6 +119,8 @@ public class UploadService extends IntentService {
 
         List<String> uploadedFilesUrls = new ArrayList<>();
         List<String> notUploadedFilesUrls = new ArrayList<>();
+        List<File> notUploadedFiles = new ArrayList<>();
+        List<String> errors = new ArrayList<>();
         for (String filePath : filePaths) {
             if (needStop) {
                 stopWork(fileMessageId);
@@ -149,7 +151,8 @@ public class UploadService extends IntentService {
 
             } catch (Exception e) {
                 notUploadedFilesUrls.add(filePath);
-                publishError(fileMessageId, e.toString());
+                notUploadedFiles.add(new File(filePath));
+                errors.add(e.toString());
             }
 
             publishProgress(fileMessageId, uploadedFilesUrls.size(), filePaths.size());
@@ -159,9 +162,8 @@ public class UploadService extends IntentService {
 
         // check that files are uploaded
         if (uploadedFilesUrls.size() == 0) {
-            String error = "Could not upload any files";
-            setErrorForMessage(fileMessageId, error);
-            publishError(fileMessageId, error);
+            setErrorForMessage(fileMessageId, generateErrorDescriptionForFiles(notUploadedFilesUrls, errors));
+            publishError(fileMessageId, "Could not upload any files");
             return;
         }
 
@@ -169,6 +171,12 @@ public class UploadService extends IntentService {
         MessageManager.getInstance().updateFileMessage(account, user, fileMessageId,
                 uploadedFilesUrls, notUploadedFilesUrls);
         publishCompleted(fileMessageId);
+
+        // if some files have errors move its to separate message
+        if (notUploadedFilesUrls.size() > 0) {
+            String messageId = MessageManager.getInstance().createFileMessage(account, user, notUploadedFiles);
+            setErrorForMessage(messageId, generateErrorDescriptionForFiles(notUploadedFilesUrls, errors));
+        }
     }
 
     private void removeTempDirectory() {
@@ -261,5 +269,18 @@ public class UploadService extends IntentService {
     private static String getCompressedDirPath() {
         return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath()
                 + File.separator + XABBER_COMPRESSED_DIR;
+    }
+
+    private String generateErrorDescriptionForFiles(List<String> files, List<String> errors) {
+        StringBuilder stringBuilder = new StringBuilder();
+        int i = 0;
+        for (String file : files) {
+            stringBuilder.append(file.substring(file.lastIndexOf("/")).substring(1));
+            stringBuilder.append(":\n");
+            stringBuilder.append(errors.size() > i ? errors.get(i) : "no description");
+            stringBuilder.append("\n\n");
+            i++;
+        }
+        return stringBuilder.toString();
     }
 }
