@@ -379,6 +379,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
 
                 if (messageItem != null) {
                     messageItem.setError(false);
+                    messageItem.setSent(false);
                     messageItem.setErrorDescription("");
                 }
             }
