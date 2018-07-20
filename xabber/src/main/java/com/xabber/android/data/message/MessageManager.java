@@ -321,6 +321,8 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
                     messageItem.setText(strBuilder.toString());
                     messageItem.setSent(false);
                     messageItem.setInProgress(false);
+                    messageItem.setError(false);
+                    messageItem.setErrorDescription("");
                 }
             }
         });
