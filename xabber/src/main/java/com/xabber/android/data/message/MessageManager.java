@@ -314,8 +314,8 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
 
                     StringBuilder strBuilder = new StringBuilder();
                     for (Map.Entry<String, String> entry : urls.entrySet()) {
+                        if (strBuilder.length() > 0) strBuilder.append("\n");
                         strBuilder.append(entry.getValue());
-                        strBuilder.append("\n");
                     }
 
                     messageItem.setText(strBuilder.toString());
