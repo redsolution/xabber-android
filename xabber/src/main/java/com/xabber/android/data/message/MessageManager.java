@@ -363,6 +363,31 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
         }
     }
 
+    public void removeErrorAndResendMessage(AccountJid account, UserJid user, final String messageId) {
+        final AbstractChat chat = getChat(account, user);
+        if (chat == null) {
+            return;
+        }
+
+        Realm realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                MessageItem messageItem = realm.where(MessageItem.class)
+                        .equalTo(MessageItem.Fields.UNIQUE_ID, messageId)
+                        .findFirst();
+
+                if (messageItem != null) {
+                    messageItem.setError(false);
+                    messageItem.setErrorDescription("");
+                }
+            }
+        });
+
+        realm.close();
+        chat.sendMessages();
+    }
+
     /**
      * @param account
      * @param user

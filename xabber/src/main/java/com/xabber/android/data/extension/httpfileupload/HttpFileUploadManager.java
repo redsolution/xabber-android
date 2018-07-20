@@ -10,6 +10,7 @@ import android.os.ResultReceiver;
 import android.support.annotation.Nullable;
 import android.webkit.MimeTypeMap;
 
+import com.xabber.android.data.Application;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.database.messagerealm.Attachment;
 import com.xabber.android.data.database.messagerealm.MessageItem;
@@ -64,7 +65,7 @@ public class HttpFileUploadManager {
         return uploadServers.containsKey(account);
     }
 
-    public void retrySendFileMessage(MessageItem messageItem, Context context) {
+    public void retrySendFileMessage(final MessageItem messageItem, Context context) {
         List<String> notUploadedFilesPaths = new ArrayList<>();
 
         for (Attachment attachment : messageItem.getAttachments()) {
@@ -73,9 +74,17 @@ public class HttpFileUploadManager {
         }
 
         // if all attachments have url that they was uploaded. just resend existing message
-        // TODO: 20.07.18 заменить метод переотправки сообщения
-        if (notUploadedFilesPaths.size() == 0) MessageManager.getInstance()
-                .sendMessage(messageItem.getAccount(), messageItem.getUser(), messageItem.getText());
+        if (notUploadedFilesPaths.size() == 0) {
+            final AccountJid accountJid = messageItem.getAccount();
+            final UserJid userJid = messageItem.getUser();
+            final String messageId = messageItem.getUniqueId();
+            Application.getInstance().runInBackgroundUserRequest(new Runnable() {
+                @Override
+                public void run() {
+                    MessageManager.getInstance().removeErrorAndResendMessage(accountJid, userJid, messageId);
+                }
+            });
+        }
 
         // else, upload files that haven't urls. Then write they in existing message and send
         else uploadFile(messageItem.getAccount(), messageItem.getUser(),
