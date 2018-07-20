@@ -10,13 +10,14 @@ import android.os.ResultReceiver;
 import android.support.annotation.Nullable;
 import android.webkit.MimeTypeMap;
 
-import com.xabber.android.data.Application;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.database.messagerealm.Attachment;
+import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.log.LogManager;
+import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.service.UploadService;
 
 import org.jivesoftware.smack.SmackException;
@@ -63,8 +64,31 @@ public class HttpFileUploadManager {
         return uploadServers.containsKey(account);
     }
 
+    public void retrySendFileMessage(MessageItem messageItem, Context context) {
+        List<String> notUploadedFilesPaths = new ArrayList<>();
+
+        for (Attachment attachment : messageItem.getAttachments()) {
+            if (attachment.getFileUrl() == null || attachment.getFileUrl().isEmpty())
+                notUploadedFilesPaths.add(attachment.getFilePath());
+        }
+
+        // if all attachments have url that they was uploaded. just resend existing message
+        // TODO: 20.07.18 заменить метод переотправки сообщения
+        if (notUploadedFilesPaths.size() == 0) MessageManager.getInstance()
+                .sendMessage(messageItem.getAccount(), messageItem.getUser(), messageItem.getText());
+
+        // else, upload files that haven't urls. Then write they in existing message and send
+        else uploadFile(messageItem.getAccount(), messageItem.getUser(),
+                notUploadedFilesPaths, messageItem.getUniqueId(), context);
+    }
+
     public void uploadFile(final AccountJid account, final UserJid user,
                            final List<String> filePaths, Context context) {
+        uploadFile(account, user, filePaths, null, context);
+    }
+
+    public void uploadFile(final AccountJid account, final UserJid user,
+                           final List<String> filePaths, String existMessageId, Context context) {
 
         if (isUploading) {
             progressSubscribe.onNext(new ProgressData(0, 0, "Uploading already started",
@@ -88,6 +112,7 @@ public class HttpFileUploadManager {
         intent.putExtra(UploadService.KEY_USER_JID, user);
         intent.putStringArrayListExtra(UploadService.KEY_FILE_PATHS, (ArrayList<String>) filePaths);
         intent.putExtra(UploadService.KEY_UPLOAD_SERVER_URL, (CharSequence) uploadServerUrl);
+        intent.putExtra(UploadService.KEY_MESSAGE_ID, existMessageId);
 
         context.startService(intent);
     }

@@ -1347,8 +1347,9 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
 
             switch (menuItem.get(CustomMessageMenuAdapter.KEY_ID)) {
                 case "action_message_repeat":
-                    if (MessageItem.isUploadFileMessage(clickedMessageItem)) {
-                        uploadFile(clickedMessageItem.getFilePath());
+                    if (clickedMessageItem.haveAttachments()) {
+                        HttpFileUploadManager.getInstance()
+                                .retrySendFileMessage(clickedMessageItem, getActivity());
                     } else {
                         sendMessage(clickedMessageItem.getText());
                     }

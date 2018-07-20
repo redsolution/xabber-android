@@ -74,7 +74,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import io.realm.Realm;
 import io.realm.RealmList;
@@ -278,7 +280,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
     }
 
     public void updateFileMessage(AccountJid account, UserJid user, final String messageId,
-                                  final List<String> urls, final List<String> notUploadedFilesUrls) {
+                                  final HashMap<String, String> urls, final List<String> notUploadedFilesUrls) {
         final AbstractChat chat = getChat(account, user);
         if (chat == null) {
             return;
@@ -306,15 +308,13 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
                         }
                     }
 
-                    int i = 0;
                     for (Attachment attachment : attachments) {
-                        attachment.setFileUrl(urls.get(i));
-                        i++;
+                        attachment.setFileUrl(urls.get(attachment.getFilePath()));
                     }
 
                     StringBuilder strBuilder = new StringBuilder();
-                    for (String url : urls) {
-                        strBuilder.append(url);
+                    for (Map.Entry<String, String> entry : urls.entrySet()) {
+                        strBuilder.append(entry.getValue());
                         strBuilder.append("\n");
                     }
 
