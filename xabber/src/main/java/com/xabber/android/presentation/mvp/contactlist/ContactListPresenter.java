@@ -213,9 +213,11 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
         final Collection<RosterContact> rosterContacts = new ArrayList<>();
         for (RosterContact contact : allRosterContacts) {
             if (blockedContacts.containsKey(contact.getAccount())) {
-                if (!blockedContacts.get(contact.getAccount()).contains(contact.getUser())) {
-                    rosterContacts.add(contact);
-                }
+                Collection<UserJid> blockedUsers = blockedContacts.get(contact.getAccount());
+                if (blockedUsers != null) {
+                    if (!blockedUsers.contains(contact.getUser()))
+                        rosterContacts.add(contact);
+                } else rosterContacts.add(contact);
             }
         }
 
