@@ -185,12 +185,8 @@ public class UploadService extends IntentService {
     }
 
     private void removeTempDirectory() {
-        try {
-            File tempDirectory = new File(getCompressedDirPath());
-            org.apache.commons.io.FileUtils.deleteDirectory(tempDirectory);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        File tempDirectory = new File(getCompressedDirPath());
+        FileManager.deleteDirectoryRecursion(tempDirectory);
     }
 
     private void stopWork(String messageId) {

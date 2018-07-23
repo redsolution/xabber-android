@@ -8,6 +8,7 @@ import android.media.ExifInterface;
 import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.support.v4.content.FileProvider;
+import android.util.Log;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
@@ -273,6 +274,21 @@ public class FileManager {
         intent.setType(HttpFileUploadManager.getMimeType(file.getPath()));
         intent.putExtra(Intent.EXTRA_TEXT, file.getName());
         return intent;
+    }
+
+    /** For java 6 */
+    public static void deleteDirectoryRecursion(File file) {
+        if (file.isDirectory()) {
+            File[] entries = file.listFiles();
+            if (entries != null) {
+                for (File entry : entries) {
+                    deleteDirectoryRecursion(entry);
+                }
+            }
+        }
+        if (!file.delete()) {
+            Log.d(LOG_TAG, "Failed to delete " + file);
+        }
     }
 
 }
