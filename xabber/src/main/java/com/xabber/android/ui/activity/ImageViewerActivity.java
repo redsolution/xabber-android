@@ -329,9 +329,12 @@ public class ImageViewerActivity extends AppCompatActivity implements Toolbar.On
     private void subscribeForAttachment(Attachment attachment) {
         if (attachment == null) return;
         Realm realm = MessageDatabaseManager.getInstance().getRealmUiThread();
-        Observable<Attachment> observable = realm.where(Attachment.class)
+        Attachment attachmentForSubscribe = realm.where(Attachment.class)
                 .equalTo(Attachment.Fields.UNIQUE_ID, attachment.getUniqueId())
-                .findFirst().asObservable();
+                .findFirst();
+
+        if (attachmentForSubscribe == null) return;
+        Observable<Attachment> observable = attachmentForSubscribe.asObservable();
 
         attachmentStateSubscription.add(observable.doOnNext(new Action1<Attachment>() {
             @Override
