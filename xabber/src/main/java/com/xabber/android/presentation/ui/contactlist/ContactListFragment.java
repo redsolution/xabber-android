@@ -45,10 +45,12 @@ import com.xabber.android.presentation.ui.contactlist.viewobjects.ContactVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.GroupVO;
 import com.xabber.android.ui.activity.AccountActivity;
 import com.xabber.android.ui.activity.AccountAddActivity;
+import com.xabber.android.ui.activity.ConferenceSelectActivity;
 import com.xabber.android.ui.activity.ContactActivity;
 import com.xabber.android.ui.activity.ContactAddActivity;
 import com.xabber.android.ui.activity.ContactEditActivity;
 import com.xabber.android.ui.activity.ContactListActivity;
+import com.xabber.android.ui.activity.StatusEditActivity;
 import com.xabber.android.ui.adapter.contactlist.ContactListState;
 import com.xabber.android.ui.helper.ContextMenuHelper;
 
@@ -333,6 +335,21 @@ public class ContactListFragment extends Fragment implements ContactListView,
         if (buttonVO.getAction().equals(ButtonVO.ACTION_ADD_CONTACT)) {
             getActivity().startActivity(ContactAddActivity.createIntent(getActivity()));
         }
+    }
+
+    @Override
+    public void startAddContactActivity() {
+        startActivity(ContactAddActivity.createIntent(getActivity()));
+    }
+
+    @Override
+    public void startJoinConferenceActivity() {
+        startActivity(ConferenceSelectActivity.createIntent(getActivity()));
+    }
+
+    @Override
+    public void startSetStatusActivity() {
+        startActivity(StatusEditActivity.createIntent(getActivity()));
     }
 
     public void showSnackbar(final ChatVO deletedItem, final int deletedIndex) {

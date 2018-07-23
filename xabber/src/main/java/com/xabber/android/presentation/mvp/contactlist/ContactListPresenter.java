@@ -162,6 +162,21 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
         }
     }
 
+    @Override
+    public void onAddContactClick() {
+        if (view != null) view.startAddContactActivity();
+    }
+
+    @Override
+    public void onJoinConferenceClick() {
+        if (view != null) view.startJoinConferenceActivity();
+    }
+
+    @Override
+    public void onSetStatusClick() {
+        if (view != null) view.startSetStatusActivity();
+    }
+
     public void setFilterString(String filter) {
         filterString = filter;
         updateBackpressure.build();
