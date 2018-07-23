@@ -227,7 +227,7 @@ public class StringUtils {
             }
 
             if (date.getYear() < today.getYear()) {
-                SimpleDateFormat pattern = new SimpleDateFormat("dd.MM.YYYY", locale);
+                SimpleDateFormat pattern = new SimpleDateFormat("dd.MM.yyyy", locale);
                 sTime = pattern.format(date);
                 return Application.getInstance().getString(R.string.last_seen_date, sTime);
             }
