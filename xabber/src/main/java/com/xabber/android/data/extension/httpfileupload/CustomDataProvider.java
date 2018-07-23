@@ -19,6 +19,7 @@ import java.util.List;
 public class CustomDataProvider extends ExtensionElementProvider<DataForm> {
 
     public static final CustomDataProvider INSTANCE = new CustomDataProvider();
+    public static final String TYPE_MEDIA = "media";
 
     @Override
     public DataForm parse(XmlPullParser parser, int initialDepth) throws
@@ -79,7 +80,8 @@ public class CustomDataProvider extends ExtensionElementProvider<DataForm> {
         try {
             type = FormField.Type.fromString(parser.getAttributeValue("", "type"));
         } catch (IllegalArgumentException e) {
-            type = FormField.Type.fixed;
+            if (TYPE_MEDIA.equals(parser.getAttributeValue("", "type"))) type = null;
+            else type = FormField.Type.fixed;
         }
 
         final ExtendedFormField formField;
