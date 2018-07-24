@@ -56,6 +56,7 @@ public class ImageViewerActivity extends AppCompatActivity implements Toolbar.On
 
     private CompositeSubscription subscriptions = new CompositeSubscription();
     private CompositeSubscription attachmentStateSubscription = new CompositeSubscription();
+    private boolean waitForSharing;
 
     @NonNull
     public static Intent createIntent(Context context, String id, int position) {
@@ -232,6 +233,7 @@ public class ImageViewerActivity extends AppCompatActivity implements Toolbar.On
         Long size = attachment.getFileSize();
         menu.findItem(R.id.action_download_image).setVisible(filePath == null && size != null);
         menu.findItem(R.id.action_done).setVisible(filePath != null);
+        menu.findItem(R.id.action_share).setVisible(size != null);
     }
 
     private void onShareClick() {
@@ -245,9 +247,11 @@ public class ImageViewerActivity extends AppCompatActivity implements Toolbar.On
                 startActivityForResult(FileManager.getIntentForShareFile(file),
                         SHARE_ACTIVITY_REQUEST_CODE);
                 return;
-            }
+            } else Toast.makeText(this, R.string.FILE_NOT_FOUND, Toast.LENGTH_SHORT).show();
+        } else {
+            waitForSharing = true;
+            onImageDownloadClick();
         }
-        Toast.makeText(this, R.string.FILE_NOT_FOUND, Toast.LENGTH_SHORT).show();
     }
 
     private void onCopyLinkClick() {
@@ -340,6 +344,10 @@ public class ImageViewerActivity extends AppCompatActivity implements Toolbar.On
             @Override
             public void call(Attachment attachment) {
                 updateToolbar();
+                if (waitForSharing) {
+                    waitForSharing = false;
+                    onShareClick();
+                }
             }
         }).subscribe());
     }
