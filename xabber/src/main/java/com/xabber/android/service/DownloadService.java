@@ -12,6 +12,7 @@ import com.xabber.android.data.connection.CertificateManager;
 import com.xabber.android.data.database.MessageDatabaseManager;
 import com.xabber.android.data.database.messagerealm.Attachment;
 import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.extension.file.FileManager;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -129,8 +130,9 @@ public class DownloadService extends IntentService {
             File file = new File(filePath);
 
             if (file.exists()) {
-                publishError("File with same name already exist");
-                return;
+                file = new File(directory.getPath() + File.separator +
+                        FileManager.generateUniqueNameForFile(directory.getPath()
+                                + File.separator, fileName));
             }
 
             if (file.createNewFile()) {
