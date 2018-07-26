@@ -2,8 +2,11 @@ package com.xabber.android.data.extension.httpfileupload;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.Log;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 
 public class ImageCompressor {
@@ -11,10 +14,44 @@ public class ImageCompressor {
     private static final int IMAGE_QUALITY = 90;
     private static final int MAX_SIZE_PIXELS = 1280;
 
+    public static Bitmap decodeFile(File file, int width, int height) {
+        try {
+            // decode image size
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inJustDecodeBounds = true;
+            BitmapFactory.decodeStream(new FileInputStream(file),null, options);
+
+            // the new size we want to scale to
+            final int REQUIRED_WIDTH = width;
+            final int REQUIRED_HIGHT = height;
+
+            // find the correct scale value. It should be the power of 2.
+            int scale = 1;
+            while (options.outWidth / scale / 2 >= REQUIRED_WIDTH
+                    && options.outHeight / scale / 2 >= REQUIRED_HIGHT)
+                scale *= 2;
+
+            // decode with inSampleSize
+            BitmapFactory.Options newOptions = new BitmapFactory.Options();
+            newOptions.inSampleSize = scale;
+            return BitmapFactory.decodeStream(new FileInputStream(file), null, newOptions);
+
+        } catch (FileNotFoundException e) {
+            return null;
+        }
+    }
+
     public static File compressImage(final File file, String outputDirectory) {
         String path = file.getPath();
         String format = path.substring(path.lastIndexOf(".")).substring(1);
-        Bitmap source = BitmapFactory.decodeFile(file.getPath());
+        Bitmap source;
+        try {
+            source = decodeFile(file, MAX_SIZE_PIXELS, MAX_SIZE_PIXELS);
+        } catch (Exception e) {
+            Log.d(ImageCompressor.class.toString(), e.toString());
+            return null;
+        }
+
         Bitmap.CompressFormat compressFormat;
 
         // if png pr webp have allowed resolution then not compress it
