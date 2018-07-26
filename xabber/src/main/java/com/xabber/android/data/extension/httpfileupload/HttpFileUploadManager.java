@@ -3,6 +3,7 @@ package com.xabber.android.data.extension.httpfileupload;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
@@ -88,16 +89,22 @@ public class HttpFileUploadManager {
 
         // else, upload files that haven't urls. Then write they in existing message and send
         else uploadFile(messageItem.getAccount(), messageItem.getUser(),
-                notUploadedFilesPaths, messageItem.getUniqueId(), context);
+                notUploadedFilesPaths, null, messageItem.getUniqueId(), context);
     }
 
     public void uploadFile(final AccountJid account, final UserJid user,
                            final List<String> filePaths, Context context) {
-        uploadFile(account, user, filePaths, null, context);
+        uploadFile(account, user, filePaths, null, null, context);
+    }
+
+    public void uploadFileViaUri(final AccountJid account, final UserJid user,
+                                 final List<Uri> fileUris, Context context) {
+        uploadFile(account, user, null, fileUris,null, context);
     }
 
     public void uploadFile(final AccountJid account, final UserJid user,
-                           final List<String> filePaths, String existMessageId, Context context) {
+                           final List<String> filePaths, final List<Uri> fileUris,
+                           String existMessageId, Context context) {
 
         if (isUploading) {
             progressSubscribe.onNext(new ProgressData(0, 0, "Uploading already started",
@@ -120,6 +127,7 @@ public class HttpFileUploadManager {
         intent.putExtra(UploadService.KEY_ACCOUNT_JID, (Parcelable) account);
         intent.putExtra(UploadService.KEY_USER_JID, user);
         intent.putStringArrayListExtra(UploadService.KEY_FILE_PATHS, (ArrayList<String>) filePaths);
+        intent.putParcelableArrayListExtra(UploadService.KEY_FILE_URIS, (ArrayList<Uri>) fileUris);
         intent.putExtra(UploadService.KEY_UPLOAD_SERVER_URL, (CharSequence) uploadServerUrl);
         intent.putExtra(UploadService.KEY_MESSAGE_ID, existMessageId);
 

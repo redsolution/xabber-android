@@ -2,10 +2,14 @@ package com.xabber.android.service;
 
 import android.app.IntentService;
 import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.ResultReceiver;
+import android.provider.OpenableColumns;
 import android.support.annotation.Nullable;
+import android.webkit.MimeTypeMap;
 
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
@@ -13,11 +17,13 @@ import com.xabber.android.data.connection.CertificateManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.file.FileManager;
+import com.xabber.android.data.extension.file.FileUtils;
 import com.xabber.android.data.extension.httpfileupload.ImageCompressor;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.xmpp.httpfileupload.Slot;
 
+import org.apache.commons.io.FilenameUtils;
 import org.jivesoftware.smack.AbstractXMPPConnection;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.StanzaCollector;
@@ -29,12 +35,16 @@ import org.jxmpp.jid.impl.JidCreate;
 import org.jxmpp.stringprep.XmppStringprepException;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.SSLContext;
@@ -53,11 +63,13 @@ public class UploadService extends IntentService {
     private final static String SERVICE_NAME = "Upload Service";
     private static final MediaType CONTENT_TYPE = MediaType.parse("application/octet-stream");
     private static final String XABBER_COMPRESSED_DIR = "Xabber/temp";
+    private static final String XABBER_DIR = "Xabber";
 
     public final static String KEY_RECEIVER = "receiver";
     public final static String KEY_ACCOUNT_JID = "account_jid";
     public final static String KEY_USER_JID = "user_jid";
     public final static String KEY_FILE_PATHS = "file_paths";
+    public final static String KEY_FILE_URIS = "file_uris";
     public final static String KEY_UPLOAD_SERVER_URL = "upload_server_url";
     public final static String KEY_FILE_COUNT = "file_count";
     public final static String KEY_PROGRESS = "progress";
@@ -82,16 +94,70 @@ public class UploadService extends IntentService {
         AccountJid account = intent.getParcelableExtra(KEY_ACCOUNT_JID);
         UserJid user = intent.getParcelableExtra(KEY_USER_JID);
         List<String> filePaths = intent.getStringArrayListExtra(KEY_FILE_PATHS);
+        List<Uri> fileUris = intent.getParcelableArrayListExtra(KEY_FILE_URIS);
         CharSequence uploadServerUrl = intent.getCharSequenceExtra(KEY_UPLOAD_SERVER_URL);
         String existMessageId = intent.getStringExtra(KEY_MESSAGE_ID);
 
-        startWork(account, user, filePaths, uploadServerUrl, existMessageId);
+        if (filePaths != null) startWork(account, user, filePaths, uploadServerUrl, existMessageId);
+        else if (fileUris != null) startWorkWithUris(account, user, fileUris, uploadServerUrl);
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
         needStop = true;
+    }
+
+    private void startWorkWithUris(AccountJid account, UserJid user, List<Uri> fileUris,
+                           CharSequence uploadServerUrl) {
+
+        // determine which files are local or remote
+        List<File> files = new ArrayList<>();
+        List<Uri> remoteFiles = new ArrayList<>();
+        for (Uri uri : fileUris) {
+            String path = FileUtils.getPath(this, uri);
+            if (path != null) files.add(new File(path));
+            else remoteFiles.add(uri);
+        }
+
+        // create message with progress
+        String messageId = MessageManager.getInstance().createFileMessage(account, user, files);
+
+        // create dir
+        File directory = new File(getDownloadDirPath());
+        if (!directory.exists())
+            if (!directory.mkdir()) {
+                publishError(messageId, "Directory not created");
+                return;
+            }
+
+        // get files from uri's
+        List<File> copiedFiles = new ArrayList<>();
+        for (Uri uri : remoteFiles) {
+            if (needStop) {
+                stopWork(messageId);
+                return;
+            }
+
+            // copy file to local storage if need
+            try {
+                copiedFiles.add(new File(copyFileToLocalStorage(uri)));
+            } catch (IOException e) {
+                publishError(messageId, "Cannot get file: " + e.toString());
+            }
+            publishProgress(messageId, copiedFiles.size(), remoteFiles.size());
+        }
+
+        // add attachments to message
+        MessageManager.getInstance().updateMessageWithNewAttachments(messageId, copiedFiles);
+
+        // startWork for upload files
+        List<String> filePaths = new ArrayList<>();
+        for (File file : files)
+            filePaths.add(file.getPath());
+        for (File file : copiedFiles)
+            filePaths.add(file.getPath());
+        startWork(account, user, filePaths, uploadServerUrl, messageId);
     }
 
     private void startWork(AccountJid account, UserJid user, List<String> filePaths,
@@ -272,6 +338,11 @@ public class UploadService extends IntentService {
                 + File.separator + XABBER_COMPRESSED_DIR;
     }
 
+    private static String getDownloadDirPath() {
+        return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath()
+                + File.separator + XABBER_DIR;
+    }
+
     private String generateErrorDescriptionForFiles(List<String> files, List<String> errors) {
         StringBuilder stringBuilder = new StringBuilder();
         int i = 0;
@@ -283,5 +354,64 @@ public class UploadService extends IntentService {
             i++;
         }
         return stringBuilder.toString();
+    }
+
+    private String copyFileToLocalStorage(Uri uri) throws IOException {
+        String extension = getExtensionFromUri(uri);
+        String name = getFileName(uri);
+        if (name == null) name = UUID.randomUUID().toString();
+        else name = name.replace(".", "");
+        String fileName = name + "." + extension;
+        File file = new File(getDownloadDirPath(),  fileName);
+
+        OutputStream os = null;
+        InputStream is = null;
+
+        if (file.exists()) {
+            file = new File(getDownloadDirPath(),
+                    FileManager.generateUniqueNameForFile(getDownloadDirPath(), fileName));
+        }
+
+        if (file.createNewFile()) {
+            os = new FileOutputStream(file);
+            is = getContentResolver().openInputStream(uri);
+
+            byte[] buffer = new byte[1024];
+            int length;
+            while ((length = is.read(buffer)) > 0) {
+                os.write(buffer, 0, length);
+            }
+            os.flush();
+            os.close();
+            is.close();
+        }
+        return file.getPath();
+    }
+
+    private String getExtensionFromUri(Uri uri) {
+        String mimeType = getContentResolver().getType(uri);
+        return MimeTypeMap.getSingleton().getExtensionFromMimeType(mimeType);
+    }
+
+    private String getFileName(Uri uri) {
+        String result = null;
+        if (uri.getScheme().equals("content")) {
+            Cursor cursor = getContentResolver().query(uri, null, null, null, null);
+            try {
+                if (cursor != null && cursor.moveToFirst()) {
+                    result = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+                }
+            } finally {
+                cursor.close();
+            }
+        }
+        if (result == null) {
+            result = uri.getPath();
+            int cut = result.lastIndexOf('/');
+            if (cut != -1) {
+                result = result.substring(cut + 1);
+            }
+        }
+        return FilenameUtils.getBaseName(result);
     }
 }

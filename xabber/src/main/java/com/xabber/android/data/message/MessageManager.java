@@ -43,6 +43,7 @@ import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.captcha.Captcha;
 import com.xabber.android.data.extension.captcha.CaptchaManager;
 import com.xabber.android.data.extension.carbons.CarbonManager;
+import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.muc.RoomChat;
@@ -329,6 +330,40 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
 
         realm.close();
         chat.sendMessages();
+    }
+
+    public void updateMessageWithNewAttachments(final String messageId, final List<File> files) {
+        Realm realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                MessageItem messageItem = realm.where(MessageItem.class)
+                        .equalTo(MessageItem.Fields.UNIQUE_ID, messageId)
+                        .findFirst();
+
+                if (messageItem != null) {
+                    RealmList<Attachment> attachments = messageItem.getAttachments();
+
+                    for (File file : files) {
+                        Attachment attachment = new Attachment();
+                        attachment.setFilePath(file.getPath());
+                        attachment.setFileSize(file.length());
+                        attachment.setTitle(file.getName());
+                        attachment.setIsImage(FileManager.fileIsImage(file));
+                        attachment.setMimeType(HttpFileUploadManager.getMimeType(file.getPath()));
+                        attachment.setDuration((long) 0);
+
+                        if (attachment.isImage()) {
+                            HttpFileUploadManager.ImageSize imageSize =
+                                    HttpFileUploadManager.getImageSizes(file.getPath());
+                            attachment.setImageHeight(imageSize.getHeight());
+                            attachment.setImageWidth(imageSize.getWidth());
+                        }
+                        attachments.add(attachment);
+                    }
+                }
+            }
+        });
     }
 
     public void updateMessageWithError(final String messageId, final String errorDescription) {

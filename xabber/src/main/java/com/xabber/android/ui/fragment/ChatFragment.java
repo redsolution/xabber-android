@@ -60,7 +60,6 @@ import com.xabber.android.data.extension.capability.CapabilitiesManager;
 import com.xabber.android.data.extension.capability.ClientInfo;
 import com.xabber.android.data.extension.cs.ChatStateManager;
 import com.xabber.android.data.extension.file.FileManager;
-import com.xabber.android.data.extension.file.FileUtils;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.httpfileupload.HttpUploadListener;
 import com.xabber.android.data.extension.mam.LastHistoryLoadFinishedEvent;
@@ -815,30 +814,29 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
                     clipData = result.getClipData();
                 }
 
-                final List<String> paths = new ArrayList<>();
+                final List<Uri> uris = new ArrayList<>();
                 if (clipData != null) {
                     for (int i = 0; i < clipData.getItemCount(); i++) {
                         ClipData.Item item = clipData.getItemAt(i);
                         Uri uri = item.getUri();
-                        paths.add(FileUtils.getPath(getActivity(), uri));
+                        uris.add(uri);
                     }
                 } else {
                     Uri fileUri = result.getData();
-                    String path = FileUtils.getPath(getActivity(), fileUri);
-                    if (path != null) paths.add(path);
+                    uris.add(fileUri);
                 }
 
-                if (paths.size() == 0) {
+                if (uris.size() == 0) {
                     Toast.makeText(getActivity(), R.string.could_not_get_path_to_file, Toast.LENGTH_SHORT).show();
                     return;
                 }
 
-                if (paths.size() > 10) {
+                if (uris.size() > 10) {
                     Toast.makeText(getActivity(), R.string.too_many_files_at_once, Toast.LENGTH_SHORT).show();
                     return;
                 }
 
-                uploadFiles(paths);
+                HttpFileUploadManager.getInstance().uploadFileViaUri(account, user, uris, getActivity());
                 break;
         }
     }
