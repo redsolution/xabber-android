@@ -39,7 +39,6 @@
   <string name="request_subscription">Soliticitar autorização de inscrição</string>
   <string name="XMPP_EXCEPTION">Erro de fluxo de dados</string>
   <string name="application_state_closing">Salvando alterações...\nA aplicação será fechada em breve.</string>
-  <string name="certificate_confirmation">%1$s.\nVocê confia absolutamente em um certificado com impressão digital SHA1: %2$s? Você gostaria de não ser notificado sobre esta questão deste certificado?</string>
   <string name="certificate_details">\n\nExpedido para:\nNome Comum (CN): %1$s\nEmpresa (O): %2$s\nUnidade Organizacional (OU): %3$s\nNúmero de Série: %4$s\n\nExpedido por:\nNome Comum (CN): %5$s\nEmpresa (O): %6$s\nUnidade Organizacional (OU): %7$s\n\nValidade:\nExpedido em: %8$s\nVálido até: %9$s.</string>
   <string name="certificate_invalid_chane">A verificação da cadeia de assinatura falhou</string>
   <string name="certificate_invalid_target">Verificação de destino falhou</string>

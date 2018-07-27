@@ -37,6 +37,7 @@
     <uses-permission android:name="android.permission.READ_INTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+    <uses-permission android:name="android.permission.CAMERA" />
 
     <application
         android:name=".data.Application"
@@ -419,6 +420,8 @@
         </activity>
 
         <service android:name=".service.XabberService" />
+        <service android:name=".service.DownloadService" />
+        <service android:name=".service.UploadService" />
 
         <receiver android:name=".receiver.BootReceiver">
             <intent-filter>
@@ -502,6 +505,14 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.xabber.android.ui.activity.AccountActivity" />
+        </activity>
+        <activity android:name=".ui.activity.ImageViewerActivity"
+            android:theme="@style/ThemeDark"
+            android:parentActivityName=".ui.activity.ChatActivity">
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.xabber.android.ui.activity.ChatActivity" />
         </activity>
         <activity android:name=".ui.activity.IntroActivity"
             android:theme="@style/ThemeDark"/>

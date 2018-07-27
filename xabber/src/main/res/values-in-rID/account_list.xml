@@ -5,7 +5,6 @@
   <string name="account_add">Tambah akun</string>
   <string name="account_register">Daftar akun baru</string>
   <string name="account_delete">Hapus akun</string>
-  <string name="account_editor">Sunting akun</string>
   <string name="account_state_registration">Daftar</string>
   <string name="account_state_authentication">Otorisasi</string>
   <string name="account_state_connected">Daring</string>

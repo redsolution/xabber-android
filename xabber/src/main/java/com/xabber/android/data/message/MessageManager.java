@@ -15,6 +15,7 @@
 package com.xabber.android.data.message;
 
 import android.os.Environment;
+import android.os.Looper;
 import android.support.annotation.Nullable;
 
 import com.xabber.android.R;
@@ -33,6 +34,7 @@ import com.xabber.android.data.connection.StanzaSender;
 import com.xabber.android.data.connection.listeners.OnDisconnectListener;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.database.MessageDatabaseManager;
+import com.xabber.android.data.database.messagerealm.Attachment;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
@@ -41,6 +43,8 @@ import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.captcha.Captcha;
 import com.xabber.android.data.extension.captcha.CaptchaManager;
 import com.xabber.android.data.extension.carbons.CarbonManager;
+import com.xabber.android.data.extension.file.FileManager;
+import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.muc.RoomChat;
 import com.xabber.android.data.log.LogManager;
@@ -71,9 +75,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import io.realm.Realm;
+import io.realm.RealmList;
 import io.realm.RealmResults;
 
 /**
@@ -252,30 +259,29 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
     private void sendMessage(final String text, final AbstractChat chat) {
         final long startTime = System.currentTimeMillis();
 
-        MessageDatabaseManager.getInstance()
-                // TODO: 13.03.18 ANR - WRITE
-                .getRealmUiThread().executeTransaction(new Realm.Transaction() {
+        MessageDatabaseManager.getInstance().getRealmUiThread()
+                .executeTransactionAsync(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
                 MessageItem newMessageItem = chat.createNewMessageItem(text);
                 realm.copyToRealm(newMessageItem);
                 LogManager.d("REALM", Thread.currentThread().getName()
                         + " save message before sending: " + (System.currentTimeMillis() - startTime));
-
+                if (chat.canSendMessage())
+                    chat.sendMessages();
             }
         });
-        if (chat.canSendMessage())
-            chat.sendMessages();
     }
 
-    public String createFileMessage(AccountJid account, UserJid user, File file) {
+    public String createFileMessage(AccountJid account, UserJid user, List<File> files) {
         AbstractChat chat = getOrCreateChat(account, user);
 
         chat.openChat();
-        return chat.newFileMessage(file);
+        return chat.newFileMessage(files);
     }
 
-    public void updateFileMessage(AccountJid account, UserJid user, final String messageId, final String url) {
+    public void updateFileMessage(AccountJid account, UserJid user, final String messageId,
+                                  final HashMap<String, String> urls, final List<String> notUploadedFilesUrls) {
         final AbstractChat chat = getChat(account, user);
         if (chat == null) {
             return;
@@ -291,9 +297,33 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
                         .findFirst();
 
                 if (messageItem != null) {
-                    messageItem.setText(url);
+                    RealmList<Attachment> attachments = messageItem.getAttachments();
+
+                    // remove attachments that not uploaded
+                    for (String file : notUploadedFilesUrls) {
+                        for (Attachment attachment : attachments) {
+                            if (file.equals(attachment.getFilePath())) {
+                                attachments.remove(attachment);
+                                break;
+                            }
+                        }
+                    }
+
+                    for (Attachment attachment : attachments) {
+                        attachment.setFileUrl(urls.get(attachment.getFilePath()));
+                    }
+
+                    StringBuilder strBuilder = new StringBuilder();
+                    for (Map.Entry<String, String> entry : urls.entrySet()) {
+                        if (strBuilder.length() > 0) strBuilder.append("\n");
+                        strBuilder.append(entry.getValue());
+                    }
+
+                    messageItem.setText(strBuilder.toString());
                     messageItem.setSent(false);
                     messageItem.setInProgress(false);
+                    messageItem.setError(false);
+                    messageItem.setErrorDescription("");
                 }
             }
         });
@@ -302,9 +332,8 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
         chat.sendMessages();
     }
 
-    public void updateMessageWithError(final String messageId, final String errorDescription) {
+    public void updateMessageWithNewAttachments(final String messageId, final List<File> files) {
         Realm realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
-
         realm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
@@ -313,14 +342,86 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
                         .findFirst();
 
                 if (messageItem != null) {
-                    messageItem.setError(true);
-                    messageItem.setErrorDescription(errorDescription);
-                    messageItem.setInProgress(false);
+                    RealmList<Attachment> attachments = messageItem.getAttachments();
+
+                    for (File file : files) {
+                        Attachment attachment = new Attachment();
+                        attachment.setFilePath(file.getPath());
+                        attachment.setFileSize(file.length());
+                        attachment.setTitle(file.getName());
+                        attachment.setIsImage(FileManager.fileIsImage(file));
+                        attachment.setMimeType(HttpFileUploadManager.getMimeType(file.getPath()));
+                        attachment.setDuration((long) 0);
+
+                        if (attachment.isImage()) {
+                            HttpFileUploadManager.ImageSize imageSize =
+                                    HttpFileUploadManager.getImageSizes(file.getPath());
+                            attachment.setImageHeight(imageSize.getHeight());
+                            attachment.setImageWidth(imageSize.getWidth());
+                        }
+                        attachments.add(attachment);
+                    }
+                }
+            }
+        });
+    }
+
+    public void updateMessageWithError(final String messageId, final String errorDescription) {
+        if (Looper.myLooper() == Looper.getMainLooper()) {
+            Realm realm = MessageDatabaseManager.getInstance().getRealmUiThread();
+            realm.executeTransactionAsync(new Realm.Transaction() {
+                @Override
+                public void execute(Realm realm) {
+                    updateMessageWithError(realm, messageId, errorDescription);
+                }
+            });
+        } else {
+            Realm realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
+            realm.executeTransaction(new Realm.Transaction() {
+                @Override
+                public void execute(Realm realm) {
+                    updateMessageWithError(realm, messageId, errorDescription);
+                }
+            });
+        }
+    }
+
+    private void updateMessageWithError(Realm realm, final String messageId, final String errorDescription) {
+        MessageItem messageItem = realm.where(MessageItem.class)
+                .equalTo(MessageItem.Fields.UNIQUE_ID, messageId)
+                .findFirst();
+
+        if (messageItem != null) {
+            messageItem.setError(true);
+            messageItem.setErrorDescription(errorDescription);
+            messageItem.setInProgress(false);
+        }
+    }
+
+    public void removeErrorAndResendMessage(AccountJid account, UserJid user, final String messageId) {
+        final AbstractChat chat = getChat(account, user);
+        if (chat == null) {
+            return;
+        }
+
+        Realm realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                MessageItem messageItem = realm.where(MessageItem.class)
+                        .equalTo(MessageItem.Fields.UNIQUE_ID, messageId)
+                        .findFirst();
+
+                if (messageItem != null) {
+                    messageItem.setError(false);
+                    messageItem.setSent(false);
+                    messageItem.setErrorDescription("");
                 }
             }
         });
 
         realm.close();
+        chat.sendMessages();
     }
 
     /**
@@ -459,9 +560,8 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
     public void clearHistory(final AccountJid account, final UserJid user) {
         final long startTime = System.currentTimeMillis();
 
-        MessageDatabaseManager.getInstance()
-                // TODO: 13.03.18 ANR
-                .getRealmUiThread().executeTransactionAsync(new Realm.Transaction() {
+        MessageDatabaseManager.getInstance().getRealmUiThread()
+                .executeTransactionAsync(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
                 realm.where(MessageItem.class)
@@ -661,21 +761,28 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
             }
 
             final AbstractChat finalChat = chat;
-            // TODO: 12.03.18 ANR - WRITE (переписать без UI)
+
             final long startTime = System.currentTimeMillis();
-            MessageDatabaseManager.getInstance().getRealmUiThread().executeTransaction(new Realm.Transaction() {
+            MessageDatabaseManager.getInstance().getRealmUiThread()
+                    .executeTransactionAsync(new Realm.Transaction() {
                 @Override
                 public void execute(Realm realm) {
                     MessageItem newMessageItem = finalChat.createNewMessageItem(body);
                     newMessageItem.setStanzaId(message.getStanzaId());
                     newMessageItem.setSent(true);
                     newMessageItem.setForwarded(true);
+
+                    RealmList<Attachment> attachments = HttpFileUploadManager.parseFileMessage(message);
+                    if (attachments.size() > 0)
+                        newMessageItem.setAttachments(attachments);
+
                     realm.copyToRealm(newMessageItem);
                     LogManager.d("REALM", Thread.currentThread().getName()
                             + " save carbons message: " + (System.currentTimeMillis() - startTime));
+
+                    EventBus.getDefault().post(new NewMessageEvent());
                 }
             });
-            EventBus.getDefault().post(new NewMessageEvent());
             return;
         }
 
@@ -868,5 +975,20 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
             NotificationManager.getInstance().
                     removeMessageNotification(chat.getAccount(), chat.getUser());
         }
+    }
+
+    public static void setAttachmentLocalPathToNull(final String uniqId) {
+        final Realm realm = MessageDatabaseManager.getInstance().getRealmUiThread();
+        realm.executeTransactionAsync(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                Attachment first = realm.where(Attachment.class)
+                        .equalTo(Attachment.Fields.UNIQUE_ID, uniqId)
+                        .findFirst();
+                if (first != null) {
+                    first.setFilePath(null);
+                }
+            }
+        });
     }
 }

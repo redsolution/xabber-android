@@ -41,10 +41,12 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.account.listeners.OnAccountRemovedListener;
 import com.xabber.android.data.connection.ConnectionState;
+import com.xabber.android.data.database.messagerealm.Attachment;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.database.sqlite.NotificationTable;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.filedownload.FileCategory;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.chat.ChatManager;
@@ -62,6 +64,8 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+
+import io.realm.RealmList;
 
 /**
  * Manage notifications about message, subscription and authentication.
@@ -250,7 +254,8 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
     @Override
     public void onInitialized() {
         application.addUIListener(OnAccountChangedListener.class, this);
-        updateMessageNotification(null);
+        //updateMessageNotification(null);
+        updatePersistentNotification();
     }
 
     /**
@@ -517,7 +522,15 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
         } else {
             messageNotifications.remove(messageNotification);
         }
-        messageNotification.addMessage(messageItem.getText());
+
+        String messageText;
+        if (messageItem.haveAttachments() && messageItem.getAttachments().size() > 0) {
+            Attachment attachment = messageItem.getAttachments().get(0);
+            FileCategory category = FileCategory.determineFileCategory(attachment.getMimeType());
+            messageText = FileCategory.getCategoryName(category, false) + attachment.getTitle();
+        } else messageText = messageItem.getText();
+
+        messageNotification.addMessage(messageText);
         messageNotifications.add(messageNotification);
 
         final AccountJid account = messageNotification.getAccount();
@@ -626,7 +639,8 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
     @Override
     public void run() {
         handler.removeCallbacks(this);
-        updateMessageNotification(null);
+        //updateMessageNotification(null);
+        updatePersistentNotification();
     }
 
     public Notification getPersistentNotification() {
@@ -673,6 +687,7 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
         @SuppressLint("WrongConstant") NotificationChannel channel =
                 new NotificationChannel(channelId, channelName,
                         android.app.NotificationManager.IMPORTANCE_NONE);
+        channel.setShowBadge(false);
         android.app.NotificationManager service = (android.app.NotificationManager)
                 Application.getInstance().getSystemService(Context.NOTIFICATION_SERVICE);
         if (service != null) service.createNotificationChannel(channel);

@@ -17,6 +17,8 @@ import android.provider.MediaStore;
 
 public class FileUtils {
 
+    private static final Uri PUBLIC_DOWNLOADS = Uri.parse("content://downloads/public_downloads");
+
     /**
      * Get a file path from a Uri. This will get the the path for Storage Access
      * Framework Documents, as well as the _data field for the MediaStore and
@@ -28,6 +30,9 @@ public class FileUtils {
      */
     @SuppressLint("NewApi")
     public static String getPath(final Context context, final Uri uri) {
+        if (uri == null) {
+            return null;
+        }
 
         final boolean isKitKat = Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT;
 
@@ -49,10 +54,13 @@ public class FileUtils {
             else if (isDownloadsDocument(uri)) {
 
                 final String id = DocumentsContract.getDocumentId(uri);
-                final Uri contentUri = ContentUris.withAppendedId(
-                        Uri.parse("content://downloads/public_downloads"), Long.valueOf(id));
-
-                return getDataColumn(context, contentUri, null, null);
+                try {
+                    final Uri contentUri = ContentUris.withAppendedId(PUBLIC_DOWNLOADS, Long.valueOf(id));
+                    return getDataColumn(context, contentUri, null, null);
+                } catch (NumberFormatException e) {
+                    String[] arr = id.split(":");
+                    return arr.length > 1 ? arr[1] : arr[0];
+                }
             }
             // MediaProvider
             else if (isMediaDocument(uri)) {

@@ -40,7 +40,6 @@
   <string name="request_subscription">Затражи претплату</string>
   <string name="XMPP_EXCEPTION">Грешка тока</string>
   <string name="application_state_closing">Уписујем измене&#8230;\nАпликација ће да се затвори ускоро.</string>
-  <string name="certificate_confirmation">%1$s.\nДа ли у потпуности имате поуздања у сертификат сха1 отиска: %2$s? Желите ли да вас се не обавештава о овом проблему са овим сертификатом?</string>
   <string name="certificate_details">\n\nИздат за:\nУобичајени назив (CN): %1$s\nОрганизација (O): %2$s\nОрганизациона јединица (OU): %3$s\nСеријски број: %4$s\n\nИздавач:\nУобичајени назив (CN): %5$s\nОрганизација (O): %6$s\nОрганизациона јединица (OU): %7$s\n\nВажност:\nИздат: %8$s\nИстиче: %9$s.</string>
   <string name="certificate_invalid_chane">Потврђивање потписа ланца није успело</string>
   <string name="certificate_invalid_target">Потврђивање мете није успело</string>
@@ -74,4 +73,13 @@
   <string name="dark_theme_suggest_dialog_message">Нова тамна тема је доступна за Ксабер. Можете ли се одупрети искушењу да је пробате?</string>
   <string name="dark_theme_suggest_dialog_join_dark_side">Придружи се Тамној страни</string>
   <string name="dark_theme_suggest_dialog_stay_on_light_side">Остани на Светлој страни</string>
+  <string name="battery_optimization_disable_dialog_title">Оптимизација батерије</string>
+  <string name="save_log_to_file">Сачувај у фајл</string>
+  <string name="open_log_file">Отвори</string>
+  <string name="send_log_file">Пошаљи</string>
+  <string name="intro_welcome">Добро дошли у Ксабер</string>
+  <string name="intro_xabber_description">ИксМПП клијент за Андроид отвореног кôда</string>
+  <string name="intro_register_account">Региструј ИксМПП налог</string>
+  <string name="intro_faq">Ако немате ИксМПП налог <a href="https://www.xabber.com/faq/">прочитајте честа питања</a> како да га набавите.</string>
+  <string name="intro_web_search_register_xmpp">Региструј ИксМПП налог</string>
 </resources>

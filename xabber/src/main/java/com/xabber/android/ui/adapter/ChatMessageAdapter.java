@@ -22,10 +22,13 @@ import android.os.Build;
 import android.support.annotation.Nullable;
 import android.support.annotation.StyleRes;
 import android.support.v4.graphics.drawable.DrawableCompat;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -41,11 +44,13 @@ import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.database.MessageDatabaseManager;
+import com.xabber.android.data.database.messagerealm.Attachment;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.file.FileManager;
+import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.muc.RoomContact;
 import com.xabber.android.data.extension.otr.OTRManager;
@@ -56,6 +61,7 @@ import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.fragment.ChatFragment;
+import com.xabber.android.ui.widget.ImageGridBuilder;
 import com.xabber.android.utils.StringUtils;
 
 import org.jxmpp.jid.parts.Resourcepart;
@@ -65,8 +71,11 @@ import java.util.Date;
 import java.util.List;
 
 import io.realm.Realm;
+import io.realm.RealmList;
 import io.realm.RealmRecyclerViewAdapter;
 import io.realm.RealmResults;
+import rx.functions.Action1;
+import rx.subscriptions.CompositeSubscription;
 
 
 public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, ChatMessageAdapter.BasicMessage> {
@@ -79,6 +88,8 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
 
     private final Context context;
     private final Message.MessageClickListener messageClickListener;
+    private final ImageGridBuilder gridBuilder = new ImageGridBuilder();
+
     /**
      * Message font appearance.
      */
@@ -155,27 +166,76 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
             outgoingMessage.progressBar.setVisibility(View.GONE);
         }
 
-        setUpImage(messageItem, outgoingMessage);
+        setupImageOrFile(messageItem, outgoingMessage);
 
         setUpMessageBalloonBackground(holder.messageBalloon,
                 context.getResources().getColorStateList(R.color.outgoing_message_color_state_dark), R.drawable.message_outgoing_states);
     }
 
-    private void setUpImage(MessageItem messageItem, final Message messageHolder) {
-        messageHolder.messageImage.setVisibility(View.GONE);
+    private void prepareImage(MessageItem messageItem, final Message messageHolder) {
+        String filePath = messageItem.getFilePath();
+        Integer imageWidth = messageItem.getImageWidth();
+        Integer imageHeight = messageItem.getImageHeight();
+        String imageUrl = messageItem.getText();
+        final String uniqueId = messageItem.getUniqueId();
+        setUpImage(filePath, imageUrl, uniqueId, imageWidth, imageHeight, messageHolder);
+    }
 
-        if (!messageItem.isImage() || !SettingsManager.connectionLoadImages()) {
-            return;
+    private void prepareImage(Attachment attachment, final Message messageHolder) {
+        String filePath = attachment.getFilePath();
+        Integer imageWidth = attachment.getImageWidth();
+        Integer imageHeight = attachment.getImageHeight();
+        String imageUrl = attachment.getFileUrl();
+        final String uniqueId = attachment.getUniqueId();
+        setUpImage(filePath, imageUrl, uniqueId, imageWidth, imageHeight, messageHolder);
+    }
+
+    private void setUpImage(RealmList<Attachment> attachments, final Message messageHolder) {
+        if (!SettingsManager.connectionLoadImages()) return;
+
+        RealmList<Attachment> imageAttachments = new RealmList<>();
+        for (Attachment attachment : attachments) {
+            if (attachment.isImage()) imageAttachments.add(attachment);
         }
 
-        if (messageItem.getFilePath() != null) {
-            boolean result = FileManager.loadImageFromFile(context, messageItem.getFilePath(), messageHolder.messageImage);
+        if (imageAttachments.size() > 0) {
+            View imageGridView = gridBuilder.inflateView(messageHolder.imageGridContainer, imageAttachments.size());
+            gridBuilder.bindView(imageGridView, imageAttachments, messageHolder);
+
+            messageHolder.imageGridContainer.addView(imageGridView);
+            messageHolder.imageGridContainer.setVisibility(View.VISIBLE);
+            messageHolder.messageText.setVisibility(View.GONE);
+        }
+    }
+
+    private void setUpFile(RealmList<Attachment> attachments, final Message messageHolder) {
+        RealmList<Attachment> fileAttachments = new RealmList<>();
+        for (Attachment attachment : attachments) {
+            if (!attachment.isImage()) fileAttachments.add(attachment);
+        }
+
+        if (fileAttachments.size() > 0) {
+            RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(context);
+            messageHolder.rvFileList.setLayoutManager(layoutManager);
+            FilesAdapter adapter = new FilesAdapter(fileAttachments, messageHolder);
+            messageHolder.rvFileList.setAdapter(adapter);
+            messageHolder.messageText.setVisibility(View.GONE);
+            messageHolder.fileLayout.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void setUpImage(String imagePath, String imageUrl, final String uniqueId, Integer imageWidth,
+                            Integer imageHeight, final Message messageHolder) {
+
+        if (!SettingsManager.connectionLoadImages()) return;
+
+        if (imagePath != null) {
+            boolean result = FileManager.loadImageFromFile(context, imagePath, messageHolder.messageImage);
 
             if (result) {
                 messageHolder.messageImage.setVisibility(View.VISIBLE);
                 messageHolder.messageText.setVisibility(View.GONE);
             } else {
-                final String uniqueId = messageItem.getUniqueId();
                 final Realm realm = MessageDatabaseManager.getInstance().getRealmUiThread();
                 realm.executeTransactionAsync(new Realm.Transaction() {
                     @Override
@@ -192,13 +252,10 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
         } else {
             final ViewGroup.LayoutParams layoutParams = messageHolder.messageImage.getLayoutParams();
 
-            Integer imageWidth = messageItem.getImageWidth();
-            Integer imageHeight = messageItem.getImageHeight();
-
             if (imageWidth != null && imageHeight != null) {
                 FileManager.scaleImage(layoutParams, imageHeight, imageWidth);
                 Glide.with(context)
-                        .load(messageItem.getText())
+                        .load(imageUrl)
                         .listener(new RequestListener<String, GlideDrawable>() {
                             @Override
                             public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
@@ -217,10 +274,9 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
                 messageHolder.messageImage.setVisibility(View.VISIBLE);
                 messageHolder.messageText.setVisibility(View.GONE);
             } else {
-                final String uniqueId = messageItem.getUniqueId();
 
                 Glide.with(context)
-                        .load(messageItem.getText())
+                        .load(imageUrl)
                         .asBitmap()
                         .into(new SimpleTarget<Bitmap>() {
                             @Override
@@ -261,6 +317,21 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
         }
     }
 
+    private void setupImageOrFile(MessageItem messageItem, final Message messageHolder) {
+        messageHolder.fileLayout.setVisibility(View.GONE);
+        messageHolder.messageImage.setVisibility(View.GONE);
+        messageHolder.imageGridContainer.removeAllViews();
+        messageHolder.imageGridContainer.setVisibility(View.GONE);
+        messageHolder.messageText.setVisibility(View.VISIBLE);
+
+        if (messageItem.haveAttachments()) {
+            setUpImage(messageItem.getAttachments(), messageHolder);
+            setUpFile(messageItem.getAttachments(), messageHolder);
+        } else if (messageItem.isImage()) {
+            prepareImage(messageItem, messageHolder);
+        }
+    }
+
     private void setUpIncomingMessage(final IncomingMessage incomingMessage, final MessageItem messageItem) {
         setUpMessage(messageItem, incomingMessage);
 
@@ -275,7 +346,7 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
 
         setUpAvatar(messageItem, incomingMessage);
 
-        setUpImage(messageItem, incomingMessage);
+        setupImageOrFile(messageItem, incomingMessage);
 
         if (messageItem.getText().trim().isEmpty()) {
             incomingMessage.messageBalloon.setVisibility(View.GONE);
@@ -399,7 +470,7 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
     }
 
     @Override
-    public void onBindViewHolder(BasicMessage holder, int position) {
+    public void onBindViewHolder(final BasicMessage holder, int position) {
         final int viewType = getItemViewType(position);
 
         MessageItem messageItem = getMessageItem(position);
@@ -408,6 +479,9 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
             LogManager.w(LOG_TAG, "onBindViewHolder Null message item. Position: " + position);
             return;
         }
+
+        if (holder instanceof Message)
+            ((Message)holder).messageId = messageItem.getUniqueId();
 
         switch (viewType) {
             case VIEW_TYPE_HINT:
@@ -442,6 +516,19 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
             holder.itemView.setBackgroundColor(context.getResources().getColor(R.color.unread_messages_background));
         else holder.itemView.setBackgroundDrawable(null);
 
+        if (holder instanceof OutgoingMessage) {
+            holder.itemView.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
+                @Override
+                public void onViewAttachedToWindow(View view) {
+                    ((Message) holder).subscribeForUploadProgress(context);
+                }
+
+                @Override
+                public void onViewDetachedFromWindow(View v) {
+                    ((Message) holder).unsubscribeAll();
+                }
+            });
+        }
     }
 
     @Override
@@ -623,6 +710,36 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
         return null;
     }
 
+    private static void setUpProgress(Context context, OutgoingMessage holder,
+                                      HttpFileUploadManager.ProgressData progressData) {
+        if (progressData != null && holder.messageId.equals(progressData.getMessageId())) {
+            if (progressData.isCompleted()) {
+                showProgress(holder, false);
+            } else if (progressData.getError() != null) {
+                showProgress(holder, false);
+                holder.onClickListener.onDownloadError(progressData.getError());
+            } else {
+                if (holder.uploadProgressBar != null) holder.uploadProgressBar.setProgress(progressData.getProgress());
+                if (holder.messageFileInfo != null)
+                    holder.messageFileInfo.setText(context.getString(R.string.uploaded_files_count,
+                            progressData.getProgress() + "/" + progressData.getFileCount()));
+                showProgress(holder, true);
+            }
+        } else showProgress(holder, false);
+    }
+
+    private static void showProgress(OutgoingMessage holder, boolean show) {
+        if (show) {
+            if (holder.uploadProgressBar != null) holder.uploadProgressBar.setVisibility(View.VISIBLE);
+            if (holder.ivCancelUpload != null) holder.ivCancelUpload.setVisibility(View.VISIBLE);
+            if (holder.messageFileInfo != null) holder.messageFileInfo.setVisibility(View.VISIBLE);
+        } else {
+            if (holder.uploadProgressBar != null) holder.uploadProgressBar.setVisibility(View.GONE);
+            if (holder.ivCancelUpload != null) holder.ivCancelUpload.setVisibility(View.GONE);
+            if (holder.messageFileInfo != null) holder.messageFileInfo.setVisibility(View.GONE);
+        }
+    }
+
     static class BasicMessage extends RecyclerView.ViewHolder {
 
         TextView messageText;
@@ -641,7 +758,8 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
         }
     }
 
-    public static abstract class Message extends BasicMessage implements View.OnClickListener {
+    public static abstract class Message extends BasicMessage implements View.OnClickListener,
+            FilesAdapter.FileListListener {
 
         private static final String LOG_TAG = Message.class.getSimpleName();
         TextView messageTime;
@@ -655,10 +773,23 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
         ImageView statusIcon;
         ImageView ivEncrypted;
 
+        View fileLayout;
+        RecyclerView rvFileList;
+
+        FrameLayout imageGridContainer;
+
+        private CompositeSubscription subscriptions = new CompositeSubscription();
+        String messageId;
+        final ProgressBar uploadProgressBar;
+        final ImageButton ivCancelUpload;
 
         public Message(View itemView, MessageClickListener onClickListener, @StyleRes int appearance) {
             super(itemView, appearance);
             this.onClickListener = onClickListener;
+
+            uploadProgressBar = itemView.findViewById(R.id.uploadProgressBar);
+            ivCancelUpload = itemView.findViewById(R.id.ivCancelUpload);
+            if (ivCancelUpload != null) ivCancelUpload.setOnClickListener(this);
 
             messageTime = (TextView) itemView.findViewById(R.id.message_time);
             messageHeader = (TextView) itemView.findViewById(R.id.message_header);
@@ -670,8 +801,39 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
             statusIcon = (ImageView) itemView.findViewById(R.id.message_status_icon);
             ivEncrypted = (ImageView) itemView.findViewById(R.id.message_encrypted_icon);
 
+            fileLayout = itemView.findViewById(R.id.fileLayout);
+            rvFileList = itemView.findViewById(R.id.rvFileList);
+
+            imageGridContainer = itemView.findViewById(R.id.imageGridContainer);
+
             itemView.setOnClickListener(this);
             messageImage.setOnClickListener(this);
+        }
+
+        @Override
+        public void onFileClick(int attachmentPosition) {
+            int messagePosition = getAdapterPosition();
+            if (messagePosition == RecyclerView.NO_POSITION) {
+                LogManager.w(LOG_TAG, "onClick: no position");
+                return;
+            }
+
+            onClickListener.onFileClick(messagePosition, attachmentPosition);
+        }
+
+        @Override
+        public void onFileLongClick(Attachment attachment, View caller) {
+            onClickListener.onFileLongClick(attachment, caller);
+        }
+
+        @Override
+        public void onDownloadCancel() {
+            onClickListener.onDownloadCancel();
+        }
+
+        @Override
+        public void onDownloadError(String error) {
+            onClickListener.onDownloadError(error);
         }
 
         @Override
@@ -682,18 +844,60 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
                 return;
             }
 
-            if (v.getId() == R.id.message_image) {
-                onClickListener.onMessageImageClick(itemView, adapterPosition);
-            } else {
-                onClickListener.onMessageClick(messageBalloon, adapterPosition);
+            switch (v.getId()) {
+                case R.id.ivImage0:
+                    onClickListener.onImageClick(adapterPosition, 0);
+                    break;
+                case R.id.ivImage1:
+                    onClickListener.onImageClick(adapterPosition, 1);
+                    break;
+                case R.id.ivImage2:
+                    onClickListener.onImageClick(adapterPosition, 2);
+                    break;
+                case R.id.ivImage3:
+                    onClickListener.onImageClick(adapterPosition, 3);
+                    break;
+                case R.id.ivImage4:
+                    onClickListener.onImageClick(adapterPosition, 4);
+                    break;
+                case R.id.ivImage5:
+                    onClickListener.onImageClick(adapterPosition, 5);
+                    break;
+                case R.id.message_image:
+                    onClickListener.onImageClick(adapterPosition, 0);
+                    break;
+                case R.id.ivCancelUpload:
+                    onClickListener.onUploadCancel();
+                    break;
+                default:
+                    onClickListener.onMessageClick(messageBalloon, adapterPosition);
+                    break;
             }
         }
 
         public interface MessageClickListener {
             void onMessageClick(View caller, int position);
-            void onMessageImageClick(View caller, int position);
+            void onImageClick(int messagePosition, int attachmentPosition);
+            void onFileClick(int messagePosition, int attachmentPosition);
+            void onFileLongClick(Attachment attachment, View caller);
+            void onDownloadCancel();
+            void onUploadCancel();
+            void onDownloadError(String error);
         }
 
+        public void unsubscribeAll() {
+            subscriptions.clear();
+        }
+
+        public void subscribeForUploadProgress(final Context context) {
+            subscriptions.add(HttpFileUploadManager.getInstance().subscribeForProgress()
+                .doOnNext(new Action1<HttpFileUploadManager.ProgressData>() {
+                    @Override
+                    public void call(HttpFileUploadManager.ProgressData progressData) {
+                        setUpProgress(context, (OutgoingMessage) Message.this, progressData);
+                    }
+                }).subscribe());
+        }
     }
 
     private static class IncomingMessage extends Message {

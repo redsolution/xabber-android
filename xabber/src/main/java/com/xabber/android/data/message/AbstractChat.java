@@ -16,12 +16,14 @@ package com.xabber.android.data.message;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.connection.StanzaSender;
 import com.xabber.android.data.database.MessageDatabaseManager;
+import com.xabber.android.data.database.messagerealm.Attachment;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.database.messagerealm.SyncInfo;
 import com.xabber.android.data.entity.AccountJid;
@@ -30,6 +32,8 @@ import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.carbons.CarbonManager;
 import com.xabber.android.data.extension.cs.ChatStateManager;
 import com.xabber.android.data.extension.file.FileManager;
+import com.xabber.android.data.extension.httpfileupload.ExtendedFormField;
+import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.ChatManager;
@@ -43,6 +47,7 @@ import org.jivesoftware.smack.packet.Message.Type;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.util.StringUtils;
 import org.jivesoftware.smackx.delay.packet.DelayInformation;
+import org.jivesoftware.smackx.xdata.packet.DataForm;
 import org.jxmpp.jid.Jid;
 import org.jxmpp.jid.parts.Resourcepart;
 
@@ -53,6 +58,7 @@ import java.util.UUID;
 
 import io.realm.Realm;
 import io.realm.RealmChangeListener;
+import io.realm.RealmList;
 import io.realm.RealmResults;
 import io.realm.Sort;
 
@@ -254,16 +260,24 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
                                            final ChatAction action, final Date delayTimestamp, final boolean incoming,
                                            boolean notify, final boolean encrypted, final boolean offline, final String stanzaId) {
         final MessageItem messageItem = createMessageItem(resource, text, action, delayTimestamp,
-                incoming, notify, encrypted, offline, stanzaId);
+                incoming, notify, encrypted, offline, stanzaId, null);
+        saveMessageItem(messageItem);
+        EventBus.getDefault().post(new NewMessageEvent());
+    }
+
+    protected void createAndSaveFileMessage(Resourcepart resource, String text, final ChatAction action, final Date delayTimestamp,
+                                            final boolean incoming, boolean notify, final boolean encrypted, final boolean offline,
+                                            final String stanzaId, RealmList<Attachment> attachments) {
+        final MessageItem messageItem = createMessageItem(resource, text, action, delayTimestamp,
+                incoming, notify, encrypted, offline, stanzaId, attachments);
         saveMessageItem(messageItem);
         EventBus.getDefault().post(new NewMessageEvent());
     }
 
     public void saveMessageItem(final MessageItem messageItem) {
         final long startTime = System.currentTimeMillis();
-        // TODO: 12.03.18 ANR - WRITE (переписать без UI)
         MessageDatabaseManager.getInstance().getRealmUiThread()
-                .executeTransaction(new Realm.Transaction() {
+                .executeTransactionAsync(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
                 realm.copyToRealm(messageItem);
@@ -275,7 +289,8 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
 
     protected MessageItem createMessageItem(Resourcepart resource, String text, ChatAction action,
                                             Date delayTimestamp, boolean incoming, boolean notify,
-                                            boolean encrypted, boolean offline, String stanzaId) {
+                                            boolean encrypted, boolean offline, String stanzaId,
+                                            RealmList<Attachment> attachments) {
         final boolean visible = MessageManager.getInstance().isVisibleChat(this);
         boolean read = incoming ? visible : true;
         boolean send = incoming;
@@ -334,6 +349,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         messageItem.setEncrypted(encrypted);
         messageItem.setOffline(offline);
         messageItem.setStanzaId(stanzaId);
+        if (attachments != null) messageItem.setAttachments(attachments);
         FileManager.processFileMessage(messageItem);
 
         if (notify && notifyAboutMessage() && !visible) {
@@ -357,7 +373,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         return messageItem;
     }
 
-    String newFileMessage(final File file) {
+    public String newFileMessage(final List<File> files) {
         Realm realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
 
         final String messageId = UUID.randomUUID().toString();
@@ -365,12 +381,31 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         realm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
+
+                RealmList<Attachment> attachments = new RealmList<>();
+                for (File file : files) {
+                    Attachment attachment = new Attachment();
+                    attachment.setFilePath(file.getPath());
+                    attachment.setFileSize(file.length());
+                    attachment.setTitle(file.getName());
+                    attachment.setIsImage(FileManager.fileIsImage(file));
+                    attachment.setMimeType(HttpFileUploadManager.getMimeType(file.getPath()));
+                    attachment.setDuration((long) 0);
+
+                    if (attachment.isImage()) {
+                        HttpFileUploadManager.ImageSize imageSize =
+                                HttpFileUploadManager.getImageSizes(file.getPath());
+                        attachment.setImageHeight(imageSize.getHeight());
+                        attachment.setImageWidth(imageSize.getWidth());
+                    }
+                    attachments.add(attachment);
+                }
+
                 MessageItem messageItem = new MessageItem(messageId);
                 messageItem.setAccount(account);
                 messageItem.setUser(user);
-                messageItem.setText(file.getName());
-                messageItem.setFilePath(file.getPath());
-                messageItem.setIsImage(FileManager.fileIsImage(file));
+                messageItem.setText("Sending files..");
+                messageItem.setAttachments(attachments);
                 messageItem.setTimestamp(System.currentTimeMillis());
                 messageItem.setRead(true);
                 messageItem.setSent(true);
@@ -381,9 +416,6 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
                 realm.copyToRealm(messageItem);
             }
         });
-
-
-        realm.close();
 
         return messageId;
     }
@@ -448,6 +480,42 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     }
 
     /**
+     * Send stanza with XEP-0221
+     */
+    public Message createFileMessagePacket(String stanzaId, RealmList<Attachment> attachments, String body) {
+
+        Message message = new Message();
+        message.setTo(getTo());
+        message.setType(getType());
+        message.setThread(threadId);
+        if (stanzaId != null) message.setStanzaId(stanzaId);
+
+        DataForm dataForm = new DataForm(DataForm.Type.form);
+
+        int i = 1;
+        for (Attachment attachment : attachments) {
+            ExtendedFormField formField = new ExtendedFormField("media" + i);
+            i++;
+            formField.setLabel(attachment.getTitle());
+
+            ExtendedFormField.Uri uri = new ExtendedFormField.Uri(attachment.getMimeType(), attachment.getFileUrl());
+            uri.setSize(attachment.getFileSize());
+            uri.setDuration(attachment.getDuration());
+
+            formField.setMedia(
+                    new ExtendedFormField.Media(String.valueOf(attachment.getImageHeight()),
+                            String.valueOf(attachment.getImageWidth()), uri));
+
+            dataForm.addField(formField);
+        }
+        message.addExtension(dataForm);
+        message.setBody(body);
+
+        Log.d("XEP-0221", message.toXML().toString());
+        return message;
+    }
+
+    /**
      * Prepare text to be send.
      *
      * @return <code>null</code> if text shouldn't be send.
@@ -472,6 +540,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
                 realm.beginTransaction();
 
                 for (final MessageItem messageItem : messagesToSend) {
+                    if (messageItem.isInProgress()) continue;
                     if (!sendMessage(messageItem)) {
                         break;
                     }
@@ -503,7 +572,12 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         }
 
         Message message = null;
-        if (text != null) {
+
+        if (messageItem.haveAttachments()) {
+            message = createFileMessagePacket(messageItem.getStanzaId(),
+                    messageItem.getAttachments(), text);
+
+        } else if (text != null) {
             message = createMessagePacket(text, messageItem.getStanzaId());
         }
 

@@ -23,9 +23,11 @@ import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.SettingsManager.ChatsShowStatusChange;
 import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.database.MessageDatabaseManager;
+import com.xabber.android.data.database.messagerealm.Attachment;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.ChatAction;
 import com.xabber.android.data.message.NewIncomingMessageEvent;
@@ -56,6 +58,7 @@ import java.util.NoSuchElementException;
 import java.util.UUID;
 
 import io.realm.Realm;
+import io.realm.RealmList;
 
 /**
  * Chat room.
@@ -184,7 +187,7 @@ public class RoomChat extends AbstractChat {
     @Override
     protected MessageItem createNewMessageItem(String text) {
         return createMessageItem(nickname, text, null, null, false,
-                false, false, false, UUID.randomUUID().toString());
+                false, false, false, UUID.randomUUID().toString(), null);
     }
 
     @Override
@@ -271,8 +274,18 @@ public class RoomChat extends AbstractChat {
                 }
 
                 updateThreadId(message.getThread());
-                createAndSaveNewMessage(resource, text, null, delay, true, notify,
+
+                RealmList<Attachment> attachments = HttpFileUploadManager.parseFileMessage(stanza);
+
+                // create message with file-attachments
+                if (attachments.size() > 0)
+                    createAndSaveFileMessage(resource, text, null, delay, true, notify,
+                            false, false, stanzaId, attachments);
+
+                    // create message without attachments
+                else createAndSaveNewMessage(resource, text, null, delay, true, notify,
                         false, false, stanzaId);
+
                 EventBus.getDefault().post(new NewIncomingMessageEvent(account, user));
             }
         } else if (stanza instanceof Presence) {

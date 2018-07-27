@@ -5,7 +5,6 @@
   <string name="account_add">添加账户</string>
   <string name="account_register">注册新账户</string>
   <string name="account_delete">删除账户</string>
-  <string name="account_editor">编辑账户</string>
   <string name="account_state_registration">正在注册</string>
   <string name="account_state_authentication">认证中</string>
   <string name="account_state_connected">在线</string>

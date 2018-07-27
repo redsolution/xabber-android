@@ -17,6 +17,7 @@ package com.xabber.android.utils;
 import android.content.Context;
 import android.content.res.Resources;
 
+import com.xabber.android.R;
 import com.xabber.android.data.Application;
 
 import java.text.DateFormat;
@@ -25,6 +26,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Helper class to get plural forms.
@@ -181,5 +183,56 @@ public class StringUtils {
         }
 
         return logDateTimeFormat;
+    }
+
+    public static String getLastActivityString(long lastActivityTime) {
+        if (lastActivityTime > 0) {
+            long timeAgo = System.currentTimeMillis()/1000 - lastActivityTime;
+            long time;
+
+            if (timeAgo < 60) return Application.getInstance().getString(R.string.last_seen_now);
+            if (timeAgo < 3600) {
+                time = TimeUnit.SECONDS.toMinutes(timeAgo);
+                return Application.getInstance().getString(R.string.last_seen_minutes, String.valueOf(time));
+            }
+            if (timeAgo < 7200) {
+                time = TimeUnit.SECONDS.toHours(timeAgo);
+                return Application.getInstance().getString(R.string.last_seen_hours);
+            }
+
+            String sTime;
+            Date date = new Date(lastActivityTime * 1000);
+            Date today = new Date();
+            long justDate = lastActivityTime / (24 * 60 * 60 * 1000);
+            long justToday = today.getTime() / (24 * 60 * 60 * 1000);
+            long justYesterday = justToday - 1;
+            Locale locale = Application.getInstance().getResources().getConfiguration().locale;
+
+            if (justDate == justToday) {
+                SimpleDateFormat pattern = new SimpleDateFormat("HH:mm", locale);
+                sTime = pattern.format(date);
+                return Application.getInstance().getString(R.string.last_seen_today, sTime);
+            }
+
+            if (justDate == justYesterday) {
+                SimpleDateFormat pattern = new SimpleDateFormat("HH:mm", locale);
+                sTime = pattern.format(date);
+                return Application.getInstance().getString(R.string.last_seen_yesterday, sTime);
+            }
+
+            if (date.getYear() == today.getYear()) {
+                SimpleDateFormat pattern = new SimpleDateFormat("d MMM", locale);
+                sTime = pattern.format(date);
+                return Application.getInstance().getString(R.string.last_seen_date, sTime);
+            }
+
+            if (date.getYear() < today.getYear()) {
+                SimpleDateFormat pattern = new SimpleDateFormat("dd.MM.yyyy", locale);
+                sTime = pattern.format(date);
+                return Application.getInstance().getString(R.string.last_seen_date, sTime);
+            }
+            return "";
+        }
+        else return "";
     }
 }

@@ -31,6 +31,7 @@ import com.xabber.android.data.connection.listeners.OnDisconnectListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.NestedMap;
 import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.extension.iqlast.LastActivityInteractor;
 import com.xabber.android.data.extension.muc.RoomChat;
 import com.xabber.android.data.extension.muc.RoomContact;
 import com.xabber.android.data.log.LogManager;
@@ -144,6 +145,8 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
                 rosterContacts.put(account.toString(),
                         contact.getUser().getBareJid().toString(), contact);
                 newContacts.add(contact);
+
+                LastActivityInteractor.getInstance().addJidToLastActivityQuery(account, UserJid.from(jid));
             } catch (UserJid.UserJidCreateException e) {
                 LogManager.exception(LOG_TAG, e);
             }

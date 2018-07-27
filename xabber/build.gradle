@@ -10,8 +10,8 @@ android {
     defaultConfig {
         minSdkVersion 15
         targetSdkVersion 27
-        versionCode 482
-        versionName '2.3.2(482)'
+        versionCode 501
+        versionName '2.4.1(501)'
     }
 
     lintOptions {
@@ -180,6 +180,7 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:3.7.0'
     implementation 'com.squareup.okhttp3:okhttp:3.5.0'
     implementation 'org.greenrobot:eventbus:3.0.0'
+    implementation 'commons-io:commons-io:2.6'
 
     // ui
     implementation 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1'

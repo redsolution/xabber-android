@@ -15,4 +15,10 @@
   <string name="required">Jika diperlukan</string>
   <string name="auto">Otomatis</string>
   <string name="save">Simpan</string>
+  <string name="cancel">Batal</string>
+  <string name="skip">Lewati</string>
+  <string name="settings">Pengaturan</string>
+  <string name="ok">OK</string>
+  <string name="login">Masuk</string>
+  <string name="resume">Lanjutkan</string>
 </resources>

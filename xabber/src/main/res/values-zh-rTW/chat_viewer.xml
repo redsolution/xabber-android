@@ -55,7 +55,6 @@
   <string name="chat_state_composing">正在輸入&#8230;</string>
   <string name="chat_state_paused">已輸入文字&#8230;</string>
   <string name="chat_typed">於%s輸入</string>
-  <string name="export_chat">匯出聊天記錄</string>
   <string name="export_chat_done">記錄已被匯出到SD卡</string>
   <string name="export_chat_mask">%2$s與%1$s.html</string>
   <string name="export_chat_send">匯出後發送</string>
@@ -74,7 +73,6 @@
   <string name="otr_verify_fingerprint">以指紋驗證</string>
   <string name="otr_verify_question">以問題驗證</string>
   <string name="otr_verify_secret">已共享的金鑰驗證</string>
-  <string name="recent_chats">近期聊天</string>
   <string name="under_construction">建設中</string>
   <string name="under_construction_message">此螢幕正在建設中</string>
   <string name="chat_events_show_text_global">使用全局設定</string>

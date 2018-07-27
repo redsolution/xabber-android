@@ -29,6 +29,7 @@ import org.jxmpp.stringprep.XmppStringprepException;
 
 import java.util.UUID;
 
+import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.Index;
 import io.realm.annotations.PrimaryKey;
@@ -65,7 +66,7 @@ public class MessageItem extends RealmObject {
         public static final String IMAGE_HEIGHT = "imageHeight";
         public static final String ACKNOWLEDGED = "acknowledged";
         public static final String IS_IN_PROGRESS = "isInProgress";
-
+        public static final String ATTACHMENTS = "attachments";
     }
 
     /**
@@ -151,24 +152,30 @@ public class MessageItem extends RealmObject {
     /**
      * If message text contains url to file
      */
+    @Deprecated
     private String fileUrl;
 
     /**
      * If message "contains" file with local file path
      */
+    @Deprecated
     private String filePath;
 
     /**
      * If message contains URL to image (and may be drawn as image)
      */
+    @Deprecated
     private boolean isImage;
 
+    @Deprecated
     @Nullable
     private Integer imageWidth;
 
+    @Deprecated
     @Nullable
     private Integer imageHeight;
 
+    @Deprecated
     private Long fileSize;
 
     /**
@@ -181,6 +188,7 @@ public class MessageItem extends RealmObject {
      */
     private boolean isInProgress;
 
+    private RealmList<Attachment> attachments;
 
     public MessageItem(String uniqueId) {
         this.uniqueId = uniqueId;
@@ -349,52 +357,64 @@ public class MessageItem extends RealmObject {
         this.forwarded = forwarded;
     }
 
+    @Deprecated
     public String getFilePath() {
         return filePath;
     }
 
+    @Deprecated
     public void setFilePath(String filePath) {
         this.filePath = filePath;
     }
 
+    @Deprecated
     public boolean isImage() {
         return isImage;
     }
 
+    @Deprecated
     public void setIsImage(boolean isImage) {
         this.isImage = isImage;
     }
 
+    @Deprecated
     @Nullable
     public Integer getImageWidth() {
         return imageWidth;
     }
 
+    @Deprecated
     public void setImageWidth(@Nullable Integer imageWidth) {
         this.imageWidth = imageWidth;
     }
 
+    @Deprecated
     @Nullable
     public Integer getImageHeight() {
         return imageHeight;
     }
 
+    @Deprecated
     public void setImageHeight(@Nullable Integer imageHeight) {
         this.imageHeight = imageHeight;
     }
 
+    @Deprecated
     public String getFileUrl() {
         return fileUrl;
     }
 
+    @Deprecated
     public void setFileUrl(String fileUrl) {
         this.fileUrl = fileUrl;
     }
 
+    @Deprecated
     public Long getFileSize() {
         return fileSize;
     }
 
+    @Deprecated
     public void setFileSize(Long fileSize) {
         this.fileSize = fileSize;
     }
@@ -441,5 +461,17 @@ public class MessageItem extends RealmObject {
 
     public void setErrorDescription(String errorDescription) {
         this.errorDescription = errorDescription;
+    }
+
+    public RealmList<Attachment> getAttachments() {
+        return attachments;
+    }
+
+    public void setAttachments(RealmList<Attachment> attachments) {
+        this.attachments = attachments;
+    }
+
+    public boolean haveAttachments() {
+        return attachments != null && attachments.size() > 0;
     }
 }

@@ -380,10 +380,10 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
         String[] words = name.split("\\s+");
         String chars = "";
 
-        if (words.length >= 1)
+        if (words.length >= 1 && words[0].length() > 0)
             chars = chars + words[0].substring(0, 1);
 
-        if (words.length >= 2)
+        if (words.length >= 2 && words[1].length() > 0)
             chars = chars + words[1].substring(0, 1);
 
         return TextDrawable.builder()

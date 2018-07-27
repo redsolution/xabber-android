@@ -30,4 +30,7 @@ public interface ContactListView {
     void hidePlaceholder();
     void onContactListChanged(CommonState commonState, boolean hasContacts,
                               boolean hasVisibleContacts, boolean isFilterEnabled);
+    void startAddContactActivity();
+    void startJoinConferenceActivity();
+    void startSetStatusActivity();
 }

@@ -39,7 +39,6 @@
   <string name="request_subscription">訂閱請求</string>
   <string name="XMPP_EXCEPTION">串流錯誤</string>
   <string name="application_state_closing">正在儲存設定&#8230;\n應用程式將很快關閉。</string>
-  <string name="certificate_confirmation">%1$s。\n你真的信任具有SHA-1指紋%2$s的證書嗎？你是否希望不再被通知關於此證書的驗證。</string>
   <string name="certificate_details">\n\n頒發給：\n通用名（CN）：%1$s\n組織（O）：%2$s\n組織單位（OU）：%3$s\n序列號：%4$s\n\n頒發者：\n通用名（CN）：%5$s\n組織（O）：%6$s\n組織單位（OU）：%7$s\n\n有效期：\n有效起始日期：%8$s\n有效終止日期：%9$s</string>
   <string name="certificate_invalid_chane">簽名鏈驗證失敗</string>
   <string name="certificate_invalid_target">目標驗證失敗</string>

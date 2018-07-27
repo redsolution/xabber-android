@@ -7,6 +7,7 @@ package com.xabber.android.presentation.ui.contactlist.viewobjects;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.text.Html;
 import android.view.View;
 
 import com.xabber.android.R;
@@ -30,12 +31,12 @@ public class ExtContactVO extends ContactVO {
                         int mucIndicatorLevel, UserJid userJid, AccountJid accountJid, int unreadCount,
                         boolean mute, NotificationState.NotificationMode notificationMode, String messageText,
                         boolean isOutgoing, Date time, int messageStatus, String messageOwner,
-                        boolean archived, ContactClickListener listener) {
+                        boolean archived, String lastActivity, ContactClickListener listener) {
 
         super(accountColorIndicator, accountColorIndicatorBack, showOfflineShadow, name, status,
                 statusId, statusLevel, avatar,
                 mucIndicatorLevel, userJid, accountJid, unreadCount, mute, notificationMode, messageText,
-                isOutgoing, time, messageStatus, messageOwner, archived, listener);
+                isOutgoing, time, messageStatus, messageOwner, archived, lastActivity, listener);
     }
 
     public static ExtContactVO convert(AbstractContact contact, ContactClickListener listener) {
@@ -48,7 +49,8 @@ public class ExtContactVO extends ContactVO {
                 contactVO.getUserJid(), contactVO.getAccountJid(), contactVO.getUnreadCount(),
                 contactVO.isMute(), contactVO.getNotificationMode(), contactVO.getMessageText(),
                 contactVO.isOutgoing(), contactVO.getTime(), contactVO.getMessageStatus(),
-                contactVO.getMessageOwner(), contactVO.isArchived(), contactVO.listener);
+                contactVO.getMessageOwner(), contactVO.isArchived(), contactVO.getLastActivity(),
+                contactVO.listener);
     }
 
     @Override
@@ -94,7 +96,7 @@ public class ExtContactVO extends ContactVO {
                 viewHolder.tvMessageText.
                         setTypeface(viewHolder.tvMessageText.getTypeface(), Typeface.ITALIC);
             } else {
-                viewHolder.tvMessageText.setText(text);
+                viewHolder.tvMessageText.setText(Html.fromHtml(text));
                 viewHolder.tvMessageText.setTypeface(Typeface.DEFAULT);
             }
         }

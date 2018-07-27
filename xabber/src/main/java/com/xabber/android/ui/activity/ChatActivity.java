@@ -69,13 +69,16 @@ import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
+import com.xabber.android.presentation.mvp.contactlist.UpdateBackpressure;
 import com.xabber.android.ui.adapter.ChatViewerAdapter;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.color.StatusBarPainter;
+import com.xabber.android.ui.dialog.AttachDialog;
 import com.xabber.android.ui.dialog.BlockContactDialog;
 import com.xabber.android.ui.dialog.ContactDeleteDialogFragment;
 import com.xabber.android.ui.fragment.ChatFragment;
 import com.xabber.android.ui.fragment.ContactVcardViewerFragment;
+import com.xabber.android.ui.fragment.OccupantListFragment;
 import com.xabber.android.ui.fragment.RecentChatFragment;
 import com.xabber.android.ui.helper.NewContactTitleInflater;
 import com.xabber.android.ui.helper.PermissionsRequester;
@@ -85,7 +88,9 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.jxmpp.stringprep.XmppStringprepException;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import static com.xabber.android.ui.adapter.ChatViewerAdapter.PAGE_POSITION_CHAT_INFO;
 import static com.xabber.android.ui.adapter.ChatViewerAdapter.PAGE_POSITION_RECENT_CHATS;
@@ -101,7 +106,8 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         OnAccountChangedListener, OnChatStateListener, ViewPager.OnPageChangeListener,
         ChatFragment.ChatViewerFragmentListener, OnBlockedListChangedListener,
         RecentChatFragment.Listener, ChatViewerAdapter.FinishUpdateListener,
-        ContactVcardViewerFragment.Listener, Toolbar.OnMenuItemClickListener {
+        ContactVcardViewerFragment.Listener, Toolbar.OnMenuItemClickListener,
+        UpdateBackpressure.UpdatableObject, OccupantListFragment.Listener {
 
     private static final String LOG_TAG = ChatActivity.class.getSimpleName();
 
@@ -123,6 +129,8 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     private static final String SAVE_SELECTED_ACCOUNT = "com.xabber.android.ui.activity.ChatActivity.SAVE_SELECTED_ACCOUNT";
     private static final String SAVE_SELECTED_USER = "com.xabber.android.ui.activity.ChatActivity.SAVE_SELECTED_USER";
     private static final String SAVE_EXIT_ON_SEND = "com.xabber.android.ui.activity.ChatActivity.SAVE_EXIT_ON_SEND";
+
+    private UpdateBackpressure updateBackpressure;
 
     ChatViewerAdapter chatViewerAdapter;
     ViewPager viewPager;
@@ -269,6 +277,8 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         setContentView(R.layout.activity_chat);
         getWindow().setBackgroundDrawable(null);
 
+        updateBackpressure = new UpdateBackpressure(this);
+
         contactTitleView = findViewById(R.id.contact_title);
         contactTitleView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -378,7 +388,9 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         }
 
         if (PermissionsRequester.requestFileReadPermissionIfNeeded(this, PERMISSIONS_REQUEST_ATTACH_FILE)) {
-            HttpFileUploadManager.getInstance().uploadFile(account, user, path);
+            List<String> paths = new ArrayList<>();
+            paths.add(path);
+            HttpFileUploadManager.getInstance().uploadFile(account, user, paths, this);
         }
     }
 
@@ -487,6 +499,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     @Override
     protected void onPause() {
         super.onPause();
+        updateBackpressure.removeRefreshRequests();
         Application.getInstance().removeUIListener(OnChatStateListener.class, this);
         Application.getInstance().removeUIListener(OnContactChangedListener.class, this);
         Application.getInstance().removeUIListener(OnAccountChangedListener.class, this);
@@ -525,24 +538,27 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         viewPager.setCurrentItem(position, smoothScroll);
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onNewMessageEvent(NewMessageEvent event) {
-        updateRecentChats();
-    }
-
     @Override
-    public void onContactsChanged(Collection<RosterContact> entities) {
-        updateToolbar();
-        updateChat();
-        updateRecentChats();
-    }
-
-    @Override
-    public void onAccountsChanged(Collection<AccountJid> accounts) {
+    public void update() {
         updateToolbar();
         updateChat();
         updateRecentChats();
         updateStatusBar();
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onNewMessageEvent(NewMessageEvent event) {
+        updateBackpressure.refreshRequest();
+    }
+
+    @Override
+    public void onContactsChanged(Collection<RosterContact> entities) {
+        updateBackpressure.refreshRequest();
+    }
+
+    @Override
+    public void onAccountsChanged(Collection<AccountJid> accounts) {
+        updateBackpressure.refreshRequest();
     }
 
     @Override
@@ -687,7 +703,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     @Override
     public void onBlockedListChanged(AccountJid account) {
         // if chat of blocked contact is currently opened, it should be closed
-        final Collection<UserJid> blockedContacts = BlockingManager.getInstance().getBlockedContacts(account);
+        final Collection<UserJid> blockedContacts = BlockingManager.getInstance().getCachedBlockedContacts(account);
         if (blockedContacts.contains(user)) {
             close();
         }
@@ -966,6 +982,12 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         toolbar.findViewById(R.id.name_holder).startAnimation(shakeAnimation);
     }
 
+    @Override
+    public void onOccupantClick(String username) {
+        selectPage(ChatViewerAdapter.PAGE_POSITION_CHAT, true);
+        if (chatFragment != null) chatFragment.mentionUser(username);
+    }
+
     private NotificationState.NotificationMode getNotifMode() {
         AbstractChat chat = MessageManager.getInstance().getOrCreateChat(account, user);
         NotificationState.NotificationMode mode = NotificationState.NotificationMode.bydefault;
@@ -1034,6 +1056,13 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
                     showShowcase(false);
                 }
             });
+        }
+    }
+
+    public void showAttachDialog() {
+        if (chatFragment != null) {
+            AttachDialog dialog = AttachDialog.newInstance(chatFragment);
+            dialog.show(getSupportFragmentManager(), "attach_fragment");
         }
     }
 }

@@ -12,9 +12,6 @@ import android.widget.TextView;
 import com.xabber.android.R;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.presentation.mvp.contactlist.ContactListPresenter;
-import com.xabber.android.ui.activity.ConferenceSelectActivity;
-import com.xabber.android.ui.activity.ContactAddActivity;
-import com.xabber.android.ui.activity.StatusEditActivity;
 import com.xabber.android.ui.color.AccountPainter;
 import com.xabber.android.ui.color.ColorManager;
 
@@ -42,6 +39,9 @@ public class ToolbarVO extends AbstractHeaderItem<ToolbarVO.ViewHolder> implemen
 
     public interface OnClickListener {
         void onStateSelected(ContactListPresenter.ChatListState state);
+        void onAddContactClick();
+        void onJoinConferenceClick();
+        void onSetStatusClick();
     }
 
     public ToolbarVO(Context context, OnClickListener listener,
@@ -147,7 +147,7 @@ public class ToolbarVO extends AbstractHeaderItem<ToolbarVO.ViewHolder> implemen
                     showToolbarPopup(ivAdd);
                     break;
                 case R.id.ivSetStatus:
-                    context.startActivity(StatusEditActivity.createIntent(context));
+                    listener.onSetStatusClick();
                     break;
                 case R.id.tvTitle:
                     showTitlePopup(tvTitle);
@@ -161,10 +161,10 @@ public class ToolbarVO extends AbstractHeaderItem<ToolbarVO.ViewHolder> implemen
         public boolean onMenuItemClick(MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.action_add_contact:
-                    context.startActivity(ContactAddActivity.createIntent(context));
+                    listener.onAddContactClick();
                     return true;
                 case R.id.action_join_conference:
-                    context.startActivity(ConferenceSelectActivity.createIntent(context));
+                    listener.onJoinConferenceClick();
                     return true;
                 case R.id.action_recent_chats:
                     listener.onStateSelected(ContactListPresenter.ChatListState.recent);

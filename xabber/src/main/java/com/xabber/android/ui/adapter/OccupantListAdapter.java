@@ -35,6 +35,7 @@ import com.xabber.android.ui.activity.OccupantListActivity;
 import org.jivesoftware.smackx.muc.MUCRole;
 import org.jxmpp.jid.EntityBareJid;
 import org.jxmpp.jid.impl.JidCreate;
+import org.jxmpp.jid.parts.Resourcepart;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -120,7 +121,8 @@ public class OccupantListAdapter extends BaseAdapter implements
 
         // avatar
 
-        if (MUCManager.getInstance().getNickname(account, room).equals(occupant.getNickname())) {
+        Resourcepart nickname = occupant.getNickname();
+        if (nickname != null && MUCManager.getInstance().getNickname(account, room).equals(nickname)) {
             avatarView.setImageDrawable(AvatarManager.getInstance().getAccountAvatar(account));
         } else {
 

@@ -40,7 +40,6 @@
   <string name="request_subscription">Solicitar subscrição</string>
   <string name="XMPP_EXCEPTION">Erro na transmissão</string>
   <string name="application_state_closing">A guardar as alterações&#8230;\nA aplicação fechará em breve.</string>
-  <string name="certificate_confirmation">%1$s.\nConfia absolutamente no certificado com a impressão digital Sha1: %2$s? Deseja não ser notificado sobre este problema com este certificado?</string>
   <string name="certificate_details">\n\nEmitido para:\nNome Comum (CN): %1$s\nOrganização (O): %2$s\nUnidade Organizacional (OU): %3$s\nNúmero de Série: %4$s\n\nEmitido por:\nNome Comum (CN): %5$s\nOrganização (O): %6$s\nUnidade Organizacional (OU): %7$s\n\nValidade:\nEmitido em: %8$s\nExpira em: %9$s.</string>
   <string name="certificate_invalid_chane">A verificação da cadeia de assinatura falhou</string>
   <string name="certificate_invalid_target">A verificação de destino falhou</string>

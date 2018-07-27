@@ -11,6 +11,7 @@ import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.cs.ChatStateManager;
 import com.xabber.android.data.message.NotificationState;
 import com.xabber.android.data.roster.AbstractContact;
+import com.xabber.android.data.roster.RosterContact;
 
 import org.jivesoftware.smackx.chatstates.ChatState;
 
@@ -82,7 +83,9 @@ public class NewContactTitleInflater {
         } else {
             statusText = abstractContact.getStatusText().trim();
             if (statusText.toString().isEmpty()) {
-                statusText = context.getString(abstractContact.getStatusMode().getStringID());
+                statusText = getLastActivity(abstractContact);
+                if (statusText.length() <= 0)
+                    statusText = context.getString(abstractContact.getStatusMode().getStringID());
             }
         }
         statusTextView.setText(statusText);
@@ -90,6 +93,15 @@ public class NewContactTitleInflater {
 
     private static boolean isContactOffline(int statusLevel) {
         return statusLevel == 6;
+    }
+
+    private static String getLastActivity(AbstractContact contact) {
+        if (contact instanceof RosterContact) {
+            RosterContact rosterContact = (RosterContact) contact;
+            if (!rosterContact.getStatusMode().isOnline())
+                return rosterContact.getLastActivity();
+        }
+        return "";
     }
 
 }

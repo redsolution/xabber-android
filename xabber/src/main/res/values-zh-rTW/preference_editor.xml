@@ -5,7 +5,6 @@
   <string name="cache_clear_warning">確實要刪除聊天記錄和其他本地資料嗎？\n帳戶和聯絡人資料不會受影響，該程式將會關閉。</string>
   <string name="chats_send_by_enter">Enter時傳送\n可以通過按Enter鍵傳送訊息</string>
   <string name="connection_go_away">自動離開\n螢幕鎖定時自動設定離開狀態</string>
-  <string name="contacts_order">聯絡人排序\n設定聯絡人的顯示順序</string>
   <string name="contacts_order_alphabet">按字母排序</string>
   <string name="contacts_order_status">依狀態</string>
   <string name="contacts_show_accounts">依帳號分組\n在聯絡人清單中依帳號分組</string>
@@ -19,13 +18,9 @@
   <string name="debug_log">偵錯日誌\n將訊息寫入偵錯日誌（請重新開機程式來應用設定）</string>
   <string name="events_lightning">燈光提示\n通知時閃爍LED</string>
   <string name="events_persistent">工作列圖示\n顯示永續性通知，此選項可防止Android從記憶體中解除安裝該程式</string>
-  <string name="events_sound">聲音提示\n選擇提示音</string>
-  <string name="events_vibro">振動\n通知時振動</string>
-  <string name="interface_theme">主題\n主題設定</string>
   <string name="interface_theme_dark">暗色</string>
   <string name="interface_theme_light">亮色</string>
   <string name="interface_theme_normal">預設</string>
-  <string name="interface_smiles">表情\n表情設定</string>
   <string name="interface_smiles_android">Android表情</string>
   <string name="interface_smiles_none">無圖像表情</string>
   <string name="preference_connection">連線設定\n連線設定</string>
@@ -36,16 +31,13 @@
   <string name="preference_interface">主題設定\n外觀設定</string>
   <string name="about_viewer">關於</string>
   <string name="chats_show_background">顯示背景\n禁用可能提升效能</string>
-  <string name="chats_font_size">字型大小\n訊息文字的大小</string>
   <string name="chats_font_size_large">大</string>
   <string name="chats_font_size_normal">中</string>
   <string name="chats_font_size_small">小</string>
   <string name="chats_font_size_xlarge">特大</string>
-  <string name="chats_hide_keyboard">隱藏鍵盤\n傳送訊息後隱藏軟鍵盤</string>
   <string name="chats_hide_keyboard_landscape">在橫向模式</string>
   <string name="chats_receipt">訊息送達通知\n發送和接收訊息送達通知</string>
   <string name="chats_show_avatars">在訊息中顯示大頭貼\n在每條訊息旁顯示大頭貼</string>
-  <string name="chats_show_status_change">顯示狀態變更\n顯示和狀態變更有關的訊息</string>
   <string name="chats_show_status_change_muc">在會議中</string>
   <string name="chats_state_notification">顯示輸入通知\n顯示其他使用者正在輸入</string>
   <string name="connection_adjust_priority">調整優先順序\n根據選擇的狀態設定優先順序，會覆蓋帳戶優先順序。</string>
@@ -63,7 +55,6 @@
   <string name="events_message_chat">僅聊天</string>
   <string name="events_message_chat_and_muc">聊天和會議</string>
   <string name="events_message_none">不通知</string>
-  <string name="events_show_text">在通知中顯示訊息\n在通知區域顯示訊息文字</string>
   <string name="events_visible_chat">接收當前聊天中通知\n接收當前聊天中收到的訊息通知</string>
   <string name="negative_priotiry_summary">%s（你將不會收到任何訊息）</string>
   <string name="preference_accounts">XMPP帳戶\n管理帳戶</string>

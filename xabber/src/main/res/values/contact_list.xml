@@ -121,4 +121,11 @@
     <string name="category_title_contacts">Contacts</string>
 
     <string name="showcase_contact_list_text_1">Swipe chat left or right to archive it</string>
+
+    <string name="last_seen_now">last seen just now</string>
+    <string name="last_seen_minutes">last seen %1$s minutes ago</string>
+    <string name="last_seen_hours">last seen a hour ago</string>
+    <string name="last_seen_today">last seen at %1$s</string>
+    <string name="last_seen_yesterday">last seen yesterday at %1$s</string>
+    <string name="last_seen_date">last seen %1$s</string>
 </resources>

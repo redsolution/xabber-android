@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.os.Looper;
 
 import com.xabber.android.data.Application;
+import com.xabber.android.data.database.messagerealm.Attachment;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.database.messagerealm.SyncInfo;
 import com.xabber.android.data.database.sqlite.MessageTable;
@@ -29,7 +30,7 @@ import io.realm.annotations.RealmModule;
 
 public class MessageDatabaseManager {
     private static final String REALM_MESSAGE_DATABASE_NAME = "xabber.realm";
-    static final int REALM_MESSAGE_DATABASE_VERSION = 15;
+    static final int REALM_MESSAGE_DATABASE_VERSION = 16;
     private final RealmConfiguration realmConfiguration;
 
     private static MessageDatabaseManager instance;
@@ -132,7 +133,7 @@ public class MessageDatabaseManager {
     }
 
 
-    @RealmModule(classes = {MessageItem.class, SyncInfo.class})
+    @RealmModule(classes = {MessageItem.class, SyncInfo.class, Attachment.class})
     static class MessageRealmDatabaseModule {
     }
 
@@ -257,6 +258,26 @@ public class MessageDatabaseManager {
                         if (oldVersion == 14) {
                             schema.get(MessageItem.class.getSimpleName())
                                     .addField(MessageItem.Fields.ERROR_DESCR, String.class);
+                            oldVersion++;
+                        }
+
+                        if (oldVersion == 15) {
+                            schema.create(Attachment.class.getSimpleName())
+                                    .addField("uniqueId", String.class,
+                                            FieldAttribute.PRIMARY_KEY, FieldAttribute.REQUIRED)
+                                    .addField("title", String.class)
+                                    .addField("filePath", String.class)
+                                    .addField("fileUrl", String.class)
+                                    .addField("fileSize", Long.class)
+                                    .addField("isImage", boolean.class)
+                                    .addField("imageWidth", Integer.class)
+                                    .addField("imageHeight", Integer.class)
+                                    .addField("duration", Long.class)
+                                    .addField("mimeType", String.class);
+
+                            schema.get(MessageItem.class.getSimpleName())
+                                    .addRealmListField(MessageItem.Fields.ATTACHMENTS,
+                                            schema.get(Attachment.class.getSimpleName()));
                             oldVersion++;
                         }
 

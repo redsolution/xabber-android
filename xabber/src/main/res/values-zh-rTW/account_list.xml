@@ -5,7 +5,6 @@
   <string name="account_add">新增帳號</string>
   <string name="account_register">註冊新帳戶</string>
   <string name="account_delete">刪除帳號</string>
-  <string name="account_editor">編輯帳號</string>
   <string name="account_state_registration">正在註冊</string>
   <string name="account_state_authentication">認證中</string>
   <string name="account_state_connected">在線</string>

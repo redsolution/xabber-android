@@ -16,9 +16,11 @@
   <string name="ENTRY_IS_NOT_AVAILABLE">Kontak tidak tersedia</string>
   <string name="FILE_NOT_FOUND">Berkas tidak ditemukan</string>
   <string name="message_copy">Salin</string>
+  <string name="message_appeal">Sebut</string>
   <string name="message_quote">Kutip</string>
   <string name="message_remove">Hapus dari riwayat</string>
   <string name="message_repeat">Kirim ulang</string>
+  <string name="message_otr_show_original">Tampilkan pesan</string>
   <string name="message_open_file">Buka</string>
   <string name="message_save_file">Simpan</string>
   <string name="save_history">Simpan riwayat lokal\nSimpan riwayat pesan secara lokal</string>
@@ -59,7 +61,6 @@
   <string name="chat_state_composing">Mengetik&#8230;</string>
   <string name="chat_state_paused">Sedang mengirim&#8230;</string>
   <string name="chat_typed">dikirim pada %s</string>
-  <string name="export_chat">Ekspor obrolan</string>
   <string name="export_chat_done">Riwayat telah diekspor ke kartu SD</string>
   <string name="export_chat_mask">%2$s untuk %1$s.html</string>
   <string name="export_chat_send">Kirim setelah ekspor</string>
@@ -74,11 +75,18 @@
   <string name="otr_start">Mulai enkripsi</string>
   <string name="otr_unencrypted_message">Pesan ini tidak dienkripsi</string>
   <string name="otr_unreadable_message">Pesan terenkripsi yang Anda kirim tidak dapat dibaca</string>
+  <string name="otr_not_decrypted_message">Pesan tidak dapat didekripsi</string>
   <string name="otr_verification">Verifikasi OTR</string>
   <string name="otr_verify_fingerprint">Verifikasi dengan sidik jari</string>
   <string name="otr_verify_question">Verifikasi dengan pertanyaan</string>
   <string name="otr_verify_secret">Verifikasi dengan rahasia bersama</string>
-  <string name="recent_chats">Obrolan terbaru</string>
+  <string name="otr_select_resource">Pilih perangkat untuk menggunakan sesi OTR:</string>
+  <string name="otr_select_toast_error">Sesi OTR belum dimulai.</string>
+  <string name="otr_select_toast_resources_not_found">Sesi OTR belum dimulai. Kontak luring.</string>
+  <string name="otr_verification_notify_title">Permintaan verifikasi OTR</string>
+  <string name="otr_verification_progress_title">Verifikasi OTR sedang diproses</string>
+  <string name="otr_verification_notify_button">Buka</string>
+  <string name="otr_verification_notify_button_cancel">Batal</string>
   <string name="under_construction">Sedang dibuat</string>
   <string name="under_construction_message">Layar ini sedang dibuat</string>
   <string name="chat_events_show_text_global">Gunakan pengaturan global</string>
@@ -95,4 +103,12 @@
   <string name="http_file_upload_slot_error">Tidak dapat mengunggah berkas. Terlalu besar?</string>
   <string name="no_permission_to_read_files">Tidak ada izin untuk membaca berkas</string>
   <string name="no_permission_to_write_files">Tidak ada izin untuk menulis berkas</string>
+  <string name="error_description_title">Deskripsi kesalahan:</string>
+  <string name="message_status_sent">Terkirim</string>
+  <string name="message_status_delivered">Diterima</string>
+  <string name="message_status_synced">Diterima dari riwayat</string>
+  <string name="message_status_error">Kesalahan</string>
+  <string name="message_status_forwarded">Kirim dari perangkat lain </string>
+  <string name="message_status_not_sent">Mengirim</string>
+  <string name="toast_no_history">Tidak ada pesan dalam riwayat</string>
 </resources>

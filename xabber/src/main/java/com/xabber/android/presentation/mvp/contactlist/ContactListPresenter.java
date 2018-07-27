@@ -1,6 +1,5 @@
 package com.xabber.android.presentation.mvp.contactlist;
 
-import android.content.Context;
 import android.text.TextUtils;
 import android.view.ContextMenu;
 import android.view.View;
@@ -66,27 +65,26 @@ import eu.davidea.flexibleadapter.items.IFlexible;
 
 public class ContactListPresenter implements OnContactChangedListener, OnAccountChangedListener,
         ContactVO.ContactClickListener, AccountVO.AccountClickListener, ToolbarVO.OnClickListener,
-        GroupVO.GroupClickListener {
+        GroupVO.GroupClickListener, UpdateBackpressure.UpdatableObject {
 
     private static final int MAX_RECENT_ITEMS = 12;
 
     private static ContactListPresenter instance;
     private ContactListView view;
-    private Context context;
-    private StructureBuilder structureBuilder;
+
+    private UpdateBackpressure updateBackpressure;
 
     private String filterString = null;
     protected Locale locale = Locale.getDefault();
     private ChatListState currentChatsState = ChatListState.recent;
 
-    public static ContactListPresenter getInstance(Context context) {
-        if (instance == null) instance = new ContactListPresenter(context);
+    public static ContactListPresenter getInstance() {
+        if (instance == null) instance = new ContactListPresenter();
         return instance;
     }
 
-    public ContactListPresenter(Context context) {
-        this.context = context;
-        structureBuilder = new StructureBuilder(this);
+    public ContactListPresenter() {
+        updateBackpressure = new UpdateBackpressure(this);
     }
 
     public void bindView(ContactListView view) {
@@ -94,7 +92,7 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
         Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
         Application.getInstance().addUIListener(OnContactChangedListener.class, this);
         EventBus.getDefault().register(this);
-        structureBuilder.build();
+        updateBackpressure.build();
     }
 
     /**
@@ -105,11 +103,11 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
         Application.getInstance().removeUIListener(OnAccountChangedListener.class, this);
         Application.getInstance().removeUIListener(OnContactChangedListener.class, this);
         EventBus.getDefault().unregister(this);
-        structureBuilder.removeRefreshRequests();
+        updateBackpressure.removeRefreshRequests();
     }
 
     public void updateContactList() {
-        structureBuilder.refreshRequest();
+        updateBackpressure.refreshRequest();
     }
 
     public void onItemClick(IFlexible item) {
@@ -157,35 +155,50 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
     @Override
     public void onStateSelected(ChatListState state) {
         this.currentChatsState = state;
-        structureBuilder.build();
+        updateBackpressure.build();
         if (view != null) {
             view.closeSnackbar();
             view.closeSearch();
         }
     }
 
+    @Override
+    public void onAddContactClick() {
+        if (view != null) view.startAddContactActivity();
+    }
+
+    @Override
+    public void onJoinConferenceClick() {
+        if (view != null) view.startJoinConferenceActivity();
+    }
+
+    @Override
+    public void onSetStatusClick() {
+        if (view != null) view.startSetStatusActivity();
+    }
+
     public void setFilterString(String filter) {
         filterString = filter;
-        structureBuilder.build();
+        updateBackpressure.build();
     }
 
     @Override
     public void onAccountsChanged(Collection<AccountJid> accounts) {
-        structureBuilder.refreshRequest();
+        updateBackpressure.refreshRequest();
     }
 
     @Override
     public void onContactsChanged(Collection<RosterContact> entities) {
-        structureBuilder.refreshRequest();
+        updateBackpressure.refreshRequest();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onNewMessageEvent(NewMessageEvent event) {
-        structureBuilder.refreshRequest();
+        updateBackpressure.refreshRequest();
     }
 
-    /** Do not call directly. Only from Structure Builder */
-    void buildStructure() {
+    @Override
+    public void update() {
 //        listener.hidePlaceholder();
 
         List<IFlexible> items = new ArrayList<>();
@@ -200,9 +213,11 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
         final Collection<RosterContact> rosterContacts = new ArrayList<>();
         for (RosterContact contact : allRosterContacts) {
             if (blockedContacts.containsKey(contact.getAccount())) {
-                if (!blockedContacts.get(contact.getAccount()).contains(contact.getUser())) {
-                    rosterContacts.add(contact);
-                }
+                Collection<UserJid> blockedUsers = blockedContacts.get(contact.getAccount());
+                if (blockedUsers != null) {
+                    if (!blockedUsers.contains(contact.getUser()))
+                        rosterContacts.add(contact);
+                } else rosterContacts.add(contact);
             }
         }
 
@@ -348,7 +363,7 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
 
             // Remove empty groups, sort and apply structure.
             items.clear();
-            items.add(new ToolbarVO(context, this, currentChatsState));
+            items.add(new ToolbarVO(Application.getInstance().getApplicationContext(), this, currentChatsState));
             if (hasVisibleContacts) {
 
                 if (currentChatsState == ChatListState.recent) {
@@ -382,7 +397,7 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
                             } else {
                                 AccountWithButtonsVO account = AccountWithButtonsVO.convert(rosterAccount, this);
                                 ButtonVO button = ButtonVO.convert(rosterAccount,
-                                        context.getString(R.string.contact_add), ButtonVO.ACTION_ADD_CONTACT);
+                                        Application.getInstance().getApplicationContext().getString(R.string.contact_add), ButtonVO.ACTION_ADD_CONTACT);
                                 account.addSubItem(button);
                                 items.add(account);
                             }
@@ -401,7 +416,7 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
             final ArrayList<AbstractContact> baseEntities = getSearchResults(rosterContacts, comparator, abstractChats);
             items.clear();
 
-            items.add(new CategoryVO(context.getString(R.string.category_title_contacts)));
+            items.add(new CategoryVO(Application.getInstance().getApplicationContext().getString(R.string.category_title_contacts)));
             items.addAll(SettingsManager.contactsShowMessages()
                     ? ExtContactVO.convert(baseEntities, this)
                     : ContactVO.convert(baseEntities, this));
@@ -414,9 +429,9 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
         if (view != null) {
             if (items.size() == 1 && (filterString == null || filterString.isEmpty())) {
                 if (currentChatsState == ChatListState.unread)
-                    view.showPlaceholder(context.getString(R.string.placeholder_no_unread));
+                    view.showPlaceholder(Application.getInstance().getApplicationContext().getString(R.string.placeholder_no_unread));
                 if (currentChatsState == ChatListState.archived)
-                    view.showPlaceholder(context.getString(R.string.placeholder_no_archived));
+                    view.showPlaceholder(Application.getInstance().getApplicationContext().getString(R.string.placeholder_no_archived));
             } else view.hidePlaceholder();
             view.updateItems(items);
         }

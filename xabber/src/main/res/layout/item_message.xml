@@ -36,6 +36,13 @@
         android:visibility="gone"
         />
 
+    <FrameLayout
+        android:id="@+id/imageGridContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        />
+
     <ImageView
         android:id="@+id/message_image"
         android:layout_width="wrap_content"
@@ -43,5 +50,8 @@
         android:visibility="gone"
         android:adjustViewBounds="true"
         />
+
+    <include layout="@layout/file_list_layout"
+        android:visibility="gone" android:id="@+id/fileLayout" />
 
 </merge>

@@ -11,6 +11,8 @@ import com.xabber.android.data.Application;
 
 public class PermissionsRequester {
 
+    public static final int REQUEST_PERMISSION_CAMERA = 5;
+
     public static boolean requestFileReadPermissionIfNeeded(Activity activity, int requestCode) {
         return checkAndRequestPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, activity, requestCode);
     }
@@ -21,6 +23,22 @@ public class PermissionsRequester {
 
     public static boolean requestFileWritePermissionIfNeeded(Fragment fragment, int requestCode) {
         return checkAndRequestPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, fragment, requestCode);
+    }
+
+    public static boolean requestFileWritePermissionIfNeeded(Activity activity, int requestCode) {
+        return checkAndRequestPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, activity, requestCode);
+    }
+
+    public static boolean requestCameraPermissionIfNeeded(Fragment fragment, int requestCode) {
+        return checkAndRequestPermission(Manifest.permission.CAMERA, fragment, requestCode);
+    }
+
+    public static boolean hasFileReadPermission() {
+        return checkPermission(Manifest.permission.READ_EXTERNAL_STORAGE);
+    }
+
+    public static boolean  hasCameraPermission() {
+        return checkPermission(Manifest.permission.CAMERA);
     }
 
     private static boolean checkAndRequestPermission(String permission, Activity activity, int requestCode) {
