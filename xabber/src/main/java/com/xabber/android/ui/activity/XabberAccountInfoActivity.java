@@ -29,6 +29,7 @@ import com.xabber.android.data.xaccount.XMPPAccountSettings;
 import com.xabber.android.data.xaccount.XabberAccount;
 import com.xabber.android.data.xaccount.XabberAccountManager;
 import com.xabber.android.ui.color.BarPainter;
+import com.xabber.android.ui.fragment.XAccountSignUpFragment;
 import com.xabber.android.ui.fragment.XabberAccountCompleteRegsiterFrament;
 import com.xabber.android.ui.fragment.XabberAccountConfirmPhoneFragment;
 import com.xabber.android.ui.fragment.XabberAccountConfirmationFragment;
@@ -244,7 +245,7 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
 
     public void showLoginFragment() {
         if (fragmentLogin == null)
-            fragmentLogin = new XabberAccountLoginFragment();
+            fragmentLogin = new XAccountSignUpFragment();
 
         fTrans = getFragmentManager().beginTransaction();
         fTrans.replace(R.id.container, fragmentLogin, FRAGMENT_LOGIN);
