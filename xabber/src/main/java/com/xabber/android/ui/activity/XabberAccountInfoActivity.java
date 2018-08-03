@@ -30,12 +30,12 @@ import com.xabber.android.data.xaccount.XabberAccount;
 import com.xabber.android.data.xaccount.XabberAccountManager;
 import com.xabber.android.ui.color.BarPainter;
 import com.xabber.android.ui.fragment.XAccountSignUpFragment;
+import com.xabber.android.ui.fragment.XAccountXMPPAuthFragment;
 import com.xabber.android.ui.fragment.XabberAccountCompleteRegsiterFrament;
 import com.xabber.android.ui.fragment.XabberAccountConfirmPhoneFragment;
 import com.xabber.android.ui.fragment.XabberAccountConfirmationFragment;
 import com.xabber.android.ui.fragment.XabberAccountInfoFragment;
 import com.xabber.android.ui.fragment.XabberAccountLastFragment;
-import com.xabber.android.ui.fragment.XabberAccountLoginFragment;
 import com.xabber.android.utils.RetrofitErrorConverter;
 
 import java.util.List;
@@ -57,6 +57,8 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
     private final static String EMAIL_CONFIRMATION_URI = "https://www.xabber.com/account/emails/confirmation/";
 
     private final static String FRAGMENT_LOGIN = "fragment_login";
+    private final static String FRAGMENT_XMPP_AUTH = "fragment_xmpp_auth";
+    private final static String FRAGMENT_SIGNUP = "fragment_signup";
     private final static String FRAGMENT_INFO = "fragment_info";
     private final static String FRAGMENT_CONFIRM = "fragment_confirm";
     private final static String FRAGMENT_PHONE_CONFIRM = "fragment_phone_confirm";
@@ -74,6 +76,8 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
     private ProgressDialog progressDialog;
 
     private Fragment fragmentLogin;
+    private Fragment fragmentXMPPAuth;
+    private Fragment fragmentSignUp;
     private Fragment fragmentInfo;
     private Fragment fragmentConfirmation;
     private Fragment fragmentPhoneConfirmation;
@@ -133,9 +137,9 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
                 showInfoFragment();
                 needShowSyncDialog = false;
             }
-        } else {
-            showLoginFragment();
-        }
+        } else if (AccountManager.getInstance().hasAccounts()) {
+            showXMPPAuthFragment();
+        } else showSignUpFragment();
 
         handleIntent(getIntent());
     }
@@ -249,6 +253,30 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
 
         fTrans = getFragmentManager().beginTransaction();
         fTrans.replace(R.id.container, fragmentLogin, FRAGMENT_LOGIN);
+        fTrans.commit();
+
+        toolbar.setTitle(R.string.title_register_xabber_account);
+        barPainter.setBlue(this);
+    }
+
+    public void showXMPPAuthFragment() {
+        if (fragmentXMPPAuth == null)
+            fragmentXMPPAuth = new XAccountXMPPAuthFragment();
+
+        fTrans = getFragmentManager().beginTransaction();
+        fTrans.replace(R.id.container, fragmentXMPPAuth, FRAGMENT_XMPP_AUTH);
+        fTrans.commit();
+
+        toolbar.setTitle(R.string.title_register_xabber_account);
+        barPainter.setBlue(this);
+    }
+
+    public void showSignUpFragment() {
+        if (fragmentSignUp == null)
+            fragmentSignUp = new XAccountSignUpFragment();
+
+        fTrans = getFragmentManager().beginTransaction();
+        fTrans.replace(R.id.container, fragmentSignUp, FRAGMENT_SIGNUP);
         fTrans.commit();
 
         toolbar.setTitle(R.string.title_register_xabber_account);
