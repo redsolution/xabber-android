@@ -10,6 +10,7 @@ import android.widget.TextView;
 import com.xabber.android.R;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.extension.avatar.AvatarManager;
+import com.xabber.android.data.extension.bookmarks.BookmarksManager;
 import com.xabber.android.ui.color.ColorManager;
 
 import java.util.List;
@@ -21,6 +22,15 @@ import java.util.List;
 public class XMPPAccountAuthAdapter extends RecyclerView.Adapter {
 
     private List<AccountItem> items;
+    private Listener listener;
+
+    public XMPPAccountAuthAdapter(Listener listener) {
+        this.listener = listener;
+    }
+
+    public interface Listener {
+        void onAccountClick(String accountJid);
+    }
 
     public void setItems(List<AccountItem> items) {
         this.items = items;
@@ -47,7 +57,20 @@ public class XMPPAccountAuthAdapter extends RecyclerView.Adapter {
                 AvatarManager.getInstance().getAccountAvatar(account.getAccount()));
 
         // set jid
-        viewHolder.jid.setText(account.getAccount().getFullJid().asBareJid().toString());
+        final String accountJid = account.getAccount().getFullJid().asBareJid().toString();
+        viewHolder.jid.setText(accountJid);
+
+        // set action
+        boolean haveBind = BookmarksManager.getInstance().isBookmarkHaveXabberAccountBinding(account.getAccount());
+        viewHolder.action.setText(haveBind ? "also binded for Xabber Account" : "will be created new Xabber Account");
+
+        // set listener
+        viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listener.onAccountClick(accountJid);
+            }
+        });
     }
 
     @Override

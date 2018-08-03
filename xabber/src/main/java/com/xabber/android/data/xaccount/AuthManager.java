@@ -262,6 +262,12 @@ public class AuthManager {
         return HttpApiManager.getXabberApi().confirmPhoneNumber(getXabberTokenHeader(), new ConfirmPhoneNumber("verify", code));
     }
 
+    // API v2
+
+    public static Single<XMPPCode> requestXMPPCode(String jid) {
+        return HttpApiManager.getXabberApi().requestXMPPCode(new Jid(jid));
+    }
+
     // support
 
     private static String getXabberTokenHeader() {
@@ -280,6 +286,24 @@ public class AuthManager {
     }
 
     // models
+
+    public static class XMPPCode {
+        final String request_id;
+        final String api_jid;
+
+        public XMPPCode(String request_id, String api_jid) {
+            this.request_id = request_id;
+            this.api_jid = api_jid;
+        }
+
+        public String getRequestId() {
+            return request_id;
+        }
+
+        public String getApiJid() {
+            return api_jid;
+        }
+    }
 
     public static class CompleteRegister {
         final String username;

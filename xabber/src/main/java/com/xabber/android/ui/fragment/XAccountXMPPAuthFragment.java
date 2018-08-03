@@ -8,16 +8,18 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.xabber.android.R;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
+import com.xabber.android.ui.activity.XabberAccountInfoActivity;
 import com.xabber.android.ui.adapter.XMPPAccountAuthAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class XAccountXMPPAuthFragment extends Fragment {
+public class XAccountXMPPAuthFragment extends Fragment implements XMPPAccountAuthAdapter.Listener {
 
     private List<AccountItem> xmppAccounts = new ArrayList<>();
 
@@ -34,7 +36,7 @@ public class XAccountXMPPAuthFragment extends Fragment {
         xmppAccounts.clear();
         xmppAccounts.addAll(AccountManager.getInstance().getAllAccountItems());
 
-        XMPPAccountAuthAdapter adapter = new XMPPAccountAuthAdapter();
+        XMPPAccountAuthAdapter adapter = new XMPPAccountAuthAdapter(this);
         adapter.setItems(xmppAccounts);
 
         RecyclerView recyclerView = view.findViewById(R.id.rlAccounts);
@@ -42,5 +44,8 @@ public class XAccountXMPPAuthFragment extends Fragment {
         recyclerView.setAdapter(adapter);
     }
 
-
+    @Override
+    public void onAccountClick(String accountJid) {
+        ((XabberAccountInfoActivity)getActivity()).onRequestXMPPAuthCodeClick(accountJid);
+    }
 }

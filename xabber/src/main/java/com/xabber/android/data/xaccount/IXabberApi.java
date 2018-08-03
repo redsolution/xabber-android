@@ -63,5 +63,9 @@ public interface IXabberApi {
     @POST("accounts/current/email_list/")
     Single<ResponseBody> addEmail(@Header("Authorization") String token, @Body AuthManager.Email email);
 
+    /* Xabber API v2 */
+
+    @POST("accounts/xmpp_code_request/")
+    Single<AuthManager.XMPPCode> requestXMPPCode(@Body AuthManager.Jid jid);
 }
 

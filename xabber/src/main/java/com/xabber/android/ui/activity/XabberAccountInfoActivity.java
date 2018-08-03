@@ -427,6 +427,13 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
         compositeSubscription.add(deleteSubscription);
     }
 
+    public void onRequestXMPPAuthCodeClick(String jid) {
+        if (NetworkManager.isNetworkAvailable()) {
+            requestXMPPCode(jid);
+        } else
+            Toast.makeText(this, R.string.toast_no_internet, Toast.LENGTH_LONG).show();
+    }
+
     private void handleSuccessDelete(List<XMPPAccountSettings> settings) {
         showInfoFragment();
         hideProgress();
@@ -833,6 +840,40 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
             Log.d(LOG_TAG, "Error while send verification email: " + throwable.toString());
             Toast.makeText(this, "Error while send verification email: " + throwable.toString(), Toast.LENGTH_LONG).show();
         }
+    }
+
+    private void requestXMPPCode(String jid) {
+        showProgress("Request XMPP auth-code..");
+        Subscription requestXMPPCodeSubscription = AuthManager.requestXMPPCode(jid)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<AuthManager.XMPPCode>() {
+                    @Override
+                    public void call(AuthManager.XMPPCode code) {
+                        handleSuccessRequestXMPPCode(code);
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        handleErrorRequestXMPPCode(throwable);
+                    }
+                });
+        compositeSubscription.add(requestXMPPCodeSubscription);
+    }
+
+    private void handleSuccessRequestXMPPCode(AuthManager.XMPPCode code) {
+        hideProgress();
+        Toast.makeText(this, code.getRequestId() + " " + code.getApiJid(), Toast.LENGTH_SHORT).show();
+    }
+
+    private void handleErrorRequestXMPPCode(Throwable throwable) {
+        hideProgress();
+
+        // TODO: 03.08.18 implement error parsing
+
+        String error = "Error while request XMPP auth-code: " + throwable.toString();
+        Log.d(LOG_TAG, error);
+        Toast.makeText(this, error, Toast.LENGTH_LONG).show();
     }
 }
 
