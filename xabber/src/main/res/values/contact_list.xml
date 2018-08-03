@@ -91,6 +91,8 @@
 
     <string name="intro_welcome">Welcome to Xabber</string>
     <string name="intro_xabber_description">Open source XMPP client for Android</string>
+    <string name="intro_signin">Sign In</string>
+    <string name="intro_signup">Sign Up</string>
     <string name="intro_have_account">XMPP login</string>
     <string name="intro_register_account">Register XMPP account</string>
     <string name="intro_create_xabber_account">Use Xabber Account</string>

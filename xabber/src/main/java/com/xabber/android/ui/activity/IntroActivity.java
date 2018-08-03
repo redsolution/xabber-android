@@ -35,17 +35,17 @@ public class IntroActivity extends ManagedActivity {
 //        ((TextView) findViewById(R.id.intro_faq_text))
 //                .setMovementMethod(LinkMovementMethod.getInstance());
 
-        Button btnBasicXmpp = (Button) findViewById(R.id.btnBasicXmpp);
-        Button btnLoginXabber = (Button) findViewById(R.id.btnLoginXabber);
+        Button btnSignIn = (Button) findViewById(R.id.btnSignIn);
+        Button btnSignUp = (Button) findViewById(R.id.btnSignUp);
 
-        btnLoginXabber.setOnClickListener(new View.OnClickListener() {
+        btnSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startActivity(TutorialActivity.createIntent(IntroActivity.this));
             }
         });
 
-        btnBasicXmpp.setOnClickListener(new View.OnClickListener() {
+        btnSignIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startActivity(AccountAddActivity.createIntent(IntroActivity.this));

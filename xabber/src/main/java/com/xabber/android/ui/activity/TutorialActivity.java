@@ -21,7 +21,7 @@ import me.relex.circleindicator.CircleIndicator;
 
 public class TutorialActivity extends AppCompatActivity {
 
-    private Button btnLogin;
+    //private Button btnLogin;
     private Button btnRegister;
 
     public static Intent createIntent(Context context) {
@@ -44,13 +44,13 @@ public class TutorialActivity extends AppCompatActivity {
         CircleIndicator indicator = (CircleIndicator) findViewById(R.id.indicator);
         indicator.setViewPager(viewPager);
 
-        btnLogin = (Button) findViewById(R.id.btnLogin);
-        btnLogin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(XabberLoginActivity.createIntent(TutorialActivity.this));
-            }
-        });
+//        btnLogin = (Button) findViewById(R.id.btnLogin);
+//        btnLogin.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                startActivity(XabberLoginActivity.createIntent(TutorialActivity.this));
+//            }
+//        });
 
         btnRegister = (Button) findViewById(R.id.btnRegister);
         btnRegister.setOnClickListener(new View.OnClickListener() {

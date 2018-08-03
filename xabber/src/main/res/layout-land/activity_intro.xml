@@ -53,11 +53,11 @@
                 />
 
             <Button
-                android:id="@+id/btnLoginXabber"
+                android:id="@+id/btnSignIn"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
 
-                android:text="@string/intro_create_xabber_account"
+                android:text="@string/intro_signin"
                 android:textColor="@color/white"
                 style="@style/Widget.AppCompat.Button.Colored"
                 android:theme="@style/BlueButton"
@@ -65,13 +65,13 @@
                 />
 
             <Button
-                android:id="@+id/btnBasicXmpp"
+                android:id="@+id/btnSignUp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 style="@style/Widget.AppCompat.Button.Borderless"
                 android:theme="@style/BlueButton"
                 android:textColor="@color/account_register_blue"
-                android:text="@string/login_without_xabber_account"
+                android:text="@string/intro_signup"
                 android:layout_gravity="center_horizontal"
                 />
 
