@@ -161,4 +161,6 @@
     <string name="patreon_pledged" translatable="false">$%1$d of $%2$d pledged per month.</string>
     <string name="patreon_current_goal" translatable="false">Goal: %1$s</string>
     <string name="patreon_appeal_url" translatable="false">https://www.xabber.com/appeal/</string>
+
+    <string name="xmpp_confirm_title">Enter confirmation code that was send to %1$s</string>
 </resources>

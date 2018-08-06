@@ -13,10 +13,11 @@
         >
 
         <TextView
+            android:id="@+id/tvTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
-            android:text="Enter confirmation code that was send to example@jabber.com"
+            android:text="@string/xmpp_confirm_title"
             android:textSize="18sp"
             android:gravity="center"
             />

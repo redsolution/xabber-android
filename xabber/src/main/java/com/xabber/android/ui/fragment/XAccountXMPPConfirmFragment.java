@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.xabber.android.R;
 import com.xabber.android.ui.activity.XabberAccountInfoActivity;
@@ -19,6 +20,7 @@ public class XAccountXMPPConfirmFragment extends Fragment implements View.OnClic
     private EditText edtCode;
     private Button btnConfirm;
     private Button btnResend;
+    private TextView tvTitle;
 
     @Nullable
     @Override
@@ -33,9 +35,16 @@ public class XAccountXMPPConfirmFragment extends Fragment implements View.OnClic
         edtCode = view.findViewById(R.id.edtCode);
         btnConfirm = view.findViewById(R.id.btnConfirm);
         btnResend = view.findViewById(R.id.btnResend);
+        tvTitle = view.findViewById(R.id.tvTitle);
 
         btnConfirm.setOnClickListener(this);
         btnResend.setOnClickListener(this);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        tvTitle.setText(getString(R.string.xmpp_confirm_title, jid));
     }
 
     @Override

@@ -58,6 +58,7 @@ public class XMPPAccountAuthAdapter extends RecyclerView.Adapter {
 
         // set jid
         final String accountJid = account.getAccount().getFullJid().asBareJid().toString();
+        final String fullJid = account.getAccount().getFullJid().toString();
         viewHolder.jid.setText(accountJid);
 
         // set action
@@ -68,7 +69,7 @@ public class XMPPAccountAuthAdapter extends RecyclerView.Adapter {
         viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                listener.onAccountClick(accountJid);
+                listener.onAccountClick(fullJid);
             }
         });
     }
