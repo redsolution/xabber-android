@@ -17,13 +17,14 @@ public class XabberAccountDTO {
     private String language;
     private String phone;
     private boolean need_to_verify_phone;
+    private String token;
     private List<XMPPUserDTO> xmpp_users;
     private List<EmailDTO> email_list;
     private List<SocialBindingDTO> social_bindings;
 
     public XabberAccountDTO(int id, String account_status, String username, String first_name,
                             String last_name, String registration_date, String language, String phone,
-                            boolean need_to_verify_phone, List<XMPPUserDTO> xmpp_users,
+                            boolean need_to_verify_phone, String token, List<XMPPUserDTO> xmpp_users,
                             List<EmailDTO> email_list, List<SocialBindingDTO> social_bindings) {
         this.id = id;
         this.account_status = account_status;
@@ -85,6 +86,10 @@ public class XabberAccountDTO {
 
     public String getPhone() {
         return phone;
+    }
+
+    public String getToken() {
+        return token;
     }
 }
 

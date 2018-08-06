@@ -268,6 +268,17 @@ public class AuthManager {
         return HttpApiManager.getXabberApi().requestXMPPCode(new Jid(jid));
     }
 
+    public static Single<XabberAccount> confirmXMPP(String jid, String code) {
+        return HttpApiManager.getXabberApi().confirmXMPP(new CodeConfirm(code, jid))
+                .flatMap(new Func1<XabberAccountDTO, Single<? extends XabberAccount>>() {
+                    @Override
+                    public Single<? extends XabberAccount> call(XabberAccountDTO xabberAccountDTO) {
+                        return XabberAccountManager.getInstance().saveOrUpdateXabberAccountToRealm(xabberAccountDTO,
+                                xabberAccountDTO.getToken());
+                    }
+                });
+    }
+
     public static Single<List<Domain>> getHosts() {
         return HttpApiManager.getXabberApi().getHosts();
     }
@@ -290,6 +301,16 @@ public class AuthManager {
     }
 
     // models
+
+    public static class CodeConfirm {
+        final String code;
+        final String jid;
+
+        public CodeConfirm(String code, String jid) {
+            this.code = code;
+            this.jid = jid;
+        }
+    }
 
     public static class Domain {
         final String domain;

@@ -31,6 +31,7 @@ import com.xabber.android.data.xaccount.XabberAccountManager;
 import com.xabber.android.ui.color.BarPainter;
 import com.xabber.android.ui.fragment.XAccountSignUpFragment;
 import com.xabber.android.ui.fragment.XAccountXMPPAuthFragment;
+import com.xabber.android.ui.fragment.XAccountXMPPConfirmFragment;
 import com.xabber.android.ui.fragment.XabberAccountCompleteRegsiterFrament;
 import com.xabber.android.ui.fragment.XabberAccountConfirmPhoneFragment;
 import com.xabber.android.ui.fragment.XabberAccountConfirmationFragment;
@@ -59,6 +60,7 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
 
     private final static String FRAGMENT_LOGIN = "fragment_login";
     private final static String FRAGMENT_XMPP_AUTH = "fragment_xmpp_auth";
+    private final static String FRAGMENT_XMPP_CONFIRM = "fragment_xmpp_confirm";
     private final static String FRAGMENT_SIGNUP = "fragment_signup";
     private final static String FRAGMENT_INFO = "fragment_info";
     private final static String FRAGMENT_CONFIRM = "fragment_confirm";
@@ -78,6 +80,7 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
 
     private Fragment fragmentLogin;
     private Fragment fragmentXMPPAuth;
+    private Fragment fragmentXMPPConfirm;
     private Fragment fragmentSignUp;
     private Fragment fragmentInfo;
     private Fragment fragmentConfirmation;
@@ -272,6 +275,20 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
         barPainter.setBlue(this);
     }
 
+    public void showXMPPConfirmFragment(String jid) {
+        if (fragmentXMPPConfirm == null)
+            fragmentXMPPConfirm = new XAccountXMPPConfirmFragment();
+
+        ((XAccountXMPPConfirmFragment)fragmentXMPPConfirm).setJid(jid);
+
+        fTrans = getFragmentManager().beginTransaction();
+        fTrans.replace(R.id.container, fragmentXMPPConfirm, FRAGMENT_XMPP_CONFIRM);
+        fTrans.commit();
+
+        toolbar.setTitle(R.string.title_register_xabber_account);
+        barPainter.setBlue(this);
+    }
+
     public void showSignUpFragment() {
         if (fragmentSignUp == null)
             fragmentSignUp = new XAccountSignUpFragment();
@@ -431,6 +448,13 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
     public void onRequestXMPPAuthCodeClick(String jid) {
         if (NetworkManager.isNetworkAvailable()) {
             requestXMPPCode(jid);
+        } else
+            Toast.makeText(this, R.string.toast_no_internet, Toast.LENGTH_LONG).show();
+    }
+
+    public void onConfirmXMPPClick(String jid, String code) {
+        if (NetworkManager.isNetworkAvailable()) {
+            confirmXMPP(code, jid);
         } else
             Toast.makeText(this, R.string.toast_no_internet, Toast.LENGTH_LONG).show();
     }
@@ -843,7 +867,7 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
         }
     }
 
-    private void requestXMPPCode(String jid) {
+    private void requestXMPPCode(final String jid) {
         showProgress("Request XMPP auth-code..");
         Subscription requestXMPPCodeSubscription = AuthManager.requestXMPPCode(jid)
                 .subscribeOn(Schedulers.io())
@@ -851,7 +875,7 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
                 .subscribe(new Action1<AuthManager.XMPPCode>() {
                     @Override
                     public void call(AuthManager.XMPPCode code) {
-                        handleSuccessRequestXMPPCode(code);
+                        handleSuccessRequestXMPPCode(code, jid);
                     }
                 }, new Action1<Throwable>() {
                     @Override
@@ -862,9 +886,9 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
         compositeSubscription.add(requestXMPPCodeSubscription);
     }
 
-    private void handleSuccessRequestXMPPCode(AuthManager.XMPPCode code) {
+    private void handleSuccessRequestXMPPCode(AuthManager.XMPPCode code, String jid) {
         hideProgress();
-        Toast.makeText(this, code.getRequestId() + " " + code.getApiJid(), Toast.LENGTH_SHORT).show();
+        showXMPPConfirmFragment(jid);
     }
 
     private void handleErrorRequestXMPPCode(Throwable throwable) {
@@ -873,6 +897,45 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
         // TODO: 03.08.18 implement error parsing
 
         String error = "Error while request XMPP auth-code: " + throwable.toString();
+        Log.d(LOG_TAG, error);
+        Toast.makeText(this, error, Toast.LENGTH_LONG).show();
+    }
+
+    private void confirmXMPP(String code, String jid) {
+        showProgress("Confirm XMPP-account with code..");
+        Subscription confirmXMPPSubscription = AuthManager.confirmXMPP(jid, code)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<XabberAccount>() {
+                    @Override
+                    public void call(XabberAccount account) {
+                        handleSuccessConfirmXMPP(account);
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        handleErrorConfirmXMPP(throwable);
+                    }
+                });
+        compositeSubscription.add(confirmXMPPSubscription);
+    }
+
+    private void handleSuccessConfirmXMPP(XabberAccount account) {
+        hideProgress();
+
+        Intent intent = XabberAccountInfoActivity.createIntent(this);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        intent.putExtra(XabberAccountInfoActivity.CALL_FROM, XabberAccountInfoActivity.CALL_FROM_LOGIN);
+        finish();
+        startActivity(intent);
+    }
+
+    private void handleErrorConfirmXMPP(Throwable throwable) {
+        hideProgress();
+
+        // TODO: 03.08.18 implement error parsing
+
+        String error = "Error while confirm XMPP-account: " + throwable.toString();
         Log.d(LOG_TAG, error);
         Toast.makeText(this, error, Toast.LENGTH_LONG).show();
     }

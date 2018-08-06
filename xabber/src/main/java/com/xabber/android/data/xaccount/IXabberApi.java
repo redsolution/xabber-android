@@ -70,6 +70,9 @@ public interface IXabberApi {
     @POST("accounts/xmpp_code_request/")
     Single<AuthManager.XMPPCode> requestXMPPCode(@Body AuthManager.Jid jid);
 
+    @POST("accounts/xmpp_auth/")
+    Single<XabberAccountDTO> confirmXMPP(@Body AuthManager.CodeConfirm codeConfirm);
+
     @GET("accounts/xmpp/hosts/")
     Single<List<AuthManager.Domain>> getHosts();
 }
