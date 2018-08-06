@@ -38,6 +38,7 @@ import com.xabber.android.ui.fragment.XabberAccountInfoFragment;
 import com.xabber.android.ui.fragment.XabberAccountLastFragment;
 import com.xabber.android.utils.RetrofitErrorConverter;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -872,6 +873,47 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
         // TODO: 03.08.18 implement error parsing
 
         String error = "Error while request XMPP auth-code: " + throwable.toString();
+        Log.d(LOG_TAG, error);
+        Toast.makeText(this, error, Toast.LENGTH_LONG).show();
+    }
+
+    public void getHosts() {
+        showProgress("Request hosts..");
+        Subscription requestHosts = AuthManager.getHosts()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<List<AuthManager.Domain>>() {
+                    @Override
+                    public void call(List<AuthManager.Domain> domains) {
+                        handleSuccessGetHosts(domains);
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        handleErrorGetHosts(throwable);
+                    }
+                });
+        compositeSubscription.add(requestHosts);
+    }
+
+    private void handleSuccessGetHosts(List<AuthManager.Domain> domains) {
+        hideProgress();
+
+        List<String> hosts = new ArrayList<>();
+        for (AuthManager.Domain domain : domains) {
+            hosts.add(domain.getDomain());
+        }
+
+        if (fragmentSignUp != null)
+            ((XAccountSignUpFragment)fragmentSignUp).setupSpinner(hosts);
+    }
+
+    private void handleErrorGetHosts(Throwable throwable) {
+        hideProgress();
+
+        // TODO: 03.08.18 implement error parsing
+
+        String error = "Error while request hosts: " + throwable.toString();
         Log.d(LOG_TAG, error);
         Toast.makeText(this, error, Toast.LENGTH_LONG).show();
     }

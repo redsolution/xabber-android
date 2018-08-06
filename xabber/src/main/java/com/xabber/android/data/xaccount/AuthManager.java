@@ -268,6 +268,10 @@ public class AuthManager {
         return HttpApiManager.getXabberApi().requestXMPPCode(new Jid(jid));
     }
 
+    public static Single<List<Domain>> getHosts() {
+        return HttpApiManager.getXabberApi().getHosts();
+    }
+
     // support
 
     private static String getXabberTokenHeader() {
@@ -286,6 +290,18 @@ public class AuthManager {
     }
 
     // models
+
+    public static class Domain {
+        final String domain;
+
+        public Domain(String domain) {
+            this.domain = domain;
+        }
+
+        public String getDomain() {
+            return domain;
+        }
+    }
 
     public static class XMPPCode {
         final String request_id;

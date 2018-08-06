@@ -1,5 +1,7 @@
 package com.xabber.android.data.xaccount;
 
+import java.util.List;
+
 import okhttp3.ResponseBody;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
@@ -67,5 +69,8 @@ public interface IXabberApi {
 
     @POST("accounts/xmpp_code_request/")
     Single<AuthManager.XMPPCode> requestXMPPCode(@Body AuthManager.Jid jid);
+
+    @GET("accounts/xmpp/hosts/")
+    Single<List<AuthManager.Domain>> getHosts();
 }
 

@@ -12,8 +12,8 @@ import android.widget.EditText;
 import android.widget.Spinner;
 
 import com.xabber.android.R;
+import com.xabber.android.ui.activity.XabberAccountInfoActivity;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class XAccountSignUpFragment extends Fragment implements View.OnClickListener {
@@ -39,12 +39,12 @@ public class XAccountSignUpFragment extends Fragment implements View.OnClickList
         btnSignUp = view.findViewById(R.id.btnSignUp);
 
         btnSignUp.setOnClickListener(this);
+    }
 
-        List<String> domains = new ArrayList<>();
-        domains.add("@xabber.org");
-        domains.add("@xabber.com");
-        domains.add("@xabber.ru");
-        setupSpinner(domains);
+    @Override
+    public void onResume() {
+        super.onResume();
+        ((XabberAccountInfoActivity)getActivity()).getHosts();
     }
 
     @Override
@@ -102,7 +102,7 @@ public class XAccountSignUpFragment extends Fragment implements View.OnClickList
         return true;
     }
 
-    private void setupSpinner(List<String> domains) {
+    public void setupSpinner(List<String> domains) {
         if (spinnerDomain == null) return;
         ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(),
                 android.R.layout.simple_spinner_item, domains);
