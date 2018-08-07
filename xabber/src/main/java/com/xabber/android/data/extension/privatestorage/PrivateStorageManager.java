@@ -50,7 +50,8 @@ public class PrivateStorageManager {
             if (!privateDataManager.isSupported()) return null;
             return privateDataManager.getPrivateData(elementName, namespace);
         } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException
-                | SmackException.NotConnectedException | InterruptedException e) {
+                | SmackException.NotConnectedException | InterruptedException
+                | IllegalArgumentException e) {
             e.printStackTrace();
             return null;
         }
@@ -67,7 +68,8 @@ public class PrivateStorageManager {
             if (!privateDataManager.isSupported()) return;
             privateDataManager.setPrivateData(privateData);
         } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException
-                | SmackException.NotConnectedException | InterruptedException e) {
+                | SmackException.NotConnectedException | InterruptedException
+                | IllegalArgumentException e) {
             e.printStackTrace();
         }
     }

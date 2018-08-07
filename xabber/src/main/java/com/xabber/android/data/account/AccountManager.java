@@ -53,6 +53,7 @@ import com.xabber.android.data.notification.BaseAccountNotificationProvider;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterManager;
+import com.xabber.android.data.xaccount.XMPPAuthManager;
 import com.xabber.android.data.xaccount.XabberAccountManager;
 
 import org.jivesoftware.smack.util.StringUtils;
@@ -434,6 +435,9 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
         if (xabberSync) XabberAccountManager.getInstance()
                 .addAccountSyncState(accountItem.getAccount().getFullJid().asBareJid().toString(), true);
         else SettingsManager.setSyncAllAccounts(false);
+
+        // add account to check-list for Xabber Account auth
+        XMPPAuthManager.getInstance().addAccountForCheck(accountItem.getAccount());
 
         return accountItem.getAccount();
     }
