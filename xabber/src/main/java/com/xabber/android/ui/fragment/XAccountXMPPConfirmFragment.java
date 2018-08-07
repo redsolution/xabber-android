@@ -11,11 +11,16 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.xabber.android.R;
+import com.xabber.android.data.xaccount.XMPPAuthManager;
 import com.xabber.android.ui.activity.XabberAccountInfoActivity;
+
+import rx.functions.Action1;
+import rx.subscriptions.CompositeSubscription;
 
 public class XAccountXMPPConfirmFragment extends Fragment implements View.OnClickListener {
 
     private String jid;
+    private CompositeSubscription subscriptions = new CompositeSubscription();
 
     private EditText edtCode;
     private Button btnConfirm;
@@ -44,7 +49,14 @@ public class XAccountXMPPConfirmFragment extends Fragment implements View.OnClic
     @Override
     public void onResume() {
         super.onResume();
+        subscribeForAuthCode();
         tvTitle.setText(getString(R.string.xmpp_confirm_title, jid));
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        unsubscribeAll();
     }
 
     @Override
@@ -71,5 +83,19 @@ public class XAccountXMPPConfirmFragment extends Fragment implements View.OnClic
 
     private void onResendClick() {
         // TODO: 06.08.18 implement
+    }
+
+    private void subscribeForAuthCode() {
+        subscriptions.add(XMPPAuthManager.getInstance().subscribeForAuthCode()
+            .doOnNext(new Action1<String>() {
+                @Override
+                public void call(String authCode) {
+                    if (edtCode != null) edtCode.setText(authCode);
+                }
+            }).subscribe());
+    }
+
+    private void unsubscribeAll() {
+        subscriptions.clear();
     }
 }

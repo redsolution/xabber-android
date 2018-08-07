@@ -26,6 +26,7 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.NetworkManager;
 import com.xabber.android.data.xaccount.AuthManager;
 import com.xabber.android.data.xaccount.XMPPAccountSettings;
+import com.xabber.android.data.xaccount.XMPPAuthManager;
 import com.xabber.android.data.xaccount.XabberAccount;
 import com.xabber.android.data.xaccount.XabberAccountManager;
 import com.xabber.android.ui.color.BarPainter;
@@ -888,6 +889,7 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
 
     private void handleSuccessRequestXMPPCode(AuthManager.XMPPCode code, String jid) {
         hideProgress();
+        XMPPAuthManager.getInstance().updateRequestId(code.getRequestId(), code.getApiJid());
         showXMPPConfirmFragment(jid);
     }
 
