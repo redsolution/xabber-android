@@ -10,7 +10,7 @@ import android.widget.TextView;
 import com.xabber.android.R;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.extension.avatar.AvatarManager;
-import com.xabber.android.data.extension.bookmarks.BookmarksManager;
+import com.xabber.android.data.extension.privatestorage.PrivateStorageManager;
 import com.xabber.android.ui.color.ColorManager;
 
 import java.util.List;
@@ -62,7 +62,7 @@ public class XMPPAccountAuthAdapter extends RecyclerView.Adapter {
         viewHolder.jid.setText(accountJid);
 
         // set action
-        boolean haveBind = BookmarksManager.getInstance().isBookmarkHaveXabberAccountBinding(account.getAccount());
+        boolean haveBind = PrivateStorageManager.getInstance().haveXabberAccountBinding(account.getAccount());
         viewHolder.action.setText(haveBind ? "also binded for Xabber Account" : "will be created new Xabber Account");
 
         // set listener
