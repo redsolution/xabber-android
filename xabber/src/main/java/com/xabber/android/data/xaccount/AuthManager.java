@@ -5,6 +5,10 @@ import android.util.Base64;
 import com.google.gson.Gson;
 import com.xabber.android.BuildConfig;
 import com.xabber.android.data.SettingsManager;
+import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.extension.privatestorage.PrivateStorageManager;
+
+import org.jxmpp.stringprep.XmppStringprepException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -268,11 +272,17 @@ public class AuthManager {
         return HttpApiManager.getXabberApi().requestXMPPCode(new Jid(jid));
     }
 
-    public static Single<XabberAccount> confirmXMPP(String jid, String code) {
+    public static Single<XabberAccount> confirmXMPP(final String jid, String code) {
         return HttpApiManager.getXabberApi().confirmXMPP(new CodeConfirm(code, jid))
                 .flatMap(new Func1<XabberAccountDTO, Single<? extends XabberAccount>>() {
                     @Override
                     public Single<? extends XabberAccount> call(XabberAccountDTO xabberAccountDTO) {
+                        try {
+                            PrivateStorageManager.getInstance().setXabberAccountBinding(AccountJid.from(jid), true);
+                        } catch (XmppStringprepException e) {
+                            e.printStackTrace();
+                        }
+
                         return XabberAccountManager.getInstance().saveOrUpdateXabberAccountToRealm(xabberAccountDTO,
                                 xabberAccountDTO.getToken());
                     }

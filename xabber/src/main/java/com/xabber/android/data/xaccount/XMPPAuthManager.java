@@ -67,8 +67,9 @@ public class XMPPAuthManager implements OnPacketListener, OnConnectedListener {
                             message.getExtension(EXTENSION_NAMESPACE);
                     this.authCode = extensionElement.getAttributeValue(ATTRIBUTE_ID);
                     authCodeSubscribe.onNext(this.authCode);
-                    // TODO: 07.08.18 if (need auto login)
-                    confirmXMPP(authJid, authCode);
+
+                    // if login running in background
+                    if (authJid != null && authCode != null) confirmXMPP(authJid, authCode);
                 }
             }
         }
