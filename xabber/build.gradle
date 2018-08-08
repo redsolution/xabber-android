@@ -168,7 +168,8 @@ dependencies {
     implementation 'io.reactivex:rxandroid:1.1.0'
     implementation 'io.reactivex:rxjava:1.1.0'
 
-    //social
+    // social
+    implementation 'com.google.android.gms:play-services-safetynet:11.4.0'
     implementation 'com.facebook.android:facebook-android-sdk:4.31.0'
     implementation 'com.twitter.sdk.android:twitter:3.0.0'
     implementation 'com.google.android.gms:play-services-auth:11.4.0'

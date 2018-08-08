@@ -2,7 +2,9 @@ package com.xabber.android.ui.fragment;
 
 import android.app.Fragment;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,12 +13,20 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.common.api.CommonStatusCodes;
+import com.google.android.gms.safetynet.SafetyNet;
+import com.google.android.gms.safetynet.SafetyNetApi;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.xabber.android.R;
 import com.xabber.android.ui.activity.XabberAccountInfoActivity;
 
 import java.util.List;
 
 public class XAccountSignUpFragment extends Fragment implements View.OnClickListener {
+
+    private static final String CAPTCHA_TOKEN = "RECAPTCHA";
 
     private EditText edtUsername;
     private EditText edtPass;
@@ -44,6 +54,7 @@ public class XAccountSignUpFragment extends Fragment implements View.OnClickList
     @Override
     public void onResume() {
         super.onResume();
+        // TODO: 08.08.18 после закрытия окна с каптчей, снова делается запрос доменов?
         ((XabberAccountInfoActivity)getActivity()).getHosts();
     }
 
@@ -57,14 +68,15 @@ public class XAccountSignUpFragment extends Fragment implements View.OnClickList
     }
 
     private void onSignUpClick() {
-        if (verifyFields()) {
-            // TODO: 03.08.18 call API
+        String username = edtUsername.getText().toString().trim();
+        String pass = edtPass.getText().toString().trim();
+
+        if (verifyFields(username, pass)) {
+            getCaptchaToken(username, pass, spinnerDomain.getSelectedItem().toString());
         }
     }
 
-    private boolean verifyFields() {
-        String username = edtUsername.getText().toString().trim();
-        String pass = edtPass.getText().toString().trim();
+    private boolean verifyFields(String username, String pass) {
 
         if (username.isEmpty()) {
             edtUsername.setError(getString(R.string.empty_field));
@@ -100,6 +112,44 @@ public class XAccountSignUpFragment extends Fragment implements View.OnClickList
         }
 
         return true;
+    }
+
+    private void getCaptchaToken(final String username, final String pass, final String domain) {
+        SafetyNet.getClient(getActivity()).verifyWithRecaptcha(getActivity().getString(R.string.RECAPTCHA_KEY))
+            .addOnSuccessListener(getActivity(),
+                new OnSuccessListener<SafetyNetApi.RecaptchaTokenResponse>() {
+                    @Override
+                    public void onSuccess(SafetyNetApi.RecaptchaTokenResponse response) {
+                        // Indicates communication with reCAPTCHA service was
+                        // successful.
+                        String userResponseToken = response.getTokenResult();
+                        if (!userResponseToken.isEmpty()) {
+                            // Validate the user response token using the
+                            // reCAPTCHA siteverify API.
+                            Log.d(CAPTCHA_TOKEN, "Success: " + userResponseToken);
+                            ((XabberAccountInfoActivity)getActivity()).signUp(username, domain,
+                                    pass, userResponseToken);
+                        }
+                    }
+                })
+            .addOnFailureListener(getActivity(),
+                new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        if (e instanceof ApiException) {
+                            // An error occurred when communicating with the
+                            // reCAPTCHA service. Refer to the status code to
+                            // handle the error appropriately.
+                            ApiException apiException = (ApiException) e;
+                            int statusCode = apiException.getStatusCode();
+                            Log.d(CAPTCHA_TOKEN, "Error: "
+                                    + CommonStatusCodes.getStatusCodeString(statusCode));
+                        } else {
+                            // A different, unknown type of error occurred.
+                            Log.d(CAPTCHA_TOKEN, "Error: " + e.getMessage());
+                        }
+                    }
+                });
     }
 
     public void setupSpinner(List<String> domains) {

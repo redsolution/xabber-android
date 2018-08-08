@@ -293,6 +293,32 @@ public class AuthManager {
         return HttpApiManager.getXabberApi().getHosts();
     }
 
+    public static Single<XabberAccount> signupv2(String username, String host, String password,
+                                                 String captchaToken) {
+        return HttpApiManager.getXabberApi().signupv2(new SignUpFields(username, host,
+            password, captchaToken))
+            .flatMap(new Func1<XabberAccountDTO, Single<? extends XabberAccount>>() {
+                @Override
+                public Single<? extends XabberAccount> call(XabberAccountDTO xabberAccountDTO) {
+                    return XabberAccountManager.getInstance().saveOrUpdateXabberAccountToRealm(xabberAccountDTO,
+                            xabberAccountDTO.getToken());
+                }
+            });
+    }
+
+    public static Single<XabberAccount> signupv2(String username, String host, String password,
+                                                 String provider, String credentials) {
+        return HttpApiManager.getXabberApi().signupv2(new SignUpFields(username, host,
+                password, provider, credentials))
+                .flatMap(new Func1<XabberAccountDTO, Single<? extends XabberAccount>>() {
+                    @Override
+                    public Single<? extends XabberAccount> call(XabberAccountDTO xabberAccountDTO) {
+                        return XabberAccountManager.getInstance().saveOrUpdateXabberAccountToRealm(xabberAccountDTO,
+                                xabberAccountDTO.getToken());
+                    }
+                });
+    }
+
     // support
 
     private static String getXabberTokenHeader() {
@@ -311,6 +337,42 @@ public class AuthManager {
     }
 
     // models
+
+    public static class SignUpFields {
+        final String username;
+        final String host;
+        final String password;
+        String captcha_token;
+        String provider;
+        String credentials;
+        final boolean create_token;
+        String first_name;
+        String last_name;
+        String language;
+        final String source;
+        String source_ip;
+
+        public SignUpFields(String username, String host, String password,
+                            String captcha_token) {
+            this.username = username;
+            this.host = host;
+            this.password = password;
+            this.captcha_token = captcha_token;
+            this.create_token = true;
+            this.source = getSource();
+        }
+
+        public SignUpFields(String username, String host, String password, String provider,
+                            String credentials) {
+            this.username = username;
+            this.host = host;
+            this.password = password;
+            this.provider = provider;
+            this.credentials = credentials;
+            this.create_token = true;
+            this.source = getSource();
+        }
+    }
 
     public static class CodeConfirm {
         final String code;

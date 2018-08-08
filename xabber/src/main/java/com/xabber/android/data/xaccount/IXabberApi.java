@@ -75,5 +75,8 @@ public interface IXabberApi {
 
     @GET("accounts/xmpp/hosts/")
     Single<List<AuthManager.Domain>> getHosts();
+
+    @POST("accounts/signup/")
+    Single<XabberAccountDTO> signupv2(@Body AuthManager.SignUpFields fields);
 }
 

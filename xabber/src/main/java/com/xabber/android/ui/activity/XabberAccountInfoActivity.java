@@ -982,5 +982,39 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
         Log.d(LOG_TAG, error);
         Toast.makeText(this, error, Toast.LENGTH_LONG).show();
     }
+
+    public void signUp(String username, String host, String pass, String captchaToken) {
+        showProgress("Sign Up..");
+        Subscription signUpSubscription = AuthManager.signupv2(username, host, pass, captchaToken)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<XabberAccount>() {
+                    @Override
+                    public void call(XabberAccount account) {
+                        handleSuccessSignUp(account);
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        handleErrorSignUp(throwable);
+                    }
+                });
+        compositeSubscription.add(signUpSubscription);
+    }
+
+    private void handleSuccessSignUp(XabberAccount account) {
+        hideProgress();
+        Toast.makeText(this, account.getUsername(), Toast.LENGTH_LONG).show();
+    }
+
+    private void handleErrorSignUp(Throwable throwable) {
+        hideProgress();
+
+        // TODO: 03.08.18 implement error parsing
+
+        String error = "Error while signup: " + throwable.toString();
+        Log.d(LOG_TAG, error);
+        Toast.makeText(this, error, Toast.LENGTH_LONG).show();
+    }
 }
 
