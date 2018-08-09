@@ -56,12 +56,13 @@
                 android:id="@+id/btnSignIn"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-
                 android:text="@string/intro_signin"
                 android:textColor="@color/white"
                 style="@style/Widget.AppCompat.Button.Colored"
                 android:theme="@style/BlueButton"
                 android:layout_gravity="center_horizontal"
+                android:layout_marginRight="16dp"
+                android:layout_marginLeft="16dp"
                 />
 
             <Button
@@ -73,6 +74,41 @@
                 android:textColor="@color/account_register_blue"
                 android:text="@string/intro_signup"
                 android:layout_gravity="center_horizontal"
+                android:layout_marginRight="16dp"
+                android:layout_marginLeft="16dp"
+                />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/llSocialLogos"
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            >
+
+            <ImageView
+                android:id="@+id/ivGoogle"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/ic_google_plus"
+                />
+
+            <ImageView
+                android:id="@+id/ivFacebook"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginLeft="32dp"
+                android:src="@drawable/ic_facebook"
+                />
+
+            <ImageView
+                android:id="@+id/ivTwitter"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginLeft="32dp"
+                android:src="@drawable/ic_twitter"
                 />
 
         </LinearLayout>
