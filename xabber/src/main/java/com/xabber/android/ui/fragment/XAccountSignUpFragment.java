@@ -12,6 +12,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.CommonStatusCodes;
@@ -27,11 +28,32 @@ import java.util.List;
 public class XAccountSignUpFragment extends Fragment implements View.OnClickListener {
 
     private static final String CAPTCHA_TOKEN = "RECAPTCHA";
+    private static final String SOCIAL_TOKEN = "SOCIAL_TOKEN";
+    private static final String SOCIAL_PROVIDER = "SOCIAL_PROVIDER";
 
     private EditText edtUsername;
     private EditText edtPass;
     private Spinner spinnerDomain;
     private Button btnSignUp;
+
+    private String socialToken;
+    private String socialProvider;
+
+    public static XAccountSignUpFragment newInstance(String socialToken, String socialProvider) {
+        XAccountSignUpFragment fragment = new XAccountSignUpFragment();
+        Bundle args = new Bundle();
+        args.putString(SOCIAL_TOKEN, socialToken);
+        args.putString(SOCIAL_PROVIDER, socialProvider);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        this.socialToken = getArguments().getString(SOCIAL_TOKEN);
+        this.socialProvider = getArguments().getString(SOCIAL_PROVIDER);
+    }
 
     @Nullable
     @Override
@@ -49,6 +71,9 @@ public class XAccountSignUpFragment extends Fragment implements View.OnClickList
         btnSignUp = view.findViewById(R.id.btnSignUp);
 
         btnSignUp.setOnClickListener(this);
+
+        TextView tvSocialProvider = view.findViewById(R.id.tvSocialProvider);
+        tvSocialProvider.setText(socialProvider);
     }
 
     @Override
@@ -72,7 +97,11 @@ public class XAccountSignUpFragment extends Fragment implements View.OnClickList
         String pass = edtPass.getText().toString().trim();
 
         if (verifyFields(username, pass)) {
-            getCaptchaToken(username, pass, spinnerDomain.getSelectedItem().toString());
+            // todo оставить только одно место для хранения socialToken. infoActivity или этот фрагмент
+            if (socialToken != null)
+                ((XabberAccountInfoActivity)getActivity()).signUp(username,
+                        spinnerDomain.getSelectedItem().toString(), pass, null);
+            else getCaptchaToken(username, pass, spinnerDomain.getSelectedItem().toString());
         }
     }
 

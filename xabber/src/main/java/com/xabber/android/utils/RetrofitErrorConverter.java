@@ -42,6 +42,8 @@ public class RetrofitErrorConverter {
             if (error != null) {
                 if (error.getDetail() != null)
                     errorMessage = error.getDetail();
+                else if (error.getDetails() != null)
+                    errorMessage = error.getDetails();
                 else if (error.getEmail() != null && error.getEmail().size() > 0)
                     errorMessage = error.getEmail().get(0);
                 else if (error.getCredentials() != null && error.getCredentials().size() > 0)
@@ -60,15 +62,17 @@ public class RetrofitErrorConverter {
 
     class APIError {
         private String detail;
+        private String details;
         private ArrayList<String> email;
         private ArrayList<String> credentials;
         private ArrayList<String> code;
         private ArrayList<String> username;
         private ArrayList<String> phone;
 
-        public APIError(String detail, ArrayList<String> email, ArrayList<String> credentials,
+        public APIError(String detail, String details, ArrayList<String> email, ArrayList<String> credentials,
                         ArrayList<String> code, ArrayList<String> username, ArrayList<String> phone) {
             this.detail = detail;
+            this.details = details;
             this.email = email;
             this.credentials = credentials;
             this.code = code;
@@ -78,6 +82,10 @@ public class RetrofitErrorConverter {
 
         public String getDetail() {
             return detail;
+        }
+
+        public String getDetails() {
+            return details;
         }
 
         public ArrayList<String> getEmail() {

@@ -307,7 +307,11 @@ public class AuthManager {
     }
 
     public static Single<XabberAccount> signupv2(String username, String host, String password,
-                                                 String provider, String credentials) {
+                                                 String provider, String socialToken) {
+
+        Gson gson = new Gson();
+        String credentials = gson.toJson(new AccessToken(socialToken));
+
         return HttpApiManager.getXabberApi().signupv2(new SignUpFields(username, host,
                 password, provider, credentials))
                 .flatMap(new Func1<XabberAccountDTO, Single<? extends XabberAccount>>() {

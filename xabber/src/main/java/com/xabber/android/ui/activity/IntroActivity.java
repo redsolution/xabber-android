@@ -71,7 +71,7 @@ public class IntroActivity extends BaseLoginActivity implements View.OnClickList
                 loginGoogle();
                 break;
             case R.id.ivTwitter:
-                loginTwitter();
+                //loginTwitter();
                 break;
         }
     }

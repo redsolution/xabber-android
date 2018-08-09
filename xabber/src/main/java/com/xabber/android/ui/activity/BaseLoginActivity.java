@@ -221,7 +221,7 @@ public abstract class BaseLoginActivity extends ManagedActivity implements Googl
         };
     }
 
-    private void loginSocial(String provider, String token) {
+    private void loginSocial(final String provider, final String token) {
         showProgress(getString(R.string.progress_title_login));
         Subscription loginSocialSubscription = AuthManager.loginSocial(provider, token)
                 .subscribeOn(Schedulers.io())
@@ -234,13 +234,14 @@ public abstract class BaseLoginActivity extends ManagedActivity implements Googl
                 }, new Action1<Throwable>() {
                     @Override
                     public void call(Throwable throwable) {
-                        handleErrorSocialLogin(throwable);
+                        handleErrorSocialLogin(throwable, token, provider);
                     }
                 });
         compositeSubscription.add(loginSocialSubscription);
     }
 
-    private void loginSocialTwitter(String token, String twitterTokenSecret, String secret, String key) {
+    // TODO: 08.08.18 что передавать в twitter ?
+    private void loginSocialTwitter(final String token, String twitterTokenSecret, String secret, String key) {
         showProgress(getString(R.string.progress_title_login));
         Subscription loginSocialSubscription = AuthManager.loginSocialTwitter(token, twitterTokenSecret, secret, key)
                 .subscribeOn(Schedulers.io())
@@ -253,7 +254,7 @@ public abstract class BaseLoginActivity extends ManagedActivity implements Googl
                 }, new Action1<Throwable>() {
                     @Override
                     public void call(Throwable throwable) {
-                        handleErrorSocialLogin(throwable);
+                        handleErrorSocialLogin(throwable, token, "twitter");
                     }
                 });
         compositeSubscription.add(loginSocialSubscription);
@@ -295,9 +296,23 @@ public abstract class BaseLoginActivity extends ManagedActivity implements Googl
         }
     }
 
-    private void handleErrorSocialLogin(Throwable throwable) {
-        Log.d(TAG, "Error while social login request: " + throwable.toString());
-        Toast.makeText(this, R.string.social_auth_fail, Toast.LENGTH_LONG).show();
+    private void handleErrorSocialLogin(Throwable throwable, String socialToken, String provider) {
+        String message = RetrofitErrorConverter.throwableToHttpError(throwable);
+        if (message != null) {
+            if (message.contains("is not attached to any Xabber account")) {
+                // go to sign up
+                Intent intent = XabberAccountInfoActivity.createIntent(BaseLoginActivity.this);
+                intent.putExtra(XabberAccountInfoActivity.SOCIAL_TOKEN, socialToken);
+                intent.putExtra(XabberAccountInfoActivity.SOCIAL_PROVIDER, provider);
+                startActivity(intent);
+            } else {
+                Log.d(TAG, "Error while social login request: " + message);
+                Toast.makeText(this, R.string.social_auth_fail, Toast.LENGTH_LONG).show();
+            }
+        } else {
+            Log.d(TAG, "Error while social login request: " + throwable.toString());
+            Toast.makeText(this, R.string.social_auth_fail, Toast.LENGTH_LONG).show();
+        }
         hideProgress();
     }
 
@@ -385,7 +400,7 @@ public abstract class BaseLoginActivity extends ManagedActivity implements Googl
         compositeSubscription.add(getAccountSubscription);
     }
 
-    private void handleSuccessGetAccountAfterSignUp(XabberAccount account) {
+    public void handleSuccessGetAccountAfterSignUp(XabberAccount account) {
         hideProgress();
 
         Intent intent = XabberAccountInfoActivity.createIntent(this);

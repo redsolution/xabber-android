@@ -45,6 +45,7 @@ import java.util.List;
 import java.util.Locale;
 
 import okhttp3.ResponseBody;
+import rx.Single;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
@@ -73,6 +74,9 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
     public final static String CALL_FROM_LOGIN = "call_from_login";
     private final static String CALL_FROM_SETTINGS = "call_from_settings";
 
+    public final static String SOCIAL_TOKEN = "social_token";
+    public final static String SOCIAL_PROVIDER = "social_provider";
+
     private FragmentTransaction fTrans;
 
     private Toolbar toolbar;
@@ -89,6 +93,8 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
     private Fragment fragmentCompleteRegsiter;
     private Fragment fragmentLastStep;
 
+    private String socialToken = null;
+    private String socialProvider = null;
     private String callFrom = CALL_FROM_SETTINGS;
     private boolean needShowSyncDialog = false;
 
@@ -103,7 +109,11 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
 
         // handle call from
         Bundle extras = getIntent().getExtras();
-        if (extras != null) callFrom = extras.getString(CALL_FROM);
+        if (extras != null) {
+            callFrom = extras.getString(CALL_FROM);
+            socialToken = extras.getString(SOCIAL_TOKEN);
+            socialProvider = extras.getString(SOCIAL_PROVIDER);
+        }
 
         setContentView(R.layout.activity_xabber_account_info);
 
@@ -292,7 +302,7 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
 
     public void showSignUpFragment() {
         if (fragmentSignUp == null)
-            fragmentSignUp = new XAccountSignUpFragment();
+            fragmentSignUp = XAccountSignUpFragment.newInstance(socialToken, socialProvider);
 
         fTrans = getFragmentManager().beginTransaction();
         fTrans.replace(R.id.container, fragmentSignUp, FRAGMENT_SIGNUP);
@@ -985,13 +995,19 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
 
     public void signUp(String username, String host, String pass, String captchaToken) {
         showProgress("Sign Up..");
-        Subscription signUpSubscription = AuthManager.signupv2(username, host, pass, captchaToken)
+
+        Single<XabberAccount> signUpSingle;
+        if (socialToken != null && socialProvider != null)
+            signUpSingle = AuthManager.signupv2(username, host, pass, socialProvider, socialToken);
+        else signUpSingle = AuthManager.signupv2(username, host, pass, captchaToken);
+
+        Subscription signUpSubscription = signUpSingle
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<XabberAccount>() {
                     @Override
                     public void call(XabberAccount account) {
-                        handleSuccessSignUp(account);
+                        handleSuccessGetAccountAfterSignUp(account);
                     }
                 }, new Action1<Throwable>() {
                     @Override
@@ -1000,11 +1016,6 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
                     }
                 });
         compositeSubscription.add(signUpSubscription);
-    }
-
-    private void handleSuccessSignUp(XabberAccount account) {
-        hideProgress();
-        Toast.makeText(this, account.getUsername(), Toast.LENGTH_LONG).show();
     }
 
     private void handleErrorSignUp(Throwable throwable) {
