@@ -78,5 +78,11 @@ public interface IXabberApi {
 
     @POST("accounts/signup/")
     Single<XabberAccountDTO> signupv2(@Body AuthManager.SignUpFields fields);
+
+    @POST("accounts/current/social_bind")
+    Single<ResponseBody> bindSocial(@Header("Authorization") String token, @Body AuthManager.SocialAuthRequest body);
+
+    @POST("accounts/current/social_unbind")
+    Single<ResponseBody> unbindSocial(@Header("Authorization") String token, @Body AuthManager.Provider provider);
 }
 

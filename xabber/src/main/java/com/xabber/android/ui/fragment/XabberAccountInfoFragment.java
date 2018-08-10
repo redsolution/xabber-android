@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -20,6 +21,7 @@ import com.xabber.android.BuildConfig;
 import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.xaccount.AuthManager;
+import com.xabber.android.data.xaccount.SocialBindingDTO;
 import com.xabber.android.data.xaccount.XMPPAccountSettings;
 import com.xabber.android.data.xaccount.XabberAccount;
 import com.xabber.android.data.xaccount.XabberAccountManager;
@@ -50,6 +52,17 @@ public class XabberAccountInfoFragment extends Fragment {
     private TextView tvLastSyncDate;
     private RelativeLayout rlLogout;
     private RelativeLayout rlSync;
+
+    private TextView tvStatusGoogle;
+    private TextView tvActionGoogle;
+    private LinearLayout itemGoogle;
+    private TextView tvStatusFacebook;
+    private TextView tvActionFacebook;
+    private LinearLayout itemFacebook;
+    private TextView tvStatusTwitter;
+    private TextView tvActionTwitter;
+    private LinearLayout itemTwitter;
+
     private boolean dialogShowed;
 
     private CompositeSubscription compositeSubscription = new CompositeSubscription();
@@ -92,6 +105,36 @@ public class XabberAccountInfoFragment extends Fragment {
             }
         });
 
+        tvStatusGoogle = view.findViewById(R.id.tvStatusGoogle);
+        tvActionGoogle = view.findViewById(R.id.tvActionGoogle);
+        itemGoogle = view.findViewById(R.id.itemGoogle);
+        itemGoogle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+        tvStatusFacebook = view.findViewById(R.id.tvStatusFacebook);
+        tvActionFacebook = view.findViewById(R.id.tvActionFacebook);
+        itemFacebook = view.findViewById(R.id.itemFacebook);
+        itemFacebook.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+        tvStatusTwitter = view.findViewById(R.id.tvStatusTwitter);
+        tvActionTwitter = view.findViewById(R.id.tvActionTwitter);
+        itemTwitter = view.findViewById(R.id.itemTwitter);
+        itemTwitter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
         if (getArguments().getBoolean("SHOW_SYNC", false))
             showSyncDialog(true);
     }
@@ -131,6 +174,8 @@ public class XabberAccountInfoFragment extends Fragment {
             String phone = account.getPhone();
             tvPhone.setText(phone != null ? phone : getString(R.string.no_phone));
         } else tvPhone.setVisibility(View.GONE);
+
+        setupSocial(account.getSocialBindings());
     }
 
     public void updateLastSyncTime() {
@@ -200,5 +245,20 @@ public class XabberAccountInfoFragment extends Fragment {
         Dialog dialog = builder.create();
         dialog.show();
         dialogShowed = false;
+    }
+
+    private void setupSocial(List<SocialBindingDTO> socialBindings) {
+        for (SocialBindingDTO socialBinding : socialBindings) {
+            if ("google".equals(socialBinding.getProvider())) {
+                tvStatusGoogle.setText(socialBinding.getFirstName() + " " + socialBinding.getLastName());
+                tvActionGoogle.setText("DISCONNECT");
+            } else if ("facebook".equals(socialBinding.getProvider())) {
+                tvStatusFacebook.setText(socialBinding.getFirstName() + " " + socialBinding.getLastName());
+                tvActionFacebook.setText("DISCONNECT");
+            } else if ("twitter".equals(socialBinding.getProvider())) {
+                tvStatusTwitter.setText(socialBinding.getFirstName() + " " + socialBinding.getLastName());
+                tvActionTwitter.setText("DISCONNECT");
+            }
+        }
     }
 }

@@ -323,6 +323,26 @@ public class AuthManager {
                 });
     }
 
+    public static Single<ResponseBody> bindSocial(String provider, String socialToken) {
+        Gson gson = new Gson();
+        String credentials = gson.toJson(new AccessToken(socialToken));
+        return HttpApiManager.getXabberApi().bindSocial(getXabberTokenHeader(),
+                new SocialAuthRequest(provider, credentials, getSource()));
+    }
+
+    public static Single<ResponseBody> bindSocial(String socialToken, String twitterTokenSecret,
+                                                  String secret, String key) {
+        Gson gson = new Gson();
+        String credentials = gson.toJson(new TwitterAccessToken(
+                new TwitterTokens(twitterTokenSecret, socialToken), secret, key));
+        return HttpApiManager.getXabberApi().bindSocial(getXabberTokenHeader(),
+                new SocialAuthRequest(PROVIDER_TWITTER, credentials, getSource()));
+    }
+
+    public static Single<ResponseBody> unbindSocial(String provider) {
+        return HttpApiManager.getXabberApi().unbindSocial(getXabberTokenHeader(), new Provider(provider));
+    }
+
     // support
 
     private static String getXabberTokenHeader() {
@@ -515,6 +535,14 @@ public class AuthManager {
         public Email(String email, String source) {
             this.email = email;
             this.source = source;
+        }
+    }
+
+    public static class Provider {
+        final String provider;
+
+        public Provider(String provider) {
+            this.provider = provider;
         }
     }
 
