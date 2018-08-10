@@ -899,7 +899,7 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
 
     private void handleSuccessRequestXMPPCode(AuthManager.XMPPCode code, String jid) {
         hideProgress();
-        XMPPAuthManager.getInstance().updateRequestId(code.getRequestId(), code.getApiJid());
+        XMPPAuthManager.getInstance().addRequest(code.getRequestId(), code.getApiJid(), jid);
         showXMPPConfirmFragment(jid);
     }
 
