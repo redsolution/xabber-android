@@ -841,7 +841,7 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
         }
     }
 
-    private void resendConfirmEmail(String email) {
+    public void resendConfirmEmail(String email) {
         showProgress(getResources().getString(R.string.progress_title_resend));
         Subscription resendEmailSubscription = AuthManager.addEmail(email)
                 .subscribeOn(Schedulers.io())

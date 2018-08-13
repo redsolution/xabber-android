@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -31,6 +32,7 @@ import com.xabber.android.data.xaccount.XabberAccountManager;
 import com.xabber.android.ui.activity.XabberAccountInfoActivity;
 import com.xabber.android.ui.adapter.EmailAdapter;
 import com.xabber.android.ui.dialog.AccountSyncDialogFragment;
+import com.xabber.android.ui.dialog.AddEmailDialogFragment;
 import com.xabber.android.utils.RetrofitErrorConverter;
 
 import java.util.List;
@@ -45,7 +47,7 @@ import rx.subscriptions.CompositeSubscription;
  * Created by valery.miller on 27.07.17.
  */
 
-public class XabberAccountInfoFragment extends Fragment {
+public class XabberAccountInfoFragment extends Fragment implements AddEmailDialogFragment.Listener {
 
     private static final String LOG_TAG = XabberAccountInfoFragment.class.getSimpleName();
 
@@ -69,6 +71,7 @@ public class XabberAccountInfoFragment extends Fragment {
 
     private RecyclerView rvEmails;
     private EmailAdapter emailAdapter;
+    private Button btnAddEmail;
 
     private boolean dialogShowed;
 
@@ -146,6 +149,14 @@ public class XabberAccountInfoFragment extends Fragment {
         rvEmails.setLayoutManager(new LinearLayoutManager(getActivity()));
         emailAdapter = new EmailAdapter();
         rvEmails.setAdapter(emailAdapter);
+        btnAddEmail = view.findViewById(R.id.btnAddEmail);
+        btnAddEmail.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AddEmailDialogFragment.newInstance(XabberAccountInfoFragment.this)
+                        .show(getFragmentManager(), AccountSyncDialogFragment.class.getSimpleName());
+            }
+        });
 
         if (getArguments().getBoolean("SHOW_SYNC", false))
             showSyncDialog(true);
@@ -165,6 +176,11 @@ public class XabberAccountInfoFragment extends Fragment {
     public void onDestroy() {
         super.onDestroy();
         compositeSubscription.clear();
+    }
+
+    @Override
+    public void onAddEmailClick(String email) {
+        ((XabberAccountInfoActivity)getActivity()).resendConfirmEmail(email);
     }
 
     public void updateData(@NonNull XabberAccount account) {
