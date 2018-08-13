@@ -15,6 +15,15 @@ import java.util.List;
 public class EmailAdapter extends RecyclerView.Adapter<EmailAdapter.EmailViewHolder> {
 
     private List<EmailDTO> emails = new ArrayList();
+    private Listener listener;
+
+    public interface Listener {
+        void onEmailClick(String email);
+    }
+
+    public EmailAdapter(Listener listener) {
+        this.listener = listener;
+    }
 
     public void setItems(List<EmailDTO> emails) {
         this.emails.clear();
@@ -28,9 +37,17 @@ public class EmailAdapter extends RecyclerView.Adapter<EmailAdapter.EmailViewHol
     }
 
     @Override
-    public void onBindViewHolder(EmailViewHolder holder, int position) {
-        EmailDTO emailDTO = emails.get(position);
+    public void onBindViewHolder(EmailViewHolder holder, final int position) {
+        final EmailDTO emailDTO = emails.get(position);
+
         holder.tvEmail.setText(emailDTO.getEmail());
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listener.onEmailClick(emailDTO.getEmail());
+            }
+        });
     }
 
     @Override

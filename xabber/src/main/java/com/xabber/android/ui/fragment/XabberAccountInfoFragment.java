@@ -33,6 +33,7 @@ import com.xabber.android.ui.activity.XabberAccountInfoActivity;
 import com.xabber.android.ui.adapter.EmailAdapter;
 import com.xabber.android.ui.dialog.AccountSyncDialogFragment;
 import com.xabber.android.ui.dialog.AddEmailDialogFragment;
+import com.xabber.android.ui.dialog.ConfirmEmailDialogFragment;
 import com.xabber.android.utils.RetrofitErrorConverter;
 
 import java.util.List;
@@ -47,7 +48,7 @@ import rx.subscriptions.CompositeSubscription;
  * Created by valery.miller on 27.07.17.
  */
 
-public class XabberAccountInfoFragment extends Fragment implements AddEmailDialogFragment.Listener {
+public class XabberAccountInfoFragment extends Fragment implements AddEmailDialogFragment.Listener, EmailAdapter.Listener {
 
     private static final String LOG_TAG = XabberAccountInfoFragment.class.getSimpleName();
 
@@ -147,7 +148,7 @@ public class XabberAccountInfoFragment extends Fragment implements AddEmailDialo
 
         rvEmails = view.findViewById(R.id.rvEmails);
         rvEmails.setLayoutManager(new LinearLayoutManager(getActivity()));
-        emailAdapter = new EmailAdapter();
+        emailAdapter = new EmailAdapter(this);
         rvEmails.setAdapter(emailAdapter);
         btnAddEmail = view.findViewById(R.id.btnAddEmail);
         btnAddEmail.setOnClickListener(new View.OnClickListener() {
@@ -181,6 +182,12 @@ public class XabberAccountInfoFragment extends Fragment implements AddEmailDialo
     @Override
     public void onAddEmailClick(String email) {
         ((XabberAccountInfoActivity)getActivity()).resendConfirmEmail(email);
+    }
+
+    @Override
+    public void onEmailClick(String email) {
+        ConfirmEmailDialogFragment.newInstance(email)
+                .show(getFragmentManager(), AccountSyncDialogFragment.class.getSimpleName());
     }
 
     public void updateData(@NonNull XabberAccount account) {
