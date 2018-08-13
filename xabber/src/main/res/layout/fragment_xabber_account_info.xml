@@ -377,4 +377,38 @@
             </LinearLayout>
         </LinearLayout>
     </android.support.v7.widget.CardView>
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/cardEmail"
+        android:layout_marginTop="12dp"
+        android:layout_below="@id/cardSocial"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        >
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/rvEmails"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false"
+                tools:listitem="@layout/item_email"
+                />
+
+            <Button
+                android:id="@+id/btnAddEmail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="bind email"
+                android:textColor="@color/teal_500"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                />
+
+        </LinearLayout>
+
+    </android.support.v7.widget.CardView>
 </RelativeLayout>

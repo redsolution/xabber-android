@@ -7,6 +7,8 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,11 +23,13 @@ import com.xabber.android.BuildConfig;
 import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.xaccount.AuthManager;
+import com.xabber.android.data.xaccount.EmailDTO;
 import com.xabber.android.data.xaccount.SocialBindingDTO;
 import com.xabber.android.data.xaccount.XMPPAccountSettings;
 import com.xabber.android.data.xaccount.XabberAccount;
 import com.xabber.android.data.xaccount.XabberAccountManager;
 import com.xabber.android.ui.activity.XabberAccountInfoActivity;
+import com.xabber.android.ui.adapter.EmailAdapter;
 import com.xabber.android.ui.dialog.AccountSyncDialogFragment;
 import com.xabber.android.utils.RetrofitErrorConverter;
 
@@ -62,6 +66,9 @@ public class XabberAccountInfoFragment extends Fragment {
     private TextView tvStatusTwitter;
     private TextView tvActionTwitter;
     private LinearLayout itemTwitter;
+
+    private RecyclerView rvEmails;
+    private EmailAdapter emailAdapter;
 
     private boolean dialogShowed;
 
@@ -135,6 +142,11 @@ public class XabberAccountInfoFragment extends Fragment {
             }
         });
 
+        rvEmails = view.findViewById(R.id.rvEmails);
+        rvEmails.setLayoutManager(new LinearLayoutManager(getActivity()));
+        emailAdapter = new EmailAdapter();
+        rvEmails.setAdapter(emailAdapter);
+
         if (getArguments().getBoolean("SHOW_SYNC", false))
             showSyncDialog(true);
     }
@@ -176,6 +188,7 @@ public class XabberAccountInfoFragment extends Fragment {
         } else tvPhone.setVisibility(View.GONE);
 
         setupSocial(account.getSocialBindings());
+        setupEmailList(account.getEmails());
     }
 
     public void updateLastSyncTime() {
@@ -260,5 +273,11 @@ public class XabberAccountInfoFragment extends Fragment {
                 tvActionTwitter.setText("DISCONNECT");
             }
         }
+    }
+
+
+    private void setupEmailList(List<EmailDTO> emails) {
+        emailAdapter.setItems(emails);
+        emailAdapter.notifyDataSetChanged();
     }
 }
