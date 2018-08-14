@@ -662,7 +662,7 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
         hideProgress();
     }
 
-    private void confirm(String code) {
+    public void confirm(String code) {
         showProgress(getResources().getString(R.string.progress_title_confirm));
         Subscription confirmSubscription = AuthManager.confirmEmail(code)
                 .subscribeOn(Schedulers.io())
@@ -701,9 +701,9 @@ public class XabberAccountInfoActivity extends BaseLoginActivity implements Tool
     }
 
     private void handleSuccessConfirm(XabberAccount response) {
-        if (BuildConfig.FLAVOR.equals("ru") && response.isNeedToVerifyPhone())
-            showPhoneConfirmFragment();
-        else showCompleteFragment();
+//        if (BuildConfig.FLAVOR.equals("ru") && response.isNeedToVerifyPhone())
+//            showPhoneConfirmFragment();
+//        else showCompleteFragment();
         hideProgress();
         Toast.makeText(this, R.string.confirm_success, Toast.LENGTH_SHORT).show();
     }

@@ -48,7 +48,8 @@ import rx.subscriptions.CompositeSubscription;
  * Created by valery.miller on 27.07.17.
  */
 
-public class XabberAccountInfoFragment extends Fragment implements AddEmailDialogFragment.Listener, EmailAdapter.Listener {
+public class XabberAccountInfoFragment extends Fragment implements AddEmailDialogFragment.Listener,
+        EmailAdapter.Listener, ConfirmEmailDialogFragment.Listener {
 
     private static final String LOG_TAG = XabberAccountInfoFragment.class.getSimpleName();
 
@@ -186,8 +187,18 @@ public class XabberAccountInfoFragment extends Fragment implements AddEmailDialo
 
     @Override
     public void onEmailClick(String email) {
-        ConfirmEmailDialogFragment.newInstance(email)
+        ConfirmEmailDialogFragment.newInstance(this, email)
                 .show(getFragmentManager(), AccountSyncDialogFragment.class.getSimpleName());
+    }
+
+    @Override
+    public void onResendCodeClick(String email) {
+        ((XabberAccountInfoActivity)getActivity()).resendConfirmEmail(email);
+    }
+
+    @Override
+    public void onConfirmClick(String email, String code) {
+        ((XabberAccountInfoActivity)getActivity()).confirm(code);
     }
 
     public void updateData(@NonNull XabberAccount account) {

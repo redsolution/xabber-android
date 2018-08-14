@@ -4,6 +4,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.xabber.android.R;
@@ -41,6 +42,8 @@ public class EmailAdapter extends RecyclerView.Adapter<EmailAdapter.EmailViewHol
         final EmailDTO emailDTO = emails.get(position);
 
         holder.tvEmail.setText(emailDTO.getEmail());
+        holder.ivEmail.setImageResource(emailDTO.isVerified() ? R.drawable.ic_email_confirmed :
+                R.drawable.ic_email);
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -58,10 +61,12 @@ public class EmailAdapter extends RecyclerView.Adapter<EmailAdapter.EmailViewHol
     class EmailViewHolder extends RecyclerView.ViewHolder {
 
         final TextView tvEmail;
+        final ImageView ivEmail;
 
         public EmailViewHolder(View itemView) {
             super(itemView);
             this.tvEmail = itemView.findViewById(R.id.tvEmail);
+            this.ivEmail = itemView.findViewById(R.id.ivEmail);
         }
     }
 
