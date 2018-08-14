@@ -41,6 +41,7 @@ import com.xabber.android.utils.RetrofitErrorConverter;
 import java.io.IOException;
 import java.util.Collections;
 
+import okhttp3.ResponseBody;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
@@ -159,7 +160,8 @@ public abstract class BaseLoginActivity extends ManagedActivity implements Googl
                             Application.getInstance().runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    loginSocial(AuthManager.PROVIDER_GOOGLE, token);
+                                    // TODO: 14.08.18 определять bind или login
+                                    bindSocial(AuthManager.PROVIDER_GOOGLE, token);
                                 }
                             });
                         } catch (IOException e) {
@@ -178,7 +180,8 @@ public abstract class BaseLoginActivity extends ManagedActivity implements Googl
             public void onSuccess(LoginResult loginResult) {
                 String token = loginResult.getAccessToken().getToken();
                 if (token != null)
-                    loginSocial(AuthManager.PROVIDER_FACEBOOK, token);
+                    // TODO: 14.08.18 определять bind или login
+                    bindSocial(AuthManager.PROVIDER_FACEBOOK, token);
             }
 
             @Override
@@ -219,6 +222,26 @@ public abstract class BaseLoginActivity extends ManagedActivity implements Googl
                 Toast.makeText(BaseLoginActivity.this, "twitter error", Toast.LENGTH_SHORT).show();
             }
         };
+    }
+
+    private void bindSocial(final String provider, final String token) {
+        showProgress("Bind social");
+        Subscription loginSocialSubscription = AuthManager.bindSocial(provider, token)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<ResponseBody>() {
+                    @Override
+                    public void call(ResponseBody s) {
+                        Toast.makeText(BaseLoginActivity.this,
+                                "Social bind successfull", Toast.LENGTH_SHORT).show();
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        handleErrorSocialLogin(throwable, token, provider);
+                    }
+                });
+        compositeSubscription.add(loginSocialSubscription);
     }
 
     private void loginSocial(final String provider, final String token) {

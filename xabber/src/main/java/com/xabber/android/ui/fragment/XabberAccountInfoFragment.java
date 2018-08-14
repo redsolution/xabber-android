@@ -123,7 +123,7 @@ public class XabberAccountInfoFragment extends Fragment implements AddEmailDialo
         itemGoogle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                ((XabberAccountInfoActivity)getActivity()).loginGoogle();
             }
         });
 
@@ -133,7 +133,7 @@ public class XabberAccountInfoFragment extends Fragment implements AddEmailDialo
         itemFacebook.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                ((XabberAccountInfoActivity)getActivity()).loginFacebook();
             }
         });
 
@@ -143,7 +143,7 @@ public class XabberAccountInfoFragment extends Fragment implements AddEmailDialo
         itemTwitter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Toast.makeText(getActivity(), "twitter not implemented yet", Toast.LENGTH_SHORT).show();
             }
         });
 
