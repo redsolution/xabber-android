@@ -91,6 +91,40 @@
             android:textColor="@color/black_text_secondary"
             />
 
+        <LinearLayout
+            android:id="@+id/llSocialLogos"
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="18dp"
+            >
+
+            <ImageView
+                android:id="@+id/ivGoogle"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/ic_google_plus"
+                />
+
+            <ImageView
+                android:id="@+id/ivFacebook"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginLeft="32dp"
+                android:src="@drawable/ic_facebook"
+                />
+
+            <ImageView
+                android:id="@+id/ivTwitter"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginLeft="32dp"
+                android:src="@drawable/ic_twitter"
+                />
+
+        </LinearLayout>
+
     </LinearLayout>
 
 

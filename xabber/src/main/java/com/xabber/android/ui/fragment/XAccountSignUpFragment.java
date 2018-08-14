@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -74,6 +75,14 @@ public class XAccountSignUpFragment extends Fragment implements View.OnClickList
 
         TextView tvSocialProvider = view.findViewById(R.id.tvSocialProvider);
         tvSocialProvider.setText(socialProvider);
+
+        ImageView ivFacebook = view.findViewById(R.id.ivFacebook);
+        ImageView ivGoogle = view.findViewById(R.id.ivGoogle);
+        ImageView ivTwitter = view.findViewById(R.id.ivTwitter);
+
+        ivFacebook.setOnClickListener(this);
+        ivGoogle.setOnClickListener(this);
+        ivTwitter.setOnClickListener(this);
     }
 
     @Override
@@ -88,6 +97,15 @@ public class XAccountSignUpFragment extends Fragment implements View.OnClickList
         switch (v.getId()) {
             case R.id.btnSignUp:
                 onSignUpClick();
+                break;
+            case R.id.ivFacebook:
+                ((XabberAccountInfoActivity)getActivity()).loginFacebook();
+                break;
+            case R.id.ivGoogle:
+                ((XabberAccountInfoActivity)getActivity()).loginGoogle();
+                break;
+            case R.id.ivTwitter:
+                //((XabberAccountInfoActivity)getActivity()).loginTwitter();
                 break;
         }
     }
