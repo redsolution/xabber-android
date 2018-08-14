@@ -11,6 +11,8 @@ import android.view.View;
 import android.widget.Button;
 
 import com.xabber.android.R;
+import com.xabber.android.data.account.AccountManager;
+import com.xabber.android.data.xaccount.XabberAccountManager;
 import com.xabber.android.ui.adapter.TutorialAdapter;
 
 import me.relex.circleindicator.CircleIndicator;
@@ -21,7 +23,7 @@ import me.relex.circleindicator.CircleIndicator;
 
 public class TutorialActivity extends AppCompatActivity {
 
-    //private Button btnLogin;
+    private Button btnLogin;
     private Button btnRegister;
 
     public static Intent createIntent(Context context) {
@@ -31,6 +33,10 @@ public class TutorialActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (isFinishing()) {
+            return;
+        }
 
         setContentView(R.layout.activity_tutorial);
 
@@ -44,13 +50,13 @@ public class TutorialActivity extends AppCompatActivity {
         CircleIndicator indicator = (CircleIndicator) findViewById(R.id.indicator);
         indicator.setViewPager(viewPager);
 
-//        btnLogin = (Button) findViewById(R.id.btnLogin);
-//        btnLogin.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                startActivity(XabberLoginActivity.createIntent(TutorialActivity.this));
-//            }
-//        });
+        btnLogin = (Button) findViewById(R.id.btnLogin);
+        btnLogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(AccountAddActivity.createIntent(TutorialActivity.this));
+            }
+        });
 
         btnRegister = (Button) findViewById(R.id.btnRegister);
         btnRegister.setOnClickListener(new View.OnClickListener() {
@@ -61,6 +67,18 @@ public class TutorialActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (AccountManager.getInstance().hasAccounts() || XabberAccountManager.getInstance().getAccount() != null) {
+            Intent intent = ContactListActivity.createIntent(this);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            finish();
+            startActivity(intent);
+        }
     }
 
     @Override

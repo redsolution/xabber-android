@@ -29,16 +29,16 @@
         android:layout_alignParentBottom="true"
         >
 
-        <!--<Button-->
-            <!--android:id="@+id/btnLogin"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--style="@style/Widget.AppCompat.Button.Borderless"-->
-            <!--android:theme="@style/BlueButton"-->
-            <!--android:textColor="@color/account_register_blue"-->
-            <!--android:text="@string/button_login"-->
-            <!--android:layout_weight="1"-->
-            <!--/>-->
+        <Button
+            android:id="@+id/btnLogin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:theme="@style/BlueButton"
+            android:textColor="@color/account_register_blue"
+            android:text="@string/button_login"
+            android:layout_weight="1"
+            />
 
         <Button
             android:id="@+id/btnRegister"
