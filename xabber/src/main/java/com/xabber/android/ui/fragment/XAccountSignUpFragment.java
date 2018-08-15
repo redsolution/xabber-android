@@ -22,8 +22,6 @@ import com.google.android.gms.safetynet.SafetyNetApi;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.xabber.android.R;
-import com.xabber.android.ui.activity.BaseLoginActivity;
-import com.xabber.android.ui.activity.XabberLoginActivity;
 
 import java.util.List;
 
@@ -38,15 +36,25 @@ public class XAccountSignUpFragment extends Fragment implements View.OnClickList
     private Spinner spinnerDomain;
     private Button btnSignUp;
 
+    private Listener listener;
     private String socialToken;
     private String socialProvider;
 
-    public static XAccountSignUpFragment newInstance(String socialToken, String socialProvider) {
+    public interface Listener {
+        void onGetHosts();
+        void onSignupClick(String username, String host, String pass, String captchaToken);
+        void onGoogleClick();
+        void onFacebookClick();
+        void onTwitterClick();
+    }
+
+    public static XAccountSignUpFragment newInstance(Listener listener, String socialToken, String socialProvider) {
         XAccountSignUpFragment fragment = new XAccountSignUpFragment();
         Bundle args = new Bundle();
         args.putString(SOCIAL_TOKEN, socialToken);
         args.putString(SOCIAL_PROVIDER, socialProvider);
         fragment.setArguments(args);
+        fragment.listener = listener;
         return fragment;
     }
 
@@ -90,7 +98,7 @@ public class XAccountSignUpFragment extends Fragment implements View.OnClickList
     public void onResume() {
         super.onResume();
         // TODO: 08.08.18 после закрытия окна с каптчей, снова делается запрос доменов?
-        ((XabberLoginActivity)getActivity()).getHosts();
+        listener.onGetHosts();
     }
 
     @Override
@@ -100,13 +108,13 @@ public class XAccountSignUpFragment extends Fragment implements View.OnClickList
                 onSignUpClick();
                 break;
             case R.id.ivFacebook:
-                ((BaseLoginActivity)getActivity()).loginFacebook();
+                listener.onFacebookClick();
                 break;
             case R.id.ivGoogle:
-                ((BaseLoginActivity)getActivity()).loginGoogle();
+                listener.onGoogleClick();
                 break;
             case R.id.ivTwitter:
-                ((BaseLoginActivity)getActivity()).loginTwitter();
+                listener.onTwitterClick();
                 break;
         }
     }
@@ -118,8 +126,7 @@ public class XAccountSignUpFragment extends Fragment implements View.OnClickList
         if (verifyFields(username, pass)) {
             // todo оставить только одно место для хранения socialToken. infoActivity или этот фрагмент
             if (socialToken != null)
-                ((XabberLoginActivity)getActivity()).signUp(username,
-                        spinnerDomain.getSelectedItem().toString(), pass, null);
+                listener.onSignupClick(username, spinnerDomain.getSelectedItem().toString(), pass, null);
             else getCaptchaToken(username, pass, spinnerDomain.getSelectedItem().toString());
         }
     }
@@ -175,8 +182,7 @@ public class XAccountSignUpFragment extends Fragment implements View.OnClickList
                             // Validate the user response token using the
                             // reCAPTCHA siteverify API.
                             Log.d(CAPTCHA_TOKEN, "Success: " + userResponseToken);
-                            ((XabberLoginActivity)getActivity()).signUp(username, domain,
-                                    pass, userResponseToken);
+                            listener.onSignupClick(username, domain, pass, userResponseToken);
                         }
                     }
                 })
