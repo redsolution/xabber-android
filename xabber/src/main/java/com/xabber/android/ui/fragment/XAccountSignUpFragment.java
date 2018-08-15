@@ -43,6 +43,8 @@ public class XAccountSignUpFragment extends Fragment implements View.OnClickList
     public interface Listener {
         void onGetHosts();
         void onSignupClick(String username, String host, String pass, String captchaToken);
+        void onSignupClick(String username, String host, String pass,
+                           String socialToken, String socialProvider);
         void onGoogleClick();
         void onFacebookClick();
         void onTwitterClick();
@@ -124,9 +126,9 @@ public class XAccountSignUpFragment extends Fragment implements View.OnClickList
         String pass = edtPass.getText().toString().trim();
 
         if (verifyFields(username, pass)) {
-            // todo оставить только одно место для хранения socialToken. infoActivity или этот фрагмент
-            if (socialToken != null)
-                listener.onSignupClick(username, spinnerDomain.getSelectedItem().toString(), pass, null);
+            if (socialToken != null && socialProvider != null)
+                listener.onSignupClick(username, spinnerDomain.getSelectedItem().toString(), pass,
+                        socialToken, socialProvider);
             else getCaptchaToken(username, pass, spinnerDomain.getSelectedItem().toString());
         }
     }

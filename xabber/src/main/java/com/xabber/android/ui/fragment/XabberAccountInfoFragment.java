@@ -48,7 +48,7 @@ import rx.subscriptions.CompositeSubscription;
  */
 
 public class XabberAccountInfoFragment extends Fragment implements AddEmailDialogFragment.Listener,
-        EmailAdapter.Listener, ConfirmEmailDialogFragment.Listener {
+        EmailAdapter.Listener, ConfirmEmailDialogFragment.Listener, AccountSyncDialogFragment.Listener {
 
     private static final String LOG_TAG = XabberAccountInfoFragment.class.getSimpleName();
 
@@ -84,8 +84,9 @@ public class XabberAccountInfoFragment extends Fragment implements AddEmailDialo
         void onFacebookClick();
         void onTwitterClick();
         void onAddEmailClick(String email);
-        void onConfirmClick(String email, String code);
+        void onConfirmEmailClick(String email, String code);
         void onLogoutClick(boolean deleteAccounts);
+        void onSyncClick(boolean needGoToMainActivity);
         void needXMPPAuthFragment();
     }
 
@@ -214,7 +215,12 @@ public class XabberAccountInfoFragment extends Fragment implements AddEmailDialo
 
     @Override
     public void onConfirmClick(String email, String code) {
-        listener.onConfirmClick(email, code);
+        listener.onConfirmEmailClick(email, code);
+    }
+
+    @Override
+    public void onSyncClick(boolean needGoToMainActivity) {
+        listener.onSyncClick(needGoToMainActivity);
     }
 
     public void updateData(@NonNull XabberAccount account) {
@@ -258,7 +264,7 @@ public class XabberAccountInfoFragment extends Fragment implements AddEmailDialo
                             // save full list to list for sync
                             XabberAccountManager.getInstance().setXmppAccountsForSync(items);
                             // show dialog
-                            AccountSyncDialogFragment.newInstance(noCancel)
+                            AccountSyncDialogFragment.newInstance(XabberAccountInfoFragment.this, noCancel)
                                     .show(getFragmentManager(), AccountSyncDialogFragment.class.getSimpleName());
                             dialogShowed = false;
                         } else Toast.makeText(getActivity(), "Не удалось начать синхронизацию", Toast.LENGTH_SHORT).show();

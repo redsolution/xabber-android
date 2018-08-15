@@ -29,7 +29,7 @@ public class XAccountXMPPConfirmFragment extends Fragment implements View.OnClic
     private Listener listener;
 
     public interface Listener {
-        void onConfirmClick(String jid, String code);
+        void onConfirmXMPPClick(String jid, String code);
     }
 
     public static XAccountXMPPConfirmFragment newInstance(Listener listener) {
@@ -89,7 +89,7 @@ public class XAccountXMPPConfirmFragment extends Fragment implements View.OnClic
     private void onConfirmClick() {
         // TODO: 06.08.18 verify fields
         String code = edtCode.getText().toString();
-        listener.onConfirmClick(jid, code);
+        listener.onConfirmXMPPClick(jid, code);
     }
 
     private void onResendClick() {

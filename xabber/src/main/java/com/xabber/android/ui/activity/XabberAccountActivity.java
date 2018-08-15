@@ -1,0 +1,569 @@
+package com.xabber.android.ui.activity;
+
+import android.app.Fragment;
+import android.app.FragmentTransaction;
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.View;
+import android.widget.Toast;
+
+import com.xabber.android.R;
+import com.xabber.android.data.SettingsManager;
+import com.xabber.android.data.account.AccountManager;
+import com.xabber.android.data.connection.NetworkManager;
+import com.xabber.android.data.xaccount.AuthManager;
+import com.xabber.android.data.xaccount.XMPPAccountSettings;
+import com.xabber.android.data.xaccount.XMPPAuthManager;
+import com.xabber.android.data.xaccount.XabberAccount;
+import com.xabber.android.data.xaccount.XabberAccountManager;
+import com.xabber.android.ui.color.BarPainter;
+import com.xabber.android.ui.fragment.XAccountXMPPAuthFragment;
+import com.xabber.android.ui.fragment.XAccountXMPPConfirmFragment;
+import com.xabber.android.ui.fragment.XabberAccountInfoFragment;
+import com.xabber.android.utils.RetrofitErrorConverter;
+
+import java.util.List;
+
+import okhttp3.ResponseBody;
+import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
+import rx.schedulers.Schedulers;
+
+public class XabberAccountActivity extends BaseLoginActivity
+        implements XAccountXMPPAuthFragment.Listener, XAccountXMPPConfirmFragment.Listener,
+                    XabberAccountInfoFragment.Listener {
+
+    private final static String LOG_TAG = XabberAccountActivity.class.getSimpleName();
+    private final static String FRAGMENT_INFO = "fragment_info";
+    private final static String FRAGMENT_XMPP_AUTH = "fragment_xmpp_auth";
+    private final static String FRAGMENT_XMPP_CONFIRM = "fragment_xmpp_confirm";
+
+    private FragmentTransaction fTrans;
+    private Fragment fragmentInfo;
+    private Fragment fragmentXMPPAuth;
+    private Fragment fragmentXMPPConfirm;
+
+    private Toolbar toolbar;
+    private BarPainter barPainter;
+    private ProgressDialog progressDialog;
+    private boolean needShowSyncDialog = false;
+
+    @NonNull
+    public static Intent createIntent(Context context) {
+        return new Intent(context, XabberAccountActivity.class);
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        setContentView(R.layout.activity_xabber_account_info);
+
+        toolbar = (Toolbar) findViewById(R.id.toolbar_default);
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+        toolbar.inflateMenu(R.menu.toolbar_xabber_account_info);
+        barPainter = new BarPainter(this, toolbar);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        onPrepareOptionsMenu(toolbar.getMenu());
+
+        XabberAccount account = XabberAccountManager.getInstance().getAccount();
+        if (account != null) showInfoFragment();
+        else showXMPPAuthFragment();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        compositeSubscription.clear();
+    }
+
+    @Override
+    protected void showProgress(String title) {
+        if (!isFinishing()) {
+            progressDialog = new ProgressDialog(this);
+            progressDialog.setTitle(title);
+            progressDialog.setMessage(getResources().getString(R.string.progress_message));
+            progressDialog.show();
+        }
+    }
+
+    @Override
+    protected void hideProgress() {
+        if (progressDialog != null) {
+            progressDialog.dismiss();
+            progressDialog = null;
+        }
+    }
+
+    /** XMPP Auth */
+
+    @Override
+    public void onAccountClick(String accountJid) {
+        if (NetworkManager.isNetworkAvailable()) {
+            requestXMPPCode(accountJid);
+        } else
+            Toast.makeText(this, R.string.toast_no_internet, Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onConfirmXMPPClick(String jid, String code) {
+        if (NetworkManager.isNetworkAvailable()) {
+            confirmXMPP(code, jid);
+        } else
+            Toast.makeText(this, R.string.toast_no_internet, Toast.LENGTH_LONG).show();
+    }
+
+    /** Social Auth */
+
+    @Override
+    public void onGoogleClick() {
+        loginGoogle();
+    }
+
+    @Override
+    public void onFacebookClick() {
+        loginFacebook();
+    }
+
+    @Override
+    public void onTwitterClick() {
+        loginTwitter();
+    }
+
+    /** Xabber Account Info */
+
+    @Override
+    public void needXMPPAuthFragment() {
+        showXMPPAuthFragment();
+    }
+
+    @Override
+    public void onLogoutClick(boolean deleteAccounts) {
+        if (NetworkManager.isNetworkAvailable()) {
+            logout(deleteAccounts);
+        } else
+            Toast.makeText(this, R.string.toast_no_internet, Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onSyncClick(boolean needGoToMainActivity) {
+        if (NetworkManager.isNetworkAvailable()) {
+            synchronize(needGoToMainActivity);
+        } else
+            Toast.makeText(this, R.string.toast_no_internet, Toast.LENGTH_LONG).show();
+    }
+
+    /** Email */
+
+    @Override
+    public void onAddEmailClick(String email) {
+        resendConfirmEmail(email);
+    }
+
+    @Override
+    public void onConfirmEmailClick(String email, String code) {
+        confirmEmail(code);
+    }
+
+    private void showInfoFragment() {
+        if (fragmentInfo == null) {
+            fragmentInfo = XabberAccountInfoFragment.newInstance(this);
+            Bundle bundle = new Bundle();
+            bundle.putBoolean("SHOW_SYNC", needShowSyncDialog);
+            fragmentInfo.setArguments(bundle);
+        }
+
+        fTrans = getFragmentManager().beginTransaction();
+        fTrans.replace(R.id.container, fragmentInfo, FRAGMENT_INFO);
+        fTrans.commit();
+
+        toolbar.setTitle(R.string.title_xabber_account);
+        barPainter.setDefaultColor();
+    }
+
+    private void showXMPPAuthFragment() {
+        if (fragmentXMPPAuth == null)
+            fragmentXMPPAuth = XAccountXMPPAuthFragment.newInstance(this);
+
+        fTrans = getFragmentManager().beginTransaction();
+        fTrans.replace(R.id.container, fragmentXMPPAuth, FRAGMENT_XMPP_AUTH);
+        fTrans.commit();
+
+        toolbar.setTitle(R.string.title_register_xabber_account);
+        barPainter.setBlue(this);
+    }
+
+    private void showXMPPConfirmFragment(String jid) {
+        if (fragmentXMPPConfirm == null)
+            fragmentXMPPConfirm = XAccountXMPPConfirmFragment.newInstance(this);
+
+        ((XAccountXMPPConfirmFragment)fragmentXMPPConfirm).setJid(jid);
+
+        fTrans = getFragmentManager().beginTransaction();
+        fTrans.replace(R.id.container, fragmentXMPPConfirm, FRAGMENT_XMPP_CONFIRM);
+        fTrans.commit();
+
+        toolbar.setTitle(R.string.title_register_xabber_account);
+        barPainter.setBlue(this);
+    }
+
+    private void updateAccountInfo(XabberAccount account) {
+        if (account != null) {
+            XabberAccountInfoFragment fragment = (XabberAccountInfoFragment) getFragmentManager().findFragmentByTag(FRAGMENT_INFO);
+            if (fragment != null && fragment.isVisible())
+                ((XabberAccountInfoFragment) fragmentInfo).updateData(account);
+        }
+    }
+
+    private void updateLastSyncTime() {
+        XabberAccountInfoFragment fragment = (XabberAccountInfoFragment) getFragmentManager().findFragmentByTag(FRAGMENT_INFO);
+        if (fragment != null && fragment.isVisible())
+            ((XabberAccountInfoFragment) fragmentInfo).updateLastSyncTime();
+    }
+
+    /** LOGOUT */
+
+    private void logout(final boolean deleteAccounts) {
+        showProgress(getResources().getString(R.string.progress_title_quit));
+        Subscription logoutSubscription = AuthManager.logout(deleteAccounts)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<ResponseBody>() {
+                    @Override
+                    public void call(ResponseBody s) {
+                        handleSuccessLogout(s, deleteAccounts);
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        handleErrorLogout(throwable);
+                    }
+                });
+        compositeSubscription.add(logoutSubscription);
+    }
+
+    private void handleSuccessLogout(ResponseBody s, boolean deleteAccounts) {
+        if (deleteAccounts) XabberAccountManager.getInstance().deleteSyncedLocalAccounts();
+        XabberAccountManager.getInstance().removeAccount();
+        //showLoginFragment();
+        hideProgress();
+        Toast.makeText(this, R.string.quit_success, Toast.LENGTH_SHORT).show();
+        Intent intent = ContactListActivity.createIntent(XabberAccountActivity.this);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+    }
+
+    private void handleErrorLogout(Throwable throwable) {
+        String message = RetrofitErrorConverter.throwableToHttpError(throwable);
+        if (message != null) {
+            if (message.equals("Invalid token")) {
+                XabberAccountManager.getInstance().onInvalidToken();
+                //showLoginFragment();
+            } else {
+                Log.d(LOG_TAG, "Error while logout: " + message);
+                Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            Log.d(LOG_TAG, "Error while logout: " + throwable.toString());
+            Toast.makeText(this, "Error while logout: " + throwable.toString(), Toast.LENGTH_LONG).show();
+        }
+        hideProgress();
+    }
+
+    /** SYNCHRONIZATION */
+
+    private void synchronize(boolean needGoToMainActivity) {
+        XabberAccount account = XabberAccountManager.getInstance().getAccount();
+        if (account != null && account.getToken() != null) {
+            showProgress(getResources().getString(R.string.progress_title_sync));
+            getAccountWithUpdate(account.getToken(), needGoToMainActivity);
+        } else {
+            Toast.makeText(XabberAccountActivity.this, R.string.sync_fail, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void getAccountWithUpdate(String token, final boolean needGoToMainActivity) {
+        Subscription loadAccountsSubscription = AuthManager.getAccount(token)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<XabberAccount>() {
+                    @Override
+                    public void call(XabberAccount s) {
+                        Log.d(LOG_TAG, "Xabber account loading from net: successfully");
+                        updateAccountInfo(s);
+
+                        // if exist local accounts
+                        if (AccountManager.getInstance().getAllAccountItems().size() > 0)
+                            updateSettings(needGoToMainActivity);
+                        else getSettings();
+
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        Log.d(LOG_TAG, "Xabber account loading from net: error: " + throwable.toString());
+                        String message = RetrofitErrorConverter.throwableToHttpError(throwable);
+                        if (message != null && message.equals("Invalid token")) {
+                            XabberAccountManager.getInstance().onInvalidToken();
+                            //showLoginFragment();
+                        }
+
+                        hideProgress();
+                        Toast.makeText(XabberAccountActivity.this, R.string.sync_fail, Toast.LENGTH_SHORT).show();
+                    }
+                });
+        compositeSubscription.add(loadAccountsSubscription);
+    }
+
+    private void updateSettings(final boolean needGoToMainActivity) {
+        Subscription getSettingsSubscription = AuthManager.patchClientSettings(XabberAccountManager.getInstance().createSettingsList())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<List<XMPPAccountSettings>>() {
+                    @Override
+                    public void call(List<XMPPAccountSettings> s) {
+                        Log.d(LOG_TAG, "XMPP accounts loading from net: successfully");
+                        hideProgress();
+                        updateLastSyncTime();
+                        Toast.makeText(XabberAccountActivity.this, R.string.sync_success, Toast.LENGTH_SHORT).show();
+                        if (needGoToMainActivity) goToMainActivity();
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        Log.d(LOG_TAG, "XMPP accounts loading from net: error: " + throwable.toString());
+                        hideProgress();
+                        Toast.makeText(XabberAccountActivity.this, R.string.sync_fail, Toast.LENGTH_SHORT).show();
+                    }
+                });
+        compositeSubscription.add(getSettingsSubscription);
+    }
+
+    private void getSettings() {
+        Subscription getSettingsSubscription = AuthManager.getClientSettings()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<List<XMPPAccountSettings>>() {
+                    @Override
+                    public void call(List<XMPPAccountSettings> settings) {
+                        Log.d(LOG_TAG, "XMPP accounts loading from net: successfully");
+                        XabberAccountManager.getInstance().setXmppAccountsForCreate(settings);
+                        hideProgress();
+                        // update last synchronization time
+                        SettingsManager.setLastSyncDate(XabberAccountManager.getCurrentTimeString());
+                        Toast.makeText(XabberAccountActivity.this, R.string.sync_success, Toast.LENGTH_SHORT).show();
+                        goToMainActivity();
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        Log.d(LOG_TAG, "XMPP accounts loading from net: error: " + throwable.toString());
+                        hideProgress();
+                    }
+                });
+        compositeSubscription.add(getSettingsSubscription);
+    }
+
+    /** REQUEST XMPP CODE */
+
+    private void requestXMPPCode(final String jid) {
+        showProgress("Request XMPP auth-code..");
+        Subscription requestXMPPCodeSubscription = AuthManager.requestXMPPCode(jid)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<AuthManager.XMPPCode>() {
+                    @Override
+                    public void call(AuthManager.XMPPCode code) {
+                        handleSuccessRequestXMPPCode(code, jid);
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        handleErrorRequestXMPPCode(throwable);
+                    }
+                });
+        compositeSubscription.add(requestXMPPCodeSubscription);
+    }
+
+    private void handleSuccessRequestXMPPCode(AuthManager.XMPPCode code, String jid) {
+        hideProgress();
+        XMPPAuthManager.getInstance().addRequest(code.getRequestId(), code.getApiJid(), jid);
+        showXMPPConfirmFragment(jid);
+    }
+
+    private void handleErrorRequestXMPPCode(Throwable throwable) {
+        hideProgress();
+
+        // TODO: 03.08.18 implement error parsing
+
+        String error = "Error while request XMPP auth-code: " + throwable.toString();
+        Log.d(LOG_TAG, error);
+        Toast.makeText(this, error, Toast.LENGTH_LONG).show();
+    }
+
+    /** CONFIRM XMPP */
+
+    private void confirmXMPP(String code, String jid) {
+        showProgress("Confirm XMPP-account with code..");
+        Subscription confirmXMPPSubscription = AuthManager.confirmXMPP(jid, code)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<XabberAccount>() {
+                    @Override
+                    public void call(XabberAccount account) {
+                        handleSuccessConfirmXMPP(account);
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        handleErrorConfirmXMPP(throwable);
+                    }
+                });
+        compositeSubscription.add(confirmXMPPSubscription);
+    }
+
+    private void handleSuccessConfirmXMPP(XabberAccount account) {
+        hideProgress();
+        showInfoFragment();
+    }
+
+    private void handleErrorConfirmXMPP(Throwable throwable) {
+        hideProgress();
+
+        // TODO: 03.08.18 implement error parsing
+
+        String error = "Error while confirmEmail XMPP-account: " + throwable.toString();
+        Log.d(LOG_TAG, error);
+        Toast.makeText(this, error, Toast.LENGTH_LONG).show();
+    }
+
+    /** ADD EMAIL */
+
+    private void resendConfirmEmail(String email) {
+        showProgress(getResources().getString(R.string.progress_title_resend));
+        Subscription resendEmailSubscription = AuthManager.addEmail(email)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<ResponseBody>() {
+                    @Override
+                    public void call(ResponseBody s) {
+                        handleSuccessResendEmail(s);
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        handleErrorResendEmail(throwable);
+                    }
+                });
+        compositeSubscription.add(resendEmailSubscription);
+    }
+
+    private void handleSuccessResendEmail(ResponseBody response) {
+        hideProgress();
+        Toast.makeText(this, R.string.resend_success, Toast.LENGTH_SHORT).show();
+    }
+
+    private void handleErrorResendEmail(Throwable throwable) {
+        hideProgress();
+
+        String message = RetrofitErrorConverter.throwableToHttpError(throwable);
+        if (message != null) {
+            Log.d(LOG_TAG, "Error while send verification email: " + message);
+            Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+        } else {
+            Log.d(LOG_TAG, "Error while send verification email: " + throwable.toString());
+            Toast.makeText(this, "Error while send verification email: " + throwable.toString(), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    /** CONFIRM EMAIL */
+
+    private void confirmEmail(String code) {
+        showProgress(getResources().getString(R.string.progress_title_confirm));
+        Subscription confirmSubscription = AuthManager.confirmEmail(code)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<XabberAccount>() {
+                    @Override
+                    public void call(XabberAccount s) {
+                        handleSuccessConfirm(s);
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        handleErrorConfirm(throwable);
+                    }
+                });
+        compositeSubscription.add(confirmSubscription);
+    }
+
+    private void handleSuccessConfirm(XabberAccount response) {
+        hideProgress();
+        Toast.makeText(this, R.string.confirm_success, Toast.LENGTH_SHORT).show();
+    }
+
+    private void handleErrorConfirm(Throwable throwable) {
+        hideProgress();
+
+        String message = RetrofitErrorConverter.throwableToHttpError(throwable);
+        if (message != null) {
+            Log.d(LOG_TAG, "Error while confirming email: " + message);
+            Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+        } else {
+            Log.d(LOG_TAG, "Error while confirming email: " + throwable.toString());
+            Toast.makeText(this, "Error while confirming email: " + throwable.toString(), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    /** SOCIAL AUTH */
+
+    @Override
+    protected void onSocialAuthSuccess(String provider, String token) {
+        showProgress("Bind social");
+        Subscription loginSocialSubscription = AuthManager.bindSocial(provider, token)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<ResponseBody>() {
+                    @Override
+                    public void call(ResponseBody s) {
+                        Toast.makeText(XabberAccountActivity.this,
+                                "Social bind successfull", Toast.LENGTH_SHORT).show();
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        Toast.makeText(XabberAccountActivity.this,
+                                "Social bind failure", Toast.LENGTH_SHORT).show();
+                    }
+                });
+        compositeSubscription.add(loginSocialSubscription);
+    }
+
+    @Override
+    protected void onTwitterAuthSuccess(String token, String twitterTokenSecret, String secret, String key) {
+        // TODO: 15.08.18 need implementation
+    }
+
+    private void goToMainActivity() {
+        Intent intent = ContactListActivity.createIntent(XabberAccountActivity.this);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        finish();
+        startActivity(intent);
+    }
+}

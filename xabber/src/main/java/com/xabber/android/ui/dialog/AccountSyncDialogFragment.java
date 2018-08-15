@@ -18,7 +18,6 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.xaccount.XMPPAccountSettings;
 import com.xabber.android.data.xaccount.XabberAccountManager;
-import com.xabber.android.ui.activity.XabberAccountActivity;
 import com.xabber.android.ui.adapter.XMPPAccountAdapter;
 
 import java.util.ArrayList;
@@ -34,18 +33,24 @@ import java.util.Map;
 
 public class AccountSyncDialogFragment extends DialogFragment {
 
+    private static final String NO_CANCEL = "NO_CANCEL";
+
     private List<XMPPAccountSettings> xmppAccounts;
     private Switch switchSyncAll;
     private XMPPAccountAdapter adapter;
     private boolean noCancel = false;
+    private Listener listener;
 
-    private static final String NO_CANCEL = "NO_CANCEL";
+    public interface Listener {
+        void onSyncClick(boolean needGoToMainActivity);
+    }
 
-    public static AccountSyncDialogFragment newInstance(boolean noCancel) {
+    public static AccountSyncDialogFragment newInstance(Listener listener, boolean noCancel) {
         AccountSyncDialogFragment fragment = new AccountSyncDialogFragment();
         Bundle args = new Bundle();
         args.putBoolean(NO_CANCEL, noCancel);
         fragment.setArguments(args);
+        fragment.listener = listener;
         return fragment;
     }
 
@@ -137,7 +142,7 @@ public class AccountSyncDialogFragment extends DialogFragment {
     @Override
     public void onCancel(DialogInterface dialog) {
         super.onCancel(dialog);
-        if (noCancel) ((XabberAccountActivity)getActivity()).onSyncClick(true);
+        if (noCancel) listener.onSyncClick(true);
     }
 
     private void onPositiveClick(boolean needGoToMainActivity) {
@@ -166,6 +171,6 @@ public class AccountSyncDialogFragment extends DialogFragment {
         SettingsManager.setSyncAllAccounts(switchSyncAll.isChecked());
 
         // callback to sync-request
-        ((XabberAccountActivity)getActivity()).onSyncClick(needGoToMainActivity);
+        listener.onSyncClick(needGoToMainActivity);
     }
 }
