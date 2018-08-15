@@ -29,7 +29,6 @@ import com.xabber.android.data.xaccount.SocialBindingDTO;
 import com.xabber.android.data.xaccount.XMPPAccountSettings;
 import com.xabber.android.data.xaccount.XabberAccount;
 import com.xabber.android.data.xaccount.XabberAccountManager;
-import com.xabber.android.ui.activity.XabberAccountInfoActivity;
 import com.xabber.android.ui.adapter.EmailAdapter;
 import com.xabber.android.ui.dialog.AccountSyncDialogFragment;
 import com.xabber.android.ui.dialog.AddEmailDialogFragment;
@@ -78,6 +77,23 @@ public class XabberAccountInfoFragment extends Fragment implements AddEmailDialo
     private boolean dialogShowed;
 
     private CompositeSubscription compositeSubscription = new CompositeSubscription();
+    private Listener listener;
+
+    public interface Listener {
+        void onGoogleClick();
+        void onFacebookClick();
+        void onTwitterClick();
+        void onAddEmailClick(String email);
+        void onConfirmClick(String email, String code);
+        void onLogoutClick(boolean deleteAccounts);
+        void needXMPPAuthFragment();
+    }
+
+    public static XabberAccountInfoFragment newInstance(Listener listener) {
+        XabberAccountInfoFragment fragment = new XabberAccountInfoFragment();
+        fragment.listener = listener;
+        return fragment;
+    }
 
     @Nullable
     @Override
@@ -123,7 +139,7 @@ public class XabberAccountInfoFragment extends Fragment implements AddEmailDialo
         itemGoogle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((XabberAccountInfoActivity)getActivity()).loginGoogle();
+                listener.onGoogleClick();
             }
         });
 
@@ -133,7 +149,7 @@ public class XabberAccountInfoFragment extends Fragment implements AddEmailDialo
         itemFacebook.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((XabberAccountInfoActivity)getActivity()).loginFacebook();
+                listener.onFacebookClick();
             }
         });
 
@@ -143,7 +159,7 @@ public class XabberAccountInfoFragment extends Fragment implements AddEmailDialo
         itemTwitter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getActivity(), "twitter not implemented yet", Toast.LENGTH_SHORT).show();
+                listener.onTwitterClick();
             }
         });
 
@@ -170,7 +186,7 @@ public class XabberAccountInfoFragment extends Fragment implements AddEmailDialo
 
         XabberAccount account = XabberAccountManager.getInstance().getAccount();
         if (account != null) updateData(account);
-        else ((XabberAccountInfoActivity)getActivity()).showLoginFragment();
+        else listener.needXMPPAuthFragment();
         updateLastSyncTime();
     }
 
@@ -182,7 +198,7 @@ public class XabberAccountInfoFragment extends Fragment implements AddEmailDialo
 
     @Override
     public void onAddEmailClick(String email) {
-        ((XabberAccountInfoActivity)getActivity()).resendConfirmEmail(email);
+        listener.onAddEmailClick(email);
     }
 
     @Override
@@ -193,12 +209,12 @@ public class XabberAccountInfoFragment extends Fragment implements AddEmailDialo
 
     @Override
     public void onResendCodeClick(String email) {
-        ((XabberAccountInfoActivity)getActivity()).resendConfirmEmail(email);
+        listener.onAddEmailClick(email);
     }
 
     @Override
     public void onConfirmClick(String email, String code) {
-        ((XabberAccountInfoActivity)getActivity()).confirm(code);
+        listener.onConfirmClick(email, code);
     }
 
     public void updateData(@NonNull XabberAccount account) {
@@ -261,7 +277,7 @@ public class XabberAccountInfoFragment extends Fragment implements AddEmailDialo
         if (message != null) {
             if (message.equals("Invalid token")) {
                 XabberAccountManager.getInstance().onInvalidToken();
-                ((XabberAccountInfoActivity)getActivity()).showLoginFragment();
+                listener.needXMPPAuthFragment();
                 Toast.makeText(getActivity(), "Аккаунт был удален", Toast.LENGTH_LONG).show();
             } else {
                 Log.d(LOG_TAG, "Error while synchronization: " + message);
@@ -285,7 +301,7 @@ public class XabberAccountInfoFragment extends Fragment implements AddEmailDialo
                 .setPositiveButton(R.string.button_quit, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        ((XabberAccountInfoActivity)getActivity()).onLogoutClick(chbDeleteAccounts.isChecked());
+                        listener.onLogoutClick(chbDeleteAccounts.isChecked());
                     }
                 })
                 .setNegativeButton(R.string.cancel, null);
