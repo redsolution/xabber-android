@@ -22,7 +22,8 @@ import com.google.android.gms.safetynet.SafetyNetApi;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.xabber.android.R;
-import com.xabber.android.ui.activity.XabberAccountInfoActivity;
+import com.xabber.android.ui.activity.BaseLoginActivity;
+import com.xabber.android.ui.activity.XabberLoginActivity;
 
 import java.util.List;
 
@@ -89,7 +90,7 @@ public class XAccountSignUpFragment extends Fragment implements View.OnClickList
     public void onResume() {
         super.onResume();
         // TODO: 08.08.18 после закрытия окна с каптчей, снова делается запрос доменов?
-        ((XabberAccountInfoActivity)getActivity()).getHosts();
+        ((XabberLoginActivity)getActivity()).getHosts();
     }
 
     @Override
@@ -99,13 +100,13 @@ public class XAccountSignUpFragment extends Fragment implements View.OnClickList
                 onSignUpClick();
                 break;
             case R.id.ivFacebook:
-                ((XabberAccountInfoActivity)getActivity()).loginFacebook();
+                ((BaseLoginActivity)getActivity()).loginFacebook();
                 break;
             case R.id.ivGoogle:
-                ((XabberAccountInfoActivity)getActivity()).loginGoogle();
+                ((BaseLoginActivity)getActivity()).loginGoogle();
                 break;
             case R.id.ivTwitter:
-                //((XabberAccountInfoActivity)getActivity()).loginTwitter();
+                ((BaseLoginActivity)getActivity()).loginTwitter();
                 break;
         }
     }
@@ -117,7 +118,7 @@ public class XAccountSignUpFragment extends Fragment implements View.OnClickList
         if (verifyFields(username, pass)) {
             // todo оставить только одно место для хранения socialToken. infoActivity или этот фрагмент
             if (socialToken != null)
-                ((XabberAccountInfoActivity)getActivity()).signUp(username,
+                ((XabberLoginActivity)getActivity()).signUp(username,
                         spinnerDomain.getSelectedItem().toString(), pass, null);
             else getCaptchaToken(username, pass, spinnerDomain.getSelectedItem().toString());
         }
@@ -174,7 +175,7 @@ public class XAccountSignUpFragment extends Fragment implements View.OnClickList
                             // Validate the user response token using the
                             // reCAPTCHA siteverify API.
                             Log.d(CAPTCHA_TOKEN, "Success: " + userResponseToken);
-                            ((XabberAccountInfoActivity)getActivity()).signUp(username, domain,
+                            ((XabberLoginActivity)getActivity()).signUp(username, domain,
                                     pass, userResponseToken);
                         }
                     }

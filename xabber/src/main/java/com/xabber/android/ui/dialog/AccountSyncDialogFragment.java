@@ -18,7 +18,7 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.xaccount.XMPPAccountSettings;
 import com.xabber.android.data.xaccount.XabberAccountManager;
-import com.xabber.android.ui.activity.XabberAccountInfoActivity;
+import com.xabber.android.ui.activity.XabberAccountActivity;
 import com.xabber.android.ui.adapter.XMPPAccountAdapter;
 
 import java.util.ArrayList;
@@ -137,7 +137,7 @@ public class AccountSyncDialogFragment extends DialogFragment {
     @Override
     public void onCancel(DialogInterface dialog) {
         super.onCancel(dialog);
-        if (noCancel) ((XabberAccountInfoActivity)getActivity()).onSyncClick(true);
+        if (noCancel) ((XabberAccountActivity)getActivity()).onSyncClick(true);
     }
 
     private void onPositiveClick(boolean needGoToMainActivity) {
@@ -166,6 +166,6 @@ public class AccountSyncDialogFragment extends DialogFragment {
         SettingsManager.setSyncAllAccounts(switchSyncAll.isChecked());
 
         // callback to sync-request
-        ((XabberAccountInfoActivity)getActivity()).onSyncClick(needGoToMainActivity);
+        ((XabberAccountActivity)getActivity()).onSyncClick(needGoToMainActivity);
     }
 }

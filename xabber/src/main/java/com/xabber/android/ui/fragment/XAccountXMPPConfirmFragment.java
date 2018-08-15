@@ -12,7 +12,7 @@ import android.widget.TextView;
 
 import com.xabber.android.R;
 import com.xabber.android.data.xaccount.XMPPAuthManager;
-import com.xabber.android.ui.activity.XabberAccountInfoActivity;
+import com.xabber.android.ui.activity.XabberAccountActivity;
 
 import rx.functions.Action1;
 import rx.subscriptions.CompositeSubscription;
@@ -78,7 +78,7 @@ public class XAccountXMPPConfirmFragment extends Fragment implements View.OnClic
     private void onConfirmClick() {
         // TODO: 06.08.18 verify fields
         String code = edtCode.getText().toString();
-        ((XabberAccountInfoActivity)getActivity()).onConfirmXMPPClick(jid, code);
+        ((XabberAccountActivity)getActivity()).onConfirmXMPPClick(jid, code);
     }
 
     private void onResendClick() {

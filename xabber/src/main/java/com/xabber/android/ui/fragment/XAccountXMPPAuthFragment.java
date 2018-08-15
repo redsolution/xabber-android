@@ -8,12 +8,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.xabber.android.R;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
-import com.xabber.android.ui.activity.XabberAccountInfoActivity;
+import com.xabber.android.ui.activity.XabberAccountActivity;
 import com.xabber.android.ui.adapter.XMPPAccountAuthAdapter;
 
 import java.util.ArrayList;
@@ -46,6 +45,6 @@ public class XAccountXMPPAuthFragment extends Fragment implements XMPPAccountAut
 
     @Override
     public void onAccountClick(String accountJid) {
-        ((XabberAccountInfoActivity)getActivity()).onRequestXMPPAuthCodeClick(accountJid);
+        ((XabberAccountActivity)getActivity()).onRequestXMPPAuthCodeClick(accountJid);
     }
 }
