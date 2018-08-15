@@ -62,9 +62,7 @@ public class TutorialActivity extends AppCompatActivity {
         btnRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = XabberAccountInfoActivity.createIntent(TutorialActivity.this);
-                intent.putExtra(XabberAccountInfoActivity.CALL_FROM, XabberAccountInfoActivity.CALL_FROM_LOGIN);
-                startActivity(intent);
+                startActivity(XabberLoginActivity.createIntent(TutorialActivity.this, XabberLoginActivity.FRAGMENT_SIGNUP));
             }
         });
     }

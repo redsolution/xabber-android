@@ -514,13 +514,11 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.xabber.android.ui.activity.ChatActivity" />
         </activity>
-        <activity android:name=".ui.activity.IntroActivity"
-            android:theme="@style/ThemeDark"/>
         <activity android:name=".ui.activity.TutorialActivity"
             android:theme="@style/ThemeDark"/>
         <activity android:name=".ui.activity.XabberLoginActivity"
             android:theme="@style/ThemeDark"/>
-        <activity android:name=".ui.activity.XabberAccountInfoActivity"
+        <activity android:name=".ui.activity.XabberAccountActivity"
             android:theme="@style/ThemeDark">
 
             <intent-filter>
