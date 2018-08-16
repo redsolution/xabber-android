@@ -273,7 +273,9 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
     }
 
     private void handleSuccessSignUp() {
-        // TODO: 15.08.18 go to xabber account
+        Intent intent = XabberAccountActivity.createIntent(this, true);
+        finish();
+        startActivity(intent);
     }
 
     private void handleErrorSignUp(Throwable throwable) {
