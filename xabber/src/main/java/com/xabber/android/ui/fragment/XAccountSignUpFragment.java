@@ -12,6 +12,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -34,7 +35,8 @@ public class XAccountSignUpFragment extends Fragment implements View.OnClickList
     private EditText edtUsername;
     private EditText edtPass;
     private Spinner spinnerDomain;
-    private Button btnSignUp;
+    private TextView tvSocialProvider;
+    private LinearLayout llSocialLogos;
 
     private Listener listener;
     private String socialToken;
@@ -80,13 +82,9 @@ public class XAccountSignUpFragment extends Fragment implements View.OnClickList
         edtUsername = view.findViewById(R.id.edtUsername);
         edtPass = view.findViewById(R.id.edtPass);
         spinnerDomain = view.findViewById(R.id.spinnerDomain);
-        btnSignUp = view.findViewById(R.id.btnSignUp);
 
-        btnSignUp.setOnClickListener(this);
-
-        TextView tvSocialProvider = view.findViewById(R.id.tvSocialProvider);
-        tvSocialProvider.setText(socialProvider);
-
+        tvSocialProvider = view.findViewById(R.id.tvSocialProvider);
+        llSocialLogos = view.findViewById(R.id.llSocialLogos);
         ImageView ivFacebook = view.findViewById(R.id.ivFacebook);
         ImageView ivGoogle = view.findViewById(R.id.ivGoogle);
         ImageView ivTwitter = view.findViewById(R.id.ivTwitter);
@@ -94,13 +92,16 @@ public class XAccountSignUpFragment extends Fragment implements View.OnClickList
         ivFacebook.setOnClickListener(this);
         ivGoogle.setOnClickListener(this);
         ivTwitter.setOnClickListener(this);
+
+        Button btnSignUp = view.findViewById(R.id.btnSignUp);
+        btnSignUp.setOnClickListener(this);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        // TODO: 08.08.18 после закрытия окна с каптчей, снова делается запрос доменов?
         listener.onGetHosts();
+        setupSocial();
     }
 
     @Override
@@ -118,6 +119,23 @@ public class XAccountSignUpFragment extends Fragment implements View.OnClickList
             case R.id.ivTwitter:
                 listener.onTwitterClick();
                 break;
+        }
+    }
+
+    public void setSocialProviderToken(String socialProvider, String socialToken) {
+        this.socialProvider = socialProvider;
+        this.socialToken = socialToken;
+        setupSocial();
+    }
+
+    private void setupSocial() {
+        if (socialToken != null && socialProvider != null) {
+            llSocialLogos.setVisibility(View.GONE);
+            tvSocialProvider.setVisibility(View.VISIBLE);
+            tvSocialProvider.setText(socialProvider);
+        } else {
+            llSocialLogos.setVisibility(View.VISIBLE);
+            tvSocialProvider.setVisibility(View.GONE);
         }
     }
 

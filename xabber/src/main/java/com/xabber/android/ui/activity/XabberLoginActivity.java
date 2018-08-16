@@ -52,6 +52,8 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
     private ProgressDialog progressDialog;
     private BarPainter barPainter;
 
+    private List<String> hosts = new ArrayList<>();
+
     public static Intent createIntent(Context context, @Nullable String currentFragment) {
         Intent intent = new Intent(context, XabberLoginActivity.class);
         intent.putExtra(CURRENT_FRAGMENT, currentFragment);
@@ -198,28 +200,32 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
     /** GET HOSTS */
 
     private void getHosts() {
-        showProgress("Request hosts..");
-        Subscription requestHosts = AuthManager.getHosts()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<List<AuthManager.Domain>>() {
-                    @Override
-                    public void call(List<AuthManager.Domain> domains) {
-                        handleSuccessGetHosts(domains);
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        handleErrorGetHosts(throwable);
-                    }
-                });
-        compositeSubscription.add(requestHosts);
+        if (hosts != null && !hosts.isEmpty()) {
+            if (fragmentSignUp != null) ((XAccountSignUpFragment)fragmentSignUp).setupSpinner(hosts);
+        } else {
+            showProgress("Request hosts..");
+            Subscription requestHosts = AuthManager.getHosts()
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Action1<List<AuthManager.Domain>>() {
+                        @Override
+                        public void call(List<AuthManager.Domain> domains) {
+                            handleSuccessGetHosts(domains);
+                        }
+                    }, new Action1<Throwable>() {
+                        @Override
+                        public void call(Throwable throwable) {
+                            handleErrorGetHosts(throwable);
+                        }
+                    });
+            compositeSubscription.add(requestHosts);
+        }
     }
 
     private void handleSuccessGetHosts(List<AuthManager.Domain> domains) {
         hideProgress();
 
-        List<String> hosts = new ArrayList<>();
+        hosts.clear();
         for (AuthManager.Domain domain : domains) {
             hosts.add(domain.getDomain());
         }
@@ -330,7 +336,10 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
         if (message != null) {
             if (message.contains("is not attached to any Xabber account")) {
                 // go to sign up
+                hideProgress();
                 showSignUpFragment(token, provider);
+                if (fragmentSignUp != null) ((XAccountSignUpFragment)fragmentSignUp)
+                        .setSocialProviderToken(provider, token);
             } else {
                 Log.d(LOG_TAG, "Error while social login request: " + message);
                 Toast.makeText(this, R.string.social_auth_fail, Toast.LENGTH_LONG).show();
