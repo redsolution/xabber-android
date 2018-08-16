@@ -231,12 +231,7 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
 
     private void handleErrorGetHosts(Throwable throwable) {
         hideProgress();
-
-        // TODO: 03.08.18 implement error parsing
-
-        String error = "Error while request hosts: " + throwable.toString();
-        Log.d(LOG_TAG, error);
-        Toast.makeText(this, error, Toast.LENGTH_LONG).show();
+        handleError(throwable, "Error while request hosts: ", LOG_TAG);
     }
 
     /** SIGN UP */
@@ -275,12 +270,7 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
 
     private void handleErrorSignUp(Throwable throwable) {
         hideProgress();
-
-        // TODO: 03.08.18 implement error parsing
-
-        String error = "Error while signup: " + throwable.toString();
-        Log.d(LOG_TAG, error);
-        Toast.makeText(this, error, Toast.LENGTH_LONG).show();
+        handleError(throwable, "Error while signup: ", LOG_TAG);
     }
 
     /** SOCIAL LOGIN */
@@ -357,15 +347,7 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
 
     private void handleErrorGetAccount(Throwable throwable) {
         hideProgress();
-
-        String message = RetrofitErrorConverter.throwableToHttpError(throwable);
-        if (message != null) {
-            Log.d(LOG_TAG, "Error while login: " + message);
-            Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-        } else {
-            Log.d(LOG_TAG, "Error while login: " + throwable.toString());
-            Toast.makeText(this, "Error while login: " + throwable.toString(), Toast.LENGTH_LONG).show();
-        }
+        handleError(throwable, "Error while login: ", LOG_TAG);
     }
 
 }

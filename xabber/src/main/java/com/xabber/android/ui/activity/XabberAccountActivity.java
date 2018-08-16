@@ -419,12 +419,7 @@ public class XabberAccountActivity extends BaseLoginActivity
 
     private void handleErrorRequestXMPPCode(Throwable throwable) {
         hideProgress();
-
-        // TODO: 03.08.18 implement error parsing
-
-        String error = "Error while request XMPP auth-code: " + throwable.toString();
-        Log.d(LOG_TAG, error);
-        Toast.makeText(this, error, Toast.LENGTH_LONG).show();
+        handleError(throwable, "Error while request XMPP auth-code: ", LOG_TAG);
     }
 
     /** CONFIRM XMPP */
@@ -455,12 +450,7 @@ public class XabberAccountActivity extends BaseLoginActivity
 
     private void handleErrorConfirmXMPP(Throwable throwable) {
         hideProgress();
-
-        // TODO: 03.08.18 implement error parsing
-
-        String error = "Error while confirmEmail XMPP-account: " + throwable.toString();
-        Log.d(LOG_TAG, error);
-        Toast.makeText(this, error, Toast.LENGTH_LONG).show();
+        handleError(throwable, "Error while confirming XMPP-account: ", LOG_TAG);
     }
 
     /** ADD EMAIL */
@@ -491,15 +481,7 @@ public class XabberAccountActivity extends BaseLoginActivity
 
     private void handleErrorResendEmail(Throwable throwable) {
         hideProgress();
-
-        String message = RetrofitErrorConverter.throwableToHttpError(throwable);
-        if (message != null) {
-            Log.d(LOG_TAG, "Error while send verification email: " + message);
-            Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-        } else {
-            Log.d(LOG_TAG, "Error while send verification email: " + throwable.toString());
-            Toast.makeText(this, "Error while send verification email: " + throwable.toString(), Toast.LENGTH_LONG).show();
-        }
+        handleError(throwable, "Error while send verification email: ", LOG_TAG);
     }
 
     /** CONFIRM EMAIL */
@@ -530,32 +512,15 @@ public class XabberAccountActivity extends BaseLoginActivity
 
     private void handleErrorConfirm(Throwable throwable) {
         hideProgress();
-
-        String message = RetrofitErrorConverter.throwableToHttpError(throwable);
-        if (message != null) {
-            Log.d(LOG_TAG, "Error while confirming email: " + message);
-            Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-        } else {
-            Log.d(LOG_TAG, "Error while confirming email: " + throwable.toString());
-            Toast.makeText(this, "Error while confirming email: " + throwable.toString(), Toast.LENGTH_LONG).show();
-        }
+        handleError(throwable, "Error while confirming email: ", LOG_TAG);
     }
 
     /** SOCIAL AUTH */
 
     @Override
-    protected void onSocialAuthSuccess(String provider, String token) {
-        onSocialAuthSuccess(AuthManager.bindSocial(provider, token));
-    }
-
-    @Override
-    protected void onTwitterAuthSuccess(String token, String twitterTokenSecret, String secret, String key) {
-        onSocialAuthSuccess(AuthManager.bindSocial(token, twitterTokenSecret, secret, key));
-    }
-
-    private void onSocialAuthSuccess(Single<ResponseBody> source) {
+    protected void onSocialAuthSuccess(String provider, String credentials) {
         showProgress("Bind social");
-        Subscription loginSocialSubscription = source
+        Subscription loginSocialSubscription = AuthManager.bindSocial(provider, credentials)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<ResponseBody>() {

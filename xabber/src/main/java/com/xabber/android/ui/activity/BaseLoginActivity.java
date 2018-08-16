@@ -34,6 +34,7 @@ import com.twitter.sdk.android.core.identity.TwitterAuthClient;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.xaccount.AuthManager;
+import com.xabber.android.utils.RetrofitErrorConverter;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -217,4 +218,16 @@ public abstract class BaseLoginActivity extends ManagedActivity implements Googl
     protected abstract void showProgress(String title);
 
     protected abstract void hideProgress();
+
+    protected void handleError(Throwable throwable, String errorContext, String logTag) {
+        String message = RetrofitErrorConverter.throwableToHttpError(throwable);
+        if (message != null) {
+            Log.d(logTag, errorContext + message);
+            Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+        } else {
+            Log.d(logTag, errorContext + throwable.toString());
+            Toast.makeText(this, errorContext + throwable.toString(),
+                    Toast.LENGTH_LONG).show();
+        }
+    }
 }
