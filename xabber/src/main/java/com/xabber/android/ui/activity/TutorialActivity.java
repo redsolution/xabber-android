@@ -21,7 +21,7 @@ import me.relex.circleindicator.CircleIndicator;
  * Created by valery.miller on 14.09.17.
  */
 
-public class TutorialActivity extends AppCompatActivity {
+public class TutorialActivity extends ManagedActivity {
 
     private Button btnLogin;
     private Button btnRegister;

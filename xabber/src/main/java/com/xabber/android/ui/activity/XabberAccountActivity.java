@@ -43,6 +43,7 @@ public class XabberAccountActivity extends BaseLoginActivity
     private final static String FRAGMENT_INFO = "fragment_info";
     private final static String FRAGMENT_XMPP_AUTH = "fragment_xmpp_auth";
     private final static String FRAGMENT_XMPP_CONFIRM = "fragment_xmpp_confirm";
+    private final static String SHOW_SYNC = "show_sync";
 
     private FragmentTransaction fTrans;
     private Fragment fragmentInfo;
@@ -55,8 +56,10 @@ public class XabberAccountActivity extends BaseLoginActivity
     private boolean needShowSyncDialog = false;
 
     @NonNull
-    public static Intent createIntent(Context context) {
-        return new Intent(context, XabberAccountActivity.class);
+    public static Intent createIntent(Context context, boolean showSync) {
+        Intent intent = new Intent(context, XabberAccountActivity.class);
+        intent.putExtra(SHOW_SYNC, showSync);
+        return intent;
     }
 
     @Override
@@ -81,6 +84,12 @@ public class XabberAccountActivity extends BaseLoginActivity
     protected void onResume() {
         super.onResume();
         onPrepareOptionsMenu(toolbar.getMenu());
+
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            needShowSyncDialog = extras.getBoolean(SHOW_SYNC);
+            extras.clear();
+        }
 
         XabberAccount account = XabberAccountManager.getInstance().getAccount();
         if (account != null) showInfoFragment();

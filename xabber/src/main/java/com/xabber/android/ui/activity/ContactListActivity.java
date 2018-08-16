@@ -701,7 +701,7 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
                 startActivity(PreferenceEditor.createIntent(this));
                 break;
             case R.id.drawer_header_action_xabber_account:
-                startActivity(XabberAccountActivity.createIntent(this));
+                startActivity(XabberAccountActivity.createIntent(this, false));
                 break;
             case R.id.drawer_action_patreon:
                 startActivity(PatreonAppealActivity.createIntent(this));
