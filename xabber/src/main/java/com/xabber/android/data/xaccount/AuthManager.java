@@ -66,21 +66,9 @@ public class AuthManager {
                 });
     }
 
-    public static Single<XAccountTokenDTO> loginSocial(String provider, String socialToken) {
+    public static Single<XAccountTokenDTO> loginSocial(String provider, String credentials) {
         SettingsManager.setSyncAllAccounts(true);
-
-        Gson gson = new Gson();
-        String credentials = gson.toJson(new AccessToken(socialToken));
         return HttpApiManager.getXabberApi().loginSocial(new SocialAuthRequest(provider, credentials, getSource()));
-    }
-
-    public static Single<XAccountTokenDTO> loginSocialTwitter(
-           String socialToken, String twitterTokenSecret, String secret, String key) {
-        SettingsManager.setSyncAllAccounts(true);
-
-        Gson gson = new Gson();
-        String credentials = gson.toJson(new TwitterAccessToken(new TwitterTokens(twitterTokenSecret, socialToken), secret, key));
-        return HttpApiManager.getXabberApi().loginSocial(new SocialAuthRequest(PROVIDER_TWITTER, credentials, getSource()));
     }
 
     public static Single<XabberAccount> getAccount(final String token) {

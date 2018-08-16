@@ -95,9 +95,9 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
 //        currentFragment = FRAGMENT_LOGIN;
     }
 
-    public void showSignUpFragment(String socialToken, String socialProvider) {
+    public void showSignUpFragment(String credentials, String socialProvider) {
         if (fragmentSignUp == null)
-            fragmentSignUp = XAccountSignUpFragment.newInstance(this, socialToken, socialProvider);
+            fragmentSignUp = XAccountSignUpFragment.newInstance(this, credentials, socialProvider);
 
         fTrans = getFragmentManager().beginTransaction();
         fTrans.replace(R.id.container, fragmentSignUp, FRAGMENT_SIGNUP);
@@ -158,13 +158,8 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
     }
 
     @Override
-    protected void onSocialAuthSuccess(String provider, String token) {
-        socialLogin(provider, token);
-    }
-
-    @Override
-    protected void onTwitterAuthSuccess(String token, String twitterTokenSecret, String secret, String key) {
-        socialLogin(token, twitterTokenSecret, secret, key);
+    protected void onSocialAuthSuccess(String provider, String credentials) {
+        socialLogin(provider, credentials);
     }
 
     @Override
@@ -247,12 +242,12 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
     /** SIGN UP */
 
     private void signUp(String username, String host, String pass, String captchaToken,
-                        String socialToken, String socialProvider) {
+                        String credentials, String socialProvider) {
         showProgress("Sign Up..");
 
         Single<XabberAccount> signUpSingle;
-        if (socialToken != null && socialProvider != null)
-            signUpSingle = AuthManager.signupv2(username, host, pass, socialProvider, socialToken);
+        if (credentials != null && socialProvider != null)
+            signUpSingle = AuthManager.signupv2(username, host, pass, socialProvider, credentials);
         else signUpSingle = AuthManager.signupv2(username, host, pass, captchaToken);
 
         Subscription signUpSubscription = signUpSingle
@@ -290,9 +285,9 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
 
     /** SOCIAL LOGIN */
 
-    private void socialLogin(final String provider, final String token) {
+    private void socialLogin(final String provider, final String credentials) {
         showProgress(getString(R.string.progress_title_login));
-        Subscription loginSocialSubscription = AuthManager.loginSocial(provider, token)
+        Subscription loginSocialSubscription = AuthManager.loginSocial(provider, credentials)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<XAccountTokenDTO>() {
@@ -303,27 +298,7 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
                 }, new Action1<Throwable>() {
                     @Override
                     public void call(Throwable throwable) {
-                        handleErrorSocialLogin(throwable, token, provider);
-                    }
-                });
-        compositeSubscription.add(loginSocialSubscription);
-    }
-
-    private void socialLogin(String socialToken, String twitterTokenSecret, String secret, String key) {
-        showProgress(getString(R.string.progress_title_login));
-        Subscription loginSocialSubscription = AuthManager.loginSocialTwitter(socialToken,
-                twitterTokenSecret, secret, key)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<XAccountTokenDTO>() {
-                    @Override
-                    public void call(XAccountTokenDTO s) {
-                        handleSuccessSocialLogin(s);
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        //handleErrorSocialLogin(throwable, token, provider);
+                        handleErrorSocialLogin(throwable, credentials, provider);
                     }
                 });
         compositeSubscription.add(loginSocialSubscription);
@@ -333,15 +308,15 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
         getAccount(response.getToken());
     }
 
-    private void handleErrorSocialLogin(Throwable throwable, String token, String provider) {
+    private void handleErrorSocialLogin(Throwable throwable, String credentials, String provider) {
         String message = RetrofitErrorConverter.throwableToHttpError(throwable);
         if (message != null) {
             if (message.contains("is not attached to any Xabber account")) {
                 // go to sign up
                 hideProgress();
-                showSignUpFragment(token, provider);
+                showSignUpFragment(credentials, provider);
                 if (fragmentSignUp != null) ((XAccountSignUpFragment)fragmentSignUp)
-                        .setSocialProviderToken(provider, token);
+                        .setSocialProviderCredentials(provider, credentials);
             } else {
                 Log.d(LOG_TAG, "Error while social login request: " + message);
                 Toast.makeText(this, R.string.social_auth_fail, Toast.LENGTH_LONG).show();

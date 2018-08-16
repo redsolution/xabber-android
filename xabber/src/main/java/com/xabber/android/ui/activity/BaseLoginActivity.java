@@ -21,6 +21,7 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeToken
 import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.gson.Gson;
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.DefaultLogger;
 import com.twitter.sdk.android.core.Result;
@@ -59,6 +60,7 @@ public abstract class BaseLoginActivity extends ManagedActivity implements Googl
     private static final int RC_SIGN_IN = 9001;
     private static final String GOOGLE_TOKEN_SERVER = "https://www.googleapis.com/oauth2/v4/token";
 
+    private Gson gson = new Gson();
     protected CompositeSubscription compositeSubscription = new CompositeSubscription();
 
     @Override
@@ -142,7 +144,8 @@ public abstract class BaseLoginActivity extends ManagedActivity implements Googl
                             Application.getInstance().runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    onSocialAuthSuccess(AuthManager.PROVIDER_GOOGLE, token);
+                                    String credentials = gson.toJson(new AuthManager.AccessToken(token));
+                                    onSocialAuthSuccess(AuthManager.PROVIDER_GOOGLE, credentials);
                                 }
                             });
                         } catch (IOException e) {
@@ -160,8 +163,10 @@ public abstract class BaseLoginActivity extends ManagedActivity implements Googl
             @Override
             public void onSuccess(LoginResult loginResult) {
                 String token = loginResult.getAccessToken().getToken();
-                if (token != null)
-                    onSocialAuthSuccess(AuthManager.PROVIDER_FACEBOOK, token);
+                if (token != null) {
+                    String credentials = gson.toJson(new AuthManager.AccessToken(token));
+                    onSocialAuthSuccess(AuthManager.PROVIDER_FACEBOOK, credentials);
+                }
             }
 
             @Override
@@ -191,10 +196,13 @@ public abstract class BaseLoginActivity extends ManagedActivity implements Googl
             public void success(Result<TwitterSession> result) {
                 String token = result.data.getAuthToken().token;
                 String secret = result.data.getAuthToken().secret;
-                if (token != null && secret != null)
-                    onTwitterAuthSuccess(token, secret,
+                if (token != null && secret != null) {
+                    String credentials = gson.toJson(new AuthManager.TwitterAccessToken(
+                            new AuthManager.TwitterTokens(secret, token),
                             getResources().getString(R.string.SOCIAL_AUTH_TWITTER_SECRET),
-                            getResources().getString(R.string.SOCIAL_AUTH_TWITTER_KEY));
+                            getResources().getString(R.string.SOCIAL_AUTH_TWITTER_KEY)));
+                    onSocialAuthSuccess(AuthManager.PROVIDER_TWITTER, credentials);
+                }
             }
 
             @Override
@@ -204,9 +212,7 @@ public abstract class BaseLoginActivity extends ManagedActivity implements Googl
         };
     }
 
-    protected abstract void onSocialAuthSuccess(final String provider, final String token);
-
-    protected abstract void onTwitterAuthSuccess(final String token, String twitterTokenSecret, String secret, String key);
+    protected abstract void onSocialAuthSuccess(final String provider, final String credentials);
 
     protected abstract void showProgress(String title);
 

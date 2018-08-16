@@ -29,7 +29,7 @@ import java.util.List;
 public class XAccountSignUpFragment extends Fragment implements View.OnClickListener {
 
     private static final String CAPTCHA_TOKEN = "RECAPTCHA";
-    private static final String SOCIAL_TOKEN = "SOCIAL_TOKEN";
+    private static final String SOCIAL_CREDENTIALS = "SOCIAL_CREDENTIALS";
     private static final String SOCIAL_PROVIDER = "SOCIAL_PROVIDER";
 
     private EditText edtUsername;
@@ -39,23 +39,23 @@ public class XAccountSignUpFragment extends Fragment implements View.OnClickList
     private LinearLayout llSocialLogos;
 
     private Listener listener;
-    private String socialToken;
+    private String credentials;
     private String socialProvider;
 
     public interface Listener {
         void onGetHosts();
         void onSignupClick(String username, String host, String pass, String captchaToken);
         void onSignupClick(String username, String host, String pass,
-                           String socialToken, String socialProvider);
+                           String credentials, String socialProvider);
         void onGoogleClick();
         void onFacebookClick();
         void onTwitterClick();
     }
 
-    public static XAccountSignUpFragment newInstance(Listener listener, String socialToken, String socialProvider) {
+    public static XAccountSignUpFragment newInstance(Listener listener, String credentials, String socialProvider) {
         XAccountSignUpFragment fragment = new XAccountSignUpFragment();
         Bundle args = new Bundle();
-        args.putString(SOCIAL_TOKEN, socialToken);
+        args.putString(SOCIAL_CREDENTIALS, credentials);
         args.putString(SOCIAL_PROVIDER, socialProvider);
         fragment.setArguments(args);
         fragment.listener = listener;
@@ -65,7 +65,7 @@ public class XAccountSignUpFragment extends Fragment implements View.OnClickList
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.socialToken = getArguments().getString(SOCIAL_TOKEN);
+        this.credentials = getArguments().getString(SOCIAL_CREDENTIALS);
         this.socialProvider = getArguments().getString(SOCIAL_PROVIDER);
     }
 
@@ -122,14 +122,14 @@ public class XAccountSignUpFragment extends Fragment implements View.OnClickList
         }
     }
 
-    public void setSocialProviderToken(String socialProvider, String socialToken) {
+    public void setSocialProviderCredentials(String socialProvider, String credentials) {
         this.socialProvider = socialProvider;
-        this.socialToken = socialToken;
+        this.credentials = credentials;
         setupSocial();
     }
 
     private void setupSocial() {
-        if (socialToken != null && socialProvider != null) {
+        if (credentials != null && socialProvider != null) {
             llSocialLogos.setVisibility(View.GONE);
             tvSocialProvider.setVisibility(View.VISIBLE);
             tvSocialProvider.setText(socialProvider);
@@ -144,9 +144,9 @@ public class XAccountSignUpFragment extends Fragment implements View.OnClickList
         String pass = edtPass.getText().toString().trim();
 
         if (verifyFields(username, pass)) {
-            if (socialToken != null && socialProvider != null)
+            if (credentials != null && socialProvider != null)
                 listener.onSignupClick(username, spinnerDomain.getSelectedItem().toString(), pass,
-                        socialToken, socialProvider);
+                        credentials, socialProvider);
             else getCaptchaToken(username, pass, spinnerDomain.getSelectedItem().toString());
         }
     }
