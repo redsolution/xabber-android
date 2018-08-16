@@ -30,6 +30,7 @@ import com.xabber.android.utils.RetrofitErrorConverter;
 import java.util.List;
 
 import okhttp3.ResponseBody;
+import rx.Single;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
@@ -544,8 +545,17 @@ public class XabberAccountActivity extends BaseLoginActivity
 
     @Override
     protected void onSocialAuthSuccess(String provider, String token) {
+        onSocialAuthSuccess(AuthManager.bindSocial(provider, token));
+    }
+
+    @Override
+    protected void onTwitterAuthSuccess(String token, String twitterTokenSecret, String secret, String key) {
+        onSocialAuthSuccess(AuthManager.bindSocial(token, twitterTokenSecret, secret, key));
+    }
+
+    private void onSocialAuthSuccess(Single<ResponseBody> source) {
         showProgress("Bind social");
-        Subscription loginSocialSubscription = AuthManager.bindSocial(provider, token)
+        Subscription loginSocialSubscription = source
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<ResponseBody>() {
@@ -562,11 +572,6 @@ public class XabberAccountActivity extends BaseLoginActivity
                     }
                 });
         compositeSubscription.add(loginSocialSubscription);
-    }
-
-    @Override
-    protected void onTwitterAuthSuccess(String token, String twitterTokenSecret, String secret, String key) {
-        // TODO: 15.08.18 need implementation
     }
 
     private void goToMainActivity() {
