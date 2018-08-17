@@ -32,9 +32,9 @@
   <string name="progress_title_complete">Завершение регистрации</string>
   <string name="progress_title_resend">Повторная отправка email</string>
   <string name="progress_title_delete_settings">Удаление настроек</string>
-  <string name="label_username">Имя пользователя*</string>
+  <string name="label_username">Имя пользователя</string>
   <string name="hint_username">username</string>
-  <string name="label_pass">Пароль*</string>
+  <string name="label_pass">Пароль</string>
   <string name="hint_pass">Введите пароль</string>
   <string name="label_conf_pass">Подтвердите пароль*</string>
   <string name="hint_conf_pass">Подтвердите пароль</string>

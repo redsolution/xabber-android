@@ -41,9 +41,9 @@
     <string name="progress_title_confirm_phone">Confirming phone number</string>
     <string name="progress_title_delete_settings">Delete settings</string>
 
-    <string name="label_username">Choose username*</string>
+    <string name="label_username">Pick your username</string>
     <string name="hint_username">username</string>
-    <string name="label_pass">Password</string>
+    <string name="label_pass">Choose password</string>
     <string name="hint_pass">Enter password</string>
     <string name="label_conf_pass">Confirm password*</string>
     <string name="hint_conf_pass">Confirm password</string>
@@ -57,6 +57,7 @@
     <string name="hint_code">code</string>
 
     <string name="default_host" translatable="false">\@xabber.org</string>
+    <string name="host" translatable="false">\@</string>
 
     <string name="title_xabber_account">Xabber Account</string>
     <string name="title_xmpp_account">XMPP Accounts</string>

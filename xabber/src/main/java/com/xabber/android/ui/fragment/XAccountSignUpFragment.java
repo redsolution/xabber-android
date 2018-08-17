@@ -36,7 +36,7 @@ public class XAccountSignUpFragment extends Fragment implements View.OnClickList
     private EditText edtPass;
     private Spinner spinnerDomain;
     private TextView tvSocialProvider;
-    private LinearLayout llSocialLogos;
+    //private LinearLayout llSocialLogos;
 
     private Listener listener;
     private String credentials;
@@ -84,14 +84,14 @@ public class XAccountSignUpFragment extends Fragment implements View.OnClickList
         spinnerDomain = view.findViewById(R.id.spinnerDomain);
 
         tvSocialProvider = view.findViewById(R.id.tvSocialProvider);
-        llSocialLogos = view.findViewById(R.id.llSocialLogos);
-        ImageView ivFacebook = view.findViewById(R.id.ivFacebook);
-        ImageView ivGoogle = view.findViewById(R.id.ivGoogle);
-        ImageView ivTwitter = view.findViewById(R.id.ivTwitter);
-
-        ivFacebook.setOnClickListener(this);
-        ivGoogle.setOnClickListener(this);
-        ivTwitter.setOnClickListener(this);
+//        llSocialLogos = view.findViewById(R.id.llSocialLogos);
+//        ImageView ivFacebook = view.findViewById(R.id.ivFacebook);
+//        ImageView ivGoogle = view.findViewById(R.id.ivGoogle);
+//        ImageView ivTwitter = view.findViewById(R.id.ivTwitter);
+//
+//        ivFacebook.setOnClickListener(this);
+//        ivGoogle.setOnClickListener(this);
+//        ivTwitter.setOnClickListener(this);
 
         Button btnSignUp = view.findViewById(R.id.btnSignUp);
         btnSignUp.setOnClickListener(this);
@@ -130,11 +130,11 @@ public class XAccountSignUpFragment extends Fragment implements View.OnClickList
 
     private void setupSocial() {
         if (credentials != null && socialProvider != null) {
-            llSocialLogos.setVisibility(View.GONE);
+            //llSocialLogos.setVisibility(View.GONE);
             tvSocialProvider.setVisibility(View.VISIBLE);
             tvSocialProvider.setText(socialProvider);
         } else {
-            llSocialLogos.setVisibility(View.VISIBLE);
+            //llSocialLogos.setVisibility(View.VISIBLE);
             tvSocialProvider.setVisibility(View.GONE);
         }
     }
