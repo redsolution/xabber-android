@@ -71,8 +71,8 @@
     <string name="title_reordering_account">Reorder accounts</string>
     <string name="title_sync">Synchronization</string>
 
-    <string name="title_login_xabber_account">Xabber Sign In</string>
-    <string name="title_register_xabber_account">Xabber Sign Up</string>
+    <string name="title_login_xabber_account">Sign In</string>
+    <string name="title_register_xabber_account">Sign Up</string>
 
     <string name="summary_xabber_account_in_login">Xabber account is required to use Xabber services and sync device settings.</string>
     <string name="summary_username">Xabber username will also act as a free XMPP ID</string>

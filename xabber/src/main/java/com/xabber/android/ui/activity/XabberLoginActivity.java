@@ -53,6 +53,7 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
 
     private ProgressDialog progressDialog;
     private BarPainter barPainter;
+    private Toolbar toolbar;
 
     private List<String> hosts = new ArrayList<>();
 
@@ -75,15 +76,16 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
 
         setContentView(R.layout.activity_xabber_login);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_default);
+        toolbar = (Toolbar) findViewById(R.id.toolbar_default);
         toolbar.setTitle(R.string.title_login_xabber_account);
-        toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_left);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 finish();
             }
         });
+        toolbar.setTitleTextColor(getResources().getColor(R.color.black_text));
         barPainter = new BarPainter(this, toolbar);
     }
 
@@ -95,6 +97,9 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
         fTrans.replace(R.id.container, fragmentLogin);
         fTrans.commit();
         currentFragment = FRAGMENT_LOGIN;
+
+        toolbar.setTitle(R.string.title_login_xabber_account);
+        barPainter.setLiteGrey();
     }
 
     public void showSignUpFragment(String credentials, String socialProvider) {
@@ -104,9 +109,10 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
         fTrans = getFragmentManager().beginTransaction();
         fTrans.replace(R.id.container, fragmentSignUp, FRAGMENT_SIGNUP);
         fTrans.commit();
+        currentFragment = FRAGMENT_LOGIN;
 
-        //toolbar.setTitle(R.string.title_register_xabber_account);
-        barPainter.setBlue(this);
+        toolbar.setTitle(R.string.title_register_xabber_account);
+        barPainter.setLiteGrey();
     }
 
     @Override
