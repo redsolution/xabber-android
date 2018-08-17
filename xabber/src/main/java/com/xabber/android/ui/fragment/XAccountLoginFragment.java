@@ -31,6 +31,9 @@ public class XAccountLoginFragment extends Fragment implements View.OnClickListe
     private EditText edtUsername;
     private EditText edtPassword;
     private Button btnLogin;
+    private Button btnOptions;
+    private View optionsView;
+    private View socialView;
 
     private Listener listener;
 
@@ -60,10 +63,14 @@ public class XAccountLoginFragment extends Fragment implements View.OnClickListe
 
         useOrbotView = (CheckBox) view.findViewById(R.id.use_orbot);
 
+        optionsView = view.findViewById(R.id.optionsView);
+        socialView = view.findViewById(R.id.socialView);
         edtUsername = (EditText) view.findViewById(R.id.edtUsername);
         edtPassword = (EditText) view.findViewById(R.id.edtPass);
         btnLogin = view.findViewById(R.id.btnLogin);
         btnLogin.setOnClickListener(this);
+        btnOptions = view.findViewById(R.id.btnOptions);
+        btnOptions.setOnClickListener(this);
 
         ((TextView) view.findViewById(R.id.account_help))
                 .setMovementMethod(LinkMovementMethod.getInstance());
@@ -94,10 +101,13 @@ public class XAccountLoginFragment extends Fragment implements View.OnClickListe
             case R.id.ivTwitter:
                 listener.onTwitterClick();
                 break;
+            case R.id.btnOptions:
+                showOptions();
+                break;
         }
     }
 
-    public void addAccount() {
+    private void addAccount() {
         if (useOrbotView.isChecked() && !OrbotHelper.isOrbotInstalled()) {
             OrbotInstallerDialog.newInstance().show(getFragmentManager(), OrbotInstallerDialog.class.getName());
             return;
@@ -124,5 +134,17 @@ public class XAccountLoginFragment extends Fragment implements View.OnClickListe
 
         startActivity(AccountActivity.createIntent(getActivity(), account));
         getActivity().finish();
+    }
+
+    private void showOptions() {
+        if (optionsView.getVisibility() == View.VISIBLE) {
+            optionsView.setVisibility(View.GONE);
+            socialView.setVisibility(View.VISIBLE);
+            btnOptions.setText(R.string.button_advanced_options);
+        } else {
+            optionsView.setVisibility(View.VISIBLE);
+            socialView.setVisibility(View.GONE);
+            btnOptions.setText(R.string.button_hide_options);
+        }
     }
 }

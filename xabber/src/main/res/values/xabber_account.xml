@@ -43,7 +43,7 @@
 
     <string name="label_username">Choose username*</string>
     <string name="hint_username">username</string>
-    <string name="label_pass">Password*</string>
+    <string name="label_pass">Password</string>
     <string name="hint_pass">Enter password</string>
     <string name="label_conf_pass">Confirm password*</string>
     <string name="hint_conf_pass">Confirm password</string>
@@ -51,6 +51,8 @@
     <string name="hint_first_name">John</string>
     <string name="label_last_name">Last name</string>
     <string name="hint_last_name">Doe</string>
+
+    <string name="label_xmpp_id">Existing XMPP ID</string>
 
     <string name="hint_code">code</string>
 
@@ -74,6 +76,10 @@
     <string name="summary_xabber_account_in_login">Xabber account is required to use Xabber services and sync device settings.</string>
     <string name="summary_username">Xabber username will also act as a free XMPP ID</string>
 
+    <string name="button_connect">CONNECT</string>
+    <string name="button_advanced_options">ADVANCED OPTIONS</string>
+    <string name="button_hide_options">HIDE OPTIONS</string>
+    <string name="button_terms_of_service">TERMS OF SERVICE</string>
     <string name="button_quit">QUIT</string>
     <string name="button_login">SIGN IN</string>
     <string name="button_registration">SIGN UP</string>

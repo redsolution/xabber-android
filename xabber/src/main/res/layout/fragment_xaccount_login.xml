@@ -12,13 +12,21 @@
         android:layout_marginRight="32dp"
         >
 
+        <ImageView
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:src="@drawable/ic_logo_circle"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="32dp"
+            />
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:paddingLeft="4dp"
             android:textColor="@color/black_text_secondary"
-            android:text="@string/label_username"
+            android:text="@string/label_xmpp_id"
             />
 
         <EditText
@@ -54,48 +62,70 @@
             android:inputType="textPassword"
             />
 
-        <CheckBox
-            android:id="@+id/store_password"
+        <LinearLayout
+            android:id="@+id/optionsView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:checked="true"
-            android:text="@string/account_store_password" />
-
-        <CheckBox
-            android:id="@+id/chkSync"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:checked="true"
-            android:text="@string/sync_with_xabber_account" />
-
-        <CheckBox
-            android:id="@+id/use_orbot"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:checked="false"
-            android:text="@string/account_use_orbot" />
-
-        <Button
-            android:id="@+id/btnLogin"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            style="@style/Widget.AppCompat.Button.Colored"
-            android:theme="@style/BlueButton"
-            android:paddingRight="18dp"
-            android:paddingLeft="18dp"
-            android:textColor="@color/white"
-            android:text="@string/button_login"
-            />
-
-        <TextView
-            android:id="@+id/tvSocialProvider"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingLeft="4dp"
-            android:textColor="@color/black_text_secondary"
+            android:orientation="vertical"
             android:visibility="gone"
-            />
+            >
+
+            <CheckBox
+                android:id="@+id/store_password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="@string/account_store_password" />
+
+            <CheckBox
+                android:id="@+id/chkSync"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="@string/sync_with_xabber_account" />
+
+            <CheckBox
+                android:id="@+id/use_orbot"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:checked="false"
+                android:text="@string/account_use_orbot" />
+
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="16dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:id="@+id/btnOptions"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:theme="@style/BlueButton"
+                android:textColor="@color/grey_500"
+                android:text="@string/button_advanced_options"
+                android:layout_centerVertical="true"
+                />
+
+            <Button
+                android:id="@+id/btnLogin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/Widget.AppCompat.Button.Colored"
+                android:theme="@style/BlueButton"
+                android:paddingRight="18dp"
+                android:paddingLeft="18dp"
+                android:layout_centerVertical="true"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:textColor="@color/white"
+                android:text="@string/button_connect"
+                />
+
+        </RelativeLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -124,39 +154,7 @@
 
         </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/llSocialLogos"
-            android:orientation="horizontal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="18dp"
-            >
-
-            <ImageView
-                android:id="@+id/ivGoogle"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:src="@drawable/ic_google_plus"
-                />
-
-            <ImageView
-                android:id="@+id/ivFacebook"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:layout_marginLeft="32dp"
-                android:src="@drawable/ic_facebook"
-                />
-
-            <ImageView
-                android:id="@+id/ivTwitter"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:layout_marginLeft="32dp"
-                android:src="@drawable/ic_twitter"
-                />
-
-        </LinearLayout>
+        <include layout="@layout/include_social"/>
 
     </LinearLayout>
 
