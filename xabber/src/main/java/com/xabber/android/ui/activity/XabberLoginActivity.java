@@ -20,6 +20,7 @@ import com.xabber.android.data.xaccount.HttpApiManager;
 import com.xabber.android.data.xaccount.XAccountTokenDTO;
 import com.xabber.android.data.xaccount.XabberAccount;
 import com.xabber.android.ui.color.BarPainter;
+import com.xabber.android.ui.fragment.XAccountLoginFragment;
 import com.xabber.android.ui.fragment.XAccountSignUpFragment;
 import com.xabber.android.utils.RetrofitErrorConverter;
 
@@ -37,7 +38,8 @@ import rx.schedulers.Schedulers;
  * Created by valery.miller on 14.07.17.
  */
 
-public class XabberLoginActivity extends BaseLoginActivity implements XAccountSignUpFragment.Listener {
+public class XabberLoginActivity extends BaseLoginActivity implements XAccountSignUpFragment.Listener,
+        XAccountLoginFragment.Listener {
 
     private final static String LOG_TAG = XabberLoginActivity.class.getSimpleName();
     public final static String CURRENT_FRAGMENT = "current_fragment";
@@ -86,13 +88,13 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
     }
 
     public void showLoginFragment() {
-//        if (fragmentLogin == null)
-//            fragmentLogin = new XabberLoginFragment();
-//
-//        fTrans = getFragmentManager().beginTransaction();
-//        fTrans.replace(R.id.container, fragmentLogin);
-//        fTrans.commit();
-//        currentFragment = FRAGMENT_LOGIN;
+        if (fragmentLogin == null)
+            fragmentLogin = XAccountLoginFragment.newInstance(this);
+
+        fTrans = getFragmentManager().beginTransaction();
+        fTrans.replace(R.id.container, fragmentLogin);
+        fTrans.commit();
+        currentFragment = FRAGMENT_LOGIN;
     }
 
     public void showSignUpFragment(String credentials, String socialProvider) {
