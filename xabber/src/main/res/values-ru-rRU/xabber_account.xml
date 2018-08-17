@@ -52,8 +52,8 @@
   <string name="title_start_messaging">Начните общение!</string>
   <string name="title_reordering_account">Порядок аккаунтов</string>
   <string name="title_sync">Синхронизация</string>
-  <string name="title_login_xabber_account">Вход в Xabber</string>
-  <string name="title_register_xabber_account">Регистрация в Xabber</string>
+  <string name="title_login_xabber_account">Авторизация</string>
+  <string name="title_register_xabber_account">Регистрация</string>
   <string name="summary_xabber_account_in_login">Аккаунт Xabber требуется для использования сервисов Xabber и синхронизации настроек устройств.</string>
   <string name="summary_username">Имя пользователя Xabber также является XMPP id</string>
   <string name="button_quit">ВЫХОД</string>
