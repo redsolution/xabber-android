@@ -32,7 +32,7 @@
     <LinearLayout
         android:id="@+id/llSocialLogos"
         android:orientation="horizontal"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginBottom="16dp"
@@ -44,31 +44,34 @@
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:src="@drawable/ic_google_plus"
+            android:layout_weight="1"
             />
 
         <ImageView
             android:id="@+id/ivFacebook"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:layout_marginLeft="30dp"
+
             android:src="@drawable/ic_facebook"
+            android:layout_weight="1"
             />
 
         <ImageView
             android:id="@+id/ivTwitter"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:layout_marginLeft="30dp"
+
             android:src="@drawable/ic_twitter"
+            android:layout_weight="1"
             />
 
         <ImageView
             android:id="@+id/ivGithub"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:layout_marginLeft="30dp"
             android:src="@drawable/ic_email_circle"
             android:visibility="visible"
+            android:layout_weight="1"
             />
 
     </LinearLayout>
