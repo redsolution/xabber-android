@@ -321,12 +321,18 @@ public class XabberAccountInfoFragment extends Fragment implements AddEmailDialo
             if ("google".equals(socialBinding.getProvider())) {
                 tvStatusGoogle.setText(socialBinding.getFirstName() + " " + socialBinding.getLastName());
                 tvActionGoogle.setText("DISCONNECT");
+                tvStatusGoogle.setTextColor(getActivity().getResources().getColor(R.color.black_text));
+                tvActionGoogle.setTextColor(getActivity().getResources().getColor(R.color.black_text));
             } else if ("facebook".equals(socialBinding.getProvider())) {
                 tvStatusFacebook.setText(socialBinding.getFirstName() + " " + socialBinding.getLastName());
                 tvActionFacebook.setText("DISCONNECT");
+                tvStatusFacebook.setTextColor(getActivity().getResources().getColor(R.color.black_text));
+                tvActionFacebook.setTextColor(getActivity().getResources().getColor(R.color.black_text));
             } else if ("twitter".equals(socialBinding.getProvider())) {
                 tvStatusTwitter.setText(socialBinding.getFirstName() + " " + socialBinding.getLastName());
                 tvActionTwitter.setText("DISCONNECT");
+                tvStatusTwitter.setTextColor(getActivity().getResources().getColor(R.color.black_text));
+                tvActionTwitter.setTextColor(getActivity().getResources().getColor(R.color.black_text));
             }
         }
     }
