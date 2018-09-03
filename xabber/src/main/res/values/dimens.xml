@@ -31,6 +31,7 @@
 
     <dimen name="intro_screen_bottom_space_height">48dp</dimen>
     <dimen name="intro_screen_right_space_wight">0dp</dimen>
+    <dimen name="login_horizontal_margin">8dp</dimen>
 
     <dimen name="vcard_main_text">16sp</dimen>
     <dimen name="vcard_secondary_text">14sp</dimen>
