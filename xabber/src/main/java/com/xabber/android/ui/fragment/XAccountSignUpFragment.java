@@ -130,12 +130,12 @@ public class XAccountSignUpFragment extends Fragment implements View.OnClickList
 
     private void setupSocial() {
         if (credentials != null && socialProvider != null) {
-            //llSocialLogos.setVisibility(View.GONE);
-            tvSocialProvider.setVisibility(View.VISIBLE);
-            tvSocialProvider.setText(socialProvider);
+            if (tvSocialProvider != null) {
+                tvSocialProvider.setVisibility(View.VISIBLE);
+                tvSocialProvider.setText(socialProvider);
+            }
         } else {
-            //llSocialLogos.setVisibility(View.VISIBLE);
-            tvSocialProvider.setVisibility(View.GONE);
+            if (tvSocialProvider != null) tvSocialProvider.setVisibility(View.GONE);
         }
     }
 
