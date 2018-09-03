@@ -457,7 +457,9 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
                             // create account if exist token
                             try {
                                 AccountJid accountJid = AccountManager.getInstance().addAccount(item.getJid(),
-                                        "", item.getToken(), false, true, true, false, false, true);
+                                        "", item.getToken(), false, true,
+                                        true, false, false,
+                                        true, false);
                                 AccountManager.getInstance().setColor(accountJid, ColorManager.getInstance().convertColorNameToIndex(item.getColor()));
                                 AccountManager.getInstance().setOrder(accountJid, item.getOrder());
                                 AccountManager.getInstance().setTimestamp(accountJid, item.getTimestamp());

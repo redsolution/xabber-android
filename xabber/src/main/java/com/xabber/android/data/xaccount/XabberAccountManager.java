@@ -445,7 +445,9 @@ public class XabberAccountManager implements OnLoadListener {
             // create new xmpp-account
             if (accountJid == null && !account.isDeleted()) {
                 try {
-                    AccountJid jid = AccountManager.getInstance().addAccount(account.getJid(), "", account.getToken(), false, true, true, false, false, true);
+                    AccountJid jid = AccountManager.getInstance().addAccount(account.getJid(),
+                            "", account.getToken(), false, true,
+                            true, false, false, true, false);
                     AccountManager.getInstance().setColor(jid, ColorManager.getInstance().convertColorNameToIndex(account.getColor()));
                     AccountManager.getInstance().setOrder(jid, account.getOrder());
                     AccountManager.getInstance().setTimestamp(jid, account.getTimestamp());

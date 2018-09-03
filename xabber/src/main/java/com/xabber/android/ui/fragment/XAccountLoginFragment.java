@@ -27,7 +27,8 @@ public class XAccountLoginFragment extends Fragment implements View.OnClickListe
 
     private CheckBox storePasswordView;
     private CheckBox chkSync;
-    private CheckBox useOrbotView;
+    private CheckBox chkRequireTLS;
+    private CheckBox chkUseTOR;
     private EditText edtUsername;
     private EditText edtPassword;
     private Button btnLogin;
@@ -61,7 +62,8 @@ public class XAccountLoginFragment extends Fragment implements View.OnClickListe
             chkSync.setChecked(false);
         }
 
-        useOrbotView = (CheckBox) view.findViewById(R.id.use_orbot);
+        chkRequireTLS = view.findViewById(R.id.chkRequireTLS);
+        chkUseTOR = view.findViewById(R.id.chkUseTOR);
 
         optionsView = view.findViewById(R.id.optionsView);
         socialView = view.findViewById(R.id.socialView);
@@ -108,7 +110,7 @@ public class XAccountLoginFragment extends Fragment implements View.OnClickListe
     }
 
     private void addAccount() {
-        if (useOrbotView.isChecked() && !OrbotHelper.isOrbotInstalled()) {
+        if (chkUseTOR.isChecked() && !OrbotHelper.isOrbotInstalled()) {
             OrbotInstallerDialog.newInstance().show(getFragmentManager(), OrbotInstallerDialog.class.getName());
             return;
         }
@@ -122,8 +124,9 @@ public class XAccountLoginFragment extends Fragment implements View.OnClickListe
                     false,
                     storePasswordView.isChecked(),
                     chkSync.isChecked(),
-                    useOrbotView.isChecked(),
-                    false, true);
+                    chkUseTOR.isChecked(),
+                    false, true,
+                    chkRequireTLS.isChecked());
         } catch (NetworkException e) {
             Application.getInstance().onError(e);
             return;
