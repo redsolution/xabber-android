@@ -109,7 +109,7 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
         fTrans = getFragmentManager().beginTransaction();
         fTrans.replace(R.id.container, fragmentSignUp, FRAGMENT_SIGNUP);
         fTrans.commit();
-        currentFragment = FRAGMENT_LOGIN;
+        currentFragment = FRAGMENT_SIGNUP;
 
         toolbar.setTitle(R.string.title_register_xabber_account);
         barPainter.setLiteGrey();
