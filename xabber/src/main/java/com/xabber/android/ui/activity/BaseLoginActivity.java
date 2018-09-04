@@ -33,12 +33,22 @@ import com.twitter.sdk.android.core.TwitterSession;
 import com.twitter.sdk.android.core.identity.TwitterAuthClient;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.SettingsManager;
+import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.xaccount.AuthManager;
+import com.xabber.android.data.xaccount.XMPPAccountSettings;
+import com.xabber.android.data.xaccount.XabberAccount;
+import com.xabber.android.data.xaccount.XabberAccountManager;
 import com.xabber.android.utils.RetrofitErrorConverter;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.List;
 
+import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
+import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -47,7 +57,7 @@ import rx.subscriptions.CompositeSubscription;
 
 public abstract class BaseLoginActivity extends ManagedActivity implements GoogleApiClient.OnConnectionFailedListener {
 
-    private final static String TAG = BaseLoginActivity.class.getSimpleName();
+    private final static String LOG_TAG = BaseLoginActivity.class.getSimpleName();
 
     // facebook auth
     private CallbackManager callbackManager;
@@ -229,5 +239,110 @@ public abstract class BaseLoginActivity extends ManagedActivity implements Googl
             Toast.makeText(this, errorContext + throwable.toString(),
                     Toast.LENGTH_LONG).show();
         }
+    }
+
+    /** SYNCHRONIZATION */
+
+    protected void synchronize(boolean needGoToMainActivity) {
+        XabberAccount account = XabberAccountManager.getInstance().getAccount();
+        if (account != null && account.getToken() != null) {
+            showProgress(getResources().getString(R.string.progress_title_sync));
+            getAccountWithUpdate(account.getToken(), needGoToMainActivity);
+        } else {
+            Toast.makeText(BaseLoginActivity.this, R.string.sync_fail, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    protected void getAccountWithUpdate(String token, final boolean needGoToMainActivity) {
+        Subscription loadAccountsSubscription = AuthManager.getAccount(token)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<XabberAccount>() {
+                    @Override
+                    public void call(XabberAccount s) {
+                        Log.d(LOG_TAG, "Xabber account loading from net: successfully");
+                        updateAccountInfo(s);
+
+                        // if exist local accounts
+                        if (AccountManager.getInstance().getAllAccountItems().size() > 0)
+                            updateSettings(needGoToMainActivity);
+                        else getSettings();
+
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        Log.d(LOG_TAG, "Xabber account loading from net: error: " + throwable.toString());
+                        String message = RetrofitErrorConverter.throwableToHttpError(throwable);
+                        if (message != null && message.equals("Invalid token")) {
+                            XabberAccountManager.getInstance().onInvalidToken();
+                            //showLoginFragment();
+                        }
+
+                        hideProgress();
+                        Toast.makeText(BaseLoginActivity.this, R.string.sync_fail, Toast.LENGTH_SHORT).show();
+                    }
+                });
+        compositeSubscription.add(loadAccountsSubscription);
+    }
+
+    protected void updateSettings(final boolean needGoToMainActivity) {
+        Subscription getSettingsSubscription = AuthManager.patchClientSettings(XabberAccountManager.getInstance().createSettingsList())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<List<XMPPAccountSettings>>() {
+                    @Override
+                    public void call(List<XMPPAccountSettings> s) {
+                        Log.d(LOG_TAG, "XMPP accounts loading from net: successfully");
+                        hideProgress();
+                        updateLastSyncTime();
+                        Toast.makeText(BaseLoginActivity.this, R.string.sync_success, Toast.LENGTH_SHORT).show();
+                        if (needGoToMainActivity) goToMainActivity();
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        Log.d(LOG_TAG, "XMPP accounts loading from net: error: " + throwable.toString());
+                        hideProgress();
+                        Toast.makeText(BaseLoginActivity.this, R.string.sync_fail, Toast.LENGTH_SHORT).show();
+                    }
+                });
+        compositeSubscription.add(getSettingsSubscription);
+    }
+
+    protected void getSettings() {
+        Subscription getSettingsSubscription = AuthManager.getClientSettings()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<List<XMPPAccountSettings>>() {
+                    @Override
+                    public void call(List<XMPPAccountSettings> settings) {
+                        Log.d(LOG_TAG, "XMPP accounts loading from net: successfully");
+                        XabberAccountManager.getInstance().setXmppAccountsForCreate(settings);
+                        hideProgress();
+                        // update last synchronization time
+                        SettingsManager.setLastSyncDate(XabberAccountManager.getCurrentTimeString());
+                        Toast.makeText(BaseLoginActivity.this, R.string.sync_success, Toast.LENGTH_SHORT).show();
+                        goToMainActivity();
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        Log.d(LOG_TAG, "XMPP accounts loading from net: error: " + throwable.toString());
+                        hideProgress();
+                    }
+                });
+        compositeSubscription.add(getSettingsSubscription);
+    }
+
+    protected void updateAccountInfo(XabberAccount account) {}
+
+    protected void updateLastSyncTime() {}
+
+    private void goToMainActivity() {
+        Intent intent = ContactListActivity.createIntent(BaseLoginActivity.this);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        finish();
+        startActivity(intent);
     }
 }

@@ -271,9 +271,7 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
     }
 
     private void handleSuccessSignUp() {
-        Intent intent = XabberAccountActivity.createIntent(this, true);
-        finish();
-        startActivity(intent);
+        synchronize(true);
     }
 
     private void handleErrorSignUp(Throwable throwable) {
