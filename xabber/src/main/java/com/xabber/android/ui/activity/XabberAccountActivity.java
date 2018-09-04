@@ -292,7 +292,7 @@ public class XabberAccountActivity extends BaseLoginActivity
             }
         } else {
             Log.d(LOG_TAG, "Error while logout: " + throwable.toString());
-            Toast.makeText(this, "Error while logout: " + throwable.toString(), Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.logout_error, Toast.LENGTH_LONG).show();
         }
         hideProgress();
     }
@@ -300,7 +300,7 @@ public class XabberAccountActivity extends BaseLoginActivity
     /** REQUEST XMPP CODE */
 
     private void requestXMPPCode(final String jid) {
-        showProgress("Request XMPP auth-code..");
+        showProgress(getResources().getString(R.string.progress_title_request_xmpp_auth));
         Subscription requestXMPPCodeSubscription = AuthManager.requestXMPPCode(jid)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -332,7 +332,7 @@ public class XabberAccountActivity extends BaseLoginActivity
     /** CONFIRM XMPP */
 
     private void confirmXMPP(String code, String jid) {
-        showProgress("Confirm XMPP-account with code..");
+        showProgress(getResources().getString(R.string.progress_title_confirm_xmpp));
         Subscription confirmXMPPSubscription = AuthManager.confirmXMPP(jid, code)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -426,7 +426,7 @@ public class XabberAccountActivity extends BaseLoginActivity
 
     @Override
     protected void onSocialAuthSuccess(String provider, String credentials) {
-        showProgress("Bind social");
+        showProgress(getResources().getString(R.string.progress_title_bind_social));
         Subscription loginSocialSubscription = AuthManager.bindSocial(provider, credentials)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -434,13 +434,13 @@ public class XabberAccountActivity extends BaseLoginActivity
                     @Override
                     public void call(ResponseBody s) {
                         Toast.makeText(XabberAccountActivity.this,
-                                "Social bind successfull", Toast.LENGTH_SHORT).show();
+                                R.string.social_bind_success, Toast.LENGTH_SHORT).show();
                     }
                 }, new Action1<Throwable>() {
                     @Override
                     public void call(Throwable throwable) {
                         Toast.makeText(XabberAccountActivity.this,
-                                "Social bind failure", Toast.LENGTH_SHORT).show();
+                                R.string.social_bind_fail, Toast.LENGTH_SHORT).show();
                     }
                 });
         compositeSubscription.add(loginSocialSubscription);

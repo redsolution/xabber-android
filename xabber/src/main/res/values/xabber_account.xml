@@ -25,6 +25,9 @@
     <string name="confirm_phone_success">Phone number successfully confirmed</string>
     <string name="set_phone_success">Confirmation code sent</string>
 
+    <string name="social_bind_success">Social network bind successfully</string>
+    <string name="social_bind_fail">Social network bind failed</string>
+
     <string name="toast_email_already_confirm">Email already confirmed</string>
     <string name="toast_not_authorized">You are not authorized</string>
     <string name="toast_no_internet">No internet connection</string>
@@ -40,6 +43,9 @@
     <string name="progress_title_set_phone">Setting phone number</string>
     <string name="progress_title_confirm_phone">Confirming phone number</string>
     <string name="progress_title_delete_settings">Delete settings</string>
+    <string name="progress_title_request_xmpp_auth">Request XMPP auth-code</string>
+    <string name="progress_title_confirm_xmpp">Confirm XMPP-account with code</string>
+    <string name="progress_title_bind_social">Bind social network</string>
 
     <string name="label_username">Pick your username</string>
     <string name="hint_username">username</string>
@@ -116,6 +122,7 @@
     <string name="delete_settings">Delete synchronised settings for this XMPP account from Xabber Account?</string>
     <string name="logout_summary">You will quit from Xabber Account. You will not be able to use enhanced Xabber services, but basic XMPP will work as usual.</string>
     <string name="delete_settings_summary">Synchronized settings for this XMPP account will be deleted from Xabber Account</string>
+    <string name="logout_error">Logout failed</string>
 
     <string name="sign_up_email_social">Sign up with Social account or Email</string>
     <string name="signed_up_email">Signed up with Email</string>
@@ -123,6 +130,11 @@
     <string name="signed_up_facebook">Signed up with Facebook</string>
     <string name="signed_up_github">Signed up with GitHub</string>
     <string name="signed_up_twitter">Signed up with Twitter</string>
+
+    <string name="auth_google_error">Authorization via Google failed</string>
+    <string name="auth_facebook_error">Authorization via Facebook failed</string>
+    <string name="auth_twitter_error">Authorization via Twitter failed</string>
+    <string name="auth_facebook_cancel">Authorization via Facebook canceled</string>
 
     <string name="reorder_summary">To synchronize accounts order between devices you need to enable "Synchronize all" option in Xabber Account settings</string>
 

@@ -165,7 +165,7 @@ public abstract class BaseLoginActivity extends ManagedActivity implements Googl
                     }
                 });
             }
-        } else Toast.makeText(this, "google error", Toast.LENGTH_LONG).show();
+        } else Toast.makeText(this, R.string.auth_google_error, Toast.LENGTH_LONG).show();
     }
 
     private void initFacebookAuth() {
@@ -182,12 +182,12 @@ public abstract class BaseLoginActivity extends ManagedActivity implements Googl
 
             @Override
             public void onCancel() {
-                Toast.makeText(BaseLoginActivity.this, "fcb cancel", Toast.LENGTH_SHORT).show();
+                Toast.makeText(BaseLoginActivity.this, R.string.auth_facebook_cancel, Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onError(FacebookException error) {
-                Toast.makeText(BaseLoginActivity.this, "fcb error", Toast.LENGTH_SHORT).show();
+                Toast.makeText(BaseLoginActivity.this, R.string.auth_facebook_error, Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -218,7 +218,7 @@ public abstract class BaseLoginActivity extends ManagedActivity implements Googl
 
             @Override
             public void failure(TwitterException exception) {
-                Toast.makeText(BaseLoginActivity.this, "twitter error", Toast.LENGTH_SHORT).show();
+                Toast.makeText(BaseLoginActivity.this, R.string.auth_twitter_error, Toast.LENGTH_SHORT).show();
             }
         };
     }
