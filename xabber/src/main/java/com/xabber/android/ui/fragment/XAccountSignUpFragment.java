@@ -100,7 +100,7 @@ public class XAccountSignUpFragment extends Fragment implements View.OnClickList
     @Override
     public void onResume() {
         super.onResume();
-        listener.onGetHosts();
+        if (listener != null) listener.onGetHosts();
         setupSocial();
     }
 
@@ -111,13 +111,13 @@ public class XAccountSignUpFragment extends Fragment implements View.OnClickList
                 onSignUpClick();
                 break;
             case R.id.ivFacebook:
-                listener.onFacebookClick();
+                if (listener != null) listener.onFacebookClick();
                 break;
             case R.id.ivGoogle:
-                listener.onGoogleClick();
+                if (listener != null) listener.onGoogleClick();
                 break;
             case R.id.ivTwitter:
-                listener.onTwitterClick();
+                if (listener != null) listener.onTwitterClick();
                 break;
         }
     }
@@ -145,7 +145,7 @@ public class XAccountSignUpFragment extends Fragment implements View.OnClickList
 
         if (verifyFields(username, pass)) {
             if (credentials != null && socialProvider != null)
-                listener.onSignupClick(username, spinnerDomain.getSelectedItem().toString(), pass,
+                if (listener != null) listener.onSignupClick(username, spinnerDomain.getSelectedItem().toString(), pass,
                         credentials, socialProvider);
             else getCaptchaToken(username, pass, spinnerDomain.getSelectedItem().toString());
         }
@@ -202,7 +202,7 @@ public class XAccountSignUpFragment extends Fragment implements View.OnClickList
                             // Validate the user response token using the
                             // reCAPTCHA siteverify API.
                             Log.d(CAPTCHA_TOKEN, "Success: " + userResponseToken);
-                            listener.onSignupClick(username, domain, pass, userResponseToken);
+                            if (listener != null) listener.onSignupClick(username, domain, pass, userResponseToken);
                         }
                     }
                 })
