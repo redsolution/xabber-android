@@ -96,8 +96,7 @@ public class XMPPAuthManager implements OnPacketListener, OnConnectedListener {
                         }
                         if (PrivateStorageManager.getInstance().haveXabberAccountBinding(accountJid))
                             requestXMPPAuthCode(accountJid);
-                        // TODO: 07.08.18 включить удаление аккаунта из очереди после попытки авториазации?
-                        //accountsForCheck.remove(accountJid);
+                        accountsForCheck.remove(accountJid);
                     }
                 }
             }
