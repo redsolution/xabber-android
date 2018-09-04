@@ -30,6 +30,7 @@ public class XAccountXMPPConfirmFragment extends Fragment implements View.OnClic
 
     public interface Listener {
         void onConfirmXMPPClick(String jid, String code);
+        void onResendClick(String jid);
     }
 
     public static XAccountXMPPConfirmFragment newInstance(Listener listener) {
@@ -87,13 +88,18 @@ public class XAccountXMPPConfirmFragment extends Fragment implements View.OnClic
     }
 
     private void onConfirmClick() {
-        // TODO: 06.08.18 verify fields
         String code = edtCode.getText().toString();
+
+        if (code.isEmpty()) {
+            edtCode.setError(getString(R.string.empty_field));
+            return;
+        }
+
         listener.onConfirmXMPPClick(jid, code);
     }
 
     private void onResendClick() {
-        // TODO: 06.08.18 implement
+        listener.onResendClick(jid);
     }
 
     private void subscribeForAuthCode() {

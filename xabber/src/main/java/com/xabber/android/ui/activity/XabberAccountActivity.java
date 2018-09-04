@@ -139,6 +139,11 @@ public class XabberAccountActivity extends BaseLoginActivity
             Toast.makeText(this, R.string.toast_no_internet, Toast.LENGTH_LONG).show();
     }
 
+    @Override
+    public void onResendClick(String jid) {
+        onAccountClick(jid);
+    }
+
     /** Social Auth */
 
     @Override
