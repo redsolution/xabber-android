@@ -206,7 +206,7 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
         if (hosts != null && !hosts.isEmpty()) {
             if (fragmentSignUp != null) ((XAccountSignUpFragment)fragmentSignUp).setupSpinner(hosts);
         } else {
-            showProgress("Request hosts..");
+            if (fragmentSignUp != null) ((XAccountSignUpFragment) fragmentSignUp).showHostsProgress(true);
             Subscription requestHosts = AuthManager.getHosts()
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
@@ -226,19 +226,19 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
     }
 
     private void handleSuccessGetHosts(List<AuthManager.Domain> domains) {
-        hideProgress();
-
         hosts.clear();
         for (AuthManager.Domain domain : domains) {
             hosts.add(domain.getDomain());
         }
 
-        if (fragmentSignUp != null)
-            ((XAccountSignUpFragment)fragmentSignUp).setupSpinner(hosts);
+        if (fragmentSignUp != null) {
+            ((XAccountSignUpFragment) fragmentSignUp).showHostsProgress(false);
+            ((XAccountSignUpFragment) fragmentSignUp).setupSpinner(hosts);
+        }
     }
 
     private void handleErrorGetHosts(Throwable throwable) {
-        hideProgress();
+        if (fragmentSignUp != null) ((XAccountSignUpFragment) fragmentSignUp).showHostsProgress(false);
         handleError(throwable, "Error while request hosts: ", LOG_TAG);
     }
 

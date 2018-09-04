@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -36,6 +37,8 @@ public class XAccountSignUpFragment extends Fragment implements View.OnClickList
     private EditText edtPass;
     private Spinner spinnerDomain;
     private TextView tvSocialProvider;
+    private ProgressBar pbHosts;
+    private Button btnSignUp;
     //private LinearLayout llSocialLogos;
 
     private Listener listener;
@@ -92,8 +95,9 @@ public class XAccountSignUpFragment extends Fragment implements View.OnClickList
 //        ivFacebook.setOnClickListener(this);
 //        ivGoogle.setOnClickListener(this);
 //        ivTwitter.setOnClickListener(this);
+        pbHosts = view.findViewById(R.id.pbHosts);
 
-        Button btnSignUp = view.findViewById(R.id.btnSignUp);
+        btnSignUp = view.findViewById(R.id.btnSignUp);
         btnSignUp.setOnClickListener(this);
     }
 
@@ -126,6 +130,12 @@ public class XAccountSignUpFragment extends Fragment implements View.OnClickList
         this.socialProvider = socialProvider;
         this.credentials = credentials;
         setupSocial();
+    }
+
+    public void showHostsProgress(boolean visible) {
+        pbHosts.setVisibility(visible ? View.VISIBLE : View.GONE);
+        spinnerDomain.setVisibility(visible ? View.GONE : View.VISIBLE);
+        btnSignUp.setEnabled(!visible);
     }
 
     private void setupSocial() {
