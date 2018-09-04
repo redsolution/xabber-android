@@ -154,10 +154,11 @@ public class XAccountSignUpFragment extends Fragment implements View.OnClickList
         String pass = edtPass.getText().toString().trim();
 
         if (verifyFields(username, pass)) {
-            if (credentials != null && socialProvider != null)
-                if (listener != null) listener.onSignupClick(username, spinnerDomain.getSelectedItem().toString(), pass,
-                        credentials, socialProvider);
-            else getCaptchaToken(username, pass, spinnerDomain.getSelectedItem().toString());
+            if (credentials != null && socialProvider != null) {
+                if (listener != null)
+                    listener.onSignupClick(username, spinnerDomain.getSelectedItem().toString(), pass,
+                            credentials, socialProvider);
+            } else getCaptchaToken(username, pass, spinnerDomain.getSelectedItem().toString());
         }
     }
 
