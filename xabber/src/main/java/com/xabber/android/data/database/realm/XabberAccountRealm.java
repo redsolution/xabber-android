@@ -19,6 +19,7 @@ public class XabberAccountRealm extends RealmObject {
     private String accountStatus;
     private String token;
     private String username;
+    private String domain;
     private String firstName;
     private String lastName;
     private String registerDate;
@@ -63,6 +64,14 @@ public class XabberAccountRealm extends RealmObject {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getDomain() {
+        return domain;
+    }
+
+    public void setDomain(String domain) {
+        this.domain = domain;
     }
 
     public String getFirstName() {

@@ -87,7 +87,8 @@ public class AccountListPreferenceAdapter extends RecyclerView.Adapter {
                 getAccountMainColor(accountItem.getAccount()) : activity.getResources().getColor(R.color.grey_400));
 
         XabberAccount xabberAccount = XabberAccountManager.getInstance().getAccount();
-        if (xabberAccount == null || !xabberAccount.getUsername().equals(accountItem.getAccount().getFullJid().getLocalpartOrNull().toString()))
+        if (xabberAccount == null || !xabberAccount.getFullUsername()
+                .equals(AccountManager.getInstance().getVerboseName(accountItem.getAccount())))
             accountHolder.avatarBorder.setBorderColor(activity.getResources().getColor(R.color.transparent));
 
         if (!accountItem.isEnabled()) {

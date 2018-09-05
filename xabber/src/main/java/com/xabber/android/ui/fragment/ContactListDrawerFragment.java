@@ -213,22 +213,10 @@ public class ContactListDrawerFragment extends Fragment implements View.OnClickL
             llNoAccount.setVisibility(View.GONE);
 
             String accountName = account.getFirstName() + " " + account.getLastName();
-            if (accountName.trim().isEmpty())
-                accountName = getActivity().getString(R.string.title_xabber_account);
+            if (accountName.trim().isEmpty()) accountName = getActivity().getString(R.string.title_xabber_account);
+            tvAccountName.setText(accountName);
+            tvAccountEmail.setText(account.getFullUsername());
 
-            if (XabberAccount.STATUS_NOT_CONFIRMED.equals(account.getAccountStatus())) {
-                tvAccountName.setText(accountName);
-                tvAccountEmail.setText(R.string.title_email_confirm);
-            }
-            if (XabberAccount.STATUS_CONFIRMED.equals(account.getAccountStatus())) {
-                tvAccountName.setText(accountName);
-                tvAccountEmail.setText(R.string.title_complete_register);
-            }
-            if (XabberAccount.STATUS_REGISTERED.equals(account.getAccountStatus())) {
-
-                tvAccountName.setText(accountName);
-                tvAccountEmail.setText(account.getUsername());
-            }
         } else {
             llAccountInfo.setVisibility(View.GONE);
             llNoAccount.setVisibility(View.VISIBLE);

@@ -229,13 +229,10 @@ public class XabberAccountInfoFragment extends Fragment implements AddEmailDialo
     }
 
     public void updateData(@NonNull XabberAccount account) {
-        String accountName = account.getFirstName() + " " + account.getLastName();
-        if (accountName.trim().isEmpty())
-            accountName = getString(R.string.title_xabber_account);
+        String accountName = account.getFullUsername();
 
         tvAccountName.setText(accountName);
-        if (account.getUsername() != null && !account.getUsername().isEmpty())
-            tvAccountUsername.setText(account.getUsername());
+        tvAccountUsername.setText("Free account");
 
         if (account.getLanguage() != null && !account.getLanguage().equals("")) {
             tvLanguage.setText(account.getLanguage());
