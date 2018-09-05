@@ -1,6 +1,7 @@
 package com.xabber.android.ui.fragment;
 
 import android.app.Fragment;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -22,6 +23,7 @@ import com.google.android.gms.safetynet.SafetyNetApi;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.xabber.android.R;
+import com.xabber.android.data.xaccount.AuthManager;
 
 import java.util.List;
 
@@ -131,11 +133,22 @@ public class XAccountSignUpFragment extends Fragment implements View.OnClickList
         if (credentials != null && socialProvider != null) {
             if (tvSocialProvider != null) {
                 tvSocialProvider.setVisibility(View.VISIBLE);
-                tvSocialProvider.setText(socialProvider);
+                tvSocialProvider.setText(getString(R.string.signup_with_social, socialProvider));
+
+                Drawable drawable;
+                switch (socialProvider) {
+                    case AuthManager.PROVIDER_TWITTER:
+                        drawable = getResources().getDrawable(R.drawable.ic_twitter);
+                        break;
+                    case AuthManager.PROVIDER_FACEBOOK:
+                        drawable = getResources().getDrawable(R.drawable.ic_facebook);
+                        break;
+                    default:
+                        drawable = getResources().getDrawable(R.drawable.ic_google_plus);
+                }
+                tvSocialProvider.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null);
             }
-        } else {
-            if (tvSocialProvider != null) tvSocialProvider.setVisibility(View.GONE);
-        }
+        } else if (tvSocialProvider != null) tvSocialProvider.setVisibility(View.GONE);
     }
 
     private void onSignUpClick() {
