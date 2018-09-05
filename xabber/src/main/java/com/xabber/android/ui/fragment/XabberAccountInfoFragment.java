@@ -272,7 +272,7 @@ public class XabberAccountInfoFragment extends Fragment implements AddEmailDialo
                             AccountSyncDialogFragment.newInstance(XabberAccountInfoFragment.this, noCancel)
                                     .show(getFragmentManager(), AccountSyncDialogFragment.class.getSimpleName());
                             dialogShowed = false;
-                        } else Toast.makeText(getActivity(), "Не удалось начать синхронизацию", Toast.LENGTH_SHORT).show();
+                        } else Toast.makeText(getActivity(), R.string.sync_fail, Toast.LENGTH_SHORT).show();
                     }
                 }, new Action1<Throwable>() {
                     @Override
@@ -289,14 +289,14 @@ public class XabberAccountInfoFragment extends Fragment implements AddEmailDialo
             if (message.equals("Invalid token")) {
                 XabberAccountManager.getInstance().onInvalidToken();
                 listener.needXMPPAuthFragment();
-                Toast.makeText(getActivity(), "Аккаунт был удален", Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), R.string.account_deleted, Toast.LENGTH_LONG).show();
             } else {
                 Log.d(LOG_TAG, "Error while synchronization: " + message);
                 Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
             }
         } else {
             Log.d(LOG_TAG, "Error while synchronization: " + throwable.toString());
-            Toast.makeText(getActivity(), "Error while synchronization: " + throwable.toString(), Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity(), R.string.sync_fail, Toast.LENGTH_LONG).show();
         }
     }
 
@@ -325,17 +325,17 @@ public class XabberAccountInfoFragment extends Fragment implements AddEmailDialo
         for (SocialBindingDTO socialBinding : socialBindings) {
             if ("google".equals(socialBinding.getProvider())) {
                 tvStatusGoogle.setText(socialBinding.getFirstName() + " " + socialBinding.getLastName());
-                tvActionGoogle.setText("DISCONNECT");
+                tvActionGoogle.setText(R.string.action_disconnect);
                 tvStatusGoogle.setTextColor(getActivity().getResources().getColor(R.color.black_text));
                 tvActionGoogle.setTextColor(getActivity().getResources().getColor(R.color.black_text));
             } else if ("facebook".equals(socialBinding.getProvider())) {
                 tvStatusFacebook.setText(socialBinding.getFirstName() + " " + socialBinding.getLastName());
-                tvActionFacebook.setText("DISCONNECT");
+                tvActionFacebook.setText(R.string.action_disconnect);
                 tvStatusFacebook.setTextColor(getActivity().getResources().getColor(R.color.black_text));
                 tvActionFacebook.setTextColor(getActivity().getResources().getColor(R.color.black_text));
             } else if ("twitter".equals(socialBinding.getProvider())) {
                 tvStatusTwitter.setText(socialBinding.getFirstName() + " " + socialBinding.getLastName());
-                tvActionTwitter.setText("DISCONNECT");
+                tvActionTwitter.setText(R.string.action_disconnect);
                 tvStatusTwitter.setTextColor(getActivity().getResources().getColor(R.color.black_text));
                 tvActionTwitter.setTextColor(getActivity().getResources().getColor(R.color.black_text));
             }

@@ -30,14 +30,14 @@ public class AddEmailDialogFragment extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setView(setupView())
-                .setTitle("Add email")
-                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                .setTitle(R.string.title_add_email)
+                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
 
                     }
                 })
-                .setPositiveButton("Add", new DialogInterface.OnClickListener() {
+                .setPositiveButton(R.string.complete_register_add, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         listener.onAddEmailClick(edtEmail.getText().toString());

@@ -246,7 +246,7 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
 
     private void signUp(String username, String host, String pass, String captchaToken,
                         String credentials, String socialProvider) {
-        showProgress("Sign Up..");
+        showProgress(getResources().getString(R.string.progress_title_signup));
 
         Single<XabberAccount> signUpSingle;
         if (credentials != null && socialProvider != null)

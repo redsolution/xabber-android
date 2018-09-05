@@ -36,14 +36,14 @@ public class ConfirmEmailDialogFragment extends DialogFragment {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setView(setupView())
-                .setTitle("Confirm email")
-                .setNeutralButton("Resend code", new DialogInterface.OnClickListener() {
+                .setTitle(R.string.title_email_confirm)
+                .setNeutralButton(R.string.button_resend_link, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         listener.onResendCodeClick(email);
                     }
                 })
-                .setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
+                .setPositiveButton(R.string.button_confirm, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         listener.onConfirmClick(email, edtCode.getText().toString());

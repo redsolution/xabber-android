@@ -11,8 +11,6 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -39,7 +37,6 @@ public class XAccountSignUpFragment extends Fragment implements View.OnClickList
     private TextView tvSocialProvider;
     private ProgressBar pbHosts;
     private Button btnSignUp;
-    //private LinearLayout llSocialLogos;
 
     private Listener listener;
     private String credentials;
@@ -87,14 +84,6 @@ public class XAccountSignUpFragment extends Fragment implements View.OnClickList
         spinnerDomain = view.findViewById(R.id.spinnerDomain);
 
         tvSocialProvider = view.findViewById(R.id.tvSocialProvider);
-//        llSocialLogos = view.findViewById(R.id.llSocialLogos);
-//        ImageView ivFacebook = view.findViewById(R.id.ivFacebook);
-//        ImageView ivGoogle = view.findViewById(R.id.ivGoogle);
-//        ImageView ivTwitter = view.findViewById(R.id.ivTwitter);
-//
-//        ivFacebook.setOnClickListener(this);
-//        ivGoogle.setOnClickListener(this);
-//        ivTwitter.setOnClickListener(this);
         pbHosts = view.findViewById(R.id.pbHosts);
 
         btnSignUp = view.findViewById(R.id.btnSignUp);
