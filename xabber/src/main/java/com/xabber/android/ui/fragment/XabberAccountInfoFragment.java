@@ -80,9 +80,8 @@ public class XabberAccountInfoFragment extends Fragment implements AddEmailDialo
     private Listener listener;
 
     public interface Listener {
-        void onGoogleClick();
-        void onFacebookClick();
-        void onTwitterClick();
+        void onSocialBindClick(String provider);
+        void onSocialUnbindClick(String provider);
         void onAddEmailClick(String email);
         void onConfirmEmailClick(String email, String code);
         void onLogoutClick(boolean deleteAccounts);
@@ -140,7 +139,9 @@ public class XabberAccountInfoFragment extends Fragment implements AddEmailDialo
         itemGoogle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                listener.onGoogleClick();
+                if (tvActionGoogle.getText().equals(getString(R.string.action_connect)))
+                    listener.onSocialBindClick(AuthManager.PROVIDER_GOOGLE);
+                else listener.onSocialUnbindClick(AuthManager.PROVIDER_GOOGLE);
             }
         });
 
@@ -150,7 +151,9 @@ public class XabberAccountInfoFragment extends Fragment implements AddEmailDialo
         itemFacebook.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                listener.onFacebookClick();
+                if (tvActionGoogle.getText().equals(getString(R.string.action_connect)))
+                    listener.onSocialBindClick(AuthManager.PROVIDER_FACEBOOK);
+                else listener.onSocialUnbindClick(AuthManager.PROVIDER_FACEBOOK);
             }
         });
 
@@ -160,7 +163,9 @@ public class XabberAccountInfoFragment extends Fragment implements AddEmailDialo
         itemTwitter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                listener.onTwitterClick();
+                if (tvActionGoogle.getText().equals(getString(R.string.action_connect)))
+                    listener.onSocialBindClick(AuthManager.PROVIDER_TWITTER);
+                else listener.onSocialUnbindClick(AuthManager.PROVIDER_TWITTER);
             }
         });
 

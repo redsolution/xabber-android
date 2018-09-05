@@ -141,18 +141,40 @@ public class XabberAccountActivity extends BaseLoginActivity
     /** Social Auth */
 
     @Override
-    public void onGoogleClick() {
-        loginGoogle();
+    public void onSocialBindClick(String provider) {
+        switch (provider) {
+            case AuthManager.PROVIDER_GOOGLE:
+                loginGoogle();
+                break;
+            case AuthManager.PROVIDER_FACEBOOK:
+                loginFacebook();
+                break;
+            case AuthManager.PROVIDER_TWITTER:
+                loginTwitter();
+                break;
+        }
     }
 
     @Override
-    public void onFacebookClick() {
-        loginFacebook();
-    }
-
-    @Override
-    public void onTwitterClick() {
-        loginTwitter();
+    public void onSocialUnbindClick(String provider) {
+        showProgress(getResources().getString(R.string.progress_title_unbind_social));
+        Subscription unbindSocialSubscription = AuthManager.unbindSocial(provider)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<ResponseBody>() {
+                    @Override
+                    public void call(ResponseBody responseBody) {
+                        Toast.makeText(XabberAccountActivity.this,
+                                R.string.social_unbind_success, Toast.LENGTH_SHORT).show();
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        Toast.makeText(XabberAccountActivity.this,
+                                R.string.social_unbind_fail, Toast.LENGTH_SHORT).show();
+                    }
+                });
+        compositeSubscription.add(unbindSocialSubscription);
     }
 
     /** Xabber Account Info */

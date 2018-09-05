@@ -311,9 +311,7 @@ public class AuthManager {
                 });
     }
 
-    public static Single<ResponseBody> bindSocial(String provider, String socialToken) {
-        Gson gson = new Gson();
-        String credentials = gson.toJson(new AccessToken(socialToken));
+    public static Single<ResponseBody> bindSocial(String provider, String credentials) {
         return HttpApiManager.getXabberApi().bindSocial(getXabberTokenHeader(),
                 new SocialAuthRequest(provider, credentials, getSource()));
     }
