@@ -517,6 +517,7 @@
         <activity android:name=".ui.activity.TutorialActivity"
             android:theme="@style/ThemeDark"/>
         <activity android:name=".ui.activity.XabberLoginActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.Design.Light"/>
         <activity android:name=".ui.activity.XabberAccountActivity"
             android:theme="@style/ThemeDark">
