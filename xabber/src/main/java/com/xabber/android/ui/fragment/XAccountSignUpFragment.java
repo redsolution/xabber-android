@@ -9,7 +9,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
@@ -24,6 +23,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.xabber.android.R;
 import com.xabber.android.data.xaccount.AuthManager;
+import com.xabber.android.ui.adapter.HostSpinnerAdapter;
 
 import java.util.List;
 
@@ -244,9 +244,8 @@ public class XAccountSignUpFragment extends Fragment implements View.OnClickList
 
     public void setupSpinner(List<String> domains) {
         if (spinnerDomain == null) return;
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(),
+        HostSpinnerAdapter adapter = new HostSpinnerAdapter(getActivity(),
                 android.R.layout.simple_spinner_item, domains);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerDomain.setAdapter(adapter);
     }
 }
