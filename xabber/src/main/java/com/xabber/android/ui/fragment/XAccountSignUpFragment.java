@@ -36,6 +36,7 @@ public class XAccountSignUpFragment extends Fragment implements View.OnClickList
     private EditText edtUsername;
     private EditText edtPass;
     private Spinner spinnerDomain;
+    private View spinnerBorder;
     private TextView tvSocialProvider;
     private ProgressBar pbHosts;
     private Button btnSignUp;
@@ -84,6 +85,7 @@ public class XAccountSignUpFragment extends Fragment implements View.OnClickList
         edtUsername = view.findViewById(R.id.edtUsername);
         edtPass = view.findViewById(R.id.edtPass);
         spinnerDomain = view.findViewById(R.id.spinnerDomain);
+        spinnerBorder = view.findViewById(R.id.spinnerBorder);
 
         tvSocialProvider = view.findViewById(R.id.tvSocialProvider);
         pbHosts = view.findViewById(R.id.pbHosts);
@@ -126,6 +128,7 @@ public class XAccountSignUpFragment extends Fragment implements View.OnClickList
     public void showHostsProgress(boolean visible) {
         pbHosts.setVisibility(visible ? View.VISIBLE : View.GONE);
         spinnerDomain.setVisibility(visible ? View.GONE : View.VISIBLE);
+        spinnerBorder.setVisibility(visible ? View.GONE : View.VISIBLE);
         btnSignUp.setEnabled(!visible);
     }
 

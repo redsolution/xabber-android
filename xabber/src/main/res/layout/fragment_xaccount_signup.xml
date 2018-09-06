@@ -26,7 +26,7 @@
 
             <LinearLayout
                 android:orientation="vertical"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1">
 
@@ -49,7 +49,6 @@
                     android:hint="@string/hint_username"
                     android:textSize="16sp"
                     android:theme="@style/Theme"
-                    android:layout_weight="3"
                     />
 
             </LinearLayout>
@@ -67,8 +66,10 @@
 
             <LinearLayout
                 android:orientation="vertical"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                >
 
                 <TextView
                     android:layout_width="match_parent"
@@ -84,6 +85,16 @@
                     android:layout_marginTop="8dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    />
+
+                <View
+                    android:id="@+id/spinnerBorder"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="#757575"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginLeft="7dp"
+                    android:layout_marginRight="16dp"
                     />
 
                 <ProgressBar
