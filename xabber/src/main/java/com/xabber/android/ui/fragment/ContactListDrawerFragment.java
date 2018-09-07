@@ -2,12 +2,12 @@ package com.xabber.android.ui.fragment;
 
 
 import android.app.Activity;
-import android.support.v4.app.Fragment;
 import android.content.pm.PackageManager;
 import android.content.res.TypedArray;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -46,9 +46,15 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
+import rx.schedulers.Schedulers;
+import rx.subscriptions.CompositeSubscription;
+
 public class ContactListDrawerFragment extends Fragment implements View.OnClickListener,
         OnAccountChangedListener, AdapterView.OnItemClickListener, AccountListPreferenceAdapter.Listener {
 
+    private CompositeSubscription compositeSubscription = new CompositeSubscription();
     ContactListDrawerListener listener;
     private ImageView drawerHeaderImage;
     private int[] headerImageResources;
@@ -148,6 +154,7 @@ public class ContactListDrawerFragment extends Fragment implements View.OnClickL
             getActivity().getWindow().setStatusBarColor(ColorManager.getInstance().getAccountPainter().getDefaultMainColor());
         }
         update();
+        subscribeForXabberAccount();
     }
 
     @Override
@@ -155,6 +162,7 @@ public class ContactListDrawerFragment extends Fragment implements View.OnClickL
         super.onPause();
         Application.getInstance().removeUIListener(OnAccountChangedListener.class, this);
         stopPatreonAnim();
+        compositeSubscription.clear();
     }
 
     @Override
@@ -184,14 +192,12 @@ public class ContactListDrawerFragment extends Fragment implements View.OnClickL
     }
 
     private void update() {
-
         Glide.with(this)
                 .fromResource()
                 .load(headerImageResources[AccountPainter.getDefaultAccountColorLevel()])
                 .fitCenter()
                 .into(drawerHeaderImage);
 
-        setupXabberAccountView();
         setupPatreonView();
         setupAccountList();
     }
@@ -205,9 +211,7 @@ public class ContactListDrawerFragment extends Fragment implements View.OnClickL
         void onAccountSelected(AccountJid account);
     }
 
-    private void setupXabberAccountView() {
-        XabberAccount account = XabberAccountManager.getInstance().getAccount();
-
+    private void setupXabberAccountView(XabberAccount account) {
         if (account != null) {
             llAccountInfo.setVisibility(View.VISIBLE);
             llNoAccount.setVisibility(View.GONE);
@@ -294,5 +298,17 @@ public class ContactListDrawerFragment extends Fragment implements View.OnClickL
     public void onDeleteAccount(AccountItem accountItem) {
         AccountDeleteDialog.newInstance(accountItem.getAccount()).show(getFragmentManager(),
                 AccountDeleteDialog.class.getName());
+    }
+
+    private void subscribeForXabberAccount() {
+        compositeSubscription.add(XabberAccountManager.getInstance().subscribeForAccount()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnNext(new Action1<XabberAccount>() {
+                @Override
+                public void call(XabberAccount account) {
+                    setupXabberAccountView(account);
+                }
+            }).subscribe());
     }
 }

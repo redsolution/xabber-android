@@ -41,6 +41,7 @@ import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
+import rx.subjects.BehaviorSubject;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -53,6 +54,7 @@ public class XabberAccountManager implements OnLoadListener {
     private static XabberAccountManager instance;
 
     private XabberAccount account;
+    private BehaviorSubject<XabberAccount> accountSubject = BehaviorSubject.create();
 
     private List<XMPPAccountSettings> xmppAccountsForSync;
     private List<XMPPAccountSettings> xmppAccountsForCreate;
@@ -201,7 +203,7 @@ public class XabberAccountManager implements OnLoadListener {
     @Override
     public void onLoad() {
         XabberAccount account = loadXabberAccountFromRealm();
-        this.account = account;
+        setAccount(account);
 
         this.lastOrderChangeTimestamp = SettingsManager.getLastOrderChangeTimestamp();
 
@@ -259,7 +261,7 @@ public class XabberAccountManager implements OnLoadListener {
 
     private void handleSuccessGetAccount(@NonNull XabberAccount xabberAccount) {
         Log.d(LOG_TAG, "Xabber account loading from net: successfully");
-        this.account = xabberAccount;
+        setAccount(xabberAccount);
         updateAccountSettings();
     }
 
@@ -278,8 +280,17 @@ public class XabberAccountManager implements OnLoadListener {
         return account;
     }
 
+    public BehaviorSubject<XabberAccount> subscribeForAccount() {
+        return accountSubject;
+    }
+
+    private void setAccount(XabberAccount account) {
+        this.account = account;
+        accountSubject.onNext(this.account);
+    }
+
     public void removeAccount() {
-        this.account = null;
+        setAccount(null);
         this.accountsSyncState.clear();
     }
 
@@ -336,7 +347,7 @@ public class XabberAccountManager implements OnLoadListener {
         realm.commitTransaction();
         realm.close();
 
-        this.account = account;
+        setAccount(account);
         return Single.just(account);
     }
 
