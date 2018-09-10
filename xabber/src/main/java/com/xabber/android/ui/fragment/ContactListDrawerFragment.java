@@ -16,7 +16,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -59,10 +58,9 @@ public class ContactListDrawerFragment extends Fragment implements View.OnClickL
     private ImageView drawerHeaderImage;
     private int[] headerImageResources;
 
-    private LinearLayout llAccountInfo;
-    private LinearLayout llNoAccount;
     private TextView tvAccountName;
     private TextView tvAccountEmail;
+    private ImageView ivSync;
 
     private TextView tvPatreonTitle;
     private ProgressBar pbPatreon;
@@ -118,8 +116,7 @@ public class ContactListDrawerFragment extends Fragment implements View.OnClickL
 
         view.findViewById(R.id.drawer_header_action_xabber_account).setOnClickListener(this);
 
-        llAccountInfo = (LinearLayout) view.findViewById(R.id.accountInfo);
-        llNoAccount = (LinearLayout) view.findViewById(R.id.noAccount);
+        ivSync = view.findViewById(R.id.ivSync);
         tvAccountName = (TextView) view.findViewById(R.id.tvAccountName);
         tvAccountEmail = (TextView) view.findViewById(R.id.tvAccountEmail);
 
@@ -213,17 +210,16 @@ public class ContactListDrawerFragment extends Fragment implements View.OnClickL
 
     private void setupXabberAccountView(XabberAccount account) {
         if (account != null) {
-            llAccountInfo.setVisibility(View.VISIBLE);
-            llNoAccount.setVisibility(View.GONE);
-
             String accountName = account.getFirstName() + " " + account.getLastName();
             if (accountName.trim().isEmpty()) accountName = getActivity().getString(R.string.title_xabber_account);
             tvAccountName.setText(accountName);
             tvAccountEmail.setText(account.getFullUsername());
+            ivSync.setImageResource(R.drawable.ic_sync_done);
 
         } else {
-            llAccountInfo.setVisibility(View.GONE);
-            llNoAccount.setVisibility(View.VISIBLE);
+            tvAccountName.setText(R.string.title_xabber_account);
+            tvAccountEmail.setText(R.string.not_login);
+            ivSync.setImageResource(R.drawable.ic_sync_disable);
         }
     }
 
