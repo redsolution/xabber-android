@@ -86,7 +86,6 @@ public class XabberAccountInfoFragment extends Fragment implements AddEmailDialo
         void onConfirmEmailClick(String email, String code);
         void onLogoutClick(boolean deleteAccounts);
         void onSyncClick(boolean needGoToMainActivity);
-        void needXMPPAuthFragment();
     }
 
     public static XabberAccountInfoFragment newInstance(Listener listener) {
@@ -191,9 +190,11 @@ public class XabberAccountInfoFragment extends Fragment implements AddEmailDialo
         super.onResume();
 
         XabberAccount account = XabberAccountManager.getInstance().getAccount();
-        if (account != null) updateData(account);
-        else listener.needXMPPAuthFragment();
-        updateLastSyncTime();
+        if (account != null) {
+            updateData(account);
+            updateLastSyncTime();
+        }
+        else getActivity().finish();
     }
 
     @Override
@@ -285,8 +286,8 @@ public class XabberAccountInfoFragment extends Fragment implements AddEmailDialo
         if (message != null) {
             if (message.equals("Invalid token")) {
                 XabberAccountManager.getInstance().onInvalidToken();
-                listener.needXMPPAuthFragment();
                 Toast.makeText(getActivity(), R.string.account_deleted, Toast.LENGTH_LONG).show();
+                getActivity().finish();
             } else {
                 Log.d(LOG_TAG, "Error while synchronization: " + message);
                 Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();

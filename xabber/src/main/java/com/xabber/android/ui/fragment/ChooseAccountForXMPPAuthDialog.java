@@ -16,7 +16,7 @@ import com.xabber.android.ui.adapter.XMPPAccountAuthAdapter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class XAccountXMPPAuthFragment extends DialogFragment implements XMPPAccountAuthAdapter.Listener {
+public class ChooseAccountForXMPPAuthDialog extends DialogFragment implements XMPPAccountAuthAdapter.Listener {
 
     private List<AccountJid> xmppAccounts = new ArrayList<>();
     private Listener listener;
@@ -25,8 +25,8 @@ public class XAccountXMPPAuthFragment extends DialogFragment implements XMPPAcco
         void onAccountClick(String accountJid);
     }
 
-    public static XAccountXMPPAuthFragment newInstance(Listener listener, ArrayList<AccountJid> items) {
-        XAccountXMPPAuthFragment fragment = new XAccountXMPPAuthFragment();
+    public static ChooseAccountForXMPPAuthDialog newInstance(Listener listener, ArrayList<AccountJid> items) {
+        ChooseAccountForXMPPAuthDialog fragment = new ChooseAccountForXMPPAuthDialog();
         fragment.listener = listener;
         fragment.xmppAccounts = items;
         return fragment;
@@ -58,5 +58,6 @@ public class XAccountXMPPAuthFragment extends DialogFragment implements XMPPAcco
     @Override
     public void onAccountClick(String accountJid) {
         listener.onAccountClick(accountJid);
+        dismiss();
     }
 }

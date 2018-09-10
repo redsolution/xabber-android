@@ -15,12 +15,9 @@ import android.widget.Toast;
 import com.xabber.android.R;
 import com.xabber.android.data.connection.NetworkManager;
 import com.xabber.android.data.xaccount.AuthManager;
-import com.xabber.android.data.xaccount.XMPPAuthManager;
 import com.xabber.android.data.xaccount.XabberAccount;
 import com.xabber.android.data.xaccount.XabberAccountManager;
 import com.xabber.android.ui.color.BarPainter;
-import com.xabber.android.ui.fragment.XAccountXMPPAuthFragment;
-import com.xabber.android.ui.fragment.XAccountXMPPConfirmFragment;
 import com.xabber.android.ui.fragment.XabberAccountInfoFragment;
 import com.xabber.android.utils.RetrofitErrorConverter;
 
@@ -31,19 +28,14 @@ import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
 public class XabberAccountActivity extends BaseLoginActivity
-        implements XAccountXMPPAuthFragment.Listener, XAccountXMPPConfirmFragment.Listener,
-                    XabberAccountInfoFragment.Listener {
+        implements XabberAccountInfoFragment.Listener {
 
     private final static String LOG_TAG = XabberAccountActivity.class.getSimpleName();
     private final static String FRAGMENT_INFO = "fragment_info";
-    private final static String FRAGMENT_XMPP_AUTH = "fragment_xmpp_auth";
-    private final static String FRAGMENT_XMPP_CONFIRM = "fragment_xmpp_confirm";
     private final static String SHOW_SYNC = "show_sync";
 
     private FragmentTransaction fTrans;
     private Fragment fragmentInfo;
-    private Fragment fragmentXMPPAuth;
-    private Fragment fragmentXMPPConfirm;
 
     private Toolbar toolbar;
     private BarPainter barPainter;
@@ -88,7 +80,7 @@ public class XabberAccountActivity extends BaseLoginActivity
 
         XabberAccount account = XabberAccountManager.getInstance().getAccount();
         if (account != null) showInfoFragment();
-        else showXMPPAuthFragment();
+        else finish();
     }
 
     @Override
@@ -113,29 +105,6 @@ public class XabberAccountActivity extends BaseLoginActivity
             progressDialog.dismiss();
             progressDialog = null;
         }
-    }
-
-    /** XMPP Auth */
-
-    @Override
-    public void onAccountClick(String accountJid) {
-        if (NetworkManager.isNetworkAvailable()) {
-            requestXMPPCode(accountJid);
-        } else
-            Toast.makeText(this, R.string.toast_no_internet, Toast.LENGTH_LONG).show();
-    }
-
-    @Override
-    public void onConfirmXMPPClick(String jid, String code) {
-        if (NetworkManager.isNetworkAvailable()) {
-            confirmXMPP(code, jid);
-        } else
-            Toast.makeText(this, R.string.toast_no_internet, Toast.LENGTH_LONG).show();
-    }
-
-    @Override
-    public void onResendClick(String jid) {
-        onAccountClick(jid);
     }
 
     /** Social Auth */
@@ -180,11 +149,6 @@ public class XabberAccountActivity extends BaseLoginActivity
     /** Xabber Account Info */
 
     @Override
-    public void needXMPPAuthFragment() {
-        showXMPPAuthFragment();
-    }
-
-    @Override
     public void onLogoutClick(boolean deleteAccounts) {
         if (NetworkManager.isNetworkAvailable()) {
             logout(deleteAccounts);
@@ -226,32 +190,6 @@ public class XabberAccountActivity extends BaseLoginActivity
 
         toolbar.setTitle(R.string.title_xabber_account);
         barPainter.setDefaultColor();
-    }
-
-    private void showXMPPAuthFragment() {
-        if (fragmentXMPPAuth == null)
-            //fragmentXMPPAuth = XAccountXMPPAuthFragment.newInstance(this);
-
-        fTrans = getFragmentManager().beginTransaction();
-        fTrans.replace(R.id.container, fragmentXMPPAuth, FRAGMENT_XMPP_AUTH);
-        fTrans.commit();
-
-        toolbar.setTitle(R.string.title_register_xabber_account);
-        barPainter.setBlue(this);
-    }
-
-    private void showXMPPConfirmFragment(String jid) {
-        if (fragmentXMPPConfirm == null)
-            fragmentXMPPConfirm = XAccountXMPPConfirmFragment.newInstance(this);
-
-        ((XAccountXMPPConfirmFragment)fragmentXMPPConfirm).setJid(jid);
-
-        fTrans = getFragmentManager().beginTransaction();
-        fTrans.replace(R.id.container, fragmentXMPPConfirm, FRAGMENT_XMPP_CONFIRM);
-        fTrans.commit();
-
-        toolbar.setTitle(R.string.title_register_xabber_account);
-        barPainter.setBlue(this);
     }
 
     @Override
@@ -317,69 +255,6 @@ public class XabberAccountActivity extends BaseLoginActivity
             Toast.makeText(this, R.string.logout_error, Toast.LENGTH_LONG).show();
         }
         hideProgress();
-    }
-
-    /** REQUEST XMPP CODE */
-
-    private void requestXMPPCode(final String jid) {
-        showProgress(getResources().getString(R.string.progress_title_request_xmpp_auth));
-        Subscription requestXMPPCodeSubscription = AuthManager.requestXMPPCode(jid)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<AuthManager.XMPPCode>() {
-                    @Override
-                    public void call(AuthManager.XMPPCode code) {
-                        handleSuccessRequestXMPPCode(code, jid);
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        handleErrorRequestXMPPCode(throwable);
-                    }
-                });
-        compositeSubscription.add(requestXMPPCodeSubscription);
-    }
-
-    private void handleSuccessRequestXMPPCode(AuthManager.XMPPCode code, String jid) {
-        hideProgress();
-        XMPPAuthManager.getInstance().addRequest(code.getRequestId(), code.getApiJid(), jid);
-        showXMPPConfirmFragment(jid);
-    }
-
-    private void handleErrorRequestXMPPCode(Throwable throwable) {
-        hideProgress();
-        handleError(throwable, "Error while request XMPP auth-code: ", LOG_TAG);
-    }
-
-    /** CONFIRM XMPP */
-
-    private void confirmXMPP(String code, String jid) {
-        showProgress(getResources().getString(R.string.progress_title_confirm_xmpp));
-        Subscription confirmXMPPSubscription = AuthManager.confirmXMPP(jid, code)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<XabberAccount>() {
-                    @Override
-                    public void call(XabberAccount account) {
-                        handleSuccessConfirmXMPP(account);
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        handleErrorConfirmXMPP(throwable);
-                    }
-                });
-        compositeSubscription.add(confirmXMPPSubscription);
-    }
-
-    private void handleSuccessConfirmXMPP(XabberAccount account) {
-        hideProgress();
-        showInfoFragment();
-    }
-
-    private void handleErrorConfirmXMPP(Throwable throwable) {
-        hideProgress();
-        handleError(throwable, "Error while confirming XMPP-account: ", LOG_TAG);
     }
 
     /** ADD EMAIL */

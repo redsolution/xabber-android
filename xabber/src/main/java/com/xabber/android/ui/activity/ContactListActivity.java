@@ -74,7 +74,7 @@ import com.xabber.android.ui.dialog.MucInviteDialog;
 import com.xabber.android.ui.dialog.MucPrivateChatInvitationDialog;
 import com.xabber.android.ui.dialog.TranslationDialog;
 import com.xabber.android.ui.fragment.ContactListDrawerFragment;
-import com.xabber.android.ui.fragment.XAccountXMPPAuthFragment;
+import com.xabber.android.ui.fragment.ChooseAccountForXMPPAuthDialog;
 import com.xabber.android.ui.preferences.PreferenceEditor;
 import com.xabber.android.ui.widget.bottomnavigation.BottomMenu;
 import com.xabber.xmpp.uri.XMPPUri;
@@ -100,7 +100,7 @@ import rx.subscriptions.CompositeSubscription;
  */
 public class ContactListActivity extends ManagedActivity implements OnAccountChangedListener,
         View.OnClickListener, OnChooseListener, ContactListFragment.ContactListFragmentListener,
-        ContactListDrawerFragment.ContactListDrawerListener, XAccountXMPPAuthFragment.Listener,
+        ContactListDrawerFragment.ContactListDrawerListener, ChooseAccountForXMPPAuthDialog.Listener,
         BottomMenu.OnClickListener {
 
     /**
@@ -785,8 +785,8 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
             ArrayList<AccountJid> accounts = new ArrayList<>(AccountManager.getInstance().getEnabledAccounts());
             if (accounts.size() < 1) return;
             if (accounts.size() > 1)
-                XAccountXMPPAuthFragment.newInstance(null, accounts)
-                    .show(getFragmentManager(), XAccountXMPPAuthFragment.class.getSimpleName());
+                ChooseAccountForXMPPAuthDialog.newInstance(this, accounts)
+                    .show(getFragmentManager(), ChooseAccountForXMPPAuthDialog.class.getSimpleName());
             else onAccountClick(accounts.get(0).getFullJid().toString());
         }
     }
