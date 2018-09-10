@@ -8,30 +8,15 @@
     android:background="@color/cardview_light_background"
     >
 
-    <LinearLayout
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rlAccounts"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_centerInParent="true"
-        android:layout_marginLeft="32dp"
-        android:layout_marginRight="32dp"
-        >
+        tools:listitem="@layout/item_xmpp_account_choose"
+        android:layout_marginBottom="12dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginLeft="8dp"
+        />
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            android:text="Choose account that will be used for registration Xabber Account:"
-            android:textSize="18sp"
-            android:gravity="center"
-            />
-
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/rlAccounts"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            tools:listitem="@layout/item_xmpp_account_choose"
-            />
-
-    </LinearLayout>
 </RelativeLayout>

@@ -74,6 +74,7 @@ import com.xabber.android.ui.dialog.MucInviteDialog;
 import com.xabber.android.ui.dialog.MucPrivateChatInvitationDialog;
 import com.xabber.android.ui.dialog.TranslationDialog;
 import com.xabber.android.ui.fragment.ContactListDrawerFragment;
+import com.xabber.android.ui.fragment.XAccountXMPPAuthFragment;
 import com.xabber.android.ui.preferences.PreferenceEditor;
 import com.xabber.android.ui.widget.bottomnavigation.BottomMenu;
 import com.xabber.xmpp.uri.XMPPUri;
@@ -99,7 +100,7 @@ import rx.subscriptions.CompositeSubscription;
  */
 public class ContactListActivity extends ManagedActivity implements OnAccountChangedListener,
         View.OnClickListener, OnChooseListener, ContactListFragment.ContactListFragmentListener,
-        ContactListDrawerFragment.ContactListDrawerListener,
+        ContactListDrawerFragment.ContactListDrawerListener, XAccountXMPPAuthFragment.Listener,
         BottomMenu.OnClickListener {
 
     /**
@@ -720,15 +721,7 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
                 startActivity(PreferenceEditor.createIntent(this));
                 break;
             case R.id.drawer_header_action_xabber_account:
-                XabberAccount account = XabberAccountManager.getInstance().getAccount();
-                if (account != null) startActivity(XabberAccountActivity.createIntent(this, false));
-                else {
-                    // TODO: 07.09.18 запрос списка аккаунтов вынести из UI ?
-                    ArrayList<AccountJid> accounts = new ArrayList<>(AccountManager.getInstance().getEnabledAccounts());
-                    if (accounts.size() < 1) return;
-                    if (accounts.size() > 1) startActivity(XabberAccountActivity.createIntent(this, false));
-                    else loginXabberAccountViaXMPP(accounts.get(0).getFullJid().toString());
-                }
+                onXabberAccountClick();
                 break;
             case R.id.drawer_action_patreon:
                 startActivity(PatreonAppealActivity.createIntent(this));
@@ -777,6 +770,25 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
         if (contentFragment != null && contentFragment instanceof ContactListFragment) {
             ((ContactListFragment) contentFragment).closeSnackbar();
         } else showContactListFragment(null);
+    }
+
+    @Override
+    public void onAccountClick(String accountJid) {
+        loginXabberAccountViaXMPP(accountJid);
+    }
+
+    private void onXabberAccountClick() {
+        XabberAccount account = XabberAccountManager.getInstance().getAccount();
+        if (account != null) startActivity(XabberAccountActivity.createIntent(this, false));
+        else {
+            // TODO: 07.09.18 запрос списка аккаунтов вынести из UI ?
+            ArrayList<AccountJid> accounts = new ArrayList<>(AccountManager.getInstance().getEnabledAccounts());
+            if (accounts.size() < 1) return;
+            if (accounts.size() > 1)
+                XAccountXMPPAuthFragment.newInstance(null, accounts)
+                    .show(getFragmentManager(), XAccountXMPPAuthFragment.class.getSimpleName());
+            else onAccountClick(accounts.get(0).getFullJid().toString());
+        }
     }
 
     private void showBottomNavigation() {

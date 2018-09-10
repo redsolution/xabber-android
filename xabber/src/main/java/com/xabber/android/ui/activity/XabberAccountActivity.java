@@ -230,7 +230,7 @@ public class XabberAccountActivity extends BaseLoginActivity
 
     private void showXMPPAuthFragment() {
         if (fragmentXMPPAuth == null)
-            fragmentXMPPAuth = XAccountXMPPAuthFragment.newInstance(this);
+            //fragmentXMPPAuth = XAccountXMPPAuthFragment.newInstance(this);
 
         fTrans = getFragmentManager().beginTransaction();
         fTrans.replace(R.id.container, fragmentXMPPAuth, FRAGMENT_XMPP_AUTH);

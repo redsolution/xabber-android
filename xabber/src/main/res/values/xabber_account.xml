@@ -190,4 +190,6 @@
     <string name="patreon_appeal_url" translatable="false">https://www.xabber.com/appeal/</string>
 
     <string name="xmpp_confirm_title">Enter confirmation code that was send to %1$s</string>
+    <string name="xaccount_not_exist">Will create new account</string>
+    <string name="xaccount_exist">Xabber Account exists</string>
 </resources>

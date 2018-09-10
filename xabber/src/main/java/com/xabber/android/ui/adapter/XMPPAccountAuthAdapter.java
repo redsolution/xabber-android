@@ -9,6 +9,8 @@ import android.widget.TextView;
 
 import com.xabber.android.R;
 import com.xabber.android.data.account.AccountItem;
+import com.xabber.android.data.account.AccountManager;
+import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.privatestorage.PrivateStorageManager;
 import com.xabber.android.ui.color.ColorManager;
@@ -21,7 +23,7 @@ import java.util.List;
 
 public class XMPPAccountAuthAdapter extends RecyclerView.Adapter {
 
-    private List<AccountItem> items;
+    private List<AccountJid> items;
     private Listener listener;
 
     public XMPPAccountAuthAdapter(Listener listener) {
@@ -32,7 +34,7 @@ public class XMPPAccountAuthAdapter extends RecyclerView.Adapter {
         void onAccountClick(String accountJid);
     }
 
-    public void setItems(List<AccountItem> items) {
+    public void setItems(List<AccountJid> items) {
         this.items = items;
         notifyDataSetChanged();
     }
@@ -45,7 +47,7 @@ public class XMPPAccountAuthAdapter extends RecyclerView.Adapter {
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        final AccountItem account = items.get(position);
+        final AccountItem account = AccountManager.getInstance().getAccount(items.get(position));
         XMPPAccountVH viewHolder = (XMPPAccountVH) holder;
 
         // set color
@@ -63,7 +65,7 @@ public class XMPPAccountAuthAdapter extends RecyclerView.Adapter {
 
         // set action
         boolean haveBind = PrivateStorageManager.getInstance().haveXabberAccountBinding(account.getAccount());
-        viewHolder.action.setText(haveBind ? "also binded for Xabber Account" : "will be created new Xabber Account");
+        viewHolder.action.setText(haveBind ? R.string.xaccount_exist : R.string.xaccount_not_exist);
 
         // set listener
         viewHolder.itemView.setOnClickListener(new View.OnClickListener() {

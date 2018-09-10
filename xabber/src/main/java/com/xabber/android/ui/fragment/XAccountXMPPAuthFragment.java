@@ -1,49 +1,50 @@
 package com.xabber.android.ui.fragment;
 
-import android.app.Fragment;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 
 import com.xabber.android.R;
-import com.xabber.android.data.account.AccountItem;
-import com.xabber.android.data.account.AccountManager;
+import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.ui.adapter.XMPPAccountAuthAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class XAccountXMPPAuthFragment extends Fragment implements XMPPAccountAuthAdapter.Listener {
+public class XAccountXMPPAuthFragment extends DialogFragment implements XMPPAccountAuthAdapter.Listener {
 
-    private List<AccountItem> xmppAccounts = new ArrayList<>();
+    private List<AccountJid> xmppAccounts = new ArrayList<>();
     private Listener listener;
 
     public interface Listener {
         void onAccountClick(String accountJid);
     }
 
-    public static XAccountXMPPAuthFragment newInstance(Listener listener) {
+    public static XAccountXMPPAuthFragment newInstance(Listener listener, ArrayList<AccountJid> items) {
         XAccountXMPPAuthFragment fragment = new XAccountXMPPAuthFragment();
         fragment.listener = listener;
+        fragment.xmppAccounts = items;
         return fragment;
     }
 
-    @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_xaccount_xmpp_auth, container, false);
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setView(setupView())
+                .setTitle(R.string.choose_account);
+
+        return builder.create();
     }
 
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        xmppAccounts.clear();
-        xmppAccounts.addAll(AccountManager.getInstance().getAllAccountItems());
+    public View setupView() {
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+        View view = inflater.inflate(R.layout.fragment_xaccount_xmpp_auth, null);
 
         XMPPAccountAuthAdapter adapter = new XMPPAccountAuthAdapter(this);
         adapter.setItems(xmppAccounts);
@@ -51,6 +52,7 @@ public class XAccountXMPPAuthFragment extends Fragment implements XMPPAccountAut
         RecyclerView recyclerView = view.findViewById(R.id.rlAccounts);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(adapter);
+        return view;
     }
 
     @Override
