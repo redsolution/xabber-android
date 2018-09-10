@@ -56,7 +56,7 @@ public class XabberAccountActivity extends BaseLoginActivity
         setContentView(R.layout.activity_xabber_account_info);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar_default);
-        toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_left);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -64,6 +64,7 @@ public class XabberAccountActivity extends BaseLoginActivity
             }
         });
         toolbar.inflateMenu(R.menu.toolbar_xabber_account_info);
+        toolbar.setTitleTextColor(getResources().getColor(R.color.black_text));
         barPainter = new BarPainter(this, toolbar);
     }
 
@@ -189,7 +190,7 @@ public class XabberAccountActivity extends BaseLoginActivity
         fTrans.commit();
 
         toolbar.setTitle(R.string.title_xabber_account);
-        barPainter.setDefaultColor();
+        barPainter.setLiteGrey();
     }
 
     @Override

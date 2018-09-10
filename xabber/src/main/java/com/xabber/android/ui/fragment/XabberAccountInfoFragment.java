@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -74,6 +75,10 @@ public class XabberAccountInfoFragment extends Fragment implements AddEmailDialo
     private EmailAdapter emailAdapter;
     private Button btnAddEmail;
 
+    private View viewShowLinks;
+    private View viewLinks;
+    private ImageView ivChevron;
+
     private boolean dialogShowed;
 
     private CompositeSubscription compositeSubscription = new CompositeSubscription();
@@ -97,7 +102,7 @@ public class XabberAccountInfoFragment extends Fragment implements AddEmailDialo
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_xabber_account_info, container, false);
+        return inflater.inflate(R.layout.fragment_xaccount_info, container, false);
     }
 
     @Override
@@ -129,6 +134,19 @@ public class XabberAccountInfoFragment extends Fragment implements AddEmailDialo
                     dialogShowed = true;
                     showSyncDialog(false);
                 }
+            }
+        });
+
+        ivChevron = view.findViewById(R.id.ivChevron);
+        viewLinks = view.findViewById(R.id.viewLinks);
+        viewShowLinks = view.findViewById(R.id.viewShowLinks);
+        viewShowLinks.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                viewLinks.setVisibility(viewLinks.getVisibility() == View.VISIBLE
+                        ? View.GONE : View.VISIBLE );
+                ivChevron.setImageResource(viewLinks.getVisibility() == View.VISIBLE
+                        ? R.drawable.ic_chevron_up : R.drawable.ic_chevron_down);
             }
         });
 
