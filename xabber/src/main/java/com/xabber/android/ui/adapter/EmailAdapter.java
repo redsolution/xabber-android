@@ -42,8 +42,9 @@ public class EmailAdapter extends RecyclerView.Adapter<EmailAdapter.EmailViewHol
         final EmailDTO emailDTO = emails.get(position);
 
         holder.tvEmail.setText(emailDTO.getEmail());
-        holder.ivEmail.setImageResource(emailDTO.isVerified() ? R.drawable.ic_email_confirmed :
-                R.drawable.ic_email);
+        holder.tvStatus.setText(emailDTO.isVerified() ? R.string.title_verified_email : R.string.title_unverified_email);
+        holder.tvAction.setText(emailDTO.isVerified() ? R.string.action_disconnect : R.string.action_verify);
+        holder.ivEmail.setImageResource(emailDTO.isVerified() ? R.drawable.ic_confirmed_email_circle : R.drawable.ic_email_circle);
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -61,11 +62,15 @@ public class EmailAdapter extends RecyclerView.Adapter<EmailAdapter.EmailViewHol
     class EmailViewHolder extends RecyclerView.ViewHolder {
 
         final TextView tvEmail;
+        final TextView tvStatus;
+        final TextView tvAction;
         final ImageView ivEmail;
 
         public EmailViewHolder(View itemView) {
             super(itemView);
             this.tvEmail = itemView.findViewById(R.id.tvEmail);
+            this.tvStatus = itemView.findViewById(R.id.tvStatus);
+            this.tvAction = itemView.findViewById(R.id.tvAction);
             this.ivEmail = itemView.findViewById(R.id.ivEmail);
         }
     }

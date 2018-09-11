@@ -79,7 +79,9 @@
     <string name="title_start_messaging">Start messaging!</string>
     <string name="title_reordering_account">Reorder accounts</string>
     <string name="title_sync">Synchronization</string>
-    <string name="title_add_email">Add email</string>
+    <string name="title_add_email">Link email account</string>
+    <string name="title_verified_email">Verified email address</string>
+    <string name="title_unverified_email">Unverified email address</string>
 
     <string name="title_login_xabber_account">Sign In</string>
     <string name="title_register_xabber_account">Sign Up</string>
@@ -143,6 +145,7 @@
 
     <string name="action_connect">LINK</string>
     <string name="action_disconnect">UNLINK</string>
+    <string name="action_verify">VERIFY</string>
 
     <string name="reorder_summary">To synchronize accounts order between devices you need to enable "Synchronize all" option in Xabber Account settings</string>
 

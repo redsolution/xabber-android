@@ -2,11 +2,11 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item>
         <shape android:shape="oval">
-            <solid android:color="@color/grey_500"/>
+            <solid android:color="@color/account_register_blue"/>
         </shape>
     </item>
     <item
-        android:drawable="@drawable/ic_email"
+        android:drawable="@drawable/ic_email_confirmed"
         android:height="28dp"
         android:width="28dp"
         android:bottom="12dp"

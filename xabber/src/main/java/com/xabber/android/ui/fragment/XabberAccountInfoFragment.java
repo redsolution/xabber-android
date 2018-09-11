@@ -73,7 +73,7 @@ public class XabberAccountInfoFragment extends Fragment implements AddEmailDialo
 
     private RecyclerView rvEmails;
     private EmailAdapter emailAdapter;
-    private Button btnAddEmail;
+    private View viewAddEmail;
 
     private View viewShowLinks;
     private View viewLinks;
@@ -190,8 +190,8 @@ public class XabberAccountInfoFragment extends Fragment implements AddEmailDialo
         rvEmails.setLayoutManager(new LinearLayoutManager(getActivity()));
         emailAdapter = new EmailAdapter(this);
         rvEmails.setAdapter(emailAdapter);
-        btnAddEmail = view.findViewById(R.id.btnAddEmail);
-        btnAddEmail.setOnClickListener(new View.OnClickListener() {
+        viewAddEmail = view.findViewById(R.id.viewAddEmail);
+        viewAddEmail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 AddEmailDialogFragment.newInstance(XabberAccountInfoFragment.this)
