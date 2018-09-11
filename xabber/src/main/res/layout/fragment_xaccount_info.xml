@@ -160,30 +160,48 @@
                     android:id="@+id/itemGoogle"
                     android:layout_width="match_parent"
                     android:layout_height="48dp"
-                    android:paddingLeft="24dp"
+                    android:paddingLeft="18dp"
                     android:paddingRight="16dp"
-                    android:paddingTop="8dp"
-                    android:paddingBottom="8dp"
                     android:clickable="true"
                     android:background="?android:attr/selectableItemBackground"
                     >
 
                     <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:src="@drawable/ic_google_plus"
+                        android:id="@+id/ivGoogle"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:src="@drawable/ic_google_plus_disabled"
                         android:layout_gravity="center_vertical"
                         />
 
-                    <TextView
-                        android:id="@+id/tvStatusGoogle"
+                    <LinearLayout
+                        android:orientation="vertical"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
-                        android:layout_marginLeft="24dp"
-                        android:textColor="@color/grey_500"
-                        android:text="Not connected"
-                        />
+                        android:layout_marginLeft="18dp"
+                        >
+
+                        <TextView
+                            android:id="@+id/tvNameGoogle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:textColor="@color/black_text"
+                            tools:text="@tools:sample/full_names"
+                            android:visibility="gone"
+                            />
+
+                        <TextView
+                            android:id="@+id/tvStatusGoogle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:textColor="@color/grey_500"
+                            android:text="@string/title_not_linked_account"
+                            />
+
+                    </LinearLayout>
 
                     <TextView
                         android:id="@+id/tvActionGoogle"
@@ -202,30 +220,48 @@
                     android:id="@+id/itemFacebook"
                     android:layout_width="match_parent"
                     android:layout_height="48dp"
-                    android:paddingLeft="24dp"
+                    android:paddingLeft="18dp"
                     android:paddingRight="16dp"
-                    android:paddingTop="8dp"
-                    android:paddingBottom="8dp"
                     android:clickable="true"
                     android:background="?android:attr/selectableItemBackground"
                     >
 
                     <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:src="@drawable/ic_facebook"
+                        android:id="@+id/ivFacebook"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:src="@drawable/ic_facebook_disabled"
                         android:layout_gravity="center_vertical"
                         />
 
-                    <TextView
-                        android:id="@+id/tvStatusFacebook"
+                    <LinearLayout
+                        android:orientation="vertical"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
-                        android:layout_marginLeft="24dp"
-                        android:textColor="@color/grey_500"
-                        android:text="Not connected"
-                        />
+                        android:layout_marginLeft="18dp"
+                        >
+
+                        <TextView
+                            android:id="@+id/tvNameFacebook"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:textColor="@color/black_text"
+                            tools:text="@tools:sample/full_names"
+                            android:visibility="gone"
+                            />
+
+                        <TextView
+                            android:id="@+id/tvStatusFacebook"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:textColor="@color/grey_500"
+                            android:text="@string/title_not_linked_account"
+                            />
+
+                    </LinearLayout>
 
                     <TextView
                         android:id="@+id/tvActionFacebook"
@@ -244,30 +280,48 @@
                     android:id="@+id/itemTwitter"
                     android:layout_width="match_parent"
                     android:layout_height="48dp"
-                    android:paddingLeft="24dp"
+                    android:paddingLeft="18dp"
                     android:paddingRight="16dp"
-                    android:paddingTop="8dp"
-                    android:paddingBottom="8dp"
                     android:clickable="true"
                     android:background="?android:attr/selectableItemBackground"
                     >
 
                     <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:src="@drawable/ic_twitter"
+                        android:id="@+id/ivTwitter"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:src="@drawable/ic_twitter_disabled"
                         android:layout_gravity="center_vertical"
                         />
 
-                    <TextView
-                        android:id="@+id/tvStatusTwitter"
+                    <LinearLayout
+                        android:orientation="vertical"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
-                        android:layout_marginLeft="24dp"
-                        android:textColor="@color/grey_500"
-                        android:text="Not connected"
-                        />
+                        android:layout_marginLeft="18dp"
+                        >
+
+                        <TextView
+                            android:id="@+id/tvNameTwitter"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:textColor="@color/black_text"
+                            tools:text="@tools:sample/full_names"
+                            android:visibility="gone"
+                            />
+
+                        <TextView
+                            android:id="@+id/tvStatusTwitter"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:textColor="@color/grey_500"
+                            android:text="@string/title_not_linked_account"
+                            />
+
+                    </LinearLayout>
 
                     <TextView
                         android:id="@+id/tvActionTwitter"

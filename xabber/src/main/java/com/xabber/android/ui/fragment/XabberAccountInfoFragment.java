@@ -61,12 +61,18 @@ public class XabberAccountInfoFragment extends Fragment implements AddEmailDialo
     private RelativeLayout rlLogout;
     private RelativeLayout rlSync;
 
+    private ImageView ivGoogle;
+    private TextView tvNameGoogle;
     private TextView tvStatusGoogle;
     private TextView tvActionGoogle;
     private LinearLayout itemGoogle;
+    private ImageView ivFacebook;
+    private TextView tvNameFacebook;
     private TextView tvStatusFacebook;
     private TextView tvActionFacebook;
     private LinearLayout itemFacebook;
+    private ImageView ivTwitter;
+    private TextView tvNameTwitter;
     private TextView tvStatusTwitter;
     private TextView tvActionTwitter;
     private LinearLayout itemTwitter;
@@ -151,6 +157,8 @@ public class XabberAccountInfoFragment extends Fragment implements AddEmailDialo
         });
 
         tvStatusGoogle = view.findViewById(R.id.tvStatusGoogle);
+        ivGoogle = view.findViewById(R.id.ivGoogle);
+        tvNameGoogle = view.findViewById(R.id.tvNameGoogle);
         tvActionGoogle = view.findViewById(R.id.tvActionGoogle);
         itemGoogle = view.findViewById(R.id.itemGoogle);
         itemGoogle.setOnClickListener(new View.OnClickListener() {
@@ -163,6 +171,8 @@ public class XabberAccountInfoFragment extends Fragment implements AddEmailDialo
         });
 
         tvStatusFacebook = view.findViewById(R.id.tvStatusFacebook);
+        ivFacebook = view.findViewById(R.id.ivFacebook);
+        tvNameFacebook = view.findViewById(R.id.tvNameFacebook);
         tvActionFacebook = view.findViewById(R.id.tvActionFacebook);
         itemFacebook = view.findViewById(R.id.itemFacebook);
         itemFacebook.setOnClickListener(new View.OnClickListener() {
@@ -175,6 +185,8 @@ public class XabberAccountInfoFragment extends Fragment implements AddEmailDialo
         });
 
         tvStatusTwitter = view.findViewById(R.id.tvStatusTwitter);
+        ivTwitter = view.findViewById(R.id.ivTwitter);
+        tvNameTwitter = view.findViewById(R.id.tvNameTwitter);
         tvActionTwitter = view.findViewById(R.id.tvActionTwitter);
         itemTwitter = view.findViewById(R.id.itemTwitter);
         itemTwitter.setOnClickListener(new View.OnClickListener() {
@@ -340,20 +352,26 @@ public class XabberAccountInfoFragment extends Fragment implements AddEmailDialo
     private void setupSocial(List<SocialBindingDTO> socialBindings) {
         for (SocialBindingDTO socialBinding : socialBindings) {
             if ("google".equals(socialBinding.getProvider())) {
-                tvStatusGoogle.setText(socialBinding.getFirstName() + " " + socialBinding.getLastName());
+                ivGoogle.setImageResource(R.drawable.ic_google_plus);
+                tvNameGoogle.setText(socialBinding.getFirstName() + " " + socialBinding.getLastName());
+                tvNameGoogle.setVisibility(View.VISIBLE);
+                tvStatusGoogle.setText(getResources().getString(R.string.title_linked_account, "Google +"));
                 tvActionGoogle.setText(R.string.action_disconnect);
-                tvStatusGoogle.setTextColor(getActivity().getResources().getColor(R.color.black_text));
-                tvActionGoogle.setTextColor(getActivity().getResources().getColor(R.color.black_text));
+                tvActionGoogle.setTextColor(getActivity().getResources().getColor(R.color.account_register_blue));
             } else if ("facebook".equals(socialBinding.getProvider())) {
-                tvStatusFacebook.setText(socialBinding.getFirstName() + " " + socialBinding.getLastName());
+                ivFacebook.setImageResource(R.drawable.ic_facebook);
+                tvNameFacebook.setText(socialBinding.getFirstName() + " " + socialBinding.getLastName());
+                tvNameFacebook.setVisibility(View.VISIBLE);
+                tvStatusFacebook.setText(getResources().getString(R.string.title_linked_account, "Facebook"));
                 tvActionFacebook.setText(R.string.action_disconnect);
-                tvStatusFacebook.setTextColor(getActivity().getResources().getColor(R.color.black_text));
-                tvActionFacebook.setTextColor(getActivity().getResources().getColor(R.color.black_text));
+                tvActionFacebook.setTextColor(getActivity().getResources().getColor(R.color.account_register_blue));
             } else if ("twitter".equals(socialBinding.getProvider())) {
-                tvStatusTwitter.setText(socialBinding.getFirstName() + " " + socialBinding.getLastName());
+                ivTwitter.setImageResource(R.drawable.ic_twitter);
+                tvNameTwitter.setText(socialBinding.getFirstName() + " " + socialBinding.getLastName());
+                tvNameTwitter.setVisibility(View.VISIBLE);
+                tvStatusTwitter.setText(getResources().getString(R.string.title_linked_account, "Twitter"));
                 tvActionTwitter.setText(R.string.action_disconnect);
-                tvStatusTwitter.setTextColor(getActivity().getResources().getColor(R.color.black_text));
-                tvActionTwitter.setTextColor(getActivity().getResources().getColor(R.color.black_text));
+                tvActionTwitter.setTextColor(getActivity().getResources().getColor(R.color.account_register_blue));
             }
         }
     }
