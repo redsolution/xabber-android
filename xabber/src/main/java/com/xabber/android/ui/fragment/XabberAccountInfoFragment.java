@@ -180,7 +180,7 @@ public class XabberAccountInfoFragment extends Fragment implements AddEmailDialo
         itemFacebook.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (tvActionGoogle.getText().equals(getString(R.string.action_connect)))
+                if (tvActionFacebook.getText().equals(getString(R.string.action_connect)))
                     listener.onSocialBindClick(AuthManager.PROVIDER_FACEBOOK);
                 else listener.onSocialUnbindClick(AuthManager.PROVIDER_FACEBOOK);
             }
@@ -194,7 +194,7 @@ public class XabberAccountInfoFragment extends Fragment implements AddEmailDialo
         itemTwitter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (tvActionGoogle.getText().equals(getString(R.string.action_connect)))
+                if (tvActionTwitter.getText().equals(getString(R.string.action_connect)))
                     listener.onSocialBindClick(AuthManager.PROVIDER_TWITTER);
                 else listener.onSocialUnbindClick(AuthManager.PROVIDER_TWITTER);
             }

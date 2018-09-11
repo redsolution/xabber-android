@@ -126,6 +126,30 @@ public class XabberAccountActivity extends BaseLoginActivity
     }
 
     @Override
+    protected void onSocialAuthSuccess(String provider, String credentials) {
+        showProgress(getResources().getString(R.string.progress_title_bind_social));
+        Subscription loginSocialSubscription = AuthManager.bindSocial(provider, credentials)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<ResponseBody>() {
+                    @Override
+                    public void call(ResponseBody s) {
+                        hideProgress();
+                        Toast.makeText(XabberAccountActivity.this,
+                                R.string.social_bind_success, Toast.LENGTH_SHORT).show();
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        hideProgress();
+                        Toast.makeText(XabberAccountActivity.this,
+                                R.string.social_bind_fail, Toast.LENGTH_SHORT).show();
+                    }
+                });
+        compositeSubscription.add(loginSocialSubscription);
+    }
+
+    @Override
     public void onSocialUnbindClick(String provider) {
         showProgress(getResources().getString(R.string.progress_title_unbind_social));
         Subscription unbindSocialSubscription = AuthManager.unbindSocial(provider)
@@ -134,12 +158,14 @@ public class XabberAccountActivity extends BaseLoginActivity
                 .subscribe(new Action1<ResponseBody>() {
                     @Override
                     public void call(ResponseBody responseBody) {
+                        hideProgress();
                         Toast.makeText(XabberAccountActivity.this,
                                 R.string.social_unbind_success, Toast.LENGTH_SHORT).show();
                     }
                 }, new Action1<Throwable>() {
                     @Override
                     public void call(Throwable throwable) {
+                        hideProgress();
                         Toast.makeText(XabberAccountActivity.this,
                                 R.string.social_unbind_fail, Toast.LENGTH_SHORT).show();
                     }
@@ -318,29 +344,5 @@ public class XabberAccountActivity extends BaseLoginActivity
     private void handleErrorConfirm(Throwable throwable) {
         hideProgress();
         handleError(throwable, "Error while confirming email: ", LOG_TAG);
-    }
-
-    /** SOCIAL AUTH */
-
-    @Override
-    protected void onSocialAuthSuccess(String provider, String credentials) {
-        showProgress(getResources().getString(R.string.progress_title_bind_social));
-        Subscription loginSocialSubscription = AuthManager.bindSocial(provider, credentials)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<ResponseBody>() {
-                    @Override
-                    public void call(ResponseBody s) {
-                        Toast.makeText(XabberAccountActivity.this,
-                                R.string.social_bind_success, Toast.LENGTH_SHORT).show();
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        Toast.makeText(XabberAccountActivity.this,
-                                R.string.social_bind_fail, Toast.LENGTH_SHORT).show();
-                    }
-                });
-        compositeSubscription.add(loginSocialSubscription);
     }
 }
