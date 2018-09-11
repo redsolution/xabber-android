@@ -139,9 +139,10 @@
                     />
 
                 <TextView
+                    android:id="@+id/tvLinks"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="No linked social accounts or emails"
+                    android:text="@string/title_no_linked_accounts"
                     android:layout_marginLeft="24dp"
                     android:layout_gravity="center_vertical"
                     />

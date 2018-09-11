@@ -81,6 +81,7 @@ public class XabberAccountInfoFragment extends Fragment implements AddEmailDialo
     private EmailAdapter emailAdapter;
     private View viewAddEmail;
 
+    private TextView tvLinks;
     private View viewShowLinks;
     private View viewLinks;
     private ImageView ivChevron;
@@ -144,6 +145,7 @@ public class XabberAccountInfoFragment extends Fragment implements AddEmailDialo
         });
 
         ivChevron = view.findViewById(R.id.ivChevron);
+        tvLinks = view.findViewById(R.id.tvLinks);
         viewLinks = view.findViewById(R.id.viewLinks);
         viewShowLinks = view.findViewById(R.id.viewShowLinks);
         viewShowLinks.setOnClickListener(new View.OnClickListener() {
@@ -374,10 +376,12 @@ public class XabberAccountInfoFragment extends Fragment implements AddEmailDialo
                 tvActionTwitter.setTextColor(getActivity().getResources().getColor(R.color.account_register_blue));
             }
         }
+        if (socialBindings.size() > 0) tvLinks.setText(R.string.title_linked_accounts);
     }
 
 
     private void setupEmailList(List<EmailDTO> emails) {
+        if (emails.size() > 0) tvLinks.setText(R.string.title_linked_accounts);
         emailAdapter.setItems(emails);
         emailAdapter.notifyDataSetChanged();
     }
