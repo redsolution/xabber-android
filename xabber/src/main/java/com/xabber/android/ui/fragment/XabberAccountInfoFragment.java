@@ -1,6 +1,7 @@
 package com.xabber.android.ui.fragment;
 
 import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -80,7 +81,8 @@ public class XabberAccountInfoFragment extends Fragment implements AddEmailDialo
     private View viewLinks;
     private ImageView ivChevron;
 
-    private boolean dialogShowed;
+    private Fragment fragmentSync;
+    private FragmentTransaction fTrans;
 
     private CompositeSubscription compositeSubscription = new CompositeSubscription();
     private Listener listener;
@@ -115,17 +117,6 @@ public class XabberAccountInfoFragment extends Fragment implements AddEmailDialo
         tvAccountUsername = (TextView) view.findViewById(R.id.tvAccountUsername);
         tvLanguage = (TextView) view.findViewById(R.id.tvLanguage);
         tvLastSyncDate = (TextView) view.findViewById(R.id.tvLastSyncDate);
-
-        rlSync = (RelativeLayout) view.findViewById(R.id.rlSync);
-        rlSync.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!dialogShowed) {
-                    dialogShowed = true;
-                    showSyncDialog(false);
-                }
-            }
-        });
 
         ivChevron = view.findViewById(R.id.ivChevron);
         tvLinks = view.findViewById(R.id.tvLinks);
@@ -195,9 +186,6 @@ public class XabberAccountInfoFragment extends Fragment implements AddEmailDialo
                         .show(getFragmentManager(), AccountSyncDialogFragment.class.getSimpleName());
             }
         });
-
-        if (getArguments().getBoolean("SHOW_SYNC", false))
-            showSyncDialog(true);
     }
 
     @Override
@@ -210,6 +198,8 @@ public class XabberAccountInfoFragment extends Fragment implements AddEmailDialo
             updateLastSyncTime();
         }
         else getActivity().finish();
+
+        getSettings();
     }
 
     @Override
@@ -269,7 +259,7 @@ public class XabberAccountInfoFragment extends Fragment implements AddEmailDialo
         tvLastSyncDate.setText(getString(R.string.last_sync_date, SettingsManager.getLastSyncDate()));
     }
 
-    public void showSyncDialog(final boolean noCancel) {
+    private void getSettings() {
         Subscription getSettingsSubscription = AuthManager.getClientSettings()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -281,10 +271,8 @@ public class XabberAccountInfoFragment extends Fragment implements AddEmailDialo
                         if (items != null && items.size() > 0) {
                             // save full list to list for sync
                             XabberAccountManager.getInstance().setXmppAccountsForSync(items);
-                            // show dialog
-                            AccountSyncDialogFragment.newInstance(XabberAccountInfoFragment.this, noCancel)
-                                    .show(getFragmentManager(), AccountSyncDialogFragment.class.getSimpleName());
-                            dialogShowed = false;
+                            // show fragment
+                            showSyncFragment();
                         } else Toast.makeText(getActivity(), R.string.sync_fail, Toast.LENGTH_SHORT).show();
                     }
                 }, new Action1<Throwable>() {
@@ -294,6 +282,13 @@ public class XabberAccountInfoFragment extends Fragment implements AddEmailDialo
                     }
                 });
         compositeSubscription.add(getSettingsSubscription);
+    }
+
+    private void showSyncFragment() {
+        fragmentSync = AccountSyncFragment.newInstance();
+        fTrans = getFragmentManager().beginTransaction();
+        fTrans.replace(R.id.childContainer, fragmentSync);
+        fTrans.commit();
     }
 
     private void handleErrorGetSettings(Throwable throwable) {

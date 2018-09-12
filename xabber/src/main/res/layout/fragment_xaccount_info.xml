@@ -407,62 +407,20 @@
             android:orientation="vertical"
             >
 
-            <RelativeLayout
-                android:id="@+id/rlSync"
+            <FrameLayout
+                android:id="@+id/childContainer"
                 android:layout_width="match_parent"
-                android:layout_height="52dp"
-                android:layout_below="@id/llAccount"
-                >
+                android:layout_height="wrap_content"/>
 
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingLeft="24dp"
-                    android:paddingRight="16dp"
-                    android:paddingTop="8dp"
-                    android:paddingBottom="8dp"
-                    android:background="?android:attr/selectableItemBackground"
-                    >
-
-                    <ImageView
-                        android:id="@+id/ivSync"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:src="@drawable/ic_sync"
-                        android:layout_centerVertical="true"
-                        android:tint="@color/grey_600"
-                        />
-
-                    <LinearLayout
-                        android:orientation="vertical"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:layout_toRightOf="@+id/ivSync"
-                        android:layout_marginLeft="24dp"
-                        >
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textColor="?android:attr/textColorPrimary"
-                            android:text="@string/button_sync"
-                            />
-
-                        <TextView
-                            android:id="@+id/tvLastSyncDate"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:singleLine="true"
-                            android:text="@string/last_sync_date"
-                            android:textColor="@color/grey_500"
-                            android:textSize="14sp" />
-
-                    </LinearLayout>
-
-                </RelativeLayout>
-
-            </RelativeLayout>
+            <TextView
+                android:id="@+id/tvLastSyncDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:singleLine="true"
+                android:text="@string/last_sync_date"
+                android:textColor="@color/grey_500"
+                android:textSize="14sp"
+                android:padding="8dp"/>
 
         </LinearLayout>
 
