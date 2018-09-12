@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import com.xabber.android.R;
@@ -170,7 +171,7 @@ public class XMPPAccountAdapter extends RecyclerView.Adapter {
         ImageView avatar;
         TextView username;
         TextView jid;
-        CheckBox chkAccountSync;
+        Switch chkAccountSync;
 
 
         XMPPAccountVH(View itemView) {
@@ -179,7 +180,7 @@ public class XMPPAccountAdapter extends RecyclerView.Adapter {
             avatar = (ImageView) itemView.findViewById(R.id.avatar);
             username = (TextView) itemView.findViewById(R.id.tvAccountName);
             jid = (TextView) itemView.findViewById(R.id.tvAccountJid);
-            chkAccountSync = (CheckBox) itemView.findViewById(R.id.chkAccountSync);
+            chkAccountSync = (Switch) itemView.findViewById(R.id.chkAccountSync);
             chkAccountSync.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

@@ -4,18 +4,17 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingTop="8dp"
+    android:paddingTop="16dp"
     android:paddingLeft="16dp"
     android:paddingRight="16dp">
 
     <TextView
-        android:id="@+id/drawer_header_action_xmpp_accounts"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textSize="16sp"
-        android:textStyle="bold"
         android:text="@string/title_sync"
+        android:textColor="@color/android_default_accent_color"
         />
 
     <TextView
@@ -72,7 +71,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:theme="@style/RedSwitchStyle"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             />
