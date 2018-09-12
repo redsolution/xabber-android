@@ -109,6 +109,9 @@ public class XabberAccountActivity extends BaseLoginActivity
                     showLogoutDialog();
                 }
                 return true;
+            case R.id.action_sync:
+                synchronize(false);
+                return true;
             default:
                 return false;
         }

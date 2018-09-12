@@ -64,7 +64,7 @@
   <string name="button_confirm">подтвердить</string>
   <string name="button_cancel_registration">Прервать регистрацию</string>
   <string name="button_continue">продолжить</string>
-  <string name="button_sync">СИНХРОНИЗИРОВАТЬ</string>
+  <string name="button_sync">Синхронизировать</string>
   <string name="btn_done">закончить</string>
   <string name="not_login">Вход не выполнен</string>
   <string name="enter_password">Пожалуйста, введите пароль для этого аккаунта</string>

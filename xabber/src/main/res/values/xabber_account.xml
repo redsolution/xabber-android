@@ -105,7 +105,7 @@
     <string name="button_confirm">confirm</string>
     <string name="button_cancel_registration">Cancel registration</string>
     <string name="button_continue">continue</string>
-    <string name="button_sync">SYNCHRONIZE</string>
+    <string name="button_sync">Sync now</string>
 
     <string name="btn_done">done</string>
 
