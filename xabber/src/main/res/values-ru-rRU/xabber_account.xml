@@ -51,7 +51,7 @@
   <string name="title_completed_register">Регистрация завершена</string>
   <string name="title_start_messaging">Начните общение!</string>
   <string name="title_reordering_account">Порядок аккаунтов</string>
-  <string name="title_sync">Синхронизация</string>
+  <string name="title_sync">Синхронизированные аккаунты</string>
   <string name="title_login_xabber_account">Авторизация</string>
   <string name="title_register_xabber_account">Регистрация</string>
   <string name="summary_xabber_account_in_login">Аккаунт Xabber требуется для использования сервисов Xabber и синхронизации настроек устройств.</string>

@@ -13,13 +13,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.xabber.android.BuildConfig;
 import com.xabber.android.R;
-import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.xaccount.AuthManager;
 import com.xabber.android.data.xaccount.EmailDTO;
 import com.xabber.android.data.xaccount.SocialBindingDTO;
@@ -53,8 +51,6 @@ public class XabberAccountInfoFragment extends Fragment implements AddEmailDialo
     private TextView tvAccountUsername;
     private TextView tvLanguage;
     private TextView tvPhone;
-    private TextView tvLastSyncDate;
-    private RelativeLayout rlSync;
 
     private ImageView ivGoogle;
     private TextView tvNameGoogle;
@@ -116,7 +112,6 @@ public class XabberAccountInfoFragment extends Fragment implements AddEmailDialo
         tvAccountName = (TextView) view.findViewById(R.id.tvAccountName);
         tvAccountUsername = (TextView) view.findViewById(R.id.tvAccountUsername);
         tvLanguage = (TextView) view.findViewById(R.id.tvLanguage);
-        tvLastSyncDate = (TextView) view.findViewById(R.id.tvLastSyncDate);
 
         ivChevron = view.findViewById(R.id.ivChevron);
         tvLinks = view.findViewById(R.id.tvLinks);
@@ -195,7 +190,6 @@ public class XabberAccountInfoFragment extends Fragment implements AddEmailDialo
         XabberAccount account = XabberAccountManager.getInstance().getAccount();
         if (account != null) {
             updateData(account);
-            updateLastSyncTime();
         }
         else getActivity().finish();
 
@@ -256,7 +250,8 @@ public class XabberAccountInfoFragment extends Fragment implements AddEmailDialo
     }
 
     public void updateLastSyncTime() {
-        tvLastSyncDate.setText(getString(R.string.last_sync_date, SettingsManager.getLastSyncDate()));
+        if (fragmentSync != null && fragmentSync.isVisible())
+            ((AccountSyncFragment) fragmentSync).updateLastSyncTime();
     }
 
     private void getSettings() {

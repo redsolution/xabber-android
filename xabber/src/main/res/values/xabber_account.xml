@@ -78,7 +78,7 @@
     <string name="title_completed_register">Registration completed</string>
     <string name="title_start_messaging">Start messaging!</string>
     <string name="title_reordering_account">Reorder accounts</string>
-    <string name="title_sync">Synchronization</string>
+    <string name="title_sync">Synchronized accounts</string>
     <string name="title_add_email">Link email account</string>
     <string name="title_verified_email">Verified email address</string>
     <string name="title_unverified_email">Unverified email address</string>
@@ -115,6 +115,7 @@
     <string name="last_sync_date">Last synchronization: %1$s</string>
     <string name="last_sync_date_never">never</string>
     <string name="sync_all">Synchronize all</string>
+    <string name="sync_all_description">Settings of all accounts and account order will be automatically synced with other devices</string>
     <string name="no_email">no email</string>
     <string name="no_username">no username</string>
     <string name="no_phone">no phone</string>

@@ -412,16 +412,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
 
-            <TextView
-                android:id="@+id/tvLastSyncDate"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:singleLine="true"
-                android:text="@string/last_sync_date"
-                android:textColor="@color/grey_500"
-                android:textSize="14sp"
-                android:padding="8dp"/>
-
         </LinearLayout>
 
     </android.support.v7.widget.CardView>

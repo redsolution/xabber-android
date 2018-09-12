@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.Switch;
+import android.widget.TextView;
 
 import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
@@ -29,6 +30,7 @@ public class AccountSyncFragment extends Fragment implements XMPPAccountAdapter.
     private List<XMPPAccountSettings> xmppAccounts;
     private Switch switchSyncAll;
     private XMPPAccountAdapter adapter;
+    private TextView tvLastSyncDate;
 
     public static AccountSyncFragment newInstance() {
         AccountSyncFragment fragment = new AccountSyncFragment();
@@ -44,6 +46,8 @@ public class AccountSyncFragment extends Fragment implements XMPPAccountAdapter.
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        tvLastSyncDate = (TextView) view.findViewById(R.id.tvLastSyncDate);
 
         switchSyncAll = (Switch) view.findViewById(R.id.switchSyncAll);
         switchSyncAll.setChecked(SettingsManager.isSyncAllAccounts());
@@ -68,6 +72,16 @@ public class AccountSyncFragment extends Fragment implements XMPPAccountAdapter.
         RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.list);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(adapter);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        updateLastSyncTime();
+    }
+
+    public void updateLastSyncTime() {
+        tvLastSyncDate.setText(getString(R.string.last_sync_date, SettingsManager.getLastSyncDate()));
     }
 
     private void setXmppAccounts(List<XMPPAccountSettings> items) {
