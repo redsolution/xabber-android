@@ -1,15 +1,21 @@
 package com.xabber.android.ui.activity;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.Toast;
 
 import com.xabber.android.R;
@@ -28,7 +34,7 @@ import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
 public class XabberAccountActivity extends BaseLoginActivity
-        implements XabberAccountInfoFragment.Listener {
+        implements XabberAccountInfoFragment.Listener, Toolbar.OnMenuItemClickListener {
 
     private final static String LOG_TAG = XabberAccountActivity.class.getSimpleName();
     private final static String FRAGMENT_INFO = "fragment_info";
@@ -42,6 +48,8 @@ public class XabberAccountActivity extends BaseLoginActivity
     private ProgressDialog progressDialog;
     private boolean needShowSyncDialog = false;
 
+    private boolean dialogShowed;
+
     @NonNull
     public static Intent createIntent(Context context, boolean showSync) {
         Intent intent = new Intent(context, XabberAccountActivity.class);
@@ -53,9 +61,11 @@ public class XabberAccountActivity extends BaseLoginActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        setTheme(R.style.Theme_LightToolbar);
         setContentView(R.layout.activity_xabber_account_info);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar_default);
+        toolbar.setOnMenuItemClickListener(this);
         toolbar.setNavigationIcon(R.drawable.ic_arrow_left);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -88,6 +98,20 @@ public class XabberAccountActivity extends BaseLoginActivity
     protected void onDestroy() {
         super.onDestroy();
         compositeSubscription.clear();
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_quit:
+                if (!dialogShowed) {
+                    dialogShowed = true;
+                    showLogoutDialog();
+                }
+                return true;
+            default:
+                return false;
+        }
     }
 
     @Override
@@ -236,6 +260,27 @@ public class XabberAccountActivity extends BaseLoginActivity
     }
 
     /** LOGOUT */
+
+    private void showLogoutDialog() {
+        LayoutInflater inflater = getLayoutInflater();
+        View view = inflater.inflate(R.layout.dialog_logout_xabber_account, null);
+        final CheckBox chbDeleteAccounts = (CheckBox) view.findViewById(R.id.chbDeleteAccounts);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.progress_title_quit)
+                .setMessage(R.string.logout_summary)
+                .setView(view)
+                .setPositiveButton(R.string.button_quit, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        onLogoutClick(chbDeleteAccounts.isChecked());
+                    }
+                })
+                .setNegativeButton(R.string.cancel, null);
+        Dialog dialog = builder.create();
+        dialog.show();
+        dialogShowed = false;
+    }
 
     private void logout(final boolean deleteAccounts) {
         showProgress(getResources().getString(R.string.progress_title_quit));

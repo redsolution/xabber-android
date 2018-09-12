@@ -56,7 +56,7 @@
   <string name="title_register_xabber_account">Регистрация</string>
   <string name="summary_xabber_account_in_login">Аккаунт Xabber требуется для использования сервисов Xabber и синхронизации настроек устройств.</string>
   <string name="summary_username">Имя пользователя Xabber также является XMPP id</string>
-  <string name="button_quit">ВЫХОД</string>
+  <string name="button_quit">Выход</string>
   <string name="button_login">ВХОД</string>
   <string name="button_registration">РЕГИСТРАЦИЯ</string>
   <string name="button_resend_link">ОТПРАВИТЬ КОД</string>

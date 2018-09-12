@@ -1,9 +1,6 @@
 package com.xabber.android.ui.fragment;
 
-import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.Fragment;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -13,8 +10,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -58,7 +53,6 @@ public class XabberAccountInfoFragment extends Fragment implements AddEmailDialo
     private TextView tvLanguage;
     private TextView tvPhone;
     private TextView tvLastSyncDate;
-    private RelativeLayout rlLogout;
     private RelativeLayout rlSync;
 
     private ImageView ivGoogle;
@@ -121,17 +115,6 @@ public class XabberAccountInfoFragment extends Fragment implements AddEmailDialo
         tvAccountUsername = (TextView) view.findViewById(R.id.tvAccountUsername);
         tvLanguage = (TextView) view.findViewById(R.id.tvLanguage);
         tvLastSyncDate = (TextView) view.findViewById(R.id.tvLastSyncDate);
-
-        rlLogout = (RelativeLayout) view.findViewById(R.id.rlLogout);
-        rlLogout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!dialogShowed) {
-                    dialogShowed = true;
-                    showLogoutDialog();
-                }
-            }
-        });
 
         rlSync = (RelativeLayout) view.findViewById(R.id.rlSync);
         rlSync.setOnClickListener(new View.OnClickListener() {
@@ -328,27 +311,6 @@ public class XabberAccountInfoFragment extends Fragment implements AddEmailDialo
             Log.d(LOG_TAG, "Error while synchronization: " + throwable.toString());
             Toast.makeText(getActivity(), R.string.sync_fail, Toast.LENGTH_LONG).show();
         }
-    }
-
-    private void showLogoutDialog() {
-        LayoutInflater inflater = getActivity().getLayoutInflater();
-        View view = inflater.inflate(R.layout.dialog_logout_xabber_account, null);
-        final CheckBox chbDeleteAccounts = (CheckBox) view.findViewById(R.id.chbDeleteAccounts);
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle(R.string.progress_title_quit)
-                .setMessage(R.string.logout_summary)
-                .setView(view)
-                .setPositiveButton(R.string.button_quit, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        listener.onLogoutClick(chbDeleteAccounts.isChecked());
-                    }
-                })
-                .setNegativeButton(R.string.cancel, null);
-        Dialog dialog = builder.create();
-        dialog.show();
-        dialogShowed = false;
     }
 
     private void setupSocial(List<SocialBindingDTO> socialBindings) {

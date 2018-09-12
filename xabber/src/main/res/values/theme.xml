@@ -14,6 +14,10 @@
 -->
 <resources>
 
+    <style name="Theme.LightToolbar" parent="Theme">
+        <item name="actionOverflowButtonStyle">@style/OverflowButtonStyle</item>
+    </style>
+
     <style name="Theme" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>

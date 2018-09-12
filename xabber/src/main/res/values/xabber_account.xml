@@ -97,7 +97,7 @@
     <string name="button_advanced_options">ADVANCED OPTIONS</string>
     <string name="button_hide_options">HIDE OPTIONS</string>
     <string name="button_terms_of_service">TERMS OF SERVICE</string>
-    <string name="button_quit">QUIT</string>
+    <string name="button_quit">Quit</string>
     <string name="button_login">SIGN IN</string>
     <string name="button_registration">SIGN UP</string>
     <string name="button_resend_link">RESEND CODE</string>
