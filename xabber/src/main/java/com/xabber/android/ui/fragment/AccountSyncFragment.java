@@ -20,9 +20,11 @@ import com.xabber.android.ui.adapter.XMPPAccountAdapter;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-public class AccountSyncFragment extends Fragment {
+public class AccountSyncFragment extends Fragment implements XMPPAccountAdapter.Listener {
 
     private List<XMPPAccountSettings> xmppAccounts;
     private Switch switchSyncAll;
@@ -50,13 +52,14 @@ public class AccountSyncFragment extends Fragment {
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if (adapter != null)
                     adapter.setAllChecked(b);
+                saveSyncSettings();
             }
         });
         if (AccountManager.getInstance().haveNotAllowedSyncAccounts()) switchSyncAll.setEnabled(false);
 
         setXmppAccounts(XabberAccountManager.getInstance().getXmppAccountsForSync());
 
-        adapter = new XMPPAccountAdapter(getActivity());
+        adapter = new XMPPAccountAdapter(getActivity(), this);
         adapter.setItems(xmppAccounts);
 
         if (adapter != null && SettingsManager.isSyncAllAccounts())
@@ -84,5 +87,29 @@ public class AccountSyncFragment extends Fragment {
             this.xmppAccounts.add(newAccount);
         }
         Collections.sort(xmppAccounts);
+    }
+
+    private void saveSyncSettings() {
+        // set accounts to sync map
+        if (!switchSyncAll.isChecked()) {
+            Map<String, Boolean> syncState = new HashMap<>();
+            for (XMPPAccountSettings account : xmppAccounts) {
+                if (account.getStatus() != XMPPAccountSettings.SyncStatus.local) {
+                    syncState.put(account.getJid(), account.isSynchronization());
+                } else if (account.isSynchronization() || XabberAccountManager.getInstance()
+                        .getAccountSyncState(account.getJid()) != null) {
+                    syncState.put(account.getJid(), account.isSynchronization());
+                }
+            }
+            XabberAccountManager.getInstance().setAccountSyncState(syncState);
+        }
+
+        // set sync all
+        SettingsManager.setSyncAllAccounts(switchSyncAll.isChecked());
+    }
+
+    @Override
+    public void onChkClick() {
+        saveSyncSettings();
     }
 }

@@ -107,7 +107,7 @@ public class AccountSyncDialogFragment extends DialogFragment {
 
         setXmppAccounts(XabberAccountManager.getInstance().getXmppAccountsForSync());
 
-        adapter = new XMPPAccountAdapter(getActivity());
+        //adapter = new XMPPAccountAdapter(getActivity());
         adapter.setItems(xmppAccounts);
 
         if (adapter != null && SettingsManager.isSyncAllAccounts())

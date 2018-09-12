@@ -14,7 +14,6 @@ import com.xabber.android.R;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.xaccount.XMPPAccountSettings;
-import com.xabber.android.data.xaccount.XabberAccount;
 import com.xabber.android.data.xaccount.XabberAccountManager;
 import com.xabber.android.ui.color.ColorManager;
 
@@ -29,9 +28,15 @@ public class XMPPAccountAdapter extends RecyclerView.Adapter {
     private List<XMPPAccountSettings> items;
     private boolean isAllChecked;
     private Context context;
+    private Listener listener;
 
-    public XMPPAccountAdapter(Context context) {
+    public interface Listener {
+        void onChkClick();
+    }
+
+    public XMPPAccountAdapter(Context context, Listener listener) {
         this.context = context;
+        this.listener = listener;
     }
 
     public void setItems(List<XMPPAccountSettings> items) {
@@ -179,6 +184,7 @@ public class XMPPAccountAdapter extends RecyclerView.Adapter {
                 @Override
                 public void onClick(View v) {
                     notifyDataSetChanged();
+                    listener.onChkClick();
                 }
             });
         }
