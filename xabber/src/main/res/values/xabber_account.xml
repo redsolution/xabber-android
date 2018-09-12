@@ -126,6 +126,7 @@
     <string name="username_rules">Username may contain only lowercase latin letters, numbers and dots</string>
     <string name="username_rules_first_symbol">Username must start with letter</string>
     <string name="username_rules_dots">Username must not contain two dots in a row</string>
+    <string name="sync_security_description">Your passwords are never synchronized and are safe from theft. But you have to enter them on every device (unless you use tokens, which you should)</string>
 
     <string name="sync_with_xabber_account">Synchronize with Xabber account</string>
     <string name="delete_synced_accounts">Delete synchronized XMPP accounts from this device?</string>
