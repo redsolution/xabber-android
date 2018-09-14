@@ -88,6 +88,7 @@ public class XabberAccountInfoFragment extends Fragment implements AddEmailDialo
         void onSocialBindClick(String provider);
         void onSocialUnbindClick(String provider);
         void onAddEmailClick(String email);
+        void onDeleteEmailClick(int emailId);
         void onConfirmEmailClick(String email, String code);
         void onLogoutClick(boolean deleteAccounts);
         void onSyncClick(boolean needGoToMainActivity);
@@ -210,9 +211,14 @@ public class XabberAccountInfoFragment extends Fragment implements AddEmailDialo
     }
 
     @Override
-    public void onEmailClick(String email) {
+    public void onEmailVerifyClick(String email) {
         ConfirmEmailDialogFragment.newInstance(this, email)
                 .show(getFragmentManager(), AccountSyncDialogFragment.class.getSimpleName());
+    }
+
+    @Override
+    public void onEmailDeleteClick(int id) {
+        listener.onDeleteEmailClick(id);
     }
 
     @Override

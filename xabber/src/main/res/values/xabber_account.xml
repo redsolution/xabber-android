@@ -16,6 +16,7 @@
     <string name="quit_fail">Quit failed</string>
     <string name="confirm_success">Email confirmed</string>
     <string name="confirm_fail">Email confirmation failed</string>
+    <string name="delete_success">Email deleted</string>
     <string name="complete_success">Registration completed</string>
     <string name="complete_fail">Registration failed</string>
     <string name="resend_success">Verification email sent</string>
@@ -42,6 +43,7 @@
     <string name="progress_title_confirm">Confirmation</string>
     <string name="progress_title_complete">Registration completion</string>
     <string name="progress_title_resend">Resending email</string>
+    <string name="progress_title_delete">Deleting email</string>
     <string name="progress_title_set_phone">Setting phone number</string>
     <string name="progress_title_confirm_phone">Confirming phone number</string>
     <string name="progress_title_delete_settings">Delete settings</string>

@@ -4,11 +4,13 @@ import java.util.List;
 
 import okhttp3.ResponseBody;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.HTTP;
 import retrofit2.http.Header;
 import retrofit2.http.PATCH;
 import retrofit2.http.POST;
+import retrofit2.http.Path;
 import rx.Single;
 
 /**
@@ -64,6 +66,9 @@ public interface IXabberApi {
 
     @POST("accounts/current/email_list/")
     Single<ResponseBody> addEmail(@Header("Authorization") String token, @Body AuthManager.Email email);
+
+    @DELETE("accounts/current/email_list/{email_id}/")
+    Single<ResponseBody> deleteEmail(@Header("Authorization") String token, @Path(value = "email_id", encoded = true) int emailId);
 
     /* Xabber API v2 */
 

@@ -19,7 +19,8 @@ public class EmailAdapter extends RecyclerView.Adapter<EmailAdapter.EmailViewHol
     private Listener listener;
 
     public interface Listener {
-        void onEmailClick(String email);
+        void onEmailVerifyClick(String email);
+        void onEmailDeleteClick(int id);
     }
 
     public EmailAdapter(Listener listener) {
@@ -49,7 +50,9 @@ public class EmailAdapter extends RecyclerView.Adapter<EmailAdapter.EmailViewHol
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                listener.onEmailClick(emailDTO.getEmail());
+                if (emailDTO.isVerified())
+                    listener.onEmailDeleteClick(emailDTO.getId());
+                else listener.onEmailVerifyClick(emailDTO.getEmail());
             }
         });
     }

@@ -228,6 +228,11 @@ public class XabberAccountActivity extends BaseLoginActivity
     }
 
     @Override
+    public void onDeleteEmailClick(int emailId) {
+        deleteEmail(emailId);
+    }
+
+    @Override
     public void onConfirmEmailClick(String email, String code) {
         confirmEmail(code);
     }
@@ -390,11 +395,43 @@ public class XabberAccountActivity extends BaseLoginActivity
     private void handleSuccessConfirm(XabberAccount response) {
         hideProgress();
         Toast.makeText(this, R.string.confirm_success, Toast.LENGTH_SHORT).show();
-        synchronize(false);
+        updateAccountInfo(response);
     }
 
     private void handleErrorConfirm(Throwable throwable) {
         hideProgress();
         handleError(throwable, "Error while confirming email: ", LOG_TAG);
+    }
+
+    /** DELETE EMAIL */
+
+    private void deleteEmail(int emailId) {
+        showProgress(getResources().getString(R.string.progress_title_delete));
+        Subscription deleteSubscription = AuthManager.deleteEmail(emailId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<ResponseBody>() {
+                    @Override
+                    public void call(ResponseBody s) {
+                        handleSuccessDelete(s);
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        handleErrorDelete(throwable);
+                    }
+                });
+        compositeSubscription.add(deleteSubscription);
+    }
+
+    private void handleSuccessDelete(ResponseBody response) {
+        hideProgress();
+        Toast.makeText(this, R.string.delete_success, Toast.LENGTH_SHORT).show();
+        synchronize(false);
+    }
+
+    private void handleErrorDelete(Throwable throwable) {
+        hideProgress();
+        handleError(throwable, "Error while deleting email: ", LOG_TAG);
     }
 }

@@ -246,6 +246,10 @@ public class AuthManager {
         return HttpApiManager.getXabberApi().addEmail(getXabberTokenHeader(), new Email(email, getSource()));
     }
 
+    public static Single<ResponseBody> deleteEmail(int emailId) {
+        return HttpApiManager.getXabberApi().deleteEmail(getXabberTokenHeader(), emailId);
+    }
+
     public static Single<ResponseBody> setPhoneNumber(String phoneNumber) {
         return HttpApiManager.getXabberApi().setPhoneNumber(getXabberTokenHeader(), new SetPhoneNumber("set", phoneNumber));
     }
