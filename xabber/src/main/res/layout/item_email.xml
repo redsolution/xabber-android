@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="48dp"
     android:clickable="true"
@@ -13,7 +12,7 @@
         android:layout_height="36dp"
         android:layout_marginLeft="18dp"
         android:src="@drawable/ic_email_circle"
-        android:layout_gravity="center_vertical"
+        android:layout_centerVertical="true"
         />
 
     <LinearLayout
@@ -22,7 +21,9 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="18dp"
         android:layout_marginRight="8dp"
-        android:layout_gravity="center_vertical"
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@id/ivEmail"
+        android:layout_toLeftOf="@id/tvAction"
         >
 
         <TextView
@@ -31,6 +32,8 @@
             android:layout_height="wrap_content"
             android:textColor="?android:attr/textColorPrimary"
             tools:text="@tools:sample/full_names"
+            android:singleLine="true"
+            android:ellipsize="middle"
             />
 
         <TextView
@@ -38,6 +41,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/grey_500"
+            android:singleLine="true"
             android:text="@string/title_unverified_email"
             />
 
@@ -45,13 +49,14 @@
 
     <TextView
         android:id="@+id/tvAction"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/account_register_blue"
         android:text="@string/action_verify"
-        android:layout_gravity="center_vertical"
-        android:gravity="right"
+        android:singleLine="true"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"
         android:layout_marginRight="16dp"
         />
 
-</LinearLayout>
+</RelativeLayout>
