@@ -77,6 +77,7 @@ public class XabberAccountInfoFragment extends Fragment implements AddEmailDialo
     private View viewLinks;
     private ImageView ivChevron;
 
+    private View progressView;
     private Fragment fragmentSync;
     private FragmentTransaction fTrans;
 
@@ -113,6 +114,7 @@ public class XabberAccountInfoFragment extends Fragment implements AddEmailDialo
         tvAccountUsername = (TextView) view.findViewById(R.id.tvAccountUsername);
         tvLanguage = (TextView) view.findViewById(R.id.tvLanguage);
 
+        progressView = view.findViewById(R.id.progressView);
         ivChevron = view.findViewById(R.id.ivChevron);
         tvLinks = view.findViewById(R.id.tvLinks);
         viewLinks = view.findViewById(R.id.viewLinks);
@@ -255,12 +257,14 @@ public class XabberAccountInfoFragment extends Fragment implements AddEmailDialo
     }
 
     private void getSettings() {
+        showProgressView(true);
         Subscription getSettingsSubscription = AuthManager.getClientSettings()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<List<XMPPAccountSettings>>() {
                     @Override
                     public void call(List<XMPPAccountSettings> list) {
+                        showProgressView(false);
                         List<XMPPAccountSettings> items = XabberAccountManager.getInstance().createSyncList(list);
 
                         if (items != null && items.size() > 0) {
@@ -286,7 +290,12 @@ public class XabberAccountInfoFragment extends Fragment implements AddEmailDialo
         fTrans.commit();
     }
 
+    private void showProgressView(boolean show) {
+        progressView.setVisibility(show ? View.VISIBLE : View.GONE);
+    }
+
     private void handleErrorGetSettings(Throwable throwable) {
+        showProgressView(false);
         String message = RetrofitErrorConverter.throwableToHttpError(throwable);
         if (message != null) {
             if (message.equals("Invalid token")) {
