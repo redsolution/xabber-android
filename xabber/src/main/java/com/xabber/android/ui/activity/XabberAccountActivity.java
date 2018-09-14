@@ -358,6 +358,7 @@ public class XabberAccountActivity extends BaseLoginActivity
     private void handleSuccessResendEmail(ResponseBody response) {
         hideProgress();
         Toast.makeText(this, R.string.resend_success, Toast.LENGTH_SHORT).show();
+        synchronize(false);
     }
 
     private void handleErrorResendEmail(Throwable throwable) {
@@ -389,6 +390,7 @@ public class XabberAccountActivity extends BaseLoginActivity
     private void handleSuccessConfirm(XabberAccount response) {
         hideProgress();
         Toast.makeText(this, R.string.confirm_success, Toast.LENGTH_SHORT).show();
+        synchronize(false);
     }
 
     private void handleErrorConfirm(Throwable throwable) {
