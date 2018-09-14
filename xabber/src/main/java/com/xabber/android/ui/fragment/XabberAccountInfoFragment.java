@@ -304,6 +304,7 @@ public class XabberAccountInfoFragment extends Fragment implements AddEmailDialo
     }
 
     private void setupSocial(List<SocialBindingDTO> socialBindings) {
+        clearSocial();
         for (SocialBindingDTO socialBinding : socialBindings) {
             if ("google".equals(socialBinding.getProvider())) {
                 ivGoogle.setImageResource(R.drawable.ic_google_plus);
@@ -331,6 +332,22 @@ public class XabberAccountInfoFragment extends Fragment implements AddEmailDialo
         if (socialBindings.size() > 0) tvLinks.setText(R.string.title_linked_accounts);
     }
 
+    private void clearSocial() {
+        ivGoogle.setImageResource(R.drawable.ic_google_plus_disabled);
+        tvNameGoogle.setVisibility(View.GONE);
+        tvStatusGoogle.setText(R.string.title_not_linked_account);
+        tvActionGoogle.setText(R.string.action_connect);
+
+        ivFacebook.setImageResource(R.drawable.ic_google_plus_disabled);
+        tvNameFacebook.setVisibility(View.GONE);
+        tvStatusFacebook.setText(R.string.title_not_linked_account);
+        tvActionFacebook.setText(R.string.action_connect);
+
+        ivTwitter.setImageResource(R.drawable.ic_google_plus_disabled);
+        tvNameTwitter.setVisibility(View.GONE);
+        tvStatusTwitter.setText(R.string.title_not_linked_account);
+        tvActionTwitter.setText(R.string.action_connect);
+    }
 
     private void setupEmailList(List<EmailDTO> emails) {
         if (emails.size() > 0) tvLinks.setText(R.string.title_linked_accounts);

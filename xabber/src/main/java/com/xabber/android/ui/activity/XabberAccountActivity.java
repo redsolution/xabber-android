@@ -164,6 +164,7 @@ public class XabberAccountActivity extends BaseLoginActivity
                         hideProgress();
                         Toast.makeText(XabberAccountActivity.this,
                                 R.string.social_bind_success, Toast.LENGTH_SHORT).show();
+                        synchronize(false);
                     }
                 }, new Action1<Throwable>() {
                     @Override
@@ -188,6 +189,7 @@ public class XabberAccountActivity extends BaseLoginActivity
                         hideProgress();
                         Toast.makeText(XabberAccountActivity.this,
                                 R.string.social_unbind_success, Toast.LENGTH_SHORT).show();
+                        synchronize(false);
                     }
                 }, new Action1<Throwable>() {
                     @Override
