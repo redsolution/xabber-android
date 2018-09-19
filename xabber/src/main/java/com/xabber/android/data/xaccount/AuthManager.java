@@ -281,7 +281,7 @@ public class AuthManager {
                 });
     }
 
-    public static Single<List<Domain>> getHosts() {
+    public static Single<HostResponse> getHosts() {
         return HttpApiManager.getXabberApi().getHosts();
     }
 
@@ -398,15 +398,39 @@ public class AuthManager {
         }
     }
 
-    public static class Domain {
-        final String domain;
+    public static class HostResponse {
+        final List<Host> results;
 
-        public Domain(String domain) {
-            this.domain = domain;
+        public HostResponse(List<Host> results) {
+            this.results = results;
         }
 
-        public String getDomain() {
-            return domain;
+        public List<Host> getHosts() {
+            return results;
+        }
+    }
+
+    public static class Host {
+        final String host;
+        final String description;
+        final boolean is_free;
+
+        public Host(String host, String description, boolean is_free) {
+            this.host = host;
+            this.description = description;
+            this.is_free = is_free;
+        }
+
+        public String getHost() {
+            return host;
+        }
+
+        public String getDescription() {
+            return description;
+        }
+
+        public boolean isFree() {
+            return is_free;
         }
     }
 

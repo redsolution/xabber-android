@@ -1,7 +1,5 @@
 package com.xabber.android.data.xaccount;
 
-import java.util.List;
-
 import okhttp3.ResponseBody;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
@@ -79,7 +77,7 @@ public interface IXabberApi {
     Single<XabberAccountDTO> confirmXMPP(@Body AuthManager.CodeConfirm codeConfirm);
 
     @GET("accounts/xmpp/hosts/")
-    Single<List<AuthManager.Domain>> getHosts();
+    Single<AuthManager.HostResponse> getHosts();
 
     @POST("accounts/signup/")
     Single<XabberAccountDTO> signupv2(@Body AuthManager.SignUpFields fields);

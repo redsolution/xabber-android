@@ -53,7 +53,7 @@
     <string name="progress_title_unbind_social">Unbind social network</string>
     <string name="progress_title_account_list">Loading list of accounts..</string>
 
-    <string name="label_username">Pick your username</string>
+    <string name="label_username">Pick your username and host</string>
     <string name="hint_username">username</string>
     <string name="label_pass">Choose password</string>
     <string name="hint_pass">Enter password</string>

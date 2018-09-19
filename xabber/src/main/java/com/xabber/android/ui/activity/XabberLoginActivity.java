@@ -21,7 +21,7 @@ import com.xabber.android.data.xaccount.XAccountTokenDTO;
 import com.xabber.android.data.xaccount.XabberAccount;
 import com.xabber.android.ui.color.BarPainter;
 import com.xabber.android.ui.fragment.XAccountLoginFragment;
-import com.xabber.android.ui.fragment.XAccountSignUpFragment;
+import com.xabber.android.ui.fragment.XAccountSignUpFragment1;
 import com.xabber.android.utils.RetrofitErrorConverter;
 
 import java.util.ArrayList;
@@ -38,7 +38,7 @@ import rx.schedulers.Schedulers;
  * Created by valery.miller on 14.07.17.
  */
 
-public class XabberLoginActivity extends BaseLoginActivity implements XAccountSignUpFragment.Listener,
+public class XabberLoginActivity extends BaseLoginActivity implements XAccountSignUpFragment1.Listener,
         XAccountLoginFragment.Listener {
 
     private final static String LOG_TAG = XabberLoginActivity.class.getSimpleName();
@@ -55,7 +55,7 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
     private BarPainter barPainter;
     private Toolbar toolbar;
 
-    private List<String> hosts = new ArrayList<>();
+    private List<AuthManager.Host> hosts = new ArrayList<>();
 
     public static Intent createIntent(Context context, @Nullable String currentFragment) {
         Intent intent = new Intent(context, XabberLoginActivity.class);
@@ -104,7 +104,7 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
 
     public void showSignUpFragment(String credentials, String socialProvider) {
         if (fragmentSignUp == null)
-            fragmentSignUp = XAccountSignUpFragment.newInstance(this, credentials, socialProvider);
+            fragmentSignUp = XAccountSignUpFragment1.newInstance(this, credentials, socialProvider);
 
         fTrans = getFragmentManager().beginTransaction();
         fTrans.replace(R.id.container, fragmentSignUp, FRAGMENT_SIGNUP);
@@ -176,14 +176,24 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
     }
 
     @Override
-    public void onSignupClick(String username, String host, String pass, String captchaToken) {
-        signUp(username, host, pass, captchaToken,null, null);
+    public void onNextClick(String username, String host) {
+
     }
 
     @Override
-    public void onSignupClick(String username, String host, String pass, String socialToken, String socialProvider) {
-        signUp(username, host, pass, null, socialToken, socialProvider);
+    public void onNextClick(String username, String host, String credentials, String socialProvider) {
+
     }
+
+    //    @Override
+//    public void onSignupClick(String username, String host, String pass, String captchaToken) {
+//        signUp(username, host, pass, captchaToken,null, null);
+//    }
+//
+//    @Override
+//    public void onSignupClick(String username, String host, String pass, String socialToken, String socialProvider) {
+//        signUp(username, host, pass, null, socialToken, socialProvider);
+//    }
 
     @Override
     public void onGoogleClick() {
@@ -204,16 +214,16 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
 
     private void getHosts() {
         if (hosts != null && !hosts.isEmpty()) {
-            if (fragmentSignUp != null) ((XAccountSignUpFragment)fragmentSignUp).setupSpinner(hosts);
+            if (fragmentSignUp != null) ((XAccountSignUpFragment1)fragmentSignUp).setupHosts(hosts);
         } else {
-            if (fragmentSignUp != null) ((XAccountSignUpFragment) fragmentSignUp).showHostsProgress(true);
+            if (fragmentSignUp != null) ((XAccountSignUpFragment1) fragmentSignUp).showHostsProgress(true);
             Subscription requestHosts = AuthManager.getHosts()
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new Action1<List<AuthManager.Domain>>() {
+                    .subscribe(new Action1<AuthManager.HostResponse>() {
                         @Override
-                        public void call(List<AuthManager.Domain> domains) {
-                            handleSuccessGetHosts(domains);
+                        public void call(AuthManager.HostResponse response) {
+                            handleSuccessGetHosts(response);
                         }
                     }, new Action1<Throwable>() {
                         @Override
@@ -225,20 +235,21 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
         }
     }
 
-    private void handleSuccessGetHosts(List<AuthManager.Domain> domains) {
-        hosts.clear();
-        for (AuthManager.Domain domain : domains) {
-            hosts.add(domain.getDomain());
-        }
+    private void handleSuccessGetHosts(AuthManager.HostResponse response) {
+        List<AuthManager.Host> hosts = response.getHosts();
+        if (hosts == null) return;
+
+        this.hosts.clear();
+        this.hosts.addAll(hosts);
 
         if (fragmentSignUp != null) {
-            ((XAccountSignUpFragment) fragmentSignUp).showHostsProgress(false);
-            ((XAccountSignUpFragment) fragmentSignUp).setupSpinner(hosts);
+            ((XAccountSignUpFragment1) fragmentSignUp).showHostsProgress(false);
+            ((XAccountSignUpFragment1) fragmentSignUp).setupHosts(this.hosts);
         }
     }
 
     private void handleErrorGetHosts(Throwable throwable) {
-        if (fragmentSignUp != null) ((XAccountSignUpFragment) fragmentSignUp).showHostsProgress(false);
+        if (fragmentSignUp != null) ((XAccountSignUpFragment1) fragmentSignUp).showHostsProgress(false);
         handleError(throwable, "Error while request hosts: ", LOG_TAG);
     }
 
@@ -311,7 +322,7 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
                 // go to sign up
                 hideProgress();
                 showSignUpFragment(credentials, provider);
-                if (fragmentSignUp != null) ((XAccountSignUpFragment)fragmentSignUp)
+                if (fragmentSignUp != null) ((XAccountSignUpFragment1)fragmentSignUp)
                         .setSocialProviderCredentials(provider, credentials);
             } else {
                 Log.d(LOG_TAG, "Error while social login request: " + message);

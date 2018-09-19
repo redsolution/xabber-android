@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:background="#F5F5F5"
-        android:elevation="16dp"
+        android:elevation="4dp"
         >
 
         <TextView
@@ -37,7 +37,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Pick your username and domain"
+            android:text="@string/label_username"
             android:textSize="12sp"
             android:paddingLeft="4dp"
             android:textColor="@color/contact_item_text_second"
@@ -74,7 +74,7 @@
 
             <LinearLayout
                 android:orientation="vertical"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 >
@@ -109,9 +109,9 @@
         </LinearLayout>
 
         <TextView
+            android:id="@+id/tvDescription"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Xabber.org accounts are free, that includes 30 days of chat history and 100MB for sent and received files. You can unlock additional storage options for $1/month."
             android:paddingLeft="4dp"
             android:layout_marginTop="16dp"
             />
@@ -134,7 +134,7 @@
                 />
 
             <Button
-                android:id="@+id/btnSignUp"
+                android:id="@+id/btnNext"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 style="@style/Widget.AppCompat.Button.Colored"
@@ -145,7 +145,7 @@
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
                 android:textColor="@color/white"
-                android:text="@string/button_registration"
+                android:text="@string/muc_next"
                 />
 
         </RelativeLayout>
