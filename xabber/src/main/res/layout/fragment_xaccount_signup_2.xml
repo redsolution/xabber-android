@@ -8,7 +8,7 @@
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:background="#F5F5F5"
-        android:elevation="16dp"
+        android:elevation="4dp"
         >
 
         <TextView
@@ -70,7 +70,7 @@
                 />
 
             <Button
-                android:id="@+id/btnSignUp"
+                android:id="@+id/btnNext"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 style="@style/Widget.AppCompat.Button.Colored"

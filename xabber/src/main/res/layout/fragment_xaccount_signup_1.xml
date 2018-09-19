@@ -150,6 +150,15 @@
 
         </RelativeLayout>
 
+        <TextView
+            android:id="@+id/tvSocialProvider"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black_text_secondary"
+            android:drawablePadding="8dp"
+            android:visibility="gone"
+            android:layout_gravity="center_horizontal"
+            />
 
     </LinearLayout>
 

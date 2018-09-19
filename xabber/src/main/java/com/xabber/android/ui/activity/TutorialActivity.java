@@ -61,7 +61,7 @@ public class TutorialActivity extends ManagedActivity {
         btnRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(XabberLoginActivity.createIntent(TutorialActivity.this, XabberLoginActivity.FRAGMENT_SIGNUP));
+                startActivity(XabberLoginActivity.createIntent(TutorialActivity.this, XabberLoginActivity.FRAGMENT_SIGNUP_STEP1));
             }
         });
     }

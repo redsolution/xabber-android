@@ -19,9 +19,11 @@ import com.xabber.android.data.xaccount.AuthManager;
 import com.xabber.android.data.xaccount.HttpApiManager;
 import com.xabber.android.data.xaccount.XAccountTokenDTO;
 import com.xabber.android.data.xaccount.XabberAccount;
+import com.xabber.android.presentation.mvp.signup.SignUpRepo;
 import com.xabber.android.ui.color.BarPainter;
 import com.xabber.android.ui.fragment.XAccountLoginFragment;
 import com.xabber.android.ui.fragment.XAccountSignUpFragment1;
+import com.xabber.android.ui.fragment.XAccountSignUpFragment2;
 import com.xabber.android.utils.RetrofitErrorConverter;
 
 import java.util.ArrayList;
@@ -39,16 +41,20 @@ import rx.schedulers.Schedulers;
  */
 
 public class XabberLoginActivity extends BaseLoginActivity implements XAccountSignUpFragment1.Listener,
-        XAccountLoginFragment.Listener {
+        XAccountSignUpFragment2.Listener, XAccountLoginFragment.Listener {
 
     private final static String LOG_TAG = XabberLoginActivity.class.getSimpleName();
     public final static String CURRENT_FRAGMENT = "current_fragment";
     public final static String FRAGMENT_LOGIN = "fragment_login";
-    public final static String FRAGMENT_SIGNUP = "fragment_signup";
+    public final static String FRAGMENT_SIGNUP_STEP1 = "fragment_signup_step1";
+    public final static String FRAGMENT_SIGNUP_STEP2 = "fragment_signup_step2";
+    public final static String FRAGMENT_SIGNUP_STEP3 = "fragment_signup_step3";
 
     private FragmentTransaction fTrans;
     private Fragment fragmentLogin;
-    private Fragment fragmentSignUp;
+    private Fragment fragmentSignUpStep1;
+    private Fragment fragmentSignUpStep2;
+    private Fragment fragmentSignUpStep3;
     private String currentFragment = FRAGMENT_LOGIN;
 
     private ProgressDialog progressDialog;
@@ -102,14 +108,27 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
         barPainter.setLiteGrey();
     }
 
-    public void showSignUpFragment(String credentials, String socialProvider) {
-        if (fragmentSignUp == null)
-            fragmentSignUp = XAccountSignUpFragment1.newInstance(this, credentials, socialProvider);
+    public void showSignUpStep1Fragment() {
+        if (fragmentSignUpStep1 == null)
+            fragmentSignUpStep1 = XAccountSignUpFragment1.newInstance(this);
 
         fTrans = getFragmentManager().beginTransaction();
-        fTrans.replace(R.id.container, fragmentSignUp, FRAGMENT_SIGNUP);
+        fTrans.replace(R.id.container, fragmentSignUpStep1, FRAGMENT_SIGNUP_STEP1);
         fTrans.commit();
-        currentFragment = FRAGMENT_SIGNUP;
+        currentFragment = FRAGMENT_SIGNUP_STEP1;
+
+        toolbar.setTitle(R.string.title_register_xabber_account);
+        barPainter.setLiteGrey();
+    }
+
+    public void showSignUpStep2Fragment() {
+        if (fragmentSignUpStep2 == null)
+            fragmentSignUpStep2 = XAccountSignUpFragment2.newInstance(this);
+
+        fTrans = getFragmentManager().beginTransaction();
+        fTrans.replace(R.id.container, fragmentSignUpStep2, FRAGMENT_SIGNUP_STEP2);
+        fTrans.commit();
+        currentFragment = FRAGMENT_SIGNUP_STEP2;
 
         toolbar.setTitle(R.string.title_register_xabber_account);
         barPainter.setLiteGrey();
@@ -120,8 +139,11 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
         super.onResume();
         if (currentFragment != null) {
             switch (currentFragment) {
-                case FRAGMENT_SIGNUP:
-                    showSignUpFragment(null, null);
+                case FRAGMENT_SIGNUP_STEP1:
+                    showSignUpStep1Fragment();
+                    break;
+                case FRAGMENT_SIGNUP_STEP2:
+                    showSignUpStep2Fragment();
                     break;
                 default:
                     showLoginFragment();
@@ -176,13 +198,18 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
     }
 
     @Override
-    public void onNextClick(String username, String host) {
+    public void onStep1Completed(String username, String host) {
+        SignUpRepo signUpRepo = SignUpRepo.getInstance();
+        signUpRepo.setUsername(username);
+        signUpRepo.setHost(host);
 
+        showSignUpStep2Fragment();
     }
 
     @Override
-    public void onNextClick(String username, String host, String credentials, String socialProvider) {
-
+    public void on2StepCompleted(String pass) {
+        SignUpRepo.getInstance().setPass(pass);
+        //showSignUpStep3Fragment();
     }
 
     //    @Override
@@ -214,9 +241,9 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
 
     private void getHosts() {
         if (hosts != null && !hosts.isEmpty()) {
-            if (fragmentSignUp != null) ((XAccountSignUpFragment1)fragmentSignUp).setupHosts(hosts);
+            if (fragmentSignUpStep1 != null) ((XAccountSignUpFragment1)fragmentSignUpStep1).setupHosts(hosts);
         } else {
-            if (fragmentSignUp != null) ((XAccountSignUpFragment1) fragmentSignUp).showHostsProgress(true);
+            if (fragmentSignUpStep1 != null) ((XAccountSignUpFragment1) fragmentSignUpStep1).showHostsProgress(true);
             Subscription requestHosts = AuthManager.getHosts()
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
@@ -242,14 +269,14 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
         this.hosts.clear();
         this.hosts.addAll(hosts);
 
-        if (fragmentSignUp != null) {
-            ((XAccountSignUpFragment1) fragmentSignUp).showHostsProgress(false);
-            ((XAccountSignUpFragment1) fragmentSignUp).setupHosts(this.hosts);
+        if (fragmentSignUpStep1 != null) {
+            ((XAccountSignUpFragment1) fragmentSignUpStep1).showHostsProgress(false);
+            ((XAccountSignUpFragment1) fragmentSignUpStep1).setupHosts(this.hosts);
         }
     }
 
     private void handleErrorGetHosts(Throwable throwable) {
-        if (fragmentSignUp != null) ((XAccountSignUpFragment1) fragmentSignUp).showHostsProgress(false);
+        if (fragmentSignUpStep1 != null) ((XAccountSignUpFragment1) fragmentSignUpStep1).showHostsProgress(false);
         handleError(throwable, "Error while request hosts: ", LOG_TAG);
     }
 
@@ -320,10 +347,11 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
         if (message != null) {
             if (message.contains("is not attached to any Xabber account")) {
                 // go to sign up
+                SignUpRepo.getInstance().setSocialCredentials(credentials);
+                SignUpRepo.getInstance().setSocialProvider(provider);
                 hideProgress();
-                showSignUpFragment(credentials, provider);
-                if (fragmentSignUp != null) ((XAccountSignUpFragment1)fragmentSignUp)
-                        .setSocialProviderCredentials(provider, credentials);
+                showSignUpStep1Fragment();
+
             } else {
                 Log.d(LOG_TAG, "Error while social login request: " + message);
                 Toast.makeText(this, R.string.social_auth_fail, Toast.LENGTH_LONG).show();

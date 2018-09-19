@@ -16,15 +16,13 @@ import android.widget.TextView;
 
 import com.xabber.android.R;
 import com.xabber.android.data.xaccount.AuthManager;
+import com.xabber.android.presentation.mvp.signup.SignUpRepo;
 import com.xabber.android.ui.adapter.HostSpinnerAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class XAccountSignUpFragment1 extends Fragment implements View.OnClickListener {
-
-    private static final String SOCIAL_CREDENTIALS = "SOCIAL_CREDENTIALS";
-    private static final String SOCIAL_PROVIDER = "SOCIAL_PROVIDER";
 
     private EditText edtUsername;
     private Spinner spinnerDomain;
@@ -35,32 +33,18 @@ public class XAccountSignUpFragment1 extends Fragment implements View.OnClickLis
     private TextView tvDescription;
 
     private XAccountSignUpFragment1.Listener listener;
-    private String credentials;
-    private String socialProvider;
 
     private List<AuthManager.Host> hosts;
 
     public interface Listener {
         void onGetHosts();
-        void onNextClick(String username, String host);
-        void onNextClick(String username, String host, String credentials, String socialProvider);
+        void onStep1Completed(String username, String host);
     }
 
-    public static XAccountSignUpFragment1 newInstance(XAccountSignUpFragment1.Listener listener, String credentials, String socialProvider) {
+    public static XAccountSignUpFragment1 newInstance(XAccountSignUpFragment1.Listener listener) {
         XAccountSignUpFragment1 fragment = new XAccountSignUpFragment1();
-        Bundle args = new Bundle();
-        args.putString(SOCIAL_CREDENTIALS, credentials);
-        args.putString(SOCIAL_PROVIDER, socialProvider);
-        fragment.setArguments(args);
         fragment.listener = listener;
         return fragment;
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        this.credentials = getArguments().getString(SOCIAL_CREDENTIALS);
-        this.socialProvider = getArguments().getString(SOCIAL_PROVIDER);
     }
 
     @Nullable
@@ -113,12 +97,6 @@ public class XAccountSignUpFragment1 extends Fragment implements View.OnClickLis
         }
     }
 
-    public void setSocialProviderCredentials(String socialProvider, String credentials) {
-        this.socialProvider = socialProvider;
-        this.credentials = credentials;
-        setupSocial();
-    }
-
     public void showHostsProgress(boolean visible) {
         pbHosts.setVisibility(visible ? View.VISIBLE : View.GONE);
         spinnerDomain.setVisibility(visible ? View.GONE : View.VISIBLE);
@@ -127,13 +105,15 @@ public class XAccountSignUpFragment1 extends Fragment implements View.OnClickLis
     }
 
     private void setupSocial() {
-        if (credentials != null && socialProvider != null) {
+        String credentials = SignUpRepo.getInstance().getSocialCredentials();
+        String provider = SignUpRepo.getInstance().getSocialProvider();
+        if (credentials != null && provider != null) {
             if (tvSocialProvider != null) {
                 tvSocialProvider.setVisibility(View.VISIBLE);
-                tvSocialProvider.setText(getString(R.string.signup_with_social, socialProvider));
+                tvSocialProvider.setText(getString(R.string.signup_with_social, provider));
 
                 Drawable drawable;
-                switch (socialProvider) {
+                switch (provider) {
                     case AuthManager.PROVIDER_TWITTER:
                         drawable = getResources().getDrawable(R.drawable.ic_twitter);
                         break;
@@ -152,10 +132,8 @@ public class XAccountSignUpFragment1 extends Fragment implements View.OnClickLis
         String username = edtUsername.getText().toString().trim();
 
         if (verifyFields(username)) {
-            if (listener == null) return;
-            else if (credentials != null && socialProvider != null)
-                listener.onNextClick(username, spinnerDomain.getSelectedItem().toString(), credentials, socialProvider);
-            else listener.onNextClick(username, spinnerDomain.getSelectedItem().toString());
+            if (listener != null)
+                listener.onStep1Completed(username, spinnerDomain.getSelectedItem().toString());
         }
     }
 
