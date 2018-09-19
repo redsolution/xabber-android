@@ -24,6 +24,7 @@ import com.xabber.android.ui.color.BarPainter;
 import com.xabber.android.ui.fragment.XAccountLoginFragment;
 import com.xabber.android.ui.fragment.XAccountSignUpFragment1;
 import com.xabber.android.ui.fragment.XAccountSignUpFragment2;
+import com.xabber.android.ui.fragment.XAccountSignUpFragment3;
 import com.xabber.android.utils.RetrofitErrorConverter;
 
 import java.util.ArrayList;
@@ -41,7 +42,7 @@ import rx.schedulers.Schedulers;
  */
 
 public class XabberLoginActivity extends BaseLoginActivity implements XAccountSignUpFragment1.Listener,
-        XAccountSignUpFragment2.Listener, XAccountLoginFragment.Listener {
+        XAccountSignUpFragment2.Listener, XAccountLoginFragment.Listener, XAccountSignUpFragment3.Listener {
 
     private final static String LOG_TAG = XabberLoginActivity.class.getSimpleName();
     public final static String CURRENT_FRAGMENT = "current_fragment";
@@ -134,6 +135,19 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
         barPainter.setLiteGrey();
     }
 
+    public void showSignUpStep3Fragment() {
+        if (fragmentSignUpStep3 == null)
+            fragmentSignUpStep3 = XAccountSignUpFragment3.newInstance(this);
+
+        fTrans = getFragmentManager().beginTransaction();
+        fTrans.replace(R.id.container, fragmentSignUpStep3, FRAGMENT_SIGNUP_STEP3);
+        fTrans.commit();
+        currentFragment = FRAGMENT_SIGNUP_STEP3;
+
+        toolbar.setTitle(R.string.title_register_xabber_account);
+        barPainter.setLiteGrey();
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -144,6 +158,9 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
                     break;
                 case FRAGMENT_SIGNUP_STEP2:
                     showSignUpStep2Fragment();
+                    break;
+                case FRAGMENT_SIGNUP_STEP3:
+                    showSignUpStep3Fragment();
                     break;
                 default:
                     showLoginFragment();
@@ -209,7 +226,12 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
     @Override
     public void on2StepCompleted(String pass) {
         SignUpRepo.getInstance().setPass(pass);
-        //showSignUpStep3Fragment();
+        showSignUpStep3Fragment();
+    }
+
+    @Override
+    public void onStep3Completed() {
+
     }
 
     //    @Override

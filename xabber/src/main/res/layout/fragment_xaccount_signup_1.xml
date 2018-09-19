@@ -17,7 +17,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Step 1 of 3"
+            android:text="Step 1 of 4"
             android:textStyle="bold"
             android:layout_marginLeft="16dp"
             android:layout_gravity="center_vertical"
@@ -121,17 +121,6 @@
             android:layout_marginBottom="16dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-
-            <Button
-                android:id="@+id/btnOptions"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                style="@style/Widget.AppCompat.Button.Borderless"
-                android:theme="@style/BlueButton"
-                android:textColor="@color/grey_500"
-                android:text="@string/button_terms_of_service"
-                android:layout_centerVertical="true"
-                />
 
             <Button
                 android:id="@+id/btnNext"

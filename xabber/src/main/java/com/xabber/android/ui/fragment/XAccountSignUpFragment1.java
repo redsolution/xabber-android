@@ -131,9 +131,8 @@ public class XAccountSignUpFragment1 extends Fragment implements View.OnClickLis
     private void onNextClick() {
         String username = edtUsername.getText().toString().trim();
 
-        if (verifyFields(username)) {
-            if (listener != null)
-                listener.onStep1Completed(username, spinnerDomain.getSelectedItem().toString());
+        if (verifyFields(username) && spinnerDomain.getSelectedItem() != null && listener != null) {
+            listener.onStep1Completed(username, spinnerDomain.getSelectedItem().toString());
         }
     }
 
