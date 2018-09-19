@@ -244,8 +244,8 @@ public class XAccountSignUpFragment extends Fragment implements View.OnClickList
 
     public void setupSpinner(List<String> domains) {
         if (spinnerDomain == null) return;
-        HostSpinnerAdapter adapter = new HostSpinnerAdapter(getActivity(),
-                android.R.layout.simple_spinner_item, domains);
-        spinnerDomain.setAdapter(adapter);
+//        HostSpinnerAdapter adapter = new HostSpinnerAdapter(getActivity(),
+//                android.R.layout.simple_spinner_item, domains);
+        //spinnerDomain.setAdapter(adapter);
     }
 }

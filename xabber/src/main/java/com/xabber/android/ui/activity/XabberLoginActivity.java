@@ -14,6 +14,12 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.common.api.CommonStatusCodes;
+import com.google.android.gms.safetynet.SafetyNet;
+import com.google.android.gms.safetynet.SafetyNetApi;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.xabber.android.R;
 import com.xabber.android.data.xaccount.AuthManager;
 import com.xabber.android.data.xaccount.HttpApiManager;
@@ -50,6 +56,8 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
     public final static String FRAGMENT_SIGNUP_STEP1 = "fragment_signup_step1";
     public final static String FRAGMENT_SIGNUP_STEP2 = "fragment_signup_step2";
     public final static String FRAGMENT_SIGNUP_STEP3 = "fragment_signup_step3";
+
+    private static final String CAPTCHA_TOKEN = "RECAPTCHA";
 
     private FragmentTransaction fTrans;
     private Fragment fragmentLogin;
@@ -231,18 +239,16 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
 
     @Override
     public void onStep3Completed() {
+        String username = SignUpRepo.getInstance().getUsername();
+        String host = SignUpRepo.getInstance().getHost();
+        String pass = SignUpRepo.getInstance().getPass();
+        String provider = SignUpRepo.getInstance().getSocialProvider();
+        String credentials = SignUpRepo.getInstance().getSocialCredentials();
 
+        if (provider != null && credentials != null)
+            signUp(username, host, pass, null, credentials, provider);
+        else getCaptchaToken(username, pass, host);
     }
-
-    //    @Override
-//    public void onSignupClick(String username, String host, String pass, String captchaToken) {
-//        signUp(username, host, pass, captchaToken,null, null);
-//    }
-//
-//    @Override
-//    public void onSignupClick(String username, String host, String pass, String socialToken, String socialProvider) {
-//        signUp(username, host, pass, null, socialToken, socialProvider);
-//    }
 
     @Override
     public void onGoogleClick() {
@@ -415,6 +421,45 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
     private void handleErrorGetAccount(Throwable throwable) {
         hideProgress();
         handleError(throwable, "Error while login: ", LOG_TAG);
+    }
+
+    /** CAPTCHA */
+
+    private void getCaptchaToken(final String username, final String pass, final String domain) {
+        SafetyNet.getClient(this).verifyWithRecaptcha(getString(R.string.RECAPTCHA_KEY))
+                .addOnSuccessListener(this,
+                        new OnSuccessListener<SafetyNetApi.RecaptchaTokenResponse>() {
+                            @Override
+                            public void onSuccess(SafetyNetApi.RecaptchaTokenResponse response) {
+                                // Indicates communication with reCAPTCHA service was
+                                // successful.
+                                String userResponseToken = response.getTokenResult();
+                                if (!userResponseToken.isEmpty()) {
+                                    // Validate the user response token using the
+                                    // reCAPTCHA siteverify API.
+                                    Log.d(CAPTCHA_TOKEN, "Success: " + userResponseToken);
+                                    signUp(username, domain, pass, userResponseToken, null, null);
+                                }
+                            }
+                        })
+                .addOnFailureListener(this,
+                        new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                if (e instanceof ApiException) {
+                                    // An error occurred when communicating with the
+                                    // reCAPTCHA service. Refer to the status code to
+                                    // handle the error appropriately.
+                                    ApiException apiException = (ApiException) e;
+                                    int statusCode = apiException.getStatusCode();
+                                    Log.d(CAPTCHA_TOKEN, "Error: "
+                                            + CommonStatusCodes.getStatusCodeString(statusCode));
+                                } else {
+                                    // A different, unknown type of error occurred.
+                                    Log.d(CAPTCHA_TOKEN, "Error: " + e.getMessage());
+                                }
+                            }
+                        });
     }
 
 }
