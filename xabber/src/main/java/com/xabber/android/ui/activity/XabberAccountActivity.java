@@ -34,7 +34,7 @@ import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
 public class XabberAccountActivity extends BaseLoginActivity
-        implements XabberAccountInfoFragment.Listener, Toolbar.OnMenuItemClickListener {
+        implements Toolbar.OnMenuItemClickListener {
 
     private final static String LOG_TAG = XabberAccountActivity.class.getSimpleName();
     private final static String FRAGMENT_INFO = "fragment_info";
@@ -110,7 +110,7 @@ public class XabberAccountActivity extends BaseLoginActivity
                 }
                 return true;
             case R.id.action_sync:
-                synchronize(false);
+                onSyncClick(false);
                 return true;
             default:
                 return false;
@@ -144,7 +144,6 @@ public class XabberAccountActivity extends BaseLoginActivity
 
     /** Xabber Account Info */
 
-    @Override
     public void onLogoutClick(boolean deleteAccounts) {
         if (NetworkManager.isNetworkAvailable()) {
             logout(deleteAccounts);
@@ -152,7 +151,6 @@ public class XabberAccountActivity extends BaseLoginActivity
             Toast.makeText(this, R.string.toast_no_internet, Toast.LENGTH_LONG).show();
     }
 
-    @Override
     public void onSyncClick(boolean needGoToMainActivity) {
         if (NetworkManager.isNetworkAvailable()) {
             synchronize(needGoToMainActivity);
@@ -162,7 +160,7 @@ public class XabberAccountActivity extends BaseLoginActivity
 
     private void showInfoFragment() {
         if (fragmentInfo == null) {
-            fragmentInfo = XabberAccountInfoFragment.newInstance(this);
+            fragmentInfo = XabberAccountInfoFragment.newInstance();
             Bundle bundle = new Bundle();
             bundle.putBoolean("SHOW_SYNC", needShowSyncDialog);
             fragmentInfo.setArguments(bundle);

@@ -19,7 +19,6 @@ import com.xabber.android.data.xaccount.AuthManager;
 import com.xabber.android.data.xaccount.XMPPAccountSettings;
 import com.xabber.android.data.xaccount.XabberAccount;
 import com.xabber.android.data.xaccount.XabberAccountManager;
-import com.xabber.android.ui.dialog.AccountSyncDialogFragment;
 import com.xabber.android.utils.RetrofitErrorConverter;
 
 import java.util.List;
@@ -34,7 +33,7 @@ import rx.subscriptions.CompositeSubscription;
  * Created by valery.miller on 27.07.17.
  */
 
-public class XabberAccountInfoFragment extends Fragment implements AccountSyncDialogFragment.Listener {
+public class XabberAccountInfoFragment extends Fragment {
 
     private static final String LOG_TAG = XabberAccountInfoFragment.class.getSimpleName();
 
@@ -53,16 +52,9 @@ public class XabberAccountInfoFragment extends Fragment implements AccountSyncDi
     private FragmentTransaction fTrans;
 
     private CompositeSubscription compositeSubscription = new CompositeSubscription();
-    private Listener listener;
 
-    public interface Listener {
-        void onLogoutClick(boolean deleteAccounts);
-        void onSyncClick(boolean needGoToMainActivity);
-    }
-
-    public static XabberAccountInfoFragment newInstance(Listener listener) {
+    public static XabberAccountInfoFragment newInstance() {
         XabberAccountInfoFragment fragment = new XabberAccountInfoFragment();
-        fragment.listener = listener;
         return fragment;
     }
 
@@ -104,25 +96,14 @@ public class XabberAccountInfoFragment extends Fragment implements AccountSyncDi
     @Override
     public void onResume() {
         super.onResume();
-
-        XabberAccount account = XabberAccountManager.getInstance().getAccount();
-        if (account != null) {
-            updateData(account);
-        }
-        else getActivity().finish();
-
+        subscribeForXabberAccount();
         getSettings();
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
+    public void onPause() {
+        super.onPause();
         compositeSubscription.clear();
-    }
-
-    @Override
-    public void onSyncClick(boolean needGoToMainActivity) {
-        listener.onSyncClick(needGoToMainActivity);
     }
 
     public void updateData(@NonNull XabberAccount account) {
@@ -141,12 +122,31 @@ public class XabberAccountInfoFragment extends Fragment implements AccountSyncDi
             String phone = account.getPhone();
             tvPhone.setText(phone != null ? phone : getString(R.string.no_phone));
         } else tvPhone.setVisibility(View.GONE);
+
+        // links
+        if (account.getSocialBindings().size() > 0 || account.getEmails().size() > 0)
+            tvLinks.setText(R.string.title_linked_accounts);
+        else tvLinks.setText(R.string.title_no_linked_accounts);
     }
 
     public void updateLastSyncTime() {
         if (fragmentSync != null && fragmentSync.isVisible())
             ((AccountSyncFragment) fragmentSync).updateLastSyncTime();
     }
+
+    private void subscribeForXabberAccount() {
+        compositeSubscription.add(XabberAccountManager.getInstance().subscribeForAccount()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext(new Action1<XabberAccount>() {
+                    @Override
+                    public void call(XabberAccount account) {
+                        updateData(account);
+                    }
+                }).subscribe());
+    }
+
+    /** GET SETTINGS */
 
     private void getSettings() {
         showProgressView(true);
