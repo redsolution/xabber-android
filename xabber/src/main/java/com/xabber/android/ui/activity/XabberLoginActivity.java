@@ -98,8 +98,6 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
         setContentView(R.layout.activity_xabber_login);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar_default);
-        toolbar.setTitle(R.string.title_login_xabber_account);
-        toolbar.setNavigationIcon(R.drawable.ic_arrow_left);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -107,8 +105,22 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
                 finish();
             }
         });
-        toolbar.setTitleTextColor(getResources().getColor(R.color.black_text));
         barPainter = new BarPainter(this, toolbar);
+        setupToolbar(true);
+    }
+
+    private void setupToolbar(boolean signIn) {
+        if (signIn) {
+            toolbar.setTitle(R.string.title_login_xabber_account);
+            toolbar.setNavigationIcon(R.drawable.ic_arrow_left);
+            toolbar.setTitleTextColor(getResources().getColor(R.color.black_text));
+            barPainter.setLiteGrey();
+        } else {
+            toolbar.setTitle(R.string.title_register_xabber_account);
+            toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
+            toolbar.setTitleTextColor(getResources().getColor(R.color.white));
+            barPainter.setBlue(this);
+        }
     }
 
     public void showLoginFragment() {
@@ -120,8 +132,7 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
         fTrans.commit();
         currentFragment = FRAGMENT_LOGIN;
 
-        toolbar.setTitle(R.string.title_login_xabber_account);
-        barPainter.setLiteGrey();
+        setupToolbar(true);
     }
 
     public void showSignUpStep1Fragment() {
@@ -133,8 +144,7 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
         fTrans.commit();
         currentFragment = FRAGMENT_SIGNUP_STEP1;
 
-        toolbar.setTitle(R.string.title_register_xabber_account);
-        barPainter.setLiteGrey();
+        setupToolbar(false);
     }
 
     public void showSignUpStep2Fragment() {
@@ -146,8 +156,7 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
         fTrans.commit();
         currentFragment = FRAGMENT_SIGNUP_STEP2;
 
-        toolbar.setTitle(R.string.title_register_xabber_account);
-        barPainter.setLiteGrey();
+        setupToolbar(false);
     }
 
     public void showSignUpStep3Fragment() {
@@ -159,8 +168,7 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
         fTrans.commit();
         currentFragment = FRAGMENT_SIGNUP_STEP3;
 
-        toolbar.setTitle(R.string.title_register_xabber_account);
-        barPainter.setLiteGrey();
+        setupToolbar(false);
     }
 
     public void showSignUpStep4Fragment() {
@@ -172,8 +180,7 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
         fTrans.commit();
         currentFragment = FRAGMENT_SIGNUP_STEP4;
 
-        toolbar.setTitle(R.string.title_register_xabber_account);
-        barPainter.setLiteGrey();
+        setupToolbar(false);
     }
 
     @Override
