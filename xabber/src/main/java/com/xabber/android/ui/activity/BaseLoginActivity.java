@@ -39,6 +39,7 @@ import com.xabber.android.data.xaccount.AuthManager;
 import com.xabber.android.data.xaccount.XMPPAccountSettings;
 import com.xabber.android.data.xaccount.XabberAccount;
 import com.xabber.android.data.xaccount.XabberAccountManager;
+import com.xabber.android.ui.fragment.XAccountLinksFragment;
 import com.xabber.android.utils.RetrofitErrorConverter;
 
 import java.io.IOException;
@@ -56,7 +57,8 @@ import rx.subscriptions.CompositeSubscription;
  * Created by valery.miller on 31.07.17.
  */
 
-public abstract class BaseLoginActivity extends ManagedActivity implements GoogleApiClient.OnConnectionFailedListener {
+public abstract class BaseLoginActivity extends ManagedActivity implements
+        GoogleApiClient.OnConnectionFailedListener, XAccountLinksFragment.Listener  {
 
     private final static String LOG_TAG = BaseLoginActivity.class.getSimpleName();
 
@@ -491,5 +493,42 @@ public abstract class BaseLoginActivity extends ManagedActivity implements Googl
                     }
                 });
         compositeSubscription.add(unbindSocialSubscription);
+    }
+
+    /** XABBER ACCOUNT LINKS LISTENER */
+
+    @Override
+    public void onSocialBindClick(String provider) {
+        switch (provider) {
+            case AuthManager.PROVIDER_GOOGLE:
+                loginGoogle();
+                break;
+            case AuthManager.PROVIDER_FACEBOOK:
+                loginFacebook();
+                break;
+            case AuthManager.PROVIDER_TWITTER:
+                loginTwitter();
+                break;
+        }
+    }
+
+    @Override
+    public void onSocialUnbindClick(String provider) {
+        unbindSocial(provider);
+    }
+
+    @Override
+    public void onAddEmailClick(String email) {
+        resendConfirmEmail(email);
+    }
+
+    @Override
+    public void onDeleteEmailClick(int emailId) {
+        deleteEmail(emailId);
+    }
+
+    @Override
+    public void onConfirmEmailClick(String email, String code) {
+        confirmEmail(code);
     }
 }

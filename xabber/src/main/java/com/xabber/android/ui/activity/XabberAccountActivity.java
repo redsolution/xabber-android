@@ -138,28 +138,8 @@ public class XabberAccountActivity extends BaseLoginActivity
     /** Social Auth */
 
     @Override
-    public void onSocialBindClick(String provider) {
-        switch (provider) {
-            case AuthManager.PROVIDER_GOOGLE:
-                loginGoogle();
-                break;
-            case AuthManager.PROVIDER_FACEBOOK:
-                loginFacebook();
-                break;
-            case AuthManager.PROVIDER_TWITTER:
-                loginTwitter();
-                break;
-        }
-    }
-
-    @Override
     protected void onSocialAuthSuccess(String provider, String credentials) {
         bindSocial(provider, credentials);
-    }
-
-    @Override
-    public void onSocialUnbindClick(String provider) {
-        unbindSocial(provider);
     }
 
     /** Xabber Account Info */
@@ -178,23 +158,6 @@ public class XabberAccountActivity extends BaseLoginActivity
             synchronize(needGoToMainActivity);
         } else
             Toast.makeText(this, R.string.toast_no_internet, Toast.LENGTH_LONG).show();
-    }
-
-    /** Email */
-
-    @Override
-    public void onAddEmailClick(String email) {
-        resendConfirmEmail(email);
-    }
-
-    @Override
-    public void onDeleteEmailClick(int emailId) {
-        deleteEmail(emailId);
-    }
-
-    @Override
-    public void onConfirmEmailClick(String email, String code) {
-        confirmEmail(code);
     }
 
     private void showInfoFragment() {
