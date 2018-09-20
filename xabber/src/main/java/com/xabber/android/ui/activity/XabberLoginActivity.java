@@ -103,6 +103,7 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                SignUpRepo.getInstance().clearRepo();
                 finish();
             }
         });
@@ -232,6 +233,7 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+        SignUpRepo.getInstance().clearRepo();
     }
 
     @Override
