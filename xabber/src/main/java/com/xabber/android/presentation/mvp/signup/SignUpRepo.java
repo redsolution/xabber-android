@@ -8,6 +8,7 @@ public class SignUpRepo {
     private String socialCredentials;
     private String socialProvider;
     private String captchaToken;
+    private String lastErrorMessage;
 
     private static SignUpRepo instance;
 
@@ -23,6 +24,7 @@ public class SignUpRepo {
         socialCredentials = null;
         socialProvider = null;
         captchaToken = null;
+        lastErrorMessage = null;
     }
 
     public String getUsername() {
@@ -71,6 +73,14 @@ public class SignUpRepo {
 
     public void setCaptchaToken(String captchaToken) {
         this.captchaToken = captchaToken;
+    }
+
+    public String getLastErrorMessage() {
+        return lastErrorMessage;
+    }
+
+    public void setLastErrorMessage(String lastErrorMessage) {
+        this.lastErrorMessage = lastErrorMessage;
     }
 
     public boolean isCompleted() {

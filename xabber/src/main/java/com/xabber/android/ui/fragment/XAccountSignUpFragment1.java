@@ -31,6 +31,7 @@ public class XAccountSignUpFragment1 extends Fragment implements View.OnClickLis
     private ProgressBar pbHosts;
     private Button btnNext;
     private TextView tvDescription;
+    private TextView tvError;
 
     private XAccountSignUpFragment1.Listener listener;
 
@@ -79,6 +80,7 @@ public class XAccountSignUpFragment1 extends Fragment implements View.OnClickLis
         btnNext.setOnClickListener(this);
 
         tvDescription = view.findViewById(R.id.tvDescription);
+        tvError = view.findViewById(R.id.tvError);
     }
 
     @Override
@@ -89,6 +91,12 @@ public class XAccountSignUpFragment1 extends Fragment implements View.OnClickLis
 
         String username = SignUpRepo.getInstance().getUsername();
         if (username != null) edtUsername.setText(username);
+
+        String errorMessage = SignUpRepo.getInstance().getLastErrorMessage();
+        if (errorMessage != null) {
+            tvError.setText(errorMessage);
+            tvError.setVisibility(View.VISIBLE);
+        } else tvError.setVisibility(View.GONE);
     }
 
     @Override

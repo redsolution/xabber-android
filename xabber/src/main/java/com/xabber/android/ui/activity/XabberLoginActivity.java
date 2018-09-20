@@ -378,10 +378,11 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
     private void handleErrorSignUp(Throwable throwable) {
         SignUpRepo.getInstance().setCaptchaToken(null);
         hideProgress();
-
-        //handleError(throwable, "Error while signup: ", LOG_TAG);
         String message = RetrofitErrorConverter.throwableToHttpError(throwable);
-        if (ERROR_NAME_NOT_AVAILABLE.equals(message)) showSignUpStep1Fragment();
+        if (ERROR_NAME_NOT_AVAILABLE.equals(message)) {
+            SignUpRepo.getInstance().setLastErrorMessage(message);
+            showSignUpStep1Fragment();
+        }
     }
 
     /** SOCIAL LOGIN */
