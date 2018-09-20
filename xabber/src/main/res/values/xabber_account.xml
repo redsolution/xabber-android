@@ -204,4 +204,12 @@
     <string name="xmpp_confirm_title">Enter confirmation code that was send to %1$s</string>
     <string name="xaccount_not_exist">Will create new account</string>
     <string name="xaccount_exist">Xabber Account exists</string>
+
+    <string name="title_signup_step_1">Step 1 of 4</string>
+    <string name="title_signup_step_2">Step 2 of 4</string>
+    <string name="title_signup_step_3">Step 3 of 4</string>
+    <string name="title_signup_step_4">Step 4 of 4</string>
+
+    <string name="accept_license">Accept license</string>
+    <string name="account_secure_description">Secure your account by linking it with at least one social network or email. If you don’t do that and lose your password, you’ll never be able to restore access to your account!</string>
 </resources>

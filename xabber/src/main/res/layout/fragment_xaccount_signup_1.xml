@@ -11,13 +11,13 @@
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:background="#F5F5F5"
-        android:elevation="4dp"
+        android:elevation="8dp"
         >
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Step 1 of 4"
+            android:text="@string/title_signup_step_1"
             android:textStyle="bold"
             android:layout_marginLeft="16dp"
             android:layout_gravity="center_vertical"

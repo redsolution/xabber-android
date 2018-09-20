@@ -8,13 +8,13 @@
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:background="#F5F5F5"
-        android:elevation="4dp"
+        android:elevation="8dp"
         >
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Step 3 of 4"
+            android:text="@string/title_signup_step_3"
             android:textStyle="bold"
             android:layout_marginLeft="16dp"
             android:layout_gravity="center_vertical"
@@ -45,7 +45,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="acept license"
+            android:text="@string/accept_license"
             />
 
         <RelativeLayout
