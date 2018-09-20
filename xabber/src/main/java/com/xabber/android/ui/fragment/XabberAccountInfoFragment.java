@@ -353,12 +353,12 @@ public class XabberAccountInfoFragment extends Fragment implements AddEmailDialo
         tvStatusGoogle.setText(R.string.title_not_linked_account);
         tvActionGoogle.setText(R.string.action_connect);
 
-        ivFacebook.setImageResource(R.drawable.ic_google_plus_disabled);
+        ivFacebook.setImageResource(R.drawable.ic_facebook_disabled);
         tvNameFacebook.setVisibility(View.GONE);
         tvStatusFacebook.setText(R.string.title_not_linked_account);
         tvActionFacebook.setText(R.string.action_connect);
 
-        ivTwitter.setImageResource(R.drawable.ic_google_plus_disabled);
+        ivTwitter.setImageResource(R.drawable.ic_twitter_disabled);
         tvNameTwitter.setVisibility(View.GONE);
         tvStatusTwitter.setText(R.string.title_not_linked_account);
         tvActionTwitter.setText(R.string.action_connect);

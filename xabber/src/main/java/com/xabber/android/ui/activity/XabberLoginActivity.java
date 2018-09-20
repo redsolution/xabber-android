@@ -31,6 +31,7 @@ import com.xabber.android.ui.fragment.XAccountLoginFragment;
 import com.xabber.android.ui.fragment.XAccountSignUpFragment1;
 import com.xabber.android.ui.fragment.XAccountSignUpFragment2;
 import com.xabber.android.ui.fragment.XAccountSignUpFragment3;
+import com.xabber.android.ui.fragment.XAccountSignUpFragment4;
 import com.xabber.android.utils.RetrofitErrorConverter;
 
 import java.util.ArrayList;
@@ -56,6 +57,7 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
     public final static String FRAGMENT_SIGNUP_STEP1 = "fragment_signup_step1";
     public final static String FRAGMENT_SIGNUP_STEP2 = "fragment_signup_step2";
     public final static String FRAGMENT_SIGNUP_STEP3 = "fragment_signup_step3";
+    public final static String FRAGMENT_SIGNUP_STEP4 = "fragment_signup_step4";
 
     private static final String CAPTCHA_TOKEN = "RECAPTCHA";
 
@@ -64,6 +66,7 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
     private Fragment fragmentSignUpStep1;
     private Fragment fragmentSignUpStep2;
     private Fragment fragmentSignUpStep3;
+    private Fragment fragmentSignUpStep4;
     private String currentFragment = FRAGMENT_LOGIN;
 
     private ProgressDialog progressDialog;
@@ -151,6 +154,19 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
         fTrans.replace(R.id.container, fragmentSignUpStep3, FRAGMENT_SIGNUP_STEP3);
         fTrans.commit();
         currentFragment = FRAGMENT_SIGNUP_STEP3;
+
+        toolbar.setTitle(R.string.title_register_xabber_account);
+        barPainter.setLiteGrey();
+    }
+
+    public void showSignUpStep4Fragment() {
+        if (fragmentSignUpStep4 == null)
+            fragmentSignUpStep4 = XAccountSignUpFragment4.newInstance();
+
+        fTrans = getFragmentManager().beginTransaction();
+        fTrans.replace(R.id.container, fragmentSignUpStep4, FRAGMENT_SIGNUP_STEP4);
+        fTrans.commit();
+        currentFragment = FRAGMENT_SIGNUP_STEP4;
 
         toolbar.setTitle(R.string.title_register_xabber_account);
         barPainter.setLiteGrey();
@@ -337,7 +353,9 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
     }
 
     private void handleSuccessSignUp() {
-        synchronize(true);
+        hideProgress();
+        synchronize(false);
+        showSignUpStep4Fragment();
     }
 
     private void handleErrorSignUp(Throwable throwable) {

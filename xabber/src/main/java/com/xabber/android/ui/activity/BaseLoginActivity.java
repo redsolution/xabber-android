@@ -323,7 +323,7 @@ public abstract class BaseLoginActivity extends ManagedActivity implements Googl
                         // update last synchronization time
                         SettingsManager.setLastSyncDate(XabberAccountManager.getCurrentTimeString());
                         Toast.makeText(BaseLoginActivity.this, R.string.sync_success, Toast.LENGTH_SHORT).show();
-                        goToMainActivity();
+                        //goToMainActivity();
                     }
                 }, new Action1<Throwable>() {
                     @Override
