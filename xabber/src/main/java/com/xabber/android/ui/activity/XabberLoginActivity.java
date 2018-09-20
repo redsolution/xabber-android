@@ -25,8 +25,10 @@ import com.xabber.android.data.xaccount.AuthManager;
 import com.xabber.android.data.xaccount.HttpApiManager;
 import com.xabber.android.data.xaccount.XAccountTokenDTO;
 import com.xabber.android.data.xaccount.XabberAccount;
+import com.xabber.android.data.xaccount.XabberAccountManager;
 import com.xabber.android.presentation.mvp.signup.SignUpRepo;
 import com.xabber.android.ui.color.BarPainter;
+import com.xabber.android.ui.fragment.XAccountLinksFragment;
 import com.xabber.android.ui.fragment.XAccountLoginFragment;
 import com.xabber.android.ui.fragment.XAccountSignUpFragment1;
 import com.xabber.android.ui.fragment.XAccountSignUpFragment2;
@@ -49,7 +51,9 @@ import rx.schedulers.Schedulers;
  */
 
 public class XabberLoginActivity extends BaseLoginActivity implements XAccountSignUpFragment1.Listener,
-        XAccountSignUpFragment2.Listener, XAccountLoginFragment.Listener, XAccountSignUpFragment3.Listener {
+        XAccountSignUpFragment2.Listener, XAccountLoginFragment.Listener,
+        XAccountSignUpFragment3.Listener, XAccountSignUpFragment4.Listener,
+        XAccountLinksFragment.Listener {
 
     private final static String LOG_TAG = XabberLoginActivity.class.getSimpleName();
     public final static String CURRENT_FRAGMENT = "current_fragment";
@@ -186,6 +190,9 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
                 case FRAGMENT_SIGNUP_STEP3:
                     showSignUpStep3Fragment();
                     break;
+                case FRAGMENT_SIGNUP_STEP4:
+                    showSignUpStep4Fragment();
+                    break;
                 default:
                     showLoginFragment();
             }
@@ -230,7 +237,9 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
 
     @Override
     protected void onSocialAuthSuccess(String provider, String credentials) {
-        socialLogin(provider, credentials);
+        XabberAccount account = XabberAccountManager.getInstance().getAccount();
+        if (account != null) bindSocial(provider, credentials);
+        else socialLogin(provider, credentials);
     }
 
     @Override
@@ -267,6 +276,11 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
     }
 
     @Override
+    public void onStep4Completed() {
+        goToMainActivity();
+    }
+
+    @Override
     public void onGoogleClick() {
         loginGoogle();
     }
@@ -279,6 +293,43 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
     @Override
     public void onTwitterClick() {
         loginTwitter();
+    }
+
+    /** Xabber Account Links callbacks */
+
+    @Override
+    public void onSocialBindClick(String provider) {
+        switch (provider) {
+            case AuthManager.PROVIDER_GOOGLE:
+                loginGoogle();
+                break;
+            case AuthManager.PROVIDER_FACEBOOK:
+                loginFacebook();
+                break;
+            case AuthManager.PROVIDER_TWITTER:
+                loginTwitter();
+                break;
+        }
+    }
+
+    @Override
+    public void onSocialUnbindClick(String provider) {
+        unbindSocial(provider);
+    }
+
+    @Override
+    public void onAddEmailClick(String email) {
+        resendConfirmEmail(email);
+    }
+
+    @Override
+    public void onDeleteEmailClick(int emailId) {
+        deleteEmail(emailId);
+    }
+
+    @Override
+    public void onConfirmEmailClick(String email, String code) {
+        confirmEmail(code);
     }
 
     /** GET HOSTS */

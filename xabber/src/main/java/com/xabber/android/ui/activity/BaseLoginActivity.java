@@ -45,6 +45,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
+import okhttp3.ResponseBody;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
@@ -339,10 +340,156 @@ public abstract class BaseLoginActivity extends ManagedActivity implements Googl
 
     protected void updateLastSyncTime() {}
 
-    private void goToMainActivity() {
+    protected void goToMainActivity() {
         Intent intent = ContactListActivity.createIntent(BaseLoginActivity.this);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         finish();
         startActivity(intent);
+    }
+
+    /** ADD EMAIL */
+
+    protected void resendConfirmEmail(String email) {
+        showProgress(getResources().getString(R.string.progress_title_resend));
+        Subscription resendEmailSubscription = AuthManager.addEmail(email)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<ResponseBody>() {
+                    @Override
+                    public void call(ResponseBody s) {
+                        handleSuccessResendEmail(s);
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        handleErrorResendEmail(throwable);
+                    }
+                });
+        compositeSubscription.add(resendEmailSubscription);
+    }
+
+    private void handleSuccessResendEmail(ResponseBody response) {
+        hideProgress();
+        Toast.makeText(this, R.string.resend_success, Toast.LENGTH_SHORT).show();
+        synchronize(false);
+    }
+
+    private void handleErrorResendEmail(Throwable throwable) {
+        hideProgress();
+        handleError(throwable, "Error while send verification email: ", LOG_TAG);
+    }
+
+    /** CONFIRM EMAIL */
+
+    protected void confirmEmail(String code) {
+        showProgress(getResources().getString(R.string.progress_title_confirm));
+        Subscription confirmSubscription = AuthManager.confirmEmail(code)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<XabberAccount>() {
+                    @Override
+                    public void call(XabberAccount s) {
+                        handleSuccessConfirm(s);
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        handleErrorConfirm(throwable);
+                    }
+                });
+        compositeSubscription.add(confirmSubscription);
+    }
+
+    private void handleSuccessConfirm(XabberAccount response) {
+        hideProgress();
+        Toast.makeText(this, R.string.confirm_success, Toast.LENGTH_SHORT).show();
+        updateAccountInfo(response);
+    }
+
+    private void handleErrorConfirm(Throwable throwable) {
+        hideProgress();
+        handleError(throwable, "Error while confirming email: ", LOG_TAG);
+    }
+
+    /** DELETE EMAIL */
+
+    protected void deleteEmail(int emailId) {
+        showProgress(getResources().getString(R.string.progress_title_delete));
+        Subscription deleteSubscription = AuthManager.deleteEmail(emailId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<ResponseBody>() {
+                    @Override
+                    public void call(ResponseBody s) {
+                        handleSuccessDelete(s);
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        handleErrorDelete(throwable);
+                    }
+                });
+        compositeSubscription.add(deleteSubscription);
+    }
+
+    private void handleSuccessDelete(ResponseBody response) {
+        hideProgress();
+        Toast.makeText(this, R.string.delete_success, Toast.LENGTH_SHORT).show();
+        synchronize(false);
+    }
+
+    private void handleErrorDelete(Throwable throwable) {
+        hideProgress();
+        handleError(throwable, "Error while deleting email: ", LOG_TAG);
+    }
+
+    /** SOCIAL BIND / UNBIND */
+
+    protected void bindSocial(String provider, String credentials) {
+        showProgress(getResources().getString(R.string.progress_title_bind_social));
+        Subscription loginSocialSubscription = AuthManager.bindSocial(provider, credentials)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<ResponseBody>() {
+                    @Override
+                    public void call(ResponseBody s) {
+                        hideProgress();
+                        Toast.makeText(BaseLoginActivity.this,
+                                R.string.social_bind_success, Toast.LENGTH_SHORT).show();
+                        synchronize(false);
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        hideProgress();
+                        Toast.makeText(BaseLoginActivity.this,
+                                R.string.social_bind_fail, Toast.LENGTH_SHORT).show();
+                    }
+                });
+        compositeSubscription.add(loginSocialSubscription);
+    }
+
+    protected void unbindSocial(String provider) {
+        showProgress(getResources().getString(R.string.progress_title_unbind_social));
+        Subscription unbindSocialSubscription = AuthManager.unbindSocial(provider)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<ResponseBody>() {
+                    @Override
+                    public void call(ResponseBody responseBody) {
+                        hideProgress();
+                        Toast.makeText(BaseLoginActivity.this,
+                                R.string.social_unbind_success, Toast.LENGTH_SHORT).show();
+                        synchronize(false);
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        hideProgress();
+                        Toast.makeText(BaseLoginActivity.this,
+                                R.string.social_unbind_fail, Toast.LENGTH_SHORT).show();
+                    }
+                });
+        compositeSubscription.add(unbindSocialSubscription);
     }
 }

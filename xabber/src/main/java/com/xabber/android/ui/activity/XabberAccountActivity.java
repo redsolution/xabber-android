@@ -154,52 +154,12 @@ public class XabberAccountActivity extends BaseLoginActivity
 
     @Override
     protected void onSocialAuthSuccess(String provider, String credentials) {
-        showProgress(getResources().getString(R.string.progress_title_bind_social));
-        Subscription loginSocialSubscription = AuthManager.bindSocial(provider, credentials)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<ResponseBody>() {
-                    @Override
-                    public void call(ResponseBody s) {
-                        hideProgress();
-                        Toast.makeText(XabberAccountActivity.this,
-                                R.string.social_bind_success, Toast.LENGTH_SHORT).show();
-                        synchronize(false);
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        hideProgress();
-                        Toast.makeText(XabberAccountActivity.this,
-                                R.string.social_bind_fail, Toast.LENGTH_SHORT).show();
-                    }
-                });
-        compositeSubscription.add(loginSocialSubscription);
+        bindSocial(provider, credentials);
     }
 
     @Override
     public void onSocialUnbindClick(String provider) {
-        showProgress(getResources().getString(R.string.progress_title_unbind_social));
-        Subscription unbindSocialSubscription = AuthManager.unbindSocial(provider)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<ResponseBody>() {
-                    @Override
-                    public void call(ResponseBody responseBody) {
-                        hideProgress();
-                        Toast.makeText(XabberAccountActivity.this,
-                                R.string.social_unbind_success, Toast.LENGTH_SHORT).show();
-                        synchronize(false);
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        hideProgress();
-                        Toast.makeText(XabberAccountActivity.this,
-                                R.string.social_unbind_fail, Toast.LENGTH_SHORT).show();
-                    }
-                });
-        compositeSubscription.add(unbindSocialSubscription);
+        unbindSocial(provider);
     }
 
     /** Xabber Account Info */
@@ -339,99 +299,4 @@ public class XabberAccountActivity extends BaseLoginActivity
         hideProgress();
     }
 
-    /** ADD EMAIL */
-
-    private void resendConfirmEmail(String email) {
-        showProgress(getResources().getString(R.string.progress_title_resend));
-        Subscription resendEmailSubscription = AuthManager.addEmail(email)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<ResponseBody>() {
-                    @Override
-                    public void call(ResponseBody s) {
-                        handleSuccessResendEmail(s);
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        handleErrorResendEmail(throwable);
-                    }
-                });
-        compositeSubscription.add(resendEmailSubscription);
-    }
-
-    private void handleSuccessResendEmail(ResponseBody response) {
-        hideProgress();
-        Toast.makeText(this, R.string.resend_success, Toast.LENGTH_SHORT).show();
-        synchronize(false);
-    }
-
-    private void handleErrorResendEmail(Throwable throwable) {
-        hideProgress();
-        handleError(throwable, "Error while send verification email: ", LOG_TAG);
-    }
-
-    /** CONFIRM EMAIL */
-
-    private void confirmEmail(String code) {
-        showProgress(getResources().getString(R.string.progress_title_confirm));
-        Subscription confirmSubscription = AuthManager.confirmEmail(code)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<XabberAccount>() {
-                    @Override
-                    public void call(XabberAccount s) {
-                        handleSuccessConfirm(s);
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        handleErrorConfirm(throwable);
-                    }
-                });
-        compositeSubscription.add(confirmSubscription);
-    }
-
-    private void handleSuccessConfirm(XabberAccount response) {
-        hideProgress();
-        Toast.makeText(this, R.string.confirm_success, Toast.LENGTH_SHORT).show();
-        updateAccountInfo(response);
-    }
-
-    private void handleErrorConfirm(Throwable throwable) {
-        hideProgress();
-        handleError(throwable, "Error while confirming email: ", LOG_TAG);
-    }
-
-    /** DELETE EMAIL */
-
-    private void deleteEmail(int emailId) {
-        showProgress(getResources().getString(R.string.progress_title_delete));
-        Subscription deleteSubscription = AuthManager.deleteEmail(emailId)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<ResponseBody>() {
-                    @Override
-                    public void call(ResponseBody s) {
-                        handleSuccessDelete(s);
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        handleErrorDelete(throwable);
-                    }
-                });
-        compositeSubscription.add(deleteSubscription);
-    }
-
-    private void handleSuccessDelete(ResponseBody response) {
-        hideProgress();
-        Toast.makeText(this, R.string.delete_success, Toast.LENGTH_SHORT).show();
-        synchronize(false);
-    }
-
-    private void handleErrorDelete(Throwable throwable) {
-        hideProgress();
-        handleError(throwable, "Error while deleting email: ", LOG_TAG);
-    }
 }
