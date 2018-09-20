@@ -248,8 +248,10 @@ public class XAccountLinksFragment  extends Fragment implements AddEmailDialogFr
             .doOnNext(new Action1<XabberAccount>() {
                 @Override
                 public void call(XabberAccount account) {
-                    setupSocial(account.getSocialBindings());
-                    setupEmailList(account.getEmails());
+                    if (account != null) {
+                        setupSocial(account.getSocialBindings());
+                        setupEmailList(account.getEmails());
+                    }
                 }
             }).subscribe());
     }
