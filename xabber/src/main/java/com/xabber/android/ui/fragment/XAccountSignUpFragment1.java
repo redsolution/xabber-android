@@ -86,6 +86,9 @@ public class XAccountSignUpFragment1 extends Fragment implements View.OnClickLis
         super.onResume();
         if (listener != null) listener.onGetHosts();
         setupSocial();
+
+        String username = SignUpRepo.getInstance().getUsername();
+        if (username != null) edtUsername.setText(username);
     }
 
     @Override

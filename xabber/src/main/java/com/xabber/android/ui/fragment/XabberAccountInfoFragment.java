@@ -3,7 +3,6 @@ package com.xabber.android.ui.fragment;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -106,7 +105,9 @@ public class XabberAccountInfoFragment extends Fragment {
         compositeSubscription.clear();
     }
 
-    public void updateData(@NonNull XabberAccount account) {
+    public void updateData(XabberAccount account) {
+        if (account == null) return;
+
         String accountName = account.getFullUsername();
 
         tvAccountName.setText(accountName);

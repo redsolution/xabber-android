@@ -62,6 +62,7 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
     public final static String FRAGMENT_SIGNUP_STEP4 = "fragment_signup_step4";
 
     private static final String CAPTCHA_TOKEN = "RECAPTCHA";
+    private static final String ERROR_NAME_NOT_AVAILABLE = "Username is not available.";
 
     private FragmentTransaction fTrans;
     private Fragment fragmentLogin;
@@ -251,7 +252,8 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
         signUpRepo.setUsername(username);
         signUpRepo.setHost(host);
 
-        showSignUpStep2Fragment();
+        if (signUpRepo.isCompleted()) onStep3Completed();
+        else showSignUpStep2Fragment();
     }
 
     @Override
@@ -262,15 +264,11 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
 
     @Override
     public void onStep3Completed() {
-        String username = SignUpRepo.getInstance().getUsername();
-        String host = SignUpRepo.getInstance().getHost();
-        String pass = SignUpRepo.getInstance().getPass();
-        String provider = SignUpRepo.getInstance().getSocialProvider();
-        String credentials = SignUpRepo.getInstance().getSocialCredentials();
+        SignUpRepo signUpRepo = SignUpRepo.getInstance();
 
-        if (provider != null && credentials != null)
-            signUp(username, host, pass, null, credentials, provider);
-        else getCaptchaToken(username, pass, host);
+        if (signUpRepo.getSocialProvider() != null
+                && signUpRepo.getSocialCredentials() != null) signUp(signUpRepo);
+        else getCaptchaToken(signUpRepo);
     }
 
     @Override
@@ -338,8 +336,14 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
 
     /** SIGN UP */
 
-    private void signUp(String username, String host, String pass, String captchaToken,
-                        String credentials, String socialProvider) {
+    private void signUp(SignUpRepo signUpRepo) {
+        String username = signUpRepo.getUsername();
+        String host = signUpRepo.getHost();
+        String pass = signUpRepo.getPass();
+        String captchaToken = signUpRepo.getCaptchaToken();
+        String credentials = signUpRepo.getSocialCredentials();
+        String socialProvider = signUpRepo.getSocialProvider();
+
         showProgress(getResources().getString(R.string.progress_title_signup));
 
         Single<XabberAccount> signUpSingle;
@@ -365,14 +369,19 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
     }
 
     private void handleSuccessSignUp() {
+        SignUpRepo.getInstance().clearRepo();
         hideProgress();
         synchronize(false);
         showSignUpStep4Fragment();
     }
 
     private void handleErrorSignUp(Throwable throwable) {
+        SignUpRepo.getInstance().setCaptchaToken(null);
         hideProgress();
-        handleError(throwable, "Error while signup: ", LOG_TAG);
+
+        //handleError(throwable, "Error while signup: ", LOG_TAG);
+        String message = RetrofitErrorConverter.throwableToHttpError(throwable);
+        if (ERROR_NAME_NOT_AVAILABLE.equals(message)) showSignUpStep1Fragment();
     }
 
     /** SOCIAL LOGIN */
@@ -455,7 +464,7 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
 
     /** CAPTCHA */
 
-    private void getCaptchaToken(final String username, final String pass, final String domain) {
+    private void getCaptchaToken(final SignUpRepo signUpRepo) {
         SafetyNet.getClient(this).verifyWithRecaptcha(getString(R.string.RECAPTCHA_KEY))
                 .addOnSuccessListener(this,
                         new OnSuccessListener<SafetyNetApi.RecaptchaTokenResponse>() {
@@ -468,7 +477,8 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
                                     // Validate the user response token using the
                                     // reCAPTCHA siteverify API.
                                     Log.d(CAPTCHA_TOKEN, "Success: " + userResponseToken);
-                                    signUp(username, domain, pass, userResponseToken, null, null);
+                                    signUpRepo.setCaptchaToken(userResponseToken);
+                                    signUp(signUpRepo);
                                 }
                             }
                         })

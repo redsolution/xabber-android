@@ -72,4 +72,8 @@ public class SignUpRepo {
     public void setCaptchaToken(String captchaToken) {
         this.captchaToken = captchaToken;
     }
+
+    public boolean isCompleted() {
+        return username != null && pass != null && host != null;
+    }
 }

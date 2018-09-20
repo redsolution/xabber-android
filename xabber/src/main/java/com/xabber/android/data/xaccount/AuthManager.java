@@ -299,10 +299,7 @@ public class AuthManager {
     }
 
     public static Single<XabberAccount> signupv2(String username, String host, String password,
-                                                 String provider, String socialToken) {
-
-        Gson gson = new Gson();
-        String credentials = gson.toJson(new AccessToken(socialToken));
+                                                 String provider, String credentials) {
 
         return HttpApiManager.getXabberApi().signupv2(new SignUpFields(username, host,
                 password, provider, credentials))
