@@ -216,5 +216,5 @@
 
     <string name="license_url" translatable="false">https://www.xabber.com/policy/</string>
     <string name="accept_license">Accept privacy policy</string>
-    <string name="account_secure_description">Secure your account by linking it with at least one social network or email. If you don’t do that and lose your password, you’ll never be able to restore access to your account!</string>
+    <string name="account_secure_description"><![CDATA[Secure your account by linking it with <i>at least one</i> social network or email. If you don’t do that and lose your password, you’ll never be able to restore access to your account!]]></string>
 </resources>

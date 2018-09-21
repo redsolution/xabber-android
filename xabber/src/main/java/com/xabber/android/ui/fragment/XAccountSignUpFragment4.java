@@ -5,10 +5,12 @@ import android.app.FragmentTransaction;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.xabber.android.R;
 
@@ -16,6 +18,7 @@ public class XAccountSignUpFragment4 extends Fragment {
 
     private Button btnStart;
     private Listener listener;
+    private TextView tvDescription;
 
     public interface Listener {
         void onStep4Completed();
@@ -35,6 +38,8 @@ public class XAccountSignUpFragment4 extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
 
+        tvDescription = view.findViewById(R.id.tvDescription);
+        tvDescription.setText(Html.fromHtml(getActivity().getString(R.string.account_secure_description)));
         btnStart = view.findViewById(R.id.btnStart);
         btnStart.setOnClickListener(new View.OnClickListener() {
             @Override

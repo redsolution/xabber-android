@@ -4,6 +4,7 @@ import android.app.Fragment;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -62,7 +63,7 @@ public class XAccountSignUpFragment1 extends Fragment implements View.OnClickLis
         spinnerDomain.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                tvDescription.setText(hosts.get(position).getDescription());
+                tvDescription.setText(Html.fromHtml(hosts.get(position).getDescription()));
             }
 
             @Override
