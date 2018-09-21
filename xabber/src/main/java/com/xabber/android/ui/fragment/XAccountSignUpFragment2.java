@@ -3,11 +3,11 @@ package com.xabber.android.ui.fragment;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.TextInputEditText;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 
 import com.xabber.android.R;
 
@@ -15,7 +15,7 @@ public class XAccountSignUpFragment2 extends Fragment implements View.OnClickLis
 
     private Listener listener;
 
-    private EditText edtPass;
+    private TextInputEditText edtPass;
     private Button btnNext;
 
     public interface Listener {

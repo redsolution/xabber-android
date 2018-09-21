@@ -35,19 +35,6 @@
         >
 
         <TextView
-            android:id="@+id/tvError"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingLeft="4dp"
-            android:layout_marginBottom="8dp"
-            android:textColor="@color/grey_700"
-            android:drawableLeft="@drawable/ic_error_grey_24dp"
-            android:drawablePadding="4dp"
-            android:gravity="center"
-            android:visibility="gone"
-            />
-
-        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/label_username"
