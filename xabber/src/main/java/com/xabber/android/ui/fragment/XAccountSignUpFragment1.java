@@ -82,12 +82,13 @@ public class XAccountSignUpFragment1 extends Fragment implements View.OnClickLis
         btnNext.setOnClickListener(this);
 
         tvDescription = view.findViewById(R.id.tvDescription);
+
+        if (listener != null) listener.onGetHosts();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        if (listener != null) listener.onGetHosts();
         setupSocial();
 
         String username = SignUpRepo.getInstance().getUsername();
