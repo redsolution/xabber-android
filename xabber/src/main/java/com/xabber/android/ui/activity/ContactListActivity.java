@@ -45,7 +45,6 @@ import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.CommonState;
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
-import com.xabber.android.data.connection.NetworkManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.UserJid;
@@ -58,10 +57,7 @@ import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
-import com.xabber.android.data.xaccount.AuthManager;
 import com.xabber.android.data.xaccount.XMPPAccountSettings;
-import com.xabber.android.data.xaccount.XMPPAuthManager;
-import com.xabber.android.data.xaccount.XabberAccount;
 import com.xabber.android.data.xaccount.XabberAccountManager;
 import com.xabber.android.presentation.mvp.contactlist.ContactListPresenter;
 import com.xabber.android.presentation.ui.contactlist.ContactListFragment;
@@ -74,7 +70,6 @@ import com.xabber.android.ui.dialog.MucInviteDialog;
 import com.xabber.android.ui.dialog.MucPrivateChatInvitationDialog;
 import com.xabber.android.ui.dialog.TranslationDialog;
 import com.xabber.android.ui.fragment.ContactListDrawerFragment;
-import com.xabber.android.ui.fragment.ChooseAccountForXMPPAuthDialog;
 import com.xabber.android.ui.preferences.PreferenceEditor;
 import com.xabber.android.ui.widget.bottomnavigation.BottomMenu;
 import com.xabber.xmpp.uri.XMPPUri;
@@ -87,10 +82,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 
-import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
-import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -100,8 +91,7 @@ import rx.subscriptions.CompositeSubscription;
  */
 public class ContactListActivity extends ManagedActivity implements OnAccountChangedListener,
         View.OnClickListener, OnChooseListener, ContactListFragment.ContactListFragmentListener,
-        ContactListDrawerFragment.ContactListDrawerListener, ChooseAccountForXMPPAuthDialog.Listener,
-        BottomMenu.OnClickListener {
+        ContactListDrawerFragment.ContactListDrawerListener, BottomMenu.OnClickListener {
 
     /**
      * Select contact to be invited to the room was requested.
@@ -772,23 +762,8 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
         } else showContactListFragment(null);
     }
 
-    @Override
-    public void onAccountClick(String accountJid) {
-        loginXabberAccountViaXMPP(accountJid);
-    }
-
     private void onXabberAccountClick() {
-        XabberAccount account = XabberAccountManager.getInstance().getAccount();
-        if (account != null) startActivity(XabberAccountActivity.createIntent(this, false));
-        else {
-            // TODO: 07.09.18 запрос списка аккаунтов вынести из UI ?
-            ArrayList<AccountJid> accounts = new ArrayList<>(AccountManager.getInstance().getEnabledAccounts());
-            if (accounts.size() < 1) return;
-            if (accounts.size() > 1)
-                ChooseAccountForXMPPAuthDialog.newInstance(this, accounts)
-                    .show(getFragmentManager(), ChooseAccountForXMPPAuthDialog.class.getSimpleName());
-            else onAccountClick(accounts.get(0).getFullJid().toString());
-        }
+        startActivity(XabberAccountActivity.createIntent(this));
     }
 
     private void showBottomNavigation() {
@@ -863,46 +838,5 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
 
     public void closeSearch() {
         if (bottomMenu != null) bottomMenu.closeSearch();
-    }
-
-    public void loginXabberAccountViaXMPP(String accountJid) {
-        if (NetworkManager.isNetworkAvailable()) {
-            requestXMPPCode(accountJid);
-        } else
-            Toast.makeText(this, R.string.toast_no_internet, Toast.LENGTH_LONG).show();
-    }
-
-    private void requestXMPPCode(final String jid) {
-
-        // ! show progress !
-
-        Subscription requestXMPPCodeSubscription = AuthManager.requestXMPPCode(jid)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<AuthManager.XMPPCode>() {
-                    @Override
-                    public void call(AuthManager.XMPPCode code) {
-                        handleSuccessRequestXMPPCode(code, jid);
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        handleErrorRequestXMPPCode(throwable);
-                    }
-                });
-        compositeSubscription.add(requestXMPPCodeSubscription);
-    }
-
-    private void handleSuccessRequestXMPPCode(AuthManager.XMPPCode code, String jid) {
-
-        // ! hide progress !
-
-        XMPPAuthManager.getInstance().addRequest(code.getRequestId(), code.getApiJid(), jid);
-    }
-
-    private void handleErrorRequestXMPPCode(Throwable throwable) {
-        // ! hide progress !
-        // TODO: 07.09.18 сделать корректную обработку ошибок
-        Toast.makeText(this, "Error while xmpp-auth: " + throwable.toString(), Toast.LENGTH_LONG).show();
     }
 }

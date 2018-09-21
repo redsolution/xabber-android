@@ -13,6 +13,7 @@ import android.support.annotation.NonNull;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
@@ -21,9 +22,11 @@ import android.widget.Toast;
 import com.xabber.android.R;
 import com.xabber.android.data.connection.NetworkManager;
 import com.xabber.android.data.xaccount.AuthManager;
+import com.xabber.android.data.xaccount.XMPPAuthManager;
 import com.xabber.android.data.xaccount.XabberAccount;
 import com.xabber.android.data.xaccount.XabberAccountManager;
 import com.xabber.android.ui.color.BarPainter;
+import com.xabber.android.ui.fragment.XAccountXMPPLoginFragment;
 import com.xabber.android.ui.fragment.XabberAccountInfoFragment;
 import com.xabber.android.utils.RetrofitErrorConverter;
 
@@ -34,27 +37,25 @@ import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
 public class XabberAccountActivity extends BaseLoginActivity
-        implements Toolbar.OnMenuItemClickListener {
+        implements Toolbar.OnMenuItemClickListener, XAccountXMPPLoginFragment.Listener {
 
     private final static String LOG_TAG = XabberAccountActivity.class.getSimpleName();
     private final static String FRAGMENT_INFO = "fragment_info";
-    private final static String SHOW_SYNC = "show_sync";
+    private final static String FRAGMENT_LOGIN = "fragment_login";
 
     private FragmentTransaction fTrans;
     private Fragment fragmentInfo;
+    private Fragment fragmentLogin;
 
     private Toolbar toolbar;
     private BarPainter barPainter;
     private ProgressDialog progressDialog;
-    private boolean needShowSyncDialog = false;
 
     private boolean dialogShowed;
 
     @NonNull
-    public static Intent createIntent(Context context, boolean showSync) {
-        Intent intent = new Intent(context, XabberAccountActivity.class);
-        intent.putExtra(SHOW_SYNC, showSync);
-        return intent;
+    public static Intent createIntent(Context context) {
+        return new Intent(context, XabberAccountActivity.class);
     }
 
     @Override
@@ -83,15 +84,9 @@ public class XabberAccountActivity extends BaseLoginActivity
         super.onResume();
         onPrepareOptionsMenu(toolbar.getMenu());
 
-        Bundle extras = getIntent().getExtras();
-        if (extras != null) {
-            needShowSyncDialog = extras.getBoolean(SHOW_SYNC);
-            extras.clear();
-        }
-
         XabberAccount account = XabberAccountManager.getInstance().getAccount();
         if (account != null) showInfoFragment();
-        else finish();
+        else showLoginFragment();
     }
 
     @Override
@@ -142,6 +137,54 @@ public class XabberAccountActivity extends BaseLoginActivity
         bindSocial(provider, credentials);
     }
 
+    /** XMPP-login */
+
+    @Override
+    public void onAccountClick(String jid) {
+        loginXabberAccountViaXMPP(jid);
+    }
+
+    public void loginXabberAccountViaXMPP(String accountJid) {
+        if (NetworkManager.isNetworkAvailable()) {
+            requestXMPPCode(accountJid);
+        } else
+            Toast.makeText(this, R.string.toast_no_internet, Toast.LENGTH_LONG).show();
+    }
+
+    private void requestXMPPCode(final String jid) {
+
+        // ! show progress !
+
+        Subscription requestXMPPCodeSubscription = AuthManager.requestXMPPCode(jid)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<AuthManager.XMPPCode>() {
+                    @Override
+                    public void call(AuthManager.XMPPCode code) {
+                        handleSuccessRequestXMPPCode(code, jid);
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        handleErrorRequestXMPPCode(throwable);
+                    }
+                });
+        compositeSubscription.add(requestXMPPCodeSubscription);
+    }
+
+    private void handleSuccessRequestXMPPCode(AuthManager.XMPPCode code, String jid) {
+
+        // ! hide progress !
+
+        XMPPAuthManager.getInstance().addRequest(code.getRequestId(), code.getApiJid(), jid);
+    }
+
+    private void handleErrorRequestXMPPCode(Throwable throwable) {
+        // ! hide progress !
+        // TODO: 07.09.18 сделать корректную обработку ошибок
+        Toast.makeText(this, "Error while xmpp-auth: " + throwable.toString(), Toast.LENGTH_LONG).show();
+    }
+
     /** Xabber Account Info */
 
     public void onLogoutClick(boolean deleteAccounts) {
@@ -159,12 +202,8 @@ public class XabberAccountActivity extends BaseLoginActivity
     }
 
     private void showInfoFragment() {
-        if (fragmentInfo == null) {
+        if (fragmentInfo == null)
             fragmentInfo = XabberAccountInfoFragment.newInstance();
-            Bundle bundle = new Bundle();
-            bundle.putBoolean("SHOW_SYNC", needShowSyncDialog);
-            fragmentInfo.setArguments(bundle);
-        }
 
         fTrans = getFragmentManager().beginTransaction();
         fTrans.replace(R.id.container, fragmentInfo, FRAGMENT_INFO);
@@ -172,6 +211,26 @@ public class XabberAccountActivity extends BaseLoginActivity
 
         toolbar.setTitle(R.string.title_xabber_account);
         barPainter.setLiteGrey();
+        setupMenu(true);
+    }
+
+    private void showLoginFragment() {
+        if (fragmentLogin == null)
+            fragmentLogin = XAccountXMPPLoginFragment.newInstance();
+
+        fTrans = getFragmentManager().beginTransaction();
+        fTrans.replace(R.id.container, fragmentLogin, FRAGMENT_LOGIN);
+        fTrans.commit();
+
+        toolbar.setTitle(R.string.title_login_xabber_account);
+        barPainter.setLiteGrey();
+        setupMenu(false);
+    }
+
+    private void setupMenu(boolean show) {
+        Menu menu = toolbar.getMenu();
+        menu.findItem(R.id.action_quit).setVisible(show);
+        menu.findItem(R.id.action_sync).setVisible(show);
     }
 
     @Override

@@ -15,6 +15,7 @@ import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.privatestorage.PrivateStorageManager;
 import com.xabber.android.ui.color.ColorManager;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -23,7 +24,7 @@ import java.util.List;
 
 public class XMPPAccountAuthAdapter extends RecyclerView.Adapter {
 
-    private List<AccountJid> items;
+    private List<AccountJid> items = new ArrayList<>();
     private Listener listener;
 
     public XMPPAccountAuthAdapter(Listener listener) {
