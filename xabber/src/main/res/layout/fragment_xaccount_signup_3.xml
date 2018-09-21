@@ -22,37 +22,39 @@
 
     </LinearLayout>
 
-    <LinearLayout
+    <RelativeLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_marginTop="24dp"
         android:layout_marginLeft="24dp"
         android:layout_marginRight="24dp"
         >
 
-        <TextView
+        <WebView
+            android:id="@+id/webView"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Terms of services"
-            android:gravity="center"
-            android:paddingLeft="4dp"
-            android:layout_marginBottom="16dp"
-            />
-
-        <CheckBox
-            android:id="@+id/chkAccept"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="@string/accept_license"
+            android:layout_height="match_parent"
+            android:layout_above="@id/buttons"
             />
 
         <RelativeLayout
+            android:id="@+id/buttons"
             android:layout_marginTop="16dp"
             android:layout_marginBottom="16dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            >
+
+            <CheckBox
+                android:id="@+id/chkAccept"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_centerVertical="true"
+                android:text="@string/accept_license"
+                />
 
             <Button
                 android:id="@+id/btnSignUp"
@@ -73,7 +75,7 @@
         </RelativeLayout>
 
 
-    </LinearLayout>
+    </RelativeLayout>
 
 
 </LinearLayout>

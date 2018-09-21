@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -54,6 +55,9 @@ public class XAccountSignUpFragment3 extends Fragment {
                 btnSignUp.setEnabled(isChecked);
             }
         });
+
+        WebView webView = view.findViewById(R.id.webView);
+        webView.loadUrl(getString(R.string.license_url));
     }
 
 }
