@@ -64,7 +64,7 @@
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
                 android:textColor="@color/white"
-                android:text="@string/title_start_messaging"
+                android:text="@string/skip"
                 />
 
         </RelativeLayout>
