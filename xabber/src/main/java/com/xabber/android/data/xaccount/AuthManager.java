@@ -410,11 +410,13 @@ public class AuthManager {
     public static class Host {
         final String host;
         final String description;
+        final String price;
         final boolean is_free;
 
-        public Host(String host, String description, boolean is_free) {
+        public Host(String host, String description, String price, boolean is_free) {
             this.host = host;
             this.description = description;
+            this.price = price;
             this.is_free = is_free;
         }
 
@@ -424,6 +426,10 @@ public class AuthManager {
 
         public String getDescription() {
             return description;
+        }
+
+        public String getPrice() {
+            return price;
         }
 
         public boolean isFree() {

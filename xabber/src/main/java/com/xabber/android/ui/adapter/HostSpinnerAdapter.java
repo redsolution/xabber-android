@@ -32,14 +32,14 @@ public class HostSpinnerAdapter extends ArrayAdapter<String> {
     }
 
     public View getCustomView(int position, View convertView, ViewGroup parent) {
+        AuthManager.Host host = mData.get(position);
 
         View view = mInflater.inflate(R.layout.item_host, parent, false);
         TextView tvHost = (TextView) view.findViewById(R.id.tvHost);
         TextView tvStatus = (TextView) view.findViewById(R.id.tvStatus);
 
-        tvHost.setText(mData.get(position).getHost());
-        tvStatus.setText(mData.get(position).isFree()
-                ? Application.getInstance().getResources().getString(R.string.free) : "");
+        tvHost.setText(host.getHost());
+        tvStatus.setText(host.isFree() ? Application.getInstance().getResources().getString(R.string.free) : host.getPrice());
 
         return view;
     }
