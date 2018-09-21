@@ -9,7 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
+import android.widget.TextView;
 
 import com.xabber.android.R;
 import com.xabber.android.data.account.AccountManager;
@@ -27,6 +27,7 @@ import rx.schedulers.Schedulers;
 public class XAccountXMPPLoginFragment extends Fragment implements XMPPAccountAuthAdapter.Listener {
 
     private View progressView;
+    private TextView tvError;
     private XMPPAccountAuthAdapter adapter;
     private RecyclerView recyclerView;
 
@@ -51,6 +52,7 @@ public class XAccountXMPPLoginFragment extends Fragment implements XMPPAccountAu
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         progressView = view.findViewById(R.id.progressView);
+        tvError = view.findViewById(R.id.tvError);
         recyclerView = view.findViewById(R.id.rlAccounts);
         adapter = new XMPPAccountAuthAdapter(this);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -83,11 +85,12 @@ public class XAccountXMPPLoginFragment extends Fragment implements XMPPAccountAu
     }
 
     private void loadData() {
+        tvError.setVisibility(View.GONE);
+        recyclerView.setVisibility(View.GONE);
+
         ArrayList<AccountJid> accounts = new ArrayList<>(AccountManager.getInstance().getEnabledAccounts());
-        if (accounts.size() < 1)
-            Toast.makeText(getActivity(), "error", Toast.LENGTH_SHORT).show();
-        else if (accounts.size() > 1)
-            loadBindings(accounts);
+        if (accounts.size() < 1) tvError.setVisibility(View.VISIBLE);
+        else if (accounts.size() > 1) loadBindings(accounts);
         else listener.onAccountClick(accounts.get(0).getFullJid().toString());
     }
 
