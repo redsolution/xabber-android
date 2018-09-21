@@ -36,6 +36,7 @@ public class XAccountSignUpFragment1 extends Fragment implements View.OnClickLis
     private XAccountSignUpFragment1.Listener listener;
 
     private List<AuthManager.Host> hosts;
+    private HostSpinnerAdapter adapter;
 
     public interface Listener {
         void onGetHosts();
@@ -64,6 +65,7 @@ public class XAccountSignUpFragment1 extends Fragment implements View.OnClickLis
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 tvDescription.setText(Html.fromHtml(hosts.get(position).getDescription()));
+                if (adapter != null) adapter.setCurrentPosition(position);
             }
 
             @Override
@@ -179,7 +181,7 @@ public class XAccountSignUpFragment1 extends Fragment implements View.OnClickLis
         for (AuthManager.Host host : hosts) {
             strings.add(host.getHost());
         }
-        HostSpinnerAdapter adapter = new HostSpinnerAdapter(getActivity(),
+        adapter = new HostSpinnerAdapter(getActivity(),
                 android.R.layout.simple_spinner_item, strings, this.hosts);
         spinnerDomain.setAdapter(adapter);
     }

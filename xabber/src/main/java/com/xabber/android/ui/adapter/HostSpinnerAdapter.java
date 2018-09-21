@@ -18,12 +18,17 @@ public class HostSpinnerAdapter extends ArrayAdapter<String> {
 
     private List<AuthManager.Host> mData;
     private LayoutInflater mInflater;
+    private int currentPosition;
 
     public HostSpinnerAdapter(@NonNull Context context, int resource, @NonNull List<String> hosts,  @NonNull List<AuthManager.Host> objects) {
         super(context, resource, hosts);
 
         mData = objects;
         mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    }
+
+    public void setCurrentPosition(int position) {
+        this.currentPosition = position;
     }
 
     @Override
@@ -40,6 +45,9 @@ public class HostSpinnerAdapter extends ArrayAdapter<String> {
 
         tvHost.setText(host.getHost());
         tvStatus.setText(host.isFree() ? Application.getInstance().getResources().getString(R.string.free) : host.getPrice());
+
+        if (position == currentPosition) view.setBackgroundColor(
+                Application.getInstance().getResources().getColor(R.color.grey_200));
 
         return view;
     }
