@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.ui.adapter.XMPPAccountAuthAdapter;
 
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
@@ -12,6 +13,12 @@ import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smackx.iqprivate.PrivateDataManager;
 import org.jivesoftware.smackx.iqprivate.packet.DefaultPrivateData;
 import org.jivesoftware.smackx.iqprivate.packet.PrivateData;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Callable;
+
+import rx.Single;
 
 public class PrivateStorageManager {
 
@@ -71,6 +78,31 @@ public class PrivateStorageManager {
                 | SmackException.NotConnectedException | InterruptedException
                 | IllegalArgumentException e) {
             e.printStackTrace();
+        }
+    }
+
+    /** Prepare views */
+
+    public Single<List<XMPPAccountAuthAdapter.AccountView>> getAccountViewWithBindings(List<AccountJid> accounts) {
+        return Single.fromCallable(new CallableLoadBindings(accounts));
+    }
+
+    private class CallableLoadBindings implements Callable<List<XMPPAccountAuthAdapter.AccountView>> {
+
+        private List<AccountJid> accounts;
+
+        public CallableLoadBindings(List<AccountJid> accounts) {
+            this.accounts = accounts;
+        }
+
+        @Override
+        public List<XMPPAccountAuthAdapter.AccountView> call() throws Exception {
+            List<XMPPAccountAuthAdapter.AccountView> items = new ArrayList<>();
+            for (AccountJid accountJid : accounts) {
+                items.add(new XMPPAccountAuthAdapter.AccountView(accountJid,
+                        haveXabberAccountBinding(accountJid)));
+            }
+            return items;
         }
     }
 

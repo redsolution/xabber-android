@@ -12,7 +12,6 @@ import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
-import com.xabber.android.data.extension.privatestorage.PrivateStorageManager;
 import com.xabber.android.ui.color.ColorManager;
 
 import java.util.ArrayList;
@@ -24,7 +23,7 @@ import java.util.List;
 
 public class XMPPAccountAuthAdapter extends RecyclerView.Adapter {
 
-    private List<AccountJid> items = new ArrayList<>();
+    private List<AccountView> items = new ArrayList<>();
     private Listener listener;
 
     public XMPPAccountAuthAdapter(Listener listener) {
@@ -35,7 +34,7 @@ public class XMPPAccountAuthAdapter extends RecyclerView.Adapter {
         void onAccountClick(String accountJid);
     }
 
-    public void setItems(List<AccountJid> items) {
+    public void setItems(List<AccountView> items) {
         this.items = items;
         notifyDataSetChanged();
     }
@@ -48,7 +47,7 @@ public class XMPPAccountAuthAdapter extends RecyclerView.Adapter {
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        final AccountItem account = AccountManager.getInstance().getAccount(items.get(position));
+        final AccountItem account = AccountManager.getInstance().getAccount(items.get(position).jid);
         XMPPAccountVH viewHolder = (XMPPAccountVH) holder;
 
         // set color
@@ -65,8 +64,7 @@ public class XMPPAccountAuthAdapter extends RecyclerView.Adapter {
         viewHolder.jid.setText(accountJid);
 
         // set action
-        boolean haveBind = PrivateStorageManager.getInstance().haveXabberAccountBinding(account.getAccount());
-        viewHolder.action.setText(haveBind ? R.string.xaccount_exist : R.string.xaccount_not_exist);
+        viewHolder.action.setText(items.get(position).bind ? R.string.xaccount_exist : R.string.xaccount_not_exist);
 
         // set listener
         viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -93,6 +91,16 @@ public class XMPPAccountAuthAdapter extends RecyclerView.Adapter {
             avatar = (ImageView) itemView.findViewById(R.id.avatar);
             jid = (TextView) itemView.findViewById(R.id.tvAccountJid);
             action = (TextView) itemView.findViewById(R.id.tvAction);
+        }
+    }
+
+    public static class AccountView {
+        AccountJid jid;
+        boolean bind;
+
+        public AccountView(AccountJid jid, boolean bind) {
+            this.jid = jid;
+            this.bind = bind;
         }
     }
 }

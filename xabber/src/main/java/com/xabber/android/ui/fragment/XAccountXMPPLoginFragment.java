@@ -14,14 +14,21 @@ import android.widget.Toast;
 import com.xabber.android.R;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.extension.privatestorage.PrivateStorageManager;
 import com.xabber.android.ui.adapter.XMPPAccountAuthAdapter;
 
 import java.util.ArrayList;
+import java.util.List;
+
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
+import rx.schedulers.Schedulers;
 
 public class XAccountXMPPLoginFragment extends Fragment implements XMPPAccountAuthAdapter.Listener {
 
     private View progressView;
     private XMPPAccountAuthAdapter adapter;
+    private RecyclerView recyclerView;
 
     private Listener listener;
 
@@ -44,8 +51,7 @@ public class XAccountXMPPLoginFragment extends Fragment implements XMPPAccountAu
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         progressView = view.findViewById(R.id.progressView);
-
-        RecyclerView recyclerView = view.findViewById(R.id.rlAccounts);
+        recyclerView = view.findViewById(R.id.rlAccounts);
         adapter = new XMPPAccountAuthAdapter(this);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(adapter);
@@ -81,8 +87,23 @@ public class XAccountXMPPLoginFragment extends Fragment implements XMPPAccountAu
         if (accounts.size() < 1)
             Toast.makeText(getActivity(), "error", Toast.LENGTH_SHORT).show();
         else if (accounts.size() > 1)
-            adapter.setItems(accounts);
+            loadBindings(accounts);
         else listener.onAccountClick(accounts.get(0).getFullJid().toString());
+    }
+
+    private void loadBindings(ArrayList<AccountJid> accounts) {
+        showProgress(true);
+        PrivateStorageManager.getInstance().getAccountViewWithBindings(accounts)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(new Action1<List<XMPPAccountAuthAdapter.AccountView>>() {
+                @Override
+                public void call(List<XMPPAccountAuthAdapter.AccountView> accountViews) {
+                    showProgress(false);
+                    adapter.setItems(accountViews);
+                    recyclerView.setVisibility(View.VISIBLE);
+                }
+            });
     }
 
     private void showProgress(boolean show) {
