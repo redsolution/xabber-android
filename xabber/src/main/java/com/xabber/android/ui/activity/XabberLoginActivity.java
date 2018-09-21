@@ -1,5 +1,6 @@
 package com.xabber.android.ui.activity;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
@@ -12,6 +13,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import com.google.android.gms.common.api.ApiException;
@@ -169,6 +171,7 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
         currentFragment = FRAGMENT_SIGNUP_STEP3;
 
         setupToolbar(false);
+        hideKeyboard();
     }
 
     public void showSignUpStep4Fragment() {
@@ -217,6 +220,15 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setData(Uri.parse(url));
         startActivity(intent);
+    }
+
+    public void hideKeyboard() {
+        // Check if no view has focus
+        View view = getCurrentFocus();
+        if (view != null) {
+            InputMethodManager inputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            if (inputManager != null) inputManager.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+        }
     }
 
     @Override
