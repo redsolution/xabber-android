@@ -25,6 +25,10 @@
 
     </LinearLayout>
 
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
@@ -77,6 +81,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:paddingRight="-12dp"
                 >
 
                 <Spinner
@@ -89,8 +94,8 @@
                 <View
                     android:id="@+id/spinnerBorder"
                     android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="#757575"
+                    android:layout_height="2dp"
+                    android:background="@color/android_default_accent_color"
                     android:layout_marginTop="1dp"
                     android:layout_marginLeft="7dp"
                     android:layout_marginRight="16dp"
@@ -113,7 +118,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingLeft="4dp"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="8dp"
             />
 
         <RelativeLayout
@@ -151,6 +156,6 @@
 
     </LinearLayout>
 
-
+    </ScrollView>
 
 </LinearLayout>
