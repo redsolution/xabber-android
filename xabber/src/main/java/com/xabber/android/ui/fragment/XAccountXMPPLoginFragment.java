@@ -23,6 +23,7 @@ import java.util.List;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
+import rx.subscriptions.CompositeSubscription;
 
 public class XAccountXMPPLoginFragment extends Fragment implements XMPPAccountAuthAdapter.Listener {
 
@@ -32,6 +33,7 @@ public class XAccountXMPPLoginFragment extends Fragment implements XMPPAccountAu
     private XMPPAccountAuthAdapter adapter;
     private RecyclerView recyclerView;
 
+    private CompositeSubscription compositeSubscription = new CompositeSubscription();
     private Listener listener;
 
     public interface Listener {
@@ -76,6 +78,12 @@ public class XAccountXMPPLoginFragment extends Fragment implements XMPPAccountAu
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+        compositeSubscription.clear();
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
         loadData();
@@ -83,7 +91,7 @@ public class XAccountXMPPLoginFragment extends Fragment implements XMPPAccountAu
 
     @Override
     public void onAccountClick(String accountJid) {
-        listener.onAccountClick(accountJid);
+        connectViaJid(accountJid);
     }
 
     private void loadData() {
@@ -98,7 +106,7 @@ public class XAccountXMPPLoginFragment extends Fragment implements XMPPAccountAu
 
     private void loadBindings(ArrayList<AccountJid> accounts) {
         showProgress(getActivity().getResources().getString(R.string.progress_title_account_list));
-        PrivateStorageManager.getInstance().getAccountViewWithBindings(accounts)
+        compositeSubscription.add(PrivateStorageManager.getInstance().getAccountViewWithBindings(accounts)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(new Action1<List<XMPPAccountAuthAdapter.AccountView>>() {
@@ -108,7 +116,7 @@ public class XAccountXMPPLoginFragment extends Fragment implements XMPPAccountAu
                     adapter.setItems(accountViews);
                     recyclerView.setVisibility(View.VISIBLE);
                 }
-            });
+            }));
     }
 
     private void showProgress(String title) {
@@ -121,6 +129,7 @@ public class XAccountXMPPLoginFragment extends Fragment implements XMPPAccountAu
     }
 
     private void connectViaJid(String jid) {
+        recyclerView.setVisibility(View.GONE);
         showProgress(getActivity().getResources().getString(R.string.progress_title_connect, jid));
         listener.onAccountClick(jid);
     }

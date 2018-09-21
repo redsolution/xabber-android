@@ -83,10 +83,7 @@ public class XabberAccountActivity extends BaseLoginActivity
     protected void onResume() {
         super.onResume();
         onPrepareOptionsMenu(toolbar.getMenu());
-
-        XabberAccount account = XabberAccountManager.getInstance().getAccount();
-        if (account != null) showInfoFragment();
-        else showLoginFragment();
+        subscribeForXabberAccount();
     }
 
     @Override
@@ -128,6 +125,19 @@ public class XabberAccountActivity extends BaseLoginActivity
             progressDialog.dismiss();
             progressDialog = null;
         }
+    }
+
+    private void subscribeForXabberAccount() {
+        compositeSubscription.add(XabberAccountManager.getInstance().subscribeForAccount()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnNext(new Action1<XabberAccount>() {
+                @Override
+                public void call(XabberAccount account) {
+                    if (account != null) showInfoFragment();
+                    else showLoginFragment();
+                }
+            }).subscribe());
     }
 
     /** Social Auth */
