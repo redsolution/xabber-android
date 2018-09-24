@@ -31,7 +31,6 @@ import java.util.Map;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
-import rx.subjects.PublishSubject;
 
 public class XMPPAuthManager implements OnPacketListener, OnConnectedListener {
 
@@ -39,17 +38,12 @@ public class XMPPAuthManager implements OnPacketListener, OnConnectedListener {
     private static final String ATTRIBUTE_ID = "id";
 
     private static XMPPAuthManager instance;
-    private PublishSubject<String> authCodeSubscribe = PublishSubject.create();
     private List<AccountJid> accountsForCheck = new ArrayList<>();
     private Map<String, Request> requests = new HashMap<>();
 
     public static XMPPAuthManager getInstance() {
         if (instance == null) instance = new XMPPAuthManager();
         return instance;
-    }
-
-    public PublishSubject<String> subscribeForAuthCode() {
-        return authCodeSubscribe;
     }
 
     public void addRequest(String requestId, String apiJid, String clientJid) {
@@ -77,7 +71,6 @@ public class XMPPAuthManager implements OnPacketListener, OnConnectedListener {
 
             if (requestId != null && code != null)
                 onRequestReceived(new Request(requestId, clientJid, apiJid, code));
-            //authCodeSubscribe.onNext(this.authCode);
         }
     }
 
