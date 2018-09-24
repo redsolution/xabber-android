@@ -55,9 +55,16 @@ public class XMPPAuthManager implements OnPacketListener, OnConnectedListener {
         accountsForCheck.add(accountJid);
     }
 
+    /**
+     *  StanzaId is RequestId
+     * */
+    public boolean isXabberServiceMessage(String stanzaId) {
+        return requests.containsKey(stanzaId);
+    }
+
     @Override
     public void onStanza(ConnectionItem connection, Stanza packet) {
-        if (packet instanceof Message) {
+        if (packet instanceof Message && ((Message) packet).getType() == Message.Type.headline) {
             Message message = (Message) packet;
 
             String apiJid = message.getFrom().toString();
