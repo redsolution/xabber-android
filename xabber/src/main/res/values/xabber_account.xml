@@ -179,15 +179,25 @@
     <string name="sync_status_enabled">Synchronization enabled</string>
     <string name="sync_status_disabled">Synchronization disabled</string>
 
-    <string name="tutorial_title_1">A better way to chat</string>
-    <string name="tutorial_title_2">Introducing Xabber Account</string>
-    <string name="tutorial_title_3">Perfectly in Sync</string>
-    <string name="tutorial_title_4">Social Login</string>
+    <string name="tutorial_title_1">Welcome to Xabber</string>
+    <string name="tutorial_title_2">Open Standards</string>
+    <string name="tutorial_title_3">Rich Multimedia</string>
+    <string name="tutorial_title_4">Privacy and Security</string>
+    <string name="tutorial_title_5">Multiple Platforms</string>
+    <string name="tutorial_title_6">Perfectly in Sync</string>
+    <string name="tutorial_title_7">Federated Network</string>
+    <string name="tutorial_title_8">Social Login</string>
+    <string name="tutorial_title_9">Open Source</string>
 
-    <string name="tutorial_description_1">Get free XMPP account from creators of Xabber, with guaranteed support of all latest features and extensions</string>
-    <string name="tutorial_description_2">Create an account to manage our services and enhance XMPP experience on all supported platforms</string>
-    <string name="tutorial_description_3">Xabber account lets you easily sync your accounts and their settings between devices and platforms</string>
-    <string name="tutorial_description_4">Use social authentification to quickly log in to Xabber and instantly connect all your accounts on new device</string>
+    <string name="tutorial_description_1">Open source XMPP client for Android with multiple accounts support</string>
+    <string name="tutorial_description_2">You are not locked into using a single service provider. Xabber works with to any standard-compliant XMPP server</string>
+    <string name="tutorial_description_3">Send multiple images, video and audio files or voice messages, viewing and playing them seamlessly in chat window</string>
+    <string name="tutorial_description_4">For maximum privacy, use a trustworthy secure server and end-to-end encryption for your communications</string>
+    <string name="tutorial_description_5">Versions of Xabber for Android, iOS and Web provide you consistent chat experience on every OS and device type</string>
+    <string name="tutorial_description_6">Xabber account lets you easily sync your accounts and their settings between devices and platforms</string>
+    <string name="tutorial_description_7">You can choose a trustworthy server for yourself and chat with contacts who are using other servers</string>
+    <string name="tutorial_description_8">Use social authentification to quickly log in to Xabber and instantly connect all your accounts on new device</string>
+    <string name="tutorial_description_9">Xabber is developed on GitHub by an open community. Anyone is welcome to participate by reporting bugs or contributing code</string>
 
     <string name="account_deleted">This Xabber Account was deleted</string>
 

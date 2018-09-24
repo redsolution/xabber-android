@@ -107,14 +107,6 @@
   <string name="sync_status_not_allowed">Синхронизация недоступна</string>
   <string name="sync_status_enabled">Синхронизация включена</string>
   <string name="sync_status_disabled">Синхронизация выключена</string>
-  <string name="tutorial_title_1">Лучший XMPP сервис</string>
-  <string name="tutorial_title_2">Представляем аккаунт Xabber</string>
-  <string name="tutorial_title_3">Синхронизация устройств</string>
-  <string name="tutorial_title_4">Социальная авторизация</string>
-  <string name="tutorial_description_1">Бесплатный XMPP аккаунт от разработчиков Xabber с гарантированной поддержкой всех необходимых функций</string>
-  <string name="tutorial_description_2">Зарегистрируйте учётную запись Xabber и улучшите работу чата на всех используемых платформах</string>
-  <string name="tutorial_description_3">С помощью аккаунта Xabber вы сможете синхронизировать настройки на всех используемых Вами устройствах</string>
-  <string name="tutorial_description_4">Используйте социальную авторизацию для быстрой настройки Xabber на новом устройстве</string>
   <string name="account_deleted">Используемый аккаунт Xabber был удалён</string>
   <string name="login_without_xabber_account">обычный xmpp</string>
   <string name="sync_not_allowed_summary">Аккаунты с нестандартными настройками (нестандартный порт, старый SSL, прокси) не могут быть синхронизированы.</string>
