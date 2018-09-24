@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
+import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.listeners.OnConnectedListener;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
@@ -85,8 +86,9 @@ public class XMPPAuthManager implements OnPacketListener, OnConnectedListener {
         Application.getInstance().runInBackground(new Runnable() {
             @Override
             public void run() {
-                if (XabberAccountManager.getInstance().getAccount() == null) {
-                    AccountJid accountJid = connection.getAccount();
+                XabberAccount xabberAccount = XabberAccountManager.getInstance().getAccount();
+                AccountJid accountJid = connection.getAccount();
+                if (xabberAccount == null) {
                     if (accountsForCheck.contains(accountJid)) {
                         try {
                             Thread.sleep(500);
@@ -97,6 +99,14 @@ public class XMPPAuthManager implements OnPacketListener, OnConnectedListener {
                             requestXMPPAuthCode(accountJid);
                         accountsForCheck.remove(accountJid);
                     }
+                } else if (xabberAccount.getFullUsername()
+                        .equals(AccountManager.getInstance().getVerboseName(accountJid))) {
+                    try {
+                        Thread.sleep(500);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    PrivateStorageManager.getInstance().setXabberAccountBinding(accountJid, true);
                 }
             }
         });
