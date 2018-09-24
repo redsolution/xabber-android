@@ -265,6 +265,7 @@ public class AuthManager {
     }
 
     public static Single<XabberAccount> confirmXMPP(final String jid, String code) {
+        SettingsManager.setSyncAllAccounts(true);
         return HttpApiManager.getXabberApi().confirmXMPP(new CodeConfirm(code, jid))
                 .flatMap(new Func1<XabberAccountDTO, Single<? extends XabberAccount>>() {
                     @Override
@@ -287,6 +288,7 @@ public class AuthManager {
 
     public static Single<XabberAccount> signupv2(String username, String host, String password,
                                                  String captchaToken) {
+        SettingsManager.setSyncAllAccounts(true);
         return HttpApiManager.getXabberApi().signupv2(new SignUpFields(username, host,
             password, captchaToken))
             .flatMap(new Func1<XabberAccountDTO, Single<? extends XabberAccount>>() {
@@ -300,7 +302,7 @@ public class AuthManager {
 
     public static Single<XabberAccount> signupv2(String username, String host, String password,
                                                  String provider, String credentials) {
-
+        SettingsManager.setSyncAllAccounts(true);
         return HttpApiManager.getXabberApi().signupv2(new SignUpFields(username, host,
                 password, provider, credentials))
                 .flatMap(new Func1<XabberAccountDTO, Single<? extends XabberAccount>>() {
