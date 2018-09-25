@@ -272,7 +272,7 @@ public abstract class BaseLoginActivity extends ManagedActivity implements
                         // if exist local accounts
                         if (AccountManager.getInstance().getAllAccountItems().size() > 0)
                             updateSettings(needGoToMainActivity);
-                        else getSettings();
+                        else getSettings(needGoToMainActivity);
 
                     }
                 }, new Action1<Throwable>() {
@@ -316,7 +316,7 @@ public abstract class BaseLoginActivity extends ManagedActivity implements
         compositeSubscription.add(getSettingsSubscription);
     }
 
-    protected void getSettings() {
+    protected void getSettings(final boolean needGoToMainActivity) {
         Subscription getSettingsSubscription = AuthManager.getClientSettings()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -329,7 +329,7 @@ public abstract class BaseLoginActivity extends ManagedActivity implements
                         // update last synchronization time
                         SettingsManager.setLastSyncDate(XabberAccountManager.getCurrentTimeString());
                         Toast.makeText(BaseLoginActivity.this, R.string.sync_success, Toast.LENGTH_SHORT).show();
-                        //goToMainActivity();
+                        if (needGoToMainActivity) goToMainActivity();
                     }
                 }, new Action1<Throwable>() {
                     @Override

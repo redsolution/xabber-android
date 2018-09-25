@@ -474,9 +474,7 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
 
     private void handleSuccessGetAccount(@NonNull XabberAccount xabberAccount) {
         hideProgress();
-        Intent intent = XabberAccountActivity.createIntent(this);
-        finish();
-        startActivity(intent);
+        synchronize(true);
     }
 
     private void handleErrorGetAccount(Throwable throwable) {
