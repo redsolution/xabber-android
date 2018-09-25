@@ -206,16 +206,19 @@ public class XAccountLinksFragment  extends Fragment implements EmailAdapter.Lis
         tvNameGoogle.setVisibility(View.GONE);
         tvStatusGoogle.setText(R.string.title_not_linked_account);
         tvActionGoogle.setText(R.string.action_connect);
+        tvActionGoogle.setTextColor(getActivity().getResources().getColor(R.color.grey_500));
 
         ivFacebook.setImageResource(R.drawable.ic_facebook_disabled);
         tvNameFacebook.setVisibility(View.GONE);
         tvStatusFacebook.setText(R.string.title_not_linked_account);
         tvActionFacebook.setText(R.string.action_connect);
+        tvActionFacebook.setTextColor(getActivity().getResources().getColor(R.color.grey_500));
 
         ivTwitter.setImageResource(R.drawable.ic_twitter_disabled);
         tvNameTwitter.setVisibility(View.GONE);
         tvStatusTwitter.setText(R.string.title_not_linked_account);
         tvActionTwitter.setText(R.string.action_connect);
+        tvActionTwitter.setTextColor(getActivity().getResources().getColor(R.color.grey_500));
     }
 
     private void setupEmailList(List<EmailDTO> emails) {

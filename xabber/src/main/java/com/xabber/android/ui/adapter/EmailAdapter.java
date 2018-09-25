@@ -1,5 +1,6 @@
 package com.xabber.android.ui.adapter;
 
+import android.content.res.Resources;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.xabber.android.R;
+import com.xabber.android.data.Application;
 import com.xabber.android.data.xaccount.EmailDTO;
 
 import java.util.ArrayList;
@@ -42,8 +44,10 @@ public class EmailAdapter extends RecyclerView.Adapter<EmailAdapter.EmailViewHol
     public void onBindViewHolder(EmailViewHolder holder, final int position) {
         final EmailDTO emailDTO = emails.get(position);
 
+        Resources res = Application.getInstance().getResources();
         holder.tvEmail.setText(emailDTO.getEmail());
         holder.tvStatus.setText(emailDTO.isVerified() ? R.string.title_verified_email : R.string.title_unverified_email);
+        holder.tvStatus.setTextColor(emailDTO.isVerified() ? res.getColor(R.color.grey_500) : res.getColor(R.color.red_500));
         holder.tvAction.setText(emailDTO.isVerified() ? R.string.action_disconnect : R.string.action_verify);
         holder.ivEmail.setImageResource(emailDTO.isVerified() ? R.drawable.ic_confirmed_email_circle : R.drawable.ic_email_circle);
 
