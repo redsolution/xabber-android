@@ -20,6 +20,7 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.xaccount.XabberAccountManager;
 import com.xabber.android.ui.activity.AccountActivity;
+import com.xabber.android.ui.activity.ContactListActivity;
 import com.xabber.android.ui.dialog.OrbotInstallerDialog;
 import com.xabber.android.ui.helper.OrbotHelper;
 
@@ -132,10 +133,7 @@ public class XAccountLoginFragment extends Fragment implements View.OnClickListe
             return;
         }
 
-        // update remote settings
-        if (chkSync.isChecked()) XabberAccountManager.getInstance().updateSettingsWithSaveLastAccount(account);
-
-        startActivity(AccountActivity.createIntent(getActivity(), account));
+        startActivity(ContactListActivity.createIntent(getActivity()));
         getActivity().finish();
     }
 

@@ -2,8 +2,10 @@ package com.xabber.android.data.xaccount;
 
 import android.util.Log;
 
+import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
+import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.listeners.OnConnectedListener;
@@ -28,6 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
@@ -139,6 +142,7 @@ public class XMPPAuthManager implements OnPacketListener, OnConnectedListener {
                 @Override
                 public void call(XabberAccount account) {
                     Log.d(XMPPAuthManager.class.toString(), "xabber account authorized successfully");
+                    handleSuccessConfirmXMPP();
                 }
             }, new Action1<Throwable>() {
                 @Override
@@ -146,6 +150,43 @@ public class XMPPAuthManager implements OnPacketListener, OnConnectedListener {
                     Log.d(XMPPAuthManager.class.toString(), "XMPP authorization failed: " + throwable.toString());
                 }
             });
+    }
+
+    private void handleSuccessConfirmXMPP() {
+        if (AccountManager.getInstance().getAllAccountItems().size() > 0)
+            updateSettings();
+        else getSettings();
+    }
+
+    protected void updateSettings() {
+        AuthManager.patchClientSettings(XabberAccountManager.getInstance().createSettingsList())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<List<XMPPAccountSettings>>() {
+                    @Override
+                    public void call(List<XMPPAccountSettings> s) { }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                    }
+                });
+    }
+
+    protected void getSettings() {
+        AuthManager.getClientSettings()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<List<XMPPAccountSettings>>() {
+                    @Override
+                    public void call(List<XMPPAccountSettings> settings) {
+                        XabberAccountManager.getInstance().setXmppAccountsForCreate(settings);
+                        SettingsManager.setLastSyncDate(XabberAccountManager.getCurrentTimeString());
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                    }
+                });
     }
 
     private void onRequestReceived(Request request) {
