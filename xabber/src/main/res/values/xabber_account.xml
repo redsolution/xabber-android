@@ -27,7 +27,7 @@
     <string name="set_phone_success">Confirmation code sent</string>
 
     <string name="social_bind_success">Social network bind successfully</string>
-    <string name="social_bind_fail">Social network bind failed</string>
+    <string name="social_bind_fail">Can\'t link this social account</string>
     <string name="social_unbind_success">Social network unbind successfully</string>
     <string name="social_unbind_fail">Social network unbind failed</string>
 
@@ -49,7 +49,7 @@
     <string name="progress_title_delete_settings">Delete settings</string>
     <string name="progress_title_request_xmpp_auth">Request XMPP auth-code</string>
     <string name="progress_title_confirm_xmpp">Confirm XMPP-account with code</string>
-    <string name="progress_title_bind_social">Bind social network</string>
+    <string name="progress_title_bind_social">Authenticating..</string>
     <string name="progress_title_unbind_social">Unbind social network</string>
     <string name="progress_title_account_list">Loading list of accounts..</string>
     <string name="progress_title_connect">Connecting to Xabber Account via %1$s</string>
