@@ -91,7 +91,7 @@ public class XMPPAuthManager implements OnPacketListener, OnConnectedListener {
                 if (xabberAccount == null) {
                     if (accountsForCheck.contains(accountJid)) {
                         try {
-                            Thread.sleep(500);
+                            Thread.sleep(1000);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
@@ -102,7 +102,7 @@ public class XMPPAuthManager implements OnPacketListener, OnConnectedListener {
                 } else if (xabberAccount.getFullUsername()
                         .equals(AccountManager.getInstance().getVerboseName(accountJid))) {
                     try {
-                        Thread.sleep(500);
+                        Thread.sleep(1000);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
