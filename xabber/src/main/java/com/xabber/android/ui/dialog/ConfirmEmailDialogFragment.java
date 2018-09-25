@@ -15,6 +15,8 @@ import com.xabber.android.R;
 
 public class ConfirmEmailDialogFragment extends DialogFragment {
 
+    private static final String KEY_EMAIL = "KEY_EMAIL";
+
     private String email;
     private Listener listener;
 
@@ -65,6 +67,19 @@ public class ConfirmEmailDialogFragment extends DialogFragment {
     public void onDetach() {
         super.onDetach();
         listener = null;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(KEY_EMAIL, email);
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        if (savedInstanceState != null)
+            email = savedInstanceState.getString(KEY_EMAIL);
     }
 
     public View setupView() {
