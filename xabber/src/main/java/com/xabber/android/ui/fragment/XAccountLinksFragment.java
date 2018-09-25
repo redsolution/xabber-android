@@ -31,8 +31,7 @@ import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
-public class XAccountLinksFragment  extends Fragment implements AddEmailDialogFragment.Listener,
-        EmailAdapter.Listener, ConfirmEmailDialogFragment.Listener {
+public class XAccountLinksFragment  extends Fragment implements EmailAdapter.Listener {
 
     private ImageView ivGoogle;
     private TextView tvNameGoogle;
@@ -60,9 +59,7 @@ public class XAccountLinksFragment  extends Fragment implements AddEmailDialogFr
     public interface Listener {
         void onSocialBindClick(String provider);
         void onSocialUnbindClick(String provider);
-        void onAddEmailClick(String email);
         void onDeleteEmailClick(int emailId);
-        void onConfirmEmailClick(String email, String code);
     }
 
     public static XAccountLinksFragment newInstance() {
@@ -130,7 +127,7 @@ public class XAccountLinksFragment  extends Fragment implements AddEmailDialogFr
         viewAddEmail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AddEmailDialogFragment.newInstance(XAccountLinksFragment.this)
+                AddEmailDialogFragment.newInstance()
                         .show(getFragmentManager(), AccountSyncDialogFragment.class.getSimpleName());
             }
         });
@@ -167,28 +164,13 @@ public class XAccountLinksFragment  extends Fragment implements AddEmailDialogFr
 
     @Override
     public void onEmailVerifyClick(String email) {
-        ConfirmEmailDialogFragment.newInstance(this, email)
+        ConfirmEmailDialogFragment.newInstance(email)
                 .show(getFragmentManager(), AccountSyncDialogFragment.class.getSimpleName());
     }
 
     @Override
     public void onEmailDeleteClick(int id) {
         listener.onDeleteEmailClick(id);
-    }
-
-    @Override
-    public void onAddEmailClick(String email) {
-        listener.onAddEmailClick(email);
-    }
-
-    @Override
-    public void onResendCodeClick(String email) {
-        listener.onAddEmailClick(email);
-    }
-
-    @Override
-    public void onConfirmClick(String email, String code) {
-        listener.onConfirmEmailClick(email, code);
     }
 
     private void setupSocial(List<SocialBindingDTO> socialBindings) {

@@ -3,6 +3,7 @@ package com.xabber.android.ui.dialog;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -24,10 +25,9 @@ public class ConfirmEmailDialogFragment extends DialogFragment {
         void onConfirmClick(String email, String code);
     }
 
-    public static ConfirmEmailDialogFragment newInstance(Listener listener, String email) {
+    public static ConfirmEmailDialogFragment newInstance(String email) {
         ConfirmEmailDialogFragment fragment = new ConfirmEmailDialogFragment();
         fragment.email = email;
-        fragment.listener = listener;
         return fragment;
     }
 
@@ -40,17 +40,31 @@ public class ConfirmEmailDialogFragment extends DialogFragment {
                 .setNeutralButton(R.string.button_resend_link, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        listener.onResendCodeClick(email);
+                        if (listener != null) listener.onResendCodeClick(email);
                     }
                 })
                 .setPositiveButton(R.string.button_confirm, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        listener.onConfirmClick(email, edtCode.getText().toString());
+                        if (listener != null) listener.onConfirmClick(email, edtCode.getText().toString());
                     }
                 });
 
         return builder.create();
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof Listener) listener = (Listener) context;
+        else throw new RuntimeException(context.toString()
+                + " must implement ConfirmEmailDialogFragment.Listener");
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        listener = null;
     }
 
     public View setupView() {

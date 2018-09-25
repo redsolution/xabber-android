@@ -3,6 +3,7 @@ package com.xabber.android.ui.dialog;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -20,9 +21,8 @@ public class AddEmailDialogFragment extends DialogFragment {
         void onAddEmailClick(String email);
     }
 
-    public static AddEmailDialogFragment newInstance(Listener listener) {
+    public static AddEmailDialogFragment newInstance() {
         AddEmailDialogFragment fragment = new AddEmailDialogFragment();
-        fragment.listener = listener;
         return fragment;
     }
 
@@ -40,11 +40,25 @@ public class AddEmailDialogFragment extends DialogFragment {
                 .setPositiveButton(R.string.complete_register_add, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        listener.onAddEmailClick(edtEmail.getText().toString());
+                        if (listener != null) listener.onAddEmailClick(edtEmail.getText().toString());
                     }
                 });
 
         return builder.create();
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof Listener) listener = (Listener) context;
+        else throw new RuntimeException(context.toString()
+                + " must implement AddEmailDialogFragment.Listener");
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        listener = null;
     }
 
     public View setupView() {
