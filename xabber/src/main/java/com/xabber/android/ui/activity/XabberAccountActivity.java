@@ -51,6 +51,7 @@ public class XabberAccountActivity extends BaseLoginActivity
     private BarPainter barPainter;
     private ProgressDialog progressDialog;
 
+    private Dialog logoutDialog;
     private boolean dialogShowed;
 
     @NonNull
@@ -84,6 +85,13 @@ public class XabberAccountActivity extends BaseLoginActivity
         super.onResume();
         onPrepareOptionsMenu(toolbar.getMenu());
         subscribeForXabberAccount();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (logoutDialog != null)
+            logoutDialog.dismiss();
     }
 
     @Override
@@ -277,8 +285,8 @@ public class XabberAccountActivity extends BaseLoginActivity
                     }
                 })
                 .setNegativeButton(R.string.cancel, null);
-        Dialog dialog = builder.create();
-        dialog.show();
+        logoutDialog = builder.create();
+        logoutDialog.show();
         dialogShowed = false;
     }
 
