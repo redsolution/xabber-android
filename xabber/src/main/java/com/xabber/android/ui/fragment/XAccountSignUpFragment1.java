@@ -4,10 +4,10 @@ import android.app.Fragment;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebView;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -31,7 +31,7 @@ public class XAccountSignUpFragment1 extends Fragment implements View.OnClickLis
     private TextView tvSocialProvider;
     private ProgressBar pbHosts;
     private Button btnNext;
-    private TextView tvDescription;
+    private WebView webViewDescription;
 
     private XAccountSignUpFragment1.Listener listener;
 
@@ -64,7 +64,7 @@ public class XAccountSignUpFragment1 extends Fragment implements View.OnClickLis
         spinnerDomain.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                tvDescription.setText(Html.fromHtml(hosts.get(position).getDescription()));
+                webViewDescription.loadData(hosts.get(position).getDescription(), null, null);
                 if (adapter != null) adapter.setCurrentPosition(position);
             }
 
@@ -81,7 +81,7 @@ public class XAccountSignUpFragment1 extends Fragment implements View.OnClickLis
         btnNext = view.findViewById(R.id.btnNext);
         btnNext.setOnClickListener(this);
 
-        tvDescription = view.findViewById(R.id.tvDescription);
+        webViewDescription = view.findViewById(R.id.webViewDescription);
 
         if (listener != null) listener.onGetHosts();
     }
