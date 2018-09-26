@@ -1,7 +1,9 @@
 package com.xabber.android.ui.fragment;
 
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
@@ -169,8 +171,22 @@ public class XAccountLinksFragment  extends Fragment implements EmailAdapter.Lis
     }
 
     @Override
-    public void onEmailDeleteClick(int id) {
-        listener.onDeleteEmailClick(id);
+    public void onEmailDeleteClick(final int id) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setMessage(R.string.title_delete_email)
+                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        listener.onDeleteEmailClick(id);
+                    }
+                })
+                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+        builder.create().show();
     }
 
     private void setupSocial(List<SocialBindingDTO> socialBindings) {
