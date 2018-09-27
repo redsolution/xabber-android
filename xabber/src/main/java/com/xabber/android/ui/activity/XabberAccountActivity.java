@@ -292,7 +292,7 @@ public class XabberAccountActivity extends BaseLoginActivity
 
     private void logout(final boolean deleteAccounts) {
         showProgress(getResources().getString(R.string.progress_title_quit));
-        Subscription logoutSubscription = AuthManager.logout(deleteAccounts)
+        Subscription logoutSubscription = AuthManager.logout()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<ResponseBody>() {

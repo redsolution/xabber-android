@@ -2,7 +2,6 @@ package com.xabber.android.data.xaccount;
 
 import android.util.Base64;
 
-import com.google.gson.Gson;
 import com.xabber.android.BuildConfig;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.entity.AccountJid;
@@ -28,7 +27,6 @@ public class AuthManager {
 
     public static final String PROVIDER_FACEBOOK = "facebook";
     public static final String PROVIDER_TWITTER = "twitter";
-    public static final String PROVIDER_GITHUB = "github";
     public static final String PROVIDER_GOOGLE = "google";
 
     private static final String SOURCE_NAME = "Xabber Android";
@@ -43,7 +41,7 @@ public class AuthManager {
         return HttpApiManager.getXabberApi().login("Basic " + encodedCredentials, new Source(getSource()));
     }
 
-    public static Single<ResponseBody> logout(final boolean deleteAccounts) {
+    public static Single<ResponseBody> logout() {
 
         return HttpApiManager.getXabberApi().logout(getXabberTokenHeader())
                 .flatMap(new Func1<ResponseBody, Single<? extends ResponseBody>>() {
@@ -229,33 +227,12 @@ public class AuthManager {
                 });
     }
 
-    public static Single<XabberAccount> completeRegister(String username, String pass, String confirmPass,
-                                                         String firstName, String lastName,
-                                                         String host, String language, boolean createToken) {
-        return HttpApiManager.getXabberApi().completeRegister(getXabberTokenHeader(),
-                new CompleteRegister(username, pass, confirmPass, firstName, lastName, host, language, createToken))
-                .flatMap(new Func1<XabberAccountDTO, Single<? extends XabberAccount>>() {
-                    @Override
-                    public Single<? extends XabberAccount> call(XabberAccountDTO xabberAccountDTO) {
-                        return XabberAccountManager.getInstance().saveOrUpdateXabberAccountToRealm(xabberAccountDTO, getXabberToken());
-                    }
-                });
-    }
-
     public static Single<ResponseBody> addEmail(String email) {
         return HttpApiManager.getXabberApi().addEmail(getXabberTokenHeader(), new Email(email, getSource()));
     }
 
     public static Single<ResponseBody> deleteEmail(int emailId) {
         return HttpApiManager.getXabberApi().deleteEmail(getXabberTokenHeader(), emailId);
-    }
-
-    public static Single<ResponseBody> setPhoneNumber(String phoneNumber) {
-        return HttpApiManager.getXabberApi().setPhoneNumber(getXabberTokenHeader(), new SetPhoneNumber("set", phoneNumber));
-    }
-
-    public static Single<ResponseBody> confirmPhoneNumber(String code) {
-        return HttpApiManager.getXabberApi().confirmPhoneNumber(getXabberTokenHeader(), new ConfirmPhoneNumber("verify", code));
     }
 
     // API v2
@@ -317,15 +294,6 @@ public class AuthManager {
     public static Single<ResponseBody> bindSocial(String provider, String credentials) {
         return HttpApiManager.getXabberApi().bindSocial(getXabberTokenHeader(),
                 new SocialAuthRequest(provider, credentials, getSource()));
-    }
-
-    public static Single<ResponseBody> bindSocial(String socialToken, String twitterTokenSecret,
-                                                  String secret, String key) {
-        Gson gson = new Gson();
-        String credentials = gson.toJson(new TwitterAccessToken(
-                new TwitterTokens(twitterTokenSecret, socialToken), secret, key));
-        return HttpApiManager.getXabberApi().bindSocial(getXabberTokenHeader(),
-                new SocialAuthRequest(PROVIDER_TWITTER, credentials, getSource()));
     }
 
     public static Single<ResponseBody> unbindSocial(String provider) {

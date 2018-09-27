@@ -35,12 +35,6 @@ public interface IXabberApi {
     @PATCH("accounts/current/")
     Single<XabberAccountDTO> updateAccount(@Header("Authorization") String token, @Body AuthManager.Account account);
 
-    @POST("accounts/current/phone/")
-    Single<ResponseBody> setPhoneNumber(@Header("Authorization") String token, @Body AuthManager.SetPhoneNumber setPhoneNumber);
-
-    @POST("accounts/current/phone/")
-    Single<ResponseBody> confirmPhoneNumber(@Header("Authorization") String token, @Body AuthManager.ConfirmPhoneNumber confirmPhoneNumber);
-
     @GET("accounts/current/client-settings/")
     Single<AuthManager.ListClientSettingsDTO> getClientSettings(@Header("Authorization") String token);
 
@@ -58,9 +52,6 @@ public interface IXabberApi {
 
     @POST("accounts/email_confirmation/")
     Single<XabberAccountDTO> confirmEmail(@Body AuthManager.Key key);
-
-    @POST("accounts/current/complete_registration/")
-    Single<XabberAccountDTO> completeRegister(@Header("Authorization") String token, @Body AuthManager.CompleteRegister register);
 
     @POST("accounts/current/email_list/")
     Single<ResponseBody> addEmail(@Header("Authorization") String token, @Body AuthManager.Email email);
