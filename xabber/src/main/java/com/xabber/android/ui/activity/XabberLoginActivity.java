@@ -233,7 +233,7 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
 
     @Override
     protected void showProgress(String title) {
-        if (!isFinishing()) {
+        if (!isFinishing() && !getString(R.string.progress_title_sync).equals(title)) {
             progressDialog = new ProgressDialog(this);
             progressDialog.setTitle(title);
             progressDialog.setMessage(getResources().getString(R.string.progress_message));
@@ -476,7 +476,7 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
     }
 
     private void handleSuccessGetAccount(@NonNull XabberAccount xabberAccount) {
-        hideProgress();
+        //hideProgress();
         synchronize(true);
     }
 
