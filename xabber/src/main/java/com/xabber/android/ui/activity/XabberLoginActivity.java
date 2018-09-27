@@ -312,6 +312,9 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
         loginTwitter();
     }
 
+    @Override
+    protected void onSynchronized() { }
+
     /** GET HOSTS */
 
     private void getHosts() {

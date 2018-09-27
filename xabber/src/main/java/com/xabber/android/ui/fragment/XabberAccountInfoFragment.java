@@ -149,7 +149,7 @@ public class XabberAccountInfoFragment extends Fragment {
 
     /** GET SETTINGS */
 
-    private void getSettings() {
+    public void getSettings() {
         showProgressView(true);
         Subscription getSettingsSubscription = AuthManager.getClientSettings()
                 .subscribeOn(Schedulers.io())

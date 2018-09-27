@@ -148,6 +148,13 @@ public class XabberAccountActivity extends BaseLoginActivity
             }).subscribe());
     }
 
+    @Override
+    protected void onSynchronized() {
+        XabberAccountInfoFragment fragment = (XabberAccountInfoFragment) getFragmentManager().findFragmentByTag(FRAGMENT_INFO);
+        if (fragment != null && fragment.isVisible())
+            ((XabberAccountInfoFragment) fragmentInfo).getSettings();
+    }
+
     /** Social Auth */
 
     @Override
