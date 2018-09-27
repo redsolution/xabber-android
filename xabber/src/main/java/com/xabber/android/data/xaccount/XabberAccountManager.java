@@ -275,6 +275,40 @@ public class XabberAccountManager implements OnLoadListener {
         }
     }
 
+    public void deleteAccountSettings(String jid) {
+        if (XabberAccountManager.getInstance().getAccountSyncState(jid) != null) {
+
+            Subscription deleteSubscription = AuthManager.deleteClientSettings(jid)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Action1<List<XMPPAccountSettings>>() {
+                        @Override
+                        public void call(List<XMPPAccountSettings> settings) {
+                            handleSuccessDelete(settings);
+                        }
+                    }, new Action1<Throwable>() {
+                        @Override
+                        public void call(Throwable throwable) {
+                            handleErrorDelete(throwable);
+                        }
+                    });
+            compositeSubscription.add(deleteSubscription);
+        }
+    }
+
+    private void handleSuccessDelete(List<XMPPAccountSettings> settings) {
+        Log.d(LOG_TAG, "Settings deleted successfuly");
+    }
+
+    private void handleErrorDelete(Throwable throwable) {
+        String message = RetrofitErrorConverter.throwableToHttpError(throwable);
+        if (message != null) {
+            if (message.equals("Invalid token"))
+                XabberAccountManager.getInstance().onInvalidToken();
+            else Log.d(LOG_TAG, "Error while deleting settings: " + message);
+        } else Log.d(LOG_TAG, "Error while deleting settings: " + throwable.toString());
+    }
+
     @Nullable
     public XabberAccount getAccount() {
         return account;
