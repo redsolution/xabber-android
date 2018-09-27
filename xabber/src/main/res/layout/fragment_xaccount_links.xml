@@ -39,6 +39,7 @@
                 android:textColor="@color/black_text"
                 tools:text="@tools:sample/full_names"
                 android:visibility="gone"
+                android:singleLine="true"
                 />
 
             <TextView
@@ -61,6 +62,7 @@
             android:layout_gravity="center_vertical"
             android:textColor="@color/grey_500"
             android:text="@string/action_connect"
+            android:singleLine="true"
             />
 
     </LinearLayout>
@@ -99,6 +101,7 @@
                 android:textColor="@color/black_text"
                 tools:text="@tools:sample/full_names"
                 android:visibility="gone"
+                android:singleLine="true"
                 />
 
             <TextView
@@ -121,6 +124,7 @@
             android:gravity="right"
             android:textColor="@color/grey_500"
             android:text="@string/action_connect"
+            android:singleLine="true"
             />
 
     </LinearLayout>
@@ -159,6 +163,7 @@
                 android:textColor="@color/black_text"
                 tools:text="@tools:sample/full_names"
                 android:visibility="gone"
+                android:singleLine="true"
                 />
 
             <TextView
@@ -181,6 +186,7 @@
             android:layout_marginLeft="24dp"
             android:textColor="@color/grey_500"
             android:text="@string/action_connect"
+            android:singleLine="true"
             />
 
     </LinearLayout>
