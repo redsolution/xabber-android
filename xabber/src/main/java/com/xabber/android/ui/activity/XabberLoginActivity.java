@@ -1,6 +1,5 @@
 package com.xabber.android.ui.activity;
 
-import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
@@ -52,8 +51,8 @@ import rx.schedulers.Schedulers;
  */
 
 public class XabberLoginActivity extends BaseLoginActivity implements XAccountSignUpFragment1.Listener,
-        XAccountSignUpFragment2.Listener, XAccountLoginFragment.Listener,
-        XAccountSignUpFragment3.Listener, XAccountSignUpFragment4.Listener {
+        XAccountSignUpFragment2.Listener, XAccountSignUpFragment3.Listener,
+        XAccountSignUpFragment4.Listener {
 
     private final static String LOG_TAG = XabberLoginActivity.class.getSimpleName();
     public final static String CURRENT_FRAGMENT = "current_fragment";
@@ -127,7 +126,7 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
 
     public void showLoginFragment() {
         if (fragmentLogin == null)
-            fragmentLogin = XAccountLoginFragment.newInstance(this);
+            fragmentLogin = XAccountLoginFragment.newInstance();
 
         fTrans = getFragmentManager().beginTransaction();
         fTrans.replace(R.id.container, fragmentLogin);
@@ -295,21 +294,6 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
     @Override
     public void onStep4Completed() {
         goToMainActivity();
-    }
-
-    @Override
-    public void onGoogleClick() {
-        loginGoogle();
-    }
-
-    @Override
-    public void onFacebookClick() {
-        loginFacebook();
-    }
-
-    @Override
-    public void onTwitterClick() {
-        loginTwitter();
     }
 
     @Override

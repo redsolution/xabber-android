@@ -25,6 +25,7 @@ import com.xabber.android.ui.adapter.EmailAdapter;
 import com.xabber.android.ui.dialog.AccountSyncDialogFragment;
 import com.xabber.android.ui.dialog.AddEmailDialogFragment;
 import com.xabber.android.ui.dialog.ConfirmEmailDialogFragment;
+import com.xabber.android.ui.helper.OnSocialBindListener;
 
 import java.util.List;
 
@@ -57,9 +58,9 @@ public class XAccountLinksFragment  extends Fragment implements EmailAdapter.Lis
 
     private CompositeSubscription compositeSubscription = new CompositeSubscription();
     private Listener listener;
+    private OnSocialBindListener bindListener;
 
     public interface Listener {
-        void onSocialBindClick(String provider);
         void onSocialUnbindClick(String provider);
         void onDeleteEmailClick(int emailId);
     }
@@ -88,7 +89,7 @@ public class XAccountLinksFragment  extends Fragment implements EmailAdapter.Lis
             @Override
             public void onClick(View v) {
                 if (tvActionGoogle.getText().equals(getString(R.string.action_connect)))
-                    listener.onSocialBindClick(AuthManager.PROVIDER_GOOGLE);
+                    bindListener.onBindClick(AuthManager.PROVIDER_GOOGLE);
                 else listener.onSocialUnbindClick(AuthManager.PROVIDER_GOOGLE);
             }
         });
@@ -102,7 +103,7 @@ public class XAccountLinksFragment  extends Fragment implements EmailAdapter.Lis
             @Override
             public void onClick(View v) {
                 if (tvActionFacebook.getText().equals(getString(R.string.action_connect)))
-                    listener.onSocialBindClick(AuthManager.PROVIDER_FACEBOOK);
+                    bindListener.onBindClick(AuthManager.PROVIDER_FACEBOOK);
                 else listener.onSocialUnbindClick(AuthManager.PROVIDER_FACEBOOK);
             }
         });
@@ -116,7 +117,7 @@ public class XAccountLinksFragment  extends Fragment implements EmailAdapter.Lis
             @Override
             public void onClick(View v) {
                 if (tvActionTwitter.getText().equals(getString(R.string.action_connect)))
-                    listener.onSocialBindClick(AuthManager.PROVIDER_TWITTER);
+                    bindListener.onBindClick(AuthManager.PROVIDER_TWITTER);
                 else listener.onSocialUnbindClick(AuthManager.PROVIDER_TWITTER);
             }
         });
@@ -138,18 +139,20 @@ public class XAccountLinksFragment  extends Fragment implements EmailAdapter.Lis
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof Listener) {
-            listener = (Listener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement XAccountLinksFragment.Listener");
-        }
+        if (context instanceof Listener) listener = (Listener) context;
+        else throw new RuntimeException(context.toString()
+                + " must implement XAccountLinksFragment.Listener");
+
+        if (context instanceof OnSocialBindListener) bindListener = (OnSocialBindListener) context;
+        else throw new RuntimeException(context.toString()
+                + " must implement OnSocialBindListener");
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
         listener = null;
+        bindListener = null;
     }
 
     @Override

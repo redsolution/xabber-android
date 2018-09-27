@@ -42,6 +42,7 @@ import com.xabber.android.data.xaccount.XabberAccountManager;
 import com.xabber.android.ui.dialog.AddEmailDialogFragment;
 import com.xabber.android.ui.dialog.ConfirmEmailDialogFragment;
 import com.xabber.android.ui.fragment.XAccountLinksFragment;
+import com.xabber.android.ui.helper.OnSocialBindListener;
 import com.xabber.android.utils.RetrofitErrorConverter;
 
 import java.io.IOException;
@@ -61,7 +62,7 @@ import rx.subscriptions.CompositeSubscription;
 
 public abstract class BaseLoginActivity extends ManagedActivity implements
         GoogleApiClient.OnConnectionFailedListener, XAccountLinksFragment.Listener,
-        AddEmailDialogFragment.Listener, ConfirmEmailDialogFragment.Listener {
+        AddEmailDialogFragment.Listener, ConfirmEmailDialogFragment.Listener, OnSocialBindListener {
 
     private final static String LOG_TAG = BaseLoginActivity.class.getSimpleName();
 
@@ -505,7 +506,7 @@ public abstract class BaseLoginActivity extends ManagedActivity implements
     /** XABBER ACCOUNT LINKS LISTENER */
 
     @Override
-    public void onSocialBindClick(String provider) {
+    public void onBindClick(String provider) {
         switch (provider) {
             case AuthManager.PROVIDER_GOOGLE:
                 loginGoogle();

@@ -1,6 +1,7 @@
 package com.xabber.android.ui.fragment;
 
 import android.app.Fragment;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.method.LinkMovementMethod;
@@ -18,10 +19,11 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.xaccount.AuthManager;
 import com.xabber.android.data.xaccount.XabberAccountManager;
-import com.xabber.android.ui.activity.AccountActivity;
 import com.xabber.android.ui.activity.ContactListActivity;
 import com.xabber.android.ui.dialog.OrbotInstallerDialog;
+import com.xabber.android.ui.helper.OnSocialBindListener;
 import com.xabber.android.ui.helper.OrbotHelper;
 
 public class XAccountLoginFragment extends Fragment implements View.OnClickListener {
@@ -37,17 +39,10 @@ public class XAccountLoginFragment extends Fragment implements View.OnClickListe
     private View optionsView;
     private View socialView;
 
-    private Listener listener;
+    private OnSocialBindListener listener;
 
-    public interface Listener {
-        void onGoogleClick();
-        void onFacebookClick();
-        void onTwitterClick();
-    }
-
-    public static XAccountLoginFragment newInstance(Listener listener) {
+    public static XAccountLoginFragment newInstance() {
         XAccountLoginFragment fragment = new XAccountLoginFragment();
-        fragment.listener = listener;
         return fragment;
     }
 
@@ -90,19 +85,34 @@ public class XAccountLoginFragment extends Fragment implements View.OnClickListe
     }
 
     @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        if (context instanceof OnSocialBindListener) listener = (OnSocialBindListener) context;
+        else throw new RuntimeException(context.toString()
+                + " must implement OnSocialBindListener");
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        listener = null;
+    }
+
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btnLogin:
                 addAccount();
                 break;
             case R.id.ivFacebook:
-                listener.onFacebookClick();
+                listener.onBindClick(AuthManager.PROVIDER_FACEBOOK);
                 break;
             case R.id.ivGoogle:
-                listener.onGoogleClick();
+                listener.onBindClick(AuthManager.PROVIDER_GOOGLE);
                 break;
             case R.id.ivTwitter:
-                listener.onTwitterClick();
+                listener.onBindClick(AuthManager.PROVIDER_TWITTER);
                 break;
             case R.id.btnOptions:
                 showOptions();
