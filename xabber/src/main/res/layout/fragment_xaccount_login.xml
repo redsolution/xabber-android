@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -10,56 +11,74 @@
         android:layout_centerInParent="true"
         android:layout_marginLeft="@dimen/login_horizontal_margin"
         android:layout_marginRight="@dimen/login_horizontal_margin"
+        android:focusableInTouchMode="true"
         >
 
-        <ImageView
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:src="@drawable/ic_logo_circle"
-            android:layout_gravity="center_horizontal"
-            />
+        <!--<ImageView-->
+            <!--android:layout_width="100dp"-->
+            <!--android:layout_height="100dp"-->
+            <!--android:src="@drawable/ic_logo_circle"-->
+            <!--android:layout_gravity="center_horizontal"-->
+            <!--/>-->
 
-        <TextView
+        <!--<TextView-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_marginTop="16dp"-->
+            <!--android:paddingLeft="4dp"-->
+            <!--android:textColor="@color/black_text_secondary"-->
+            <!--android:text="@string/label_xmpp_id"-->
+            <!--/>-->
+
+        <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            >
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/edtUsername"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:imeOptions="actionNext"
+                android:nextFocusForward="@+id/edtPass"
+                android:singleLine="true"
+                android:hint="@string/label_xmpp_id"
+                android:textSize="16sp"
+                android:theme="@style/Theme"
+                />
+
+        </android.support.design.widget.TextInputLayout>
+
+        <!--<TextView-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:paddingLeft="4dp"-->
+            <!--android:layout_marginTop="16dp"-->
+            <!--android:textColor="@color/black_text_secondary"-->
+            <!--android:text="@string/label_pass"-->
+            <!--/>-->
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:passwordToggleEnabled="true"
             android:layout_marginTop="16dp"
-            android:paddingLeft="4dp"
-            android:textColor="@color/black_text_secondary"
-            android:text="@string/label_xmpp_id"
-            />
+            android:layout_marginBottom="16dp"
+            >
 
-        <EditText
-            android:id="@+id/edtUsername"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:imeOptions="actionNext"
-            android:nextFocusForward="@+id/edtPass"
-            android:singleLine="true"
-            android:hint="@string/name_example_com"
-            android:textSize="16sp"
-            android:theme="@style/Theme"
-            />
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/edtPass"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:imeOptions="actionDone"
+                android:singleLine="true"
+                android:textSize="16sp"
+                android:theme="@style/Theme"
+                android:hint="@string/hint_pass"
+                android:inputType="textPassword"
+                />
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingLeft="4dp"
-            android:layout_marginTop="16dp"
-            android:textColor="@color/black_text_secondary"
-            android:text="@string/label_pass"
-            />
-
-        <EditText
-            android:id="@+id/edtPass"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:imeOptions="actionDone"
-            android:singleLine="true"
-            android:textSize="16sp"
-            android:theme="@style/Theme"
-            android:hint="@string/hint_pass"
-            android:inputType="textPassword"
-            />
+        </android.support.design.widget.TextInputLayout>
 
         <LinearLayout
             android:id="@+id/optionsView"
