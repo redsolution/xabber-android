@@ -150,7 +150,7 @@
     <string name="signed_up_facebook">Signed up with Facebook</string>
     <string name="signed_up_github">Signed up with GitHub</string>
     <string name="signed_up_twitter">Signed up with Twitter</string>
-    <string name="signup_with_social">Your %1$s account will be bound to new Xabber Account</string>
+    <string name="signup_with_social">Your %1$s account will be linked to create account</string>
 
     <string name="auth_google_error">Authorization via Google failed</string>
     <string name="auth_facebook_error">Authorization via Facebook failed</string>
