@@ -64,7 +64,11 @@ public class XAccountSignUpFragment1 extends Fragment implements View.OnClickLis
         spinnerDomain.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                webViewDescription.loadData(hosts.get(position).getDescription(), null, null);
+                String htmlData = "<link rel=\"stylesheet\" type=\"text/css\" href=\"style.css\" />"
+                        + hosts.get(position).getDescription();
+                webViewDescription.loadDataWithBaseURL("file:///android_asset/",
+                        htmlData, "text/html", "UTF-8", null);
+
                 if (adapter != null) adapter.setCurrentPosition(position);
             }
 
