@@ -184,6 +184,7 @@ public class XabberAccountInfoFragment extends Fragment {
     }
 
     private void showProgressView(boolean show) {
+        if (fragmentSync != null && fragmentSync.isVisible() && show) return;
         progressView.setVisibility(show ? View.VISIBLE : View.GONE);
     }
 
