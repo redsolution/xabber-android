@@ -8,6 +8,8 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.media.AudioAttributes;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
@@ -1551,7 +1553,18 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
 
     public void playIncomingSound() {
         if (SettingsManager.eventsInChatSounds()) {
-            final MediaPlayer mp = MediaPlayer.create(getActivity(), SettingsManager.eventsSound());
+            final MediaPlayer mp;
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+                AudioAttributes attr = new AudioAttributes.Builder()
+                        .setContentType(AudioAttributes.CONTENT_TYPE_UNKNOWN)
+                        .setUsage(AudioAttributes.USAGE_NOTIFICATION_EVENT).build();
+                mp = MediaPlayer.create(getActivity(), SettingsManager.eventsSound(),
+                        null, attr, AudioManager.AUDIO_SESSION_ID_GENERATE);
+            } else {
+                mp = MediaPlayer.create(getActivity(), SettingsManager.eventsSound());
+                mp.setAudioStreamType(AudioManager.STREAM_NOTIFICATION);
+            }
+
             mp.start();
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
