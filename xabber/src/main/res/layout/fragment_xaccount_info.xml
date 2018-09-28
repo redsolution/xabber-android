@@ -18,7 +18,7 @@
             android:layout_height="match_parent"
             >
 
-            <LinearLayout
+            <RelativeLayout
                 android:id="@+id/llAccount"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -29,6 +29,7 @@
                 >
 
                 <FrameLayout
+                    android:id="@+id/avatarView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical">
@@ -51,12 +52,14 @@
                 </FrameLayout>
 
                 <LinearLayout
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:layout_weight="1"
                     android:orientation="vertical"
-                    android:paddingLeft="16dp">
+                    android:layout_toRightOf="@id/avatarView"
+                    android:layout_toLeftOf="@id/toolbarProgress"
+                    android:paddingLeft="16dp"
+                    android:paddingRight="16dp">
 
                     <LinearLayout
                         android:layout_width="wrap_content"
@@ -113,7 +116,17 @@
                         android:textSize="14sp" />
 
                 </LinearLayout>
-            </LinearLayout>
+
+                <ProgressBar
+                    android:id="@+id/toolbarProgress"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:indeterminateTint="@color/account_register_blue"
+                    android:visibility="invisible"
+                    />
+            </RelativeLayout>
 
             <View
                 android:layout_width="match_parent"

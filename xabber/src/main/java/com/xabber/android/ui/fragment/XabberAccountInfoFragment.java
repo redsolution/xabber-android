@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -46,6 +47,7 @@ public class XabberAccountInfoFragment extends Fragment {
     private View viewLinks;
     private ImageView ivChevron;
 
+    private ProgressBar progressBar;
     private View progressView;
     private Fragment fragmentSync;
     private FragmentTransaction fTrans;
@@ -67,6 +69,7 @@ public class XabberAccountInfoFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        progressBar = view.findViewById(R.id.toolbarProgress);
         tvPhone = (TextView) view.findViewById(R.id.tvPhoneNumber);
         tvAccountName = (TextView) view.findViewById(R.id.tvAccountName);
         tvAccountUsername = (TextView) view.findViewById(R.id.tvAccountUsername);
@@ -145,6 +148,10 @@ public class XabberAccountInfoFragment extends Fragment {
                         updateData(account);
                     }
                 }).subscribe());
+    }
+
+    public void showProgressInAccount(boolean show) {
+        progressBar.setVisibility(show ? View.VISIBLE : View.INVISIBLE);
     }
 
     /** GET SETTINGS */
