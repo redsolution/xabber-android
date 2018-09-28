@@ -55,7 +55,7 @@
     <string name="progress_title_connect">Connecting to Xabber Account via %1$s</string>
 
     <string name="label_username">Pick your username and host</string>
-    <string name="hint_username">username</string>
+    <string name="hint_username">Username</string>
     <string name="label_pass">Choose password</string>
     <string name="hint_pass">Enter password</string>
     <string name="label_conf_pass">Confirm password*</string>
@@ -220,10 +220,10 @@
     <string name="xaccount_not_exist">Will create new account</string>
     <string name="xaccount_exist">Xabber Account exists</string>
 
-    <string name="title_signup_step_1">Step 1 of 4</string>
-    <string name="title_signup_step_2">Step 2 of 4</string>
-    <string name="title_signup_step_3">Step 3 of 4</string>
-    <string name="title_signup_step_4">Step 4 of 4</string>
+    <string name="title_signup_step_1">Step 1 of 4. Pick username and host</string>
+    <string name="title_signup_step_2">Step 2 of 4. Set password</string>
+    <string name="title_signup_step_3">Step 3 of 4. Accept privacy policy</string>
+    <string name="title_signup_step_4">Step 4 of 4. Set social links</string>
 
     <string name="license_url" translatable="false">https://www.xabber.com/policy/</string>
     <string name="accept_license">Accept privacy policy</string>

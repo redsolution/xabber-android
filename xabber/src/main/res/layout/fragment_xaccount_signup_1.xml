@@ -20,6 +20,7 @@
             android:layout_height="wrap_content"
             android:text="@string/title_signup_step_1"
             android:textStyle="bold"
+            android:textSize="18sp"
             android:layout_marginLeft="16dp"
             android:layout_gravity="center_vertical"
             />
@@ -39,32 +40,30 @@
         android:layout_marginRight="24dp"
         >
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/label_username"
-            android:textSize="12sp"
-            android:paddingLeft="4dp"
-            android:textColor="@color/contact_item_text_second"
-            />
-
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <EditText
-                android:id="@+id/edtUsername"
+            <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:imeOptions="actionNext"
-                android:nextFocusForward="@+id/edtPass"
-                android:singleLine="true"
-                android:hint="@string/hint_username"
-                android:textSize="16sp"
-                android:theme="@style/Theme"
                 android:layout_weight="1"
-                />
+                >
+
+                <EditText
+                    android:id="@+id/edtUsername"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:imeOptions="actionNext"
+                    android:nextFocusForward="@+id/edtPass"
+                    android:singleLine="true"
+                    android:hint="@string/hint_username"
+                    android:textSize="16sp"
+                    android:theme="@style/Theme"
+                    />
+
+            </android.support.design.widget.TextInputLayout>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -83,6 +82,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:paddingRight="-12dp"
+                android:layout_gravity="bottom"
+                android:paddingBottom="6dp"
                 >
 
                 <Spinner
@@ -96,7 +97,7 @@
                     android:id="@+id/spinnerBorder"
                     android:layout_width="match_parent"
                     android:layout_height="2dp"
-                    android:background="@color/android_default_accent_color"
+                    android:background="@color/grey_400"
                     android:layout_marginTop="1dp"
                     android:layout_marginLeft="7dp"
                     android:layout_marginRight="16dp"
@@ -119,11 +120,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingLeft="4dp"
-            android:layout_marginTop="8dp"
             />
 
         <RelativeLayout
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="8dp"
             android:layout_marginBottom="16dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
