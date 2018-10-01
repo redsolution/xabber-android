@@ -48,7 +48,7 @@ public class EmailAdapter extends RecyclerView.Adapter<EmailAdapter.EmailViewHol
         holder.tvEmail.setText(emailDTO.getEmail());
         holder.tvStatus.setText(emailDTO.isVerified() ? R.string.title_verified_email : R.string.title_unverified_email);
         holder.tvStatus.setTextColor(emailDTO.isVerified() ? res.getColor(R.color.grey_500) : res.getColor(R.color.red_500));
-        holder.tvAction.setText(emailDTO.isVerified() ? R.string.action_disconnect : R.string.action_verify);
+        holder.tvAction.setVisibility(emailDTO.isVerified() ? View.GONE : View.VISIBLE);
         holder.ivEmail.setImageResource(emailDTO.isVerified() ? R.drawable.ic_confirmed_email_circle : R.drawable.ic_email_circle);
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {

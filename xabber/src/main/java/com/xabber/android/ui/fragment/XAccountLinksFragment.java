@@ -218,6 +218,7 @@ public class XAccountLinksFragment  extends Fragment implements EmailAdapter.Lis
                 tvNameGoogle.setVisibility(View.VISIBLE);
                 tvStatusGoogle.setText(getResources().getString(R.string.title_linked_account, "Google +"));
                 tvActionGoogle.setText(R.string.action_disconnect);
+                tvActionGoogle.setVisibility(View.GONE);
                 tvActionGoogle.setTextColor(getActivity().getResources().getColor(R.color.account_register_blue));
             } else if ("facebook".equals(socialBinding.getProvider())) {
                 ivFacebook.setImageResource(R.drawable.ic_facebook);
@@ -225,6 +226,7 @@ public class XAccountLinksFragment  extends Fragment implements EmailAdapter.Lis
                 tvNameFacebook.setVisibility(View.VISIBLE);
                 tvStatusFacebook.setText(getResources().getString(R.string.title_linked_account, "Facebook"));
                 tvActionFacebook.setText(R.string.action_disconnect);
+                tvActionFacebook.setVisibility(View.GONE);
                 tvActionFacebook.setTextColor(getActivity().getResources().getColor(R.color.account_register_blue));
             } else if ("twitter".equals(socialBinding.getProvider())) {
                 ivTwitter.setImageResource(R.drawable.ic_twitter);
@@ -232,6 +234,7 @@ public class XAccountLinksFragment  extends Fragment implements EmailAdapter.Lis
                 tvNameTwitter.setVisibility(View.VISIBLE);
                 tvStatusTwitter.setText(getResources().getString(R.string.title_linked_account, "Twitter"));
                 tvActionTwitter.setText(R.string.action_disconnect);
+                tvActionTwitter.setVisibility(View.GONE);
                 tvActionTwitter.setTextColor(getActivity().getResources().getColor(R.color.account_register_blue));
             }
         }
@@ -242,18 +245,21 @@ public class XAccountLinksFragment  extends Fragment implements EmailAdapter.Lis
         tvNameGoogle.setVisibility(View.GONE);
         tvStatusGoogle.setText(R.string.title_not_linked_account);
         tvActionGoogle.setText(R.string.action_connect);
+        tvActionGoogle.setVisibility(View.VISIBLE);
         tvActionGoogle.setTextColor(getActivity().getResources().getColor(R.color.grey_500));
 
         ivFacebook.setImageResource(R.drawable.ic_facebook_disabled);
         tvNameFacebook.setVisibility(View.GONE);
         tvStatusFacebook.setText(R.string.title_not_linked_account);
         tvActionFacebook.setText(R.string.action_connect);
+        tvActionFacebook.setVisibility(View.VISIBLE);
         tvActionFacebook.setTextColor(getActivity().getResources().getColor(R.color.grey_500));
 
         ivTwitter.setImageResource(R.drawable.ic_twitter_disabled);
         tvNameTwitter.setVisibility(View.GONE);
         tvStatusTwitter.setText(R.string.title_not_linked_account);
         tvActionTwitter.setText(R.string.action_connect);
+        tvActionTwitter.setVisibility(View.VISIBLE);
         tvActionTwitter.setTextColor(getActivity().getResources().getColor(R.color.grey_500));
     }
 
