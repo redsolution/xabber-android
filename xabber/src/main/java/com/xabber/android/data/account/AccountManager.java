@@ -317,6 +317,15 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
         return accountItems.get(account);
     }
 
+    public boolean isAccountExist(String user) {
+        Collection<AccountJid> accounts = getAllAccounts();
+        for (AccountJid account : accounts) {
+            if (account.getFullJid().asBareJid().equals(user))
+                return true;
+        }
+        return false;
+    }
+
     /**
      * Save account item to database.
      */
@@ -381,6 +390,9 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
             throw new NetworkException(R.string.INCORRECT_USER_NAME);
         }
 
+        if (isAccountExist(user))
+            throw new NetworkException(R.string.ACCOUNT_EXIST);
+
         Resourcepart resource = null;
         String resourceString = XmppStringUtils.parseResource(user).trim();
         if (!TextUtils.isEmpty(resourceString)) {
@@ -398,14 +410,6 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
         }
 
         AccountItem accountItem;
-        while(true) {
-
-            if (getAccount(AccountJid.from(userName, serverName, resource)) == null) {
-                break;
-            }
-            resource = generateResource();
-        }
-
 
         boolean useCustomHost = application.getResources().getBoolean(R.bool.account_use_custom_host_default);
 

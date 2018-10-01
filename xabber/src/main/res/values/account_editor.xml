@@ -18,6 +18,7 @@
     <string name="EMPTY_SERVER_NAME">Server name is not specified</string>
     <string name="EMPTY_USER_NAME">Username is not specified</string>
     <string name="CONFIRM_PASSWORD">Passwords do not match</string>
+    <string name="ACCOUNT_EXIST">This account already exist</string>
     <string name="account_archive_mode">Store message history</string>
     <string name="account_archive_mode_available">On server if available</string>
     <string name="account_archive_mode_dont_store">Don\'t store</string>
