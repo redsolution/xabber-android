@@ -54,7 +54,7 @@ import rx.schedulers.Schedulers;
 public class XabberLoginActivity extends BaseLoginActivity implements XAccountSignUpFragment1.Listener,
         XAccountSignUpFragment2.Listener, XAccountSignUpFragment3.Listener,
         XAccountSignUpFragment4.Listener, XAccountLoginFragment.EmailClickListener,
-        XAccountEmailLoginFragment.Listener {
+        XAccountEmailLoginFragment.Listener, XAccountLoginFragment.ForgotPassClickListener {
 
     private final static String LOG_TAG = XabberLoginActivity.class.getSimpleName();
     public final static String CURRENT_FRAGMENT = "current_fragment";
@@ -233,6 +233,7 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
         outState.putString(CURRENT_FRAGMENT, currentFragment);
     }
 
+    @Override
     public void onForgotPassClick() {
         String url = HttpApiManager.XABBER_FORGOT_PASS_URL;
         Intent intent = new Intent(Intent.ACTION_VIEW);

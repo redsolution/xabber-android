@@ -17,8 +17,10 @@ public class XAccountEmailLoginFragment extends Fragment {
     private EditText edtEmail;
     private EditText edtPass;
     private Button btnLogin;
+    private Button btnForgotPass;
 
     private Listener listener;
+    private XAccountLoginFragment.ForgotPassClickListener forgotPassListener;
 
     public interface Listener {
         void onLoginClick(String email, String pass);
@@ -49,6 +51,13 @@ public class XAccountEmailLoginFragment extends Fragment {
                 if (verifyFields(email, pass)) listener.onLoginClick(email, pass);
             }
         });
+        btnForgotPass = view.findViewById(R.id.btnForgotPass);
+        btnForgotPass.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                forgotPassListener.onForgotPassClick();
+            }
+        });
     }
 
     @Override
@@ -57,12 +66,18 @@ public class XAccountEmailLoginFragment extends Fragment {
         if (context instanceof Listener) listener = (Listener) context;
         else throw new RuntimeException(context.toString()
                 + " must implement XAccountEmailLoginFragment.Listener");
+
+        if (context instanceof XAccountLoginFragment.ForgotPassClickListener)
+            forgotPassListener = (XAccountLoginFragment.ForgotPassClickListener) context;
+        else throw new RuntimeException(context.toString()
+                + " must implement ForgotPassClickListener");
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
         listener = null;
+        forgotPassListener = null;
     }
 
     private boolean verifyFields(String email, String pass) {

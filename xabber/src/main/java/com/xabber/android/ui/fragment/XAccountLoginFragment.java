@@ -36,14 +36,20 @@ public class XAccountLoginFragment extends Fragment implements View.OnClickListe
     private EditText edtPassword;
     private Button btnLogin;
     private Button btnOptions;
+    private Button btnForgotPass;
     private View optionsView;
     private View socialView;
 
     private OnSocialBindListener listener;
     private EmailClickListener emailListener;
+    private ForgotPassClickListener forgotPassListener;
 
     public interface EmailClickListener {
         void onEmailClick();
+    }
+
+    public interface ForgotPassClickListener {
+        void onForgotPassClick();
     }
 
     public static XAccountLoginFragment newInstance() {
@@ -74,6 +80,8 @@ public class XAccountLoginFragment extends Fragment implements View.OnClickListe
         btnLogin.setOnClickListener(this);
         btnOptions = view.findViewById(R.id.btnOptions);
         btnOptions.setOnClickListener(this);
+        btnForgotPass = view.findViewById(R.id.btnForgotPass);
+        btnForgotPass.setOnClickListener(this);
 
         ((TextView) view.findViewById(R.id.account_help))
                 .setMovementMethod(LinkMovementMethod.getInstance());
@@ -102,6 +110,11 @@ public class XAccountLoginFragment extends Fragment implements View.OnClickListe
         if (context instanceof EmailClickListener) emailListener = (EmailClickListener) context;
         else throw new RuntimeException(context.toString()
                 + " must implement EmailClickListener");
+
+        if (context instanceof ForgotPassClickListener)
+            forgotPassListener = (ForgotPassClickListener) context;
+        else throw new RuntimeException(context.toString()
+                + " must implement ForgotPassClickListener");
     }
 
     @Override
@@ -109,6 +122,7 @@ public class XAccountLoginFragment extends Fragment implements View.OnClickListe
         super.onDetach();
         listener = null;
         emailListener = null;
+        forgotPassListener = null;
     }
 
     @Override
@@ -131,6 +145,9 @@ public class XAccountLoginFragment extends Fragment implements View.OnClickListe
                 break;
             case R.id.btnOptions:
                 showOptions();
+                break;
+            case R.id.btnForgotPass:
+                forgotPassListener.onForgotPassClick();
                 break;
         }
     }

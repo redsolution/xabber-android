@@ -74,18 +74,38 @@
 
         </android.support.design.widget.TextInputLayout>
 
-        <Button
-            android:id="@+id/btnLogin"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            style="@style/Widget.AppCompat.Button.Colored"
-            android:theme="@style/BlueButton"
-            android:paddingRight="18dp"
-            android:paddingLeft="18dp"
-            android:layout_gravity="right"
-            android:textColor="@color/white"
-            android:text="@string/button_connect"
-            />
+        <RelativeLayout
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="16dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:id="@+id/btnLogin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/Widget.AppCompat.Button.Colored"
+                android:theme="@style/BlueButton"
+                android:paddingRight="18dp"
+                android:paddingLeft="18dp"
+                android:layout_gravity="right"
+                android:textColor="@color/white"
+                android:text="@string/button_connect"
+                android:layout_alignParentRight="true"
+                />
+
+            <Button
+                android:id="@+id/btnForgotPass"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:theme="@style/BlueButton"
+                android:textColor="@color/grey_500"
+                android:text="@string/forgot_pass"
+                android:layout_centerVertical="true"
+                />
+
+        </RelativeLayout>
 
     </LinearLayout>
 
