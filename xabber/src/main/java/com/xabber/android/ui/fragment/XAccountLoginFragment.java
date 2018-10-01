@@ -40,6 +40,11 @@ public class XAccountLoginFragment extends Fragment implements View.OnClickListe
     private View socialView;
 
     private OnSocialBindListener listener;
+    private EmailClickListener emailListener;
+
+    public interface EmailClickListener {
+        void onEmailClick();
+    }
 
     public static XAccountLoginFragment newInstance() {
         XAccountLoginFragment fragment = new XAccountLoginFragment();
@@ -76,10 +81,12 @@ public class XAccountLoginFragment extends Fragment implements View.OnClickListe
         ImageView ivFacebook = view.findViewById(R.id.ivFacebook);
         ImageView ivGoogle = view.findViewById(R.id.ivGoogle);
         ImageView ivTwitter = view.findViewById(R.id.ivTwitter);
+        ImageView ivEmail = view.findViewById(R.id.ivEmail);
 
         ivFacebook.setOnClickListener(this);
         ivGoogle.setOnClickListener(this);
         ivTwitter.setOnClickListener(this);
+        ivEmail.setOnClickListener(this);
 
         return view;
     }
@@ -91,12 +98,17 @@ public class XAccountLoginFragment extends Fragment implements View.OnClickListe
         if (context instanceof OnSocialBindListener) listener = (OnSocialBindListener) context;
         else throw new RuntimeException(context.toString()
                 + " must implement OnSocialBindListener");
+
+        if (context instanceof EmailClickListener) emailListener = (EmailClickListener) context;
+        else throw new RuntimeException(context.toString()
+                + " must implement EmailClickListener");
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
         listener = null;
+        emailListener = null;
     }
 
     @Override
@@ -113,6 +125,9 @@ public class XAccountLoginFragment extends Fragment implements View.OnClickListe
                 break;
             case R.id.ivTwitter:
                 listener.onBindClick(AuthManager.PROVIDER_TWITTER);
+                break;
+            case R.id.ivEmail:
+                emailListener.onEmailClick();
                 break;
             case R.id.btnOptions:
                 showOptions();

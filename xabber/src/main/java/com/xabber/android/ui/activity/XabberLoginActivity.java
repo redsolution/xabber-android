@@ -29,6 +29,7 @@ import com.xabber.android.data.xaccount.XabberAccount;
 import com.xabber.android.data.xaccount.XabberAccountManager;
 import com.xabber.android.presentation.mvp.signup.SignUpRepo;
 import com.xabber.android.ui.color.BarPainter;
+import com.xabber.android.ui.fragment.XAccountEmailLoginFragment;
 import com.xabber.android.ui.fragment.XAccountLoginFragment;
 import com.xabber.android.ui.fragment.XAccountSignUpFragment1;
 import com.xabber.android.ui.fragment.XAccountSignUpFragment2;
@@ -52,11 +53,13 @@ import rx.schedulers.Schedulers;
 
 public class XabberLoginActivity extends BaseLoginActivity implements XAccountSignUpFragment1.Listener,
         XAccountSignUpFragment2.Listener, XAccountSignUpFragment3.Listener,
-        XAccountSignUpFragment4.Listener {
+        XAccountSignUpFragment4.Listener, XAccountLoginFragment.EmailClickListener,
+        XAccountEmailLoginFragment.Listener {
 
     private final static String LOG_TAG = XabberLoginActivity.class.getSimpleName();
     public final static String CURRENT_FRAGMENT = "current_fragment";
     public final static String FRAGMENT_LOGIN = "fragment_login";
+    public final static String FRAGMENT_EMAIL_LOGIN = "fragment_email_login";
     public final static String FRAGMENT_SIGNUP_STEP1 = "fragment_signup_step1";
     public final static String FRAGMENT_SIGNUP_STEP2 = "fragment_signup_step2";
     public final static String FRAGMENT_SIGNUP_STEP3 = "fragment_signup_step3";
@@ -67,6 +70,7 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
 
     private FragmentTransaction fTrans;
     private Fragment fragmentLogin;
+    private Fragment fragmentEmailLogin;
     private Fragment fragmentSignUpStep1;
     private Fragment fragmentSignUpStep2;
     private Fragment fragmentSignUpStep3;
@@ -136,6 +140,18 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
         setupToolbar(true);
     }
 
+    public void showEmailLoginFragment() {
+        if (fragmentEmailLogin == null)
+            fragmentEmailLogin = XAccountEmailLoginFragment.newInstance();
+
+        fTrans = getFragmentManager().beginTransaction();
+        fTrans.replace(R.id.container, fragmentEmailLogin);
+        fTrans.commit();
+        currentFragment = FRAGMENT_EMAIL_LOGIN;
+
+        setupToolbar(true);
+    }
+
     public void showSignUpStep1Fragment() {
         if (fragmentSignUpStep1 == null)
             fragmentSignUpStep1 = XAccountSignUpFragment1.newInstance(this);
@@ -201,6 +217,9 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
                     break;
                 case FRAGMENT_SIGNUP_STEP4:
                     showSignUpStep4Fragment();
+                    break;
+                case FRAGMENT_EMAIL_LOGIN:
+                    showEmailLoginFragment();
                     break;
                 default:
                     showLoginFragment();
@@ -298,6 +317,37 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
 
     @Override
     protected void onSynchronized() { }
+
+    @Override
+    public void onEmailClick() {
+        showEmailLoginFragment();
+    }
+
+    @Override
+    public void onLoginClick(String email, String pass) {
+        emailLogin(email, pass);
+    }
+
+    /** EMAIL LOGIN */
+
+    private void emailLogin(String email, String pass) {
+        showProgress(getString(R.string.progress_title_login));
+        Subscription emailLoginSubscription = AuthManager.login(email, pass)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<XAccountTokenDTO>() {
+                    @Override
+                    public void call(XAccountTokenDTO xAccountTokenDTO) {
+                        handleSuccessSocialLogin(xAccountTokenDTO);
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        handleErrorGetAccount(throwable);
+                    }
+                });
+        compositeSubscription.add(emailLoginSubscription);
+    }
 
     /** GET HOSTS */
 

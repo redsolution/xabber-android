@@ -224,6 +224,7 @@
     <string name="title_signup_step_2">Step 2 of 4. Set password</string>
     <string name="title_signup_step_3">Step 3 of 4. Accept privacy policy</string>
     <string name="title_signup_step_4">Step 4 of 4. Set social links</string>
+    <string name="title_login_email">Login via email</string>
 
     <string name="license_url" translatable="false">https://www.xabber.com/policy/</string>
     <string name="accept_license">Accept privacy policy</string>
