@@ -27,7 +27,7 @@
     <string name="set_phone_success">Confirmation code sent</string>
 
     <string name="social_bind_success">Social network bind successfully</string>
-    <string name="social_bind_fail">Can\'t link this social account</string>
+    <string name="social_bind_fail">Can\'t link this social account. Perhaps it is already using by another Xabber-account</string>
     <string name="social_unbind_success">Social network unbind successfully</string>
     <string name="social_unbind_fail">Social network unbind failed</string>
 
