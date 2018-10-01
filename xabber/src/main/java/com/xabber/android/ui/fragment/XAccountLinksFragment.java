@@ -22,7 +22,6 @@ import com.xabber.android.data.xaccount.SocialBindingDTO;
 import com.xabber.android.data.xaccount.XabberAccount;
 import com.xabber.android.data.xaccount.XabberAccountManager;
 import com.xabber.android.ui.adapter.EmailAdapter;
-import com.xabber.android.ui.dialog.AccountSyncDialogFragment;
 import com.xabber.android.ui.dialog.AddEmailDialogFragment;
 import com.xabber.android.ui.dialog.ConfirmEmailDialogFragment;
 import com.xabber.android.ui.helper.OnSocialBindListener;
@@ -131,7 +130,7 @@ public class XAccountLinksFragment  extends Fragment implements EmailAdapter.Lis
             @Override
             public void onClick(View v) {
                 AddEmailDialogFragment.newInstance()
-                        .show(getFragmentManager(), AccountSyncDialogFragment.class.getSimpleName());
+                        .show(getFragmentManager(), AddEmailDialogFragment.class.getSimpleName());
             }
         });
     }
@@ -170,7 +169,7 @@ public class XAccountLinksFragment  extends Fragment implements EmailAdapter.Lis
     @Override
     public void onEmailVerifyClick(String email) {
         ConfirmEmailDialogFragment.newInstance(email)
-                .show(getFragmentManager(), AccountSyncDialogFragment.class.getSimpleName());
+                .show(getFragmentManager(), ConfirmEmailDialogFragment.class.getSimpleName());
     }
 
     @Override
