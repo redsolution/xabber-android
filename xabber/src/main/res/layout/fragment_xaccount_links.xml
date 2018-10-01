@@ -202,6 +202,7 @@
             android:layout_height="wrap_content"
             android:nestedScrollingEnabled="false"
             tools:listitem="@layout/item_email"
+            android:overScrollMode="never"
             />
 
         <LinearLayout
