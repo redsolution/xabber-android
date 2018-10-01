@@ -317,6 +317,17 @@ public class AuthManager {
         return SOURCE_NAME + " " + BuildConfig.FLAVOR + " " + BuildConfig.VERSION_NAME;
     }
 
+    public static String getProviderName(String provider) {
+        switch (provider) {
+            case AuthManager.PROVIDER_TWITTER:
+                return "Twitter";
+            case AuthManager.PROVIDER_FACEBOOK:
+                return "Facebook";
+            default:
+                return "Google+";
+        }
+    }
+
     // models
 
     public static class SignUpFields {

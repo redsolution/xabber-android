@@ -124,7 +124,7 @@ public class XAccountSignUpFragment1 extends Fragment implements View.OnClickLis
         if (credentials != null && provider != null) {
             if (tvSocialProvider != null) {
                 tvSocialProvider.setVisibility(View.VISIBLE);
-                tvSocialProvider.setText(getString(R.string.signup_with_social, getProviderName(provider)));
+                tvSocialProvider.setText(getString(R.string.signup_with_social, AuthManager.getProviderName(provider)));
 
                 Drawable drawable;
                 switch (provider) {
@@ -140,17 +140,6 @@ public class XAccountSignUpFragment1 extends Fragment implements View.OnClickLis
                 tvSocialProvider.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null);
             }
         } else if (tvSocialProvider != null) tvSocialProvider.setVisibility(View.GONE);
-    }
-
-    private String getProviderName(String provider) {
-        switch (provider) {
-            case AuthManager.PROVIDER_TWITTER:
-                return "Twitter";
-            case AuthManager.PROVIDER_FACEBOOK:
-                return "Facebook";
-            default:
-                return "Google+";
-        }
     }
 
     private void onNextClick() {

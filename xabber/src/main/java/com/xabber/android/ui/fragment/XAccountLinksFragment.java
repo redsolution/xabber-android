@@ -174,7 +174,7 @@ public class XAccountLinksFragment  extends Fragment implements EmailAdapter.Lis
 
     private void onSocialUnlinkClick(final String provider) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setMessage(getString(R.string.title_delete_social, provider))
+        builder.setMessage(getString(R.string.title_delete_social, AuthManager.getProviderName(provider)))
                 .setPositiveButton(R.string.action_disconnect, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -216,7 +216,8 @@ public class XAccountLinksFragment  extends Fragment implements EmailAdapter.Lis
                 ivGoogle.setImageResource(R.drawable.ic_google_plus);
                 tvNameGoogle.setText(socialBinding.getFirstName() + " " + socialBinding.getLastName());
                 tvNameGoogle.setVisibility(View.VISIBLE);
-                tvStatusGoogle.setText(getResources().getString(R.string.title_linked_account, "Google+"));
+                tvStatusGoogle.setText(getResources().getString(R.string.title_linked_account,
+                        AuthManager.getProviderName(socialBinding.getProvider())));
                 tvActionGoogle.setText(R.string.action_disconnect);
                 tvActionGoogle.setVisibility(View.GONE);
                 tvActionGoogle.setTextColor(getActivity().getResources().getColor(R.color.account_register_blue));
@@ -224,7 +225,8 @@ public class XAccountLinksFragment  extends Fragment implements EmailAdapter.Lis
                 ivFacebook.setImageResource(R.drawable.ic_facebook);
                 tvNameFacebook.setText(socialBinding.getFirstName() + " " + socialBinding.getLastName());
                 tvNameFacebook.setVisibility(View.VISIBLE);
-                tvStatusFacebook.setText(getResources().getString(R.string.title_linked_account, "Facebook"));
+                tvStatusFacebook.setText(getResources().getString(R.string.title_linked_account,
+                        AuthManager.getProviderName(socialBinding.getProvider())));
                 tvActionFacebook.setText(R.string.action_disconnect);
                 tvActionFacebook.setVisibility(View.GONE);
                 tvActionFacebook.setTextColor(getActivity().getResources().getColor(R.color.account_register_blue));
@@ -232,7 +234,8 @@ public class XAccountLinksFragment  extends Fragment implements EmailAdapter.Lis
                 ivTwitter.setImageResource(R.drawable.ic_twitter);
                 tvNameTwitter.setText(socialBinding.getFirstName() + " " + socialBinding.getLastName());
                 tvNameTwitter.setVisibility(View.VISIBLE);
-                tvStatusTwitter.setText(getResources().getString(R.string.title_linked_account, "Twitter"));
+                tvStatusTwitter.setText(getResources().getString(R.string.title_linked_account,
+                        AuthManager.getProviderName(socialBinding.getProvider())));
                 tvActionTwitter.setText(R.string.action_disconnect);
                 tvActionTwitter.setVisibility(View.GONE);
                 tvActionTwitter.setTextColor(getActivity().getResources().getColor(R.color.account_register_blue));
