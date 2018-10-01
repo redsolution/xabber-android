@@ -216,7 +216,7 @@ public class XAccountLinksFragment  extends Fragment implements EmailAdapter.Lis
                 ivGoogle.setImageResource(R.drawable.ic_google_plus);
                 tvNameGoogle.setText(socialBinding.getFirstName() + " " + socialBinding.getLastName());
                 tvNameGoogle.setVisibility(View.VISIBLE);
-                tvStatusGoogle.setText(getResources().getString(R.string.title_linked_account, "Google +"));
+                tvStatusGoogle.setText(getResources().getString(R.string.title_linked_account, "Google+"));
                 tvActionGoogle.setText(R.string.action_disconnect);
                 tvActionGoogle.setVisibility(View.GONE);
                 tvActionGoogle.setTextColor(getActivity().getResources().getColor(R.color.account_register_blue));
