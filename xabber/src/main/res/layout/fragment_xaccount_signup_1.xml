@@ -20,6 +20,7 @@
             android:layout_height="wrap_content"
             android:text="@string/title_signup_step_1"
             android:textStyle="bold"
+            android:textSize="16sp"
             android:layout_marginLeft="16dp"
             android:layout_gravity="center_vertical"
             />
