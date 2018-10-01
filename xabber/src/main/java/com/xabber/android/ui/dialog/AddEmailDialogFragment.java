@@ -37,7 +37,7 @@ public class AddEmailDialogFragment extends DialogFragment {
 
                     }
                 })
-                .setPositiveButton(R.string.complete_register_add, new DialogInterface.OnClickListener() {
+                .setPositiveButton(R.string.action_connect, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         if (listener != null) listener.onAddEmailClick(edtEmail.getText().toString());

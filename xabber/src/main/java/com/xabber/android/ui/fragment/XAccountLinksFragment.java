@@ -89,7 +89,7 @@ public class XAccountLinksFragment  extends Fragment implements EmailAdapter.Lis
             public void onClick(View v) {
                 if (tvActionGoogle.getText().equals(getString(R.string.action_connect)))
                     bindListener.onBindClick(AuthManager.PROVIDER_GOOGLE);
-                else listener.onSocialUnbindClick(AuthManager.PROVIDER_GOOGLE);
+                else onSocialUnlinkClick(AuthManager.PROVIDER_GOOGLE);
             }
         });
 
@@ -103,7 +103,7 @@ public class XAccountLinksFragment  extends Fragment implements EmailAdapter.Lis
             public void onClick(View v) {
                 if (tvActionFacebook.getText().equals(getString(R.string.action_connect)))
                     bindListener.onBindClick(AuthManager.PROVIDER_FACEBOOK);
-                else listener.onSocialUnbindClick(AuthManager.PROVIDER_FACEBOOK);
+                else onSocialUnlinkClick(AuthManager.PROVIDER_FACEBOOK);
             }
         });
 
@@ -117,7 +117,7 @@ public class XAccountLinksFragment  extends Fragment implements EmailAdapter.Lis
             public void onClick(View v) {
                 if (tvActionTwitter.getText().equals(getString(R.string.action_connect)))
                     bindListener.onBindClick(AuthManager.PROVIDER_TWITTER);
-                else listener.onSocialUnbindClick(AuthManager.PROVIDER_TWITTER);
+                else onSocialUnlinkClick(AuthManager.PROVIDER_TWITTER);
             }
         });
 
@@ -172,11 +172,29 @@ public class XAccountLinksFragment  extends Fragment implements EmailAdapter.Lis
                 .show(getFragmentManager(), ConfirmEmailDialogFragment.class.getSimpleName());
     }
 
+    private void onSocialUnlinkClick(final String provider) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setMessage(getString(R.string.title_delete_social, provider))
+                .setPositiveButton(R.string.action_disconnect, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        listener.onSocialUnbindClick(provider);
+                    }
+                })
+                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+        builder.create().show();
+    }
+
     @Override
     public void onEmailDeleteClick(final int id) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setMessage(R.string.title_delete_email)
-                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                .setPositiveButton(R.string.action_disconnect, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         listener.onDeleteEmailClick(id);
