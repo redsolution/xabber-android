@@ -300,6 +300,10 @@ public class AuthManager {
         return HttpApiManager.getXabberApi().unbindSocial(getXabberTokenHeader(), new Provider(provider));
     }
 
+    public static Single<ResponseBody> registerFCMEndpoint(String endpoint) {
+        return HttpApiManager.getXabberApi().registerFCMEndpoint(getXabberTokenHeader(), new Endpoint(endpoint));
+    }
+
     // support
 
     private static String getXabberTokenHeader() {
@@ -329,6 +333,14 @@ public class AuthManager {
     }
 
     // models
+
+    public static class Endpoint {
+        final String endpoint_key;
+
+        public Endpoint(String endpoint_key) {
+            this.endpoint_key = endpoint_key;
+        }
+    }
 
     public static class SignUpFields {
         final String username;

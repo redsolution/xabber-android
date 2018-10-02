@@ -425,6 +425,12 @@
         <service android:name=".service.XabberService" />
         <service android:name=".service.DownloadService" />
         <service android:name=".service.UploadService" />
+        <service
+            android:name=".service.PushService">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+            </intent-filter>
+        </service>
 
         <receiver android:name=".receiver.BootReceiver">
             <intent-filter>

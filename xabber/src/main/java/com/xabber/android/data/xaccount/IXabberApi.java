@@ -59,6 +59,9 @@ public interface IXabberApi {
     @DELETE("accounts/current/email_list/{email_id}/")
     Single<ResponseBody> deleteEmail(@Header("Authorization") String token, @Path(value = "email_id", encoded = true) int emailId);
 
+    @POST("fcm/subscription/")
+    Single<ResponseBody> registerFCMEndpoint(@Header("Authorization") String token, @Body AuthManager.Endpoint endpoint);
+
     /* Xabber API v2 */
 
     @POST("accounts/xmpp_code_request/")

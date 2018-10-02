@@ -154,6 +154,9 @@ dependencies {
     implementation "com.android.support:customtabs:$supportVersion"
     implementation 'com.android.support:multidex:1.0.3'
 
+    // firebase
+    compile 'com.google.firebase:firebase-messaging:11.4.0'
+
     implementation 'com.github.Str4tocaster:otr4j:custom-SNAPSHOT'
     implementation 'com.google.zxing:android-integration:3.3.0'
 
