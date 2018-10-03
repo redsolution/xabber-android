@@ -584,6 +584,7 @@ public class XabberAccountManager implements OnLoadListener {
                 removeAccount();
             }
         });
+        unregisterEndpoint();
     }
 
     public static class XabberAccountDeletedEvent {}
@@ -789,6 +790,24 @@ public class XabberAccountManager implements OnLoadListener {
                     @Override
                     public void call(Throwable throwable) {
                         Log.d(LOG_TAG, "Endpoint register failed: " + throwable.toString());
+                    }
+                }));
+    }
+
+    public void unregisterEndpoint() {
+        compositeSubscription.add(
+            AuthManager.unregisterFCMEndpoint(FirebaseInstanceId.getInstance().getToken())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<ResponseBody>() {
+                    @Override
+                    public void call(ResponseBody responseBody) {
+                        Log.d(LOG_TAG, "Endpoint successfully unregistered");
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        Log.d(LOG_TAG, "Endpoint unregister failed: " + throwable.toString());
                     }
                 }));
     }

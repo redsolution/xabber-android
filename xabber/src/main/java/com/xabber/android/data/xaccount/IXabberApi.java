@@ -62,6 +62,9 @@ public interface IXabberApi {
     @POST("fcm/subscription/")
     Single<ResponseBody> registerFCMEndpoint(@Header("Authorization") String token, @Body AuthManager.Endpoint endpoint);
 
+    @DELETE("fcm/subscription/")
+    Single<ResponseBody> unregisterFCMEndpoint(@Body AuthManager.Endpoint endpoint);
+
     /* Xabber API v2 */
 
     @POST("accounts/xmpp_code_request/")

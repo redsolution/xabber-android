@@ -304,6 +304,10 @@ public class AuthManager {
         return HttpApiManager.getXabberApi().registerFCMEndpoint(getXabberTokenHeader(), new Endpoint(endpoint));
     }
 
+    public static Single<ResponseBody> unregisterFCMEndpoint(String endpoint) {
+        return HttpApiManager.getXabberApi().unregisterFCMEndpoint(new Endpoint(endpoint));
+    }
+
     // support
 
     private static String getXabberTokenHeader() {
