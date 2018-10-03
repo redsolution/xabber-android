@@ -62,7 +62,7 @@ public interface IXabberApi {
     @POST("fcm/subscription/")
     Single<ResponseBody> registerFCMEndpoint(@Header("Authorization") String token, @Body AuthManager.Endpoint endpoint);
 
-    @DELETE("fcm/subscription/")
+    @HTTP(method = "DELETE", path = "fcm/subscription/", hasBody = true)
     Single<ResponseBody> unregisterFCMEndpoint(@Body AuthManager.Endpoint endpoint);
 
     /* Xabber API v2 */

@@ -2,6 +2,7 @@ package com.xabber.android.data.xaccount;
 
 import android.util.Base64;
 
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.xabber.android.BuildConfig;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.entity.AccountJid;
@@ -60,6 +61,12 @@ public class AuthManager {
                             return Single.just(responseBody);
                         else
                             return Single.error(new Throwable("Realm: xabber account deletion error"));
+                    }
+                })
+                .flatMap(new Func1<ResponseBody, Single<? extends ResponseBody>>() {
+                    @Override
+                    public Single<? extends ResponseBody> call(ResponseBody responseBody) {
+                        return unregisterFCMEndpoint(FirebaseInstanceId.getInstance().getToken());
                     }
                 });
     }

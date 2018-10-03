@@ -311,7 +311,6 @@ public class XabberAccountActivity extends BaseLoginActivity
     private void handleSuccessLogout(ResponseBody s, boolean deleteAccounts) {
         if (deleteAccounts) XabberAccountManager.getInstance().deleteSyncedLocalAccounts();
         XabberAccountManager.getInstance().removeAccount();
-        XabberAccountManager.getInstance().unregisterEndpoint();
         hideProgress();
         Toast.makeText(this, R.string.quit_success, Toast.LENGTH_SHORT).show();
         Intent intent = ContactListActivity.createIntent(XabberAccountActivity.this);
