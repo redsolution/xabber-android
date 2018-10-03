@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
+import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.listeners.OnConnectedListener;
@@ -79,6 +80,8 @@ public class XMPPAuthManager implements OnPacketListener, OnConnectedListener {
 
     @Override
     public void onConnected(final ConnectionItem connection) {
+        if (!SettingsManager.autoLoginToXabberAccount()) return;
+
         Application.getInstance().runInBackground(new Runnable() {
             @Override
             public void run() {
@@ -133,6 +136,7 @@ public class XMPPAuthManager implements OnPacketListener, OnConnectedListener {
                 @Override
                 public void call(XabberAccount account) {
                     Log.d(XMPPAuthManager.class.toString(), "xabber account authorized successfully");
+                    SettingsManager.setAutoLoginToXabberAccount(true);
                     updateSettings();
                 }
             }, new Action1<Throwable>() {

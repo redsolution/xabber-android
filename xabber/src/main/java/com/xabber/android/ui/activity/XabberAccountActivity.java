@@ -19,6 +19,7 @@ import android.widget.CheckBox;
 import android.widget.Toast;
 
 import com.xabber.android.R;
+import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.connection.NetworkManager;
 import com.xabber.android.data.xaccount.AuthManager;
 import com.xabber.android.data.xaccount.XMPPAuthManager;
@@ -310,6 +311,7 @@ public class XabberAccountActivity extends BaseLoginActivity
 
     private void handleSuccessLogout(ResponseBody s, boolean deleteAccounts) {
         if (deleteAccounts) XabberAccountManager.getInstance().deleteSyncedLocalAccounts();
+        SettingsManager.setAutoLoginToXabberAccount(false);
         XabberAccountManager.getInstance().removeAccount();
         hideProgress();
         Toast.makeText(this, R.string.quit_success, Toast.LENGTH_SHORT).show();
