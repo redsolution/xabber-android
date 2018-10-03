@@ -27,7 +27,7 @@
     <string name="set_phone_success">Confirmation code sent</string>
 
     <string name="social_bind_success">Social network linked successfully</string>
-    <string name="social_bind_fail">Can\'t link this social account. Perhaps it is already using by another Xabber-account</string>
+    <string name="social_bind_fail">This account is already linked with different Xabber Account</string>
     <string name="social_unbind_success">Social network unlink successfully</string>
     <string name="social_unbind_fail">Social network unlink failed</string>
 
@@ -54,7 +54,6 @@
     <string name="progress_title_account_list">Loading list of accounts..</string>
     <string name="progress_title_connect">Connecting to Xabber Account via %1$s</string>
 
-    <string name="label_username">Pick your username and host</string>
     <string name="hint_username">Username</string>
     <string name="label_pass">Choose password</string>
     <string name="hint_pass">Enter password</string>
@@ -134,7 +133,7 @@
     <string name="username_rules_first_symbol">Username must start with letter</string>
     <string name="username_rules_dots">Username must not contain two dots in a row</string>
     <string name="sync_security_description">Your passwords are never synchronized and are safe from theft. But you have to enter them on every device (unless you use tokens, which you should)</string>
-    <string name="xmpp_auth_description">Chosen XMPP account would be used to sign in to Xabber Account. By signing in you accept our privacy policy and terms of service.</string>
+    <string name="xmpp_auth_description">Selected XMPP account will be used to sign in to Xabber Account. By signing in you accept our privacy policy and terms of service.</string>
     <string name="xmpp_auth_no_account">All your XMPP accounts are disabled</string>
 
     <string name="sync_with_xabber_account">Synchronize with Xabber account</string>
@@ -217,14 +216,14 @@
     <string name="patreon_current_goal" translatable="false">Goal: %1$s</string>
     <string name="patreon_appeal_url" translatable="false">https://www.xabber.com/appeal/</string>
 
-    <string name="xmpp_confirm_title">Enter verification code that was send to %1$s</string>
+    <string name="xmpp_confirm_title">Enter verification code that was sent to %1$s</string>
     <string name="xaccount_not_exist">Will create new account</string>
     <string name="xaccount_exist">Xabber Account exists</string>
 
-    <string name="title_signup_step_1">Step 1 of 4. Pick username and host</string>
+    <string name="title_signup_step_1">Step 1 of 4. Pick username and domain</string>
     <string name="title_signup_step_2">Step 2 of 4. Set password</string>
     <string name="title_signup_step_3">Step 3 of 4. Accept privacy policy</string>
-    <string name="title_signup_step_4">Step 4 of 4. Set social links</string>
+    <string name="title_signup_step_4">Step 4 of 4. Secure your account</string>
     <string name="title_login_email">Login via email</string>
 
     <string name="license_url" translatable="false">https://www.xabber.com/policy/</string>
