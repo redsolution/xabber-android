@@ -430,6 +430,7 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
     private void handleSuccessSignUp() {
         SignUpRepo.getInstance().clearRepo();
         hideProgress();
+        XabberAccountManager.getInstance().registerEndpoint();
         synchronize(false);
         showSignUpStep4Fragment();
     }
@@ -511,7 +512,7 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
     }
 
     private void handleSuccessGetAccount(@NonNull XabberAccount xabberAccount) {
-        //hideProgress();
+        XabberAccountManager.getInstance().registerEndpoint();
         synchronize(true);
     }
 
