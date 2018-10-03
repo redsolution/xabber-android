@@ -21,16 +21,9 @@ import android.text.TextUtils;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
-import com.xabber.android.data.OnUnloadListener;
-import com.xabber.android.data.connection.ConnectionSettings;
-import com.xabber.android.data.database.MessageDatabaseManager;
-import com.xabber.android.data.database.RealmManager;
-import com.xabber.android.data.database.realm.AccountRealm;
-import com.xabber.android.data.extension.mam.LoadHistorySettings;
-import com.xabber.android.data.extension.mam.MamManager;
-import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.OnLoadListener;
+import com.xabber.android.data.OnUnloadListener;
 import com.xabber.android.data.OnWipeListener;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.listeners.OnAccountAddedListener;
@@ -41,19 +34,25 @@ import com.xabber.android.data.account.listeners.OnAccountOfflineListener;
 import com.xabber.android.data.account.listeners.OnAccountOnlineListener;
 import com.xabber.android.data.account.listeners.OnAccountRemovedListener;
 import com.xabber.android.data.account.listeners.OnAccountSyncableChangedListener;
+import com.xabber.android.data.connection.ConnectionSettings;
 import com.xabber.android.data.connection.ConnectionState;
 import com.xabber.android.data.connection.ProxyType;
 import com.xabber.android.data.connection.ReconnectionManager;
 import com.xabber.android.data.connection.TLSMode;
+import com.xabber.android.data.database.MessageDatabaseManager;
+import com.xabber.android.data.database.RealmManager;
+import com.xabber.android.data.database.realm.AccountRealm;
 import com.xabber.android.data.database.sqlite.AccountTable;
 import com.xabber.android.data.database.sqlite.StatusTable;
 import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.extension.mam.LoadHistorySettings;
+import com.xabber.android.data.extension.mam.MamManager;
 import com.xabber.android.data.extension.vcard.VCardManager;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.notification.BaseAccountNotificationProvider;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterManager;
-import com.xabber.android.data.xaccount.XMPPAuthManager;
 import com.xabber.android.data.xaccount.XabberAccountManager;
 
 import org.jivesoftware.smack.util.StringUtils;
@@ -436,9 +435,6 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
         if (xabberSync) XabberAccountManager.getInstance()
                 .addAccountSyncState(accountItem.getAccount().getFullJid().asBareJid().toString(), true);
         else SettingsManager.setSyncAllAccounts(false);
-
-        // add account to check-list for Xabber Account auth
-        XMPPAuthManager.getInstance().addAccountForCheck(accountItem.getAccount());
 
         return accountItem.getAccount();
     }

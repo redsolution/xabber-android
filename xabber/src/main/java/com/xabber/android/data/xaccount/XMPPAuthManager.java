@@ -22,7 +22,6 @@ import org.jivesoftware.smack.packet.StandardExtensionElement;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jxmpp.stringprep.XmppStringprepException;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -39,7 +38,7 @@ public class XMPPAuthManager implements OnPacketListener, OnConnectedListener {
     private static final String ATTRIBUTE_ID = "id";
 
     private static XMPPAuthManager instance;
-    private List<AccountJid> accountsForCheck = new ArrayList<>();
+
     private Map<String, Request> requests = new HashMap<>();
 
     public static XMPPAuthManager getInstance() {
@@ -50,10 +49,6 @@ public class XMPPAuthManager implements OnPacketListener, OnConnectedListener {
     public void addRequest(String requestId, String apiJid, String clientJid) {
         onRequestReceived(new Request(requestId, clientJid, apiJid));
         addContactToRoster(apiJid, clientJid);
-    }
-
-    public void addAccountForCheck(AccountJid accountJid) {
-        accountsForCheck.add(accountJid);
     }
 
     /**
@@ -90,16 +85,14 @@ public class XMPPAuthManager implements OnPacketListener, OnConnectedListener {
                 XabberAccount xabberAccount = XabberAccountManager.getInstance().getAccount();
                 AccountJid accountJid = connection.getAccount();
                 if (xabberAccount == null) {
-                    if (accountsForCheck.contains(accountJid)) {
-                        try {
-                            Thread.sleep(1000);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                        if (PrivateStorageManager.getInstance().haveXabberAccountBinding(accountJid))
-                            requestXMPPAuthCode(accountJid);
-                        accountsForCheck.remove(accountJid);
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
                     }
+                    if (PrivateStorageManager.getInstance().haveXabberAccountBinding(accountJid))
+                        requestXMPPAuthCode(accountJid);
+
                 } else if (xabberAccount.getFullUsername()
                         .equals(AccountManager.getInstance().getVerboseName(accountJid))) {
                     try {
