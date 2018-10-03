@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.OnLoadListener;
@@ -36,6 +37,7 @@ import java.util.Map;
 import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmResults;
+import okhttp3.ResponseBody;
 import rx.Single;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
@@ -771,6 +773,24 @@ public class XabberAccountManager implements OnLoadListener {
 
 
         return resultList;
+    }
+
+    public void registerEndpoint() {
+        compositeSubscription.add(
+            AuthManager.registerFCMEndpoint(FirebaseInstanceId.getInstance().getToken())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<ResponseBody>() {
+                    @Override
+                    public void call(ResponseBody responseBody) {
+                        Log.d(LOG_TAG, "Endpoint successfully registered");
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        Log.d(LOG_TAG, "Endpoint register failed: " + throwable.toString());
+                    }
+                }));
     }
 }
 

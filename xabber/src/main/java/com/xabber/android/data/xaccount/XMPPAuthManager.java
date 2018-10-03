@@ -2,10 +2,8 @@ package com.xabber.android.data.xaccount;
 
 import android.util.Log;
 
-import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
-import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.listeners.OnConnectedListener;
@@ -30,13 +28,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
 public class XMPPAuthManager implements OnPacketListener, OnConnectedListener {
 
+    private static final String LOG_TAG = XMPPAuthManager.class.getSimpleName();
     private static final String EXTENSION_NAMESPACE = "http://jabber.org/protocol/http-auth";
     private static final String ATTRIBUTE_ID = "id";
 
@@ -116,7 +114,7 @@ public class XMPPAuthManager implements OnPacketListener, OnConnectedListener {
     }
 
     private void requestXMPPAuthCode(final AccountJid accountJid) {
-        Log.d(XMPPAuthManager.class.toString(), "request XMPP code for account: "
+        Log.d(LOG_TAG, "request XMPP code for account: "
                 + accountJid.getFullJid().toString());
         AuthManager.requestXMPPCode(accountJid.getFullJid().toString())
             .subscribe(new Action1<AuthManager.XMPPCode>() {
@@ -134,7 +132,7 @@ public class XMPPAuthManager implements OnPacketListener, OnConnectedListener {
     }
 
     private void confirmXMPP(Request request) {
-        Log.d(XMPPAuthManager.class.toString(), "confirm account: " + request.clientJid);
+        Log.d(LOG_TAG, "confirm account: " + request.clientJid);
         AuthManager.confirmXMPP(request.clientJid, request.code)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -142,7 +140,7 @@ public class XMPPAuthManager implements OnPacketListener, OnConnectedListener {
                 @Override
                 public void call(XabberAccount account) {
                     Log.d(XMPPAuthManager.class.toString(), "xabber account authorized successfully");
-                    handleSuccessConfirmXMPP();
+                    updateSettings();
                 }
             }, new Action1<Throwable>() {
                 @Override
@@ -152,41 +150,24 @@ public class XMPPAuthManager implements OnPacketListener, OnConnectedListener {
             });
     }
 
-    private void handleSuccessConfirmXMPP() {
-        if (AccountManager.getInstance().getAllAccountItems().size() > 0)
-            updateSettings();
-        else getSettings();
-    }
-
     protected void updateSettings() {
         AuthManager.patchClientSettings(XabberAccountManager.getInstance().createSettingsList())
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<List<XMPPAccountSettings>>() {
-                    @Override
-                    public void call(List<XMPPAccountSettings> s) { }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                    }
-                });
-    }
-
-    protected void getSettings() {
-        AuthManager.getClientSettings()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<List<XMPPAccountSettings>>() {
-                    @Override
-                    public void call(List<XMPPAccountSettings> settings) {
-                        XabberAccountManager.getInstance().setXmppAccountsForCreate(settings);
-                        SettingsManager.setLastSyncDate(XabberAccountManager.getCurrentTimeString());
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                    }
-                });
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(new Action1<List<XMPPAccountSettings>>() {
+                @Override
+                public void call(List<XMPPAccountSettings> s) {
+                    Log.d(XMPPAuthManager.class.toString(),
+                            "xabber account settings updated successfully");
+                    XabberAccountManager.getInstance().registerEndpoint();
+                }
+            }, new Action1<Throwable>() {
+                @Override
+                public void call(Throwable throwable) {
+                    Log.d(XMPPAuthManager.class.toString(),
+                            "xabber account settings update failed: " + throwable.toString());
+                }
+            });
     }
 
     private void onRequestReceived(Request request) {
