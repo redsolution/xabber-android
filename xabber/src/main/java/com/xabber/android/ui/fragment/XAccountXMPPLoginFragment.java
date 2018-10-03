@@ -9,13 +9,16 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.xabber.android.R;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.privatestorage.PrivateStorageManager;
 import com.xabber.android.ui.adapter.XMPPAccountAuthAdapter;
+import com.xabber.android.ui.color.ColorManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,8 +31,14 @@ import rx.subscriptions.CompositeSubscription;
 public class XAccountXMPPLoginFragment extends Fragment implements XMPPAccountAuthAdapter.Listener {
 
     private View progressView;
-    private TextView tvProgressTitle;
     private TextView tvError;
+    private TextView tvTitle;
+
+    private View loginProgressView;
+    private TextView tvAccountJidInLoginProgressView;
+    private TextView tvActionInLoginProgressView;
+    private ImageView ivAvatarInLoginProgressView;
+
     private XMPPAccountAuthAdapter adapter;
     private RecyclerView recyclerView;
 
@@ -55,8 +64,14 @@ public class XAccountXMPPLoginFragment extends Fragment implements XMPPAccountAu
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         progressView = view.findViewById(R.id.progressView);
-        tvProgressTitle = view.findViewById(R.id.tvProgressTitle);
+        tvTitle = view.findViewById(R.id.tvTitle);
         tvError = view.findViewById(R.id.tvError);
+
+        loginProgressView = view.findViewById(R.id.loginProgressView);
+        tvAccountJidInLoginProgressView = loginProgressView.findViewById(R.id.tvAccountJid);
+        tvActionInLoginProgressView = loginProgressView.findViewById(R.id.tvAction);
+        ivAvatarInLoginProgressView = loginProgressView.findViewById(R.id.avatar);
+
         recyclerView = view.findViewById(R.id.rlAccounts);
         adapter = new XMPPAccountAuthAdapter(this);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -90,47 +105,66 @@ public class XAccountXMPPLoginFragment extends Fragment implements XMPPAccountAu
     }
 
     @Override
-    public void onAccountClick(String accountJid) {
+    public void onAccountClick(AccountJid accountJid) {
         connectViaJid(accountJid);
     }
 
     private void loadData() {
         tvError.setVisibility(View.GONE);
         recyclerView.setVisibility(View.GONE);
+        tvTitle.setVisibility(View.GONE);
 
         ArrayList<AccountJid> accounts = new ArrayList<>(AccountManager.getInstance().getEnabledAccounts());
         if (accounts.size() < 1) tvError.setVisibility(View.VISIBLE);
         else if (accounts.size() > 1) loadBindings(accounts);
-        else connectViaJid(accounts.get(0).getFullJid().toString());
+        else connectViaJid(accounts.get(0));
     }
 
     private void loadBindings(ArrayList<AccountJid> accounts) {
-        showProgress(getActivity().getResources().getString(R.string.progress_title_account_list));
+        showProgress(true);
         compositeSubscription.add(PrivateStorageManager.getInstance().getAccountViewWithBindings(accounts)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(new Action1<List<XMPPAccountAuthAdapter.AccountView>>() {
                 @Override
                 public void call(List<XMPPAccountAuthAdapter.AccountView> accountViews) {
-                    hideProgress();
+                    showProgress(false);
                     adapter.setItems(accountViews);
                     recyclerView.setVisibility(View.VISIBLE);
+                    tvTitle.setVisibility(View.VISIBLE);
                 }
             }));
     }
 
-    private void showProgress(String title) {
-        tvProgressTitle.setText(title);
-        progressView.setVisibility(View.VISIBLE);
+    private void showProgress(boolean show) {
+        progressView.setVisibility(show ? View.VISIBLE : View.GONE);
     }
 
-    private void hideProgress() {
-        progressView.setVisibility(View.GONE);
+    private void showLoginProgress(AccountJid account) {
+
+        // set color
+        tvAccountJidInLoginProgressView.setTextColor(ColorManager.getInstance().getAccountPainter().
+                getAccountMainColor(account));
+
+        // set avatar
+        ivAvatarInLoginProgressView.setImageDrawable(
+                AvatarManager.getInstance().getAccountAvatar(account));
+
+        // set jid
+        final String accountJid = account.getFullJid().asBareJid().toString();
+        tvAccountJidInLoginProgressView.setText(accountJid);
+
+        // set action
+        tvActionInLoginProgressView.setText(R.string.progress_title_connect);
+
+        // show view
+        loginProgressView.setVisibility(View.VISIBLE);
     }
 
-    private void connectViaJid(String jid) {
+    private void connectViaJid(AccountJid jid) {
         recyclerView.setVisibility(View.GONE);
-        showProgress(getActivity().getResources().getString(R.string.progress_title_connect, jid));
-        listener.onAccountClick(jid);
+        tvTitle.setVisibility(View.GONE);
+        showLoginProgress(jid);
+        listener.onAccountClick(jid.getFullJid().toString());
     }
 }

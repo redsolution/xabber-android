@@ -18,6 +18,7 @@
             android:layout_height="wrap_content">
 
             <TextView
+                android:id="@+id/tvTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceMedium"
@@ -55,12 +56,32 @@
                     />
 
                 <TextView
-                    android:id="@+id/tvProgressTitle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/progress_title_account_list"
                     android:gravity="center"
                     android:layout_marginBottom="20dp"
+                    />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/loginProgressView"
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:visibility="gone"
+                android:padding="16dp"
+                >
+
+                <include layout="@layout/item_xmpp_account_choose"/>
+
+                <ProgressBar
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="16dp"
                     />
 
             </LinearLayout>
