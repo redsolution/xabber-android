@@ -321,6 +321,7 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
         }
 
         rebuildAccountToggle();
+        setStatusBarColor();
         Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
 
         if (action != null) {
@@ -682,6 +683,7 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
     @Override
     public void onAccountsChanged(Collection<AccountJid> accounts) {
         rebuildAccountToggle();
+        setStatusBarColor();
     }
 
     @Override

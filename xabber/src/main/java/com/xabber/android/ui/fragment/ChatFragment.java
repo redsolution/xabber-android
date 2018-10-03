@@ -51,6 +51,7 @@ import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
+import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.database.messagerealm.Attachment;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.database.messagerealm.SyncInfo;
@@ -113,6 +114,7 @@ import org.jxmpp.stringprep.XmppStringprepException;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -132,7 +134,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         View.OnClickListener, Toolbar.OnMenuItemClickListener,
         ChatMessageAdapter.Message.MessageClickListener, HttpUploadListener,
         ChatMessageAdapter.Listener, AdapterView.OnItemClickListener, PopupWindow.OnDismissListener,
-        AttachDialog.Listener {
+        AttachDialog.Listener, OnAccountChangedListener {
 
     public static final String ARGUMENT_ACCOUNT = "ARGUMENT_ACCOUNT";
     public static final String ARGUMENT_USER = "ARGUMENT_USER";
@@ -411,6 +413,8 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         showHideNotifyIfNeed();
 
         showJoinButtonIfNeed();
+
+        Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
     }
 
     @Override
@@ -421,6 +425,8 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
 
         saveInputState();
         saveScrollState();
+
+        Application.getInstance().removeUIListener(OnAccountChangedListener.class, this);
     }
 
     @Override
@@ -1446,6 +1452,11 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
             }
         });
         popupMenu.show();
+    }
+
+    @Override
+    public void onAccountsChanged(Collection<AccountJid> accounts) {
+        chatMessageAdapter.notifyDataSetChanged();
     }
 
     private void onShareClick(Attachment attachment) {
