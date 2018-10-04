@@ -304,7 +304,7 @@ public abstract class BaseLoginActivity extends ManagedActivity implements
                         hideProgress();
                         updateLastSyncTime();
                         onSynchronized();
-                        Toast.makeText(BaseLoginActivity.this, R.string.sync_success, Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(BaseLoginActivity.this, R.string.sync_success, Toast.LENGTH_SHORT).show();
                         if (needGoToMainActivity) goToMainActivity();
                     }
                 }, new Action1<Throwable>() {
@@ -331,7 +331,7 @@ public abstract class BaseLoginActivity extends ManagedActivity implements
                         // update last synchronization time
                         SettingsManager.setLastSyncDate(XabberAccountManager.getCurrentTimeString());
                         onSynchronized();
-                        Toast.makeText(BaseLoginActivity.this, R.string.sync_success, Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(BaseLoginActivity.this, R.string.sync_success, Toast.LENGTH_SHORT).show();
                         if (needGoToMainActivity) goToMainActivity();
                     }
                 }, new Action1<Throwable>() {
