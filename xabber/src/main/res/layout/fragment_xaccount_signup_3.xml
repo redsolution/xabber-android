@@ -27,9 +27,6 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="16dp"
-        android:layout_marginLeft="24dp"
-        android:layout_marginRight="24dp"
         >
 
         <WebView
@@ -41,11 +38,10 @@
 
         <RelativeLayout
             android:id="@+id/buttons"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="16dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
+            android:layout_margin="16dp"
             >
 
             <CheckBox
