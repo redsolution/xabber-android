@@ -4,10 +4,14 @@ import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.xabber.android.R;
 
@@ -39,9 +43,22 @@ public class XAccountSignUpFragment2 extends Fragment implements View.OnClickLis
         super.onViewCreated(view, savedInstanceState);
 
         edtPass = view.findViewById(R.id.edtPass);
+        edtPass.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                btnNext.setEnabled(s.length() >= 4);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) { }
+        });
 
         btnNext = view.findViewById(R.id.btnNext);
         btnNext.setOnClickListener(this);
+        btnNext.setEnabled(false);
     }
 
     @Override
