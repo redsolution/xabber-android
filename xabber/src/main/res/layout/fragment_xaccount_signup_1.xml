@@ -83,7 +83,7 @@
                 android:layout_weight="1"
                 android:paddingRight="-12dp"
                 android:layout_gravity="bottom"
-                android:paddingBottom="6dp"
+                android:paddingBottom="7.8dp"
                 >
 
                 <Spinner
@@ -96,8 +96,8 @@
                 <View
                     android:id="@+id/spinnerBorder"
                     android:layout_width="match_parent"
-                    android:layout_height="2dp"
-                    android:background="@color/grey_400"
+                    android:layout_height="1dp"
+                    android:background="@color/grey_500"
                     android:layout_marginTop="1dp"
                     android:layout_marginLeft="7dp"
                     android:layout_marginRight="16dp"
