@@ -1188,6 +1188,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
     public void setAllAccountAutoLoginToXabber(boolean autoLogin) {
         for (AccountItem accountItem : getAllAccountItems()) {
             accountItem.setXabberAutoLoginEnabled(autoLogin);
+            requestToWriteAccount(accountItem);
         }
     }
 
