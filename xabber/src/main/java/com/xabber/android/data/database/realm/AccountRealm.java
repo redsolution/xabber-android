@@ -59,6 +59,7 @@ public class AccountRealm extends RealmObject {
     private int timestamp;
     private int order;
     private boolean syncNotAllowed;
+    private boolean xabberAutoLoginEnabled;
 
     private int priority;
     private String statusMode;
@@ -206,6 +207,14 @@ public class AccountRealm extends RealmObject {
 
     public void setSyncNotAllowed(boolean syncNotAllowed) {
         this.syncNotAllowed = syncNotAllowed;
+    }
+
+    public boolean isXabberAutoLoginEnabled() {
+        return xabberAutoLoginEnabled;
+    }
+
+    public void setXabberAutoLoginEnabled(boolean xabberAutoLoginEnabled) {
+        this.xabberAutoLoginEnabled = xabberAutoLoginEnabled;
     }
 
     public int getPriority() {

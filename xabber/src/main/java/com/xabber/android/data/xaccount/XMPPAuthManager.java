@@ -5,6 +5,7 @@ import android.util.Log;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
+import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.listeners.OnConnectedListener;
@@ -88,13 +89,16 @@ public class XMPPAuthManager implements OnPacketListener, OnConnectedListener {
                 XabberAccount xabberAccount = XabberAccountManager.getInstance().getAccount();
                 AccountJid accountJid = connection.getAccount();
                 if (xabberAccount == null) {
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+                    AccountItem accountItem = AccountManager.getInstance().getAccount(accountJid);
+                    if (accountItem != null && accountItem.isXabberAutoLoginEnabled()) {
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        if (PrivateStorageManager.getInstance().haveXabberAccountBinding(accountJid))
+                            requestXMPPAuthCode(accountJid);
                     }
-                    if (PrivateStorageManager.getInstance().haveXabberAccountBinding(accountJid))
-                        requestXMPPAuthCode(accountJid);
 
                 } else if (xabberAccount.getFullUsername()
                         .equals(AccountManager.getInstance().getVerboseName(accountJid))) {
@@ -137,6 +141,7 @@ public class XMPPAuthManager implements OnPacketListener, OnConnectedListener {
                 public void call(XabberAccount account) {
                     Log.d(XMPPAuthManager.class.toString(), "xabber account authorized successfully");
                     updateSettings();
+                    AccountManager.getInstance().setAllAccountAutoLoginToXabber(true);
                 }
             }, new Action1<Throwable>() {
                 @Override

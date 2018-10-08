@@ -458,6 +458,7 @@ public class AccountTable extends AbstractTable {
         accountRealm.setToken(connectionSettings.getToken());
         accountRealm.setOrder(accountItem.getOrder());
         accountRealm.setSyncNotAllowed(accountItem.isSyncNotAllowed());
+        accountRealm.setXabberAutoLoginEnabled(accountItem.isXabberAutoLoginEnabled());
         accountRealm.setTimestamp(accountItem.getTimestamp());
         accountRealm.setResource(connectionSettings.getResource().toString());
         accountRealm.setColorIndex(accountItem.getColorIndex());

@@ -217,7 +217,8 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
                     accountRealm.isSyncable(),
                     accountRealm.getKeyPair(),
                     accountRealm.getLastSync(),
-                    accountRealm.getArchiveMode());
+                    accountRealm.getArchiveMode(),
+                    accountRealm.isXabberAutoLoginEnabled());
             accountItem.setId(accountRealm.getId());
             accountItem.setClearHistoryOnExit(accountRealm.isClearHistoryOnExit());
             if (accountRealm.getMamDefaultBehavior() != null) {
@@ -353,7 +354,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
         AccountItem accountItem = new AccountItem(custom, host, port, serverName, userName,
                 resource, storePassword, password, token, color, order, syncNotAllowed, timestamp, priority, statusMode, statusText, enabled,
                 saslEnabled, tlsMode, compression, proxyType, proxyHost, proxyPort, proxyUser,
-                proxyPassword, syncable, keyPair, lastSync, archiveMode);
+                proxyPassword, syncable, keyPair, lastSync, archiveMode, true);
 
         requestToWriteAccount(accountItem);
         addAccount(accountItem);
@@ -1183,4 +1184,11 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
             }
         }
     }
+
+    public void setAllAccountAutoLoginToXabber(boolean autoLogin) {
+        for (AccountItem accountItem : getAllAccountItems()) {
+            accountItem.setXabberAutoLoginEnabled(autoLogin);
+        }
+    }
+
 }
