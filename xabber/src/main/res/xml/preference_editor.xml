@@ -51,11 +51,6 @@
     <PreferenceCategory
         android:title="@string/category_settings">
     <CheckBoxPreference
-        android:title="@string/auto_login_to_xabber_account"
-        android:key="@string/auto_login_to_xabber_account_key"
-        android:defaultValue="@bool/auto_login_to_xabber_account_default"
-        />
-    <CheckBoxPreference
         android:title="@string/connection_start_at_boot"
         android:key="@string/connection_start_at_boot_key"
         android:defaultValue="@bool/connection_start_at_boot_default"

@@ -80,7 +80,7 @@ public class XMPPAuthManager implements OnPacketListener, OnConnectedListener {
 
     @Override
     public void onConnected(final ConnectionItem connection) {
-        if (!SettingsManager.autoLoginToXabberAccount()) return;
+
 
         Application.getInstance().runInBackground(new Runnable() {
             @Override
@@ -136,7 +136,6 @@ public class XMPPAuthManager implements OnPacketListener, OnConnectedListener {
                 @Override
                 public void call(XabberAccount account) {
                     Log.d(XMPPAuthManager.class.toString(), "xabber account authorized successfully");
-                    SettingsManager.setAutoLoginToXabberAccount(true);
                     updateSettings();
                 }
             }, new Action1<Throwable>() {

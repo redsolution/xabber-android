@@ -87,7 +87,6 @@
     <string name="connection_start_at_boot">Start when Android boots\nStart the application when Android boots. This doesn\'t work when Xabber is installed on SD card.</string>
     <string name="connection_wake_lock">Prevent sleep mode\nPrevent the device from sleeping. This will increase battery usage.</string>
     <string name="connection_wifi_lock">Keep WiFi awake\nKeep WiFi active on standby. This will increase battery usage</string>
-    <string name="auto_login_to_xabber_account">Auto login to Xabber Account\nAuto login to Xabber account via XMPP-account</string>
 
     <string name="contacts_reset_offline">Reset offline settings\nClear individual settings for groups and accounts</string>
     <string name="contacts_reset_offline_warning">Do you really want to clear individual settings for groups and accounts?</string>

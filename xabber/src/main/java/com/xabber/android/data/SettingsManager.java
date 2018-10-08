@@ -468,15 +468,6 @@ public class SettingsManager implements OnInitializedListener,
                 R.bool.connection_wake_lock_default);
     }
 
-    public static boolean autoLoginToXabberAccount() {
-        return getBoolean(R.string.auto_login_to_xabber_account_key,
-                R.bool.auto_login_to_xabber_account_default);
-    }
-
-    public static void setAutoLoginToXabberAccount(boolean value) {
-        setBoolean(R.string.auto_login_to_xabber_account_key, value);
-    }
-
     public static boolean connectionStartAtBoot() {
         return getBoolean(R.string.connection_start_at_boot_key,
                 R.bool.connection_start_at_boot_default);

@@ -268,10 +268,6 @@
     <string name="chats_attention_sound_key">chats_attention_sound</string>
     <string name="chats_attention_sound_default">@string/default_sound</string>
 
-<!-- preference_connection -->
-    <string name="auto_login_to_xabber_account_key">auto_login_to_xabber_account</string>
-    <bool name="auto_login_to_xabber_account_default">true</bool>
-
     <string name="connection_start_at_boot_key">connection_start_at_boot</string>
     <bool name="connection_start_at_boot_default">false</bool>
 
