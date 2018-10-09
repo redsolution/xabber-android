@@ -90,8 +90,8 @@
     <string name="title_no_linked_accounts">No linked social accounts or emails</string>
     <string name="title_linked_accounts">Linked social accounts and emails</string>
     <string name="title_select_xmpp_account">Select XMPP account to proceed</string>
-    <string name="title_delete_email">Do you want to unlink this email from Xabber-account?</string>
-    <string name="title_delete_social">Do you want to unlink this %1$s account from Xabber-account?</string>
+    <string name="title_delete_email">Do you want to unlink this email from Xabber Account?</string>
+    <string name="title_delete_social">Do you want to unlink this %1$s account from Xabber Account?</string>
 
     <string name="title_login_xabber_account">Sign In</string>
     <string name="title_register_xabber_account">Sign Up</string>
