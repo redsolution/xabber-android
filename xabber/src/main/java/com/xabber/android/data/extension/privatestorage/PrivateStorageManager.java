@@ -11,7 +11,6 @@ import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smackx.iqprivate.PrivateDataManager;
-import org.jivesoftware.smackx.iqprivate.packet.DefaultPrivateData;
 import org.jivesoftware.smackx.iqprivate.packet.PrivateData;
 
 import java.util.ArrayList;
@@ -24,11 +23,16 @@ public class PrivateStorageManager {
 
     private static final String NAMESPACE = "xabber:options";
     private static final String ELEMENT_NAME = "storage";
-    private static final String VALUE_BIND = "bind";
+    private static final String TYPE_BIND = "bind";
     private static final String BIND_TRUE = "1";
     private static final String BIND_FALSE = "0";
 
     private static PrivateStorageManager instance;
+
+    static {
+        PrivateDataManager.addPrivateDataProvider(ELEMENT_NAME, NAMESPACE,
+                new XabberOptionsPrivateData.Provider());
+    }
 
     public static PrivateStorageManager getInstance() {
         if (instance == null) instance = new PrivateStorageManager();
@@ -36,14 +40,14 @@ public class PrivateStorageManager {
     }
 
     public boolean haveXabberAccountBinding(AccountJid accountJid) {
-        DefaultPrivateData privateData = (DefaultPrivateData) getPrivateData(accountJid, NAMESPACE, ELEMENT_NAME);
+        XabberOptionsPrivateData privateData = (XabberOptionsPrivateData) getPrivateData(accountJid, NAMESPACE, ELEMENT_NAME);
         if (privateData == null) return false;
-        return BIND_TRUE.equals(privateData.getValue(VALUE_BIND));
+        return BIND_TRUE.equals(privateData.getValue(TYPE_BIND));
     }
 
     public void setXabberAccountBinding(AccountJid accountJid, boolean bind) {
-        DefaultPrivateData privateData = new DefaultPrivateData(ELEMENT_NAME, NAMESPACE);
-        privateData.setValue(VALUE_BIND, bind ? BIND_TRUE : BIND_FALSE);
+        XabberOptionsPrivateData privateData = new XabberOptionsPrivateData(ELEMENT_NAME, NAMESPACE);
+        privateData.setValue(TYPE_BIND, bind ? BIND_TRUE : BIND_FALSE);
         setPrivateData(accountJid, privateData);
     }
 
