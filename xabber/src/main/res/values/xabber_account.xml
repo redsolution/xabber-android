@@ -55,14 +55,14 @@
     <string name="progress_title_connect">Connecting to Xabber Account</string>
 
     <string name="hint_username">Username</string>
-    <string name="label_pass">Choose password</string>
-    <string name="hint_pass">Enter password</string>
-    <string name="label_conf_pass">Confirm password*</string>
-    <string name="hint_conf_pass">Confirm password</string>
+
     <string name="label_first_name">First name</string>
     <string name="hint_first_name">John</string>
     <string name="label_last_name">Last name</string>
     <string name="hint_last_name">Doe</string>
+    <string name="hint_old_pass">Old password</string>
+    <string name="hint_pass">New password</string>
+    <string name="hint_confirm_pass">Confirm password</string>
 
     <string name="label_xmpp_id">Existing XMPP ID</string>
 
@@ -112,6 +112,7 @@
     <string name="button_cancel_registration">Cancel registration</string>
     <string name="button_continue">continue</string>
     <string name="button_sync">Sync now</string>
+    <string name="button_change_pass">Change password</string>
 
     <string name="btn_done">done</string>
 
