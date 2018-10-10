@@ -113,6 +113,7 @@
     <string name="button_continue">continue</string>
     <string name="button_sync">Sync now</string>
     <string name="button_change_pass">Change password</string>
+    <string name="button_reset_pass">Reset password</string>
 
     <string name="btn_done">done</string>
 
@@ -231,4 +232,7 @@
     <string name="accept_license">Accept privacy policy</string>
     <string name="account_secure_description"><![CDATA[Secure your account by linking it with <i>at least one</i> social network or email. If you don’t do that and lose your password, you’ll never be able to restore access to your account!]]></string>
     <string name="account_secure_warning">If you don\'t link it with existing email or social account you might lose access to your XMPP account forever</string>
+
+    <string name="password_changed_success">Password changed</string>
+    <string name="password_changed_fail">Password change failed</string>
 </resources>

@@ -15,7 +15,9 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.xabber.android.R;
@@ -50,7 +52,7 @@ public class XabberAccountActivity extends BaseLoginActivity
     private Toolbar toolbar;
     private BarPainter barPainter;
 
-    private Dialog logoutDialog;
+    private Dialog dialog;
     private boolean dialogShowed;
 
     @NonNull
@@ -89,8 +91,8 @@ public class XabberAccountActivity extends BaseLoginActivity
     @Override
     protected void onPause() {
         super.onPause();
-        if (logoutDialog != null)
-            logoutDialog.dismiss();
+        if (dialog != null)
+            dialog.dismiss();
     }
 
     @Override
@@ -102,6 +104,12 @@ public class XabberAccountActivity extends BaseLoginActivity
     @Override
     public boolean onMenuItemClick(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.action_change_pass:
+                if (!dialogShowed) {
+                    dialogShowed = true;
+                    showChangePassDialog();
+                }
+                return true;
             case R.id.action_quit:
                 if (!dialogShowed) {
                     dialogShowed = true;
@@ -126,6 +134,14 @@ public class XabberAccountActivity extends BaseLoginActivity
     protected void hideProgress() {
         if (fragmentInfo != null)
             ((XabberAccountInfoFragment)fragmentInfo).showProgressInAccount(false);
+    }
+
+    private boolean checkInternetOrShowError() {
+        if (NetworkManager.isNetworkAvailable()) return true;
+        else {
+            Toast.makeText(this, R.string.toast_no_internet, Toast.LENGTH_LONG).show();
+            return false;
+        }
     }
 
     private void subscribeForXabberAccount() {
@@ -163,10 +179,7 @@ public class XabberAccountActivity extends BaseLoginActivity
     }
 
     public void loginXabberAccountViaXMPP(String accountJid) {
-        if (NetworkManager.isNetworkAvailable()) {
-            requestXMPPCode(accountJid);
-        } else
-            Toast.makeText(this, R.string.toast_no_internet, Toast.LENGTH_LONG).show();
+        if (checkInternetOrShowError()) requestXMPPCode(accountJid);
     }
 
     private void requestXMPPCode(final String jid) {
@@ -206,17 +219,11 @@ public class XabberAccountActivity extends BaseLoginActivity
     /** Xabber Account Info */
 
     public void onLogoutClick(boolean deleteAccounts) {
-        if (NetworkManager.isNetworkAvailable()) {
-            logout(deleteAccounts);
-        } else
-            Toast.makeText(this, R.string.toast_no_internet, Toast.LENGTH_LONG).show();
+        if (checkInternetOrShowError()) logout(deleteAccounts);
     }
 
     public void onSyncClick(boolean needGoToMainActivity) {
-        if (NetworkManager.isNetworkAvailable()) {
-            synchronize(needGoToMainActivity);
-        } else
-            Toast.makeText(this, R.string.toast_no_internet, Toast.LENGTH_LONG).show();
+        if (checkInternetOrShowError()) synchronize(needGoToMainActivity);
     }
 
     private void showInfoFragment() {
@@ -285,8 +292,8 @@ public class XabberAccountActivity extends BaseLoginActivity
                     }
                 })
                 .setNegativeButton(R.string.cancel, null);
-        logoutDialog = builder.create();
-        logoutDialog.show();
+        dialog = builder.create();
+        dialog.show();
         dialogShowed = false;
     }
 
@@ -338,4 +345,114 @@ public class XabberAccountActivity extends BaseLoginActivity
         hideProgress();
     }
 
+    /** CHANGE PASS */
+
+    private void showChangePassDialog() {
+        LayoutInflater inflater = getLayoutInflater();
+        View view = inflater.inflate(R.layout.dialog_change_pass, null);
+        final EditText edtOldPass = view.findViewById(R.id.edtOldPass);
+        final EditText edtPass = view.findViewById(R.id.edtPass);
+        final EditText edtConfirmPass = view.findViewById(R.id.edtConfirmPass);
+        Button btnOk = view.findViewById(R.id.btnOk);
+        Button btnResetPass = view.findViewById(R.id.btnResetPass);
+
+        btnOk.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onChangePassClick(edtOldPass, edtPass, edtConfirmPass);
+            }
+        });
+
+        btnResetPass.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.button_change_pass).setView(view);
+        dialog = builder.create();
+        dialog.show();
+        dialogShowed = false;
+    }
+
+    public void onChangePassClick(EditText edtOldPass, EditText edtPass, EditText edtConfirmPass) {
+        String oldPass = edtOldPass.getText().toString();
+        oldPass = oldPass.trim();
+
+        String pass = edtPass.getText().toString();
+        pass = pass.trim();
+
+        String confirmPass = edtConfirmPass.getText().toString();
+        confirmPass = confirmPass.trim();
+
+        if (oldPass.isEmpty()) {
+            edtOldPass.setError(getString(R.string.empty_field));
+            return;
+        }
+
+        if (oldPass.length() < 4) {
+            edtOldPass.setError(getString(R.string.pass_too_short));
+            return;
+        }
+
+        if (pass.isEmpty()) {
+            edtPass.setError(getString(R.string.empty_field));
+            return;
+        }
+
+        if (pass.length() < 4) {
+            edtPass.setError(getString(R.string.pass_too_short));
+            return;
+        }
+
+        if (confirmPass.isEmpty()) {
+            edtConfirmPass.setError(getString(R.string.empty_field));
+            return;
+        }
+
+        if (confirmPass.length() < 4) {
+            edtConfirmPass.setError(getString(R.string.pass_too_short));
+            return;
+        }
+
+        if (!pass.equals(confirmPass)) {
+            edtConfirmPass.setError(getString(R.string.passwords_not_match));
+            return;
+        }
+
+        if (checkInternetOrShowError()) {
+            changePass(oldPass, pass, confirmPass);
+            dialog.dismiss();
+        }
+    }
+
+    private void changePass(String oldPass, String pass, String confirmPass) {
+        showProgress("");
+        compositeSubscription.add(AuthManager.changePassword(oldPass, pass, confirmPass)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(new Action1<ResponseBody>() {
+                @Override
+                public void call(ResponseBody s) {
+                    handleSuccessChangePass();
+                }
+            }, new Action1<Throwable>() {
+                @Override
+                public void call(Throwable throwable) {
+                    handleErrorChangePass();
+                }
+            }));
+    }
+
+    private void handleSuccessChangePass() {
+        Toast.makeText(this, R.string.password_changed_success, Toast.LENGTH_SHORT).show();
+        hideProgress();
+    }
+
+    private void handleErrorChangePass() {
+        Toast.makeText(this, R.string.password_changed_fail, Toast.LENGTH_SHORT).show();
+        hideProgress();
+    }
 }
