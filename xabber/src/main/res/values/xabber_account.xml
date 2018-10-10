@@ -114,6 +114,7 @@
     <string name="button_sync">Sync now</string>
     <string name="button_change_pass">Change password</string>
     <string name="button_reset_pass">Reset password</string>
+    <string name="button_set_pass">Set password</string>
 
     <string name="btn_done">done</string>
 

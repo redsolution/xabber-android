@@ -105,6 +105,9 @@ public class XabberAccountActivity extends BaseLoginActivity
     @Override
     public boolean onMenuItemClick(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.action_set_pass:
+                onResetPassClick();
+                return true;
             case R.id.action_change_pass:
                 if (!dialogShowed) {
                     dialogShowed = true;
@@ -255,8 +258,15 @@ public class XabberAccountActivity extends BaseLoginActivity
 
     private void setupMenu(boolean show) {
         Menu menu = toolbar.getMenu();
-        menu.findItem(R.id.action_quit).setVisible(show);
-        menu.findItem(R.id.action_sync).setVisible(show);
+        menu.setGroupVisible(R.id.group1, show);
+
+        XabberAccount account = XabberAccountManager.getInstance().getAccount();
+        if (account != null) {
+            if (account.hasPassword())
+                menu.findItem(R.id.action_set_pass).setVisible(false);
+            else menu.findItem(R.id.action_change_pass).setVisible(false);
+
+        }
     }
 
     @Override
@@ -367,7 +377,7 @@ public class XabberAccountActivity extends BaseLoginActivity
         btnResetPass.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                requestResetPass();
+                onResetPassClick();
                 dialog.dismiss();
             }
         });
@@ -462,38 +472,39 @@ public class XabberAccountActivity extends BaseLoginActivity
 
     /** RESET PASS */
 
-    private void requestResetPass() {
+    private void onResetPassClick() {
         String email = null;
         XabberAccount account = XabberAccountManager.getInstance().getAccount();
-        if (account != null) {
-            for (EmailDTO emailDTO : account.getEmails()) {
-                if (emailDTO.isVerified()) {
-                    email = emailDTO.getEmail();
-                    break;
-                }
-            }
-        } else return;
+        if (account == null) return;
 
-        if (email == null || email.isEmpty()) {
-            Toast.makeText(this, R.string.password_reset_need_email, Toast.LENGTH_SHORT).show();
-            return;
+        for (EmailDTO emailDTO : account.getEmails()) {
+            if (emailDTO.isVerified()) {
+                email = emailDTO.getEmail();
+                break;
+            }
         }
 
+        if (email == null || email.isEmpty())
+            Toast.makeText(this, R.string.password_reset_need_email, Toast.LENGTH_SHORT).show();
+        else if (checkInternetOrShowError()) requestResetPass(email);
+    }
+
+    private void requestResetPass(String email) {
         showProgress("");
         compositeSubscription.add(AuthManager.requestResetPassword(email)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<ResponseBody>() {
-                    @Override
-                    public void call(ResponseBody s) {
-                        handleSuccessResetPass();
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        handleErrorResetPass();
-                    }
-                }));
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(new Action1<ResponseBody>() {
+                @Override
+                public void call(ResponseBody s) {
+                    handleSuccessResetPass();
+                }
+            }, new Action1<Throwable>() {
+                @Override
+                public void call(Throwable throwable) {
+                    handleErrorResetPass();
+                }
+            }));
     }
 
     private void handleSuccessResetPass() {
