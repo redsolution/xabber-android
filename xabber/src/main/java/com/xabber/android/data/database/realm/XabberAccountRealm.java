@@ -26,6 +26,7 @@ public class XabberAccountRealm extends RealmObject {
     private String language;
     private String phone;
     private boolean needToVerifyPhone;
+    private boolean hasPassword;
     private RealmList<XMPPUserRealm> xmppUsers;
     private RealmList<EmailRealm> emails;
     private RealmList<SocialBindingRealm> socialBindings;
@@ -144,6 +145,14 @@ public class XabberAccountRealm extends RealmObject {
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public boolean hasPassword() {
+        return hasPassword;
+    }
+
+    public void setHasPassword(boolean hasPassword) {
+        this.hasPassword = hasPassword;
     }
 }
 

@@ -348,6 +348,7 @@ public class XabberAccountManager implements OnLoadListener {
         xabberAccountRealm.setRegisterDate(xabberAccount.getRegistrationDate());
         xabberAccountRealm.setNeedToVerifyPhone(xabberAccount.isNeedToVerifyPhone());
         xabberAccountRealm.setPhone(xabberAccount.getPhone());
+        xabberAccountRealm.setHasPassword(xabberAccount.hasPassword());
 
         RealmList<XMPPUserRealm> realmUsers = new RealmList<>();
         for (XMPPUserDTO user : xabberAccount.getXmppUsers()) {
@@ -444,7 +445,8 @@ public class XabberAccountManager implements OnLoadListener {
                 socials,
                 accountRealm.getToken(),
                 accountRealm.isNeedToVerifyPhone(),
-                accountRealm.getPhone()
+                accountRealm.getPhone(),
+                accountRealm.hasPassword()
         );
 
         return xabberAccount;

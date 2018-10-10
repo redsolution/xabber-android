@@ -26,11 +26,12 @@ public class XabberAccount {
     private String token;
     private String phone;
     private boolean needToVerifyPhone;
+    private boolean hasPassword;
 
     public XabberAccount(int id, String accountStatus, String username, String domain, String firstName,
                          String lastName, String registerDate, String language, List<XMPPUser> xmppUsers,
                          List<EmailDTO> emails, List<SocialBindingDTO> socialBindings, String token,
-                         boolean needToVerifyPhone, String phone) {
+                         boolean needToVerifyPhone, String phone, boolean hasPassword) {
         this.id = id;
         this.accountStatus = accountStatus;
         this.username = username;
@@ -45,6 +46,7 @@ public class XabberAccount {
         this.token = token;
         this.needToVerifyPhone = needToVerifyPhone;
         this.phone = phone;
+        this.hasPassword = hasPassword;
     }
 
     public String getAccountStatus() {
@@ -105,5 +107,9 @@ public class XabberAccount {
 
     public String getPhone() {
         return phone;
+    }
+
+    public boolean hasPassword() {
+        return hasPassword;
     }
 }
