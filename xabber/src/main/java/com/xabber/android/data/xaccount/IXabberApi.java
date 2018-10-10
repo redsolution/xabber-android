@@ -65,6 +65,12 @@ public interface IXabberApi {
     @HTTP(method = "DELETE", path = "fcm/subscription/", hasBody = true)
     Single<ResponseBody> unregisterFCMEndpoint(@Body AuthManager.Endpoint endpoint);
 
+    @POST("accounts/current/set_password/")
+    Single<ResponseBody> changePassword(@Header("Authorization") String token, @Body AuthManager.ChangePassFields fields);
+
+    @POST("accounts/password_reset_request/")
+    Single<ResponseBody> requestResetPassword(@Body AuthManager.ResetPassFields fields);
+
     /* Xabber API v2 */
 
     @POST("accounts/xmpp_code_request/")

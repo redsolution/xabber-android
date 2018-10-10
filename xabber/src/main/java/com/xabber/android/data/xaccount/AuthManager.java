@@ -315,6 +315,15 @@ public class AuthManager {
         return HttpApiManager.getXabberApi().unregisterFCMEndpoint(new Endpoint(endpoint));
     }
 
+    public static Single<ResponseBody> changePassword(String oldPass, String pass, String passConfirm) {
+        return HttpApiManager.getXabberApi().changePassword(getXabberTokenHeader(),
+                new ChangePassFields(oldPass, pass, passConfirm));
+    }
+
+    public static Single<ResponseBody> requestResetPassword(String email) {
+        return HttpApiManager.getXabberApi().requestResetPassword(new ResetPassFields(email, HttpApiManager.XABBER_RESET_PASS_URL));
+    }
+
     // support
 
     private static String getXabberTokenHeader() {
@@ -344,6 +353,28 @@ public class AuthManager {
     }
 
     // models
+
+    public static class ChangePassFields {
+        final String old_password;
+        final String password;
+        final String confirm_password;
+
+        public ChangePassFields(String oldPassword, String password, String confirmPassword) {
+            this.old_password = oldPassword;
+            this.password = password;
+            this.confirm_password = confirmPassword;
+        }
+    }
+
+    public static class ResetPassFields {
+        final String email;
+        final String password_reset_url;
+
+        public ResetPassFields(String email, String resetPassUrl) {
+            this.email = email;
+            this.password_reset_url = resetPassUrl;
+        }
+    }
 
     public static class Endpoint {
         final String endpoint_key;
