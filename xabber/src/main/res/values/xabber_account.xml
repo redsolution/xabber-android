@@ -235,4 +235,8 @@
 
     <string name="password_changed_success">Password changed</string>
     <string name="password_changed_fail">Password change failed</string>
+
+    <string name="password_reset_success">Request for reset password sent</string>
+    <string name="password_reset_fail">Request for reset password failed</string>
+    <string name="password_reset_need_email">For reset password need at least one confirmed email</string>
 </resources>

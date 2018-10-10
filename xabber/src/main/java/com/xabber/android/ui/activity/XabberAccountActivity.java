@@ -24,6 +24,7 @@ import com.xabber.android.R;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.NetworkManager;
 import com.xabber.android.data.xaccount.AuthManager;
+import com.xabber.android.data.xaccount.EmailDTO;
 import com.xabber.android.data.xaccount.XMPPAuthManager;
 import com.xabber.android.data.xaccount.XabberAccount;
 import com.xabber.android.data.xaccount.XabberAccountManager;
@@ -345,7 +346,7 @@ public class XabberAccountActivity extends BaseLoginActivity
         hideProgress();
     }
 
-    /** CHANGE PASS */
+    /** CHANGE\RESET PASS DIALOG */
 
     private void showChangePassDialog() {
         LayoutInflater inflater = getLayoutInflater();
@@ -366,6 +367,7 @@ public class XabberAccountActivity extends BaseLoginActivity
         btnResetPass.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                requestResetPass();
                 dialog.dismiss();
             }
         });
@@ -428,6 +430,8 @@ public class XabberAccountActivity extends BaseLoginActivity
         }
     }
 
+    /** CHANGE PASS */
+
     private void changePass(String oldPass, String pass, String confirmPass) {
         showProgress("");
         compositeSubscription.add(AuthManager.changePassword(oldPass, pass, confirmPass)
@@ -453,6 +457,52 @@ public class XabberAccountActivity extends BaseLoginActivity
 
     private void handleErrorChangePass() {
         Toast.makeText(this, R.string.password_changed_fail, Toast.LENGTH_SHORT).show();
+        hideProgress();
+    }
+
+    /** RESET PASS */
+
+    private void requestResetPass() {
+        String email = null;
+        XabberAccount account = XabberAccountManager.getInstance().getAccount();
+        if (account != null) {
+            for (EmailDTO emailDTO : account.getEmails()) {
+                if (emailDTO.isVerified()) {
+                    email = emailDTO.getEmail();
+                    break;
+                }
+            }
+        } else return;
+
+        if (email == null || email.isEmpty()) {
+            Toast.makeText(this, R.string.password_reset_need_email, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        showProgress("");
+        compositeSubscription.add(AuthManager.requestResetPassword(email)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<ResponseBody>() {
+                    @Override
+                    public void call(ResponseBody s) {
+                        handleSuccessResetPass();
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        handleErrorResetPass();
+                    }
+                }));
+    }
+
+    private void handleSuccessResetPass() {
+        Toast.makeText(this, R.string.password_reset_success, Toast.LENGTH_SHORT).show();
+        hideProgress();
+    }
+
+    private void handleErrorResetPass() {
+        Toast.makeText(this, R.string.password_reset_fail, Toast.LENGTH_SHORT).show();
         hideProgress();
     }
 }
