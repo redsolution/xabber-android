@@ -321,7 +321,7 @@ public class AuthManager {
     }
 
     public static Single<ResponseBody> requestResetPassword(String email) {
-        return HttpApiManager.getXabberApi().requestResetPassword(new ResetPassFields(email, HttpApiManager.XABBER_RESET_PASS_URL));
+        return HttpApiManager.getXabberApi().requestResetPassword(new ResetPassFields(email));
     }
 
     // support
@@ -368,11 +368,9 @@ public class AuthManager {
 
     public static class ResetPassFields {
         final String email;
-        final String password_reset_url;
 
-        public ResetPassFields(String email, String resetPassUrl) {
+        public ResetPassFields(String email) {
             this.email = email;
-            this.password_reset_url = resetPassUrl;
         }
     }
 
@@ -487,50 +485,6 @@ public class AuthManager {
 
         public String getApiJid() {
             return api_jid;
-        }
-    }
-
-    public static class CompleteRegister {
-        final String username;
-        final String password;
-        final String confirm_password;
-        final String first_name;
-        final String last_name;
-        final String host;
-        final String language;
-        final boolean create_token;
-
-        public CompleteRegister(String username, String password, String confirm_password,
-                                String first_name, String last_name, String host, String language,
-                                boolean create_token) {
-            this.username = username;
-            this.password = password;
-            this.confirm_password = confirm_password;
-            this.first_name = first_name;
-            this.last_name = last_name;
-            this.host = host;
-            this.language = language;
-            this.create_token = create_token;
-        }
-    }
-
-    public static class SetPhoneNumber {
-        final String action;
-        final String phone;
-
-        public SetPhoneNumber(String action, String phone) {
-            this.action = action;
-            this.phone = phone;
-        }
-    }
-
-    public static class ConfirmPhoneNumber {
-        final String action;
-        final String code;
-
-        public ConfirmPhoneNumber(String action, String code) {
-            this.action = action;
-            this.code = code;
         }
     }
 
