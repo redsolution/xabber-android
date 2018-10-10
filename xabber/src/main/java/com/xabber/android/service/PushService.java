@@ -18,6 +18,7 @@ public class PushService extends FirebaseMessagingService {
     private static final String FIELD_BODY = "body";
 
     private static final String ACTION_SETTINGS_UPDATED = "settings_updated";
+    private static final String ACTION_ACCOUNT_UPDATED = "account_updated";
     private static final String TARGET_TYPE_XACCOUNT = "xaccount";
     private static final String TARGET_TYPE_NODE = "node";
 
@@ -59,6 +60,9 @@ public class PushService extends FirebaseMessagingService {
                 switch (data.getAction()) {
                     case ACTION_SETTINGS_UPDATED:
                         XabberAccountManager.getInstance().updateAccountSettings();
+                        break;
+                    case ACTION_ACCOUNT_UPDATED:
+                        XabberAccountManager.getInstance().updateAccountInfo();
                         break;
                     default:
                         Log.d(PushService.class.getSimpleName(),

@@ -233,6 +233,10 @@ public class XabberAccountManager implements OnLoadListener {
         compositeSubscription.add(getAccountSubscription);
     }
 
+    public void updateAccountInfo() {
+        getAccountFromNet(account.getToken());
+    }
+
     public void updateAccountSettings() {
         List<XMPPAccountSettings> list = createSettingsList();
         if (list != null && list.size() > 0) {
