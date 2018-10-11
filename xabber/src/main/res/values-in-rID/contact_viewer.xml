@@ -17,12 +17,9 @@
   <string name="vcard_organization_unit">Unit organisasi</string>
   <string name="vcard_title">Profesi, bagian</string>
   <string name="vcard_role">Jabatan</string>
-  <string name="vcard_other">Informasi lain</string>
-  <string name="vcard_categories">Kategori</string>
-  <string name="vcard_decsription">Deskripsi</string>
+    <string name="vcard_decsription">Deskripsi</string>
   <string name="vcard_note">Catatan</string>
-  <string name="vcard_address">Alamat</string>
-  <string name="vcard_address_pobox">PO Box</string>
+    <string name="vcard_address_pobox">PO Box</string>
   <string name="vcard_address_extadr">Alamat pelengkap</string>
   <string name="vcard_address_street">Jalan</string>
   <string name="vcard_address_locality">Tempat</string>

@@ -17,12 +17,9 @@
   <string name="vcard_organization_unit">組織単位</string>
   <string name="vcard_title">肩書, 役職</string>
   <string name="vcard_role">役割</string>
-  <string name="vcard_other">その他の情報</string>
-  <string name="vcard_categories">カテゴリー</string>
-  <string name="vcard_decsription">説明</string>
+    <string name="vcard_decsription">説明</string>
   <string name="vcard_note">注釈</string>
-  <string name="vcard_address">住所</string>
-  <string name="vcard_address_pobox">私書箱</string>
+    <string name="vcard_address_pobox">私書箱</string>
   <string name="vcard_address_extadr">追加の住所</string>
   <string name="vcard_address_street">番地</string>
   <string name="vcard_address_locality">市区町村</string>

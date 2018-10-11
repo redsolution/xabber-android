@@ -11,8 +11,7 @@
   <string name="contacts_order_status">Ըստ կարգավիճակի</string>
   <string name="interface_theme_dark">Մուգ</string>
   <string name="interface_theme_light">Բաց</string>
-  <string name="interface_theme_normal">Լռելյայն</string>
-  <string name="interface_smiles">Հուզապատկերներ</string>
+    <string name="interface_smiles">Հուզապատկերներ</string>
   <string name="interface_smiles_android">Անդրոիդ հուզապատկերներ</string>
   <string name="preference_debug">Վրիպազերծման կարգավորումներ\nԿարգավորումներ, որ կօգնեն ծրագրավորողներին բարելավել Քսաբբերը</string>
   <string name="preference_editor">Կարգավորումներ</string>

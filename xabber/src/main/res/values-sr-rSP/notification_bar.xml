@@ -34,10 +34,7 @@
   <!-- Used for plural form in russian. -->
   <string name="connection_state_waiting_5">%1$d од %2$d %3$s чекају на повезивање</string>
   <string name="connection_state_offline">%1$d %2$s ван везе</string>
-  <string name="archive_available_request_message">Желите ли да складиштите историјат порука на серверу?\nОво омогућује Ксаберу да учита историјат порука са свих уређаја који користе овај налог.\nОва функција ће повући нешто више података са интернета и лагано смањити брзину везе.\nУПОЗОРЕЊЕ: Читав ваш локални историјат ће бити уклоњен.</string>
-  <string name="archive_available_request_title">Омогућити архивисање порука?</string>
-  <string name="INVALID_CERTIFICATE">Неисправан сертификат</string>
-  <string name="muc_invite_message">Желите ли да се прикључите групном ћаскању?</string>
+    <string name="muc_invite_message">Желите ли да се прикључите групном ћаскању?</string>
   <string name="otr_verification_in_progress">Кликните овде за прекид.</string>
   <string name="PASSWORD_REQUIRED">Потребна је лозинка</string>
   <string name="pay_attention">Обратите пажњу</string>

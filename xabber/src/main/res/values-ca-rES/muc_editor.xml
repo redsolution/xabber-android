@@ -20,12 +20,10 @@
   <string name="muc_invite_confirm">%2$s t\'ha convidat a unir-te a la conferència %3$s. Vols unir-te amb el compte %1$s?</string>
   <string name="muc_invite_confirm_reason">%2$s t\'ha convidat a unir-te a la conferència %3$s: %4$s. Vols unir-te amb el compte %1$s?</string>
   <string name="muc_leave">Abandonar la conferència</string>
-  <string name="muc_save">Desar la conferència</string>
-  <string name="muc_choose_conference">Triar conferència</string>
+    <string name="muc_choose_conference">Triar conferència</string>
   <string name="muc_next">Següent</string>
   <string name="muc_get_hosted_conferences">Obtenir conferències organitzades</string>
   <string name="muc_error_getting_conferences">Error en obtenir conferències</string>
   <string name="muc_type_conference_name">Escriu el nom de la conferència</string>
-  <string name="contact_is_blocked">El contacte està bloquejat!</string>
-  <string name="conference_invitation">Invitació a una conferència</string>
+    <string name="conference_invitation">Invitació a una conferència</string>
 </resources>

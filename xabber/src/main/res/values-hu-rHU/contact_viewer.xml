@@ -17,12 +17,9 @@
   <string name="vcard_organization_unit">Szervezeti egység</string>
   <string name="vcard_title">Munkakör</string>
   <string name="vcard_role">Beosztás</string>
-  <string name="vcard_other">Egyéb információ</string>
-  <string name="vcard_categories">Kategóriák</string>
-  <string name="vcard_decsription">Leírás</string>
+    <string name="vcard_decsription">Leírás</string>
   <string name="vcard_note">Jegyzet</string>
-  <string name="vcard_address">Cím</string>
-  <string name="vcard_address_pobox">Postafiók</string>
+    <string name="vcard_address_pobox">Postafiók</string>
   <string name="vcard_address_extadr">Bővebb cím</string>
   <string name="vcard_address_street">Utca</string>
   <string name="vcard_address_locality">Helység</string>

@@ -17,10 +17,6 @@
   <string name="processing_image">Đang xử lý ảnh...</string>
   <string name="error_during_crop">Lỗi khi cắt ảnh</string>
   <string name="error_during_image_processing">Lỗi khi xử lý ảnh</string>
-  <string name="account_settings">Cài đặt tài khoản</string>
-  <string name="account_user_info">Thông tin tài khoản</string>
-  <string name="conference_private_chat_invitation">%1$s từ %2$s muốn bắt đầu chat riêng tư với bạn</string>
+    <string name="conference_private_chat_invitation">%1$s từ %2$s muốn bắt đầu chat riêng tư với bạn</string>
   <string name="accept_muc_private_chat">Chấp nhận</string>
-  <string name="block_muc_private_chat">Chặn</string>
-  <string name="no_permission_camera">Không trao quyền sử dụng camera</string>
 </resources>

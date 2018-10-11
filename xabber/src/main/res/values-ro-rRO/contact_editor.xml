@@ -17,12 +17,8 @@
   <string name="processing_image">Procesare imagine&#8230;</string>
   <string name="error_during_crop">Eroare decupare imagine</string>
   <string name="error_during_image_processing">Eroare în timpul procesării</string>
-  <string name="account_settings">Setări cont</string>
-  <string name="account_user_info">Informații cont</string>
-  <string name="account_server_info">Informații server</string>
+    <string name="account_server_info">Informații server</string>
   <string name="account_server_info_description">Afișare opțiuni server</string>
   <string name="conference_private_chat_invitation">%1$s de la %2$s dorește inițierea unei conversații private cu tine</string>
   <string name="accept_muc_private_chat">Acceptă</string>
-  <string name="block_muc_private_chat">Blochează</string>
-  <string name="no_permission_camera">Accesul la cameră nu a fost permis</string>
 </resources>

@@ -17,12 +17,9 @@
   <string name="vcard_organization_unit">Unitat d\'organització</string>
   <string name="vcard_title">Lloc de feina, funció</string>
   <string name="vcard_role">Rol</string>
-  <string name="vcard_other">Altres dades</string>
-  <string name="vcard_categories">Categories</string>
-  <string name="vcard_decsription">Descripció</string>
+    <string name="vcard_decsription">Descripció</string>
   <string name="vcard_note">Notes</string>
-  <string name="vcard_address">Adreça</string>
-  <string name="vcard_address_pobox">Codi Postal</string>
+    <string name="vcard_address_pobox">Codi Postal</string>
   <string name="vcard_address_extadr">Adreça completa</string>
   <string name="vcard_address_street">Carrer</string>
   <string name="vcard_address_locality">Localitat</string>

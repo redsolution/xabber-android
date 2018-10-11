@@ -34,10 +34,7 @@
   <!-- Used for plural form in russian. -->
   <string name="connection_state_waiting_5">-</string>
   <string name="connection_state_offline">%1$d %2$s offline</string>
-  <string name="archive_available_request_message">Doriți salvarea istoricului conversațiilor pe server?\nAceastă opțiune pemite accesarea istoricului de pe toate dispozitivele care utilizează contul, cu costul unui trafic de date adițional și reducerea vitezei conexiunii. ATENȚIE: Tot istoricul local va fi șters.</string>
-  <string name="archive_available_request_title">Activați arhivarea mesajelor?</string>
-  <string name="INVALID_CERTIFICATE">Certificat invalid</string>
-  <string name="muc_invite_message">Doriți să intrați în conferință?</string>
+    <string name="muc_invite_message">Doriți să intrați în conferință?</string>
   <string name="otr_verification_in_progress">Click aici pentru anulare.</string>
   <string name="PASSWORD_REQUIRED">Parolă necesară</string>
   <string name="pay_attention">Atenție</string>

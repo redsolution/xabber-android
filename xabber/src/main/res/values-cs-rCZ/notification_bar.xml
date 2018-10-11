@@ -34,10 +34,7 @@
   <!-- Used for plural form in russian. -->
   <string name="connection_state_waiting_5">-</string>
   <string name="connection_state_offline">%1$d %2$s offline</string>
-  <string name="archive_available_request_message">Přejete si uložit historii zpráv na serveru? \nXabber umožňuje načíst historii ze všech zařízení, které používají tento účet. \n Tato nastavení budou mít dopad na provoz a mírně sníží rychlost připojení. \nUpozornění: Všechna lokální historie bude odstraněna.</string>
-  <string name="archive_available_request_title">Povolit archiv zpráv?</string>
-  <string name="INVALID_CERTIFICATE">Neplatný certifikát</string>
-  <string name="muc_invite_message">Chcete vstoupit do konference?</string>
+    <string name="muc_invite_message">Chcete vstoupit do konference?</string>
   <string name="otr_verification_in_progress">Kliknutím zde zrušíte akci.</string>
   <string name="PASSWORD_REQUIRED">Heslo je vyžadováno</string>
   <string name="pay_attention">Věnujte pozornost</string>

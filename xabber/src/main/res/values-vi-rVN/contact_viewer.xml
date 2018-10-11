@@ -16,12 +16,9 @@
   <string name="vcard_organization_unit">Đơn vị trực thuộc</string>
   <string name="vcard_title">Chức vị</string>
   <string name="vcard_role">Phận sự</string>
-  <string name="vcard_other">Các thông tin khác</string>
-  <string name="vcard_categories">Danh mục</string>
-  <string name="vcard_decsription">Mô tả</string>
+    <string name="vcard_decsription">Mô tả</string>
   <string name="vcard_note">Ghi chú</string>
-  <string name="vcard_address">Địa chỉ</string>
-  <string name="vcard_address_pobox">Hộp thư</string>
+    <string name="vcard_address_pobox">Hộp thư</string>
   <string name="vcard_address_extadr">Địa chỉ mở rộng</string>
   <string name="vcard_address_street">Đường</string>
   <string name="vcard_address_locality">Phường/Xã/Thị trấn</string>

@@ -17,10 +17,7 @@
   <string name="message_quote">மேற்கோளிடு</string>
   <string name="message_remove">வரலாற்றிலிருந்து அகற்று</string>
   <string name="message_repeat">மீண்டும் அனுப்ப முயற்சிக்கவும்</string>
-  <string name="message_open_file">திற</string>
-  <string name="message_save_file">சேமிக்கவும்</string>
-  <string name="show_history">வரலாற்றைக் காண்பி</string>
-  <string name="chat_state_composing">தட்டச்சு செய்கிறார்&#8230;</string>
+    <string name="chat_state_composing">தட்டச்சு செய்கிறார்&#8230;</string>
   <string name="chat_state_paused">செய்தி எழுதியுள்ளார். அனுப்பவில்லை&#8230;</string>
   <string name="chat_typed">அனுப்பிய நேரம் %s</string>
   <string name="export_chat_send">காப்புப் பிரதி அல்லது ஏற்றுமதிக்குப் பின் அனுப்பவும்</string>
@@ -32,12 +29,8 @@
   <string name="otr_end">மறையாக்கத்தை நிறுத்து</string>
   <string name="otr_refresh">மறையாக்கத்தை மீண்டும் துவக்கு</string>
   <string name="otr_start">மறையாக்கத்தை தொடங்கு</string>
-  <string name="under_construction">வேலை நடந்து கொண்டு இருக்கிறது</string>
-  <string name="chat_events_show_text_global">பொதுவான அமைப்புகளைப் பயன்படுத்தவும்</string>
+    <string name="chat_events_show_text_global">பொதுவான அமைப்புகளைப் பயன்படுத்தவும்</string>
   <string name="chat_events_show_text_always">குறுஞ்செய்தி உரையைக் காட்டு</string>
   <string name="chat_events_show_text_never">குறுஞ்செய்தி உரையை மறை</string>
-  <string name="sending_file">கோப்பு %s அனுப்பப்படுகிறது</string>
-  <string name="error_sending_file">கோப்பு%s அனுப்புவதில் பிழை நேர்ந்துள்ளது</string>
-  <string name="could_not_save_file">கோப்பைச் சேமிக்க முடியவில்லை</string>
-  <string name="file_saved_successfully">கோப்பு வெற்றிகரமாகச் சேமிக்கப்பட்டது</string>
+    <string name="error_sending_file">கோப்பு%s அனுப்புவதில் பிழை நேர்ந்துள்ளது</string>
 </resources>

@@ -19,7 +19,8 @@ public class HttpApiManager {
 
     public static final String XABBER_FORGOT_PASS_URL = "https://www.xabber.com/account/auth/forgot-password/";
 
-    public static final String XABBER_API_URL = "https://api.xabber.com/api/v1/";
+    //public static final String XABBER_API_URL = "https://api.xabber.com/api/v1/";
+    public static final String XABBER_API_URL = "https://api.dev.xabber.com/api/v2/";
     private static final String XABBER_COM_URL = "https://www.xabber.com/";
     private static IXabberApi xabberApi;
     private static IXabberCom xabberCom;

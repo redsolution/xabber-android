@@ -17,12 +17,8 @@
   <string name="processing_image">Zpracovávam obrázok...</string>
   <string name="error_during_crop">Chyba počas orezávania obrázku</string>
   <string name="error_during_image_processing">Chyba počas spracovania obrazku</string>
-  <string name="account_settings">Nastavenia účtu</string>
-  <string name="account_user_info">Informácie o účte</string>
-  <string name="account_server_info">Informácie o serveri</string>
+    <string name="account_server_info">Informácie o serveri</string>
   <string name="account_server_info_description">Zoznam schopností servra</string>
   <string name="conference_private_chat_invitation">%1$s z %2$s chce s vami začať súkromný rozhovor</string>
   <string name="accept_muc_private_chat">Prijať</string>
-  <string name="block_muc_private_chat">Blokovať</string>
-  <string name="no_permission_camera">Nemáte povolenie pre prístup k fotoaparátu</string>
 </resources>

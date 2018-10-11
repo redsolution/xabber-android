@@ -17,12 +17,8 @@
   <string name="processing_image">Processant la imatge...</string>
   <string name="error_during_crop">Error durant l\'ajustament de la imatge</string>
   <string name="error_during_image_processing">Error durant el processament de la imatge</string>
-  <string name="account_settings">Configuració del compte</string>
-  <string name="account_user_info">Informació de compte</string>
-  <string name="account_server_info">Informació de servidor</string>
+    <string name="account_server_info">Informació de servidor</string>
   <string name="account_server_info_description">Llista de capacitats de servidor</string>
   <string name="conference_private_chat_invitation">%1$s de %2$s vol començar un xat privat amb tu</string>
   <string name="accept_muc_private_chat">D\'acord</string>
-  <string name="block_muc_private_chat">Bloquejar</string>
-  <string name="no_permission_camera">Sense permís d\'accés a la càmera</string>
 </resources>

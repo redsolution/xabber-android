@@ -114,10 +114,10 @@ public class RecentChatFragment extends Fragment implements Toolbar.OnMenuItemCl
 
     @Override
     public boolean onMenuItemClick(MenuItem item) {
-        if (item.getItemId() == R.id.action_close_chats) {
-            MessageManager.closeActiveChats();
-            updateChats();
-        }
+//        if (item.getItemId() == R.id.action_close_chats) {
+//            MessageManager.closeActiveChats();
+//            updateChats();
+//        }
 
         return false;
     }

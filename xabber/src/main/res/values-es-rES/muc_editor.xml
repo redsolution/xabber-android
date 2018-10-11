@@ -20,12 +20,10 @@
   <string name="muc_invite_confirm">%2$s te ha invitado a unirte a la sala %3$s. ¿Unirte con la cuenta %1$s?</string>
   <string name="muc_invite_confirm_reason">%2$s te ha invitado a unirte a la sala %3$s: %4$s. ¿Unirte con la cuenta %1$s?</string>
   <string name="muc_leave">Abandonar sala</string>
-  <string name="muc_save">Guardar sala de charla</string>
-  <string name="muc_choose_conference">Elegir sala de charla</string>
+    <string name="muc_choose_conference">Elegir sala de charla</string>
   <string name="muc_next">Siguiente</string>
   <string name="muc_get_hosted_conferences">Obtener salas de charla organizadas</string>
   <string name="muc_error_getting_conferences">Error al obtener la lista de salas de charla</string>
   <string name="muc_type_conference_name">Escribe el nombre de la sala de charla</string>
-  <string name="contact_is_blocked">¡El contacto está bloqueado!</string>
-  <string name="conference_invitation">Invitación a una sala</string>
+    <string name="conference_invitation">Invitación a una sala</string>
 </resources>

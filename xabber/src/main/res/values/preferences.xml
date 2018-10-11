@@ -84,8 +84,6 @@
     <string name="interface_smiles_default">@string/interface_smiles_android_value</string>
 
 <!-- preference_contacts -->
-    <string name="contacts_show_panel_key">contacts_show_panel</string>
-    <bool name="contacts_show_panel_default">true</bool>
 
     <string name="contacts_show_avatars_key">contacts_show_avatars</string>
     <bool name="contacts_show_avatars_default">true</bool>
@@ -101,12 +99,6 @@
 
     <string name="contacts_show_accounts_key">contacts_show_accounts</string>
     <bool name="contacts_show_accounts_default">true</bool>
-
-    <string name="contacts_show_active_chats_key">contacts_show_active_chats</string>
-    <bool name="contacts_show_active_chats_default">true</bool>
-
-    <string name="contacts_stay_active_chats_key">contacts_stay_active_chats</string>
-    <bool name="contacts_stay_active_chats_default">true</bool>
 
     <string name="contacts_show_empty_groups_key">contacts_show_empty_groups</string>
     <bool name="contacts_show_empty_groups_default">false</bool>
@@ -355,14 +347,6 @@
     <string name="connection_dns_resolver_type_dns_java_resolver_value">connection_dns_resolver_type_dns_java_resolver</string>
     <string name="connection_dns_resolver_type_mini_dns_resolver_value">connection_dns_resolver_type_mini_dns_resolver</string>
 
-    <string-array name="connection_dns_resolver_type_entries">
-        <item>@string/connection_dns_resolver_type_dns_java_resolver</item>
-        <item>@string/connection_dns_resolver_type_mini_dns_resolver</item>
-    </string-array>
-    <string-array name="connection_dns_resolver_type_entry_values">
-        <item>@string/connection_dns_resolver_type_dns_java_resolver_value</item>
-        <item>@string/connection_dns_resolver_type_mini_dns_resolver_value</item>
-    </string-array>
     <string name="connection_dns_resolver_type_default">@string/connection_dns_resolver_type_dns_java_resolver_value</string>
 
     <string name="connection_use_plain_text_auth_key">connection_use_plain_text_auth</string>
@@ -393,11 +377,9 @@
     <string name="preference_about_key">preference_about</string>
 
 <!-- preference_account -->
-    <string name="preference_accounts_key">preference_accounts</string>
 
     <string name="account_enabled_key">account_enabled</string>
     <string name="account_syncable_key">account_syncable</string>
-    <string name="account_oauth_key">account_oauth</string>
     <string name="account_username_key">account_username</string>
     <string name="account_store_password_key">account_store_password</string>
     <string name="account_password_key">account_password</string>
@@ -447,25 +429,9 @@
         <item>@string/orbot</item>
     </string-array>
 
-    <string-array name="account_archive_mode_entries">
-        <item>@string/account_archive_mode_server</item>
-        <item>@string/account_archive_mode_available</item>
-        <item>@string/account_archive_mode_local</item>
-        <item>@string/account_archive_mode_unread</item>
-        <item>@string/account_archive_mode_dont_store</item>
-    </string-array>
-    <string-array name="account_archive_mode_entryvalues">
-        <item>@string/account_archive_mode_server</item>
-        <item>@string/account_archive_mode_available</item>
-        <item>@string/account_archive_mode_local</item>
-        <item>@string/account_archive_mode_unread</item>
-        <item>@string/account_archive_mode_dont_store</item>
-    </string-array>
-
     <string name="account_archive_mode_default_value">local</string>
 
     <string name="account_clear_history_on_exit_key">account_clear_history_on_exit</string>
-    <bool name="account_clear_history_on_exit_default_value">false</bool>
 
     <string name="account_mam_default_behavior_key">account_mam_default_behavior</string>
 
@@ -499,8 +465,6 @@
     <string name="security_check_certificate_key">security_check_certificate</string>
     <bool name="security_check_certificate_default">true</bool>
 
-    <string name="security_clear_certificate_key">security_clear_certificate</string>
-
     <string name="security_otr_mode_key">security_otr_mode</string>
     <string name="security_otr_mode_disabled_value">disabled</string>
     <string name="security_otr_mode_manual_value">manual</string>
@@ -532,22 +496,6 @@
 
 <!-- preference_chat -->
     <string name="chat_notification_settings_key">chat_notification_settings_key</string>
-    <string-array name="chat_notification_settings_entries">
-        <item>@string/chat_notification_settings_enabled</item>
-        <item>@string/chat_notification_settings_bydefault</item>
-        <item>@string/chat_notification_settings_disabled</item>
-    </string-array>
-    <string name="chat_notification_settings_enabled">Enabled</string>
-    <string name="chat_notification_settings_bydefault">Default</string>
-    <string name="chat_notification_settings_disabled">Disabled</string>
-    <string-array name="chat_notification_settings_entryvalues">
-        <item>@string/chat_notification_settings_bydefault_value</item>
-        <item>@string/chat_notification_settings_enabled_value</item>
-        <item>@string/chat_notification_settings_disabled_value</item>
-    </string-array>
-    <string name="chat_notification_settings_bydefault_value">chat_notification_settings_bydefault_value</string>
-    <string name="chat_notification_settings_enabled_value">chat_notification_settings_enabled_value</string>
-    <string name="chat_notification_settings_disabled_value">chat_notification_settings_disabled_value</string>
 
     <string name="chat_save_history_key">chat_save_history</string>
     <string name="chat_events_sound_key">chat_events_sound</string>
@@ -577,9 +525,8 @@
     <bool name="chat_events_suppress_100_default">false</bool>
 
 <!-- preference_xabber -->
-    <string name="preference_xabber_key">preference_xabber</string>
 
-<!-- common values -->
+    <!-- common values -->
     <bool name="landscape">false</bool>
     <string name="status_mode_key">status_mode</string>
     <string name="status_text_key">status_text</string>
@@ -589,7 +536,6 @@
     <string name="translation_suggested_key">translation_suggested</string>
     <string name="dark_theme_suggested_key">dark_theme_suggested</string>
     <string name="battery_optimization_disable_suggested_key">battery_optimization_disable_suggested</string>
-    <string name="sync_account_type">@string/application_package</string>
     <string name="contact_viewer_mime_type">vnd.android.cursor.item/vnd.com.xabber.view</string>
     <string name="chat_showcase_suggested_key">chat_showcase_suggested_key</string>
     <string name="contact_showcase_suggested_key">contact_showcase_suggested_key</string>

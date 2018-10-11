@@ -5,34 +5,22 @@
     <string name="social_sign_in">Social Sign In</string>
 
     <string name="email_hint">Email</string>
-    <string name="username_hint">Xabber username or email</string>
-    <string name="pass_hint">Password</string>
     <string name="forgot_pass">FORGOT PASSWORD?</string>
-    <string name="agrees">I agree to receive occasional newsletter from Xabber team. We promise not to bother you too often with it.</string>
 
     <string name="sync_success">Synchronized</string>
     <string name="sync_fail">Synchronization failed</string>
     <string name="quit_success">Quit successful</string>
-    <string name="quit_fail">Quit failed</string>
     <string name="confirm_success">Email verified</string>
-    <string name="confirm_fail">Email verification failed</string>
     <string name="delete_success">Email deleted</string>
-    <string name="complete_success">Registration completed</string>
-    <string name="complete_fail">Registration failed</string>
     <string name="resend_success">Verification email sent</string>
-    <string name="resend_fail">Failed to send verification email</string>
     <string name="social_auth_fail">Social authentication failed</string>
     <string name="settings_delete_success">Settings deleted</string>
-    <string name="confirm_phone_success">Phone number successfully confirmed</string>
-    <string name="set_phone_success">Confirmation code sent</string>
 
     <string name="social_bind_success">Social network linked successfully</string>
     <string name="social_bind_fail">This account is already linked with different Xabber Account</string>
     <string name="social_unbind_success">Social network unlink successfully</string>
     <string name="social_unbind_fail">Social network unlink failed</string>
 
-    <string name="toast_email_already_confirm">Email already verified</string>
-    <string name="toast_not_authorized">You are not authorized</string>
     <string name="toast_no_internet">No internet connection</string>
 
     <string name="progress_message">Please wait</string>
@@ -41,14 +29,9 @@
     <string name="progress_title_login">Login</string>
     <string name="progress_title_signup">Registration</string>
     <string name="progress_title_confirm">Verification</string>
-    <string name="progress_title_complete">Registration completion</string>
     <string name="progress_title_resend">Resending email</string>
     <string name="progress_title_delete">Deleting email</string>
-    <string name="progress_title_set_phone">Setting phone number</string>
-    <string name="progress_title_confirm_phone">Confirming phone number</string>
     <string name="progress_title_delete_settings">Delete settings</string>
-    <string name="progress_title_request_xmpp_auth">Request XMPP auth-code</string>
-    <string name="progress_title_confirm_xmpp">Verify XMPP-account with code</string>
     <string name="progress_title_bind_social">Authenticating..</string>
     <string name="progress_title_unbind_social">Unlink social network</string>
     <string name="progress_title_account_list">Loading list of accounts..</string>
@@ -56,29 +39,17 @@
 
     <string name="hint_username">Username</string>
 
-    <string name="label_first_name">First name</string>
-    <string name="hint_first_name">John</string>
-    <string name="label_last_name">Last name</string>
-    <string name="hint_last_name">Doe</string>
     <string name="hint_old_pass">Old password</string>
     <string name="hint_pass">New password</string>
     <string name="hint_confirm_pass">Confirm password</string>
 
     <string name="label_xmpp_id">Existing XMPP ID</string>
 
-    <string name="hint_code">code</string>
-
-    <string name="default_host" translatable="false">\@xabber.org</string>
     <string name="host" translatable="false">\@</string>
 
     <string name="title_xabber_account">Xabber Account</string>
-    <string name="title_xmpp_account">XMPP Accounts</string>
     <string name="title_email_confirm">Verify email address</string>
-    <string name="title_email_confirmed">Email address verified</string>
-    <string name="title_phone_confirm">Confirm phone number</string>
-    <string name="title_phone_confirmed">Phone number confirmed</string>
     <string name="title_complete_register">Complete registration</string>
-    <string name="title_completed_register">Registration completed</string>
     <string name="title_start_messaging">Start messaging!</string>
     <string name="title_reordering_account">Reorder accounts</string>
     <string name="title_sync">Synchronized accounts</string>
@@ -97,20 +68,15 @@
     <string name="title_register_xabber_account">Sign Up</string>
 
     <string name="summary_xabber_account_in_login">Xabber account is required to use Xabber services and sync device settings.</string>
-    <string name="summary_username">Xabber username will also act as a free XMPP ID</string>
 
     <string name="button_connect">CONNECT</string>
     <string name="button_advanced_options">ADVANCED OPTIONS</string>
     <string name="button_hide_options">HIDE OPTIONS</string>
-    <string name="button_terms_of_service">TERMS OF SERVICE</string>
     <string name="button_quit">Quit</string>
     <string name="button_login">SIGN IN</string>
     <string name="button_registration">SIGN UP</string>
     <string name="button_resend_link">RESEND CODE</string>
-    <string name="button_complete_registration">REGISTER</string>
     <string name="button_confirm">verify</string>
-    <string name="button_cancel_registration">Cancel registration</string>
-    <string name="button_continue">continue</string>
     <string name="button_sync">Sync now</string>
     <string name="button_change_pass">Change password</string>
     <string name="button_reset_pass">Reset password</string>
@@ -125,11 +91,9 @@
     <string name="last_sync_date_never">never</string>
     <string name="sync_all">Synchronize all</string>
     <string name="sync_all_description">Settings of all accounts and account order will be automatically synced with other devices</string>
-    <string name="no_email">no email</string>
     <string name="no_username">no username</string>
     <string name="no_phone">no phone</string>
     <string name="empty_field">Empty field</string>
-    <string name="code_length_wrong">Code length must be 6</string>
     <string name="pass_too_short">Password must be longer than 4 characters</string>
     <string name="passwords_not_match">Passwords do not match</string>
     <string name="username_rules">Username may contain only lowercase latin letters, numbers and dots</string>
@@ -147,12 +111,6 @@
     <string name="delete_settings_summary">Synchronized settings for this XMPP account will be deleted from Xabber Account</string>
     <string name="logout_error">Logout failed</string>
 
-    <string name="sign_up_email_social">Sign up with Social account or Email</string>
-    <string name="signed_up_email">Signed up with Email</string>
-    <string name="signed_up_google">Signed up with Google+</string>
-    <string name="signed_up_facebook">Signed up with Facebook</string>
-    <string name="signed_up_github">Signed up with GitHub</string>
-    <string name="signed_up_twitter">Signed up with Twitter</string>
     <string name="signup_with_social">Your %1$s account will be linked to create account</string>
 
     <string name="auth_google_error">Authorization via Google failed</string>
@@ -165,11 +123,6 @@
     <string name="action_verify">VERIFY</string>
 
     <string name="reorder_summary">To synchronize accounts order between devices you need to enable "Synchronize all" option in Xabber Account settings</string>
-
-    <string name="cancel_registration_progress">Cancel registration</string>
-    <string name="cancel_registration_dialog_message">Xabber account greatly improves chat experience, but is not required to use Xabber. You may complete registration later.</string>
-    <string name="cancel_registration_dialog_cancel">Cancel</string>
-    <string name="cancel_registration_dialog_resume">Resume</string>
 
     <string name="delete_settings_button">Delete settings</string>
     <string name="account_sync_enable_summary">Enable synchronization</string>
@@ -205,14 +158,7 @@
 
     <string name="account_deleted">This Xabber Account was deleted</string>
 
-    <string name="login_without_xabber_account">basic xmpp experience</string>
-
     <string name="sync_not_allowed_summary">Accounts with non-standard settings (custom host, legacy SSL, proxy) can not be synchronized.</string>
-    <string name="github_alert">Authorization with GitHub is not available yet</string>
-
-    <string name="complete_register_summary">Do you want to add %1$s to your XMPP accounts?</string>
-    <string name="complete_register_add">Add</string>
-    <string name="complete_register_no">No</string>
 
     <string name="patreon_title" translatable="false">Support Xabber on Patreon!</string>
     <string name="patreon_pledged" translatable="false">$%1$d of $%2$d pledged per month.</string>

@@ -18,8 +18,7 @@
   <string name="message_remove">從歷史中移除</string>
   <string name="message_repeat">重試發送</string>
   <string name="save_history">儲存本地歷史\n在本地儲存訊息歷史</string>
-  <string name="show_history">顯示歷史</string>
-  <string name="action_attention_called">已發送提醒</string>
+    <string name="action_attention_called">已發送提醒</string>
   <string name="action_attention_requested">被請求提醒</string>
   <string name="action_ban">%1$s被禁言</string>
   <string name="action_ban_by">%1$s被%2$s禁言</string>
@@ -67,15 +66,12 @@
   <string name="otr_refresh">重新加密</string>
   <string name="otr_request">已被請求Off-the-Record私人對話，但已啟用沒有支援此功能的元件。在PC/Mac上請使用Pidgin，Gajim或Adium，在Android上請使用Xabber或ChatSecure。請參見http://otr.cypherpunks.ca/</string>
   <string name="otr_start">開始加密</string>
-  <string name="otr_unencrypted_message">訊息未被加密</string>
-  <string name="otr_unreadable_message">無法讀取您發送的加密訊息</string>
+    <string name="otr_unreadable_message">無法讀取您發送的加密訊息</string>
   <string name="otr_verification">OTR驗證</string>
   <string name="otr_verify_fingerprint">以指紋驗證</string>
   <string name="otr_verify_question">以問題驗證</string>
   <string name="otr_verify_secret">已共享的金鑰驗證</string>
-  <string name="under_construction">建設中</string>
-  <string name="under_construction_message">此螢幕正在建設中</string>
-  <string name="chat_events_show_text_global">使用全局設定</string>
+    <string name="chat_events_show_text_global">使用全局設定</string>
   <string name="chat_events_show_text_always">顯示訊息文字</string>
   <string name="chat_events_show_text_never">隱藏訊息文字</string>
 </resources>

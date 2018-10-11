@@ -17,12 +17,9 @@
   <string name="vcard_organization_unit">الوحدة التنظيمية</string>
   <string name="vcard_title">الوظيفة</string>
   <string name="vcard_role">الدور</string>
-  <string name="vcard_other">معلومات أخرى</string>
-  <string name="vcard_categories">فئات</string>
-  <string name="vcard_decsription">وصف</string>
+    <string name="vcard_decsription">وصف</string>
   <string name="vcard_note">ملاحظات</string>
-  <string name="vcard_address">العنوان</string>
-  <string name="vcard_address_pobox">صندوق بريد</string>
+    <string name="vcard_address_pobox">صندوق بريد</string>
   <string name="vcard_address_extadr">العنوان</string>
   <string name="vcard_address_street">شارع</string>
   <string name="vcard_address_locality">المجاورة</string>

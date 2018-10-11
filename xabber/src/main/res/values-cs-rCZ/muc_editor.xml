@@ -20,12 +20,10 @@
   <string name="muc_invite_confirm">%2$s vás zve do konference %3$s. Připojte se z účtu %1$s?</string>
   <string name="muc_invite_confirm_reason">%2$s vás zve do konference %3$s: %4$s. Připojte se z účtu %1$s?</string>
   <string name="muc_leave">Odejít z konference</string>
-  <string name="muc_save">Uložit konferenci</string>
-  <string name="muc_choose_conference">Vyberte konferenci</string>
+    <string name="muc_choose_conference">Vyberte konferenci</string>
   <string name="muc_next">Další</string>
   <string name="muc_get_hosted_conferences">Získat seznam konferencí</string>
   <string name="muc_error_getting_conferences">Chyba při získávání seznamu konferencí</string>
   <string name="muc_type_conference_name">Zadejte název konference</string>
-  <string name="contact_is_blocked">Kontakt je zablokován!</string>
-  <string name="conference_invitation">Pozvánka na konferenci</string>
+    <string name="conference_invitation">Pozvánka na konferenci</string>
 </resources>

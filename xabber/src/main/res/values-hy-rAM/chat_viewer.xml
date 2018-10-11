@@ -18,10 +18,7 @@
   <string name="message_copy">Պատճենել</string>
   <string name="message_quote">Մեջբերել</string>
   <string name="message_remove">Ջնջել պատմությունից</string>
-  <string name="message_open_file">Բացել</string>
-  <string name="message_save_file">Պահպանել</string>
-  <string name="show_history">Ցույց տալ պատմությունը</string>
-  <string name="action_attention_called">Ուշադրությունը գրավելու հրավերը ուղարկվեց</string>
+    <string name="action_attention_called">Ուշադրությունը գրավելու հրավերը ուղարկվեց</string>
   <string name="action_attention_requested">Ուշադրությունդ է հրավիրում</string>
   <string name="action_leave">%1$s դուրս եկավ չաթից</string>
   <string name="action_status_available">%1$s այժմ առցանց է</string>

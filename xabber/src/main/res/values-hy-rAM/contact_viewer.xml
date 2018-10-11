@@ -10,11 +10,9 @@
   <string name="vcard_birth_date">Ծննդյան ամսաթիվ</string>
   <string name="vcard_url">Կայք</string>
   <string name="vcard_organization">Կազմակերպություն</string>
-  <string name="vcard_other">Այլ տեղեկատվություն</string>
-  <string name="vcard_decsription">Նկարագրություն</string>
+    <string name="vcard_decsription">Նկարագրություն</string>
   <string name="vcard_note">Նշումներ</string>
-  <string name="vcard_address">Հասցե</string>
-  <string name="vcard_telephone">Հեռախոսահամար</string>
+    <string name="vcard_telephone">Հեռախոսահամար</string>
   <string name="vcard_email">Էլ.հասցե</string>
   <string name="saving">Պահպանվում է&#8230;</string>
   <string name="conference_name">Անվանում</string>

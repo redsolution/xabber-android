@@ -16,12 +16,9 @@
   <string name="vcard_organization_unit">Unitat organizacionala</string>
   <string name="vcard_title">Títol de l\'emplec, foncion</string>
   <string name="vcard_role">Ròtle</string>
-  <string name="vcard_other">Autras informacions</string>
-  <string name="vcard_categories">Categorias</string>
-  <string name="vcard_decsription">Descripcion</string>
+    <string name="vcard_decsription">Descripcion</string>
   <string name="vcard_note">Nòtas</string>
-  <string name="vcard_address">Adreça</string>
-  <string name="vcard_address_pobox">Bóstia postala</string>
+    <string name="vcard_address_pobox">Bóstia postala</string>
   <string name="vcard_address_extadr">Adreça espandida</string>
   <string name="vcard_address_street">Carrièra</string>
   <string name="vcard_address_locality">Vila</string>

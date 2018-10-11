@@ -17,12 +17,8 @@
   <string name="processing_image">Behandler bilde&#8230;</string>
   <string name="error_during_crop">Feil ved beskjæring av bilde</string>
   <string name="error_during_image_processing">Feil ved behandling av bilde</string>
-  <string name="account_settings">Kontoinnstillinger</string>
-  <string name="account_user_info">Kontoinformasjon</string>
-  <string name="account_server_info">Tjenerinfo</string>
+    <string name="account_server_info">Tjenerinfo</string>
   <string name="account_server_info_description">Liste over tjenerfunksjoner</string>
   <string name="conference_private_chat_invitation">%1$s fra %2$s ønsker å starte en private samtale med deg</string>
   <string name="accept_muc_private_chat">Godta</string>
-  <string name="block_muc_private_chat">Blokker</string>
-  <string name="no_permission_camera">Mangler tillatelse til å åpne kamera</string>
 </resources>

@@ -17,12 +17,9 @@
   <string name="vcard_organization_unit">Avdeling</string>
   <string name="vcard_title">Jobbtittel, funksjon</string>
   <string name="vcard_role">Rolle</string>
-  <string name="vcard_other">Annen informasjon</string>
-  <string name="vcard_categories">Kategorier</string>
-  <string name="vcard_decsription">Beskrivelse</string>
+    <string name="vcard_decsription">Beskrivelse</string>
   <string name="vcard_note">Notater</string>
-  <string name="vcard_address">Adresse</string>
-  <string name="vcard_address_pobox">Postboks</string>
+    <string name="vcard_address_pobox">Postboks</string>
   <string name="vcard_address_extadr">Utvidet adresse</string>
   <string name="vcard_address_street">Gate</string>
   <string name="vcard_address_locality">Lokale</string>

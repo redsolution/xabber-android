@@ -15,12 +15,9 @@
   <string name="vcard_organization">Empresa</string>
   <string name="vcard_title">Função</string>
   <string name="vcard_role">Cargo</string>
-  <string name="vcard_other">Outras informações</string>
-  <string name="vcard_categories">Categorias</string>
-  <string name="vcard_decsription">Descrição</string>
+    <string name="vcard_decsription">Descrição</string>
   <string name="vcard_note">Notas</string>
-  <string name="vcard_address">Endereço</string>
-  <string name="vcard_address_pobox">Caixa postal</string>
+    <string name="vcard_address_pobox">Caixa postal</string>
   <string name="vcard_address_extadr">Endereço completo</string>
   <string name="vcard_address_street">Rua</string>
   <string name="vcard_address_locality">Cidade</string>

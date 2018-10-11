@@ -17,12 +17,9 @@
   <string name="vcard_organization_unit">Οργανική μονάδα</string>
   <string name="vcard_title">Τίτλος εργασίας, θέση</string>
   <string name="vcard_role">Ρόλος</string>
-  <string name="vcard_other">Άλλες πληροφορίες</string>
-  <string name="vcard_categories">Κατηγορίες</string>
-  <string name="vcard_decsription">Περιγραφή</string>
+    <string name="vcard_decsription">Περιγραφή</string>
   <string name="vcard_note">Σημειώσεις</string>
-  <string name="vcard_address">Διεύθυνση</string>
-  <string name="vcard_address_pobox">Ταχυδρομική θυρίδα</string>
+    <string name="vcard_address_pobox">Ταχυδρομική θυρίδα</string>
   <string name="vcard_address_extadr">Εκτεταμένη διεύθυνση</string>
   <string name="vcard_address_street">Οδός</string>
   <string name="vcard_address_locality">Τοποθεσία</string>

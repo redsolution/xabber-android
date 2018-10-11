@@ -20,12 +20,10 @@
   <string name="muc_invite_confirm">%2$s ви кани да се присъедините към конференция %3$s. Присъединете се от профил %1$s?</string>
   <string name="muc_invite_confirm_reason">%2$s ви кани да се присъедините към конференция %3$s: %4$s. Присъединете се от профил %1$s?</string>
   <string name="muc_leave">Напусни конференцията</string>
-  <string name="muc_save">Запази конференцията</string>
-  <string name="muc_choose_conference">Избор на конференция</string>
+    <string name="muc_choose_conference">Избор на конференция</string>
   <string name="muc_next">Напред</string>
   <string name="muc_get_hosted_conferences">Получи списък с конференциите</string>
   <string name="muc_error_getting_conferences">Грешка при доставяне на конференциите</string>
   <string name="muc_type_conference_name">Име на конферентния разговор</string>
-  <string name="contact_is_blocked">Контактът е блокиран!</string>
-  <string name="conference_invitation">Покана за конферентен разговор</string>
+    <string name="conference_invitation">Покана за конферентен разговор</string>
 </resources>

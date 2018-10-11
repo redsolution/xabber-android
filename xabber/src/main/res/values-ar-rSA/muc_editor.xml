@@ -20,12 +20,10 @@
   <string name="muc_invite_confirm">%2$s يدعوك أن تنضم للاجتماع %3$s. هل تنضم من حساب %1$s؟</string>
   <string name="muc_invite_confirm_reason">%2$s يدعوك أن تنضم للاجتماع %3$s: %4$s. هل تنضم من حساب %1$s؟</string>
   <string name="muc_leave">ترك الاجتماع</string>
-  <string name="muc_save">حفظ الاجتماع</string>
-  <string name="muc_choose_conference">اختر الاجتماع</string>
+    <string name="muc_choose_conference">اختر الاجتماع</string>
   <string name="muc_next">التالى</string>
   <string name="muc_get_hosted_conferences">الحصول على الاجتماعات المستضافة</string>
   <string name="muc_error_getting_conferences">خطأ في الحصول على الاجتماعات</string>
   <string name="muc_type_conference_name">أدخل اسم الاجتماع</string>
-  <string name="contact_is_blocked">جهة الاتصال محظورة!</string>
-  <string name="conference_invitation">دعوة للاجتماع</string>
+    <string name="conference_invitation">دعوة للاجتماع</string>
 </resources>

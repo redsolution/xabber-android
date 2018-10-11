@@ -20,12 +20,10 @@
   <string name="muc_invite_confirm">%2$s mengundang Anda untuk bergabung dengan konferensi %3$s. Gabung dengan akun %1$s?</string>
   <string name="muc_invite_confirm_reason">%2$s mengundang Anda untuk bergabung dalam konferensi %3$s: %4$s. Gabung dengan akun %1$s?</string>
   <string name="muc_leave">Tinggalkan konferensi</string>
-  <string name="muc_save">Simpan konferensi</string>
-  <string name="muc_choose_conference">Pilih konferensi</string>
+    <string name="muc_choose_conference">Pilih konferensi</string>
   <string name="muc_next">Berikutnya</string>
   <string name="muc_get_hosted_conferences">Dapatkan konferensi dengan host</string>
   <string name="muc_error_getting_conferences">Gagal mendapatkan konferensi</string>
   <string name="muc_type_conference_name">Ketik nama konferensi</string>
-  <string name="contact_is_blocked">Kontak diblokir!</string>
-  <string name="conference_invitation">Undangan konferensi</string>
+    <string name="conference_invitation">Undangan konferensi</string>
 </resources>

@@ -17,12 +17,8 @@
   <string name="processing_image">Traitement de l\'image en cours...</string>
   <string name="error_during_crop">Erreur durant le redimensionnement de l\'image</string>
   <string name="error_during_image_processing">Erreur durant le traitement de l\'image</string>
-  <string name="account_settings">Paramètres du compte</string>
-  <string name="account_user_info">Détails du compte</string>
-  <string name="account_server_info">Informations serveur</string>
+    <string name="account_server_info">Informations serveur</string>
   <string name="account_server_info_description">Liste des fonctionnalités du serveur</string>
   <string name="conference_private_chat_invitation">%1$s de %2$s désire discuter en privé</string>
   <string name="accept_muc_private_chat">Accepter</string>
-  <string name="block_muc_private_chat">Bloquer</string>
-  <string name="no_permission_camera">Permission d\'accéder à la caméra refusée</string>
 </resources>
