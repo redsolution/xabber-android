@@ -443,7 +443,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
     @NonNull
     private Resourcepart generateResource() {
         try {
-            return Resourcepart.from(application.getString(R.string.account_resource_default) + "_" + StringUtils.randomString(8));
+            return Resourcepart.from(application.getString(R.string.account_resource_default) + "-" + StringUtils.randomString(8));
         } catch (XmppStringprepException e) {
             LogManager.exception(this, e);
             return Resourcepart.EMPTY;
