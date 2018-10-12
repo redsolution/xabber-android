@@ -541,6 +541,7 @@
             </intent-filter>
 
         </activity>
+        <activity android:name=".ui.activity.XAChangePassActivity" />
         <activity android:name=".ui.activity.PatreonAppealActivity"
             android:theme="@style/ThemeDark">
             <meta-data

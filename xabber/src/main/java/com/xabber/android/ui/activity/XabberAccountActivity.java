@@ -15,9 +15,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import com.xabber.android.R;
@@ -112,10 +110,7 @@ public class XabberAccountActivity extends BaseLoginActivity
                 onResetPassClick();
                 return true;
             case R.id.action_change_pass:
-                if (!dialogShowed) {
-                    dialogShowed = true;
-                    showChangePassDialog();
-                }
+                startActivity(XAChangePassActivity.createIntent(this));
                 return true;
             case R.id.action_quit:
                 if (!dialogShowed) {
@@ -359,120 +354,6 @@ public class XabberAccountActivity extends BaseLoginActivity
             Log.d(LOG_TAG, "Error while logout: " + throwable.toString());
             Toast.makeText(this, R.string.logout_error, Toast.LENGTH_LONG).show();
         }
-        hideProgress();
-    }
-
-    /** CHANGE\RESET PASS DIALOG */
-
-    private void showChangePassDialog() {
-        LayoutInflater inflater = getLayoutInflater();
-        View view = inflater.inflate(R.layout.dialog_change_pass, null);
-        final EditText edtOldPass = view.findViewById(R.id.edtOldPass);
-        final EditText edtPass = view.findViewById(R.id.edtPass);
-        final EditText edtConfirmPass = view.findViewById(R.id.edtConfirmPass);
-        Button btnOk = view.findViewById(R.id.btnOk);
-        Button btnResetPass = view.findViewById(R.id.btnResetPass);
-
-        btnOk.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onChangePassClick(edtOldPass, edtPass, edtConfirmPass);
-            }
-        });
-
-        btnResetPass.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onResetPassClick();
-                dialog.dismiss();
-            }
-        });
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(R.string.button_change_pass).setView(view);
-        dialog = builder.create();
-        dialog.show();
-        dialogShowed = false;
-    }
-
-    public void onChangePassClick(EditText edtOldPass, EditText edtPass, EditText edtConfirmPass) {
-        String oldPass = edtOldPass.getText().toString();
-        oldPass = oldPass.trim();
-
-        String pass = edtPass.getText().toString();
-        pass = pass.trim();
-
-        String confirmPass = edtConfirmPass.getText().toString();
-        confirmPass = confirmPass.trim();
-
-        if (oldPass.isEmpty()) {
-            edtOldPass.setError(getString(R.string.empty_field));
-            return;
-        }
-
-        if (oldPass.length() < 4) {
-            edtOldPass.setError(getString(R.string.pass_too_short));
-            return;
-        }
-
-        if (pass.isEmpty()) {
-            edtPass.setError(getString(R.string.empty_field));
-            return;
-        }
-
-        if (pass.length() < 4) {
-            edtPass.setError(getString(R.string.pass_too_short));
-            return;
-        }
-
-        if (confirmPass.isEmpty()) {
-            edtConfirmPass.setError(getString(R.string.empty_field));
-            return;
-        }
-
-        if (confirmPass.length() < 4) {
-            edtConfirmPass.setError(getString(R.string.pass_too_short));
-            return;
-        }
-
-        if (!pass.equals(confirmPass)) {
-            edtConfirmPass.setError(getString(R.string.passwords_not_match));
-            return;
-        }
-
-        if (checkInternetOrShowError()) {
-            changePass(oldPass, pass, confirmPass);
-            dialog.dismiss();
-        }
-    }
-
-    /** CHANGE PASS */
-
-    private void changePass(String oldPass, String pass, String confirmPass) {
-        showProgress("");
-        compositeSubscription.add(AuthManager.changePassword(oldPass, pass, confirmPass)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(new Action1<ResponseBody>() {
-                @Override
-                public void call(ResponseBody s) {
-                    handleSuccessChangePass();
-                }
-            }, new Action1<Throwable>() {
-                @Override
-                public void call(Throwable throwable) {
-                    handleErrorChangePass();
-                }
-            }));
-    }
-
-    private void handleSuccessChangePass() {
-        Toast.makeText(this, R.string.password_changed_success, Toast.LENGTH_SHORT).show();
-        hideProgress();
-    }
-
-    private void handleErrorChangePass() {
-        Toast.makeText(this, R.string.password_changed_fail, Toast.LENGTH_SHORT).show();
         hideProgress();
     }
 
