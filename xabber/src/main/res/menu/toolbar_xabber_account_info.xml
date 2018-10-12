@@ -3,6 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <group android:id="@+id/group1">
+
+        <item android:id="@+id/action_sync"
+            android:title="@string/button_sync"
+            app:showAsAction="never"
+            />
+
         <item android:id="@+id/action_set_pass"
             android:title="@string/button_set_pass"
             app:showAsAction="never"
@@ -13,8 +19,8 @@
             app:showAsAction="never"
             />
 
-        <item android:id="@+id/action_sync"
-            android:title="@string/button_sync"
+        <item android:id="@+id/action_reset_pass"
+            android:title="@string/button_reset_pass"
             app:showAsAction="never"
             />
 

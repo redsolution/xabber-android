@@ -108,6 +108,9 @@ public class XabberAccountActivity extends BaseLoginActivity
             case R.id.action_set_pass:
                 onResetPassClick();
                 return true;
+            case R.id.action_reset_pass:
+                onResetPassClick();
+                return true;
             case R.id.action_change_pass:
                 if (!dialogShowed) {
                     dialogShowed = true;
@@ -264,7 +267,10 @@ public class XabberAccountActivity extends BaseLoginActivity
         if (account != null) {
             if (account.hasPassword())
                 menu.findItem(R.id.action_set_pass).setVisible(false);
-            else menu.findItem(R.id.action_change_pass).setVisible(false);
+            else {
+                menu.findItem(R.id.action_change_pass).setVisible(false);
+                menu.findItem(R.id.action_reset_pass).setVisible(false);
+            }
 
         }
     }
@@ -489,7 +495,7 @@ public class XabberAccountActivity extends BaseLoginActivity
         else if (checkInternetOrShowError()) requestResetPass(email);
     }
 
-    private void requestResetPass(String email) {
+    private void requestResetPass(final String email) {
         showProgress("");
         compositeSubscription.add(AuthManager.requestResetPassword(email)
             .subscribeOn(Schedulers.io())
@@ -497,7 +503,7 @@ public class XabberAccountActivity extends BaseLoginActivity
             .subscribe(new Action1<ResponseBody>() {
                 @Override
                 public void call(ResponseBody s) {
-                    handleSuccessResetPass();
+                    handleSuccessResetPass(email);
                 }
             }, new Action1<Throwable>() {
                 @Override
@@ -507,8 +513,8 @@ public class XabberAccountActivity extends BaseLoginActivity
             }));
     }
 
-    private void handleSuccessResetPass() {
-        Toast.makeText(this, R.string.password_reset_success, Toast.LENGTH_SHORT).show();
+    private void handleSuccessResetPass(String email) {
+        Toast.makeText(this, getString(R.string.password_reset_success, email), Toast.LENGTH_LONG).show();
         hideProgress();
     }
 
