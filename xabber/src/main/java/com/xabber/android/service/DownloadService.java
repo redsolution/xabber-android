@@ -8,24 +8,16 @@ import android.os.ResultReceiver;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.xabber.android.data.connection.CertificateManager;
 import com.xabber.android.data.database.MessageDatabaseManager;
 import com.xabber.android.data.database.messagerealm.Attachment;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.file.FileManager;
+import com.xabber.android.utils.HttpClientWithMTM;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
-import java.util.concurrent.TimeUnit;
 
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.X509TrustManager;
-
-import de.duenndns.ssl.MemorizingTrustManager;
 import io.realm.Realm;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -68,7 +60,7 @@ public class DownloadService extends IntentService {
         AccountJid accountJid = intent.getParcelableExtra(KEY_ACCOUNT_JID);
 
         // build http client
-        OkHttpClient client = createHttpClient(accountJid);
+        OkHttpClient client = HttpClientWithMTM.getClient(accountJid);
 
         // start download
         if (client != null) requestFileDownload(fileName, fileSize, url, client);
@@ -79,32 +71,6 @@ public class DownloadService extends IntentService {
     public void onDestroy() {
         super.onDestroy();
         needStop = true;
-    }
-
-    private static OkHttpClient createHttpClient(AccountJid accountJid) {
-        // create ssl verification
-        SSLSocketFactory sslSocketFactory = null;
-        MemorizingTrustManager mtm = CertificateManager.getInstance().getNewFileUploadManager(accountJid);
-
-        final SSLContext sslContext;
-        try {
-            sslContext = SSLContext.getInstance("SSL");
-            sslContext.init(null, new X509TrustManager[]{mtm}, new java.security.SecureRandom());
-            sslSocketFactory = sslContext.getSocketFactory();
-        } catch (NoSuchAlgorithmException | KeyManagementException e) {
-            return null;
-        }
-
-        // build http client
-        final OkHttpClient client = new OkHttpClient().newBuilder()
-                .sslSocketFactory(sslSocketFactory)
-                .hostnameVerifier(mtm.wrapHostnameVerifier(new org.apache.http.conn.ssl.StrictHostnameVerifier()))
-                .writeTimeout(5, TimeUnit.MINUTES)
-                .connectTimeout(5, TimeUnit.MINUTES)
-                .readTimeout(5, TimeUnit.MINUTES)
-                .build();
-
-        return client;
     }
 
     private void requestFileDownload(final String fileName, final long fileSize, String url, OkHttpClient client) {
