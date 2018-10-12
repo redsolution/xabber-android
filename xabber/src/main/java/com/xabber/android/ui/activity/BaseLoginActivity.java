@@ -413,7 +413,7 @@ public abstract class BaseLoginActivity extends ManagedActivity implements
     private void handleSuccessConfirm(XabberAccount response) {
         hideProgress();
         Toast.makeText(this, R.string.confirm_success, Toast.LENGTH_SHORT).show();
-        updateAccountInfo(response);
+        synchronize(false);
     }
 
     private void handleErrorConfirm(Throwable throwable) {
