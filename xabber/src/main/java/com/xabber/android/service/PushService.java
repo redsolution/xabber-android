@@ -56,7 +56,8 @@ public class PushService extends FirebaseMessagingService {
         if (xabberAccount != null && xabberAccount.getFullUsername().equals(target)) {
             XAccountPushData data = gson.fromJson(body, XAccountPushData.class);
 
-            if (data != null && xabberAccount.getFullUsername().equals(data.getUsername())) {
+            if (data != null && xabberAccount.getFullUsername().equals(data.getUsername())
+                    && !xabberAccount.getToken().equals(data.getFromToken())) {
                 switch (data.getAction()) {
                     case ACTION_SETTINGS_UPDATED:
                         XabberAccountManager.getInstance().updateAccountSettings();
