@@ -1,5 +1,6 @@
 package com.xabber.android.ui.fragment;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
@@ -100,20 +101,19 @@ public class XAccountLoginFragment extends Fragment implements View.OnClickListe
     }
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-
-        if (context instanceof OnSocialBindListener) listener = (OnSocialBindListener) context;
-        else throw new RuntimeException(context.toString()
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        if (activity instanceof OnSocialBindListener) listener = (OnSocialBindListener) activity;
+        else throw new RuntimeException(activity.toString()
                 + " must implement OnSocialBindListener");
 
-        if (context instanceof EmailClickListener) emailListener = (EmailClickListener) context;
-        else throw new RuntimeException(context.toString()
+        if (activity instanceof EmailClickListener) emailListener = (EmailClickListener) activity;
+        else throw new RuntimeException(activity.toString()
                 + " must implement EmailClickListener");
 
-        if (context instanceof ForgotPassClickListener)
-            forgotPassListener = (ForgotPassClickListener) context;
-        else throw new RuntimeException(context.toString()
+        if (activity instanceof ForgotPassClickListener)
+            forgotPassListener = (ForgotPassClickListener) activity;
+        else throw new RuntimeException(activity.toString()
                 + " must implement ForgotPassClickListener");
     }
 

@@ -2,6 +2,7 @@ package com.xabber.android.ui.fragment;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -145,7 +146,9 @@ public class OccupantListFragment extends Fragment implements AdapterView.OnItem
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        listener = (Listener) activity;
+        if (activity instanceof Listener) listener = (Listener) activity;
+        else throw new RuntimeException(activity.toString()
+                + " must implement OccupantListFragment.Listener");
     }
 
     @Override

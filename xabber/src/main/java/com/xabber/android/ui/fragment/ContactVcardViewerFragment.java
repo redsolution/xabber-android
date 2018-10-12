@@ -2,6 +2,7 @@ package com.xabber.android.ui.fragment;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -99,9 +100,12 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-
-        listener = (Listener) activity;
-        listener.registerVCardFragment(this);
+        if (activity instanceof Listener) {
+            listener = (Listener) activity;
+            listener.registerVCardFragment(this);
+        }
+        else throw new RuntimeException(activity.toString()
+                + " must implement ContactVcardViewerFragment.Listener");
     }
 
     @Override

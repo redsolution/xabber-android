@@ -2,6 +2,7 @@ package com.xabber.android.ui.fragment;
 
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.res.TypedArray;
 import android.os.Build;
@@ -78,7 +79,10 @@ public class ContactListDrawerFragment extends Fragment implements View.OnClickL
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        listener = (ContactListDrawerListener) activity;
+        if (activity instanceof ContactListDrawerListener)
+            listener = (ContactListDrawerListener) activity;
+        else throw new RuntimeException(activity.toString()
+                + " must implement ContactListDrawerFragment.ContactListDrawerListener");
     }
 
     @Override

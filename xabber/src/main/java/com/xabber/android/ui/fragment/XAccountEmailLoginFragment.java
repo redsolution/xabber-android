@@ -1,5 +1,6 @@
 package com.xabber.android.ui.fragment;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
@@ -61,15 +62,15 @@ public class XAccountEmailLoginFragment extends Fragment {
     }
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof Listener) listener = (Listener) context;
-        else throw new RuntimeException(context.toString()
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        if (activity instanceof Listener) listener = (Listener) activity;
+        else throw new RuntimeException(activity.toString()
                 + " must implement XAccountEmailLoginFragment.Listener");
 
-        if (context instanceof XAccountLoginFragment.ForgotPassClickListener)
-            forgotPassListener = (XAccountLoginFragment.ForgotPassClickListener) context;
-        else throw new RuntimeException(context.toString()
+        if (activity instanceof XAccountLoginFragment.ForgotPassClickListener)
+            forgotPassListener = (XAccountLoginFragment.ForgotPassClickListener) activity;
+        else throw new RuntimeException(activity.toString()
                 + " must implement ForgotPassClickListener");
     }
 

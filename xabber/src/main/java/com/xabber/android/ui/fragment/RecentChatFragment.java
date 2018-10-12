@@ -2,6 +2,7 @@ package com.xabber.android.ui.fragment;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -79,9 +80,12 @@ public class RecentChatFragment extends Fragment implements Toolbar.OnMenuItemCl
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-
-        listener = (Listener) activity;
-        listener.registerRecentChatFragment(this);
+        if (activity instanceof Listener) {
+            listener = (Listener) activity;
+            listener.registerRecentChatFragment(this);
+        }
+        else throw new RuntimeException(activity.toString()
+                + " must implement RecentChatFragment.Listener");
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.xabber.android.ui.fragment;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.Fragment;
@@ -70,11 +71,11 @@ public class XAccountSignUpFragment4 extends Fragment {
     }
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof Listener) listener = (Listener) context;
-        else throw new RuntimeException(context.toString()
-                    + " must implement XAccountSignUpFragment4.Listener");
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        if (activity instanceof Listener) listener = (Listener) activity;
+        else throw new RuntimeException(activity.toString()
+                + " must implement XAccountSignUpFragment4.Listener");
     }
 
     @Override

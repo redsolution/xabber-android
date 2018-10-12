@@ -1,5 +1,6 @@
 package com.xabber.android.ui.fragment;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.Context;
@@ -136,14 +137,14 @@ public class XAccountLinksFragment  extends Fragment implements EmailAdapter.Lis
     }
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof Listener) listener = (Listener) context;
-        else throw new RuntimeException(context.toString()
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        if (activity instanceof Listener) listener = (Listener) activity;
+        else throw new RuntimeException(activity.toString()
                 + " must implement XAccountLinksFragment.Listener");
 
-        if (context instanceof OnSocialBindListener) bindListener = (OnSocialBindListener) context;
-        else throw new RuntimeException(context.toString()
+        if (activity instanceof OnSocialBindListener) bindListener = (OnSocialBindListener) activity;
+        else throw new RuntimeException(activity.toString()
                 + " must implement OnSocialBindListener");
     }
 
