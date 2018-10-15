@@ -19,13 +19,13 @@
   <string name="application_state_roster">Подключено...</string>
   <string name="application_state_starting">Идет запуск приложения ...</string>
   <string name="application_state_waiting">Ожидание подключения...</string>
-    <string name="chat_viewer">Чат</string>
-    <string name="CONNECTION_FAILED">Ошибка подключения</string>
+  <string name="chat_viewer">Чат</string>
+  <string name="CONNECTION_FAILED">Ошибка подключения</string>
   <string name="contact_add">Добавить контакт</string>
   <string name="contact_delete">Удалить</string>
   <string name="contact_block">Заблокировать контакт</string>
   <string name="contact_delete_confirm">Вы действительно хотите удалить контакт %1$s из учетной записи %2$s?</string>
-    <string name="discard_subscription">Запретить подписку</string>
+  <string name="discard_subscription">Запретить подписку</string>
   <string name="archive_chat">Архивировать</string>
   <string name="unarchive_chat">Разархивировать</string>
   <string name="mute_chat">Выключить уведомления</string>
@@ -43,7 +43,7 @@
   <string name="action_send_contact">Отправить контакт</string>
   <string name="XMPP_EXCEPTION">Ошибка соединения</string>
   <string name="application_state_closing">Сохранение изменений...\nПриложение скоро закроется.</string>
-    <string name="group_room">Конференции</string>
+  <string name="group_room">Конференции</string>
   <string name="OTR_ERROR">Ошибка OTR</string>
   <string name="select_contact">Выберите нужный контакт</string>
   <string name="show_offline_always">Всегда отображать</string>
@@ -58,7 +58,7 @@
   <string name="block_list">Черный список</string>
   <string name="contact_blocked_successfully">Контакт успешно заблокирован</string>
   <string name="error_blocking_contact">Не удалось заблокировать контакт</string>
-    <string name="contacts_unblocked_successfully">Контакты успешно разблокированы</string>
+  <string name="contacts_unblocked_successfully">Контакты успешно разблокированы</string>
   <string name="error_unblocking_contacts">Не удалось разблокировать контакты</string>
   <string name="block_contact_confirm">Вы действительно хотите удалить контакт %1$s из учетной записи %2$s?</string>
   <string name="unblock_all_contacts_confirm">Вы действительно хотите разблокировать все контакты из аккаунта %1$s?</string>
@@ -70,10 +70,10 @@
   <string name="dark_theme_suggest_dialog_stay_on_light_side">Светлая</string>
   <string name="battery_optimization_disable_dialog_title">Оптимизация расхода аккумулятора</string>
   <string name="battery_optimization_disable_dialog_message">Ваше устройство оптимизирует расход батареи, что может привести к задержкам в доставке сообщений или их потере.\n\nСейчас вам предложат отключить оптимизацию.</string>
-    <string name="clear_log">Удалить старые файлы журнала</string>
+  <string name="clear_log">Удалить старые файлы журнала</string>
   <string name="open_log_file">Открыть</string>
   <string name="send_log_file">Отправить</string>
-    <string name="synchronize_bookmarks">Синхронизировать закладки</string>
+  <string name="synchronize_bookmarks">Синхронизировать закладки</string>
   <string name="remove_all_bookmarks">Удалить все</string>
   <string name="remove_selected_bookmarks">Удалить выбранные</string>
   <string name="remove_all_bookmarks_confirm">Вы действительно хотите удалить все закладки учётной записи %1$s?</string>
@@ -89,5 +89,12 @@
   <string name="all_chats">Все чаты</string>
   <string name="no_messages">Нет сообщений</string>
   <string name="show_all_chats">Показать все чаты</string>
+  <string name="category_title_contacts">Контакты</string>
   <string name="showcase_contact_list_text_1">Смахните влево или вправо чтобы поместить чат в архив</string>
+  <string name="last_seen_now">был в сети только что</string>
+  <string name="last_seen_minutes">был в сети %1$s минут назад</string>
+  <string name="last_seen_hours">был в сети час назад</string>
+  <string name="last_seen_today">был в сети в %1$s</string>
+  <string name="last_seen_yesterday">был в сети вчера в %1$s</string>
+  <string name="last_seen_date">был в сети %1$s</string>
 </resources>

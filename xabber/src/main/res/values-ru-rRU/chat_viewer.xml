@@ -21,8 +21,8 @@
   <string name="message_remove">Удалить из истории</string>
   <string name="message_repeat">Повторить отправку</string>
   <string name="message_otr_show_original">Показать сообщение</string>
-    <string name="save_history">Сохранять локальную историю сообщений\nХранить историю переписки на устройстве</string>
-    <string name="action_attention_called">Сообщение для привлечения внимания было отправлено</string>
+  <string name="save_history">Сохранять локальную историю сообщений\nХранить историю переписки на устройстве</string>
+  <string name="action_attention_called">Сообщение для привлечения внимания было отправлено</string>
   <string name="action_attention_requested">Вас окликнули</string>
   <string name="action_ban">%1$s был забанен</string>
   <string name="action_ban_by">%2$s забанил %1$s</string>
@@ -71,7 +71,7 @@
   <string name="otr_refresh">Заново начать шифрование</string>
   <string name="otr_request">Собеседник запросил OTR шифрование беседы, но у вас не установлен плагин, который его поддерживает. Используйте Pidgin или Adium для PC/Mac и Xabber или GibberBot для Android. Посетите http://otr.cypherpunks.ca/ для получения более полной информации.</string>
   <string name="otr_start">Начать шифрование</string>
-    <string name="otr_unreadable_message">Зашифрованное сообщение, отправленное Вами, невозможно прочитать</string>
+  <string name="otr_unreadable_message">Зашифрованное сообщение, отправленное Вами, невозможно прочитать</string>
   <string name="otr_not_decrypted_message">Сообщение не может быть расшифровано</string>
   <string name="otr_verification">Проверка личности OTR</string>
   <string name="otr_verify_fingerprint">Проверка отпечатком пальца</string>
@@ -84,14 +84,15 @@
   <string name="otr_verification_progress_title">Идёт подтверждение подлинности сеанса OTR</string>
   <string name="otr_verification_notify_button">ОТКРЫТЬ</string>
   <string name="otr_verification_notify_button_cancel">ОТМЕНИТЬ</string>
-    <string name="chat_events_show_text_global">Использовать глобальные настройки</string>
+  <string name="chat_events_show_text_global">Использовать глобальные настройки</string>
   <string name="chat_events_show_text_always">Отображать текст сообщения</string>
   <string name="chat_events_show_text_never">Скрывать текст сообщения</string>
-    <string name="error_sending_file">Ошибка при отправке файла %s</string>
-    <string name="could_not_get_path_to_file">Не удалось найти путь к файлу</string>
+  <string name="error_sending_file">Ошибка при отправке файла %s</string>
+  <string name="could_not_get_path_to_file">Не удалось найти путь к файлу</string>
   <string name="message_open_private_chat">Начать личный чат</string>
-    <string name="no_permission_to_read_files">Нет разрешения на чтение файлов</string>
+  <string name="no_permission_to_read_files">Нет разрешения на чтение файлов</string>
   <string name="no_permission_to_write_files">Нет разрешения на сохранение файлов</string>
+  <string name="no_permission_to_camera">Нет доступа к камере</string>
   <string name="error_description_title">Сообщение об ошибке:</string>
   <string name="message_status_sent">Отправлено</string>
   <string name="message_status_delivered">Доставлено</string>
@@ -99,6 +100,7 @@
   <string name="message_status_error">Ошибка</string>
   <string name="message_status_forwarded">Отправлено с другого устройства</string>
   <string name="message_status_not_sent">Отправляется</string>
+  <string name="too_many_files_at_once">Нельзя отправить больше 10 файлов за раз</string>
   <string name="toast_no_history">В истории больше нет сообщений</string>
   <string name="muc_role_moderator">Модератор</string>
   <string name="muc_role_participant">Участник</string>
@@ -110,4 +112,10 @@
   <string name="button_join_conference">Присоединиться</string>
   <string name="showcase_chat_text_1">Смахните вправо чтобы открыть список недавних чатов</string>
   <string name="showcase_chat_text_2">Смахните влево чтобы увидеть данные собеседника</string>
+  <string name="action_copy_link">Скопировать ссылку</string>
+  <string name="action_download">Скачать</string>
+  <string name="action_image_saved">Изображение сохранено</string>
+  <string name="toast_link_copied">Ссылка скопирована в буфер обмена</string>
+  <string name="toast_could_not_open_file">Не удалось открыть файл</string>
+  <string name="uploaded_files_count">Загрузка.. %s</string>
 </resources>

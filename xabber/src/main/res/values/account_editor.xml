@@ -75,8 +75,8 @@
     <string name="blocked_contacts_empty">No blocked contacts.</string>
 
     <plurals name="blocked_contacts_number">
-        <item quantity="one">%d contact blocked.</item>
-        <item quantity="other">%d contacts blocked.</item>
+        <item quantity="one">%d contact blocked</item>
+        <item quantity="other">%d contacts blocked</item>
     </plurals>
 
     <string name="account_chat_history">Chat history</string>
