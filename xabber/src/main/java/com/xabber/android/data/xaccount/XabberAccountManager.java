@@ -213,16 +213,16 @@ public class XabberAccountManager implements OnLoadListener {
         this.accountsSyncState = loadSyncStatesFromRealm();
 
         if (account != null) {
-            getAccountFromNet(account.getToken());
+            getAccountFromNet(account.getToken(), true);
         }
     }
 
-    private void getAccountFromNet(String token) {
+    private void getAccountFromNet(String token, final boolean needUpdateSettings) {
         Subscription getAccountSubscription = AuthManager.getAccount(token)
                 .subscribe(new Action1<XabberAccount>() {
                     @Override
                     public void call(XabberAccount xabberAccount) {
-                        handleSuccessGetAccount(xabberAccount);
+                        handleSuccessGetAccount(xabberAccount, needUpdateSettings);
                     }
                 }, new Action1<Throwable>() {
                     @Override
@@ -234,7 +234,7 @@ public class XabberAccountManager implements OnLoadListener {
     }
 
     public void updateAccountInfo() {
-        getAccountFromNet(account.getToken());
+        getAccountFromNet(account.getToken(), false);
     }
 
     public void updateAccountSettings() {
@@ -265,10 +265,10 @@ public class XabberAccountManager implements OnLoadListener {
         }
     }
 
-    private void handleSuccessGetAccount(@NonNull XabberAccount xabberAccount) {
+    private void handleSuccessGetAccount(@NonNull XabberAccount xabberAccount, boolean needUpdateSettings) {
         Log.d(LOG_TAG, "Xabber account loading from net: successfully");
         setAccount(xabberAccount);
-        updateAccountSettings();
+        if (needUpdateSettings) updateAccountSettings();
     }
 
     private void handleErrorGetAccount(Throwable throwable) {
