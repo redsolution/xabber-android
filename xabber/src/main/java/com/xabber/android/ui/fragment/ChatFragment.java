@@ -95,6 +95,8 @@ import com.xabber.android.ui.activity.QuestionActivity;
 import com.xabber.android.ui.adapter.ChatMessageAdapter;
 import com.xabber.android.ui.adapter.CustomMessageMenuAdapter;
 import com.xabber.android.ui.adapter.ResourceAdapter;
+import com.xabber.android.ui.adapter.chat.MessageVH;
+import com.xabber.android.ui.adapter.chat.MessagesAdapter;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.dialog.AttachDialog;
 import com.xabber.android.ui.dialog.ChatExportDialogFragment;
@@ -132,9 +134,10 @@ import io.realm.Sort;
 
 public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickListener,
         View.OnClickListener, Toolbar.OnMenuItemClickListener,
-        ChatMessageAdapter.Message.MessageClickListener, HttpUploadListener,
-        ChatMessageAdapter.Listener, AdapterView.OnItemClickListener, PopupWindow.OnDismissListener,
-        AttachDialog.Listener, OnAccountChangedListener {
+        MessageVH.MessageClickListener, HttpUploadListener,
+        MessagesAdapter.Listener, AdapterView.OnItemClickListener, PopupWindow.OnDismissListener,
+        AttachDialog.Listener, OnAccountChangedListener, ChatMessageAdapter.Listener,
+        ChatMessageAdapter.Message.MessageClickListener {
 
     public static final String ARGUMENT_ACCOUNT = "ARGUMENT_ACCOUNT";
     public static final String ARGUMENT_USER = "ARGUMENT_USER";
@@ -171,7 +174,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
     private TextView tvNotifyAction;
 
     private RecyclerView realmRecyclerView;
-    private ChatMessageAdapter chatMessageAdapter;
+    private MessagesAdapter chatMessageAdapter;
     private LinearLayoutManager layoutManager;
     private SwipeRefreshLayout swipeContainer;
     private View placeholder;
@@ -375,7 +378,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
             syncInfoResults = abstractChat.getSyncInfo();
         }
 
-        chatMessageAdapter = new ChatMessageAdapter(getActivity(), messageItems, abstractChat, this);
+        chatMessageAdapter = new MessagesAdapter(getActivity(), messageItems, abstractChat, this, this);
         realmRecyclerView.setAdapter(chatMessageAdapter);
 
         restoreInputState();

@@ -153,6 +153,7 @@ dependencies {
     implementation "com.android.support:support-v13:$supportVersion"
     implementation "com.android.support:customtabs:$supportVersion"
     implementation 'com.android.support:multidex:1.0.3'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
 
     // firebase
     compile 'com.google.firebase:firebase-messaging:11.4.0'
