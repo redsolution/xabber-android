@@ -234,7 +234,7 @@ public class XabberAccountActivity extends BaseLoginActivity
 
         fTrans = getFragmentManager().beginTransaction();
         fTrans.replace(R.id.container, fragmentInfo, FRAGMENT_INFO);
-        fTrans.commit();
+        fTrans.commitAllowingStateLoss();
 
         toolbar.setTitle(R.string.title_xabber_account);
         barPainter.setLiteGrey();
