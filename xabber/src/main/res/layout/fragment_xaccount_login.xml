@@ -14,22 +14,6 @@
         android:focusableInTouchMode="true"
         >
 
-        <!--<ImageView-->
-            <!--android:layout_width="100dp"-->
-            <!--android:layout_height="100dp"-->
-            <!--android:src="@drawable/ic_logo_circle"-->
-            <!--android:layout_gravity="center_horizontal"-->
-            <!--/>-->
-
-        <!--<TextView-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_marginTop="16dp"-->
-            <!--android:paddingLeft="4dp"-->
-            <!--android:textColor="@color/black_text_secondary"-->
-            <!--android:text="@string/label_xmpp_id"-->
-            <!--/>-->
-
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -49,15 +33,6 @@
                 />
 
         </android.support.design.widget.TextInputLayout>
-
-        <!--<TextView-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:paddingLeft="4dp"-->
-            <!--android:layout_marginTop="16dp"-->
-            <!--android:textColor="@color/black_text_secondary"-->
-            <!--android:text="@string/label_pass"-->
-            <!--/>-->
 
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
