@@ -104,12 +104,12 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener,
             messageNotDecrypted.setVisibility(View.GONE);
         }
 
-        String time = StringUtils.getSmartTimeText(context, new Date(messageItem.getTimestamp()));
+        String time = StringUtils.getTimeText(new Date(messageItem.getTimestamp()));
 
         Long delayTimestamp = messageItem.getDelayTimestamp();
         if (delayTimestamp != null) {
             String delay = context.getString(messageItem.isIncoming() ? R.string.chat_delay : R.string.chat_typed,
-                    StringUtils.getSmartTimeText(context, new Date(delayTimestamp)));
+                    StringUtils.getTimeText(new Date(delayTimestamp)));
             time += " (" + delay + ")";
         }
 

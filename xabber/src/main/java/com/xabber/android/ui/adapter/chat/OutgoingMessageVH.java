@@ -34,7 +34,7 @@ public class OutgoingMessageVH extends FileMessageVH {
     }
 
     public void bind(MessageItem messageItem, boolean isMUC, boolean showOriginalOTR,
-                     final Context context, boolean unread) {
+                     final Context context, boolean unread, AccountJid account) {
         super.bind(messageItem, isMUC, showOriginalOTR, context, unread);
 
         setStatusIcon(messageItem);
@@ -42,9 +42,10 @@ public class OutgoingMessageVH extends FileMessageVH {
         // setup PROGRESS
         progressBar.setVisibility(messageItem.isInProgress() ? View.VISIBLE : View.GONE);
 
-//        setUpMessageBalloonBackground(messageBalloon,
-//                context.getResources().getColorStateList(R.color.outgoing_message_color_state_dark),
-//                R.drawable.message_outgoing_states, account);
+        // setup BACKGROUND COLOR
+        setUpMessageBalloonBackground(messageBalloon,
+                context.getResources().getColorStateList(R.color.outgoing_message_color_state_dark),
+                R.drawable.message_outgoing_states, account);
 
         itemView.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
             @Override
@@ -86,44 +87,43 @@ public class OutgoingMessageVH extends FileMessageVH {
         statusIcon.setImageResource(messageIcon);
     }
 
-    // TODO: 18.10.18 удалить
-//    private void setUpMessageBalloonBackground(
-//            View messageBalloon, ColorStateList darkColorStateList,
-//            int lightBackgroundId, AccountJid account) {
-//
-//        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.dark) {
-//            final Drawable originalBackgroundDrawable = messageBalloon.getBackground();
-//
-//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-//                originalBackgroundDrawable.setTintList(darkColorStateList);
-//            } else {
-//                Drawable wrapDrawable = DrawableCompat.wrap(originalBackgroundDrawable);
-//                DrawableCompat.setTintList(wrapDrawable, darkColorStateList);
-//
-//                int pL = messageBalloon.getPaddingLeft();
-//                int pT = messageBalloon.getPaddingTop();
-//                int pR = messageBalloon.getPaddingRight();
-//                int pB = messageBalloon.getPaddingBottom();
-//
-//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-//                    messageBalloon.setBackground(wrapDrawable);
-//                } else {
-//                    messageBalloon.setBackgroundDrawable(wrapDrawable);
-//                }
-//
-//                messageBalloon.setPadding(pL, pT, pR, pB);
-//            }
-//        } else {
-//            int pL = messageBalloon.getPaddingLeft();
-//            int pT = messageBalloon.getPaddingTop();
-//            int pR = messageBalloon.getPaddingRight();
-//            int pB = messageBalloon.getPaddingBottom();
-//
-//            messageBalloon.setBackgroundResource(lightBackgroundId);
-//            messageBalloon.getBackground().setLevel(AccountManager.getInstance().getColorLevel(account));
-//            messageBalloon.setPadding(pL, pT, pR, pB);
-//        }
-//    }
+    private void setUpMessageBalloonBackground(
+            View messageBalloon, ColorStateList darkColorStateList,
+            int lightBackgroundId, AccountJid account) {
+
+        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.dark) {
+            final Drawable originalBackgroundDrawable = messageBalloon.getBackground();
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                originalBackgroundDrawable.setTintList(darkColorStateList);
+            } else {
+                Drawable wrapDrawable = DrawableCompat.wrap(originalBackgroundDrawable);
+                DrawableCompat.setTintList(wrapDrawable, darkColorStateList);
+
+                int pL = messageBalloon.getPaddingLeft();
+                int pT = messageBalloon.getPaddingTop();
+                int pR = messageBalloon.getPaddingRight();
+                int pB = messageBalloon.getPaddingBottom();
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                    messageBalloon.setBackground(wrapDrawable);
+                } else {
+                    messageBalloon.setBackgroundDrawable(wrapDrawable);
+                }
+
+                messageBalloon.setPadding(pL, pT, pR, pB);
+            }
+        } else {
+            int pL = messageBalloon.getPaddingLeft();
+            int pT = messageBalloon.getPaddingTop();
+            int pR = messageBalloon.getPaddingRight();
+            int pB = messageBalloon.getPaddingBottom();
+
+            messageBalloon.setBackgroundResource(lightBackgroundId);
+            messageBalloon.getBackground().setLevel(AccountManager.getInstance().getColorLevel(account));
+            messageBalloon.setPadding(pL, pT, pR, pB);
+        }
+    }
 
     private void subscribeForUploadProgress(final Context context) {
         subscriptions.add(HttpFileUploadManager.getInstance().subscribeForProgress()

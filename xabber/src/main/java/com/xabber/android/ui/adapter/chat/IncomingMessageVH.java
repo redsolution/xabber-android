@@ -32,14 +32,14 @@ public class IncomingMessageVH  extends FileMessageVH {
     }
 
     public void bind(MessageItem messageItem, boolean isMUC, boolean showOriginalOTR,
-                     Context context, String userName, boolean unread) {
+                     Context context, String userName, boolean unread, ColorStateList backgroundColors) {
         super.bind(messageItem, isMUC, showOriginalOTR, context, unread);
 
         // setup ARCHIVED icon
         statusIcon.setVisibility(messageItem.isReceivedFromMessageArchive() ? View.VISIBLE : View.GONE);
 
         // setup BACKGROUND COLOR
-        //setUpMessageBalloonBackground(messageBalloon, backgroundColors);
+        setUpMessageBalloonBackground(messageBalloon, backgroundColors);
 
         setUpAvatar(messageItem, isMUC, userName);
 
@@ -56,29 +56,28 @@ public class IncomingMessageVH  extends FileMessageVH {
         }
     }
 
-    // TODO: 18.10.18 удалить
-//    private void setUpMessageBalloonBackground(View view, ColorStateList colorList) {
-//        final Drawable originalBackgroundDrawable = view.getBackground();
-//
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-//            originalBackgroundDrawable.setTintList(colorList);
-//
-//        } else {
-//            Drawable wrapDrawable = DrawableCompat.wrap(originalBackgroundDrawable);
-//            DrawableCompat.setTintList(wrapDrawable, colorList);
-//
-//            int pL = view.getPaddingLeft();
-//            int pT = view.getPaddingTop();
-//            int pR = view.getPaddingRight();
-//            int pB = view.getPaddingBottom();
-//
-//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
-//                view.setBackground(wrapDrawable);
-//            else view.setBackgroundDrawable(wrapDrawable);
-//            view.setPadding(pL, pT, pR, pB);
-//        }
-//
-//    }
+    private void setUpMessageBalloonBackground(View view, ColorStateList colorList) {
+        final Drawable originalBackgroundDrawable = view.getBackground();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            originalBackgroundDrawable.setTintList(colorList);
+
+        } else {
+            Drawable wrapDrawable = DrawableCompat.wrap(originalBackgroundDrawable);
+            DrawableCompat.setTintList(wrapDrawable, colorList);
+
+            int pL = view.getPaddingLeft();
+            int pT = view.getPaddingTop();
+            int pR = view.getPaddingRight();
+            int pB = view.getPaddingBottom();
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
+                view.setBackground(wrapDrawable);
+            else view.setBackgroundDrawable(wrapDrawable);
+            view.setPadding(pL, pT, pR, pB);
+        }
+
+    }
 
     private void setUpAvatar(MessageItem messageItem, boolean isMUC, String userName) {
         if (SettingsManager.chatsShowAvatars() && !isMUC) {

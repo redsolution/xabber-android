@@ -130,6 +130,10 @@ public class StringUtils {
         }
     }
 
+    public static String getTimeText(Date timeStamp) {
+        return timeFormat.format(timeStamp);
+    }
+
     /**
      * @param timeStamp
      * @return String with time or with date and time depend on current time.
