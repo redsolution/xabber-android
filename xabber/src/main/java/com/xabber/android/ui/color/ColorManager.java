@@ -134,7 +134,7 @@ public class ColorManager {
         return unreadMessagesBackground[getAccountColorLevel(account)];
     }
 
-    private static int getAccountColorLevel(AccountJid account) {
+    public static int getAccountColorLevel(AccountJid account) {
         return AccountManager.getInstance().getColorLevel(account);
     }
 

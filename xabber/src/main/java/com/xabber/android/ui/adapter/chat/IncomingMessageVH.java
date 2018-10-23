@@ -1,11 +1,7 @@
 package com.xabber.android.ui.adapter.chat;
 
 import android.content.Context;
-import android.content.res.ColorStateList;
-import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.support.annotation.StyleRes;
-import android.support.v4.graphics.drawable.DrawableCompat;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -32,14 +28,14 @@ public class IncomingMessageVH  extends FileMessageVH {
     }
 
     public void bind(MessageItem messageItem, boolean isMUC, boolean showOriginalOTR,
-                     Context context, String userName, boolean unread, ColorStateList backgroundColors) {
+                     Context context, String userName, boolean unread, int accountColorLevel) {
         super.bind(messageItem, isMUC, showOriginalOTR, context, unread);
 
         // setup ARCHIVED icon
         statusIcon.setVisibility(messageItem.isReceivedFromMessageArchive() ? View.VISIBLE : View.GONE);
 
         // setup BACKGROUND COLOR
-        setUpMessageBalloonBackground(messageBalloon, backgroundColors);
+        messageBalloon.getBackground().setLevel(accountColorLevel);
 
         setUpAvatar(messageItem, isMUC, userName);
 
@@ -54,29 +50,6 @@ public class IncomingMessageVH  extends FileMessageVH {
             messageBalloon.setVisibility(View.VISIBLE);
             messageTime.setVisibility(View.VISIBLE);
         }
-    }
-
-    private void setUpMessageBalloonBackground(View view, ColorStateList colorList) {
-        final Drawable originalBackgroundDrawable = view.getBackground();
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            originalBackgroundDrawable.setTintList(colorList);
-
-        } else {
-            Drawable wrapDrawable = DrawableCompat.wrap(originalBackgroundDrawable);
-            DrawableCompat.setTintList(wrapDrawable, colorList);
-
-            int pL = view.getPaddingLeft();
-            int pT = view.getPaddingTop();
-            int pR = view.getPaddingRight();
-            int pB = view.getPaddingBottom();
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
-                view.setBackground(wrapDrawable);
-            else view.setBackgroundDrawable(wrapDrawable);
-            view.setPadding(pL, pT, pR, pB);
-        }
-
     }
 
     private void setUpAvatar(MessageItem messageItem, boolean isMUC, String userName) {

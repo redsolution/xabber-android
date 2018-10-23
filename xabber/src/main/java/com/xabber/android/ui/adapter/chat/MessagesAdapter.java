@@ -1,7 +1,6 @@
 package com.xabber.android.ui.adapter.chat;
 
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -40,7 +39,7 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
 
     // message font style
     private final int appearanceStyle = SettingsManager.chatsAppearanceStyle();
-    private ColorStateList incomingBackgroundColors;
+    private int accountColorLevel;
     private boolean isMUC;
     private Resourcepart mucNickname;
     private String userName;
@@ -69,11 +68,10 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
         user = chat.getUser();
         userName = RosterManager.getInstance().getName(account, user);
         prevItemCount = getItemCount();
+        accountColorLevel = ColorManager.getAccountColorLevel(account);
 
         isMUC = MUCManager.getInstance().hasRoom(account, user.getJid().asEntityBareJidIfPossible());
         if (isMUC) mucNickname = MUCManager.getInstance().getNickname(account, user.getJid().asEntityBareJidIfPossible());
-
-        incomingBackgroundColors = ColorManager.getInstance().getChatIncomingBalloonColorsStateList(account);
     }
 
     @Override
@@ -148,12 +146,11 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
 
             case VIEW_TYPE_INCOMING_MESSAGE:
                 ((IncomingMessageVH)holder).bind(messageItem, isMUC, showOriginalOTR, context,
-                        userName, unread, incomingBackgroundColors);
+                        userName, unread, accountColorLevel);
 
                 break;
             case VIEW_TYPE_OUTGOING_MESSAGE:
-                ((OutgoingMessageVH)holder).bind(messageItem, isMUC, showOriginalOTR, context,
-                        unread, account);
+                ((OutgoingMessageVH)holder).bind(messageItem, isMUC, showOriginalOTR, context, unread);
                 break;
         }
     }

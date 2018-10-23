@@ -6,7 +6,7 @@
     android:orientation="vertical"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:background="@drawable/message_background"
+    android:background="?attr/message_background"
     android:padding="0dp"
     android:elevation="1dp"
     android:clickable="true">

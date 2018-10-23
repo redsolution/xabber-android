@@ -1,20 +1,13 @@
 package com.xabber.android.ui.adapter.chat;
 
 import android.content.Context;
-import android.content.res.ColorStateList;
-import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.support.annotation.StyleRes;
-import android.support.v4.graphics.drawable.DrawableCompat;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.xabber.android.R;
-import com.xabber.android.data.SettingsManager;
-import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.database.messagerealm.MessageItem;
-import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 
 import rx.functions.Action1;
@@ -34,7 +27,7 @@ public class OutgoingMessageVH extends FileMessageVH {
     }
 
     public void bind(MessageItem messageItem, boolean isMUC, boolean showOriginalOTR,
-                     final Context context, boolean unread, AccountJid account) {
+                     final Context context, boolean unread) {
         super.bind(messageItem, isMUC, showOriginalOTR, context, unread);
 
         setStatusIcon(messageItem);
@@ -43,9 +36,7 @@ public class OutgoingMessageVH extends FileMessageVH {
         progressBar.setVisibility(messageItem.isInProgress() ? View.VISIBLE : View.GONE);
 
         // setup BACKGROUND COLOR
-        setUpMessageBalloonBackground(messageBalloon,
-                context.getResources().getColorStateList(R.color.outgoing_message_color_state_dark),
-                R.drawable.message_outgoing_states, account);
+        messageBalloon.getBackground().setLevel(17);
 
         itemView.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
             @Override
@@ -85,44 +76,6 @@ public class OutgoingMessageVH extends FileMessageVH {
             else statusIcon.setVisibility(View.GONE);
         }
         statusIcon.setImageResource(messageIcon);
-    }
-
-    private void setUpMessageBalloonBackground(
-            View messageBalloon, ColorStateList darkColorStateList,
-            int lightBackgroundId, AccountJid account) {
-
-        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.dark) {
-            final Drawable originalBackgroundDrawable = messageBalloon.getBackground();
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                originalBackgroundDrawable.setTintList(darkColorStateList);
-            } else {
-                Drawable wrapDrawable = DrawableCompat.wrap(originalBackgroundDrawable);
-                DrawableCompat.setTintList(wrapDrawable, darkColorStateList);
-
-                int pL = messageBalloon.getPaddingLeft();
-                int pT = messageBalloon.getPaddingTop();
-                int pR = messageBalloon.getPaddingRight();
-                int pB = messageBalloon.getPaddingBottom();
-
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                    messageBalloon.setBackground(wrapDrawable);
-                } else {
-                    messageBalloon.setBackgroundDrawable(wrapDrawable);
-                }
-
-                messageBalloon.setPadding(pL, pT, pR, pB);
-            }
-        } else {
-            int pL = messageBalloon.getPaddingLeft();
-            int pT = messageBalloon.getPaddingTop();
-            int pR = messageBalloon.getPaddingRight();
-            int pB = messageBalloon.getPaddingBottom();
-
-            messageBalloon.setBackgroundResource(lightBackgroundId);
-            messageBalloon.getBackground().setLevel(AccountManager.getInstance().getColorLevel(account));
-            messageBalloon.setPadding(pL, pT, pR, pB);
-        }
     }
 
     private void subscribeForUploadProgress(final Context context) {

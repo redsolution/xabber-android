@@ -58,5 +58,7 @@
         <attr name="half_transparent_background" format="reference" />
         <attr name="action_with_chat_background" format="reference|color" />
         <attr name="contact_list_contact_archived_background" format="reference|color" />
+
+        <attr name="message_background" format="reference" />
     </declare-styleable>
 </resources>
