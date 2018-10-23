@@ -1,11 +1,7 @@
 package com.xabber.android.ui.adapter.chat;
 
 import android.content.Context;
-import android.content.res.ColorStateList;
-import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.support.annotation.StyleRes;
-import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -15,14 +11,10 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.xabber.android.R;
-import com.xabber.android.data.SettingsManager;
-import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.database.messagerealm.Attachment;
 import com.xabber.android.data.database.messagerealm.MessageItem;
-import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.ui.adapter.ChatMessageAdapter;
 import com.xabber.android.ui.adapter.FilesAdapter;
 import com.xabber.android.utils.StringUtils;
 
@@ -31,7 +23,7 @@ import java.util.Date;
 public class MessageVH extends BasicMessageVH implements View.OnClickListener,
         FilesAdapter.FileListListener {
 
-    private static final String LOG_TAG = ChatMessageAdapter.Message.class.getSimpleName();
+    private static final String LOG_TAG = MessageVH.class.getSimpleName();
     protected MessageClickListener onClickListener;
 
     TextView messageTime;

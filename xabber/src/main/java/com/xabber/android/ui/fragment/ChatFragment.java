@@ -92,7 +92,6 @@ import com.xabber.android.ui.activity.ContactActivity;
 import com.xabber.android.ui.activity.ContactEditActivity;
 import com.xabber.android.ui.activity.ImageViewerActivity;
 import com.xabber.android.ui.activity.QuestionActivity;
-import com.xabber.android.ui.adapter.ChatMessageAdapter;
 import com.xabber.android.ui.adapter.CustomMessageMenuAdapter;
 import com.xabber.android.ui.adapter.ResourceAdapter;
 import com.xabber.android.ui.adapter.chat.MessageVH;
@@ -136,8 +135,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         View.OnClickListener, Toolbar.OnMenuItemClickListener,
         MessageVH.MessageClickListener, HttpUploadListener,
         MessagesAdapter.Listener, AdapterView.OnItemClickListener, PopupWindow.OnDismissListener,
-        AttachDialog.Listener, OnAccountChangedListener, ChatMessageAdapter.Listener,
-        ChatMessageAdapter.Message.MessageClickListener {
+        AttachDialog.Listener, OnAccountChangedListener {
 
     public static final String ARGUMENT_ACCOUNT = "ARGUMENT_ACCOUNT";
     public static final String ARGUMENT_USER = "ARGUMENT_USER";
@@ -1293,8 +1291,8 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
     public void onMessageClick(View caller, int position) {
         int itemViewType = chatMessageAdapter.getItemViewType(position);
 
-        if (itemViewType == ChatMessageAdapter.VIEW_TYPE_INCOMING_MESSAGE
-                || itemViewType == ChatMessageAdapter.VIEW_TYPE_OUTGOING_MESSAGE) {
+        if (itemViewType == MessagesAdapter.VIEW_TYPE_INCOMING_MESSAGE
+                || itemViewType == MessagesAdapter.VIEW_TYPE_OUTGOING_MESSAGE) {
 
             clickedMessageItem = chatMessageAdapter.getMessageItem(position);
             if (clickedMessageItem == null) {
