@@ -35,7 +35,7 @@
         android:src="#80CBC4"
         />
 
-    <include layout="@layout/item_msg"
+    <include layout="@layout/item_message"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="8dp"
