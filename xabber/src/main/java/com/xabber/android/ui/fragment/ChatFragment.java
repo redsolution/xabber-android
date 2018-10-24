@@ -94,6 +94,7 @@ import com.xabber.android.ui.activity.ImageViewerActivity;
 import com.xabber.android.ui.activity.QuestionActivity;
 import com.xabber.android.ui.adapter.CustomMessageMenuAdapter;
 import com.xabber.android.ui.adapter.ResourceAdapter;
+import com.xabber.android.ui.adapter.chat.FileMessageVH;
 import com.xabber.android.ui.adapter.chat.MessageVH;
 import com.xabber.android.ui.adapter.chat.MessagesAdapter;
 import com.xabber.android.ui.color.ColorManager;
@@ -133,7 +134,7 @@ import io.realm.Sort;
 
 public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickListener,
         View.OnClickListener, Toolbar.OnMenuItemClickListener,
-        MessageVH.MessageClickListener, HttpUploadListener,
+        MessageVH.MessageClickListener, FileMessageVH.FileListener, HttpUploadListener,
         MessagesAdapter.Listener, AdapterView.OnItemClickListener, PopupWindow.OnDismissListener,
         AttachDialog.Listener, OnAccountChangedListener {
 
@@ -376,7 +377,8 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
             syncInfoResults = abstractChat.getSyncInfo();
         }
 
-        chatMessageAdapter = new MessagesAdapter(getActivity(), messageItems, abstractChat, this, this);
+        chatMessageAdapter = new MessagesAdapter(getActivity(), messageItems, abstractChat,
+                this, this, this);
         realmRecyclerView.setAdapter(chatMessageAdapter);
 
         restoreInputState();

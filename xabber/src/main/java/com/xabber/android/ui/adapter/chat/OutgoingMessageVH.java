@@ -3,27 +3,15 @@ package com.xabber.android.ui.adapter.chat;
 import android.content.Context;
 import android.support.annotation.StyleRes;
 import android.view.View;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 
 import com.xabber.android.R;
 import com.xabber.android.data.database.messagerealm.MessageItem;
-import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
-
-import rx.functions.Action1;
-import rx.subscriptions.CompositeSubscription;
 
 public class OutgoingMessageVH extends FileMessageVH {
 
-    private CompositeSubscription subscriptions = new CompositeSubscription();
-
-    TextView messageFileInfo;
-    ProgressBar progressBar;
-
-    OutgoingMessageVH(View itemView, MessageClickListener listener, @StyleRes int appearance) {
-        super(itemView, listener, appearance);
-        progressBar = (ProgressBar) itemView.findViewById(R.id.message_progress_bar);
-        messageFileInfo = (TextView) itemView.findViewById(R.id.message_file_info);
+    OutgoingMessageVH(View itemView, MessageClickListener messageListener,
+                      FileListener fileListener, @StyleRes int appearance) {
+        super(itemView, messageListener, fileListener, appearance);
     }
 
     public void bind(MessageItem messageItem, boolean isMUC, boolean showOriginalOTR,
@@ -38,6 +26,7 @@ public class OutgoingMessageVH extends FileMessageVH {
         // setup BACKGROUND COLOR
         messageBalloon.getBackground().setLevel(17);
 
+        // subscribe for FILE UPLOAD PROGRESS
         itemView.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
             @Override
             public void onViewAttachedToWindow(View view) {
@@ -76,42 +65,5 @@ public class OutgoingMessageVH extends FileMessageVH {
             else statusIcon.setVisibility(View.GONE);
         }
         statusIcon.setImageResource(messageIcon);
-    }
-
-    private void subscribeForUploadProgress(final Context context) {
-        subscriptions.add(HttpFileUploadManager.getInstance().subscribeForProgress()
-            .doOnNext(new Action1<HttpFileUploadManager.ProgressData>() {
-                @Override
-                public void call(HttpFileUploadManager.ProgressData progressData) {
-                    setUpProgress(context, progressData);
-                }
-            }).subscribe());
-    }
-
-    private void unsubscribeAll() {
-        subscriptions.clear();
-    }
-
-    private void setUpProgress(Context context, HttpFileUploadManager.ProgressData progressData) {
-        if (progressData != null && messageId.equals(progressData.getMessageId())) {
-            if (progressData.isCompleted()) {
-                showProgress(false);
-            } else if (progressData.getError() != null) {
-                showProgress(false);
-                onClickListener.onDownloadError(progressData.getError());
-            } else {
-                if (uploadProgressBar != null) uploadProgressBar.setProgress(progressData.getProgress());
-                if (messageFileInfo != null)
-                    messageFileInfo.setText(context.getString(R.string.uploaded_files_count,
-                            progressData.getProgress() + "/" + progressData.getFileCount()));
-                showProgress(true);
-            }
-        } else showProgress(false);
-    }
-
-    private void showProgress(boolean show) {
-        if (uploadProgressBar != null) uploadProgressBar.setVisibility(show ? View.VISIBLE : View.GONE);
-        if (ivCancelUpload != null) ivCancelUpload.setVisibility(show ? View.VISIBLE : View.GONE);
-        if (messageFileInfo != null) messageFileInfo.setVisibility(show ? View.VISIBLE : View.GONE);
     }
 }

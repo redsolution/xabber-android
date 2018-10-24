@@ -21,10 +21,10 @@ public class IncomingMessageVH  extends FileMessageVH {
     public ImageView avatar;
     public ImageView avatarBackground;
 
-    IncomingMessageVH(View itemView, MessageClickListener listener, @StyleRes int appearance) {
-        super(itemView, listener, appearance);
-        avatar = (ImageView) itemView.findViewById(R.id.avatar);
-        avatarBackground = (ImageView) itemView.findViewById(R.id.avatarBackground);
+    IncomingMessageVH(View itemView, MessageClickListener messageListener, FileListener fileListener, @StyleRes int appearance) {
+        super(itemView, messageListener, fileListener, appearance);
+        avatar = itemView.findViewById(R.id.avatar);
+        avatarBackground = itemView.findViewById(R.id.avatarBackground);
     }
 
     public void bind(MessageItem messageItem, boolean isMUC, boolean showOriginalOTR,

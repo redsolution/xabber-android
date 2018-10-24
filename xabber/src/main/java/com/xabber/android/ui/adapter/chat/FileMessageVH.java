@@ -6,6 +6,11 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
@@ -13,22 +18,64 @@ import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.target.Target;
+import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.database.MessageDatabaseManager;
 import com.xabber.android.data.database.messagerealm.Attachment;
 import com.xabber.android.data.database.messagerealm.MessageItem;
-import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.file.FileManager;
+import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.ui.adapter.FilesAdapter;
 import com.xabber.android.ui.widget.ImageGridBuilder;
 
 import io.realm.Realm;
 import io.realm.RealmList;
+import rx.functions.Action1;
+import rx.subscriptions.CompositeSubscription;
 
-public class FileMessageVH extends MessageVH {
+public class FileMessageVH extends MessageVH
+        implements FilesAdapter.FileListListener, View.OnClickListener {
 
-    public FileMessageVH(View itemView, MessageClickListener onClickListener, int appearance) {
-        super(itemView, onClickListener, appearance);
+    private static final String LOG_TAG = FileMessageVH.class.getSimpleName();
+
+    private CompositeSubscription subscriptions = new CompositeSubscription();
+    private FileListener listener;
+
+    final TextView messageFileInfo;
+    final ProgressBar progressBar;
+    final ImageView messageImage;
+    final View fileLayout;
+    final RecyclerView rvFileList;
+    final FrameLayout imageGridContainer;
+    final ProgressBar uploadProgressBar;
+    final ImageButton ivCancelUpload;
+
+    public interface FileListener {
+        void onImageClick(int messagePosition, int attachmentPosition);
+        void onFileClick(int messagePosition, int attachmentPosition);
+        void onFileLongClick(Attachment attachment, View caller);
+        void onDownloadCancel();
+        void onUploadCancel();
+        void onDownloadError(String error);
+    }
+
+    public FileMessageVH(View itemView, MessageClickListener messageListener,
+            FileListener listener, int appearance) {
+        super(itemView, messageListener, appearance);
+        this.listener = listener;
+
+        messageImage = itemView.findViewById(R.id.message_image);
+        fileLayout = itemView.findViewById(R.id.fileLayout);
+        rvFileList = itemView.findViewById(R.id.rvFileList);
+        imageGridContainer = itemView.findViewById(R.id.imageGridContainer);
+        uploadProgressBar = itemView.findViewById(R.id.uploadProgressBar);
+        ivCancelUpload = itemView.findViewById(R.id.ivCancelUpload);
+        progressBar = itemView.findViewById(R.id.message_progress_bar);
+        messageFileInfo = itemView.findViewById(R.id.message_file_info);
+
+        if (ivCancelUpload != null) ivCancelUpload.setOnClickListener(this);
+        if (messageImage != null) messageImage.setOnClickListener(this);
     }
 
     public void bind(MessageItem messageItem, boolean isMUC, boolean showOriginalOTR,
@@ -188,5 +235,109 @@ public class FileMessageVH extends MessageVH {
                         });
             }
         }
+    }
+
+    /** File list Listener */
+
+    @Override
+    public void onFileClick(int attachmentPosition) {
+        int messagePosition = getAdapterPosition();
+        if (messagePosition == RecyclerView.NO_POSITION) {
+            LogManager.w(LOG_TAG, "onClick: no position");
+            return;
+        }
+        listener.onFileClick(messagePosition, attachmentPosition);
+    }
+
+    @Override
+    public void onFileLongClick(Attachment attachment, View caller) {
+        listener.onFileLongClick(attachment, caller);
+    }
+
+    @Override
+    public void onDownloadCancel() {
+        listener.onDownloadCancel();
+    }
+
+    @Override
+    public void onDownloadError(String error) {
+        listener.onDownloadError(error);
+    }
+
+    @Override
+    public void onClick(View v) {
+        int adapterPosition = getAdapterPosition();
+        if (adapterPosition == RecyclerView.NO_POSITION) {
+            LogManager.w(LOG_TAG, "onClick: no position");
+            return;
+        }
+
+        switch (v.getId()) {
+            case R.id.ivImage0:
+                listener.onImageClick(adapterPosition, 0);
+                break;
+            case R.id.ivImage1:
+                listener.onImageClick(adapterPosition, 1);
+                break;
+            case R.id.ivImage2:
+                listener.onImageClick(adapterPosition, 2);
+                break;
+            case R.id.ivImage3:
+                listener.onImageClick(adapterPosition, 3);
+                break;
+            case R.id.ivImage4:
+                listener.onImageClick(adapterPosition, 4);
+                break;
+            case R.id.ivImage5:
+                listener.onImageClick(adapterPosition, 5);
+                break;
+            case R.id.message_image:
+                listener.onImageClick(adapterPosition, 0);
+                break;
+            case R.id.ivCancelUpload:
+                listener.onUploadCancel();
+                break;
+            default:
+                super.onClick(v);
+        }
+    }
+
+    /** Upload progress subscription */
+
+    protected void subscribeForUploadProgress(final Context context) {
+        subscriptions.add(HttpFileUploadManager.getInstance().subscribeForProgress()
+                .doOnNext(new Action1<HttpFileUploadManager.ProgressData>() {
+                    @Override
+                    public void call(HttpFileUploadManager.ProgressData progressData) {
+                        setUpProgress(context, progressData);
+                    }
+                }).subscribe());
+    }
+
+    protected void unsubscribeAll() {
+        subscriptions.clear();
+    }
+
+    private void setUpProgress(Context context, HttpFileUploadManager.ProgressData progressData) {
+        if (progressData != null && messageId.equals(progressData.getMessageId())) {
+            if (progressData.isCompleted()) {
+                showProgress(false);
+            } else if (progressData.getError() != null) {
+                showProgress(false);
+                listener.onDownloadError(progressData.getError());
+            } else {
+                if (uploadProgressBar != null) uploadProgressBar.setProgress(progressData.getProgress());
+                if (messageFileInfo != null)
+                    messageFileInfo.setText(context.getString(R.string.uploaded_files_count,
+                            progressData.getProgress() + "/" + progressData.getFileCount()));
+                showProgress(true);
+            }
+        } else showProgress(false);
+    }
+
+    private void showProgress(boolean show) {
+        if (uploadProgressBar != null) uploadProgressBar.setVisibility(show ? View.VISIBLE : View.GONE);
+        if (ivCancelUpload != null) ivCancelUpload.setVisibility(show ? View.VISIBLE : View.GONE);
+        if (messageFileInfo != null) messageFileInfo.setVisibility(show ? View.VISIBLE : View.GONE);
     }
 }

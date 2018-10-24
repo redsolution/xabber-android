@@ -34,7 +34,8 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
     private static final int VIEW_TYPE_ACTION_MESSAGE = 4;
 
     private final Context context;
-    private final MessageVH.MessageClickListener messageClickListener;
+    private final MessageVH.MessageClickListener messageListener;
+    private final FileMessageVH.FileListener fileListener;
     private final Listener listener;
 
     // message font style
@@ -57,11 +58,13 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
 
     public MessagesAdapter(
             Context context, RealmResults<MessageItem> messageItems,
-            AbstractChat chat, MessageVH.MessageClickListener messageClickListener, Listener listener) {
+            AbstractChat chat, MessageVH.MessageClickListener messageListener,
+            FileMessageVH.FileListener fileListener, Listener listener) {
         super(context, messageItems, true);
 
         this.context = context;
-        this.messageClickListener = messageClickListener;
+        this.messageListener = messageListener;
+        this.fileListener = fileListener;
         this.listener = listener;
 
         account = chat.getAccount();
@@ -107,12 +110,12 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
             case VIEW_TYPE_INCOMING_MESSAGE:
                 return new IncomingMessageVH(LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.item_message_incoming, parent, false),
-                        messageClickListener, appearanceStyle);
+                        messageListener, fileListener, appearanceStyle);
 
             case VIEW_TYPE_OUTGOING_MESSAGE:
                 return new OutgoingMessageVH(LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.item_message_outgoing, parent, false),
-                        messageClickListener, appearanceStyle);
+                        messageListener, fileListener, appearanceStyle);
             default:
                 return null;
         }
