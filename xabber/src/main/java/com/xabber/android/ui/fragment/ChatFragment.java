@@ -1291,18 +1291,30 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
 
     @Override
     public void onMessageClick(View caller, int position) {
+        if (checkMessageClick(position)) showCustomMenu(caller);
+    }
+
+    @Override
+    public void onLongMessageClick(int position) {
+        if (checkMessageClick(position)) showMultiplySelect(position);
+    }
+
+    private boolean checkMessageClick(int position) {
         int itemViewType = chatMessageAdapter.getItemViewType(position);
 
         if (itemViewType == MessagesAdapter.VIEW_TYPE_INCOMING_MESSAGE
                 || itemViewType == MessagesAdapter.VIEW_TYPE_OUTGOING_MESSAGE) {
 
             clickedMessageItem = chatMessageAdapter.getMessageItem(position);
-            if (clickedMessageItem == null) {
-                LogManager.w(LOG_TAG, "onMessageClick null message item. Position: " + position);
-                return;
-            }
-            showCustomMenu(caller);
+            if (clickedMessageItem != null) {
+                return true;
+            } else LogManager.w(LOG_TAG, "onMessageClick null message item. Position: " + position);
         }
+        return false;
+    }
+
+    private void showMultiplySelect(int position) {
+        Toast.makeText(getActivity(), "long click on: " + position, Toast.LENGTH_SHORT).show();
     }
 
     public void showCustomMenu(View anchor) {

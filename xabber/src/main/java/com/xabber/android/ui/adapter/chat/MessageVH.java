@@ -15,7 +15,7 @@ import com.xabber.android.utils.StringUtils;
 
 import java.util.Date;
 
-public class MessageVH extends BasicMessageVH implements View.OnClickListener {
+public class MessageVH extends BasicMessageVH implements View.OnClickListener, View.OnLongClickListener {
 
     private static final String LOG_TAG = MessageVH.class.getSimpleName();
     private MessageClickListener listerner;
@@ -30,6 +30,7 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener {
 
     public interface MessageClickListener {
         void onMessageClick(View caller, int position);
+        void onLongMessageClick(int position);
     }
 
     public MessageVH(View itemView, MessageClickListener listerner, @StyleRes int appearance) {
@@ -44,6 +45,7 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener {
         ivEncrypted = itemView.findViewById(R.id.message_encrypted_icon);
 
         itemView.setOnClickListener(this);
+        itemView.setOnLongClickListener(this);
     }
 
     public void bind(MessageItem messageItem, boolean isMUC, boolean showOriginalOTR,
@@ -96,5 +98,16 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener {
             return;
         }
         listerner.onMessageClick(messageBalloon, adapterPosition);
+    }
+
+    @Override
+    public boolean onLongClick(View v) {
+        int adapterPosition = getAdapterPosition();
+        if (adapterPosition == RecyclerView.NO_POSITION) {
+            LogManager.w(LOG_TAG, "onClick: no position");
+            return false;
+        }
+        listerner.onLongMessageClick(adapterPosition);
+        return true;
     }
 }
