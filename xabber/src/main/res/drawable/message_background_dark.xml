@@ -16,7 +16,263 @@
             </item>
         </selector>
     </item>
-    <item android:minLevel="18" android:maxLevel="18">
+    <item android:minLevel="1" android:maxLevel="1">
+        <selector>
+            <item android:state_pressed="true">
+                <shape>
+                    <solid android:color="#321801"/>
+                    <corners android:radius="15dp" />
+                </shape>
+            </item>
+            <item >
+                <shape>
+                    <solid android:color="#351F0D"/>
+                    <corners android:radius="15dp" />
+                </shape>
+            </item>
+        </selector>
+    </item>
+    <item android:minLevel="2" android:maxLevel="2">
+        <selector>
+            <item android:state_pressed="true">
+                <shape>
+                    <solid android:color="#2B0909"/>
+                    <corners android:radius="15dp" />
+                </shape>
+            </item>
+            <item >
+                <shape>
+                    <solid android:color="#452525"/>
+                    <corners android:radius="15dp" />
+                </shape>
+            </item>
+        </selector>
+    </item>
+    <item android:minLevel="3" android:maxLevel="3">
+        <selector>
+            <item android:state_pressed="true">
+                <shape>
+                    <solid android:color="#1C2024"/>
+                    <corners android:radius="15dp" />
+                </shape>
+            </item>
+            <item >
+                <shape>
+                    <solid android:color="#414B56"/>
+                    <corners android:radius="15dp" />
+                </shape>
+            </item>
+        </selector>
+    </item>
+    <item android:minLevel="4" android:maxLevel="4">
+        <selector>
+            <item android:state_pressed="true">
+                <shape>
+                    <solid android:color="#0C0F27"/>
+                    <corners android:radius="15dp" />
+                </shape>
+            </item>
+            <item >
+                <shape>
+                    <solid android:color="#1F263F"/>
+                    <corners android:radius="15dp" />
+                </shape>
+            </item>
+        </selector>
+    </item>
+    <item android:minLevel="5" android:maxLevel="5">
+        <selector>
+            <item android:state_pressed="true">
+                <shape>
+                    <solid android:color="#242424"/>
+                    <corners android:radius="15dp" />
+                </shape>
+            </item>
+            <item >
+                <shape>
+                    <solid android:color="@color/blue_grey_800"/>
+                    <corners android:radius="15dp" />
+                </shape>
+            </item>
+        </selector>
+    </item>
+    <item android:minLevel="6" android:maxLevel="6">
+        <selector>
+            <item android:state_pressed="true">
+                <shape>
+                    <solid android:color="#172828"/>
+                    <corners android:radius="15dp" />
+                </shape>
+            </item>
+            <item >
+                <shape>
+                    <solid android:color="#284442"/>
+                    <corners android:radius="15dp" />
+                </shape>
+            </item>
+        </selector>
+    </item>
+    <item android:minLevel="7" android:maxLevel="7">
+        <selector>
+            <item android:state_pressed="true">
+                <shape>
+                    <solid android:color="#002420"/>
+                    <corners android:radius="15dp" />
+                </shape>
+            </item>
+            <item >
+                <shape>
+                    <solid android:color="#142E23"/>
+                    <corners android:radius="15dp" />
+                </shape>
+            </item>
+        </selector>
+    </item>
+    <item android:minLevel="8" android:maxLevel="8">
+        <selector>
+            <item android:state_pressed="true">
+                <shape>
+                    <solid android:color="#2e184b"/>
+                    <corners android:radius="15dp" />
+                </shape>
+            </item>
+            <item >
+                <shape>
+                    <solid android:color="#3a1963"/>
+                    <corners android:radius="15dp" />
+                </shape>
+            </item>
+        </selector>
+    </item>
+    <item android:minLevel="9" android:maxLevel="9">
+        <selector>
+            <item android:state_pressed="true">
+                <shape>
+                    <solid android:color="#1e1838"/>
+                    <corners android:radius="15dp" />
+                </shape>
+            </item>
+            <item >
+                <shape>
+                    <solid android:color="#1d134b"/>
+                    <corners android:radius="15dp" />
+                </shape>
+            </item>
+        </selector>
+    </item>
+    <item android:minLevel="10" android:maxLevel="10">
+        <selector>
+            <item android:state_pressed="true">
+                <shape>
+                    <solid android:color="#333015"/>
+                    <corners android:radius="15dp" />
+                </shape>
+            </item>
+            <item >
+                <shape>
+                    <solid android:color="#4e4600"/>
+                    <corners android:radius="15dp" />
+                </shape>
+            </item>
+        </selector>
+    </item>
+    <item android:minLevel="11" android:maxLevel="11">
+        <selector>
+            <item android:state_pressed="true">
+                <shape>
+                    <solid android:color="#300f20"/>
+                    <corners android:radius="15dp" />
+                </shape>
+            </item>
+            <item >
+                <shape>
+                    <solid android:color="#58002f"/>
+                    <corners android:radius="15dp" />
+                </shape>
+            </item>
+        </selector>
+    </item>
+    <item android:minLevel="12" android:maxLevel="12">
+        <selector>
+            <item android:state_pressed="true">
+                <shape>
+                    <solid android:color="#0f2435"/>
+                    <corners android:radius="15dp" />
+                </shape>
+            </item>
+            <item >
+                <shape>
+                    <solid android:color="#003660"/>
+                    <corners android:radius="15dp" />
+                </shape>
+            </item>
+        </selector>
+    </item>
+    <item android:minLevel="13" android:maxLevel="13">
+        <selector>
+            <item android:state_pressed="true">
+                <shape>
+                    <solid android:color="#304129"/>
+                    <corners android:radius="15dp" />
+                </shape>
+            </item>
+            <item >
+                <shape>
+                    <solid android:color="#1d5807"/>
+                    <corners android:radius="15dp" />
+                </shape>
+            </item>
+        </selector>
+    </item>
+    <item android:minLevel="14" android:maxLevel="14">
+        <selector>
+            <item android:state_pressed="true">
+                <shape>
+                    <solid android:color="#3d251e"/>
+                    <corners android:radius="15dp" />
+                </shape>
+            </item>
+            <item >
+                <shape>
+                    <solid android:color="#791c00"/>
+                    <corners android:radius="15dp" />
+                </shape>
+            </item>
+        </selector>
+    </item>
+    <item android:minLevel="15" android:maxLevel="15">
+        <selector>
+            <item android:state_pressed="true">
+                <shape>
+                    <solid android:color="#281b19"/>
+                    <corners android:radius="15dp" />
+                </shape>
+            </item>
+            <item >
+                <shape>
+                    <solid android:color="#261816"/>
+                    <corners android:radius="15dp" />
+                </shape>
+            </item>
+        </selector>
+    </item>
+    <item android:minLevel="16" android:maxLevel="16">
+        <selector>
+            <item android:state_pressed="true">
+                <shape>
+                    <solid android:color="#4b3320"/>
+                    <corners android:radius="15dp" />
+                </shape>
+            </item>
+            <item >
+                <shape>
+                    <solid android:color="#964100"/>
+                    <corners android:radius="15dp" />
+                </shape>
+            </item>
+        </selector>
+    </item>
+    <item android:minLevel="17" android:maxLevel="17">
         <selector>
             <item android:state_pressed="true">
                 <shape>
@@ -32,5 +288,4 @@
             </item>
         </selector>
     </item>
-
 </level-list>
