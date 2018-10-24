@@ -8,8 +8,7 @@
     android:layout_height="wrap_content"
     android:background="?attr/message_background"
     android:padding="0dp"
-    android:elevation="1dp"
-    android:clickable="true">
+    android:elevation="1dp">
 
     <LinearLayout
         android:id="@+id/message"
