@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import com.xabber.android.R;
@@ -25,7 +26,8 @@ import java.util.List;
 import io.realm.RealmRecyclerViewAdapter;
 import io.realm.RealmResults;
 
-public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, BasicMessageVH> {
+public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, BasicMessageVH>
+        implements MessageVH.MessageClickListener, MessageVH.MessageLongClickListener {
 
     private static final String LOG_TAG = MessagesAdapter.class.getSimpleName();
 
@@ -48,12 +50,15 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
     private UserJid user;
     private int prevItemCount;
     private int unreadCount = 0;
+    private boolean isCheckMode;
 
     private List<String> itemsNeedOriginalText = new ArrayList<>();
+    private List<String> checkedItemIds = new ArrayList<>();
 
     public interface Listener {
         void onMessageNumberChanged(int prevItemCount);
         void onMessagesUpdated();
+        void onChangeCheckedItems(int checkedItems);
     }
 
     public MessagesAdapter(
@@ -110,12 +115,12 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
             case VIEW_TYPE_INCOMING_MESSAGE:
                 return new IncomingMessageVH(LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.item_message_incoming, parent, false),
-                        messageListener, fileListener, appearanceStyle);
+                        this, this, fileListener, appearanceStyle);
 
             case VIEW_TYPE_OUTGOING_MESSAGE:
                 return new OutgoingMessageVH(LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.item_message_outgoing, parent, false),
-                        messageListener, fileListener, appearanceStyle);
+                        this, this, fileListener, appearanceStyle);
             default:
                 return null;
         }
@@ -139,6 +144,9 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
         // setup message as unread
         boolean unread = position >= getItemCount() - unreadCount;
 
+        // setup message as checked
+        boolean checked = checkedItemIds.contains(messageItem.getUniqueId());
+
         // need show original OTR message
         boolean showOriginalOTR = itemsNeedOriginalText.contains(messageItem.getUniqueId());
 
@@ -149,11 +157,12 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
 
             case VIEW_TYPE_INCOMING_MESSAGE:
                 ((IncomingMessageVH)holder).bind(messageItem, isMUC, showOriginalOTR, context,
-                        userName, unread, accountColorLevel);
+                        userName, unread, checked, isCheckMode, accountColorLevel);
 
                 break;
             case VIEW_TYPE_OUTGOING_MESSAGE:
-                ((OutgoingMessageVH)holder).bind(messageItem, isMUC, showOriginalOTR, context, unread);
+                ((OutgoingMessageVH)holder).bind(messageItem, isMUC, showOriginalOTR, context,
+                        unread, checked, isCheckMode);
                 break;
         }
     }
@@ -179,6 +188,17 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
         else return null;
     }
 
+    @Override
+    public void onMessageClick(View caller, int position) {
+        if (isCheckMode) addOrRemoveCheckedItem(position);
+        else messageListener.onMessageClick(caller, position);
+    }
+
+    @Override
+    public void onLongMessageClick(int position) {
+        addOrRemoveCheckedItem(position);
+    }
+
     public int findMessagePosition(String uniqueId) {
         for (int i = 0; i < realmResults.size(); i++) {
             if (realmResults.get(i).getUniqueId().equals(uniqueId)) return i;
@@ -201,5 +221,32 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
         if (itemsNeedOriginalText.contains(messageId))
             itemsNeedOriginalText.remove(messageId);
         else itemsNeedOriginalText.add(messageId);
+    }
+
+    /** Checked items */
+
+    private void addOrRemoveCheckedItem(int position) {
+        String uniqueId = getItem(position).getUniqueId();
+
+        if (checkedItemIds.contains(uniqueId))
+            checkedItemIds.remove(uniqueId);
+        else checkedItemIds.add(uniqueId);
+
+        boolean isCheckModePrevious = isCheckMode;
+        isCheckMode = checkedItemIds.size() > 0;
+
+        if (isCheckMode != isCheckModePrevious)
+            notifyDataSetChanged();
+        else notifyItemChanged(position);
+
+        listener.onChangeCheckedItems(checkedItemIds.size());
+    }
+
+    public List<String> getCheckedItemIds() {
+        return checkedItemIds;
+    }
+
+    public int getCheckedItemsCount() {
+        return checkedItemIds.size();
     }
 }

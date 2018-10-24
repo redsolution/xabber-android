@@ -21,15 +21,17 @@ public class IncomingMessageVH  extends FileMessageVH {
     public ImageView avatar;
     public ImageView avatarBackground;
 
-    IncomingMessageVH(View itemView, MessageClickListener messageListener, FileListener fileListener, @StyleRes int appearance) {
-        super(itemView, messageListener, fileListener, appearance);
+    IncomingMessageVH(View itemView, MessageClickListener messageListener,
+                      MessageLongClickListener longClickListener,
+                      FileListener fileListener, @StyleRes int appearance) {
+        super(itemView, messageListener, longClickListener, fileListener, appearance);
         avatar = itemView.findViewById(R.id.avatar);
         avatarBackground = itemView.findViewById(R.id.avatarBackground);
     }
 
     public void bind(MessageItem messageItem, boolean isMUC, boolean showOriginalOTR,
-                     Context context, String userName, boolean unread, int accountColorLevel) {
-        super.bind(messageItem, isMUC, showOriginalOTR, context, unread);
+                     Context context, String userName, boolean unread, boolean checked, boolean showCheckboxes, int accountColorLevel) {
+        super.bind(messageItem, isMUC, showOriginalOTR, context, unread, checked, showCheckboxes);
 
         // setup ARCHIVED icon
         statusIcon.setVisibility(messageItem.isReceivedFromMessageArchive() ? View.VISIBLE : View.GONE);

@@ -10,13 +10,14 @@ import com.xabber.android.data.database.messagerealm.MessageItem;
 public class OutgoingMessageVH extends FileMessageVH {
 
     OutgoingMessageVH(View itemView, MessageClickListener messageListener,
+                      MessageLongClickListener longClickListener,
                       FileListener fileListener, @StyleRes int appearance) {
-        super(itemView, messageListener, fileListener, appearance);
+        super(itemView, messageListener, longClickListener, fileListener, appearance);
     }
 
     public void bind(MessageItem messageItem, boolean isMUC, boolean showOriginalOTR,
-                     final Context context, boolean unread) {
-        super.bind(messageItem, isMUC, showOriginalOTR, context, unread);
+                     final Context context, boolean unread, boolean checked, boolean showCheckboxes) {
+        super.bind(messageItem, isMUC, showOriginalOTR, context, unread, checked, showCheckboxes);
 
         setStatusIcon(messageItem);
 

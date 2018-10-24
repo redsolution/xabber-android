@@ -61,8 +61,9 @@ public class FileMessageVH extends MessageVH
     }
 
     public FileMessageVH(View itemView, MessageClickListener messageListener,
+            MessageLongClickListener longClickListener,
             FileListener listener, int appearance) {
-        super(itemView, messageListener, appearance);
+        super(itemView, messageListener, longClickListener, appearance);
         this.listener = listener;
 
         messageImage = itemView.findViewById(R.id.message_image);
@@ -79,8 +80,8 @@ public class FileMessageVH extends MessageVH
     }
 
     public void bind(MessageItem messageItem, boolean isMUC, boolean showOriginalOTR,
-                     Context context, boolean unread) {
-        super.bind(messageItem, isMUC, showOriginalOTR, context, unread);
+                     Context context, boolean unread, boolean checked, boolean showCheckboxes) {
+        super.bind(messageItem, isMUC, showOriginalOTR, context, unread, checked, showCheckboxes);
         setupImageOrFile(messageItem, context);
     }
 

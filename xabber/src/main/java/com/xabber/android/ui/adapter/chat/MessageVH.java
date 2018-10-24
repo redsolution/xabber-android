@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.annotation.StyleRes;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -18,7 +19,8 @@ import java.util.Date;
 public class MessageVH extends BasicMessageVH implements View.OnClickListener, View.OnLongClickListener {
 
     private static final String LOG_TAG = MessageVH.class.getSimpleName();
-    private MessageClickListener listerner;
+    private MessageClickListener listener;
+    private MessageLongClickListener longClickListener;
 
     TextView messageTime;
     TextView messageHeader;
@@ -26,16 +28,22 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
     View messageBalloon;
     ImageView statusIcon;
     ImageView ivEncrypted;
+    CheckBox checkbox;
     String messageId;
 
     public interface MessageClickListener {
         void onMessageClick(View caller, int position);
+    }
+
+    public interface MessageLongClickListener {
         void onLongMessageClick(int position);
     }
 
-    public MessageVH(View itemView, MessageClickListener listerner, @StyleRes int appearance) {
+    public MessageVH(View itemView, MessageClickListener listener,
+                     MessageLongClickListener longClickListener, @StyleRes int appearance) {
         super(itemView, appearance);
-        this.listerner = listerner;
+        this.listener = listener;
+        this.longClickListener = longClickListener;
 
         messageTime = itemView.findViewById(R.id.message_time);
         messageHeader = itemView.findViewById(R.id.message_header);
@@ -43,13 +51,14 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
         messageBalloon = itemView.findViewById(R.id.message_balloon);
         statusIcon = itemView.findViewById(R.id.message_status_icon);
         ivEncrypted = itemView.findViewById(R.id.message_encrypted_icon);
+        checkbox = itemView.findViewById(R.id.checkbox);
 
         itemView.setOnClickListener(this);
         itemView.setOnLongClickListener(this);
     }
 
     public void bind(MessageItem messageItem, boolean isMUC, boolean showOriginalOTR,
-                     Context context, boolean unread) {
+                     Context context, boolean unread, boolean checked, boolean showCheckBoxes) {
         if (isMUC) {
             messageHeader.setText(messageItem.getResource());
             messageHeader.setVisibility(View.VISIBLE);
@@ -85,9 +94,16 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
 
         messageTime.setText(time);
 
-        /** setup UNREAD */
+        // setup UNREAD
         if (unread) itemView.setBackgroundColor(context.getResources().getColor(R.color.unread_messages_background));
         else itemView.setBackgroundDrawable(null);
+
+        // setup CHECKED
+        checkbox.setChecked(checked);
+
+        // setup CHECKBOX VISIBILITY
+        checkbox.setVisibility(showCheckBoxes ? View.VISIBLE : View.GONE);
+
     }
 
     @Override
@@ -97,7 +113,7 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
             LogManager.w(LOG_TAG, "onClick: no position");
             return;
         }
-        listerner.onMessageClick(messageBalloon, adapterPosition);
+        listener.onMessageClick(messageBalloon, adapterPosition);
     }
 
     @Override
@@ -107,7 +123,7 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
             LogManager.w(LOG_TAG, "onClick: no position");
             return false;
         }
-        listerner.onLongMessageClick(adapterPosition);
+        longClickListener.onLongMessageClick(adapterPosition);
         return true;
     }
 }
