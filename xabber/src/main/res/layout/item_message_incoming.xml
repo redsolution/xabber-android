@@ -16,6 +16,7 @@
         android:layout_marginRight="8dp"
         android:layout_marginEnd="8dp"
         android:visibility="gone"
+        android:clickable="false"
         />
 
     <de.hdodenhof.circleimageview.CircleImageView
