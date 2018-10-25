@@ -26,7 +26,7 @@
         android:id="@+id/swipeContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/input_layout"
+        android:layout_above="@+id/bottomPanel"
         android:layout_below="@+id/toolbar_default"
         >
 
@@ -38,7 +38,7 @@
         android:dividerHeight="0dp"
         android:listSelector="@android:color/transparent"
         android:scrollbars="vertical"
-        tools:listitem="@layout/item_outgoing_message"
+        tools:listitem="@layout/item_message_incoming"
         />
 
     </android.support.v4.widget.SwipeRefreshLayout>
@@ -52,86 +52,30 @@
         android:layout_above="@+id/input_layout"
         />
 
-    <LinearLayout
-        android:id="@+id/input_layout"
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
+        android:layout_above="@id/bottomPanel"
+        android:background="@drawable/bottom_view_shadow"/>
+
+    <RelativeLayout
+        android:id="@+id/bottomPanel"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:background="?attr/chat_input_background"
-        android:elevation="8dp"
-        android:orientation="horizontal"
-        >
+        android:layout_alignParentBottom="true">
 
-        <ImageButton
-            android:id="@+id/button_emoticon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:background="?android:selectableItemBackground"
-            android:padding="8dp"
-            android:src="@drawable/ic_mood_black_24dp"
-            android:tint="?attr/chat_input_button_color"
-            />
+        <include layout="@layout/view_chat_input" />
 
-        <github.ankushsachdeva.emojicon.EmojiconEditText
-            android:id="@+id/chat_input"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@android:color/transparent"
-            android:cursorVisible="true"
-            android:fadingEdge="vertical"
-            android:gravity="center_vertical"
-            android:hint="@string/chat_input_hint"
-            android:imeOptions="flagNoExtractUi"
-            android:inputType="textAutoCorrect|textCapSentences|textMultiLine"
-            android:maxLines="4"
-            android:minHeight="40dp"
-            android:scrollbars="vertical"
-         />
+        <include layout="@layout/view_chat_interaction"
+            android:visibility="gone"/>
 
-        <ImageButton
-            android:id="@+id/button_attach"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="?android:selectableItemBackground"
-            android:padding="8dp"
-            android:src="@drawable/ic_attach_file_black_24dp"
-            android:tint="?attr/chat_input_button_color"
-            android:layout_gravity="bottom"
-            />
-
-
-        <ImageButton
-            android:id="@+id/button_security"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="?android:selectableItemBackground"
-            android:contentDescription="@string/otr_encryption"
-            android:padding="8dp"
-            android:src="@drawable/ic_security_grey_24dp"
-            android:tint="?attr/chat_input_button_color"
-            android:layout_gravity="bottom"
-            />
-
-        <ImageButton
-            android:id="@+id/button_send_message"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:background="?android:selectableItemBackground"
-            android:contentDescription="@string/chat_send"
-            android:padding="8dp"
-            android:src="@drawable/ic_send"
-            android:tint="?attr/chat_input_button_color"
-            />
-    </LinearLayout>
+    </RelativeLayout>
 
     <RelativeLayout
         android:id="@+id/btnScrollDown"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@id/input_layout"
+        android:layout_above="@id/bottomPanel"
         android:layout_alignParentRight="true"
         android:clickable="true"
         android:visibility="gone"

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/input_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/chat_input_background"
+    android:orientation="horizontal"
+    >
+
+    <ImageButton
+        android:id="@+id/button_emoticon"
+        android:layout_width="52dp"
+        android:layout_height="52dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:padding="12dp"
+        android:src="@drawable/ic_mood_black_24dp"
+        android:tint="?attr/chat_input_button_color"
+        />
+
+    <github.ankushsachdeva.emojicon.EmojiconEditText
+        android:id="@+id/chat_input"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:background="@android:color/transparent"
+        android:cursorVisible="true"
+        android:fadingEdge="vertical"
+        android:gravity="center_vertical"
+        android:layout_gravity="center_vertical"
+        android:hint="@string/chat_input_hint"
+        android:imeOptions="flagNoExtractUi"
+        android:inputType="textAutoCorrect|textCapSentences|textMultiLine"
+        android:maxLines="4"
+        android:minHeight="40dp"
+        android:scrollbars="vertical"
+        />
+
+    <ImageButton
+        android:id="@+id/button_attach"
+        android:layout_width="52dp"
+        android:layout_height="52dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:padding="12dp"
+        android:src="@drawable/ic_attach_file_black_24dp"
+        android:tint="?attr/chat_input_button_color"
+        />
+
+
+    <ImageButton
+        android:id="@+id/button_security"
+        android:layout_width="52dp"
+        android:layout_height="52dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="@string/otr_encryption"
+        android:padding="12dp"
+        android:src="@drawable/ic_security_grey_24dp"
+        android:tint="?attr/chat_input_button_color"
+        />
+
+    <ImageButton
+        android:id="@+id/button_send_message"
+        android:layout_width="52dp"
+        android:layout_height="52dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="@string/chat_send"
+        android:padding="12dp"
+        android:src="@drawable/ic_send"
+        android:tint="?attr/chat_input_button_color"
+        />
+</LinearLayout>

@@ -183,6 +183,9 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
     private LinearLayout actionJoin;
     private RelativeLayout btnScrollDown;
     private TextView tvNewReceivedCount;
+    private View interactionView;
+    private TextView tvCount;
+    private ImageView ivClose;
 
     boolean isInputEmpty = true;
     private boolean skipOnTextChanges = false;
@@ -287,6 +290,17 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         // to avoid strange bug on some 4.x androids
         inputLayout = (LinearLayout) view.findViewById(R.id.input_layout);
         inputLayout.setBackgroundColor(ColorManager.getInstance().getChatInputBackgroundColor());
+
+        // interaction view
+        interactionView = view.findViewById(R.id.interactionView);
+        tvCount = view.findViewById(R.id.tvCount);
+        ivClose = view.findViewById(R.id.ivClose);
+        ivClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                chatMessageAdapter.resetCheckedItems();
+            }
+        });
 
         view.findViewById(R.id.button_send_message).setOnClickListener(
                 new View.OnClickListener() {
@@ -1307,8 +1321,10 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
 
     @Override
     public void onChangeCheckedItems(int checkedItems) {
-        Toast.makeText(getActivity(), "checked items: " + checkedItems, Toast.LENGTH_SHORT).show();
-
+        if (checkedItems > 0) {
+            interactionView.setVisibility(View.VISIBLE);
+            tvCount.setText(String.valueOf(checkedItems));
+        } else interactionView.setVisibility(View.GONE);
     }
 
     public void showCustomMenu(View anchor) {

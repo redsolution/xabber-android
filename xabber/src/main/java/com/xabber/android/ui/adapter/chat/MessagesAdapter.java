@@ -249,4 +249,13 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
     public int getCheckedItemsCount() {
         return checkedItemIds.size();
     }
+
+    public void resetCheckedItems() {
+        if (checkedItemIds.size() > 0) {
+            checkedItemIds.clear();
+            isCheckMode = false;
+            notifyDataSetChanged();
+            listener.onChangeCheckedItems(checkedItemIds.size());
+        }
+    }
 }
