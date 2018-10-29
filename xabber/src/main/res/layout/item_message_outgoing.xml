@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingTop="4dp">
@@ -16,11 +15,29 @@
         android:clickable="false"
         />
 
+    <TextView
+        android:id="@+id/tvFirstUnread"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="4dp"
+        android:paddingTop="2dp"
+        android:paddingBottom="2dp"
+        android:paddingRight="2dp"
+        android:paddingLeft="8dp"
+        android:textStyle="bold"
+        android:text="@string/unread_messages"
+        android:drawableRight="@drawable/ic_chevron_down"
+        android:background="@drawable/rounded_background_grey_transparent"
+        android:visibility="gone"
+        />
+
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
+        android:layout_below="@id/tvFirstUnread"
         >
 
         <include layout="@layout/item_message"

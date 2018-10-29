@@ -22,6 +22,7 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
     private MessageClickListener listener;
     private MessageLongClickListener longClickListener;
 
+    TextView tvFirstUnread;
     TextView messageTime;
     TextView messageHeader;
     TextView messageNotDecrypted;
@@ -45,6 +46,7 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
         this.listener = listener;
         this.longClickListener = longClickListener;
 
+        tvFirstUnread = itemView.findViewById(R.id.tvFirstUnread);
         messageTime = itemView.findViewById(R.id.message_time);
         messageHeader = itemView.findViewById(R.id.message_header);
         messageNotDecrypted = itemView.findViewById(R.id.message_not_decrypted);
@@ -95,8 +97,7 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
         messageTime.setText(time);
 
         // setup UNREAD
-        if (unread) itemView.setBackgroundColor(context.getResources().getColor(R.color.unread_messages_background));
-        else itemView.setBackgroundDrawable(null);
+        tvFirstUnread.setVisibility(unread ? View.VISIBLE : View.GONE);
 
         // setup CHECKED
         checkbox.setChecked(checked);

@@ -142,7 +142,7 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
             ((MessageVH)holder).messageId = messageItem.getUniqueId();
 
         // setup message as unread
-        boolean unread = position >= getItemCount() - unreadCount;
+        boolean unread = position == getItemCount() - unreadCount;
 
         // setup message as checked
         boolean checked = checkedItemIds.contains(messageItem.getUniqueId());

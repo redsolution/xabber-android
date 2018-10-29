@@ -125,4 +125,5 @@
     <string name="toast_could_not_open_file">Could not open file</string>
 
     <string name="uploaded_files_count">Uploading.. %s</string>
+    <string name="unread_messages">Unread messages</string>
 </resources>
