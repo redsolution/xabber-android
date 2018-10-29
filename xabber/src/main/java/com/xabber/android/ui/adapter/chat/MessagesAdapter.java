@@ -157,12 +157,12 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
 
             case VIEW_TYPE_INCOMING_MESSAGE:
                 ((IncomingMessageVH)holder).bind(messageItem, isMUC, showOriginalOTR, context,
-                        userName, unread, checked, isCheckMode, accountColorLevel);
+                        userName, unread, checked, accountColorLevel);
 
                 break;
             case VIEW_TYPE_OUTGOING_MESSAGE:
                 ((OutgoingMessageVH)holder).bind(messageItem, isMUC, showOriginalOTR, context,
-                        unread, checked, isCheckMode);
+                        unread, checked);
                 break;
         }
     }

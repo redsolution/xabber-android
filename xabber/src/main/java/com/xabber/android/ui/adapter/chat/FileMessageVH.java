@@ -80,8 +80,8 @@ public class FileMessageVH extends MessageVH
     }
 
     public void bind(MessageItem messageItem, boolean isMUC, boolean showOriginalOTR,
-                     Context context, boolean unread, boolean checked, boolean showCheckboxes) {
-        super.bind(messageItem, isMUC, showOriginalOTR, context, unread, checked, showCheckboxes);
+                     Context context, boolean unread, boolean checked) {
+        super.bind(messageItem, isMUC, showOriginalOTR, context, unread, checked);
         setupImageOrFile(messageItem, context);
     }
 

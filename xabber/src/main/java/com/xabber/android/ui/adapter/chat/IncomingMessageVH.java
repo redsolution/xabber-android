@@ -30,8 +30,8 @@ public class IncomingMessageVH  extends FileMessageVH {
     }
 
     public void bind(MessageItem messageItem, boolean isMUC, boolean showOriginalOTR,
-                     Context context, String userName, boolean unread, boolean checked, boolean showCheckboxes, int accountColorLevel) {
-        super.bind(messageItem, isMUC, showOriginalOTR, context, unread, checked, showCheckboxes);
+                     Context context, String userName, boolean unread, boolean checked, int accountColorLevel) {
+        super.bind(messageItem, isMUC, showOriginalOTR, context, unread, checked);
 
         // setup ARCHIVED icon
         statusIcon.setVisibility(messageItem.isReceivedFromMessageArchive() ? View.VISIBLE : View.GONE);

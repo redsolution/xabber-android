@@ -29,7 +29,6 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
     View messageBalloon;
     ImageView statusIcon;
     ImageView ivEncrypted;
-    CheckBox checkbox;
     String messageId;
 
     public interface MessageClickListener {
@@ -53,14 +52,13 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
         messageBalloon = itemView.findViewById(R.id.message_balloon);
         statusIcon = itemView.findViewById(R.id.message_status_icon);
         ivEncrypted = itemView.findViewById(R.id.message_encrypted_icon);
-        checkbox = itemView.findViewById(R.id.checkbox);
 
         itemView.setOnClickListener(this);
         itemView.setOnLongClickListener(this);
     }
 
     public void bind(MessageItem messageItem, boolean isMUC, boolean showOriginalOTR,
-                     Context context, boolean unread, boolean checked, boolean showCheckBoxes) {
+                     Context context, boolean unread, boolean checked) {
         if (isMUC) {
             messageHeader.setText(messageItem.getResource());
             messageHeader.setVisibility(View.VISIBLE);
@@ -100,11 +98,8 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
         tvFirstUnread.setVisibility(unread ? View.VISIBLE : View.GONE);
 
         // setup CHECKED
-        checkbox.setChecked(checked);
-
-        // setup CHECKBOX VISIBILITY
-        checkbox.setVisibility(showCheckBoxes ? View.VISIBLE : View.GONE);
-
+        if (checked) itemView.setBackgroundColor(context.getResources().getColor(R.color.unread_messages_background));
+        else itemView.setBackgroundDrawable(null);
     }
 
     @Override

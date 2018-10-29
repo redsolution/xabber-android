@@ -16,8 +16,8 @@ public class OutgoingMessageVH extends FileMessageVH {
     }
 
     public void bind(MessageItem messageItem, boolean isMUC, boolean showOriginalOTR,
-                     final Context context, boolean unread, boolean checked, boolean showCheckboxes) {
-        super.bind(messageItem, isMUC, showOriginalOTR, context, unread, checked, showCheckboxes);
+                     final Context context, boolean unread, boolean checked) {
+        super.bind(messageItem, isMUC, showOriginalOTR, context, unread, checked);
 
         setStatusIcon(messageItem);
 
