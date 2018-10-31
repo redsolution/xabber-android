@@ -4,7 +4,6 @@ import android.content.Context;
 import android.support.annotation.StyleRes;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -27,6 +26,8 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
     TextView messageHeader;
     TextView messageNotDecrypted;
     View messageBalloon;
+    View messageShadow;
+    View message;
     ImageView statusIcon;
     ImageView ivEncrypted;
     String messageId;
@@ -50,6 +51,8 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
         messageHeader = itemView.findViewById(R.id.message_header);
         messageNotDecrypted = itemView.findViewById(R.id.message_not_decrypted);
         messageBalloon = itemView.findViewById(R.id.message_balloon);
+        messageShadow = itemView.findViewById(R.id.message_shadow);
+        message = itemView.findViewById(R.id.message);
         statusIcon = itemView.findViewById(R.id.message_status_icon);
         ivEncrypted = itemView.findViewById(R.id.message_encrypted_icon);
 

@@ -3,9 +3,12 @@ package com.xabber.android.ui.adapter.chat;
 import android.content.Context;
 import android.support.annotation.StyleRes;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 
 import com.xabber.android.R;
 import com.xabber.android.data.database.messagerealm.MessageItem;
+import com.xabber.android.utils.Utils;
 
 public class OutgoingMessageVH extends FileMessageVH {
 
@@ -16,7 +19,7 @@ public class OutgoingMessageVH extends FileMessageVH {
     }
 
     public void bind(MessageItem messageItem, boolean isMUC, boolean showOriginalOTR,
-                     final Context context, boolean unread, boolean checked) {
+                     final Context context, boolean unread, boolean checked, boolean needTail) {
         super.bind(messageItem, isMUC, showOriginalOTR, context, unread, checked);
 
         setStatusIcon(messageItem);
@@ -24,8 +27,27 @@ public class OutgoingMessageVH extends FileMessageVH {
         // setup PROGRESS
         progressBar.setVisibility(messageItem.isInProgress() ? View.VISIBLE : View.GONE);
 
-        // setup BACKGROUND COLOR
-        messageBalloon.getBackground().setLevel(17);
+        // setup BACKGROUND
+        messageBalloon.setBackground(context.getDrawable(needTail ? R.drawable.msg_out : R.drawable.msg));
+        messageShadow.setBackground(context.getDrawable(needTail ? R.drawable.msg_out_shadow : R.drawable.msg_shadow));
+
+        // setup BALLOON margins
+        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+
+        layoutParams.setMargins(
+                Utils.dipToPx(needTail ? 2f : 10f, context),
+                Utils.dipToPx(2f, context),
+                Utils.dipToPx(needTail ? 2f : 11f, context),
+                Utils.dipToPx(2f, context));
+        messageShadow.setLayoutParams(layoutParams);
+
+        // setup MESSAGE padding
+        messageBalloon.setPadding(
+                Utils.dipToPx(12f, context),
+                Utils.dipToPx(8f, context),
+                Utils.dipToPx(needTail ? 20f : 12f, context),
+                Utils.dipToPx(8f, context));
 
         // subscribe for FILE UPLOAD PROGRESS
         itemView.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {

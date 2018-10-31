@@ -1,6 +1,7 @@
 package com.xabber.android.ui.adapter.chat;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -43,6 +44,7 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
     // message font style
     private final int appearanceStyle = SettingsManager.chatsAppearanceStyle();
     private int accountColorLevel;
+    private ColorStateList colorStateList;
     private boolean isMUC;
     private Resourcepart mucNickname;
     private String userName;
@@ -77,6 +79,7 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
         userName = RosterManager.getInstance().getName(account, user);
         prevItemCount = getItemCount();
         accountColorLevel = ColorManager.getAccountColorLevel(account);
+        colorStateList = ColorManager.getInstance().getChatIncomingBalloonColorsStateList(account);
 
         isMUC = MUCManager.getInstance().hasRoom(account, user.getJid().asEntityBareJidIfPossible());
         if (isMUC) mucNickname = MUCManager.getInstance().getNickname(account, user.getJid().asEntityBareJidIfPossible());
@@ -150,6 +153,9 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
         // need show original OTR message
         boolean showOriginalOTR = itemsNeedOriginalText.contains(messageItem.getUniqueId());
 
+        // need tail
+        boolean needTail = viewType != getItemViewType(position + 1);
+
         switch (viewType) {
             case VIEW_TYPE_ACTION_MESSAGE:
                 ((ActionMessageVH)holder).bind(messageItem, context, account, isMUC);
@@ -157,12 +163,12 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
 
             case VIEW_TYPE_INCOMING_MESSAGE:
                 ((IncomingMessageVH)holder).bind(messageItem, isMUC, showOriginalOTR, context,
-                        userName, unread, checked, accountColorLevel);
+                        userName, unread, checked, colorStateList, needTail);
 
                 break;
             case VIEW_TYPE_OUTGOING_MESSAGE:
                 ((OutgoingMessageVH)holder).bind(messageItem, isMUC, showOriginalOTR, context,
-                        unread, checked);
+                        unread, checked, needTail);
                 break;
         }
     }

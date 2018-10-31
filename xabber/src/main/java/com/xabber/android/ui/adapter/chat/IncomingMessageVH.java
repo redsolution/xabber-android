@@ -1,9 +1,12 @@
 package com.xabber.android.ui.adapter.chat;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.support.annotation.StyleRes;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 
 import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
@@ -13,6 +16,7 @@ import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.log.LogManager;
+import com.xabber.android.utils.Utils;
 
 import org.jxmpp.jid.parts.Resourcepart;
 
@@ -30,14 +34,39 @@ public class IncomingMessageVH  extends FileMessageVH {
     }
 
     public void bind(MessageItem messageItem, boolean isMUC, boolean showOriginalOTR,
-                     Context context, String userName, boolean unread, boolean checked, int accountColorLevel) {
+                     Context context, String userName, boolean unread, boolean checked,
+                     ColorStateList colorStateList, boolean needTail) {
         super.bind(messageItem, isMUC, showOriginalOTR, context, unread, checked);
 
         // setup ARCHIVED icon
         statusIcon.setVisibility(messageItem.isReceivedFromMessageArchive() ? View.VISIBLE : View.GONE);
 
+        // setup BACKGROUND
+        messageBalloon.setBackground(context.getDrawable(needTail ? R.drawable.msg_in : R.drawable.msg));
+        messageShadow.setBackground(context.getDrawable(needTail ? R.drawable.msg_in_shadow : R.drawable.msg_shadow));
+
+        // setup BALLOON margins
+        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+
+        layoutParams.addRule(RelativeLayout.RIGHT_OF, R.id.avatar);
+        layoutParams.addRule(RelativeLayout.BELOW, R.id.tvFirstUnread);
+        layoutParams.setMargins(
+                Utils.dipToPx(needTail ? 2f : 11f, context),
+                Utils.dipToPx(2f, context),
+                Utils.dipToPx(needTail ? 2f : 10f, context),
+                Utils.dipToPx(2f, context));
+        messageShadow.setLayoutParams(layoutParams);
+
+        // setup MESSAGE padding
+        messageBalloon.setPadding(
+                Utils.dipToPx(needTail ? 20f : 12f, context),
+                Utils.dipToPx(8f, context),
+                Utils.dipToPx(12f, context),
+                Utils.dipToPx(8f, context));
+
         // setup BACKGROUND COLOR
-        messageBalloon.getBackground().setLevel(accountColorLevel);
+        messageBalloon.getBackground().setTintList(colorStateList);
 
         setUpAvatar(messageItem, isMUC, userName);
 
