@@ -13,7 +13,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/msg"
-        android:backgroundTint="@color/white"
+        android:backgroundTint="?attr/message_background"
         android:paddingLeft="12dp"
         android:paddingRight="12dp"
         android:paddingTop="8dp"
