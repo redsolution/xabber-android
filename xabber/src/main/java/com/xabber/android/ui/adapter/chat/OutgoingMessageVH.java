@@ -1,7 +1,10 @@
 package com.xabber.android.ui.adapter.chat;
 
 import android.content.Context;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.StyleRes;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
@@ -28,8 +31,10 @@ public class OutgoingMessageVH extends FileMessageVH {
         progressBar.setVisibility(messageItem.isInProgress() ? View.VISIBLE : View.GONE);
 
         // setup BACKGROUND
-        messageBalloon.setBackground(context.getDrawable(needTail ? R.drawable.msg_out : R.drawable.msg));
-        messageShadow.setBackground(context.getDrawable(needTail ? R.drawable.msg_out_shadow : R.drawable.msg_shadow));
+        Drawable shadowDrawable = context.getResources().getDrawable(needTail ? R.drawable.msg_out_shadow : R.drawable.msg_shadow);
+        shadowDrawable.setColorFilter(context.getResources().getColor(R.color.black), PorterDuff.Mode.MULTIPLY);
+        messageBalloon.setBackgroundDrawable(context.getResources().getDrawable(needTail ? R.drawable.msg_out : R.drawable.msg));
+        messageShadow.setBackgroundDrawable(shadowDrawable);
 
         // setup BALLOON margins
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
@@ -48,6 +53,11 @@ public class OutgoingMessageVH extends FileMessageVH {
                 Utils.dipToPx(8f, context),
                 Utils.dipToPx(needTail ? 20f : 12f, context),
                 Utils.dipToPx(8f, context));
+
+        // setup BACKGROUND COLOR
+        TypedValue typedValue = new TypedValue();
+        context.getTheme().resolveAttribute(R.attr.message_background, typedValue, true);
+        setUpMessageBalloonBackground(messageBalloon, context.getResources().getColorStateList(typedValue.resourceId));
 
         // subscribe for FILE UPLOAD PROGRESS
         itemView.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {

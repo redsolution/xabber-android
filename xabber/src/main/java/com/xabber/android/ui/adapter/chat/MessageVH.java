@@ -1,7 +1,11 @@
 package com.xabber.android.ui.adapter.chat;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.support.annotation.StyleRes;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
@@ -124,5 +128,28 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
         }
         longClickListener.onLongMessageClick(adapterPosition);
         return true;
+    }
+
+    protected void setUpMessageBalloonBackground(View view, ColorStateList colorList) {
+        final Drawable originalBackgroundDrawable = view.getBackground();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            originalBackgroundDrawable.setTintList(colorList);
+
+        } else {
+            Drawable wrapDrawable = DrawableCompat.wrap(originalBackgroundDrawable);
+            DrawableCompat.setTintList(wrapDrawable, colorList);
+
+            int pL = view.getPaddingLeft();
+            int pT = view.getPaddingTop();
+            int pR = view.getPaddingRight();
+            int pB = view.getPaddingBottom();
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
+                view.setBackground(wrapDrawable);
+            else view.setBackgroundDrawable(wrapDrawable);
+            view.setPadding(pL, pT, pR, pB);
+        }
+
     }
 }

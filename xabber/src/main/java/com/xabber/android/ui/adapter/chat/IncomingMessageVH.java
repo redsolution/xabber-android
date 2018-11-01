@@ -2,6 +2,8 @@ package com.xabber.android.ui.adapter.chat;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.StyleRes;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,8 +44,11 @@ public class IncomingMessageVH  extends FileMessageVH {
         statusIcon.setVisibility(messageItem.isReceivedFromMessageArchive() ? View.VISIBLE : View.GONE);
 
         // setup BACKGROUND
-        messageBalloon.setBackground(context.getDrawable(needTail ? R.drawable.msg_in : R.drawable.msg));
-        messageShadow.setBackground(context.getDrawable(needTail ? R.drawable.msg_in_shadow : R.drawable.msg_shadow));
+        Drawable balloonDrawable = context.getResources().getDrawable(needTail ? R.drawable.msg_in : R.drawable.msg);
+        Drawable shadowDrawable = context.getResources().getDrawable(needTail ? R.drawable.msg_in_shadow : R.drawable.msg_shadow);
+        shadowDrawable.setColorFilter(context.getResources().getColor(R.color.black), PorterDuff.Mode.MULTIPLY);
+        messageBalloon.setBackgroundDrawable(balloonDrawable);
+        messageShadow.setBackgroundDrawable(shadowDrawable);
 
         // setup BALLOON margins
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
@@ -66,7 +71,7 @@ public class IncomingMessageVH  extends FileMessageVH {
                 Utils.dipToPx(8f, context));
 
         // setup BACKGROUND COLOR
-        messageBalloon.getBackground().setTintList(colorStateList);
+        setUpMessageBalloonBackground(messageBalloon, colorStateList);
 
         setUpAvatar(messageItem, isMUC, userName);
 
