@@ -73,7 +73,7 @@ public class IncomingMessageVH  extends FileMessageVH {
         // setup BACKGROUND COLOR
         setUpMessageBalloonBackground(messageBalloon, colorStateList);
 
-        setUpAvatar(messageItem, isMUC, userName);
+        setUpAvatar(messageItem, isMUC, userName, needTail);
 
         // hide empty message
         if (messageItem.getText().trim().isEmpty()) {
@@ -88,21 +88,33 @@ public class IncomingMessageVH  extends FileMessageVH {
         }
     }
 
-    private void setUpAvatar(MessageItem messageItem, boolean isMUC, String userName) {
-        if (SettingsManager.chatsShowAvatars() && !isMUC) {
-            final UserJid user = messageItem.getUser();
-            avatar.setVisibility(View.VISIBLE);
-            avatarBackground.setVisibility(View.VISIBLE);
-            avatar.setImageDrawable(AvatarManager.getInstance().getUserAvatar(user, userName));
+    private void setUpAvatar(MessageItem messageItem, boolean isMUC, String userName, boolean needTail) {
+        boolean needAvatar = isMUC ? SettingsManager.chatsShowAvatarsMUC() : SettingsManager.chatsShowAvatars();
 
-        } else if (SettingsManager.chatsShowAvatarsMUC() && isMUC) {
-            final AccountJid account = messageItem.getAccount();
-            final UserJid user = messageItem.getUser();
-            final Resourcepart resource = messageItem.getResource();
+        if (!needAvatar) {
+            avatar.setVisibility(View.GONE);
+            avatarBackground.setVisibility(View.GONE);
+            return;
+        }
 
-            avatar.setVisibility(View.VISIBLE);
-            avatarBackground.setVisibility(View.VISIBLE);
-            if ((MUCManager.getInstance().getNickname(account, user.getJid().asEntityBareJidIfPossible()).equals(resource))) {
+        if (!needTail) {
+            avatar.setVisibility(View.INVISIBLE);
+            avatarBackground.setVisibility(View.INVISIBLE);
+            return;
+        }
+
+
+        final UserJid user = messageItem.getUser();
+        final AccountJid account = messageItem.getAccount();
+        final Resourcepart resource = messageItem.getResource();
+        avatar.setVisibility(View.VISIBLE);
+        avatarBackground.setVisibility(View.VISIBLE);
+
+        if (!isMUC) avatar.setImageDrawable(AvatarManager.getInstance().getUserAvatar(user, userName));
+        else {
+            if ((MUCManager.getInstance()
+                    .getNickname(account, user.getJid().asEntityBareJidIfPossible())
+                    .equals(resource))) {
                 avatar.setImageDrawable(AvatarManager.getInstance().getAccountAvatar(account));
             } else {
                 if (resource.equals(Resourcepart.EMPTY)) {
@@ -124,9 +136,6 @@ public class IncomingMessageVH  extends FileMessageVH {
                     }
                 }
             }
-        } else {
-            avatar.setVisibility(View.GONE);
-            avatarBackground.setVisibility(View.GONE);
         }
     }
 }

@@ -39,6 +39,9 @@
         android:listSelector="@android:color/transparent"
         android:scrollbars="vertical"
         tools:listitem="@layout/item_message_incoming"
+        android:paddingBottom="4dp"
+        android:paddingTop="4dp"
+        android:clipToPadding="false"
         />
 
     </android.support.v4.widget.SwipeRefreshLayout>
