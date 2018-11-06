@@ -154,7 +154,12 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
         boolean showOriginalOTR = itemsNeedOriginalText.contains(messageItem.getUniqueId());
 
         // need tail
-        boolean needTail = viewType != getItemViewType(position + 1);
+        boolean needTail = false;
+        if (isMUC) {
+            MessageItem nextMessage = getMessageItem(position + 1);
+            if (nextMessage != null)
+                needTail = !messageItem.getResource().equals(nextMessage.getResource());
+        } else needTail = viewType != getItemViewType(position + 1);
 
         switch (viewType) {
             case VIEW_TYPE_ACTION_MESSAGE:
