@@ -27,11 +27,30 @@
             android:text="nickname@example.com"
             android:textSize="12sp" />
 
+        <FrameLayout
+            android:id="@+id/imageGridContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone" />
+
+        <ImageView
+            android:id="@+id/message_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:visibility="gone" />
+
+        <include
+            android:id="@+id/fileLayout"
+            layout="@layout/file_list_layout"
+            android:visibility="gone" />
+
         <com.google.android.flexbox.FlexboxLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:flexWrap="wrap"
-            app:justifyContent="flex_end">
+            app:justifyContent="flex_end"
+            android:layout_gravity="right">
 
             <LinearLayout
                 android:id="@+id/message"
@@ -61,24 +80,6 @@
                     android:layout_height="wrap_content"
                     android:minWidth="160dp"
                     android:text="some_file_name.txt"
-                    android:visibility="gone" />
-
-                <FrameLayout
-                    android:id="@+id/imageGridContainer"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:visibility="gone" />
-
-                <ImageView
-                    android:id="@+id/message_image"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:adjustViewBounds="true"
-                    android:visibility="gone" />
-
-                <include
-                    android:id="@+id/fileLayout"
-                    layout="@layout/file_list_layout"
                     android:visibility="gone" />
 
             </LinearLayout>
