@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 
 import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
+import com.xabber.android.data.database.messagerealm.Attachment;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
@@ -28,7 +29,8 @@ import io.realm.RealmRecyclerViewAdapter;
 import io.realm.RealmResults;
 
 public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, BasicMessageVH>
-        implements MessageVH.MessageClickListener, MessageVH.MessageLongClickListener {
+        implements MessageVH.MessageClickListener, MessageVH.MessageLongClickListener,
+        FileMessageVH.FileListener {
 
     private static final String LOG_TAG = MessagesAdapter.class.getSimpleName();
 
@@ -118,12 +120,12 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
             case VIEW_TYPE_INCOMING_MESSAGE:
                 return new IncomingMessageVH(LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.item_message_incoming, parent, false),
-                        this, this, fileListener, appearanceStyle);
+                        this, this, this, appearanceStyle);
 
             case VIEW_TYPE_OUTGOING_MESSAGE:
                 return new OutgoingMessageVH(LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.item_message_outgoing, parent, false),
-                        this, this, fileListener, appearanceStyle);
+                        this, this, this, appearanceStyle);
             default:
                 return null;
         }
@@ -232,6 +234,40 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
         if (itemsNeedOriginalText.contains(messageId))
             itemsNeedOriginalText.remove(messageId);
         else itemsNeedOriginalText.add(messageId);
+    }
+
+    /** File listener */
+
+    @Override
+    public void onImageClick(int messagePosition, int attachmentPosition) {
+        if (isCheckMode) addOrRemoveCheckedItem(messagePosition);
+        else fileListener.onImageClick(messagePosition, attachmentPosition);
+    }
+
+    @Override
+    public void onFileClick(int messagePosition, int attachmentPosition) {
+        if (isCheckMode) addOrRemoveCheckedItem(messagePosition);
+        else fileListener.onFileClick(messagePosition, attachmentPosition);
+    }
+
+    @Override
+    public void onFileLongClick(Attachment attachment, View caller) {
+        fileListener.onFileLongClick(attachment, caller);
+    }
+
+    @Override
+    public void onDownloadCancel() {
+        fileListener.onDownloadCancel();
+    }
+
+    @Override
+    public void onUploadCancel() {
+        fileListener.onUploadCancel();
+    }
+
+    @Override
+    public void onDownloadError(String error) {
+        fileListener.onDownloadError(error);
     }
 
     /** Checked items */
