@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
+import android.graphics.Color;
 import android.support.v4.content.ContextCompat;
 import android.util.SparseArray;
 
@@ -279,6 +280,17 @@ public class ColorManager {
         String colorName = colors.get(colorIndex);
         if (colorName != null) return colorName;
         else return "green";
+    }
+
+    public static int changeColor(int color, float factor) {
+        int a = Color.alpha(color);
+        int r = Math.round(Color.red(color) * factor);
+        int g = Math.round(Color.green(color) * factor);
+        int b = Math.round(Color.blue(color) * factor);
+        return Color.argb(a,
+                Math.min(r,255),
+                Math.min(g,255),
+                Math.min(b,255));
     }
 
 }

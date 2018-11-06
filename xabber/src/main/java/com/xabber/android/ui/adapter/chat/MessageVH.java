@@ -11,10 +11,12 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.amulyakhare.textdrawable.util.ColorGenerator;
 import com.xabber.android.R;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.log.LogManager;
+import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.utils.StringUtils;
 
 import java.util.Date;
@@ -66,6 +68,8 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
                      Context context, boolean unread, boolean checked) {
         if (isMUC) {
             messageHeader.setText(messageItem.getResource());
+            messageHeader.setTextColor(ColorManager.changeColor(
+                    ColorGenerator.MATERIAL.getColor(messageItem.getResource()), 0.8f));
             messageHeader.setVisibility(View.VISIBLE);
         } else {
             messageHeader.setVisibility(View.GONE);
