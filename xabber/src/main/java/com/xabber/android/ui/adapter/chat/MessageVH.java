@@ -31,7 +31,6 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
     TextView messageNotDecrypted;
     View messageBalloon;
     View messageShadow;
-    View message;
     ImageView statusIcon;
     ImageView ivEncrypted;
     String messageId;
@@ -56,7 +55,6 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
         messageNotDecrypted = itemView.findViewById(R.id.message_not_decrypted);
         messageBalloon = itemView.findViewById(R.id.message_balloon);
         messageShadow = itemView.findViewById(R.id.message_shadow);
-        message = itemView.findViewById(R.id.message);
         statusIcon = itemView.findViewById(R.id.message_status_icon);
         ivEncrypted = itemView.findViewById(R.id.message_encrypted_icon);
 
