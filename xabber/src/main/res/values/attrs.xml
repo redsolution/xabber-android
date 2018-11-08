@@ -61,4 +61,8 @@
 
         <attr name="message_background" format="color|reference" />
     </declare-styleable>
+    <declare-styleable name="ImFlexboxLayout">
+        <attr name="viewPartMain" format="reference"></attr>
+        <attr name="viewPartSlave" format="reference"></attr>
+    </declare-styleable>
 </resources>

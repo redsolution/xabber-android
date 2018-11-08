@@ -8,6 +8,7 @@ import android.support.annotation.StyleRes;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import com.xabber.android.R;
@@ -51,11 +52,11 @@ public class IncomingMessageVH  extends FileMessageVH {
         messageShadow.setBackgroundDrawable(shadowDrawable);
 
         // setup BALLOON margins
-        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
-        layoutParams.addRule(RelativeLayout.RIGHT_OF, R.id.avatar);
-        layoutParams.addRule(RelativeLayout.BELOW, R.id.tvFirstUnread);
+//        layoutParams.addRule(RelativeLayout.RIGHT_OF, R.id.avatar);
+//        layoutParams.addRule(RelativeLayout.BELOW, R.id.tvFirstUnread);
         layoutParams.setMargins(
                 Utils.dipToPx(needTail ? 2f : 11f, context),
                 Utils.dipToPx(2f, context),
