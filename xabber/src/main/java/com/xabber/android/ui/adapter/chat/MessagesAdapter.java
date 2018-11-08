@@ -161,6 +161,7 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
             MessageItem nextMessage = getMessageItem(position + 1);
             if (nextMessage != null)
                 needTail = !messageItem.getResource().equals(nextMessage.getResource());
+            else needTail = true;
         } else needTail = viewType != getItemViewType(position + 1);
 
         switch (viewType) {
