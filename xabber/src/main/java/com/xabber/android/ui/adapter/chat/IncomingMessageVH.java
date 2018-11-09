@@ -1,7 +1,6 @@
 package com.xabber.android.ui.adapter.chat;
 
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.StyleRes;
@@ -9,7 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 
 import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
@@ -36,10 +34,11 @@ public class IncomingMessageVH  extends FileMessageVH {
         avatarBackground = itemView.findViewById(R.id.avatarBackground);
     }
 
-    public void bind(MessageItem messageItem, boolean isMUC, boolean showOriginalOTR,
-                     Context context, String userName, boolean unread, boolean checked,
-                     ColorStateList colorStateList, boolean needTail) {
-        super.bind(messageItem, isMUC, showOriginalOTR, context, unread, checked);
+    public void bind(MessageItem messageItem, MessagesAdapter.MessageExtraData extraData) {
+        super.bind(messageItem, extraData);
+
+        Context context = extraData.getContext();
+        boolean needTail = extraData.isNeedTail();
 
         // setup ARCHIVED icon
         statusIcon.setVisibility(messageItem.isReceivedFromMessageArchive() ? View.VISIBLE : View.GONE);
@@ -55,8 +54,6 @@ public class IncomingMessageVH  extends FileMessageVH {
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
-//        layoutParams.addRule(RelativeLayout.RIGHT_OF, R.id.avatar);
-//        layoutParams.addRule(RelativeLayout.BELOW, R.id.tvFirstUnread);
         layoutParams.setMargins(
                 Utils.dipToPx(needTail ? 2f : 11f, context),
                 Utils.dipToPx(2f, context),
@@ -72,9 +69,9 @@ public class IncomingMessageVH  extends FileMessageVH {
                 Utils.dipToPx(8f, context));
 
         // setup BACKGROUND COLOR
-        setUpMessageBalloonBackground(messageBalloon, colorStateList);
+        setUpMessageBalloonBackground(messageBalloon, extraData.getColorStateList());
 
-        setUpAvatar(messageItem, isMUC, userName, needTail);
+        setUpAvatar(messageItem, extraData.isMuc(), extraData.getUsername(), needTail);
 
         // hide empty message
         if (messageItem.getText().trim().isEmpty()) {

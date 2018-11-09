@@ -1,6 +1,5 @@
 package com.xabber.android.ui.adapter.chat;
 
-import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -64,9 +63,8 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
         itemView.setOnLongClickListener(this);
     }
 
-    public void bind(MessageItem messageItem, boolean isMUC, boolean showOriginalOTR,
-                     Context context, boolean unread, boolean checked) {
-        if (isMUC) {
+    public void bind(MessageItem messageItem, MessagesAdapter.MessageExtraData extraData) {
+        if (extraData.isMuc()) {
             messageHeader.setText(messageItem.getResource());
             messageHeader.setTextColor(ColorManager.changeColor(
                     ColorGenerator.MATERIAL.getColor(messageItem.getResource()), 0.8f));
@@ -83,7 +81,7 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
 
         messageText.setText(messageItem.getText());
         if (OTRManager.getInstance().isEncrypted(messageItem.getText())) {
-            if (showOriginalOTR)
+            if (extraData.isShowOriginalOTR())
                 messageText.setVisibility(View.VISIBLE);
             else messageText.setVisibility(View.GONE);
             messageNotDecrypted.setVisibility(View.VISIBLE);
@@ -96,7 +94,7 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
 
         Long delayTimestamp = messageItem.getDelayTimestamp();
         if (delayTimestamp != null) {
-            String delay = context.getString(messageItem.isIncoming() ? R.string.chat_delay : R.string.chat_typed,
+            String delay = extraData.getContext().getString(messageItem.isIncoming() ? R.string.chat_delay : R.string.chat_typed,
                     StringUtils.getTimeText(new Date(delayTimestamp)));
             time += " (" + delay + ")";
         }
@@ -104,10 +102,11 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
         messageTime.setText(time);
 
         // setup UNREAD
-        tvFirstUnread.setVisibility(unread ? View.VISIBLE : View.GONE);
+        tvFirstUnread.setVisibility(extraData.isUnread() ? View.VISIBLE : View.GONE);
 
         // setup CHECKED
-        if (checked) itemView.setBackgroundColor(context.getResources().getColor(R.color.unread_messages_background));
+        if (extraData.isChecked()) itemView.setBackgroundColor(extraData.getContext().getResources()
+                .getColor(R.color.unread_messages_background));
         else itemView.setBackgroundDrawable(null);
     }
 

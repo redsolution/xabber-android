@@ -164,19 +164,20 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
             else needTail = true;
         } else needTail = viewType != getItemViewType(position + 1);
 
+        MessageExtraData extraData = new MessageExtraData(context, userName, colorStateList, isMUC,
+                showOriginalOTR, unread, checked, needTail);
+
         switch (viewType) {
             case VIEW_TYPE_ACTION_MESSAGE:
                 ((ActionMessageVH)holder).bind(messageItem, context, account, isMUC);
                 break;
 
             case VIEW_TYPE_INCOMING_MESSAGE:
-                ((IncomingMessageVH)holder).bind(messageItem, isMUC, showOriginalOTR, context,
-                        userName, unread, checked, colorStateList, needTail);
+                ((IncomingMessageVH)holder).bind(messageItem, extraData);
 
                 break;
             case VIEW_TYPE_OUTGOING_MESSAGE:
-                ((OutgoingMessageVH)holder).bind(messageItem, isMUC, showOriginalOTR, context,
-                        unread, checked, needTail);
+                ((OutgoingMessageVH)holder).bind(messageItem, extraData);
                 break;
         }
     }
@@ -304,6 +305,66 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
             isCheckMode = false;
             notifyDataSetChanged();
             listener.onChangeCheckedItems(checkedItemIds.size());
+        }
+    }
+
+    /** Message Extra Data */
+
+    public class MessageExtraData {
+
+        private  Context context;
+        private String username;
+        private ColorStateList colorStateList;
+
+        private boolean isMuc;
+        private boolean showOriginalOTR;
+        private boolean unread;
+        private boolean checked;
+        private boolean needTail;
+
+        public MessageExtraData(Context context, String username, ColorStateList colorStateList,
+                                boolean isMuc, boolean showOriginalOTR, boolean unread,
+                                boolean checked, boolean needTail) {
+            this.context = context;
+            this.username = username;
+            this.colorStateList = colorStateList;
+            this.isMuc = isMuc;
+            this.showOriginalOTR = showOriginalOTR;
+            this.unread = unread;
+            this.checked = checked;
+            this.needTail = needTail;
+        }
+
+        public Context getContext() {
+            return context;
+        }
+
+        public String getUsername() {
+            return username;
+        }
+
+        public ColorStateList getColorStateList() {
+            return colorStateList;
+        }
+
+        public boolean isMuc() {
+            return isMuc;
+        }
+
+        public boolean isShowOriginalOTR() {
+            return showOriginalOTR;
+        }
+
+        public boolean isUnread() {
+            return unread;
+        }
+
+        public boolean isChecked() {
+            return checked;
+        }
+
+        public boolean isNeedTail() {
+            return needTail;
         }
     }
 }

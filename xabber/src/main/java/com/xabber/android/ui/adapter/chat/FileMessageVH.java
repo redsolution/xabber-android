@@ -79,10 +79,9 @@ public class FileMessageVH extends MessageVH
         if (messageImage != null) messageImage.setOnClickListener(this);
     }
 
-    public void bind(MessageItem messageItem, boolean isMUC, boolean showOriginalOTR,
-                     Context context, boolean unread, boolean checked) {
-        super.bind(messageItem, isMUC, showOriginalOTR, context, unread, checked);
-        setupImageOrFile(messageItem, context);
+    public void bind(MessageItem messageItem, MessagesAdapter.MessageExtraData extraData) {
+        super.bind(messageItem, extraData);
+        setupImageOrFile(messageItem, extraData.getContext());
     }
 
     protected void setupImageOrFile(MessageItem messageItem, Context context) {

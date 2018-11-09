@@ -8,7 +8,6 @@ import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 
 import com.xabber.android.R;
 import com.xabber.android.data.database.messagerealm.MessageItem;
@@ -22,9 +21,11 @@ public class OutgoingMessageVH extends FileMessageVH {
         super(itemView, messageListener, longClickListener, fileListener, appearance);
     }
 
-    public void bind(MessageItem messageItem, boolean isMUC, boolean showOriginalOTR,
-                     final Context context, boolean unread, boolean checked, boolean needTail) {
-        super.bind(messageItem, isMUC, showOriginalOTR, context, unread, checked);
+    public void bind(MessageItem messageItem, MessagesAdapter.MessageExtraData extraData) {
+        super.bind(messageItem, extraData);
+
+        final Context context = extraData.getContext();
+        boolean needTail = extraData.isNeedTail();
 
         setStatusIcon(messageItem);
 
