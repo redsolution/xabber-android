@@ -70,7 +70,7 @@
             android:layout_gravity="right"
             >
 
-            <TextView
+            <com.xabber.android.ui.widget.CorrectlyMeasuringTextView
                 android:id="@+id/message_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

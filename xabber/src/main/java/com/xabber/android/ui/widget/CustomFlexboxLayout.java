@@ -70,22 +70,21 @@ public class CustomFlexboxLayout extends RelativeLayout {
         viewPartSlaveHeight = viewPartSlave.getMeasuredHeight() + viewPartSlaveLayoutParams.topMargin + viewPartSlaveLayoutParams.bottomMargin;
 
         int viewPartMainLineCount = viewPartMain.getLineCount();
-        float viewPartMainLastLineWitdh = viewPartMainLineCount > 0 ? viewPartMain.getLayout().getLineWidth(viewPartMainLineCount - 1) : 0;
+        float viewPartMainLastLineWitdh = viewPartMainLineCount > 0 ?
+                viewPartMain.getLayout().getLineWidth(viewPartMainLineCount - 1)
+                        + viewPartMainLayoutParams.rightMargin : 0;
 
         widthSize = getPaddingLeft() + getPaddingRight();
         heightSize = getPaddingTop() + getPaddingBottom();
 
-        if (viewPartMainLineCount > 1 && !(viewPartMainLastLineWitdh + viewPartSlaveWidth >= viewPartMain.getMeasuredWidth())) {
+        if (viewPartMainLastLineWitdh + viewPartSlaveWidth > availableWidth) {
+            widthSize += viewPartMainWidth;
+            heightSize += viewPartMainHeight + viewPartSlaveHeight;
+        } else if (viewPartMainWidth >= viewPartMainLastLineWitdh + viewPartSlaveWidth) {
             widthSize += viewPartMainWidth;
             heightSize += viewPartMainHeight;
-        } else if (viewPartMainLineCount > 1 && (viewPartMainLastLineWitdh + viewPartSlaveWidth >= availableWidth)) {
-            widthSize += viewPartMainWidth;
-            heightSize += viewPartMainHeight + viewPartSlaveHeight;
-        } else if (viewPartMainLineCount == 1 && (viewPartMainWidth + viewPartSlaveWidth >= availableWidth)) {
-            widthSize += viewPartMain.getMeasuredWidth();
-            heightSize += viewPartMainHeight + viewPartSlaveHeight;
         } else {
-            widthSize += viewPartMainWidth + viewPartSlaveWidth;
+            widthSize += viewPartMainLastLineWitdh + viewPartSlaveWidth;
             heightSize += viewPartMainHeight;
         }
 
