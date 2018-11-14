@@ -21,6 +21,7 @@ import android.text.TextUtils;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.database.messagerealm.Attachment;
+import com.xabber.android.data.database.messagerealm.ForwardId;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
@@ -142,7 +143,8 @@ public class RegularChat extends AbstractChat {
     @Override
     protected MessageItem createNewMessageItem(String text) {
         return createMessageItem(null, text, null, null, false,
-                false, false, false, UUID.randomUUID().toString(), null);
+                false, false, false, UUID.randomUUID().toString(),
+                null, null, null, null, null);
     }
 
     @Override
@@ -210,20 +212,59 @@ public class RegularChat extends AbstractChat {
 
             RealmList<Attachment> attachments = HttpFileUploadManager.parseFileMessage(packet);
 
+            String uid = UUID.randomUUID().toString();
+            RealmList<ForwardId> forwardIds = parseForwardedMessage(packet, uid);
+            String originalStanza = packet.toXML().toString();
+            String originalFrom = packet.getFrom().toString();
+
             // create message with file-attachments
             if (attachments.size() > 0)
-                createAndSaveFileMessage(resource, text, null, getDelayStamp(message), true,
+                createAndSaveFileMessage(uid, resource, text, null, getDelayStamp(message), true,
                         true, encrypted, isOfflineMessage(account.getFullJid().getDomain(), packet),
-                        packet.getStanzaId(), attachments);
+                        packet.getStanzaId(), attachments, originalStanza, null, originalFrom);
 
                 // create message without attachments
-            else createAndSaveNewMessage(resource, text, null, getDelayStamp(message), true,
+            else createAndSaveNewMessage(uid, resource, text, null, getDelayStamp(message), true,
                     true, encrypted, isOfflineMessage(account.getFullJid().getDomain(), packet),
-                    packet.getStanzaId());
+                    packet.getStanzaId(), originalStanza, null, originalFrom, forwardIds);
 
             EventBus.getDefault().post(new NewIncomingMessageEvent(account, user));
         }
         return true;
+    }
+
+    @Override
+    protected String parseInnerMessage(Message message, String parentMessageId) {
+        if (message.getType() == Message.Type.error) return null;
+
+        MUCUser mucUser = MUCUser.from(message);
+        if (mucUser != null && mucUser.getInvite() != null) return null;
+
+        final Resourcepart resource = message.getFrom().getResourceOrNull();
+        String text = message.getBody();
+        if (text == null) return null;
+
+        boolean encrypted = OTRManager.getInstance().isEncrypted(text);
+
+        RealmList<Attachment> attachments = HttpFileUploadManager.parseFileMessage(message);
+
+        String uid = UUID.randomUUID().toString();
+        RealmList<ForwardId> forwardIds = parseForwardedMessage(message, uid);
+        String originalStanza = message.toXML().toString();
+        String originalFrom = message.getFrom().toString();
+
+        // create message with file-attachments
+        if (attachments.size() > 0)
+            createAndSaveFileMessage(uid, resource, text, null, null, true,
+                    false, encrypted, false, message.getStanzaId(), attachments,
+                    originalStanza, parentMessageId, originalFrom);
+
+            // create message without attachments
+        else createAndSaveNewMessage(uid, resource, text, null, null, true,
+                false, encrypted, false, message.getStanzaId(), originalStanza,
+                parentMessageId, originalFrom, forwardIds);
+
+        return uid;
     }
 
     /**

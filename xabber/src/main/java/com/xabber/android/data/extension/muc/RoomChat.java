@@ -24,6 +24,7 @@ import com.xabber.android.data.SettingsManager.ChatsShowStatusChange;
 import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.database.MessageDatabaseManager;
 import com.xabber.android.data.database.messagerealm.Attachment;
+import com.xabber.android.data.database.messagerealm.ForwardId;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
@@ -187,7 +188,8 @@ public class RoomChat extends AbstractChat {
     @Override
     protected MessageItem createNewMessageItem(String text) {
         return createMessageItem(nickname, text, null, null, false,
-                false, false, false, UUID.randomUUID().toString(), null);
+                false, false, false, UUID.randomUUID().toString(), null,
+        null, null, null, null);
     }
 
     @Override
@@ -277,14 +279,21 @@ public class RoomChat extends AbstractChat {
 
                 RealmList<Attachment> attachments = HttpFileUploadManager.parseFileMessage(stanza);
 
+                String uid = UUID.randomUUID().toString();
+                RealmList<ForwardId> forwardIds = parseForwardedMessage(stanza, uid);
+                String originalStanza = stanza.toXML().toString();
+                String originalFrom = stanza.getFrom().toString();
+
                 // create message with file-attachments
                 if (attachments.size() > 0)
-                    createAndSaveFileMessage(resource, text, null, delay, true, notify,
-                            false, false, stanzaId, attachments);
+                    createAndSaveFileMessage(uid, resource, text, null, delay, true, notify,
+                            false, false, stanzaId, attachments,
+                            originalStanza, null, originalFrom);
 
                     // create message without attachments
-                else createAndSaveNewMessage(resource, text, null, delay, true, notify,
-                        false, false, stanzaId);
+                else createAndSaveNewMessage(uid, resource, text, null, delay, true, notify,
+                        false, false, stanzaId,
+                        originalStanza, null, originalFrom, forwardIds);
 
                 EventBus.getDefault().post(new NewIncomingMessageEvent(account, user));
             }
@@ -345,7 +354,45 @@ public class RoomChat extends AbstractChat {
         return true;
     }
 
-    private void markMessageAsDelivered(final String messageUId) {
+    @Override
+    protected String parseInnerMessage(Message message, String parentMessageId) {
+        if (message.getType() == Message.Type.error) return null;
+
+        final org.jxmpp.jid.Jid from = message.getFrom();
+        final Resourcepart resource = from.getResourceOrNull();
+        final String text = message.getBody();
+        final String subject = message.getSubject();
+
+        if (text == null) return null;
+        if (subject != null) return null;
+
+        String stanzaId = message.getStanzaId();
+
+        // Use stanza id from XEP-0359 if common stanza id is null
+        if (stanzaId == null) stanzaId = UniqStanzaHelper.getStanzaId(message);
+
+        RealmList<Attachment> attachments = HttpFileUploadManager.parseFileMessage(message);
+
+        String uid = UUID.randomUUID().toString();
+        RealmList<ForwardId> forwardIds = parseForwardedMessage(message, uid);
+        String originalStanza = message.toXML().toString();
+        String originalFrom = message.getFrom().toString();
+
+        // create message with file-attachments
+        if (attachments.size() > 0)
+            createAndSaveFileMessage(uid, resource, text, null, null,
+                    true, false, false, false, stanzaId, attachments,
+                    originalStanza, parentMessageId, originalFrom);
+
+            // create message without attachments
+        else createAndSaveNewMessage(uid, resource, text, null, null,
+                true, false, false, false, stanzaId,
+                originalStanza, parentMessageId, originalFrom, forwardIds);
+
+        return uid;
+    }
+
+        private void markMessageAsDelivered(final String messageUId) {
         Application.getInstance().runInBackground(new Runnable() {
             @Override
             public void run() {
@@ -406,9 +453,11 @@ public class RoomChat extends AbstractChat {
             setState(RoomState.available);
             if (isRequested()) {
                 if (showStatusChange()) {
-                    createAndSaveNewMessage(resource, Application.getInstance().getString(
+                    createAndSaveNewMessage(UUID.randomUUID().toString(), resource, Application.getInstance().getString(
                                     R.string.action_join_complete_to, user),
-                            ChatAction.complete, null, true, true, false, false, null);
+                            ChatAction.complete, null, true, true,
+                            false, false, null,
+                            null, null, null, null);
                 }
                 active = true;
                 setRequested(false);
