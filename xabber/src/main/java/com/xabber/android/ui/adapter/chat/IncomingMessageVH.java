@@ -52,17 +52,21 @@ public class IncomingMessageVH  extends FileMessageVH {
                     ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
 
             forwardedParams.setMargins(
-                    Utils.dipToPx(11f, context),
+                    Utils.dipToPx(needTail ? 11f : 12f, context),
                     Utils.dipToPx(2f, context),
-                    Utils.dipToPx(0f, context),
+                    Utils.dipToPx(1f, context),
                     Utils.dipToPx(0f, context));
 
             forwardLayout.setLayoutParams(forwardedParams);
         } else forwardLayout.setVisibility(View.GONE);
 
         // setup BACKGROUND
-        Drawable balloonDrawable = context.getResources().getDrawable(needTail ? R.drawable.msg_in : R.drawable.msg);
-        Drawable shadowDrawable = context.getResources().getDrawable(needTail ? R.drawable.msg_in_shadow : R.drawable.msg_shadow);
+        Drawable balloonDrawable = context.getResources().getDrawable(
+                haveForwarded ? (needTail ? R.drawable.fwd_in : R.drawable.fwd)
+                            : (needTail ? R.drawable.msg_in : R.drawable.msg));
+        Drawable shadowDrawable = context.getResources().getDrawable(
+                haveForwarded ? (needTail ? R.drawable.fwd_in_shadow : R.drawable.fwd_shadow)
+                            : (needTail ? R.drawable.msg_in_shadow : R.drawable.msg_shadow));
         shadowDrawable.setColorFilter(context.getResources().getColor(R.color.black), PorterDuff.Mode.MULTIPLY);
         messageBalloon.setBackgroundDrawable(balloonDrawable);
         messageShadow.setBackgroundDrawable(shadowDrawable);
