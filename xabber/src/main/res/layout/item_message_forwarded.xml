@@ -3,8 +3,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:paddingRight="40dp"
-    android:paddingEnd="40dp"
+    android:paddingRight="8dp"
+    android:paddingEnd="8dp"
     android:layout_marginTop="2dp"
     android:layout_marginBottom="2dp"
     >

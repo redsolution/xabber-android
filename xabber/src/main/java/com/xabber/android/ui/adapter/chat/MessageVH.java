@@ -130,7 +130,7 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
             recyclerView.setLayoutManager(new LinearLayoutManager(extraData.getContext()));
             recyclerView.setAdapter(adapter);
             forwardLayout.setBackgroundColor(ColorManager.getColorWithAlpha(
-                    extraData.getAccountMainColor(), 0.5f));
+                    extraData.getAccountMainColor(), 0.2f));
             forwardLeftBorder.setBackgroundColor(extraData.getAccountMainColor());
             forwardLayout.setVisibility(View.VISIBLE);
         }
