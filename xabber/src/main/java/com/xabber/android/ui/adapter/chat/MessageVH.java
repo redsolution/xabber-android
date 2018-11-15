@@ -129,8 +129,7 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
             ForwardedAdapter adapter = new ForwardedAdapter(forwardedMessages, extraData);
             recyclerView.setLayoutManager(new LinearLayoutManager(extraData.getContext()));
             recyclerView.setAdapter(adapter);
-            forwardLayout.setBackgroundColor(ColorManager.getColorWithAlpha(
-                    extraData.getAccountMainColor(), 0.2f));
+            forwardLayout.setBackgroundColor(ColorManager.getColorWithAlpha(R.color.forwarded_background_color, 0.2f));
             forwardLeftBorder.setBackgroundColor(extraData.getAccountMainColor());
             forwardLayout.setVisibility(View.VISIBLE);
         }
