@@ -43,6 +43,23 @@ public class IncomingMessageVH  extends FileMessageVH {
         // setup ARCHIVED icon
         statusIcon.setVisibility(messageItem.isReceivedFromMessageArchive() ? View.VISIBLE : View.GONE);
 
+        // setup FORWARDED
+        boolean haveForwarded = messageItem.haveForwardedMessages();
+        if (haveForwarded) {
+            setupForwarded(messageItem, extraData);
+
+            LinearLayout.LayoutParams forwardedParams = new LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+
+            forwardedParams.setMargins(
+                    Utils.dipToPx(11f, context),
+                    Utils.dipToPx(2f, context),
+                    Utils.dipToPx(0f, context),
+                    Utils.dipToPx(0f, context));
+
+            forwardLayout.setLayoutParams(forwardedParams);
+        } else forwardLayout.setVisibility(View.GONE);
+
         // setup BACKGROUND
         Drawable balloonDrawable = context.getResources().getDrawable(needTail ? R.drawable.msg_in : R.drawable.msg);
         Drawable shadowDrawable = context.getResources().getDrawable(needTail ? R.drawable.msg_in_shadow : R.drawable.msg_shadow);
@@ -52,12 +69,12 @@ public class IncomingMessageVH  extends FileMessageVH {
 
         // setup BALLOON margins
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
 
         layoutParams.setMargins(
                 Utils.dipToPx(needTail ? 2f : 11f, context),
-                Utils.dipToPx(2f, context),
-                Utils.dipToPx(needTail ? 2f : 10f, context),
+                Utils.dipToPx(haveForwarded ? 0f : 2f, context),
+                Utils.dipToPx(0f, context),
                 Utils.dipToPx(2f, context));
         messageShadow.setLayoutParams(layoutParams);
 

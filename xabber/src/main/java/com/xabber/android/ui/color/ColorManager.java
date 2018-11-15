@@ -293,4 +293,11 @@ public class ColorManager {
                 Math.min(b,255));
     }
 
+    public static int getColorWithAlpha(int color, float alpha) {
+        return Color.argb(
+                Math.round(Color.alpha(color) * alpha),
+                Color.red(color),
+                Color.green(color),
+                Color.blue(color));
+    }
 }

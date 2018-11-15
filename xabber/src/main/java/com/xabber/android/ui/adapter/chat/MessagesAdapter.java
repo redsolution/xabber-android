@@ -45,7 +45,7 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
 
     // message font style
     private final int appearanceStyle = SettingsManager.chatsAppearanceStyle();
-    private int accountColorLevel;
+    private int accountMainColor;
     private ColorStateList colorStateList;
     private boolean isMUC;
     private Resourcepart mucNickname;
@@ -80,7 +80,7 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
         user = chat.getUser();
         userName = RosterManager.getInstance().getName(account, user);
         prevItemCount = getItemCount();
-        accountColorLevel = ColorManager.getAccountColorLevel(account);
+        accountMainColor = ColorManager.getInstance().getAccountPainter().getAccountMainColor(account);
         colorStateList = ColorManager.getInstance().getChatIncomingBalloonColorsStateList(account);
 
         isMUC = MUCManager.getInstance().hasRoom(account, user.getJid().asEntityBareJidIfPossible());
@@ -164,8 +164,8 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
             else needTail = true;
         } else needTail = viewType != getItemViewType(position + 1);
 
-        MessageExtraData extraData = new MessageExtraData(context, userName, colorStateList, isMUC,
-                showOriginalOTR, unread, checked, needTail);
+        MessageExtraData extraData = new MessageExtraData(context, userName, colorStateList,
+                accountMainColor, isMUC, showOriginalOTR, unread, checked, needTail);
 
         switch (viewType) {
             case VIEW_TYPE_ACTION_MESSAGE:
@@ -310,11 +310,12 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
 
     /** Message Extra Data */
 
-    public class MessageExtraData {
+    public static class MessageExtraData {
 
         private  Context context;
         private String username;
         private ColorStateList colorStateList;
+        private int accountMainColor;
 
         private boolean isMuc;
         private boolean showOriginalOTR;
@@ -323,11 +324,12 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
         private boolean needTail;
 
         public MessageExtraData(Context context, String username, ColorStateList colorStateList,
-                                boolean isMuc, boolean showOriginalOTR, boolean unread,
-                                boolean checked, boolean needTail) {
+                                int accountMainColor, boolean isMuc, boolean showOriginalOTR,
+                                boolean unread, boolean checked, boolean needTail) {
             this.context = context;
             this.username = username;
             this.colorStateList = colorStateList;
+            this.accountMainColor = accountMainColor;
             this.isMuc = isMuc;
             this.showOriginalOTR = showOriginalOTR;
             this.unread = unread;
@@ -345,6 +347,10 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
 
         public ColorStateList getColorStateList() {
             return colorStateList;
+        }
+
+        public int getAccountMainColor() {
+            return accountMainColor;
         }
 
         public boolean isMuc() {

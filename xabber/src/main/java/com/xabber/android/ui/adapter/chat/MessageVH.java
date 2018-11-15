@@ -5,6 +5,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.annotation.StyleRes;
 import android.support.v4.graphics.drawable.DrawableCompat;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
@@ -12,6 +13,7 @@ import android.widget.TextView;
 
 import com.amulyakhare.textdrawable.util.ColorGenerator;
 import com.xabber.android.R;
+import com.xabber.android.data.database.MessageDatabaseManager;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.log.LogManager;
@@ -19,6 +21,8 @@ import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.utils.StringUtils;
 
 import java.util.Date;
+
+import io.realm.RealmResults;
 
 public class MessageVH extends BasicMessageVH implements View.OnClickListener, View.OnLongClickListener {
 
@@ -35,6 +39,8 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
     ImageView statusIcon;
     ImageView ivEncrypted;
     String messageId;
+    View forwardLayout;
+    View forwardLeftBorder;
 
     public interface MessageClickListener {
         void onMessageClick(View caller, int position);
@@ -58,6 +64,8 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
         messageShadow = itemView.findViewById(R.id.message_shadow);
         statusIcon = itemView.findViewById(R.id.message_status_icon);
         ivEncrypted = itemView.findViewById(R.id.message_encrypted_icon);
+        forwardLayout = itemView.findViewById(R.id.forwardLayout);
+        forwardLeftBorder = itemView.findViewById(R.id.forwardLeftBorder);
 
         itemView.setOnClickListener(this);
         itemView.setOnLongClickListener(this);
@@ -102,12 +110,30 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
         messageTime.setText(time);
 
         // setup UNREAD
-        tvFirstUnread.setVisibility(extraData.isUnread() ? View.VISIBLE : View.GONE);
+        if (tvFirstUnread != null)
+            tvFirstUnread.setVisibility(extraData.isUnread() ? View.VISIBLE : View.GONE);
 
         // setup CHECKED
         if (extraData.isChecked()) itemView.setBackgroundColor(extraData.getContext().getResources()
                 .getColor(R.color.unread_messages_background));
         else itemView.setBackgroundDrawable(null);
+    }
+
+    protected void setupForwarded(MessageItem messageItem, MessagesAdapter.MessageExtraData extraData) {
+        RealmResults<MessageItem> forwardedMessages =
+            MessageDatabaseManager.getInstance().getRealmUiThread().where(MessageItem.class)
+                    .in(MessageItem.Fields.UNIQUE_ID, messageItem.getForwardedIdsAsArray()).findAll();
+
+        if (forwardedMessages.size() > 0) {
+            RecyclerView recyclerView = forwardLayout.findViewById(R.id.recyclerView);
+            ForwardedAdapter adapter = new ForwardedAdapter(forwardedMessages, extraData);
+            recyclerView.setLayoutManager(new LinearLayoutManager(extraData.getContext()));
+            recyclerView.setAdapter(adapter);
+            forwardLayout.setBackgroundColor(ColorManager.getColorWithAlpha(
+                    extraData.getAccountMainColor(), 0.5f));
+            forwardLeftBorder.setBackgroundColor(extraData.getAccountMainColor());
+            forwardLayout.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override

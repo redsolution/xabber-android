@@ -47,11 +47,17 @@
 
     <LinearLayout
         android:id="@+id/message"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@id/avatar"
         android:layout_toEndOf="@id/avatar"
-        android:layout_below="@id/tvFirstUnread">
+        android:layout_below="@id/tvFirstUnread"
+        android:orientation="vertical">
+
+        <include
+            android:id="@+id/forwardLayout"
+            layout="@layout/forwarded_layout"
+            android:visibility="gone" />
 
         <include layout="@layout/item_message" />
 
