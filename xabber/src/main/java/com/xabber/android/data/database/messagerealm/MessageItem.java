@@ -495,6 +495,18 @@ public class MessageItem extends RealmObject {
         return forwardedIds;
     }
 
+    public String[] getForwardedIdsAsArray() {
+        String forwardedIds[] = new String[getForwardedIds().size()];
+
+        int i = 0;
+        for (ForwardId id : getForwardedIds()) {
+            forwardedIds[i] = id.getForwardMessageId();
+            i++;
+        }
+
+        return forwardedIds;
+    }
+
     public void setForwardedIds(RealmList<ForwardId> forwardedMessages) {
         this.forwardedIds = forwardedMessages;
     }
