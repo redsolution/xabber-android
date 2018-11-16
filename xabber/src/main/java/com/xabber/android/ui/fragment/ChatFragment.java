@@ -52,6 +52,7 @@ import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
+import com.xabber.android.data.database.MessageDatabaseManager;
 import com.xabber.android.data.database.messagerealm.Attachment;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.database.messagerealm.SyncInfo;
@@ -80,6 +81,7 @@ import com.xabber.android.data.extension.otr.SecurityLevel;
 import com.xabber.android.data.filedownload.DownloadManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
+import com.xabber.android.data.message.ForwardManager;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.MessageUpdateEvent;
 import com.xabber.android.data.message.NewIncomingMessageEvent;
@@ -186,6 +188,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
     private View interactionView;
     private TextView tvCount;
     private ImageView ivClose;
+    private ImageView ivReply;
 
     boolean isInputEmpty = true;
     private boolean skipOnTextChanges = false;
@@ -211,7 +214,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
     private String currentPicturePath;
 
     private int clickedAttachmentPos;
-    private int clickedMessagePos;
+    private String clickedMessageUID;
 
     public static ChatFragment newInstance(AccountJid account, UserJid user) {
         ChatFragment fragment = new ChatFragment();
@@ -299,6 +302,13 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
             @Override
             public void onClick(View v) {
                 chatMessageAdapter.resetCheckedItems();
+            }
+        });
+        ivReply = view.findViewById(R.id.ivReply);
+        ivReply.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ForwardManager.forwardMessage(chatMessageAdapter.getCheckedItemIds(), account, user, "forward");
             }
         });
 
@@ -803,7 +813,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
 
             case PERMISSIONS_REQUEST_DOWNLOAD_FILE:
                 if (PermissionsRequester.isPermissionGranted(grantResults))
-                    openFileOrDownload(clickedMessagePos, clickedAttachmentPos);
+                    openFileOrDownload(clickedMessageUID, clickedAttachmentPos);
                 else onNoWritePermissionError();
                 break;
         }
@@ -1511,18 +1521,20 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
     }
 
     @Override
-    public void onFileClick(int messagePosition, int attachmentPosition) {
+    public void onFileClick(int messagePosition, int attachmentPosition, String messageUID) {
         clickedAttachmentPos = attachmentPosition;
-        clickedMessagePos = messagePosition;
+        clickedMessageUID = messageUID;
         if (PermissionsRequester.requestFileWritePermissionIfNeeded(
                 this, PERMISSIONS_REQUEST_DOWNLOAD_FILE))
-            openFileOrDownload(messagePosition, attachmentPosition);
+            openFileOrDownload(messageUID, attachmentPosition);
     }
 
-    private void openFileOrDownload(int messagePosition, int attachmentPosition) {
-        MessageItem messageItem = chatMessageAdapter.getMessageItem(messagePosition);
+    private void openFileOrDownload(String messageUID, int attachmentPosition) {
+        MessageItem messageItem = MessageDatabaseManager.getInstance().getRealmUiThread().where(MessageItem.class)
+                .equalTo(MessageItem.Fields.UNIQUE_ID, messageUID).findFirst();
+
         if (messageItem == null) {
-            LogManager.w(LOG_TAG, "onMessageFileClick: null message item. Position: " + messagePosition);
+            LogManager.w(LOG_TAG, "onMessageFileClick: null message item. UID: " + messageUID);
             return;
         }
 
@@ -1561,8 +1573,10 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
     }
 
     @Override
-    public void onImageClick(int messagePosition, int attachmentPosition) {
-        MessageItem messageItem = chatMessageAdapter.getMessageItem(messagePosition);
+    public void onImageClick(int messagePosition, int attachmentPosition, String messageUID) {
+        MessageItem messageItem = MessageDatabaseManager.getInstance().getRealmUiThread().where(MessageItem.class)
+                .equalTo(MessageItem.Fields.UNIQUE_ID, messageUID).findFirst();
+
         if (messageItem == null) {
             LogManager.w(LOG_TAG, "onMessageFileClick: null message item. Position: " + messagePosition);
             return;

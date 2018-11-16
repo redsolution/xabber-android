@@ -52,8 +52,8 @@ public class FileMessageVH extends MessageVH
     final ImageButton ivCancelUpload;
 
     public interface FileListener {
-        void onImageClick(int messagePosition, int attachmentPosition);
-        void onFileClick(int messagePosition, int attachmentPosition);
+        void onImageClick(int messagePosition, int attachmentPosition, String messageUID);
+        void onFileClick(int messagePosition, int attachmentPosition, String messageUID);
         void onFileLongClick(Attachment attachment, View caller);
         void onDownloadCancel();
         void onUploadCancel();
@@ -251,7 +251,7 @@ public class FileMessageVH extends MessageVH
             LogManager.w(LOG_TAG, "onClick: no position");
             return;
         }
-        listener.onFileClick(messagePosition, attachmentPosition);
+        listener.onFileClick(messagePosition, attachmentPosition, messageId);
     }
 
     @Override
@@ -279,25 +279,25 @@ public class FileMessageVH extends MessageVH
 
         switch (v.getId()) {
             case R.id.ivImage0:
-                listener.onImageClick(adapterPosition, 0);
+                listener.onImageClick(adapterPosition, 0, messageId);
                 break;
             case R.id.ivImage1:
-                listener.onImageClick(adapterPosition, 1);
+                listener.onImageClick(adapterPosition, 1, messageId);
                 break;
             case R.id.ivImage2:
-                listener.onImageClick(adapterPosition, 2);
+                listener.onImageClick(adapterPosition, 2, messageId);
                 break;
             case R.id.ivImage3:
-                listener.onImageClick(adapterPosition, 3);
+                listener.onImageClick(adapterPosition, 3, messageId);
                 break;
             case R.id.ivImage4:
-                listener.onImageClick(adapterPosition, 4);
+                listener.onImageClick(adapterPosition, 4, messageId);
                 break;
             case R.id.ivImage5:
-                listener.onImageClick(adapterPosition, 5);
+                listener.onImageClick(adapterPosition, 5, messageId);
                 break;
             case R.id.message_image:
-                listener.onImageClick(adapterPosition, 0);
+                listener.onImageClick(adapterPosition, 0, messageId);
                 break;
             case R.id.ivCancelUpload:
                 listener.onUploadCancel();

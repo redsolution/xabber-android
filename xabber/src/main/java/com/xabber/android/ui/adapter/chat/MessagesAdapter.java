@@ -164,7 +164,7 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
             else needTail = true;
         } else needTail = viewType != getItemViewType(position + 1);
 
-        MessageExtraData extraData = new MessageExtraData(context, userName, colorStateList,
+        MessageExtraData extraData = new MessageExtraData(fileListener, context, userName, colorStateList,
                 accountMainColor, isMUC, showOriginalOTR, unread, checked, needTail);
 
         switch (viewType) {
@@ -241,15 +241,15 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
     /** File listener */
 
     @Override
-    public void onImageClick(int messagePosition, int attachmentPosition) {
+    public void onImageClick(int messagePosition, int attachmentPosition, String messageUID) {
         if (isCheckMode) addOrRemoveCheckedItem(messagePosition);
-        else fileListener.onImageClick(messagePosition, attachmentPosition);
+        else fileListener.onImageClick(messagePosition, attachmentPosition, messageUID);
     }
 
     @Override
-    public void onFileClick(int messagePosition, int attachmentPosition) {
+    public void onFileClick(int messagePosition, int attachmentPosition, String messageUID) {
         if (isCheckMode) addOrRemoveCheckedItem(messagePosition);
-        else fileListener.onFileClick(messagePosition, attachmentPosition);
+        else fileListener.onFileClick(messagePosition, attachmentPosition, messageUID);
     }
 
     @Override
@@ -313,6 +313,7 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
     public static class MessageExtraData {
 
         private  Context context;
+        private FileMessageVH.FileListener listener;
         private String username;
         private ColorStateList colorStateList;
         private int accountMainColor;
@@ -323,9 +324,10 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
         private boolean checked;
         private boolean needTail;
 
-        public MessageExtraData(Context context, String username, ColorStateList colorStateList,
+        public MessageExtraData(FileMessageVH.FileListener listener, Context context, String username, ColorStateList colorStateList,
                                 int accountMainColor, boolean isMuc, boolean showOriginalOTR,
                                 boolean unread, boolean checked, boolean needTail) {
+            this.listener = listener;
             this.context = context;
             this.username = username;
             this.colorStateList = colorStateList;
@@ -335,6 +337,10 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
             this.unread = unread;
             this.checked = checked;
             this.needTail = needTail;
+        }
+
+        public FileMessageVH.FileListener getListener() {
+            return listener;
         }
 
         public Context getContext() {
