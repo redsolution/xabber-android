@@ -5,6 +5,7 @@ import android.view.View;
 import com.amulyakhare.textdrawable.util.ColorGenerator;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.color.ColorManager;
 
 public class ForwardedVH extends FileMessageVH {
@@ -22,13 +23,16 @@ public class ForwardedVH extends FileMessageVH {
         statusIcon.setVisibility(View.GONE);
 
         // setup message author
-        String author = null;
+        UserJid jid = null;
         try {
-            UserJid jid = UserJid.from(messageItem.getOriginalFrom());
-            author = jid.getBareJid().toString();
+            jid = UserJid.from(messageItem.getOriginalFrom());
         } catch (UserJid.UserJidCreateException e) {
             e.printStackTrace();
         }
+
+        String author = null;
+        if (jid != null)
+            author = RosterManager.getInstance().getNameOrBareJid(messageItem.getAccount(), jid);
 
         if (author != null) {
             messageHeader.setText(author);

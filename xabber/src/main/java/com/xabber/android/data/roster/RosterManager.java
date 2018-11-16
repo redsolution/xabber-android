@@ -270,6 +270,17 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
     }
 
     /**
+     * @return Contact's name or BareJid if that contacts not exist.
+     */
+    public String getNameOrBareJid(AccountJid account, UserJid user) {
+        RosterContact contact = getRosterContact(account, user);
+        if (contact == null) {
+            return user.getBareJid().toString();
+        }
+        return contact.getName();
+    }
+
+    /**
      * @return Contact's groups.
      */
     public Collection<String> getGroups(AccountJid account, UserJid user) {
