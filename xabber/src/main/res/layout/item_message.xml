@@ -78,7 +78,6 @@
             android:layout_height="wrap_content"
             app:viewPartMain="@+id/message_text"
             app:viewPartSlave="@+id/message_info"
-            android:layout_gravity="right"
             >
 
             <com.xabber.android.ui.widget.CorrectlyMeasuringTextView
