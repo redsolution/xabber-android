@@ -144,7 +144,7 @@ public class RegularChat extends AbstractChat {
     protected MessageItem createNewMessageItem(String text) {
         return createMessageItem(null, text, null, null, false,
                 false, false, false, UUID.randomUUID().toString(),
-                null, null, null, null, null);
+                null, null, null, account.getFullJid().toString(), null);
     }
 
     @Override
