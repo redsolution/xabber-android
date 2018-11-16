@@ -69,7 +69,8 @@ public class ForwardedAdapter extends RealmRecyclerViewAdapter<MessageItem, Basi
                 this.extraData.getAccountMainColor(),
                 false, false, false, false, false);
 
-        ((ForwardedVH)holder).bind(messageItem, extraData);
+        ((ForwardedVH)holder).bind(messageItem, extraData,
+                messageItem.getAccount().getFullJid().asBareJid().toString());
     }
 
 }

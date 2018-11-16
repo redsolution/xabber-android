@@ -1,8 +1,10 @@
 package com.xabber.android.ui.adapter.chat;
 
+import android.util.TypedValue;
 import android.view.View;
 
 import com.amulyakhare.textdrawable.util.ColorGenerator;
+import com.xabber.android.R;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.roster.RosterManager;
@@ -16,13 +18,13 @@ public class ForwardedVH extends FileMessageVH {
         super(itemView, messageListener, longClickListener, listener, appearance);
     }
 
-    public void bind(MessageItem messageItem, MessagesAdapter.MessageExtraData extraData) {
+    public void bind(MessageItem messageItem, MessagesAdapter.MessageExtraData extraData, String accountJid) {
         super.bind(messageItem, extraData);
 
-        // hide some elements
+        // hide STATUS ICONS
         statusIcon.setVisibility(View.GONE);
 
-        // setup message author
+        // setup MESSAGE AUTHOR
         UserJid jid = null;
         try {
             jid = UserJid.from(messageItem.getOriginalFrom());
@@ -42,5 +44,17 @@ public class ForwardedVH extends FileMessageVH {
                     ColorGenerator.MATERIAL.getColor(author), 0.8f));
             messageHeader.setVisibility(View.VISIBLE);
         } else messageHeader.setVisibility(View.GONE);
+
+        // setup BACKGROUND COLOR
+        if (jid != null && !accountJid.equals(jid.getBareJid().toString()))
+            setUpMessageBalloonBackground(messageBalloon, extraData.getColorStateList());
+        else {
+            TypedValue typedValue = new TypedValue();
+            extraData.getContext().getTheme().resolveAttribute(R.attr.message_background,
+                    typedValue, true);
+            setUpMessageBalloonBackground(messageBalloon,
+                    extraData.getContext().getResources().getColorStateList(typedValue.resourceId));
+        }
+
     }
 }
