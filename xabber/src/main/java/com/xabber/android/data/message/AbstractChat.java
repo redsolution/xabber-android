@@ -241,10 +241,10 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
      * @param resource can be <code>null</code>.
      * @param text     can be <code>null</code>.
      */
-    public void newAction(Resourcepart resource, String text, ChatAction action) {
+    public void newAction(Resourcepart resource, String text, ChatAction action, boolean fromMUC) {
         createAndSaveNewMessage(UUID.randomUUID().toString(), resource, text, action,
                 null, true, false, false, false,
-                null, null, null, null, null);
+                null, null, null, null, null, fromMUC);
     }
 
     /**
@@ -266,11 +266,11 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
                    final Date delayTimestamp, final boolean incoming, boolean notify,
                    final boolean encrypted, final boolean offline, final String stanzaId,
                    final String originalStanza, final String parentMessageId, final String originalFrom,
-                   final RealmList<ForwardId> forwardIds) {
+                   final RealmList<ForwardId> forwardIds, boolean fromMUC) {
 
         final MessageItem messageItem = createMessageItem(uid, resource, text, action, delayTimestamp,
                 incoming, notify, encrypted, offline, stanzaId, null,
-                originalStanza, parentMessageId, originalFrom, forwardIds);
+                originalStanza, parentMessageId, originalFrom, forwardIds, fromMUC);
 
         saveMessageItem(messageItem);
         EventBus.getDefault().post(new NewMessageEvent());
@@ -280,11 +280,11 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
                     final Date delayTimestamp, final boolean incoming, boolean notify,
                     final boolean encrypted, final boolean offline, final String stanzaId,
                     RealmList<Attachment> attachments, final String originalStanza,
-                    final String parentMessageId, final String originalFrom) {
+                    final String parentMessageId, final String originalFrom, boolean fromMUC) {
 
         final MessageItem messageItem = createMessageItem(uid, resource, text, action, delayTimestamp,
                 incoming, notify, encrypted, offline, stanzaId, attachments,
-                originalStanza, parentMessageId, originalFrom, null);
+                originalStanza, parentMessageId, originalFrom, null, fromMUC);
 
         saveMessageItem(messageItem);
         EventBus.getDefault().post(new NewMessageEvent());
@@ -307,18 +307,18 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
                         Date delayTimestamp, boolean incoming, boolean notify, boolean encrypted,
                         boolean offline, String stanzaId, RealmList<Attachment> attachments,
                         String originalStanza, String parentMessageId, String originalFrom,
-                        RealmList<ForwardId> forwardIds) {
+                        RealmList<ForwardId> forwardIds, boolean fromMUC) {
 
         return createMessageItem(UUID.randomUUID().toString(), resource,  text,  action,
                 delayTimestamp,  incoming,  notify,  encrypted, offline,  stanzaId, attachments,
-                 originalStanza,  parentMessageId,  originalFrom, forwardIds);
+                 originalStanza,  parentMessageId,  originalFrom, forwardIds, fromMUC);
     }
 
     protected MessageItem createMessageItem(String uid, Resourcepart resource, String text, ChatAction action,
                         Date delayTimestamp, boolean incoming, boolean notify, boolean encrypted,
                         boolean offline, String stanzaId, RealmList<Attachment> attachments,
                         String originalStanza, String parentMessageId, String originalFrom,
-                        RealmList<ForwardId> forwardIds) {
+                        RealmList<ForwardId> forwardIds, boolean fromMUC) {
 
         final boolean visible = MessageManager.getInstance().isVisibleChat(this);
         boolean read = incoming ? visible : true;
@@ -377,6 +377,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         messageItem.setSent(send);
         messageItem.setEncrypted(encrypted);
         messageItem.setOffline(offline);
+        messageItem.setFromMUC(fromMUC);
         messageItem.setStanzaId(stanzaId);
         if (attachments != null) messageItem.setAttachments(attachments);
         FileManager.processFileMessage(messageItem);

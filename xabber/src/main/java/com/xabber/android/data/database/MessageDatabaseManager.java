@@ -292,6 +292,7 @@ public class MessageDatabaseManager {
                                     .addField(MessageItem.Fields.ORIGINAL_STANZA, String.class)
                                     .addField(MessageItem.Fields.ORIGINAL_FROM, String.class)
                                     .addField(MessageItem.Fields.PARENT_MESSAGE_ID, String.class)
+                                    .addField(MessageItem.Fields.FROM_MUC, boolean.class)
                                     .addRealmListField(MessageItem.Fields.FORWARDED_IDS,
                                             schema.get(ForwardId.class.getSimpleName()));
 

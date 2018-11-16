@@ -168,10 +168,11 @@ public class AttentionManager implements OnPacketListener, OnLoadListener {
 
         for (ExtensionElement packetExtension : stanza.getExtensions()) {
             if (packetExtension instanceof AttentionExtension) {
+                boolean fromMUC = ((Message) stanza).getType().equals(Message.Type.groupchat);
                 MessageManager.getInstance().openChat(account, from);
                 MessageManager.getInstance()
                         .getOrCreateChat(account, from)
-                        .newAction(null, null, ChatAction.attention_requested);
+                        .newAction(null, null, ChatAction.attention_requested, fromMUC);
                 attentionRequestProvider.add(new AttentionRequest(account, from.getBareUserJid()), true);
             }
         }
@@ -205,7 +206,7 @@ public class AttentionManager implements OnPacketListener, OnLoadListener {
         message.setType(Message.Type.headline);
         message.addExtension(new AttentionExtension());
         StanzaSender.sendStanza(account, message);
-        chat.newAction(null, null, ChatAction.attention_called);
+        chat.newAction(null, null, ChatAction.attention_called, false);
     }
 
     public void removeAccountNotifications(AccountJid accountJid, UserJid userJid) {

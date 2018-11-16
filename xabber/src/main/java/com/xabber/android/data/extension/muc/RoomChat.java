@@ -189,7 +189,7 @@ public class RoomChat extends AbstractChat {
     protected MessageItem createNewMessageItem(String text) {
         return createMessageItem(nickname, text, null, null, false,
                 false, false, false, UUID.randomUUID().toString(), null,
-        null, null, account.getFullJid().toString(), null);
+        null, null, account.getFullJid().toString(), null, true);
     }
 
     @Override
@@ -220,7 +220,7 @@ public class RoomChat extends AbstractChat {
             if (message.getType() == Message.Type.error) {
                 UserJid invite = invites.remove(message.getStanzaId());
                 if (invite != null) {
-                    newAction(nickname, invite.toString(), ChatAction.invite_error);
+                    newAction(nickname, invite.toString(), ChatAction.invite_error, true);
                 }
                 return true;
             }
@@ -245,7 +245,7 @@ public class RoomChat extends AbstractChat {
                 }
                 this.subject = subject;
                 RosterManager.onContactChanged(account, bareAddress);
-                newAction(resource, subject, ChatAction.subject);
+                newAction(resource, subject, ChatAction.subject, true);
             } else {
                 boolean notify = true;
                 String stanzaId = message.getStanzaId();
@@ -288,12 +288,12 @@ public class RoomChat extends AbstractChat {
                 if (attachments.size() > 0)
                     createAndSaveFileMessage(uid, resource, text, null, delay, true, notify,
                             false, false, stanzaId, attachments,
-                            originalStanza, null, originalFrom);
+                            originalStanza, null, originalFrom, true);
 
                     // create message without attachments
                 else createAndSaveNewMessage(uid, resource, text, null, delay, true, notify,
                         false, false, stanzaId,
-                        originalStanza, null, originalFrom, forwardIds);
+                        originalStanza, null, originalFrom, forwardIds, true);
 
                 EventBus.getDefault().post(new NewIncomingMessageEvent(account, user));
             }
@@ -377,17 +377,18 @@ public class RoomChat extends AbstractChat {
         RealmList<ForwardId> forwardIds = parseForwardedMessage(message, uid);
         String originalStanza = message.toXML().toString();
         String originalFrom = message.getFrom().toString();
+        boolean fromMUC = message.getType().equals(Type.groupchat);
 
         // create message with file-attachments
         if (attachments.size() > 0)
             createAndSaveFileMessage(uid, resource, text, null, null,
                     true, false, false, false, stanzaId, attachments,
-                    originalStanza, parentMessageId, originalFrom);
+                    originalStanza, parentMessageId, originalFrom, fromMUC);
 
             // create message without attachments
         else createAndSaveNewMessage(uid, resource, text, null, null,
                 true, false, false, false, stanzaId,
-                originalStanza, parentMessageId, originalFrom, forwardIds);
+                originalStanza, parentMessageId, originalFrom, forwardIds, fromMUC);
 
         return uid;
     }
@@ -457,19 +458,19 @@ public class RoomChat extends AbstractChat {
                                     R.string.action_join_complete_to, user),
                             ChatAction.complete, null, true, true,
                             false, false, null,
-                            null, null, null, null);
+                            null, null, null, null, true);
                 }
                 active = true;
                 setRequested(false);
             } else {
                 if (showStatusChange()) {
-                    newAction(resource, null, ChatAction.complete);
+                    newAction(resource, null, ChatAction.complete, true);
                 }
             }
         } else {
             if (state == RoomState.available) {
                 if (showStatusChange()) {
-                    newAction(resource, null, ChatAction.join);
+                    newAction(resource, null, ChatAction.join, true);
                 }
             }
         }
@@ -532,7 +533,7 @@ public class RoomChat extends AbstractChat {
      */
     private void onLeave(Resourcepart resource) {
         if (showStatusChange()) {
-            newAction(resource, null, ChatAction.leave);
+            newAction(resource, null, ChatAction.leave, true);
         }
         if (isSelf(resource)) {
             setState(RoomState.waiting);
@@ -548,8 +549,8 @@ public class RoomChat extends AbstractChat {
      */
     private void onKick(Resourcepart resource, org.jxmpp.jid.Jid actor) {
         if (showStatusChange()) {
-            if (actor != null) newAction(resource, actor.toString(), ChatAction.kick);
-            else newAction(resource, "", ChatAction.kick);
+            if (actor != null) newAction(resource, actor.toString(), ChatAction.kick, true);
+            else newAction(resource, "", ChatAction.kick, true);
         }
         if (isSelf(resource)) {
             MUCManager.getInstance().leaveRoom(account, getRoom());
@@ -564,7 +565,7 @@ public class RoomChat extends AbstractChat {
      */
     private void onBan(Resourcepart resource, org.jxmpp.jid.Jid actor) {
         if (showStatusChange()) {
-            newAction(resource, actor.toString(), ChatAction.ban);
+            newAction(resource, actor.toString(), ChatAction.ban, true);
         }
         if (isSelf(resource)) {
             MUCManager.getInstance().leaveRoom(account, getRoom());
@@ -579,7 +580,7 @@ public class RoomChat extends AbstractChat {
      */
     private void onRename(Resourcepart resource, Resourcepart newNick) {
         if (showStatusChange()) {
-            newAction(resource, newNick.toString(), ChatAction.nickname);
+            newAction(resource, newNick.toString(), ChatAction.nickname, true);
         }
     }
 
@@ -591,7 +592,7 @@ public class RoomChat extends AbstractChat {
      */
     private void onRevoke(Resourcepart resource, org.jxmpp.jid.Jid actor) {
         if (showStatusChange()) {
-            newAction(resource, actor.toString(), ChatAction.kick);
+            newAction(resource, actor.toString(), ChatAction.kick, true);
         }
         if (isSelf(resource)) {
             MUCManager.getInstance().leaveRoom(account, getRoom());

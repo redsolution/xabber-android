@@ -31,10 +31,12 @@ public class ForwardedVH extends FileMessageVH {
         }
 
         String author = null;
-        if (jid != null)
-            author = RosterManager.getInstance().getNameOrBareJid(messageItem.getAccount(), jid);
+        if (jid != null) {
+            if (messageItem.isFromMUC()) author = jid.getJid().getResourceOrEmpty().toString();
+            else author = RosterManager.getInstance().getNameOrBareJid(messageItem.getAccount(), jid);
+        }
 
-        if (author != null) {
+        if (author != null && !author.isEmpty()) {
             messageHeader.setText(author);
             messageHeader.setTextColor(ColorManager.changeColor(
                     ColorGenerator.MATERIAL.getColor(author), 0.8f));

@@ -144,7 +144,8 @@ public class RegularChat extends AbstractChat {
     protected MessageItem createNewMessageItem(String text) {
         return createMessageItem(null, text, null, null, false,
                 false, false, false, UUID.randomUUID().toString(),
-                null, null, null, account.getFullJid().toString(), null);
+                null, null, null,
+                account.getFullJid().toString(), null, false);
     }
 
     @Override
@@ -219,14 +220,18 @@ public class RegularChat extends AbstractChat {
 
             // create message with file-attachments
             if (attachments.size() > 0)
-                createAndSaveFileMessage(uid, resource, text, null, getDelayStamp(message), true,
-                        true, encrypted, isOfflineMessage(account.getFullJid().getDomain(), packet),
-                        packet.getStanzaId(), attachments, originalStanza, null, originalFrom);
+                createAndSaveFileMessage(uid, resource, text, null, getDelayStamp(message),
+                        true, true, encrypted,
+                        isOfflineMessage(account.getFullJid().getDomain(), packet),
+                        packet.getStanzaId(), attachments, originalStanza, null,
+                        originalFrom, false);
 
                 // create message without attachments
-            else createAndSaveNewMessage(uid, resource, text, null, getDelayStamp(message), true,
-                    true, encrypted, isOfflineMessage(account.getFullJid().getDomain(), packet),
-                    packet.getStanzaId(), originalStanza, null, originalFrom, forwardIds);
+            else createAndSaveNewMessage(uid, resource, text, null, getDelayStamp(message),
+                    true, true, encrypted,
+                    isOfflineMessage(account.getFullJid().getDomain(), packet),
+                    packet.getStanzaId(), originalStanza, null,
+                    originalFrom, forwardIds,false);
 
             EventBus.getDefault().post(new NewIncomingMessageEvent(account, user));
         }
@@ -252,17 +257,18 @@ public class RegularChat extends AbstractChat {
         RealmList<ForwardId> forwardIds = parseForwardedMessage(message, uid);
         String originalStanza = message.toXML().toString();
         String originalFrom = message.getFrom().toString();
+        boolean fromMuc = message.getType().equals(Type.groupchat);
 
         // create message with file-attachments
         if (attachments.size() > 0)
             createAndSaveFileMessage(uid, resource, text, null, null, true,
                     false, encrypted, false, message.getStanzaId(), attachments,
-                    originalStanza, parentMessageId, originalFrom);
+                    originalStanza, parentMessageId, originalFrom, fromMuc);
 
             // create message without attachments
         else createAndSaveNewMessage(uid, resource, text, null, null, true,
                 false, encrypted, false, message.getStanzaId(), originalStanza,
-                parentMessageId, originalFrom, forwardIds);
+                parentMessageId, originalFrom, forwardIds, fromMuc);
 
         return uid;
     }

@@ -72,6 +72,7 @@ public class MessageItem extends RealmObject {
         public static final String ORIGINAL_STANZA = "originalStanza";
         public static final String ORIGINAL_FROM = "originalFrom";
         public static final String PARENT_MESSAGE_ID = "parentMessageId";
+        public static final String FROM_MUC = "fromMUC";
     }
 
     /**
@@ -205,6 +206,8 @@ public class MessageItem extends RealmObject {
     private String parentMessageId;
 
     private RealmList<ForwardId> forwardedIds;
+
+    private boolean fromMUC;
 
     public MessageItem(String uniqueId) {
         this.uniqueId = uniqueId;
@@ -537,5 +540,13 @@ public class MessageItem extends RealmObject {
 
     public void setParentMessageId(String parentMessageId) {
         this.parentMessageId = parentMessageId;
+    }
+
+    public boolean isFromMUC() {
+        return fromMUC;
+    }
+
+    public void setFromMUC(boolean fromMUC) {
+        this.fromMUC = fromMUC;
     }
 }
