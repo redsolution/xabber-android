@@ -1,7 +1,9 @@
 package com.xabber.android.ui.adapter.chat;
 
+import android.graphics.Paint;
 import android.util.TypedValue;
 import android.view.View;
+import android.widget.TextView;
 
 import com.amulyakhare.textdrawable.util.ColorGenerator;
 import com.xabber.android.R;
@@ -12,10 +14,13 @@ import com.xabber.android.ui.color.ColorManager;
 
 public class ForwardedVH extends FileMessageVH {
 
+    private TextView tvForwardedCount;
+
     public ForwardedVH(View itemView, MessageClickListener messageListener,
                        MessageLongClickListener longClickListener, FileListener listener,
                        int appearance) {
         super(itemView, messageListener, longClickListener, listener, appearance);
+        tvForwardedCount = itemView.findViewById(R.id.tvForwardedCount);
     }
 
     public void bind(MessageItem messageItem, MessagesAdapter.MessageExtraData extraData, String accountJid) {
@@ -55,6 +60,14 @@ public class ForwardedVH extends FileMessageVH {
             setUpMessageBalloonBackground(messageBalloon,
                     extraData.getContext().getResources().getColorStateList(typedValue.resourceId));
         }
+
+        // setup FORWARDED
+        if (messageItem.haveForwardedMessages()) {
+            tvForwardedCount.setText(String.format(extraData.getContext()
+                    .getResources().getString(R.string.forwarded_messages_count), messageItem.getForwardedIds().size()));
+            tvForwardedCount.setPaintFlags(tvForwardedCount.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+            tvForwardedCount.setVisibility(View.VISIBLE);
+        } else tvForwardedCount.setVisibility(View.GONE);
 
     }
 }
