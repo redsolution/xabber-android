@@ -85,12 +85,12 @@ public class ContactEditActivity extends ContactActivity implements Toolbar.OnMe
                 return true;
 
             case R.id.action_clear_history:
-                ChatHistoryClearDialog.newInstance(getAccount(), getUser()).show(getFragmentManager(), ChatHistoryClearDialog.class.getSimpleName());
+                ChatHistoryClearDialog.newInstance(getAccount(), getUser()).show(getSupportFragmentManager(), ChatHistoryClearDialog.class.getSimpleName());
                 return true;
 
             case R.id.action_export_chat:
                 if (PermissionsRequester.requestFileReadPermissionIfNeeded(this, PERMISSIONS_REQUEST_EXPORT_CHAT)) {
-                    ChatExportDialogFragment.newInstance(getAccount(), getUser()).show(getFragmentManager(), "CHAT_EXPORT");
+                    ChatExportDialogFragment.newInstance(getAccount(), getUser()).show(getSupportFragmentManager(), "CHAT_EXPORT");
                 }
                 return true;
 

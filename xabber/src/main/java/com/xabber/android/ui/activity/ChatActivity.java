@@ -431,9 +431,9 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
 
     private void initChats() {
         if (account != null && user != null) {
-            chatViewerAdapter = new ChatViewerAdapter(getFragmentManager(), this, account, user);
+            chatViewerAdapter = new ChatViewerAdapter(getSupportFragmentManager(), this, account, user);
         } else {
-            chatViewerAdapter = new ChatViewerAdapter(getFragmentManager(), this);
+            chatViewerAdapter = new ChatViewerAdapter(getSupportFragmentManager(), this);
         }
 
         viewPager = (ViewPager) findViewById(R.id.pager);

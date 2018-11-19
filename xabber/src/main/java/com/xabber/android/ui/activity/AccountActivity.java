@@ -156,7 +156,7 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
         Fragment fragmentById = getFragmentManager().findFragmentById(R.id.account_fragment_container);
 
         if (fragmentById == null) {
-            getFragmentManager().beginTransaction()
+            getSupportFragmentManager().beginTransaction()
                     .add(R.id.account_fragment_container, ContactVcardViewerFragment.newInstance(account))
                     .commit();
         }
