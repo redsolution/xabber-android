@@ -305,7 +305,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         ivClose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                chatMessageAdapter.resetCheckedItems();
+                closeInteractionPanel();
             }
         });
         ivReply = view.findViewById(R.id.ivReply);
@@ -313,7 +313,8 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
             @Override
             public void onClick(View v) {
                 //ForwardManager.forwardMessage(chatMessageAdapter.getCheckedItemIds(), account, user, "forward");
-                showForwardPanel();
+                showForwardPanel(chatMessageAdapter.getCheckedItemIds());
+                closeInteractionPanel();
             }
         });
 
@@ -1838,6 +1839,10 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         }
     }
 
+    private void closeInteractionPanel() {
+        chatMessageAdapter.resetCheckedItems();
+    }
+
     /** Forward Panel */
 
     @Override
@@ -1855,11 +1860,12 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         }
     }
 
-    private void showForwardPanel() {
+    private void showForwardPanel(List<String> forwardIds) {
+        List<String> ids = new ArrayList<>(forwardIds);
         Activity activity = getActivity();
         if (activity != null && !activity.isFinishing()) {
             FragmentManager fragmentManager = getChildFragmentManager();
-            forwardPanel = ForwardPanel.newInstance(chatMessageAdapter.getCheckedItemIds());
+            forwardPanel = ForwardPanel.newInstance(ids);
             FragmentTransaction fTrans = fragmentManager.beginTransaction();
             fTrans.replace(R.id.secondBottomPanel, forwardPanel);
             fTrans.commit();

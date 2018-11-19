@@ -36,12 +36,7 @@ public class ForwardedVH extends FileMessageVH {
         } catch (UserJid.UserJidCreateException e) {
             e.printStackTrace();
         }
-
-        String author = null;
-        if (jid != null) {
-            if (messageItem.isFromMUC()) author = jid.getJid().getResourceOrEmpty().toString();
-            else author = RosterManager.getInstance().getNameOrBareJid(messageItem.getAccount(), jid);
-        }
+        String author = RosterManager.getDisplayAuthorName(messageItem);
 
         if (author != null && !author.isEmpty()) {
             messageHeader.setText(author);

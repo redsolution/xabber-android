@@ -28,6 +28,7 @@ import com.xabber.android.data.account.listeners.OnAccountEnabledListener;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.StanzaSender;
 import com.xabber.android.data.connection.listeners.OnDisconnectListener;
+import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.NestedMap;
 import com.xabber.android.data.entity.UserJid;
@@ -622,5 +623,22 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
                 }
             }
         });
+    }
+
+    public static String getDisplayAuthorName(MessageItem messageItem) {
+        UserJid jid = null;
+        try {
+            jid = UserJid.from(messageItem.getOriginalFrom());
+        } catch (UserJid.UserJidCreateException e) {
+            e.printStackTrace();
+        }
+
+        String author = null;
+        if (jid != null) {
+            if (messageItem.isFromMUC()) author = jid.getJid().getResourceOrEmpty().toString();
+            else author = RosterManager.getInstance().getNameOrBareJid(messageItem.getAccount(), jid);
+        }
+
+        return author;
     }
 }

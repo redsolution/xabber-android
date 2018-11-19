@@ -5,7 +5,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/grey_100"
+    android:background="@color/grey_50"
     >
 
     <View
@@ -32,13 +32,17 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textStyle="bold"
-            tools:text="Valery Miller"
+            android:singleLine="true"
+            android:ellipsize="middle"
+            tools:text="John Doe"
             />
 
         <TextView
             android:id="@+id/tvForwardedText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:ellipsize="middle"
             tools:text="2 forwarded messages"
             />
 

@@ -5,15 +5,24 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.amulyakhare.textdrawable.util.ColorGenerator;
 import com.xabber.android.R;
+import com.xabber.android.data.database.MessageDatabaseManager;
+import com.xabber.android.data.database.messagerealm.MessageItem;
+import com.xabber.android.data.roster.RosterManager;
+import com.xabber.android.ui.color.ColorManager;
 
+import java.util.HashSet;
 import java.util.List;
+
+import io.realm.RealmResults;
 
 public class ForwardPanel extends Fragment {
 
@@ -59,9 +68,19 @@ public class ForwardPanel extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        int count = forwardedIds.size();
-        tvForwardedFrom.setText("Valery Miller");
-        tvForwardedText.setText(count + " forwarded messages");
+        if (forwardedIds != null && forwardedIds.size() > 0) {
+            RealmResults<MessageItem> forwardedMessages =
+                    MessageDatabaseManager.getInstance().getRealmUiThread().where(MessageItem.class)
+                            .in(MessageItem.Fields.UNIQUE_ID, forwardedIds.toArray(new String[0])).findAll();
+
+            tvForwardedFrom.setText(Html.fromHtml(getNames(forwardedMessages)));
+            if (forwardedMessages.size() > 1) {
+                Context context = getContext();
+                if (context != null)
+                    tvForwardedText.setText(String.format(context.getResources()
+                        .getString(R.string.forwarded_messages_count), forwardedMessages.size()));
+            } else tvForwardedText.setText(forwardedMessages.get(0).getText());
+        }
 
         ivCloseForwardPanel.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -69,5 +88,23 @@ public class ForwardPanel extends Fragment {
                 listener.onClose();
             }
         });
+    }
+
+    private String getNames(RealmResults<MessageItem> messages) {
+        HashSet<String> names = new HashSet<>();
+        for (MessageItem message : messages) {
+            String name = RosterManager.getDisplayAuthorName(message);
+            int color = ColorManager.changeColor(ColorGenerator.MATERIAL.getColor(name), 0.8f);
+            names.add("<font color='#" + color + "'>" + name + "</font>");
+        }
+
+        StringBuilder stringBuilder = new StringBuilder();
+        for (String name : names) {
+            stringBuilder.append(name);
+            stringBuilder.append(", ");
+        }
+
+        stringBuilder.delete(stringBuilder.length() - 2, stringBuilder.length() - 1);
+        return stringBuilder.toString();
     }
 }
