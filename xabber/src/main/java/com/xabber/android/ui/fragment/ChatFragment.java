@@ -1,7 +1,7 @@
 package com.xabber.android.ui.fragment;
 
 import android.app.Activity;
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.content.ActivityNotFoundException;
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -16,6 +16,8 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.FileProvider;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
@@ -81,7 +83,6 @@ import com.xabber.android.data.extension.otr.SecurityLevel;
 import com.xabber.android.data.filedownload.DownloadManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
-import com.xabber.android.data.message.ForwardManager;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.MessageUpdateEvent;
 import com.xabber.android.data.message.NewIncomingMessageEvent;
@@ -105,6 +106,7 @@ import com.xabber.android.ui.dialog.ChatExportDialogFragment;
 import com.xabber.android.ui.dialog.ChatHistoryClearDialog;
 import com.xabber.android.ui.helper.PermissionsRequester;
 import com.xabber.android.ui.widget.CustomMessageMenu;
+import com.xabber.android.ui.widget.ForwardPanel;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -138,7 +140,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         View.OnClickListener, Toolbar.OnMenuItemClickListener,
         MessageVH.MessageClickListener, FileMessageVH.FileListener, HttpUploadListener,
         MessagesAdapter.Listener, AdapterView.OnItemClickListener, PopupWindow.OnDismissListener,
-        AttachDialog.Listener, OnAccountChangedListener {
+        AttachDialog.Listener, OnAccountChangedListener, ForwardPanel.OnCloseListener {
 
     public static final String ARGUMENT_ACCOUNT = "ARGUMENT_ACCOUNT";
     public static final String ARGUMENT_USER = "ARGUMENT_USER";
@@ -215,6 +217,8 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
 
     private int clickedAttachmentPos;
     private String clickedMessageUID;
+
+    private ForwardPanel forwardPanel;
 
     public static ChatFragment newInstance(AccountJid account, UserJid user) {
         ChatFragment fragment = new ChatFragment();
@@ -308,7 +312,8 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         ivReply.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ForwardManager.forwardMessage(chatMessageAdapter.getCheckedItemIds(), account, user, "forward");
+                //ForwardManager.forwardMessage(chatMessageAdapter.getCheckedItemIds(), account, user, "forward");
+                showForwardPanel();
             }
         });
 
@@ -374,7 +379,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
             if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.dark) {
                 view.setBackgroundResource(R.drawable.chat_background_repeat_dark);
             } else {
-                view.setBackgroundResource(R.drawable.chat_background_test);
+                view.setBackgroundResource(R.drawable.chat_background_repeat);
             }
         } else {
             view.setBackgroundColor(ColorManager.getInstance().getChatBackgroundColor());
@@ -1830,6 +1835,34 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
                     chatMessageAdapter.notifyDataSetChanged();
                 }
             });
+        }
+    }
+
+    /** Forward Panel */
+
+    @Override
+    public void onClose() {
+        hideForwardPanel();
+    }
+
+    private void hideForwardPanel() {
+        Activity activity = getActivity();
+        if (activity != null && !activity.isFinishing()) {
+            FragmentManager fragmentManager = getChildFragmentManager();
+            FragmentTransaction fTrans = fragmentManager.beginTransaction();
+            fTrans.remove(forwardPanel);
+            fTrans.commit();
+        }
+    }
+
+    private void showForwardPanel() {
+        Activity activity = getActivity();
+        if (activity != null && !activity.isFinishing()) {
+            FragmentManager fragmentManager = getChildFragmentManager();
+            forwardPanel = ForwardPanel.newInstance(chatMessageAdapter.getCheckedItemIds());
+            FragmentTransaction fTrans = fragmentManager.beginTransaction();
+            fTrans.replace(R.id.secondBottomPanel, forwardPanel);
+            fTrans.commit();
         }
     }
 }

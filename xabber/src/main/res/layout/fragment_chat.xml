@@ -26,7 +26,7 @@
         android:id="@+id/swipeContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/bottomPanel"
+        android:layout_above="@+id/secondBottomPanel"
         android:layout_below="@+id/toolbar_default"
         >
 
@@ -58,8 +58,16 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="4dp"
-        android:layout_above="@id/bottomPanel"
+        android:layout_above="@id/secondBottomPanel"
         android:background="@drawable/bottom_view_shadow"/>
+
+    <FrameLayout
+        android:id="@+id/secondBottomPanel"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/bottomPanel"
+        />
 
     <RelativeLayout
         android:id="@+id/bottomPanel"
@@ -78,7 +86,7 @@
         android:id="@+id/btnScrollDown"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@id/bottomPanel"
+        android:layout_above="@id/secondBottomPanel"
         android:layout_alignParentRight="true"
         android:clickable="true"
         android:visibility="gone"
