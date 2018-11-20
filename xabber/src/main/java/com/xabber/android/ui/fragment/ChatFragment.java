@@ -83,6 +83,7 @@ import com.xabber.android.data.extension.otr.SecurityLevel;
 import com.xabber.android.data.filedownload.DownloadManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
+import com.xabber.android.data.message.ForwardManager;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.MessageUpdateEvent;
 import com.xabber.android.data.message.NewIncomingMessageEvent;
@@ -219,6 +220,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
     private String clickedMessageUID;
 
     private ForwardPanel forwardPanel;
+    private List<String> forwardIds = new ArrayList<>();
 
     public static ChatFragment newInstance(AccountJid account, UserJid user) {
         ChatFragment fragment = new ChatFragment();
@@ -312,8 +314,8 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         ivReply.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //ForwardManager.forwardMessage(chatMessageAdapter.getCheckedItemIds(), account, user, "forward");
-                showForwardPanel(chatMessageAdapter.getCheckedItemIds());
+                forwardIds = new ArrayList<>(chatMessageAdapter.getCheckedItemIds());
+                showForwardPanel(forwardIds);
                 closeInteractionPanel();
             }
         });
@@ -380,7 +382,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
             if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.dark) {
                 view.setBackgroundResource(R.drawable.chat_background_repeat_dark);
             } else {
-                view.setBackgroundResource(R.drawable.chat_background_repeat);
+                view.setBackgroundResource(R.drawable.chat_background_test);
             }
         } else {
             view.setBackgroundColor(ColorManager.getInstance().getChatBackgroundColor());
@@ -1010,6 +1012,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
 
     private void setUpInputViewButtons() {
         boolean empty = inputView.getText().toString().trim().isEmpty();
+        if (empty) empty = forwardIds.isEmpty();
 
         if (empty != isInputEmpty) {
             isInputEmpty = empty;
@@ -1051,14 +1054,15 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
 
     private void sendMessage() {
         String text = inputView.getText().toString().trim();
-
-        if (text.isEmpty()) {
-            return;
-        }
-
         clearInputText();
 
-        sendMessage(text);
+        if (forwardIds != null && !forwardIds.isEmpty()) {
+            sendForwardMessage(forwardIds, !text.isEmpty() ? text : " ");
+        } else if (!text.isEmpty()) {
+            sendMessage(text);
+        } else {
+            return;
+        }
 
         listener.onMessageSent();
 
@@ -1841,6 +1845,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
 
     private void closeInteractionPanel() {
         chatMessageAdapter.resetCheckedItems();
+        setUpInputViewButtons();
     }
 
     /** Forward Panel */
@@ -1851,6 +1856,9 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
     }
 
     private void hideForwardPanel() {
+        forwardIds.clear();
+        setUpInputViewButtons();
+
         Activity activity = getActivity();
         if (activity != null && !activity.isFinishing()) {
             FragmentManager fragmentManager = getChildFragmentManager();
@@ -1870,5 +1878,10 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
             fTrans.replace(R.id.secondBottomPanel, forwardPanel);
             fTrans.commit();
         }
+    }
+
+    private void sendForwardMessage(List<String> messages, String text) {
+        ForwardManager.forwardMessage(messages, account, user, text);
+        hideForwardPanel();
     }
 }
