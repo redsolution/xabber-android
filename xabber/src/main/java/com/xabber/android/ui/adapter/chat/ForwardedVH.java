@@ -1,6 +1,9 @@
 package com.xabber.android.ui.adapter.chat;
 
+import android.content.Context;
 import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.TextView;
@@ -15,12 +18,16 @@ import com.xabber.android.ui.color.ColorManager;
 public class ForwardedVH extends FileMessageVH {
 
     private TextView tvForwardedCount;
+    private View innerForwardLayout;
+    private View innerForwardLeftBorder;
 
     public ForwardedVH(View itemView, MessageClickListener messageListener,
                        MessageLongClickListener longClickListener, FileListener listener,
                        int appearance) {
         super(itemView, messageListener, longClickListener, listener, appearance);
         tvForwardedCount = itemView.findViewById(R.id.tvForwardedCount);
+        innerForwardLayout = itemView.findViewById(R.id.innerForwardLayout);
+        innerForwardLeftBorder = itemView.findViewById(R.id.innerForwardLeftBorder);
     }
 
     public void bind(MessageItem messageItem, MessagesAdapter.MessageExtraData extraData, String accountJid) {
@@ -45,6 +52,27 @@ public class ForwardedVH extends FileMessageVH {
             messageHeader.setVisibility(View.VISIBLE);
         } else messageHeader.setVisibility(View.GONE);
 
+        // setup FORWARDED
+        Context context = extraData.getContext();
+        boolean haveForwarded = messageItem.haveForwardedMessages();
+        if (haveForwarded) {
+            innerForwardLayout.setVisibility(View.VISIBLE);
+            tvForwardedCount.setText(String.format(extraData.getContext()
+                    .getResources().getString(R.string.forwarded_messages_count), messageItem.getForwardedIds().size()));
+            tvForwardedCount.setPaintFlags(tvForwardedCount.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+            innerForwardLayout.setBackgroundColor(ColorManager.getColorWithAlpha(R.color.forwarded_background_color, 0.2f));
+            innerForwardLeftBorder.setBackgroundColor(extraData.getAccountMainColor());
+        } else innerForwardLayout.setVisibility(View.GONE);
+
+        // setup BACKGROUND
+        Drawable balloonDrawable = context.getResources().getDrawable(
+                haveForwarded ? R.drawable.fwd : R.drawable.msg);
+        Drawable shadowDrawable = context.getResources().getDrawable(
+                haveForwarded ? R.drawable.fwd_shadow : R.drawable.msg_shadow);
+        shadowDrawable.setColorFilter(context.getResources().getColor(R.color.black), PorterDuff.Mode.MULTIPLY);
+        messageBalloon.setBackgroundDrawable(balloonDrawable);
+        messageShadow.setBackgroundDrawable(shadowDrawable);
+
         // setup BACKGROUND COLOR
         if (jid != null && !accountJid.equals(jid.getBareJid().toString()))
             setUpMessageBalloonBackground(messageBalloon, extraData.getColorStateList());
@@ -55,14 +83,6 @@ public class ForwardedVH extends FileMessageVH {
             setUpMessageBalloonBackground(messageBalloon,
                     extraData.getContext().getResources().getColorStateList(typedValue.resourceId));
         }
-
-        // setup FORWARDED
-        if (messageItem.haveForwardedMessages()) {
-            tvForwardedCount.setText(String.format(extraData.getContext()
-                    .getResources().getString(R.string.forwarded_messages_count), messageItem.getForwardedIds().size()));
-            tvForwardedCount.setPaintFlags(tvForwardedCount.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
-            tvForwardedCount.setVisibility(View.VISIBLE);
-        } else tvForwardedCount.setVisibility(View.GONE);
 
     }
 }
