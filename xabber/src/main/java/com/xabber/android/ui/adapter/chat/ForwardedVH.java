@@ -18,16 +18,12 @@ import com.xabber.android.ui.color.ColorManager;
 public class ForwardedVH extends FileMessageVH {
 
     private TextView tvForwardedCount;
-    private View innerForwardLayout;
-    private View innerForwardLeftBorder;
 
     public ForwardedVH(View itemView, MessageClickListener messageListener,
                        MessageLongClickListener longClickListener, FileListener listener,
                        int appearance) {
         super(itemView, messageListener, longClickListener, listener, appearance);
         tvForwardedCount = itemView.findViewById(R.id.tvForwardedCount);
-        innerForwardLayout = itemView.findViewById(R.id.innerForwardLayout);
-        innerForwardLeftBorder = itemView.findViewById(R.id.innerForwardLeftBorder);
     }
 
     public void bind(MessageItem messageItem, MessagesAdapter.MessageExtraData extraData, String accountJid) {
@@ -56,13 +52,13 @@ public class ForwardedVH extends FileMessageVH {
         Context context = extraData.getContext();
         boolean haveForwarded = messageItem.haveForwardedMessages();
         if (haveForwarded) {
-            innerForwardLayout.setVisibility(View.VISIBLE);
+            forwardLayout.setVisibility(View.VISIBLE);
             tvForwardedCount.setText(String.format(extraData.getContext()
                     .getResources().getString(R.string.forwarded_messages_count), messageItem.getForwardedIds().size()));
             tvForwardedCount.setPaintFlags(tvForwardedCount.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
-            innerForwardLayout.setBackgroundColor(ColorManager.getColorWithAlpha(R.color.forwarded_background_color, 0.2f));
-            innerForwardLeftBorder.setBackgroundColor(extraData.getAccountMainColor());
-        } else innerForwardLayout.setVisibility(View.GONE);
+            forwardLayout.setBackgroundColor(ColorManager.getColorWithAlpha(R.color.forwarded_background_color, 0.2f));
+            forwardLeftBorder.setBackgroundColor(extraData.getAccountMainColor());
+        } else forwardLayout.setVisibility(View.GONE);
 
         // setup BACKGROUND
         Drawable balloonDrawable = context.getResources().getDrawable(
