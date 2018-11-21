@@ -207,16 +207,16 @@ public class RegularChat extends AbstractChat {
                 }
             }
 
-            // System message received.
-            if (text == null || text.trim().equals(""))
-                return true;
-
             RealmList<Attachment> attachments = HttpFileUploadManager.parseFileMessage(packet);
 
             String uid = UUID.randomUUID().toString();
             RealmList<ForwardId> forwardIds = parseForwardedMessage(packet, uid);
             String originalStanza = packet.toXML().toString();
             String originalFrom = packet.getFrom().toString();
+
+            // System message received.
+            if ((text == null || text.trim().equals("")) && forwardIds.isEmpty())
+                return true;
 
             // create message with file-attachments
             if (attachments.size() > 0)
