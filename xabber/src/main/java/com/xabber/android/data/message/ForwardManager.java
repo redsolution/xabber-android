@@ -24,7 +24,7 @@ public class ForwardManager {
         }
 
         messageItem.setForwardedIds(ids);
-        chat.saveMessageItem(messageItem);
+        chat.saveMessageItem(true, messageItem);
         chat.sendMessages();
         EventBus.getDefault().post(new NewMessageEvent());
     }

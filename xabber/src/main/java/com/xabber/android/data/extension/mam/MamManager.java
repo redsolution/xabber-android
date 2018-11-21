@@ -9,6 +9,7 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.database.MessageDatabaseManager;
 import com.xabber.android.data.database.messagerealm.Attachment;
+import com.xabber.android.data.database.messagerealm.ForwardId;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.database.messagerealm.SyncInfo;
 import com.xabber.android.data.entity.AccountJid;
@@ -32,6 +33,7 @@ import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
+import org.jivesoftware.smack.util.PacketParserUtils;
 import org.jivesoftware.smackx.delay.packet.DelayInformation;
 import org.jivesoftware.smackx.forward.packet.Forwarded;
 
@@ -42,6 +44,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
@@ -339,6 +342,16 @@ public class MamManager implements OnRosterReceivedListener {
                 iterator.remove();
                 continue;
             }
+
+            // forwarded
+            try {
+                Message message = (Message) PacketParserUtils.parseStanza(remoteMessage.getOriginalStanza());
+                RealmList<ForwardId> forwardIds = chat.parseForwardedMessage(false, message, remoteMessage.getUniqueId());
+                if (!forwardIds.isEmpty())
+                    remoteMessage.setForwardedIds(forwardIds);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
         realm.beginTransaction();
@@ -522,7 +535,8 @@ public class MamManager implements OnRosterReceivedListener {
 
             boolean incoming = message.getFrom().asBareJid().equals(chat.getUser().getJid().asBareJid());
 
-            MessageItem messageItem = new MessageItem();
+            String uid = UUID.randomUUID().toString();
+            MessageItem messageItem = new MessageItem(uid);
 
             messageItem.setAccount(chat.getAccount());
             messageItem.setUser(chat.getUser());
@@ -539,11 +553,16 @@ public class MamManager implements OnRosterReceivedListener {
             messageItem.setSent(true);
             messageItem.setEncrypted(encrypted);
 
+            // attachments
             FileManager.processFileMessage(messageItem);
 
             RealmList<Attachment> attachments = HttpFileUploadManager.parseFileMessage(message);
             if (attachments.size() > 0)
                 messageItem.setAttachments(attachments);
+
+            // forwarded
+            messageItem.setOriginalStanza(message.toXML().toString());
+            messageItem.setOriginalFrom(message.getFrom().toString());
 
             messageItems.add(messageItem);
         }

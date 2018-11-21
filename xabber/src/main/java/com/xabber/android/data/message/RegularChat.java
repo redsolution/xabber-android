@@ -210,7 +210,7 @@ public class RegularChat extends AbstractChat {
             RealmList<Attachment> attachments = HttpFileUploadManager.parseFileMessage(packet);
 
             String uid = UUID.randomUUID().toString();
-            RealmList<ForwardId> forwardIds = parseForwardedMessage(packet, uid);
+            RealmList<ForwardId> forwardIds = parseForwardedMessage(true, packet, uid);
             String originalStanza = packet.toXML().toString();
             String originalFrom = packet.getFrom().toString();
 
@@ -220,14 +220,14 @@ public class RegularChat extends AbstractChat {
 
             // create message with file-attachments
             if (attachments.size() > 0)
-                createAndSaveFileMessage(uid, resource, text, null, getDelayStamp(message),
+                createAndSaveFileMessage(true, uid, resource, text, null, getDelayStamp(message),
                         true, true, encrypted,
                         isOfflineMessage(account.getFullJid().getDomain(), packet),
                         packet.getStanzaId(), attachments, originalStanza, null,
                         originalFrom, false);
 
                 // create message without attachments
-            else createAndSaveNewMessage(uid, resource, text, null, getDelayStamp(message),
+            else createAndSaveNewMessage(true, uid, resource, text, null, getDelayStamp(message),
                     true, true, encrypted,
                     isOfflineMessage(account.getFullJid().getDomain(), packet),
                     packet.getStanzaId(), originalStanza, null,
@@ -239,7 +239,7 @@ public class RegularChat extends AbstractChat {
     }
 
     @Override
-    protected String parseInnerMessage(Message message, String parentMessageId) {
+    protected String parseInnerMessage(boolean ui, Message message, String parentMessageId) {
         if (message.getType() == Message.Type.error) return null;
 
         MUCUser mucUser = MUCUser.from(message);
@@ -256,7 +256,7 @@ public class RegularChat extends AbstractChat {
         RealmList<Attachment> attachments = HttpFileUploadManager.parseFileMessage(message);
 
         String uid = UUID.randomUUID().toString();
-        RealmList<ForwardId> forwardIds = parseForwardedMessage(message, uid);
+        RealmList<ForwardId> forwardIds = parseForwardedMessage(ui, message, uid);
         String originalStanza = message.toXML().toString();
         String originalFrom = "";
         if (fromJid != null) originalFrom = fromJid.toString();
@@ -264,12 +264,12 @@ public class RegularChat extends AbstractChat {
 
         // create message with file-attachments
         if (attachments.size() > 0)
-            createAndSaveFileMessage(uid, resource, text, null, null, true,
+            createAndSaveFileMessage(ui, uid, resource, text, null, null, true,
                     false, encrypted, false, message.getStanzaId(), attachments,
                     originalStanza, parentMessageId, originalFrom, fromMuc);
 
             // create message without attachments
-        else createAndSaveNewMessage(uid, resource, text, null, null, true,
+        else createAndSaveNewMessage(ui, uid, resource, text, null, null, true,
                 false, encrypted, false, message.getStanzaId(), originalStanza,
                 parentMessageId, originalFrom, forwardIds, fromMuc);
 

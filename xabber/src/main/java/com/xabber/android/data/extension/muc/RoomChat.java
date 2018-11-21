@@ -280,18 +280,18 @@ public class RoomChat extends AbstractChat {
                 RealmList<Attachment> attachments = HttpFileUploadManager.parseFileMessage(stanza);
 
                 String uid = UUID.randomUUID().toString();
-                RealmList<ForwardId> forwardIds = parseForwardedMessage(stanza, uid);
+                RealmList<ForwardId> forwardIds = parseForwardedMessage(true, stanza, uid);
                 String originalStanza = stanza.toXML().toString();
                 String originalFrom = stanza.getFrom().toString();
 
                 // create message with file-attachments
                 if (attachments.size() > 0)
-                    createAndSaveFileMessage(uid, resource, text, null, delay, true, notify,
+                    createAndSaveFileMessage(true, uid, resource, text, null, delay, true, notify,
                             false, false, stanzaId, attachments,
                             originalStanza, null, originalFrom, true);
 
                     // create message without attachments
-                else createAndSaveNewMessage(uid, resource, text, null, delay, true, notify,
+                else createAndSaveNewMessage(true, uid, resource, text, null, delay, true, notify,
                         false, false, stanzaId,
                         originalStanza, null, originalFrom, forwardIds, true);
 
@@ -355,7 +355,7 @@ public class RoomChat extends AbstractChat {
     }
 
     @Override
-    protected String parseInnerMessage(Message message, String parentMessageId) {
+    protected String parseInnerMessage(boolean ui, Message message, String parentMessageId) {
         if (message.getType() == Message.Type.error) return null;
 
         final org.jxmpp.jid.Jid from = message.getFrom();
@@ -374,19 +374,19 @@ public class RoomChat extends AbstractChat {
         RealmList<Attachment> attachments = HttpFileUploadManager.parseFileMessage(message);
 
         String uid = UUID.randomUUID().toString();
-        RealmList<ForwardId> forwardIds = parseForwardedMessage(message, uid);
+        RealmList<ForwardId> forwardIds = parseForwardedMessage(ui, message, uid);
         String originalStanza = message.toXML().toString();
         String originalFrom = message.getFrom().toString();
         boolean fromMUC = message.getType().equals(Type.groupchat);
 
         // create message with file-attachments
         if (attachments.size() > 0)
-            createAndSaveFileMessage(uid, resource, text, null, null,
+            createAndSaveFileMessage(ui, uid, resource, text, null, null,
                     true, false, false, false, stanzaId, attachments,
                     originalStanza, parentMessageId, originalFrom, fromMUC);
 
             // create message without attachments
-        else createAndSaveNewMessage(uid, resource, text, null, null,
+        else createAndSaveNewMessage(ui, uid, resource, text, null, null,
                 true, false, false, false, stanzaId,
                 originalStanza, parentMessageId, originalFrom, forwardIds, fromMUC);
 
@@ -454,7 +454,7 @@ public class RoomChat extends AbstractChat {
             setState(RoomState.available);
             if (isRequested()) {
                 if (showStatusChange()) {
-                    createAndSaveNewMessage(UUID.randomUUID().toString(), resource, Application.getInstance().getString(
+                    createAndSaveNewMessage(true, UUID.randomUUID().toString(), resource, Application.getInstance().getString(
                                     R.string.action_join_complete_to, user),
                             ChatAction.complete, null, true, true,
                             false, false, null,

@@ -242,7 +242,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
      * @param text     can be <code>null</code>.
      */
     public void newAction(Resourcepart resource, String text, ChatAction action, boolean fromMUC) {
-        createAndSaveNewMessage(UUID.randomUUID().toString(), resource, text, action,
+        createAndSaveNewMessage(true, UUID.randomUUID().toString(), resource, text, action,
                 null, true, false, false, false,
                 null, null, null, null, null, fromMUC);
     }
@@ -262,7 +262,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
      * @param offline        Whether message was received from server side offline storage.
      * @return
      */
-    protected void createAndSaveNewMessage(String uid, Resourcepart resource, String text, final ChatAction action,
+    protected void createAndSaveNewMessage(boolean ui, String uid, Resourcepart resource, String text, final ChatAction action,
                    final Date delayTimestamp, final boolean incoming, boolean notify,
                    final boolean encrypted, final boolean offline, final String stanzaId,
                    final String originalStanza, final String parentMessageId, final String originalFrom,
@@ -272,11 +272,11 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
                 incoming, notify, encrypted, offline, stanzaId, null,
                 originalStanza, parentMessageId, originalFrom, forwardIds, fromMUC);
 
-        saveMessageItem(messageItem);
+        saveMessageItem(ui, messageItem);
         EventBus.getDefault().post(new NewMessageEvent());
     }
 
-    protected void createAndSaveFileMessage(String uid, Resourcepart resource, String text, final ChatAction action,
+    protected void createAndSaveFileMessage(boolean ui, String uid, Resourcepart resource, String text, final ChatAction action,
                     final Date delayTimestamp, final boolean incoming, boolean notify,
                     final boolean encrypted, final boolean offline, final String stanzaId,
                     RealmList<Attachment> attachments, final String originalStanza,
@@ -286,14 +286,17 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
                 incoming, notify, encrypted, offline, stanzaId, attachments,
                 originalStanza, parentMessageId, originalFrom, null, fromMUC);
 
-        saveMessageItem(messageItem);
+        saveMessageItem(ui, messageItem);
         EventBus.getDefault().post(new NewMessageEvent());
     }
 
-    public void saveMessageItem(final MessageItem messageItem) {
+    public void saveMessageItem(boolean ui, final MessageItem messageItem) {
         final long startTime = System.currentTimeMillis();
-        MessageDatabaseManager.getInstance().getRealmUiThread()
-                .executeTransactionAsync(new Realm.Transaction() {
+        Realm realm;
+        if (ui) realm = MessageDatabaseManager.getInstance().getRealmUiThread();
+        else realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
+
+        realm.executeTransactionAsync(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
                 realm.copyToRealm(messageItem);
@@ -796,7 +799,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         this.lastPosition = lastPosition;
     }
 
-    protected RealmList<ForwardId> parseForwardedMessage(Stanza packet, String parentMessageId) {
+    public RealmList<ForwardId> parseForwardedMessage(boolean ui, Stanza packet, String parentMessageId) {
         List<ExtensionElement> elements = packet.getExtensions(Forwarded.ELEMENT, Forwarded.NAMESPACE);
         if (elements == null || elements.size() == 0) return null;
 
@@ -805,12 +808,12 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
             if (element instanceof Forwarded) {
                 Stanza stanza = ((Forwarded) element).getForwardedStanza();
                 if (stanza instanceof Message) {
-                    forwarded.add(new ForwardId(parseInnerMessage((Message) stanza, parentMessageId)));
+                    forwarded.add(new ForwardId(parseInnerMessage(ui, (Message) stanza, parentMessageId)));
                 }
             }
         }
         return forwarded;
     }
 
-    protected abstract String parseInnerMessage(Message message, String parentMessageId);
+    protected abstract String parseInnerMessage(boolean ui, Message message, String parentMessageId);
 }
