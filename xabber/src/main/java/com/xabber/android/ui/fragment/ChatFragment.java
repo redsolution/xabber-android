@@ -762,7 +762,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
     public void onEvent(NewIncomingMessageEvent event) {
         if (event.getAccount().equals(account) && event.getUser().equals(user)) {
             listener.playIncomingAnimation();
-            playIncomingSound();
+            //playIncomingSound();
             increaseUnreadMessageCountIfNeed();
             chatMessageAdapter.setUnreadCount(chatMessageAdapter.getUnreadCount() + 1);
         }

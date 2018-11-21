@@ -245,7 +245,9 @@ public class RegularChat extends AbstractChat {
         MUCUser mucUser = MUCUser.from(message);
         if (mucUser != null && mucUser.getInvite() != null) return null;
 
-        final Resourcepart resource = message.getFrom().getResourceOrNull();
+        final Jid fromJid = message.getFrom();
+        Resourcepart resource = null;
+        if (fromJid != null) resource = fromJid.getResourceOrNull();
         String text = message.getBody();
         if (text == null) return null;
 
@@ -256,7 +258,8 @@ public class RegularChat extends AbstractChat {
         String uid = UUID.randomUUID().toString();
         RealmList<ForwardId> forwardIds = parseForwardedMessage(message, uid);
         String originalStanza = message.toXML().toString();
-        String originalFrom = message.getFrom().toString();
+        String originalFrom = "";
+        if (fromJid != null) originalFrom = fromJid.toString();
         boolean fromMuc = message.getType().equals(Type.groupchat);
 
         // create message with file-attachments

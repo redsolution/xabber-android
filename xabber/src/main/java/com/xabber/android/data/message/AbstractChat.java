@@ -674,6 +674,9 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         if (message == null) {
             messageItem.setError(true);
             messageItem.setErrorDescription("Internal error: message is null");
+        } else {
+            message.setFrom(account.getFullJid());
+            messageItem.setOriginalStanza(message.toXML().toString());
         }
 
         if (delayTimestamp != null) {
