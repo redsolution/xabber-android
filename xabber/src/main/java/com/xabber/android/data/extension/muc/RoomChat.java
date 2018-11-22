@@ -189,7 +189,7 @@ public class RoomChat extends AbstractChat {
     protected MessageItem createNewMessageItem(String text) {
         return createMessageItem(nickname, text, null, null, false,
                 false, false, false, UUID.randomUUID().toString(), null,
-        null, null, account.getFullJid().toString(), null, true);
+        null, null, account.getFullJid().toString(), null, false);
     }
 
     @Override
