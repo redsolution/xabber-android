@@ -1,7 +1,6 @@
 package com.xabber.android.ui.fragment;
 
 import android.app.Activity;
-import android.support.v4.app.Fragment;
 import android.content.ActivityNotFoundException;
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -16,6 +15,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.FileProvider;
@@ -192,6 +192,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
     private TextView tvCount;
     private ImageView ivClose;
     private ImageView ivReply;
+    private ImageView ivForward;
 
     boolean isInputEmpty = true;
     private boolean skipOnTextChanges = false;
@@ -317,6 +318,15 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
                 forwardIds = new ArrayList<>(chatMessageAdapter.getCheckedItemIds());
                 showForwardPanel(forwardIds);
                 closeInteractionPanel();
+            }
+        });
+        ivForward = view.findViewById(R.id.ivForward);
+        ivForward.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                forwardIds = new ArrayList<>(chatMessageAdapter.getCheckedItemIds());
+                closeInteractionPanel();
+                openChooserForForward((ArrayList<String>) forwardIds);
             }
         });
 
@@ -1868,6 +1878,12 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         }
     }
 
+    public void setForwardIds(List<String> forwardIds) {
+        this.forwardIds = forwardIds;
+        setUpInputViewButtons();
+        showForwardPanel(forwardIds);
+    }
+
     private void showForwardPanel(List<String> forwardIds) {
         List<String> ids = new ArrayList<>(forwardIds);
         Activity activity = getActivity();
@@ -1883,5 +1899,9 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
     private void sendForwardMessage(List<String> messages, String text) {
         ForwardManager.forwardMessage(messages, account, user, text);
         hideForwardPanel();
+    }
+
+    private void openChooserForForward(ArrayList<String> forwardIds) {
+        ((ChatActivity)getActivity()).forwardMessages(forwardIds);
     }
 }

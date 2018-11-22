@@ -114,6 +114,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     private static final String ACTION_ATTENTION = "com.xabber.android.data.ATTENTION";
     private static final String ACTION_RECENT_CHATS = "com.xabber.android.data.RECENT_CHATS";
     private static final String ACTION_SPECIFIC_CHAT = "com.xabber.android.data.ACTION_SPECIFIC_CHAT";
+    public static final String ACTION_FORWARD = "com.xabber.android.data.ACTION_FORWARD";
 
     public static final String EXTRA_OTR_REQUEST = "com.xabber.android.data.EXTRA_OTR_REQUEST";
     public static final String EXTRA_OTR_PROGRESS = "com.xabber.android.data.EXTRA_OTR_PROGRESS";
@@ -124,6 +125,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     public final static String KEY_USER = "KEY_USER";
     public final static String KEY_QUESTION = "KEY_QUESTION";
     public final static String KEY_SHOW_ARCHIVED = "KEY_SHOW_ARCHIVED";
+    public final static String KEY_MESSAGES_ID = "KEY_MESSAGES_ID";
 
     private static final String SAVE_SELECTED_PAGE = "com.xabber.android.ui.activity.ChatActivity.SAVE_SELECTED_PAGE";
     private static final String SAVE_SELECTED_ACCOUNT = "com.xabber.android.ui.activity.ChatActivity.SAVE_SELECTED_ACCOUNT";
@@ -136,6 +138,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     ViewPager viewPager;
 
     private String extraText = null;
+    private ArrayList<String> forwardsIds;
 
     private StatusBarPainter statusBarPainter;
 
@@ -236,6 +239,14 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     public static Intent createClearTopIntent(Context context, AccountJid account, UserJid user) {
         Intent intent = createSpecificChatIntent(context, account, user);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        return intent;
+    }
+
+    public static Intent createForwardIntent(Context context, AccountJid account, UserJid user,
+                                             ArrayList<String> messagesIds) {
+        Intent intent = new EntityIntentBuilder(context, ChatActivity.class).setAccount(account).setUser(user).build();
+        intent.setAction(ACTION_FORWARD);
+        intent.putStringArrayListExtra(KEY_MESSAGES_ID, messagesIds);
         return intent;
     }
 
@@ -375,6 +386,13 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         if (!SettingsManager.chatShowcaseSuggested()) {
             showShowcase(true);
         }
+
+        // forward
+        if (ACTION_FORWARD.equals(intent.getAction())) {
+            List<String> messages = intent.getStringArrayListExtra(KEY_MESSAGES_ID);
+            forwardsIds = (ArrayList<String>) messages;
+            intent.removeExtra(KEY_MESSAGES_ID);
+        }
     }
 
     public void handleShareFileUri(Uri fileUri) {
@@ -471,6 +489,9 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
             case ACTION_SPECIFIC_CHAT:
             case ACTION_ATTENTION:
             case Intent.ACTION_SEND:
+                selectedPagePosition = ChatViewerAdapter.PAGE_POSITION_CHAT;
+                break;
+            case ACTION_FORWARD:
                 selectedPagePosition = ChatViewerAdapter.PAGE_POSITION_CHAT;
                 break;
         }
@@ -629,6 +650,13 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     @Override
     public void onChatViewAdapterFinishUpdate() {
         insertExtraText();
+        setForwardMessages();
+    }
+
+    private void setForwardMessages() {
+        if (forwardsIds == null || chatFragment == null) return;
+        chatFragment.setForwardIds(forwardsIds);
+        forwardsIds = null;
     }
 
     private void insertExtraText() {
@@ -1040,6 +1068,14 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         sendIntent.putExtra(Intent.EXTRA_TEXT, text);
         sendIntent.setType("text/plain");
         startActivity(Intent.createChooser(sendIntent, getResources().getText(R.string.send_to)));
+    }
+
+    public void forwardMessages(ArrayList<String> messagesIds) {
+        Intent sendIntent = ContactListActivity.createIntent(this);
+        sendIntent.setAction(ACTION_FORWARD);
+        sendIntent.putStringArrayListExtra(KEY_MESSAGES_ID, messagesIds);
+        finish();
+        startActivity(sendIntent);
     }
 
     public void onJoinConferenceClick() {
