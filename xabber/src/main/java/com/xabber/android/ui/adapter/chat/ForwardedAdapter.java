@@ -19,6 +19,9 @@ public class ForwardedAdapter extends RealmRecyclerViewAdapter<MessageItem, Basi
 
     private static final String LOG_TAG = MessagesAdapter.class.getSimpleName();
 
+    private static final int VIEW_TYPE_MESSAGE = 1;
+    private static final int VIEW_TYPE_MESSAGE_NOFLEX = 2;
+
     private final int appearanceStyle = SettingsManager.chatsAppearanceStyle();
     private MessagesAdapter.MessageExtraData extraData;
     private FileMessageVH.FileListener listener;
@@ -29,6 +32,17 @@ public class ForwardedAdapter extends RealmRecyclerViewAdapter<MessageItem, Basi
         super(extraData.getContext(), realmResults, true);
         this.extraData = extraData;
         this.listener = extraData.getListener();
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        MessageItem messageItem = getMessageItem(position);
+        if (messageItem == null) return 0;
+
+        // if have forwarded-messages or attachments should use special layout without flexbox-style text
+        if (messageItem.haveForwardedMessages() || messageItem.haveAttachments() || messageItem.isImage())
+            return VIEW_TYPE_MESSAGE_NOFLEX;
+        else return VIEW_TYPE_MESSAGE;
     }
 
     @Override
@@ -49,9 +63,16 @@ public class ForwardedAdapter extends RealmRecyclerViewAdapter<MessageItem, Basi
 
     @Override
     public BasicMessageVH onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new ForwardedVH(LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_message_forwarded, parent, false),
-                this, this, listener, appearanceStyle);
+        switch (viewType) {
+            case VIEW_TYPE_MESSAGE_NOFLEX:
+                return new NoFlexForwardedVH(LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.item_message_forwarded_noflex, parent, false),
+                        this, this, listener, appearanceStyle);
+            default:
+                return new ForwardedVH(LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.item_message_forwarded, parent, false),
+                        this, this, listener, appearanceStyle);
+        }
     }
 
     @Override
@@ -72,8 +93,16 @@ public class ForwardedAdapter extends RealmRecyclerViewAdapter<MessageItem, Basi
                 this.extraData.getColorStateList(), this.extraData.getAccountMainColor(),
                 false, false, false, false, false);
 
-        ((ForwardedVH)holder).bind(messageItem, extraData,
-                messageItem.getAccount().getFullJid().asBareJid().toString());
+        final int viewType = getItemViewType(position);
+        switch (viewType) {
+            case VIEW_TYPE_MESSAGE_NOFLEX:
+                ((NoFlexForwardedVH)holder).bind(messageItem, extraData,
+                        messageItem.getAccount().getFullJid().asBareJid().toString());
+                break;
+            default:
+                ((ForwardedVH)holder).bind(messageItem, extraData,
+                        messageItem.getAccount().getFullJid().asBareJid().toString());
+        }
     }
 
     @Override

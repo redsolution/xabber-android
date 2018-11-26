@@ -105,7 +105,7 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
             return VIEW_TYPE_ACTION_MESSAGE;
 
         // if noFlex is true, should use special layout without flexbox-style text
-        boolean noFlex = messageItem.haveForwardedMessages() || messageItem.haveAttachments();
+        boolean noFlex = messageItem.haveForwardedMessages() || messageItem.haveAttachments() || messageItem.isImage();
 
         if (messageItem.isIncoming()) {
             if (isMUC && messageItem.getResource().equals(mucNickname)) {

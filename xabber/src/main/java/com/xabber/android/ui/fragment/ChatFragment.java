@@ -1338,7 +1338,9 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         int itemViewType = chatMessageAdapter.getItemViewType(position);
 
         if (itemViewType == MessagesAdapter.VIEW_TYPE_INCOMING_MESSAGE
-                || itemViewType == MessagesAdapter.VIEW_TYPE_OUTGOING_MESSAGE) {
+                || itemViewType == MessagesAdapter.VIEW_TYPE_OUTGOING_MESSAGE
+                || itemViewType == MessagesAdapter.VIEW_TYPE_INCOMING_MESSAGE_NOFLEX
+                || itemViewType== MessagesAdapter.VIEW_TYPE_OUTGOING_MESSAGE_NOFLEX) {
 
             clickedMessageItem = chatMessageAdapter.getMessageItem(position);
             if (clickedMessageItem == null) {
