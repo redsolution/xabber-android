@@ -94,11 +94,13 @@ import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.activity.ChatActivity;
 import com.xabber.android.ui.activity.ContactActivity;
 import com.xabber.android.ui.activity.ContactEditActivity;
+import com.xabber.android.ui.activity.ForwardedActivity;
 import com.xabber.android.ui.activity.ImageViewerActivity;
 import com.xabber.android.ui.activity.QuestionActivity;
 import com.xabber.android.ui.adapter.CustomMessageMenuAdapter;
 import com.xabber.android.ui.adapter.ResourceAdapter;
 import com.xabber.android.ui.adapter.chat.FileMessageVH;
+import com.xabber.android.ui.adapter.chat.ForwardedAdapter;
 import com.xabber.android.ui.adapter.chat.MessageVH;
 import com.xabber.android.ui.adapter.chat.MessagesAdapter;
 import com.xabber.android.ui.color.ColorManager;
@@ -141,7 +143,8 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         View.OnClickListener, Toolbar.OnMenuItemClickListener,
         MessageVH.MessageClickListener, FileMessageVH.FileListener, HttpUploadListener,
         MessagesAdapter.Listener, AdapterView.OnItemClickListener, PopupWindow.OnDismissListener,
-        AttachDialog.Listener, OnAccountChangedListener, ForwardPanel.OnCloseListener {
+        AttachDialog.Listener, OnAccountChangedListener, ForwardPanel.OnCloseListener,
+        ForwardedAdapter.ForwardListener {
 
     public static final String ARGUMENT_ACCOUNT = "ARGUMENT_ACCOUNT";
     public static final String ARGUMENT_USER = "ARGUMENT_USER";
@@ -420,7 +423,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         }
 
         chatMessageAdapter = new MessagesAdapter(getActivity(), messageItems, abstractChat,
-                this, this, this);
+                this, this, this, this);
         realmRecyclerView.setAdapter(chatMessageAdapter);
 
         restoreInputState();
@@ -1905,5 +1908,12 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
 
     private void openChooserForForward(ArrayList<String> forwardIds) {
         ((ChatActivity)getActivity()).forwardMessages(forwardIds);
+    }
+
+    /** Forwarded Adapter Listener */
+
+    @Override
+    public void onForwardClick(String messageId) {
+        startActivity(ForwardedActivity.createIntent(getActivity(), messageId, user, account));
     }
 }

@@ -43,6 +43,7 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
     private final Context context;
     private final MessageVH.MessageClickListener messageListener;
     private final FileMessageVH.FileListener fileListener;
+    private final ForwardedAdapter.ForwardListener fwdListener;
     private final Listener listener;
 
     // message font style
@@ -70,12 +71,14 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
     public MessagesAdapter(
             Context context, RealmResults<MessageItem> messageItems,
             AbstractChat chat, MessageVH.MessageClickListener messageListener,
-            FileMessageVH.FileListener fileListener, Listener listener) {
+            FileMessageVH.FileListener fileListener, ForwardedAdapter.ForwardListener fwdListener,
+            Listener listener) {
         super(context, messageItems, true);
 
         this.context = context;
         this.messageListener = messageListener;
         this.fileListener = fileListener;
+        this.fwdListener = fwdListener;
         this.listener = listener;
 
         account = chat.getAccount();
@@ -180,8 +183,9 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
             else needTail = true;
         } else needTail = viewType != getItemViewType(position + 1);
 
-        MessageExtraData extraData = new MessageExtraData(fileListener, context, userName, colorStateList,
-                accountMainColor, isMUC, showOriginalOTR, unread, checked, needTail);
+        MessageExtraData extraData = new MessageExtraData(fileListener, fwdListener, context,
+                userName, colorStateList, accountMainColor, isMUC, showOriginalOTR, unread,
+                checked, needTail);
 
         switch (viewType) {
             case VIEW_TYPE_ACTION_MESSAGE:
@@ -338,6 +342,7 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
 
         private  Context context;
         private FileMessageVH.FileListener listener;
+        private ForwardedAdapter.ForwardListener fwdListener;
         private String username;
         private ColorStateList colorStateList;
         private int accountMainColor;
@@ -348,10 +353,13 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
         private boolean checked;
         private boolean needTail;
 
-        public MessageExtraData(FileMessageVH.FileListener listener, Context context, String username, ColorStateList colorStateList,
+        public MessageExtraData(FileMessageVH.FileListener listener,
+                                ForwardedAdapter.ForwardListener fwdListener,
+                                Context context, String username, ColorStateList colorStateList,
                                 int accountMainColor, boolean isMuc, boolean showOriginalOTR,
                                 boolean unread, boolean checked, boolean needTail) {
             this.listener = listener;
+            this.fwdListener = fwdListener;
             this.context = context;
             this.username = username;
             this.colorStateList = colorStateList;
@@ -365,6 +373,10 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
 
         public FileMessageVH.FileListener getListener() {
             return listener;
+        }
+
+        public ForwardedAdapter.ForwardListener getFwdListener() {
+            return fwdListener;
         }
 
         public Context getContext() {

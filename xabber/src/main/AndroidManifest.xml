@@ -564,6 +564,11 @@
                 <data android:scheme="@string/SOCIAL_AUTH_FACEBOOK_SCHEME" />
             </intent-filter>
         </activity>
+        <activity android:name=".ui.activity.ForwardedActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.xabber.android.ui.activity.ChatActivity" />
+        </activity>
     </application>
 
 </manifest>

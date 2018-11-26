@@ -25,13 +25,18 @@ public class ForwardedAdapter extends RealmRecyclerViewAdapter<MessageItem, Basi
     private final int appearanceStyle = SettingsManager.chatsAppearanceStyle();
     private MessagesAdapter.MessageExtraData extraData;
     private FileMessageVH.FileListener listener;
+    private ForwardListener fwdListener;
 
+    public interface ForwardListener {
+        void onForwardClick(String messageId);
+    }
 
     public ForwardedAdapter(RealmResults<MessageItem> realmResults,
                             MessagesAdapter.MessageExtraData extraData) {
         super(extraData.getContext(), realmResults, true);
         this.extraData = extraData;
         this.listener = extraData.getListener();
+        this.fwdListener = extraData.getFwdListener();
     }
 
     @Override
@@ -89,7 +94,7 @@ public class ForwardedAdapter extends RealmRecyclerViewAdapter<MessageItem, Basi
             ((MessageVH)holder).messageId = messageItem.getUniqueId();
 
         MessagesAdapter.MessageExtraData extraData = new MessagesAdapter.MessageExtraData(
-                null, this.extraData.getContext(), messageItem.getOriginalFrom(),
+                null, null, this.extraData.getContext(), messageItem.getOriginalFrom(),
                 this.extraData.getColorStateList(), this.extraData.getAccountMainColor(),
                 false, false, false, false, false);
 
@@ -107,7 +112,9 @@ public class ForwardedAdapter extends RealmRecyclerViewAdapter<MessageItem, Basi
 
     @Override
     public void onMessageClick(View caller, int position) {
-
+        MessageItem message = getItem(position);
+        if (message != null && message.haveForwardedMessages())
+            fwdListener.onForwardClick(message.getUniqueId());
     }
 
     @Override
