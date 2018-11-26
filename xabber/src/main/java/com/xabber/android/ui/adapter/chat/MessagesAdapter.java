@@ -35,8 +35,10 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
     private static final String LOG_TAG = MessagesAdapter.class.getSimpleName();
 
     public static final int VIEW_TYPE_INCOMING_MESSAGE = 2;
+    public static final int VIEW_TYPE_INCOMING_MESSAGE_NOFLEX = 5;
     public static final int VIEW_TYPE_OUTGOING_MESSAGE = 3;
     private static final int VIEW_TYPE_ACTION_MESSAGE = 4;
+    public static final int VIEW_TYPE_OUTGOING_MESSAGE_NOFLEX = 6;
 
     private final Context context;
     private final MessageVH.MessageClickListener messageListener;
@@ -102,12 +104,15 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
         if (messageItem.getAction() != null)
             return VIEW_TYPE_ACTION_MESSAGE;
 
+        // if noFlex is true, should use special layout without flexbox-style text
+        boolean noFlex = messageItem.haveForwardedMessages() || messageItem.haveAttachments();
+
         if (messageItem.isIncoming()) {
             if (isMUC && messageItem.getResource().equals(mucNickname)) {
-                return VIEW_TYPE_OUTGOING_MESSAGE;
+                return noFlex ? VIEW_TYPE_OUTGOING_MESSAGE_NOFLEX : VIEW_TYPE_OUTGOING_MESSAGE;
             }
-            return VIEW_TYPE_INCOMING_MESSAGE;
-        } else return VIEW_TYPE_OUTGOING_MESSAGE;
+            return noFlex ? VIEW_TYPE_INCOMING_MESSAGE_NOFLEX : VIEW_TYPE_INCOMING_MESSAGE;
+        } else return noFlex ? VIEW_TYPE_OUTGOING_MESSAGE_NOFLEX : VIEW_TYPE_OUTGOING_MESSAGE;
     }
 
     @Override
@@ -122,10 +127,21 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
                         .inflate(R.layout.item_message_incoming, parent, false),
                         this, this, this, appearanceStyle);
 
+            case VIEW_TYPE_INCOMING_MESSAGE_NOFLEX:
+                return new NoFlexIncomingMsgVH(LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.item_message_incoming_noflex, parent, false),
+                        this, this, this, appearanceStyle);
+
             case VIEW_TYPE_OUTGOING_MESSAGE:
                 return new OutgoingMessageVH(LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.item_message_outgoing, parent, false),
                         this, this, this, appearanceStyle);
+
+            case VIEW_TYPE_OUTGOING_MESSAGE_NOFLEX:
+                return new NoFlexOutgoingMsgVH(LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.item_message_outgoing_noflex, parent, false),
+                        this, this, this, appearanceStyle);
+
             default:
                 return null;
         }
@@ -174,10 +190,18 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
 
             case VIEW_TYPE_INCOMING_MESSAGE:
                 ((IncomingMessageVH)holder).bind(messageItem, extraData);
-
                 break;
+
+            case VIEW_TYPE_INCOMING_MESSAGE_NOFLEX:
+                ((NoFlexIncomingMsgVH)holder).bind(messageItem, extraData);
+                break;
+
             case VIEW_TYPE_OUTGOING_MESSAGE:
                 ((OutgoingMessageVH)holder).bind(messageItem, extraData);
+                break;
+
+            case VIEW_TYPE_OUTGOING_MESSAGE_NOFLEX:
+                ((NoFlexOutgoingMsgVH)holder).bind(messageItem, extraData);
                 break;
         }
     }
