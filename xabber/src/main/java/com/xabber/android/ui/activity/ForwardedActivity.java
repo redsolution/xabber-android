@@ -1,6 +1,5 @@
 package com.xabber.android.ui.activity;
 
-import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
@@ -15,22 +14,18 @@ import android.view.View;
 import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.database.MessageDatabaseManager;
-import com.xabber.android.data.database.messagerealm.Attachment;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.muc.MUCManager;
-import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.roster.RosterManager;
-import com.xabber.android.ui.adapter.chat.FileMessageVH;
 import com.xabber.android.ui.adapter.chat.ForwardedAdapter;
 import com.xabber.android.ui.adapter.chat.MessagesAdapter;
 import com.xabber.android.ui.color.ColorManager;
 
 import io.realm.RealmResults;
 
-public class ForwardedActivity extends ManagedActivity implements ForwardedAdapter.ForwardListener,
-        FileMessageVH.FileListener {
+public class ForwardedActivity extends FileInteractionActivity implements ForwardedAdapter.ForwardListener {
 
     private String messageId;
     private UserJid user;
@@ -47,8 +42,6 @@ public class ForwardedActivity extends ManagedActivity implements ForwardedAdapt
     private final static String KEY_MESSAGE_ID = "messageId";
     private final static String KEY_ACCOUNT = "account";
     private final static String KEY_USER = "user";
-
-    private static final String LOG_TAG = ForwardedActivity.class.getSimpleName();
 
     public static Intent createIntent(Context context, String messageId, UserJid user, AccountJid account) {
         Intent intent = new Intent(context, ForwardedActivity.class);
@@ -130,61 +123,5 @@ public class ForwardedActivity extends ManagedActivity implements ForwardedAdapt
     @Override
     public void onForwardClick(String messageId) {
         startActivity(ForwardedActivity.createIntent(this, messageId, user, account));
-    }
-
-    /** Files listener */
-
-    @Override
-    public void onImageClick(int messagePosition, int attachmentPosition, String messageUID) {
-        MessageItem messageItem = MessageDatabaseManager.getInstance().getRealmUiThread().where(MessageItem.class)
-                .equalTo(MessageItem.Fields.UNIQUE_ID, messageUID).findFirst();
-
-        if (messageItem == null) {
-            LogManager.w(LOG_TAG, "onMessageFileClick: null message item. Position: " + messagePosition);
-            return;
-        }
-
-        if (messageItem.haveAttachments()) {
-            try {
-                startActivity(ImageViewerActivity.createIntent(this,
-                        messageItem.getUniqueId(), attachmentPosition));
-                // possible if image was not sent and don't have URL yet.
-            } catch (ActivityNotFoundException e) {
-                LogManager.exception(LOG_TAG, e);
-            }
-        } else {
-            try {
-                startActivity(ImageViewerActivity.createIntent(this,
-                        messageItem.getUniqueId(), messageItem.getText()));
-                // possible if image was not sent and don't have URL yet.
-            } catch (ActivityNotFoundException e) {
-                LogManager.exception(LOG_TAG, e);
-            }
-        }
-    }
-
-    @Override
-    public void onFileClick(int messagePosition, int attachmentPosition, String messageUID) {
-
-    }
-
-    @Override
-    public void onFileLongClick(Attachment attachment, View caller) {
-
-    }
-
-    @Override
-    public void onDownloadCancel() {
-
-    }
-
-    @Override
-    public void onUploadCancel() {
-
-    }
-
-    @Override
-    public void onDownloadError(String error) {
-
     }
 }
