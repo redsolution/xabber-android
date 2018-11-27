@@ -17,12 +17,8 @@
   <string name="processing_image">Опрацювання зображення...</string>
   <string name="error_during_crop">Виникла помилка при обрізанні зображення</string>
   <string name="error_during_image_processing">Error during image processing</string>
-  <string name="account_settings">Налаштування облікового запису</string>
-  <string name="account_user_info">Інформація облікового запису</string>
-  <string name="account_server_info">Інформація про сервер</string>
+    <string name="account_server_info">Інформація про сервер</string>
   <string name="account_server_info_description">Перелік можливостей сервера</string>
   <string name="conference_private_chat_invitation">%1$s з %2$s хоче розпочати особистий чат з вами</string>
   <string name="accept_muc_private_chat">Прийняти</string>
-  <string name="block_muc_private_chat">Заблокувати</string>
-  <string name="no_permission_camera">Немає дозволу на доступ до камери</string>
 </resources>

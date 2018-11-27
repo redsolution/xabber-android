@@ -17,11 +17,14 @@
   <string name="save">Сохранить</string>
   <string name="cancel">Отмена</string>
   <string name="skip">Пропустить</string>
+  <string name="skip_anyway">Все равно продолжить</string>
+  <string name="warning">Внимание!</string>
   <string name="settings">Настройки</string>
   <string name="ok">ОК</string>
   <string name="login">Вход</string>
-  <string name="resume">Продолжить</string>
   <string name="share">Поделиться</string>
   <string name="send_to">Отправить:</string>
   <string name="got_it">Понял</string>
+  <string name="search">Поиск</string>
+  <string name="free">бесплатно</string>
 </resources>

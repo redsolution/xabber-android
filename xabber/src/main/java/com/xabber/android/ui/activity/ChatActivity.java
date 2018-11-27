@@ -519,7 +519,6 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
 
         if (chatFragment != null) {
             chatFragment.saveInputState();
-            chatFragment.saveScrollState();
             chatFragment.setChat(chat.getAccount(), chat.getUser());
         }
 
@@ -645,6 +644,8 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
 
     @Override
     public void onChatSelected(AccountJid accountJid, UserJid userJid) {
+        if (chatFragment != null)
+            chatFragment.saveScrollState();
         selectChat(accountJid, userJid);
     }
 

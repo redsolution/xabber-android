@@ -55,6 +55,7 @@ public class AccountItem extends ConnectionItem implements Comparable<AccountIte
     private int order;
     private int timestamp;
     private boolean syncNotAllowed;
+    private boolean xabberAutoLoginEnabled;
 
     /**
      * Whether account is enabled.
@@ -121,7 +122,7 @@ public class AccountItem extends ConnectionItem implements Comparable<AccountIte
                        boolean compression, ProxyType proxyType, String proxyHost,
                        int proxyPort, String proxyUser, String proxyPassword,
                        boolean syncable, KeyPair keyPair, Date lastSync,
-                       ArchiveMode archiveMode) {
+                       ArchiveMode archiveMode, boolean xabberAutoLoginEnabled) {
         super(custom, host, port, serverName, userName, resource,
                 storePassword, password, token, saslEnabled, tlsMode, compression,
                 proxyType, proxyHost, proxyPort, proxyUser, proxyPassword);
@@ -130,6 +131,7 @@ public class AccountItem extends ConnectionItem implements Comparable<AccountIte
         this.order = order;
         this.timestamp = timestamp;
         this.syncNotAllowed = syncNotAllowed;
+        this.xabberAutoLoginEnabled = xabberAutoLoginEnabled;
 
         this.enabled = enabled;
         this.priority = getValidPriority(priority);
@@ -183,6 +185,14 @@ public class AccountItem extends ConnectionItem implements Comparable<AccountIte
 
     public void setSyncNotAllowed(boolean syncNotAllowed) {
         this.syncNotAllowed = syncNotAllowed;
+    }
+
+    public boolean isXabberAutoLoginEnabled() {
+        return xabberAutoLoginEnabled;
+    }
+
+    public void setXabberAutoLoginEnabled(boolean xabberAutoLoginEnabled) {
+        this.xabberAutoLoginEnabled = xabberAutoLoginEnabled;
     }
 
     /**

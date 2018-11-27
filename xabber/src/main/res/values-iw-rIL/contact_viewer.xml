@@ -17,12 +17,9 @@
   <string name="vcard_organization_unit">יחידה ארגונית</string>
   <string name="vcard_title">תואר משרה, תפקוד</string>
   <string name="vcard_role">תפקיד</string>
-  <string name="vcard_other">מידע אחר</string>
-  <string name="vcard_categories">קטגוריות</string>
-  <string name="vcard_decsription">תיאור</string>
+    <string name="vcard_decsription">תיאור</string>
   <string name="vcard_note">הערות</string>
-  <string name="vcard_address">כתובת</string>
-  <string name="vcard_address_pobox">PO Box</string>
+    <string name="vcard_address_pobox">PO Box</string>
   <string name="vcard_address_extadr">כתובת מורחבת</string>
   <string name="vcard_address_street">רחוב</string>
   <string name="vcard_address_locality">מקומיות</string>

@@ -16,6 +16,7 @@ import de.duenndns.ssl.MemorizingTrustManager;
 
 public class CertificateManager implements OnAccountRemovedListener {
 
+    private Activity currentActivityForBind;
     private static CertificateManager instance;
 
     public static CertificateManager getInstance() {
@@ -37,6 +38,7 @@ public class CertificateManager implements OnAccountRemovedListener {
     @NonNull
     MemorizingTrustManager getNewMemorizingTrustManager(@NonNull final AccountJid accountJid) {
         MemorizingTrustManager mtm = new MemorizingTrustManager(Application.getInstance());
+        if (currentActivityForBind != null) mtm.bindDisplayActivity(currentActivityForBind);
         memorizingTrustManagerMap.put(accountJid, mtm);
         return mtm;
     }
@@ -44,6 +46,7 @@ public class CertificateManager implements OnAccountRemovedListener {
     @NonNull
     public MemorizingTrustManager getNewFileUploadManager(@NonNull final AccountJid accountJid) {
         MemorizingTrustManager mtm = new MemorizingTrustManager(Application.getInstance());
+        if (currentActivityForBind != null) mtm.bindDisplayActivity(currentActivityForBind);
         fileUploadMap.put(accountJid, mtm);
         return mtm;
     }
@@ -56,6 +59,7 @@ public class CertificateManager implements OnAccountRemovedListener {
         for (MemorizingTrustManager memorizingTrustManager : fileUploadMap.values()) {
             memorizingTrustManager.bindDisplayActivity(activity);
         }
+        currentActivityForBind = activity;
     }
 
     public void unregisterActivity(Activity activity) {
@@ -66,6 +70,7 @@ public class CertificateManager implements OnAccountRemovedListener {
         for (MemorizingTrustManager memorizingTrustManager : fileUploadMap.values()) {
             memorizingTrustManager.unbindDisplayActivity(activity);
         }
+        if (currentActivityForBind == activity) currentActivityForBind = null;
     }
 
     @Override

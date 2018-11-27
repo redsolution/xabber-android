@@ -13,14 +13,11 @@
     <string name="contacts_order_alphabet">Alphabetic</string>
     <string name="contacts_order_status">By status</string>
     <string name="contacts_show_accounts">Group by account\nGroup contacts in contact list by account</string>
-    <string name="contacts_show_active_chats">Active chats on top\nDisplay active chats at the top of the contact list</string>
     <string name="contacts_show_avatars">Show avatars\nShows users\' avatars in contact list</string>
     <string name="contacts_show_messages">Show messages\nShows users\' messages in contact list</string>
     <string name="contacts_show_empty_groups">Show empty groups\nShow groups with no online contacts</string>
     <string name="contacts_show_groups">Show groups\nShow groups in contact list</string>
     <string name="contacts_show_offline">Show offline contacts</string>
-    <string name="contacts_show_panel">Show accounts panel\nShow action buttons with avatars in the bottom right corner of contact list</string>
-    <string name="contacts_stay_active_chats">Duplicate active chats\nActive chats appear both on top of contact list and in groups</string>
 
     <string name="debug_log">Debug log\nWrite messages to debug log (please restart application to apply changes)</string>
     <string name="debug_file_log_title">Write file log\nWrite debug log to local file (you can share it).</string>
@@ -43,7 +40,6 @@
     <string name="interface_theme">Theme</string>
     <string name="interface_theme_dark">Dark</string>
     <string name="interface_theme_light">Light</string>
-    <string name="interface_theme_normal">Default</string>
     <string name="interface_smiles">Emoticons</string>
     <string name="interface_smiles_android">Android emoticons</string>
     <string name="interface_smiles_none">No graphical emoticons</string>
@@ -73,7 +69,6 @@
     <string name="chats_font_size_xlarge">Extra large</string>
     <string name="chats_hide_keyboard">Hide keyboard</string>
     <string name="chats_hide_keyboard_landscape">In landscape mode</string>
-    <string name="chats_receipt">Message delivery receipts\nSend and receive message delivery receipts</string>
     <string name="chats_show_avatars">Avatars in chat\nShow avatars in each message inside chat</string>
     <string name="chats_show_avatars_muc">Avatars in conference\nShow avatars in each message inside conference</string>
     <string name="chats_show_status_change">Show status changes</string>
@@ -92,21 +87,13 @@
     <string name="contacts_reset_offline_warning">Do you really want to clear individual settings for groups and accounts?</string>
 
     <string name="events_first_only">Alert on first message\nNotify only on the first message in a chat</string>
-    <string name="events_ignore_system_vibro">Ignore system vibration settings\nUse this option if system vibration does not work</string>
-    <string name="events_message">Notification settings\nConfigure incoming message notifications</string>
-    <string name="events_message_chat">Chats only</string>
-    <string name="events_message_chat_and_muc">Chats and conferences</string>
-    <string name="events_message_none">Don\'t notify</string>
     <string name="events_show_text">Message preview\nShow message text from chats in notification area</string>
     <string name="events_show_text_muc">Message preview\nShow message text from conferences in notification area</string>
-    <string name="events_visible_chat">Notify in current chat\nNotify on incoming messages in current chat</string>
     <string name="events_suppress_100">Suppress some status messages\nDon\'t get \'This room is not anonymous\' messages</string>
     <string name="negative_priotiry_summary">%s (you won\'t receive messages from any chat)</string>
     <string name="preference_accounts">XMPP accounts\nManage accounts</string>
     <string name="preference_security">Security\nSecurity settings</string>
     <string name="security_check_certificate">Check server certificate\nNotify for certificate problems on encrypted connections</string>
-    <string name="security_clear_certificate">Remove certificates\nClear list of ignored certificates</string>
-    <string name="security_otr_history">Store history\nStore chat history for OTR sessions</string>
     <string name="security_otr_mode">OTR mode</string>
     <string name="chats_attention">Attention\nReact for incoming attention requests</string>
     <string name="chats_attention_sound">Attention sound\nChoose ringtone</string>
@@ -114,19 +101,13 @@
     <string name="connection_load_vcard">Load vCard\nLoad and update contact\'s personal info and avatar. Disable to reduce traffic usage.</string>
     <string name="connection_load_images">Load images\nLoad images from file URL automatically. Disable to reduce traffic usage.</string>
     <string name="connection_use_carbons">Carbon-copied mode\nWill share sessions for the same account on this client. Disable to reduce traffic usage.</string>
-    <string name="connection_dns_resolver_type">DNS resolver type</string>
     <string name="connection_dns_resolver_type_dns_java_resolver">DNSJavaResolver</string>
     <string name="connection_dns_resolver_type_mini_dns_resolver">MiniDNSResolver (experimental)</string>
 
-    <string name="connection_use_plain_text_auth">Plain text auth\nUse plain text authentication for all accounts. Not recommended.</string>
-
     <string name="events_phrases">Key phrases\nCreate custom notifications for received messages that contain specific phrases</string>
-    <string name="security_clear_certificate_warning">Do you really want to remove all ignored certificates?</string>
 
     <string name="account_error_settings">Settings</string>
 
-    <string name="category_xabber_account">Xabber Account</string>
-    <string name="category_xmpp_accounts">XMPP Accounts</string>
     <string name="category_interface">Interface</string>
     <string name="category_settings">Settings</string>
     <string name="category_about">About</string>

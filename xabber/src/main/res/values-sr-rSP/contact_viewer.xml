@@ -17,12 +17,9 @@
   <string name="vcard_organization_unit">Организациона јединица</string>
   <string name="vcard_title">Радно место, функција</string>
   <string name="vcard_role">Улога</string>
-  <string name="vcard_other">Остали подаци</string>
-  <string name="vcard_categories">Категорије</string>
-  <string name="vcard_decsription">Опис</string>
+    <string name="vcard_decsription">Опис</string>
   <string name="vcard_note">Белешке</string>
-  <string name="vcard_address">Адреса</string>
-  <string name="vcard_address_pobox">Поштански фах</string>
+    <string name="vcard_address_pobox">Поштански фах</string>
   <string name="vcard_address_extadr">Проширена адреса</string>
   <string name="vcard_address_street">Улица</string>
   <string name="vcard_address_locality">Локалитет</string>

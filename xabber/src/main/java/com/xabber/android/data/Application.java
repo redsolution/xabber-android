@@ -58,6 +58,7 @@ import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.GroupManager;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterManager;
+import com.xabber.android.data.xaccount.XMPPAuthManager;
 import com.xabber.android.data.xaccount.XabberAccountManager;
 import com.xabber.android.service.XabberService;
 import com.xabber.android.utils.AppBlockCanaryContext;
@@ -386,6 +387,7 @@ public class Application extends android.app.Application {
         addManager(BlockingManager.getInstance());
         addManager(MamManager.getInstance());
         addManager(CertificateManager.getInstance());
+        addManager(XMPPAuthManager.getInstance());
     }
 
     /**

@@ -17,12 +17,9 @@
   <string name="vcard_organization_unit">Kurum birimi</string>
   <string name="vcard_title">İş tanımı</string>
   <string name="vcard_role">Görev</string>
-  <string name="vcard_other">Diğer bilgiler</string>
-  <string name="vcard_categories">Kategoriler</string>
-  <string name="vcard_decsription">Açıklama</string>
+    <string name="vcard_decsription">Açıklama</string>
   <string name="vcard_note">Notlar</string>
-  <string name="vcard_address">Adres</string>
-  <string name="vcard_address_pobox">Posta kutusu</string>
+    <string name="vcard_address_pobox">Posta kutusu</string>
   <string name="vcard_address_extadr">Açık adres</string>
   <string name="vcard_address_street">Cadde</string>
   <string name="vcard_address_locality">Bölge</string>

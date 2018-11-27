@@ -34,10 +34,7 @@
   <!-- Used for plural form in russian. -->
   <string name="connection_state_waiting_5">-</string>
   <string name="connection_state_offline">%1$d %2$s hesap çevrimdışı</string>
-  <string name="archive_available_request_message">Mesaj arşivini sunucuda tutmak istiyor musunuz?\nBu durumda, Xabber mesaj arşivini bu hasabı kullanan bütün cihazlardan yükleyebilir.\nBu özellik, biraz trafik yaratır ve bağlantı hızında biraz düşmeye neden olur. \nUYARI: Yerel arşivin tamamı silinecektir.</string>
-  <string name="archive_available_request_title">Mesaj deposu etkin ?</string>
-  <string name="INVALID_CERTIFICATE">Geçersiz sertifika</string>
-  <string name="muc_invite_message">Konferansa katılmak istiyormusunuz?</string>
+    <string name="muc_invite_message">Konferansa katılmak istiyormusunuz?</string>
   <string name="otr_verification_in_progress">İptal etmek için buraya tıkla.</string>
   <string name="PASSWORD_REQUIRED">Parola gerekli</string>
   <string name="pay_attention">Dikkat edin</string>

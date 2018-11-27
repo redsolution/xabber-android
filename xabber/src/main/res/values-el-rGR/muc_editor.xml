@@ -20,12 +20,10 @@
   <string name="muc_invite_confirm">Ο/Η %2$s σας προσκαλεί να συμμετάσχετε στη συνδιάσκεψη %3$s. Συμμετοχή από το λογαριασμό %1$s;</string>
   <string name="muc_invite_confirm_reason">Ο/Η %2$s σας προσκαλεί να συμμετάσχετε στη συνδιάσκεψη %3$s: %4$s. Συμμετοχή από το λογαριασμό %1$s;</string>
   <string name="muc_leave">Αποχώρηση από τη συνδιάσκεψη</string>
-  <string name="muc_save">Αποθήκευση συνδιάσκεψης</string>
-  <string name="muc_choose_conference">Επιλέξτε συνδιάσκεψη</string>
+    <string name="muc_choose_conference">Επιλέξτε συνδιάσκεψη</string>
   <string name="muc_next">Επόμενο</string>
   <string name="muc_get_hosted_conferences">Λήψη φιλοξενούμενων συνδιασκέψεων</string>
   <string name="muc_error_getting_conferences">Σφάλμα κατά τη λήψη των συνδιασκέψεων</string>
   <string name="muc_type_conference_name">Πληκτρολογήστε το όνομα της συνδιάσκεψης</string>
-  <string name="contact_is_blocked">Η επαφή είναι αποκλεισμένη!</string>
-  <string name="conference_invitation">Πρόσκληση σε συνδιάσκεψη</string>
+    <string name="conference_invitation">Πρόσκληση σε συνδιάσκεψη</string>
 </resources>

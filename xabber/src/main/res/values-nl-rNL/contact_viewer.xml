@@ -17,12 +17,9 @@
   <string name="vcard_organization_unit">Eenheid binnen organisatie</string>
   <string name="vcard_title">Werktitel, functie</string>
   <string name="vcard_role">Rol</string>
-  <string name="vcard_other">Overige informatie</string>
-  <string name="vcard_categories">Categorieën</string>
-  <string name="vcard_decsription">Omschrijving</string>
+    <string name="vcard_decsription">Omschrijving</string>
   <string name="vcard_note">Notities</string>
-  <string name="vcard_address">Adres</string>
-  <string name="vcard_address_pobox">Postbus</string>
+    <string name="vcard_address_pobox">Postbus</string>
   <string name="vcard_address_extadr">Uitgebreid adres</string>
   <string name="vcard_address_street">Straat</string>
   <string name="vcard_address_locality">Woonplaats</string>

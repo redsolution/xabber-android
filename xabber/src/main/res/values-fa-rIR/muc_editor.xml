@@ -19,5 +19,4 @@
   <string name="muc_invite_confirm">%2$s شما را به چت روم %3$s دعوت کرده است.آیا با حساب %1$s وارد میشوید؟</string>
   <string name="muc_invite_confirm_reason">%2$s شما را به کنفرانس %3$s: %4$s دعوت کرده است.آیا با حساب %1$s وارد میشوید؟</string>
   <string name="muc_leave">ترک چت روم</string>
-  <string name="muc_save">ذخیره چت روم</string>
 </resources>

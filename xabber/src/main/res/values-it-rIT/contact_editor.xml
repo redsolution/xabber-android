@@ -17,12 +17,8 @@
   <string name="processing_image">Elaborazione immagine...</string>
   <string name="error_during_crop">Errore durante il ritaglio dell\'immagine</string>
   <string name="error_during_image_processing">Errore durante l\'elaborazione dell\'immagine</string>
-  <string name="account_settings">Impostazioni dell\'account</string>
-  <string name="account_user_info">Informazioni sull\'account</string>
-  <string name="account_server_info">Informazioni di server</string>
+    <string name="account_server_info">Informazioni di server</string>
   <string name="account_server_info_description">Lista delle funzionalità del server</string>
   <string name="conference_private_chat_invitation">%1$s da %2$s vuole avviare una chat privata con te</string>
   <string name="accept_muc_private_chat">Accetta</string>
-  <string name="block_muc_private_chat">Blocca</string>
-  <string name="no_permission_camera">Nessun permesso di accesso alla fotocamera</string>
 </resources>

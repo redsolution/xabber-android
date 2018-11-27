@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/itemGoogle"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:paddingLeft="18dp"
+        android:paddingRight="16dp"
+        android:clickable="true"
+        android:background="?android:attr/selectableItemBackground"
+        >
+
+        <ImageView
+            android:id="@+id/ivGoogle"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:src="@drawable/ic_google_plus_disabled"
+            android:layout_gravity="center_vertical"
+            />
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="18dp"
+            >
+
+            <TextView
+                android:id="@+id/tvNameGoogle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:textColor="@color/black_text"
+                tools:text="@tools:sample/full_names"
+                android:visibility="gone"
+                android:singleLine="true"
+                />
+
+            <TextView
+                android:id="@+id/tvStatusGoogle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:textColor="@color/grey_500"
+                android:text="@string/title_not_linked_account"
+                />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvActionGoogle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="24dp"
+            android:gravity="right"
+            android:layout_gravity="center_vertical"
+            android:textColor="@color/grey_500"
+            android:text="@string/action_connect"
+            android:singleLine="true"
+            />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/itemFacebook"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:paddingLeft="18dp"
+        android:paddingRight="16dp"
+        android:clickable="true"
+        android:background="?android:attr/selectableItemBackground"
+        >
+
+        <ImageView
+            android:id="@+id/ivFacebook"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:src="@drawable/ic_facebook_disabled"
+            android:layout_gravity="center_vertical"
+            />
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="18dp"
+            >
+
+            <TextView
+                android:id="@+id/tvNameFacebook"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:textColor="@color/black_text"
+                tools:text="@tools:sample/full_names"
+                android:visibility="gone"
+                android:singleLine="true"
+                />
+
+            <TextView
+                android:id="@+id/tvStatusFacebook"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:textColor="@color/grey_500"
+                android:text="@string/title_not_linked_account"
+                />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvActionFacebook"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="24dp"
+            android:layout_gravity="center_vertical"
+            android:gravity="right"
+            android:textColor="@color/grey_500"
+            android:text="@string/action_connect"
+            android:singleLine="true"
+            />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/itemTwitter"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:paddingLeft="18dp"
+        android:paddingRight="16dp"
+        android:clickable="true"
+        android:background="?android:attr/selectableItemBackground"
+        >
+
+        <ImageView
+            android:id="@+id/ivTwitter"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:src="@drawable/ic_twitter_disabled"
+            android:layout_gravity="center_vertical"
+            />
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="18dp"
+            >
+
+            <TextView
+                android:id="@+id/tvNameTwitter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:textColor="@color/black_text"
+                tools:text="@tools:sample/full_names"
+                android:visibility="gone"
+                android:singleLine="true"
+                />
+
+            <TextView
+                android:id="@+id/tvStatusTwitter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:textColor="@color/grey_500"
+                android:text="@string/title_not_linked_account"
+                />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvActionTwitter"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:gravity="right"
+            android:layout_marginLeft="24dp"
+            android:textColor="@color/grey_500"
+            android:text="@string/action_connect"
+            android:singleLine="true"
+            />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rvEmails"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:nestedScrollingEnabled="false"
+            tools:listitem="@layout/item_email"
+            android:overScrollMode="never"
+            />
+
+        <LinearLayout
+            android:id="@+id/viewAddEmail"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:paddingLeft="18dp"
+            android:paddingRight="16dp"
+            android:clickable="true"
+            android:background="?android:attr/selectableItemBackground"
+            >
+
+            <ImageView
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:src="@drawable/ic_add_email_circle"
+                android:layout_gravity="center_vertical"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="18dp"
+                android:textColor="@color/grey_500"
+                android:text="@string/title_add_email"
+                />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:gravity="right"
+                android:layout_marginLeft="24dp"
+                android:textColor="@color/grey_500"
+                android:text="@string/action_connect"
+                />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+</LinearLayout>

@@ -30,6 +30,7 @@ import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.otr.OTRUnencryptedException;
 import com.xabber.android.data.extension.otr.SecurityLevel;
 import com.xabber.android.data.log.LogManager;
+import com.xabber.android.data.xaccount.XMPPAuthManager;
 
 import net.java.otr4j.OtrException;
 
@@ -172,6 +173,12 @@ public class RegularChat extends AbstractChat {
             String text = message.getBody();
             if (text == null)
                 return true;
+
+            // Xabber service message received
+            if (message.getType() == Type.headline) {
+                if (XMPPAuthManager.getInstance().isXabberServiceMessage(message.getStanzaId()))
+                    return true;
+            }
 
             String thread = message.getThread();
             updateThreadId(thread);

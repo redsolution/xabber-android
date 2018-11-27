@@ -20,12 +20,10 @@
   <string name="muc_invite_confirm">%2$s szeretné, ha csatlakoznál %3$s konferenciabeszélgetéshez. Csatlakozol %1$s fiókkal?</string>
   <string name="muc_invite_confirm_reason">%2$s szeretné, ha csatlakoznál %3$s konferenciához: %4$s. Csatlakozol %1$s fiókkal?</string>
   <string name="muc_leave">Konferencia elhagyása</string>
-  <string name="muc_save">Konferencia mentése</string>
-  <string name="muc_choose_conference">Konferencia kiválasztása</string>
+    <string name="muc_choose_conference">Konferencia kiválasztása</string>
   <string name="muc_next">Tovább</string>
   <string name="muc_get_hosted_conferences">Szerver konferenciáinak lekérése</string>
   <string name="muc_error_getting_conferences">Konferenciák lekérése sikertelen</string>
   <string name="muc_type_conference_name">Konferencianév megadása</string>
-  <string name="contact_is_blocked">A partner le van tiltva!</string>
-  <string name="conference_invitation">Meghívás konferenciabeszélgetésre</string>
+    <string name="conference_invitation">Meghívás konferenciabeszélgetésre</string>
 </resources>

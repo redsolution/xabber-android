@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:background="@color/cardview_light_background">
 
-    <include layout="@layout/toolbar_default"
+    <include layout="@layout/toolbar_with_logo"
         android:id="@+id/toolbar_default" />
 
     <FrameLayout
@@ -12,9 +12,7 @@
         android:layout_below="@+id/toolbar_default"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"/>
-
-    <include layout="@layout/include_login_social" />
+        android:elevation="8dp"
+        />
 
 </RelativeLayout>

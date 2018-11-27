@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:focusableInTouchMode="true"
+    >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="#F5F5F5"
+        android:elevation="8dp"
+        >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/title_signup_step_1"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:layout_marginLeft="16dp"
+            android:layout_gravity="center_vertical"
+            />
+
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="24dp"
+        android:layout_marginLeft="24dp"
+        android:layout_marginRight="24dp"
+        >
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                >
+
+                <EditText
+                    android:id="@+id/edtUsername"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:imeOptions="actionNext"
+                    android:nextFocusForward="@+id/edtPass"
+                    android:singleLine="true"
+                    android:hint="@string/hint_username"
+                    android:textSize="16sp"
+                    android:theme="@style/Theme"
+                    />
+
+            </android.support.design.widget.TextInputLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/host"
+                android:textColor="@color/black_text"
+                android:layout_gravity="bottom"
+                android:layout_marginBottom="6dp"
+                android:layout_marginLeft="4dp"
+                android:layout_marginRight="4dp"
+                />
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:paddingRight="-12dp"
+                android:layout_gravity="bottom"
+                android:paddingBottom="7.8dp"
+                >
+
+                <Spinner
+                    android:id="@+id/spinnerDomain"
+                    android:layout_marginTop="8dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    />
+
+                <View
+                    android:id="@+id/spinnerBorder"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/grey_500"
+                    android:layout_marginTop="1dp"
+                    android:layout_marginLeft="7dp"
+                    android:layout_marginRight="16dp"
+                    />
+
+                <ProgressBar
+                    android:id="@+id/pbHosts"
+                    android:layout_width="140dp"
+                    android:layout_height="30dp"
+                    android:layout_marginTop="8dp"
+                    android:visibility="gone"
+                    />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <WebView
+            android:id="@+id/webViewDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="4dp"
+            />
+
+        <RelativeLayout
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="16dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:id="@+id/btnNext"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/Widget.AppCompat.Button.Colored"
+                android:theme="@style/BlueButton"
+                android:paddingRight="18dp"
+                android:paddingLeft="18dp"
+                android:layout_centerVertical="true"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:textColor="@color/white"
+                android:text="@string/muc_next"
+                />
+
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/tvSocialProvider"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black_text_secondary"
+            android:drawablePadding="8dp"
+            android:visibility="gone"
+            android:layout_gravity="center_horizontal"
+            />
+
+    </LinearLayout>
+
+    </ScrollView>
+
+</LinearLayout>

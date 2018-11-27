@@ -20,12 +20,10 @@
   <string name="muc_invite_confirm">הוזמנת על ידי %2$s להצטרף לשיחת הועידה %3$s. ברצונך להצטרף מהחשבון %1$s?</string>
   <string name="muc_invite_confirm_reason">הוזמנת על ידי %2$s להצטרף לשיחת הועידה %3$s. ברצונך להצטרף מהחשבון %1$s?</string>
   <string name="muc_leave">עזוב את שיחת הועידה</string>
-  <string name="muc_save">שמור שיחת ועידה</string>
-  <string name="muc_choose_conference">בחר שיחת ועידה</string>
+    <string name="muc_choose_conference">בחר שיחת ועידה</string>
   <string name="muc_next">הבא</string>
   <string name="muc_get_hosted_conferences">קבל אירוח ועידה</string>
   <string name="muc_error_getting_conferences">אירעה שגיאה במהלך הוועידה</string>
   <string name="muc_type_conference_name">הקש שם לשיחת הועידה</string>
-  <string name="contact_is_blocked">איש הקשר חסום!</string>
-  <string name="conference_invitation">הזמנה לשיחת ועידה</string>
+    <string name="conference_invitation">הזמנה לשיחת ועידה</string>
 </resources>

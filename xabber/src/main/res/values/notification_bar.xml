@@ -33,9 +33,6 @@
     <!-- Used for plural form in russian. -->
     <string name="connection_state_waiting_5">-</string>
     <string name="connection_state_offline">%1$d %2$s offline</string>
-    <string name="archive_available_request_message">Do you want to store message history on server?\nIt allows Xabber to load message history from all the devices using this account.\nThis feature will take some additional traffic and will slightly reduce connection speed.\nWARNING: All your local history will be removed.</string>
-    <string name="archive_available_request_title">Enable message archive?</string>
-    <string name="INVALID_CERTIFICATE">Invalid certificate</string>
     <string name="muc_invite_message">Do you want to enter conference?</string>
     <string name="otr_verification_in_progress">Click here to abort it.</string>
     <string name="PASSWORD_REQUIRED">Password required</string>

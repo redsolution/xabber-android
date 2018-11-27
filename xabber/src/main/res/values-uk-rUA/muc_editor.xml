@@ -20,12 +20,10 @@
   <string name="muc_invite_confirm">%2$s запрошує Вас до конференції %3$s. Приєднатись з облікового запису %1$s?</string>
   <string name="muc_invite_confirm_reason">%2$s запрошує Вас до конференції %3$s: %4$s. Приєднатись з облікового запису %1$s?</string>
   <string name="muc_leave">Покинути конференцію</string>
-  <string name="muc_save">Зберегти конференцію</string>
-  <string name="muc_choose_conference">Вибрати конференцію</string>
+    <string name="muc_choose_conference">Вибрати конференцію</string>
   <string name="muc_next">Далі</string>
   <string name="muc_get_hosted_conferences">Отримати відкриті конференції</string>
   <string name="muc_error_getting_conferences">Помилка отримання конференцій</string>
   <string name="muc_type_conference_name">Введіть назву конференції</string>
-  <string name="contact_is_blocked">Контакт заблоковано!</string>
-  <string name="conference_invitation">Запрошення у конференцію</string>
+    <string name="conference_invitation">Запрошення у конференцію</string>
 </resources>

@@ -20,12 +20,10 @@
   <string name="muc_invite_confirm">%2$s запрашае вас паўдзельнічаць у канфэрэнцыі %3$s. Далучыцца з рахунку %1$s?</string>
   <string name="muc_invite_confirm_reason">%2$s запрашае вас паўдзельнічаць у канфэрэнцыі %3$s: %4$s. Далучыцца з рахунку %1$s?</string>
   <string name="muc_leave">Выйсьці з канфэрэнцыі</string>
-  <string name="muc_save">Захаваць канфэрэнцыю</string>
-  <string name="muc_choose_conference">Выбраць канферэнцыю</string>
+    <string name="muc_choose_conference">Выбраць канферэнцыю</string>
   <string name="muc_next">Далей</string>
   <string name="muc_get_hosted_conferences">Атрымаць сьпіс канфэрэнцый</string>
   <string name="muc_error_getting_conferences">Падчас атрыманьня сьпісу канфэрэнцый узьнікла памылка</string>
   <string name="muc_type_conference_name">Увядзіце імя канфэрэнцыі</string>
-  <string name="contact_is_blocked">Суразмоўца заблякаваны!</string>
-  <string name="conference_invitation">Запрашэньне ў канфэрэнцыю</string>
+    <string name="conference_invitation">Запрашэньне ў канфэрэнцыю</string>
 </resources>

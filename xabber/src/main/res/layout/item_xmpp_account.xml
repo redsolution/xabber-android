@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingTop="8dp"
-    android:paddingBottom="8dp"
-    >
+    android:paddingBottom="8dp">
 
     <FrameLayout
         android:layout_width="wrap_content"
@@ -14,18 +12,10 @@
         android:layout_gravity="center_vertical">
 
         <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/color"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:src="@color/green_500"
-            android:visibility="invisible"/>
-
-        <ImageView
             android:id="@+id/avatar"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:padding="8dp"
-            android:src="@drawable/ic_sync_disable" />
+            />
 
     </FrameLayout>
     <LinearLayout
@@ -34,36 +24,35 @@
         android:layout_gravity="center_vertical"
         android:layout_weight="1"
         android:orientation="vertical"
-        android:paddingLeft="8dp"
+        android:paddingLeft="16dp"
         >
 
         <TextView
             android:id="@+id/tvAccountName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:ellipsize="marquee"
-            android:lines="1"
+            android:singleLine="true"
             android:text="Username"
             android:textColor="@color/black_text"
-            android:textSize="18sp" />
+            android:textSize="16sp" />
 
         <TextView
             android:id="@+id/tvAccountJid"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+
             android:text="jid"
             android:textColor="@color/grey_500"
             android:textSize="14sp" />
     </LinearLayout>
-    <android.support.v7.widget.AppCompatCheckBox
+
+    <Switch
         android:id="@+id/chkAccountSync"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_gravity="center"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
         android:layout_marginLeft="8dp"
-        android:theme="@style/RedCheckBox"
         />
 
 </LinearLayout>

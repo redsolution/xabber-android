@@ -20,12 +20,10 @@
   <string name="muc_invite_confirm">%2$s ti ha invitato ad entrare nella conferenza %3$s. Vuoi entrare con l\'account %1$s?</string>
   <string name="muc_invite_confirm_reason">%2$s ti ha invitato ad entrare nella conferenza %3$s: %4$s. Vuoi entrare con l\'account %1$s?</string>
   <string name="muc_leave">Abbandona conferenza</string>
-  <string name="muc_save">Salva conferenza</string>
-  <string name="muc_choose_conference">Scegli conferenza</string>
+    <string name="muc_choose_conference">Scegli conferenza</string>
   <string name="muc_next">Successivo</string>
   <string name="muc_get_hosted_conferences">Recupera le conversazioni di gruppo ospitate</string>
   <string name="muc_error_getting_conferences">Errore nell\'ottenere la lista delle conferenze</string>
   <string name="muc_type_conference_name">Inserire il nome di conferenza</string>
-  <string name="contact_is_blocked">Il contatto è bloccato!</string>
-  <string name="conference_invitation">Invito ad una conferenza</string>
+    <string name="conference_invitation">Invito ad una conferenza</string>
 </resources>

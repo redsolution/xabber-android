@@ -20,12 +20,10 @@
   <string name="muc_invite_confirm">%2$s mời bạn tham gia diễn đàn %3$s. Tham gia từ tài khoản %1$s?</string>
   <string name="muc_invite_confirm_reason">%2$s mời bạn tham gia diễn đàn %3$s: %4$s. Tham gia từ tài khoản %1$s?</string>
   <string name="muc_leave">Rời diễn đàn</string>
-  <string name="muc_save">Lưu diễn đàn</string>
-  <string name="muc_choose_conference">Chọn diễn đàn</string>
+    <string name="muc_choose_conference">Chọn diễn đàn</string>
   <string name="muc_next">Tiếp theo</string>
   <string name="muc_get_hosted_conferences">Tiếp nhận diễn đàn đã mở</string>
   <string name="muc_error_getting_conferences">Lỗi khi tiếp nhận diễn đàn</string>
   <string name="muc_type_conference_name">Gõ tên diễn đàn</string>
-  <string name="contact_is_blocked">Liên hệ đã bị chặn!</string>
-  <string name="conference_invitation">Lời mời diễn đàn</string>
+    <string name="conference_invitation">Lời mời diễn đàn</string>
 </resources>

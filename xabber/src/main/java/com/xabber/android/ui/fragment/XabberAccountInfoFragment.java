@@ -1,30 +1,24 @@
 package com.xabber.android.ui.fragment;
 
-import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.Fragment;
-import android.content.DialogInterface;
+import android.app.FragmentTransaction;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
-import android.widget.RelativeLayout;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.xabber.android.BuildConfig;
 import com.xabber.android.R;
-import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.xaccount.AuthManager;
 import com.xabber.android.data.xaccount.XMPPAccountSettings;
 import com.xabber.android.data.xaccount.XabberAccount;
 import com.xabber.android.data.xaccount.XabberAccountManager;
-import com.xabber.android.ui.activity.XabberAccountInfoActivity;
-import com.xabber.android.ui.dialog.AccountSyncDialogFragment;
 import com.xabber.android.utils.RetrofitErrorConverter;
 
 import java.util.List;
@@ -47,79 +41,80 @@ public class XabberAccountInfoFragment extends Fragment {
     private TextView tvAccountUsername;
     private TextView tvLanguage;
     private TextView tvPhone;
-    private TextView tvLastSyncDate;
-    private RelativeLayout rlLogout;
-    private RelativeLayout rlSync;
-    private boolean dialogShowed;
+
+    private TextView tvLinks;
+    private View viewShowLinks;
+    private View viewLinks;
+    private ImageView ivChevron;
+
+    private ProgressBar progressBar;
+    private View progressView;
+    private Fragment fragmentSync;
+    private FragmentTransaction fTrans;
 
     private CompositeSubscription compositeSubscription = new CompositeSubscription();
+
+    public static XabberAccountInfoFragment newInstance() {
+        XabberAccountInfoFragment fragment = new XabberAccountInfoFragment();
+        return fragment;
+    }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_xabber_account_info, container, false);
+        return inflater.inflate(R.layout.fragment_xaccount_info, container, false);
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        progressBar = view.findViewById(R.id.toolbarProgress);
         tvPhone = (TextView) view.findViewById(R.id.tvPhoneNumber);
         tvAccountName = (TextView) view.findViewById(R.id.tvAccountName);
         tvAccountUsername = (TextView) view.findViewById(R.id.tvAccountUsername);
         tvLanguage = (TextView) view.findViewById(R.id.tvLanguage);
-        tvLastSyncDate = (TextView) view.findViewById(R.id.tvLastSyncDate);
 
-        rlLogout = (RelativeLayout) view.findViewById(R.id.rlLogout);
-        rlLogout.setOnClickListener(new View.OnClickListener() {
+        progressView = view.findViewById(R.id.progressView);
+        ivChevron = view.findViewById(R.id.ivChevron);
+        tvLinks = view.findViewById(R.id.tvLinks);
+        viewLinks = view.findViewById(R.id.viewLinks);
+        viewShowLinks = view.findViewById(R.id.viewShowLinks);
+        viewShowLinks.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!dialogShowed) {
-                    dialogShowed = true;
-                    showLogoutDialog();
-                }
+                viewLinks.setVisibility(viewLinks.getVisibility() == View.VISIBLE
+                        ? View.GONE : View.VISIBLE );
+                ivChevron.setImageResource(viewLinks.getVisibility() == View.VISIBLE
+                        ? R.drawable.ic_chevron_up : R.drawable.ic_chevron_down);
             }
         });
 
-        rlSync = (RelativeLayout) view.findViewById(R.id.rlSync);
-        rlSync.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!dialogShowed) {
-                    dialogShowed = true;
-                    showSyncDialog(false);
-                }
-            }
-        });
-
-        if (getArguments().getBoolean("SHOW_SYNC", false))
-            showSyncDialog(true);
+        Fragment linksFragment = XAccountLinksFragment.newInstance();
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        transaction.replace(R.id.accountLinksFrame, linksFragment).commit();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-
-        XabberAccount account = XabberAccountManager.getInstance().getAccount();
-        if (account != null) updateData(account);
-        else ((XabberAccountInfoActivity)getActivity()).showLoginFragment();
-        updateLastSyncTime();
+        subscribeForXabberAccount();
+        getSettings();
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
+    public void onPause() {
+        super.onPause();
         compositeSubscription.clear();
     }
 
-    public void updateData(@NonNull XabberAccount account) {
-        String accountName = account.getFirstName() + " " + account.getLastName();
-        if (accountName.trim().isEmpty())
-            accountName = getString(R.string.title_xabber_account);
+    public void updateData(XabberAccount account) {
+        if (account == null) return;
+
+        String accountName = account.getFullUsername();
 
         tvAccountName.setText(accountName);
-        if (account.getUsername() != null && !account.getUsername().isEmpty())
-            tvAccountUsername.setText(account.getUsername());
+        tvAccountUsername.setText("Free account");
 
         if (account.getLanguage() != null && !account.getLanguage().equals("")) {
             tvLanguage.setText(account.getLanguage());
@@ -131,29 +126,53 @@ public class XabberAccountInfoFragment extends Fragment {
             String phone = account.getPhone();
             tvPhone.setText(phone != null ? phone : getString(R.string.no_phone));
         } else tvPhone.setVisibility(View.GONE);
+
+        // links
+        if (account.getSocialBindings().size() > 0 || account.getEmails().size() > 0)
+            tvLinks.setText(R.string.title_linked_accounts);
+        else tvLinks.setText(R.string.title_no_linked_accounts);
     }
 
     public void updateLastSyncTime() {
-        tvLastSyncDate.setText(getString(R.string.last_sync_date, SettingsManager.getLastSyncDate()));
+        if (fragmentSync != null && fragmentSync.isVisible())
+            ((AccountSyncFragment) fragmentSync).updateLastSyncTime();
     }
 
-    public void showSyncDialog(final boolean noCancel) {
+    private void subscribeForXabberAccount() {
+        compositeSubscription.add(XabberAccountManager.getInstance().subscribeForAccount()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext(new Action1<XabberAccount>() {
+                    @Override
+                    public void call(XabberAccount account) {
+                        updateData(account);
+                    }
+                }).subscribe());
+    }
+
+    public void showProgressInAccount(boolean show) {
+        progressBar.setVisibility(show ? View.VISIBLE : View.INVISIBLE);
+    }
+
+    /** GET SETTINGS */
+
+    public void getSettings() {
+        showProgressView(true);
         Subscription getSettingsSubscription = AuthManager.getClientSettings()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<List<XMPPAccountSettings>>() {
                     @Override
                     public void call(List<XMPPAccountSettings> list) {
+                        showProgressView(false);
                         List<XMPPAccountSettings> items = XabberAccountManager.getInstance().createSyncList(list);
 
                         if (items != null && items.size() > 0) {
                             // save full list to list for sync
                             XabberAccountManager.getInstance().setXmppAccountsForSync(items);
-                            // show dialog
-                            AccountSyncDialogFragment.newInstance(noCancel)
-                                    .show(getFragmentManager(), AccountSyncDialogFragment.class.getSimpleName());
-                            dialogShowed = false;
-                        } else Toast.makeText(getActivity(), "Не удалось начать синхронизацию", Toast.LENGTH_SHORT).show();
+                            // show fragment
+                            showSyncFragment();
+                        } else Toast.makeText(getActivity(), R.string.sync_fail, Toast.LENGTH_SHORT).show();
                     }
                 }, new Action1<Throwable>() {
                     @Override
@@ -164,41 +183,33 @@ public class XabberAccountInfoFragment extends Fragment {
         compositeSubscription.add(getSettingsSubscription);
     }
 
+    private void showSyncFragment() {
+        fragmentSync = AccountSyncFragment.newInstance();
+        fTrans = getFragmentManager().beginTransaction();
+        fTrans.replace(R.id.childContainer, fragmentSync);
+        fTrans.commit();
+    }
+
+    private void showProgressView(boolean show) {
+        if (fragmentSync != null && fragmentSync.isVisible() && show) return;
+        progressView.setVisibility(show ? View.VISIBLE : View.GONE);
+    }
+
     private void handleErrorGetSettings(Throwable throwable) {
+        showProgressView(false);
         String message = RetrofitErrorConverter.throwableToHttpError(throwable);
         if (message != null) {
             if (message.equals("Invalid token")) {
                 XabberAccountManager.getInstance().onInvalidToken();
-                ((XabberAccountInfoActivity)getActivity()).showLoginFragment();
-                Toast.makeText(getActivity(), "Аккаунт был удален", Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), R.string.account_deleted, Toast.LENGTH_LONG).show();
+                getActivity().finish();
             } else {
                 Log.d(LOG_TAG, "Error while synchronization: " + message);
                 Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
             }
         } else {
             Log.d(LOG_TAG, "Error while synchronization: " + throwable.toString());
-            Toast.makeText(getActivity(), "Error while synchronization: " + throwable.toString(), Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity(), R.string.sync_fail, Toast.LENGTH_LONG).show();
         }
-    }
-
-    private void showLogoutDialog() {
-        LayoutInflater inflater = getActivity().getLayoutInflater();
-        View view = inflater.inflate(R.layout.dialog_logout_xabber_account, null);
-        final CheckBox chbDeleteAccounts = (CheckBox) view.findViewById(R.id.chbDeleteAccounts);
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle(R.string.progress_title_quit)
-                .setMessage(R.string.logout_summary)
-                .setView(view)
-                .setPositiveButton(R.string.button_quit, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        ((XabberAccountInfoActivity)getActivity()).onLogoutClick(chbDeleteAccounts.isChecked());
-                    }
-                })
-                .setNegativeButton(R.string.cancel, null);
-        Dialog dialog = builder.create();
-        dialog.show();
-        dialogShowed = false;
     }
 }

@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
-    <string name="xmpp">XMPP</string>
-    <string name="google_talk">Google Talk</string>
     <string name="http">HTTP</string>
     <string name="orbot">Orbot</string>
     <string name="socks4">SOCKS4</string>

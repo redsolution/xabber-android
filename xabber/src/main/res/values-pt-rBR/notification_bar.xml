@@ -34,10 +34,7 @@
   <!-- Used for plural form in russian. -->
   <string name="connection_state_waiting_5">-</string>
   <string name="connection_state_offline">%1$d %2$s desconectada(s)</string>
-  <string name="archive_available_request_message">Você deseja armazenar histórico de mensagem no servidor?\nHabilita o Xabber a carregar histórico de mensagem de todos os seus dispositivos usando esta conta.\nEstá funcionalidade tomará mais tráfego da sua rede e reduzirá a velocidade de sua conexão.\nATENÇÃO: Todo o seu histórico local será removido.</string>
-  <string name="archive_available_request_title">Ativar arquivamento de mensagem?</string>
-  <string name="INVALID_CERTIFICATE">Certificado inválido</string>
-  <string name="muc_invite_message">Você quer entrar na conferência?</string>
+    <string name="muc_invite_message">Você quer entrar na conferência?</string>
   <string name="otr_verification_in_progress">Clique aqui para abortar.</string>
   <string name="PASSWORD_REQUIRED">Senha obrigatória</string>
   <string name="pay_attention">Atenção</string>

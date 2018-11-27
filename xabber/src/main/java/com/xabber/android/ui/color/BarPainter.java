@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
 import com.xabber.android.R;
+import com.xabber.android.data.Application;
 import com.xabber.android.data.entity.AccountJid;
 
 public class BarPainter {
@@ -35,6 +36,10 @@ public class BarPainter {
     public void updateWithColorName(String targetColorName) {
         toolbar.setBackgroundColor(accountPainter.getAccountMainColorByColorName(targetColorName));
         statusBarPainter.updateWithColor(accountPainter.getAccountDarkColorByColorName(targetColorName));
+    }
+
+    public void setLiteGrey() {
+        toolbar.setBackgroundColor(Application.getInstance().getResources().getColor(R.color.grey_200));
     }
 
     public void setGrey() {

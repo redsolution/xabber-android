@@ -27,10 +27,7 @@
   <string name="connection_state_waiting_2">%1$d %3$s sus %2$d en espèra de connexion</string>
   <!-- Used for plural form in russian. -->
   <string name="connection_state_offline">%1$d %2$s fòra linha</string>
-  <string name="archive_available_request_message">Volètz emmagazinar l\'istoric dels messatges sul servidor ?\nAquò permet a Xabber d\'obténer l\'istoric de messatges per l\'ensemble dels aparelhs qu\'utilizan aqueste compte.\nAquesta foncion genèra un pauc mai de trafic e redutz leugièrament la velocitat de connexion.\nATENCION : Tot vòstre istoric local va èsser suprimit.</string>
-  <string name="archive_available_request_title">Activar l\'archivatge dels messatges ?</string>
-  <string name="INVALID_CERTIFICATE">Certificat invalid</string>
-  <string name="muc_invite_message">Volètz rejónher la conferéncia ?</string>
+    <string name="muc_invite_message">Volètz rejónher la conferéncia ?</string>
   <string name="otr_verification_in_progress">Quichatz aicí per anullar.</string>
   <string name="PASSWORD_REQUIRED">Senhal requesit</string>
   <string name="pay_attention">Demanda d\'atencion</string>

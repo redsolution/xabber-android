@@ -17,12 +17,9 @@
   <string name="vcard_organization_unit">Suborganizație</string>
   <string name="vcard_title">Ocupație/Funcție</string>
   <string name="vcard_role">Rol</string>
-  <string name="vcard_other">Alte informații</string>
-  <string name="vcard_categories">Categorii</string>
-  <string name="vcard_decsription">Descriere</string>
+    <string name="vcard_decsription">Descriere</string>
   <string name="vcard_note">Note</string>
-  <string name="vcard_address">Adresă</string>
-  <string name="vcard_address_pobox">Casuță poștală</string>
+    <string name="vcard_address_pobox">Casuță poștală</string>
   <string name="vcard_address_extadr">Adresă adițională</string>
   <string name="vcard_address_street">Stradă</string>
   <string name="vcard_address_locality">Localitate</string>

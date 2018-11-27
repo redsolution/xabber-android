@@ -34,10 +34,7 @@
   <!-- Used for plural form in russian. -->
   <string name="connection_state_waiting_5">-</string>
   <string name="connection_state_offline">%1$d个%2$s离线</string>
-  <string name="archive_available_request_message">你想要在服务器上保存聊天记录吗？\n这会使Xabber可加载使用此账户的所有设备的聊天记录。\n此功能会带来一些额外流量并会稍许降低连接速度。\n警告：你的所有本地历史会被删除。</string>
-  <string name="archive_available_request_title">启用消息存档？</string>
-  <string name="INVALID_CERTIFICATE">无效证书</string>
-  <string name="muc_invite_message">你要加入会议吗？</string>
+    <string name="muc_invite_message">你要加入会议吗？</string>
   <string name="otr_verification_in_progress">点击此处放弃</string>
   <string name="PASSWORD_REQUIRED">需要密码</string>
   <string name="pay_attention">注意</string>

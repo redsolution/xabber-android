@@ -17,12 +17,9 @@
   <string name="vcard_organization_unit">Pracovná funkcia</string>
   <string name="vcard_title">Zamestnanie, funkcia</string>
   <string name="vcard_role">Funkcia</string>
-  <string name="vcard_other">Iné informácie</string>
-  <string name="vcard_categories">Kategórie</string>
-  <string name="vcard_decsription">Popis</string>
+    <string name="vcard_decsription">Popis</string>
   <string name="vcard_note">Poznámky</string>
-  <string name="vcard_address">Adresa</string>
-  <string name="vcard_address_pobox">PO Box</string>
+    <string name="vcard_address_pobox">PO Box</string>
   <string name="vcard_address_extadr">Rozšírená adresa</string>
   <string name="vcard_address_street">Ulica</string>
   <string name="vcard_address_locality">Lokalita</string>

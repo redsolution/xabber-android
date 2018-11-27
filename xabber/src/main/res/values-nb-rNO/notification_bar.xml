@@ -34,10 +34,7 @@
   <!-- Used for plural form in russian. -->
   <string name="connection_state_waiting_5">-</string>
   <string name="connection_state_offline">%1$d %2$s frakoblet</string>
-  <string name="archive_available_request_message">Ønsker du å lagre meldingshistorikken på tjeneren\nDette gir Xabber muligheten til å laste meldingshistorikk fra alle enheter som bruker denne kontoen\nDenne egenskapen vil medføre litt ekstra trafikk, og kan i noen grad påvirke tilkoblingshastigheten.\nADVARSEL: All lokal historikk vil bli fjernet.</string>
-  <string name="archive_available_request_title">Aktivere meldingsarkiv?</string>
-  <string name="INVALID_CERTIFICATE">Ugyldig sertifikat</string>
-  <string name="muc_invite_message">Ønsker du å ta del i konferansen?</string>
+    <string name="muc_invite_message">Ønsker du å ta del i konferansen?</string>
   <string name="otr_verification_in_progress">Trykk her for å avbryte den.</string>
   <string name="PASSWORD_REQUIRED">Passord påkrevet</string>
   <string name="pay_attention">Vær oppmerksom</string>

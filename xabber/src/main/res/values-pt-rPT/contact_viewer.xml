@@ -16,12 +16,9 @@
   <string name="vcard_organization_unit">Unidade da organização</string>
   <string name="vcard_title">Título do trabalho, função</string>
   <string name="vcard_role">Função</string>
-  <string name="vcard_other">Outra informação</string>
-  <string name="vcard_categories">Categorias</string>
-  <string name="vcard_decsription">Descrição</string>
+    <string name="vcard_decsription">Descrição</string>
   <string name="vcard_note">Notas</string>
-  <string name="vcard_address">Morada</string>
-  <string name="vcard_address_pobox">Código postal</string>
+    <string name="vcard_address_pobox">Código postal</string>
   <string name="vcard_address_extadr">Morada completa</string>
   <string name="vcard_address_street">Rua</string>
   <string name="vcard_address_locality">Localidade</string>

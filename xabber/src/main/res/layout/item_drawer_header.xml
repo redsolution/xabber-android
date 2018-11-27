@@ -82,7 +82,7 @@
                 android:layout_alignParentBottom="true"
                 android:background="@drawable/ripple_background">
 
-                <include layout="@layout/item_nav_drawer_xabber_account" />
+                <include layout="@layout/item_xabber_account" />
 
             </LinearLayout>
 

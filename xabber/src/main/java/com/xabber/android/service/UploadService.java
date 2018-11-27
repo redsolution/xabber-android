@@ -13,7 +13,6 @@ import android.webkit.MimeTypeMap;
 
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
-import com.xabber.android.data.connection.CertificateManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.file.FileManager;
@@ -21,6 +20,7 @@ import com.xabber.android.data.extension.file.FileUtils;
 import com.xabber.android.data.extension.httpfileupload.ImageCompressor;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.MessageManager;
+import com.xabber.android.utils.HttpClientWithMTM;
 import com.xabber.xmpp.httpfileupload.Slot;
 
 import org.apache.commons.io.FilenameUtils;
@@ -45,13 +45,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.X509TrustManager;
-
-import de.duenndns.ssl.MemorizingTrustManager;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -312,25 +306,15 @@ public class UploadService extends IntentService {
     private Response uploadFileToSlot(final AccountJid account, final Slot slot, final File file)
             throws IOException, NoSuchAlgorithmException, KeyManagementException {
 
-        MemorizingTrustManager mtm = CertificateManager.getInstance().getNewFileUploadManager(account);
-        SSLContext sslContext = SSLContext.getInstance("SSL");
-        sslContext.init(null, new X509TrustManager[]{mtm}, new java.security.SecureRandom());
-        SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
-
-        OkHttpClient client = new OkHttpClient().newBuilder()
-                .sslSocketFactory(sslSocketFactory)
-                .hostnameVerifier(mtm.wrapHostnameVerifier(new org.apache.http.conn.ssl.StrictHostnameVerifier()))
-                .writeTimeout(5, TimeUnit.MINUTES)
-                .connectTimeout(5, TimeUnit.MINUTES)
-                .readTimeout(5, TimeUnit.MINUTES)
-                .build();
+        OkHttpClient client = HttpClientWithMTM.getClient(account);
 
         Request request = new Request.Builder()
                 .url(slot.getPutUrl())
                 .put(RequestBody.create(CONTENT_TYPE, file))
                 .build();
 
-        return client.newCall(request).execute();
+        if (client != null) return client.newCall(request).execute();
+        else throw new IOException("Upload failed: failed to create httpclient");
     }
 
     private static String getCompressedDirPath() {

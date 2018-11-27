@@ -16,6 +16,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.xabber.android">
 
+    <meta-data android:name="firebase_crashlytics_collection_enabled" android:value="false" />
+
     <uses-feature
         android:name="android.hardware.touchscreen"
         android:required="false" />
@@ -38,6 +40,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <application
         android:name=".data.Application"
@@ -422,6 +425,12 @@
         <service android:name=".service.XabberService" />
         <service android:name=".service.DownloadService" />
         <service android:name=".service.UploadService" />
+        <service
+            android:name=".service.PushService">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+            </intent-filter>
+        </service>
 
         <receiver android:name=".receiver.BootReceiver">
             <intent-filter>
@@ -514,15 +523,23 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.xabber.android.ui.activity.ChatActivity" />
         </activity>
-        <activity android:name=".ui.activity.IntroActivity"
-            android:theme="@style/ThemeDark"/>
         <activity android:name=".ui.activity.TutorialActivity"
             android:theme="@style/ThemeDark"/>
         <activity android:name=".ui.activity.XabberLoginActivity"
-            android:theme="@style/ThemeDark"/>
-        <activity android:name=".ui.activity.XabberAccountInfoActivity"
-            android:theme="@style/ThemeDark">
+            android:theme="@style/Theme.Design.Light"/>
 
+        <activity android:name=".ui.activity.XabberAccountActivity"
+            android:theme="@style/ThemeDark"/>
+
+        <activity android:name=".ui.activity.XAChangePassActivity" />
+        <activity android:name=".ui.activity.PatreonAppealActivity"
+            android:theme="@style/ThemeDark">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.xabber.android.ui.activity.ContactListActivity" />
+        </activity>
+
+        <activity android:name=".ui.activity.DeepLinkActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -531,14 +548,8 @@
                 <data android:host="www.xabber.com" />
                 <data android:pathPrefix="/account/emails/confirmation" />
             </intent-filter>
+        </activity>
 
-        </activity>
-        <activity android:name=".ui.activity.PatreonAppealActivity"
-            android:theme="@style/ThemeDark">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.xabber.android.ui.activity.ContactListActivity" />
-        </activity>
         <meta-data android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/SOCIAL_AUTH_FACEBOOK_KEY"/>
         <activity android:name="com.facebook.FacebookActivity"

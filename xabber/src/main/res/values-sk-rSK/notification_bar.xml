@@ -34,10 +34,7 @@
   <!-- Used for plural form in russian. -->
   <string name="connection_state_waiting_5">čakajúcich</string>
   <string name="connection_state_offline">%1$d %2$s odpojených</string>
-  <string name="archive_available_request_message">Chcete ukladať históriu správ na serveri?\nDovoluje to Xabberu načítať históriu správ zo všetkých zariadení používajúcich tento účet.\nTáto funkcia si vezme trochu viac dátového objemu a mierne spomalí rýchlosť pripojenia.\nVAROVANIE: Všetka vaša lokálna história bude odstránená .</string>
-  <string name="archive_available_request_title">Povoliť archív správ?</string>
-  <string name="INVALID_CERTIFICATE">Neplatný certifikát</string>
-  <string name="muc_invite_message">Chcete vstúpiť do konferencie?</string>
+    <string name="muc_invite_message">Chcete vstúpiť do konferencie?</string>
   <string name="otr_verification_in_progress">Kliknite sem pre jeho prerušenie.</string>
   <string name="PASSWORD_REQUIRED">Heslo požadované</string>
   <string name="pay_attention">Dávať pozor</string>

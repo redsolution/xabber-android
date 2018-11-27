@@ -92,7 +92,8 @@ public class EnterPassDialog extends DialogFragment implements DialogInterface.O
     private void createAccount(boolean enabled) {
         try {
             AccountJid accountJid = AccountManager.getInstance().addAccount(jid,
-                    edtPass.getText().toString(), token, false, true, true, false, false, enabled);
+                    edtPass.getText().toString(), token, false, true,
+                    true, false, false, enabled, false);
             AccountManager.getInstance().setColor(accountJid, ColorManager.getInstance().convertColorNameToIndex(color));
             AccountManager.getInstance().setOrder(accountJid, order);
             AccountManager.getInstance().setTimestamp(accountJid, timestamp);

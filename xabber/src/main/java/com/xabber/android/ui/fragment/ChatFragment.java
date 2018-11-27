@@ -8,6 +8,8 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.media.AudioAttributes;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
@@ -49,6 +51,7 @@ import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
+import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.database.messagerealm.Attachment;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.database.messagerealm.SyncInfo;
@@ -111,6 +114,7 @@ import org.jxmpp.stringprep.XmppStringprepException;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -130,7 +134,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         View.OnClickListener, Toolbar.OnMenuItemClickListener,
         ChatMessageAdapter.Message.MessageClickListener, HttpUploadListener,
         ChatMessageAdapter.Listener, AdapterView.OnItemClickListener, PopupWindow.OnDismissListener,
-        AttachDialog.Listener {
+        AttachDialog.Listener, OnAccountChangedListener {
 
     public static final String ARGUMENT_ACCOUNT = "ARGUMENT_ACCOUNT";
     public static final String ARGUMENT_USER = "ARGUMENT_USER";
@@ -409,6 +413,8 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         showHideNotifyIfNeed();
 
         showJoinButtonIfNeed();
+
+        Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
     }
 
     @Override
@@ -419,6 +425,8 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
 
         saveInputState();
         saveScrollState();
+
+        Application.getInstance().removeUIListener(OnAccountChangedListener.class, this);
     }
 
     @Override
@@ -1446,6 +1454,11 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         popupMenu.show();
     }
 
+    @Override
+    public void onAccountsChanged(Collection<AccountJid> accounts) {
+        chatMessageAdapter.notifyDataSetChanged();
+    }
+
     private void onShareClick(Attachment attachment) {
         if (attachment == null) return;
         String path = attachment.getFilePath();
@@ -1551,7 +1564,18 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
 
     public void playIncomingSound() {
         if (SettingsManager.eventsInChatSounds()) {
-            final MediaPlayer mp = MediaPlayer.create(getActivity(), SettingsManager.eventsSound());
+            final MediaPlayer mp;
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+                AudioAttributes attr = new AudioAttributes.Builder()
+                        .setContentType(AudioAttributes.CONTENT_TYPE_UNKNOWN)
+                        .setUsage(AudioAttributes.USAGE_NOTIFICATION_EVENT).build();
+                mp = MediaPlayer.create(getActivity(), SettingsManager.eventsSound(),
+                        null, attr, AudioManager.AUDIO_SESSION_ID_GENERATE);
+            } else {
+                mp = MediaPlayer.create(getActivity(), SettingsManager.eventsSound());
+                mp.setAudioStreamType(AudioManager.STREAM_NOTIFICATION);
+            }
+
             mp.start();
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override

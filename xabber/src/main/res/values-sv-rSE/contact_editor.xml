@@ -17,12 +17,8 @@
   <string name="processing_image">Bearbetar foto...</string>
   <string name="error_during_crop">Fel vid beskärning</string>
   <string name="error_during_image_processing">Något gick fel när bilden processades</string>
-  <string name="account_settings">Kontoinställningar</string>
-  <string name="account_user_info">Kontaktinfo</string>
-  <string name="account_server_info">Serverinformation</string>
+    <string name="account_server_info">Serverinformation</string>
   <string name="account_server_info_description">Lista med serverns funktioner</string>
   <string name="conference_private_chat_invitation">%1$s från %2$s vill starta en privat chatt med dig</string>
   <string name="accept_muc_private_chat">Bekräfta</string>
-  <string name="block_muc_private_chat">Blockera</string>
-  <string name="no_permission_camera">Saknar rättigheter för kameraåtkomst</string>
 </resources>

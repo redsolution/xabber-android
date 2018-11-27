@@ -27,10 +27,7 @@
   <string name="connection_state_waiting_2">%1$d %3$s sur %2$d en attente de connexion</string>
   <!-- Used for plural form in russian. -->
   <string name="connection_state_offline">%1$d %2$s hors-ligne</string>
-  <string name="archive_available_request_message">Souhaitez-vous stocker l\'historique des messages sur le serveur ?\nCela permet à Xabber d\'obtenir l\'historique des messages pour l\'ensemble des appareils qui utilisent ce compte.\nCette fonction génère un peu plus de trafic et réduit légèrement la vitesse de connexion.\nATTENTION : Tout votre historique local va être supprimé.</string>
-  <string name="archive_available_request_title">Activer l\'archivage des messages ?</string>
-  <string name="INVALID_CERTIFICATE">Certificat non-valide</string>
-  <string name="muc_invite_message">Souhaitez-vous rejoindre la conférence ?</string>
+    <string name="muc_invite_message">Souhaitez-vous rejoindre la conférence ?</string>
   <string name="otr_verification_in_progress">Appuyez ici pour annuler.</string>
   <string name="PASSWORD_REQUIRED">Mot de passe requis</string>
   <string name="pay_attention">Demande d\'attention</string>

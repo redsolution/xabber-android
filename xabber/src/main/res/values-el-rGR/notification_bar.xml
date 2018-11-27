@@ -34,10 +34,7 @@
   <!-- Used for plural form in russian. -->
   <string name="connection_state_waiting_5">-</string>
   <string name="connection_state_offline">%1$d %2$s εκτός σύνδεσης</string>
-  <string name="archive_available_request_message">Θέλετε να αποθηκεύσετε το ιστορικό μηνυμάτων στο διακομιστή; \nΕπιτρέπει στο Xabber να φορτώσει ιστορικό μηνυμάτων από όλες τις συσκευές που χρησιμοποιούν αυτό το λογαριασμό. \nΑυτό θα προσθέσει κάποια επιπλέον κίνηση και θα μειώσει ελαφρώς την ταχύτητα σύνδεσης. \nΠΡΟΕΙΔΟΠΟΙΗΣΗ: Όλο το τοπικό ιστορικό θα αφαιρεθεί.</string>
-  <string name="archive_available_request_title">Ενεργοποίηση αρχειοθέτησης μηνύματος;</string>
-  <string name="INVALID_CERTIFICATE">Μη έγκυρο πιστοποιητικό</string>
-  <string name="muc_invite_message">Θέλετε να εισαγάγετε στη διάσκεψη;</string>
+    <string name="muc_invite_message">Θέλετε να εισαγάγετε στη διάσκεψη;</string>
   <string name="otr_verification_in_progress">Κάντε κλικ εδώ για την ματαίωση.</string>
   <string name="PASSWORD_REQUIRED">Απαιτείται κωδικός</string>
   <string name="pay_attention">Δώστε προσοχή</string>

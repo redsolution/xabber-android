@@ -34,10 +34,7 @@
   <!-- Used for plural form in russian. -->
   <string name="connection_state_waiting_5">-</string>
   <string name="connection_state_offline">%1$d %2$s offline</string>
-  <string name="archive_available_request_message">Wil je de berichtengeschiedenis opslaan op de server?\nDaarmee kan Xabber de berichtenhistorie laden van alle apparaten die dit account gebruiken.\nDeze optie gebruikt extra dataverkeer en kan de verbindingssnelheid negatief beïnvloeden.\nWAARSCHUWING: je lokale geschiedenis zal helemaal verwijderd worden.</string>
-  <string name="archive_available_request_title">Berichtenarchief aanzetten?</string>
-  <string name="INVALID_CERTIFICATE">Ongeldig certificaat</string>
-  <string name="muc_invite_message">Conferentie betreden?</string>
+    <string name="muc_invite_message">Conferentie betreden?</string>
   <string name="otr_verification_in_progress">Kies om af te breken.</string>
   <string name="PASSWORD_REQUIRED">Wachtwoord vereist</string>
   <string name="pay_attention">Geef aandacht</string>

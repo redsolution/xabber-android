@@ -20,12 +20,10 @@
   <string name="muc_invite_confirm">%2$s邀请你加入会议%3$s，以账户%1$s加入？</string>
   <string name="muc_invite_confirm_reason">%2$s邀请你加入会议%3$s：%4$s，以账户%1$s加入？</string>
   <string name="muc_leave">离开会议</string>
-  <string name="muc_save">保存会议</string>
-  <string name="muc_choose_conference">选择会议</string>
+    <string name="muc_choose_conference">选择会议</string>
   <string name="muc_next">下一个</string>
   <string name="muc_get_hosted_conferences">获取承载的会议</string>
   <string name="muc_error_getting_conferences">获取会议时出错</string>
   <string name="muc_type_conference_name">输入会议名称</string>
-  <string name="contact_is_blocked">联系人被屏蔽！</string>
-  <string name="conference_invitation">会议邀请</string>
+    <string name="conference_invitation">会议邀请</string>
 </resources>

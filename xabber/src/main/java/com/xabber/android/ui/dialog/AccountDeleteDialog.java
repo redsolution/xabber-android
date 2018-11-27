@@ -1,11 +1,10 @@
 package com.xabber.android.ui.dialog;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.support.v4.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.CheckBox;
@@ -14,7 +13,6 @@ import com.xabber.android.R;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.xaccount.XabberAccountManager;
-import com.xabber.android.ui.preferences.PreferenceEditor;
 
 
 public class AccountDeleteDialog extends DialogFragment implements DialogInterface.OnClickListener {
@@ -60,16 +58,10 @@ public class AccountDeleteDialog extends DialogFragment implements DialogInterfa
 
     @Override
     public void onClick(DialogInterface dialog, int which) {
-        if (which != Dialog.BUTTON_POSITIVE) {
-            return;
-        }
+        if (which != Dialog.BUTTON_POSITIVE) return;
 
         AccountManager.getInstance().removeAccount(account);
-
-        if (chbDeleteSettings != null && chbDeleteSettings.isChecked()) {
-            Activity activity = getActivity();
-            if (activity instanceof PreferenceEditor)
-                ((PreferenceEditor)activity).onDeleteAccountSettings(jid);
-        }
+        if (chbDeleteSettings != null && chbDeleteSettings.isChecked())
+            XabberAccountManager.getInstance().deleteAccountSettings(jid);
     }
 }

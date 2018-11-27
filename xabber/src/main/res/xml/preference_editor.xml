@@ -50,7 +50,6 @@
 
     <PreferenceCategory
         android:title="@string/category_settings">
-
     <CheckBoxPreference
         android:title="@string/connection_start_at_boot"
         android:key="@string/connection_start_at_boot_key"

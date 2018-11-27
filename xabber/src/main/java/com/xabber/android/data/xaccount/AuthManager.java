@@ -2,9 +2,13 @@ package com.xabber.android.data.xaccount;
 
 import android.util.Base64;
 
-import com.google.gson.Gson;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.xabber.android.BuildConfig;
 import com.xabber.android.data.SettingsManager;
+import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.extension.privatestorage.PrivateStorageManager;
+
+import org.jxmpp.stringprep.XmppStringprepException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,7 +28,6 @@ public class AuthManager {
 
     public static final String PROVIDER_FACEBOOK = "facebook";
     public static final String PROVIDER_TWITTER = "twitter";
-    public static final String PROVIDER_GITHUB = "github";
     public static final String PROVIDER_GOOGLE = "google";
 
     private static final String SOURCE_NAME = "Xabber Android";
@@ -39,7 +42,7 @@ public class AuthManager {
         return HttpApiManager.getXabberApi().login("Basic " + encodedCredentials, new Source(getSource()));
     }
 
-    public static Single<ResponseBody> logout(final boolean deleteAccounts) {
+    public static Single<ResponseBody> logout() {
 
         return HttpApiManager.getXabberApi().logout(getXabberTokenHeader())
                 .flatMap(new Func1<ResponseBody, Single<? extends ResponseBody>>() {
@@ -59,24 +62,18 @@ public class AuthManager {
                         else
                             return Single.error(new Throwable("Realm: xabber account deletion error"));
                     }
+                })
+                .flatMap(new Func1<ResponseBody, Single<? extends ResponseBody>>() {
+                    @Override
+                    public Single<? extends ResponseBody> call(ResponseBody responseBody) {
+                        return unregisterFCMEndpoint(FirebaseInstanceId.getInstance().getToken());
+                    }
                 });
     }
 
-    public static Single<XAccountTokenDTO> loginSocial(String provider, String socialToken) {
+    public static Single<XAccountTokenDTO> loginSocial(String provider, String credentials) {
         SettingsManager.setSyncAllAccounts(true);
-
-        Gson gson = new Gson();
-        String credentials = gson.toJson(new AccessToken(socialToken));
         return HttpApiManager.getXabberApi().loginSocial(new SocialAuthRequest(provider, credentials, getSource()));
-    }
-
-    public static Single<XAccountTokenDTO> loginSocialTwitter(
-           String socialToken, String twitterTokenSecret, String secret, String key) {
-        SettingsManager.setSyncAllAccounts(true);
-
-        Gson gson = new Gson();
-        String credentials = gson.toJson(new TwitterAccessToken(new TwitterTokens(twitterTokenSecret, socialToken), secret, key));
-        return HttpApiManager.getXabberApi().loginSocial(new SocialAuthRequest(PROVIDER_TWITTER, credentials, getSource()));
     }
 
     public static Single<XabberAccount> getAccount(final String token) {
@@ -237,29 +234,94 @@ public class AuthManager {
                 });
     }
 
-    public static Single<XabberAccount> completeRegister(String username, String pass, String confirmPass,
-                                                         String firstName, String lastName,
-                                                         String host, String language, boolean createToken) {
-        return HttpApiManager.getXabberApi().completeRegister(getXabberTokenHeader(),
-                new CompleteRegister(username, pass, confirmPass, firstName, lastName, host, language, createToken))
-                .flatMap(new Func1<XabberAccountDTO, Single<? extends XabberAccount>>() {
-                    @Override
-                    public Single<? extends XabberAccount> call(XabberAccountDTO xabberAccountDTO) {
-                        return XabberAccountManager.getInstance().saveOrUpdateXabberAccountToRealm(xabberAccountDTO, getXabberToken());
-                    }
-                });
-    }
-
     public static Single<ResponseBody> addEmail(String email) {
         return HttpApiManager.getXabberApi().addEmail(getXabberTokenHeader(), new Email(email, getSource()));
     }
 
-    public static Single<ResponseBody> setPhoneNumber(String phoneNumber) {
-        return HttpApiManager.getXabberApi().setPhoneNumber(getXabberTokenHeader(), new SetPhoneNumber("set", phoneNumber));
+    public static Single<ResponseBody> deleteEmail(int emailId) {
+        return HttpApiManager.getXabberApi().deleteEmail(getXabberTokenHeader(), emailId);
     }
 
-    public static Single<ResponseBody> confirmPhoneNumber(String code) {
-        return HttpApiManager.getXabberApi().confirmPhoneNumber(getXabberTokenHeader(), new ConfirmPhoneNumber("verify", code));
+    // API v2
+
+    public static Single<XMPPCode> requestXMPPCode(String jid) {
+        return HttpApiManager.getXabberApi().requestXMPPCode(new Jid(jid));
+    }
+
+    public static Single<XabberAccount> confirmXMPP(final String jid, String code) {
+        SettingsManager.setSyncAllAccounts(true);
+        return HttpApiManager.getXabberApi().confirmXMPP(new CodeConfirm(code, jid))
+                .flatMap(new Func1<XabberAccountDTO, Single<? extends XabberAccount>>() {
+                    @Override
+                    public Single<? extends XabberAccount> call(XabberAccountDTO xabberAccountDTO) {
+                        try {
+                            PrivateStorageManager.getInstance().setXabberAccountBinding(AccountJid.from(jid), true);
+                        } catch (XmppStringprepException e) {
+                            e.printStackTrace();
+                        }
+
+                        return XabberAccountManager.getInstance().saveOrUpdateXabberAccountToRealm(xabberAccountDTO,
+                                xabberAccountDTO.getToken());
+                    }
+                });
+    }
+
+    public static Single<HostResponse> getHosts() {
+        return HttpApiManager.getXabberApi().getHosts();
+    }
+
+    public static Single<XabberAccount> signupv2(String username, String host, String password,
+                                                 String captchaToken) {
+        SettingsManager.setSyncAllAccounts(true);
+        return HttpApiManager.getXabberApi().signupv2(new SignUpFields(username, host,
+            password, captchaToken))
+            .flatMap(new Func1<XabberAccountDTO, Single<? extends XabberAccount>>() {
+                @Override
+                public Single<? extends XabberAccount> call(XabberAccountDTO xabberAccountDTO) {
+                    return XabberAccountManager.getInstance().saveOrUpdateXabberAccountToRealm(xabberAccountDTO,
+                            xabberAccountDTO.getToken());
+                }
+            });
+    }
+
+    public static Single<XabberAccount> signupv2(String username, String host, String password,
+                                                 String provider, String credentials) {
+        SettingsManager.setSyncAllAccounts(true);
+        return HttpApiManager.getXabberApi().signupv2(new SignUpFields(username, host,
+                password, provider, credentials))
+                .flatMap(new Func1<XabberAccountDTO, Single<? extends XabberAccount>>() {
+                    @Override
+                    public Single<? extends XabberAccount> call(XabberAccountDTO xabberAccountDTO) {
+                        return XabberAccountManager.getInstance().saveOrUpdateXabberAccountToRealm(xabberAccountDTO,
+                                xabberAccountDTO.getToken());
+                    }
+                });
+    }
+
+    public static Single<ResponseBody> bindSocial(String provider, String credentials) {
+        return HttpApiManager.getXabberApi().bindSocial(getXabberTokenHeader(),
+                new SocialAuthRequest(provider, credentials, getSource()));
+    }
+
+    public static Single<ResponseBody> unbindSocial(String provider) {
+        return HttpApiManager.getXabberApi().unbindSocial(getXabberTokenHeader(), new Provider(provider));
+    }
+
+    public static Single<ResponseBody> registerFCMEndpoint(String endpoint) {
+        return HttpApiManager.getXabberApi().registerFCMEndpoint(getXabberTokenHeader(), new Endpoint(endpoint));
+    }
+
+    public static Single<ResponseBody> unregisterFCMEndpoint(String endpoint) {
+        return HttpApiManager.getXabberApi().unregisterFCMEndpoint(new Endpoint(endpoint));
+    }
+
+    public static Single<ResponseBody> changePassword(String oldPass, String pass, String passConfirm) {
+        return HttpApiManager.getXabberApi().changePassword(getXabberTokenHeader(),
+                new ChangePassFields(oldPass, pass, passConfirm));
+    }
+
+    public static Single<ResponseBody> requestResetPassword(String email) {
+        return HttpApiManager.getXabberApi().requestResetPassword(new ResetPassFields(email));
     }
 
     // support
@@ -279,49 +341,150 @@ public class AuthManager {
         return SOURCE_NAME + " " + BuildConfig.FLAVOR + " " + BuildConfig.VERSION_NAME;
     }
 
+    public static String getProviderName(String provider) {
+        switch (provider) {
+            case AuthManager.PROVIDER_TWITTER:
+                return "Twitter";
+            case AuthManager.PROVIDER_FACEBOOK:
+                return "Facebook";
+            default:
+                return "Google+";
+        }
+    }
+
     // models
 
-    public static class CompleteRegister {
-        final String username;
+    public static class ChangePassFields {
+        final String old_password;
         final String password;
         final String confirm_password;
-        final String first_name;
-        final String last_name;
-        final String host;
-        final String language;
-        final boolean create_token;
 
-        public CompleteRegister(String username, String password, String confirm_password,
-                                String first_name, String last_name, String host, String language,
-                                boolean create_token) {
-            this.username = username;
+        public ChangePassFields(String oldPassword, String password, String confirmPassword) {
+            this.old_password = oldPassword;
             this.password = password;
-            this.confirm_password = confirm_password;
-            this.first_name = first_name;
-            this.last_name = last_name;
+            this.confirm_password = confirmPassword;
+        }
+    }
+
+    public static class ResetPassFields {
+        final String email;
+
+        public ResetPassFields(String email) {
+            this.email = email;
+        }
+    }
+
+    public static class Endpoint {
+        final String endpoint_key;
+
+        public Endpoint(String endpoint_key) {
+            this.endpoint_key = endpoint_key;
+        }
+    }
+
+    public static class SignUpFields {
+        final String username;
+        final String host;
+        final String password;
+        String captcha_token;
+        String provider;
+        String credentials;
+        final boolean create_token;
+        String first_name;
+        String last_name;
+        String language;
+        final String source;
+        String source_ip;
+
+        public SignUpFields(String username, String host, String password,
+                            String captcha_token) {
+            this.username = username;
             this.host = host;
-            this.language = language;
-            this.create_token = create_token;
+            this.password = password;
+            this.captcha_token = captcha_token;
+            this.create_token = true;
+            this.source = getSource();
+        }
+
+        public SignUpFields(String username, String host, String password, String provider,
+                            String credentials) {
+            this.username = username;
+            this.host = host;
+            this.password = password;
+            this.provider = provider;
+            this.credentials = credentials;
+            this.create_token = true;
+            this.source = getSource();
         }
     }
 
-    public static class SetPhoneNumber {
-        final String action;
-        final String phone;
-
-        public SetPhoneNumber(String action, String phone) {
-            this.action = action;
-            this.phone = phone;
-        }
-    }
-
-    public static class ConfirmPhoneNumber {
-        final String action;
+    public static class CodeConfirm {
         final String code;
+        final String jid;
 
-        public ConfirmPhoneNumber(String action, String code) {
-            this.action = action;
+        public CodeConfirm(String code, String jid) {
             this.code = code;
+            this.jid = jid;
+        }
+    }
+
+    public static class HostResponse {
+        final List<Host> results;
+
+        public HostResponse(List<Host> results) {
+            this.results = results;
+        }
+
+        public List<Host> getHosts() {
+            return results;
+        }
+    }
+
+    public static class Host {
+        final String host;
+        final String description;
+        final String price;
+        final boolean is_free;
+
+        public Host(String host, String description, String price, boolean is_free) {
+            this.host = host;
+            this.description = description;
+            this.price = price;
+            this.is_free = is_free;
+        }
+
+        public String getHost() {
+            return host;
+        }
+
+        public String getDescription() {
+            return description;
+        }
+
+        public String getPrice() {
+            return price;
+        }
+
+        public boolean isFree() {
+            return is_free;
+        }
+    }
+
+    public static class XMPPCode {
+        final String request_id;
+        final String api_jid;
+
+        public XMPPCode(String request_id, String api_jid) {
+            this.request_id = request_id;
+            this.api_jid = api_jid;
+        }
+
+        public String getRequestId() {
+            return request_id;
+        }
+
+        public String getApiJid() {
+            return api_jid;
         }
     }
 
@@ -378,6 +541,14 @@ public class AuthManager {
         public Email(String email, String source) {
             this.email = email;
             this.source = source;
+        }
+    }
+
+    public static class Provider {
+        final String provider;
+
+        public Provider(String provider) {
+            this.provider = provider;
         }
     }
 

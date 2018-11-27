@@ -34,9 +34,6 @@
   <!-- Used for plural form in russian. -->
   <string name="connection_state_waiting_5">%1$d из %2$d %3$s ожидают переподключения </string>
   <string name="connection_state_offline">%1$d %2$s не в сети</string>
-  <string name="archive_available_request_message">Сохранять историю сообщений на сервере?\nЭто позволит Xabber загружать историю переписки со всех устройств, использующих данную учётную запись.\nИспользование архива сообщений приведет к дополнительному расходу трафика и незначительно замедлит подключение.\nВНИМАНИЕ: Вся локальная история сообщений будет удалена.</string>
-  <string name="archive_available_request_title">Включить архив сообщений?</string>
-  <string name="INVALID_CERTIFICATE">Неверный сертификат</string>
   <string name="muc_invite_message">Вы хотите подключиться к конференции?</string>
   <string name="otr_verification_in_progress">Нажмите, чтобы прервать.</string>
   <string name="PASSWORD_REQUIRED">Требуется ввести пароль</string>
