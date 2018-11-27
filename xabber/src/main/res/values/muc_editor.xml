@@ -19,14 +19,12 @@
     <string name="muc_invite_confirm">%2$s invites you to join conference %3$s. Join from account %1$s?</string>
     <string name="muc_invite_confirm_reason">%2$s invites you to join conference %3$s: %4$s. Join from account %1$s?</string>
     <string name="muc_leave">Leave conference</string>
-    <string name="muc_save">Save conference</string>
 
     <string name="muc_choose_conference">Choose conference</string>
     <string name="muc_next">Next</string>
     <string name="muc_get_hosted_conferences">Get hosted conferences</string>
     <string name="muc_error_getting_conferences">Error getting conferences</string>
     <string name="muc_type_conference_name">Type conference name</string>
-    <string name="contact_is_blocked">Contact is blocked!</string>
     <string name="conference_invitation">Conference invitation</string>
 
     <string name="domen_part" translatable="false">conference.%1$s</string>

@@ -17,10 +17,6 @@
   <string name="processing_image">Tractament de l\'imatge en cors...</string>
   <string name="error_during_crop">Error pendent lo redimensionament de l\'imatge</string>
   <string name="error_during_image_processing">Error pendent lo tractament de l\'imatge</string>
-  <string name="account_settings">Paramètres del compte</string>
-  <string name="account_user_info">Detalhs del compte</string>
-  <string name="conference_private_chat_invitation">%1$s de %2$s desira discutir en privat</string>
+    <string name="conference_private_chat_invitation">%1$s de %2$s desira discutir en privat</string>
   <string name="accept_muc_private_chat">Acceptar</string>
-  <string name="block_muc_private_chat">Blocar</string>
-  <string name="no_permission_camera">Permission d\'accedir a la camèra refusada</string>
 </resources>

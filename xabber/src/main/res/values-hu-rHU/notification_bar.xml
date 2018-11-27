@@ -34,10 +34,7 @@
   <!-- Used for plural form in russian. -->
   <string name="connection_state_waiting_5">-</string>
   <string name="connection_state_offline">%1$d %2$s kijelentkezve</string>
-  <string name="archive_available_request_message">A csevegési előzményeket a szerveren akarod tárolni?\nEz lehetővé teszi, hogy a Xabber betöltse a fiókhoz tartozó előzményeket egyéb eszközökről is.\nEz a lehetőség kissé megnöveli az adatforgalmat, és csökkentheti a kapcsolat sebességét.\nFIGYELEM: Minden helyben tárolt előzmény törölve lesz!</string>
-  <string name="archive_available_request_title">Engedélyezed az üzenetek archiválását?</string>
-  <string name="INVALID_CERTIFICATE">Hibás tanúsítvány</string>
-  <string name="muc_invite_message">Belépsz a konferenciába?</string>
+    <string name="muc_invite_message">Belépsz a konferenciába?</string>
   <string name="otr_verification_in_progress">Kopp ide a leállításhoz.</string>
   <string name="PASSWORD_REQUIRED">Jelszó szükséges</string>
   <string name="pay_attention">Figyelem</string>

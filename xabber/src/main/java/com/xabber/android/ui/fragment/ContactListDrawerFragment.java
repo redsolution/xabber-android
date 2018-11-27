@@ -2,12 +2,13 @@ package com.xabber.android.ui.fragment;
 
 
 import android.app.Activity;
-import android.support.v4.app.Fragment;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.res.TypedArray;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -16,7 +17,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -46,17 +46,22 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
+import rx.schedulers.Schedulers;
+import rx.subscriptions.CompositeSubscription;
+
 public class ContactListDrawerFragment extends Fragment implements View.OnClickListener,
         OnAccountChangedListener, AdapterView.OnItemClickListener, AccountListPreferenceAdapter.Listener {
 
+    private CompositeSubscription compositeSubscription = new CompositeSubscription();
     ContactListDrawerListener listener;
     private ImageView drawerHeaderImage;
     private int[] headerImageResources;
 
-    private LinearLayout llAccountInfo;
-    private LinearLayout llNoAccount;
     private TextView tvAccountName;
     private TextView tvAccountEmail;
+    private ImageView ivSync;
 
     private TextView tvPatreonTitle;
     private ProgressBar pbPatreon;
@@ -74,7 +79,10 @@ public class ContactListDrawerFragment extends Fragment implements View.OnClickL
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        listener = (ContactListDrawerListener) activity;
+        if (activity instanceof ContactListDrawerListener)
+            listener = (ContactListDrawerListener) activity;
+        else throw new RuntimeException(activity.toString()
+                + " must implement ContactListDrawerFragment.ContactListDrawerListener");
     }
 
     @Override
@@ -112,8 +120,7 @@ public class ContactListDrawerFragment extends Fragment implements View.OnClickL
 
         view.findViewById(R.id.drawer_header_action_xabber_account).setOnClickListener(this);
 
-        llAccountInfo = (LinearLayout) view.findViewById(R.id.accountInfo);
-        llNoAccount = (LinearLayout) view.findViewById(R.id.noAccount);
+        ivSync = view.findViewById(R.id.ivSync);
         tvAccountName = (TextView) view.findViewById(R.id.tvAccountName);
         tvAccountEmail = (TextView) view.findViewById(R.id.tvAccountEmail);
 
@@ -148,6 +155,7 @@ public class ContactListDrawerFragment extends Fragment implements View.OnClickL
             getActivity().getWindow().setStatusBarColor(ColorManager.getInstance().getAccountPainter().getDefaultMainColor());
         }
         update();
+        subscribeForXabberAccount();
     }
 
     @Override
@@ -155,6 +163,7 @@ public class ContactListDrawerFragment extends Fragment implements View.OnClickL
         super.onPause();
         Application.getInstance().removeUIListener(OnAccountChangedListener.class, this);
         stopPatreonAnim();
+        compositeSubscription.clear();
     }
 
     @Override
@@ -184,14 +193,12 @@ public class ContactListDrawerFragment extends Fragment implements View.OnClickL
     }
 
     private void update() {
-
         Glide.with(this)
                 .fromResource()
                 .load(headerImageResources[AccountPainter.getDefaultAccountColorLevel()])
                 .fitCenter()
                 .into(drawerHeaderImage);
 
-        setupXabberAccountView();
         setupPatreonView();
         setupAccountList();
     }
@@ -205,33 +212,18 @@ public class ContactListDrawerFragment extends Fragment implements View.OnClickL
         void onAccountSelected(AccountJid account);
     }
 
-    private void setupXabberAccountView() {
-        XabberAccount account = XabberAccountManager.getInstance().getAccount();
-
+    private void setupXabberAccountView(XabberAccount account) {
         if (account != null) {
-            llAccountInfo.setVisibility(View.VISIBLE);
-            llNoAccount.setVisibility(View.GONE);
-
             String accountName = account.getFirstName() + " " + account.getLastName();
-            if (accountName.trim().isEmpty())
-                accountName = getActivity().getString(R.string.title_xabber_account);
+            if (accountName.trim().isEmpty()) accountName = getActivity().getString(R.string.title_xabber_account);
+            tvAccountName.setText(accountName);
+            tvAccountEmail.setText(account.getFullUsername());
+            ivSync.setImageResource(R.drawable.ic_sync_done);
 
-            if (XabberAccount.STATUS_NOT_CONFIRMED.equals(account.getAccountStatus())) {
-                tvAccountName.setText(accountName);
-                tvAccountEmail.setText(R.string.title_email_confirm);
-            }
-            if (XabberAccount.STATUS_CONFIRMED.equals(account.getAccountStatus())) {
-                tvAccountName.setText(accountName);
-                tvAccountEmail.setText(R.string.title_complete_register);
-            }
-            if (XabberAccount.STATUS_REGISTERED.equals(account.getAccountStatus())) {
-
-                tvAccountName.setText(accountName);
-                tvAccountEmail.setText(account.getUsername());
-            }
         } else {
-            llAccountInfo.setVisibility(View.GONE);
-            llNoAccount.setVisibility(View.VISIBLE);
+            tvAccountName.setText(R.string.title_xabber_account);
+            tvAccountEmail.setText(R.string.not_login);
+            ivSync.setImageResource(R.drawable.ic_sync_disable);
         }
     }
 
@@ -306,5 +298,17 @@ public class ContactListDrawerFragment extends Fragment implements View.OnClickL
     public void onDeleteAccount(AccountItem accountItem) {
         AccountDeleteDialog.newInstance(accountItem.getAccount()).show(getFragmentManager(),
                 AccountDeleteDialog.class.getName());
+    }
+
+    private void subscribeForXabberAccount() {
+        compositeSubscription.add(XabberAccountManager.getInstance().subscribeForAccount()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnNext(new Action1<XabberAccount>() {
+                @Override
+                public void call(XabberAccount account) {
+                    setupXabberAccountView(account);
+                }
+            }).subscribe());
     }
 }

@@ -15,12 +15,9 @@
   <string name="vcard_organization">Арганізацыя</string>
   <string name="vcard_title">Пасада</string>
   <string name="vcard_role">Функцыі, якія выконвае</string>
-  <string name="vcard_other">Іншыя зьвесткі</string>
-  <string name="vcard_categories">Катэгорыі</string>
-  <string name="vcard_decsription">Апісаньне</string>
+    <string name="vcard_decsription">Апісаньне</string>
   <string name="vcard_note">Заўвагі</string>
-  <string name="vcard_address">Адрэса</string>
-  <string name="vcard_address_pobox">Паштовая скрыня</string>
+    <string name="vcard_address_pobox">Паштовая скрыня</string>
   <string name="vcard_address_extadr">Дадатковая адрэса</string>
   <string name="vcard_address_street">Вуліца</string>
   <string name="vcard_address_locality">Горад</string>

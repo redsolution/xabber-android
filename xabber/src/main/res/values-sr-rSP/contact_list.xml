@@ -18,17 +18,13 @@
   <string name="application_state_roster">Повезан.</string>
   <string name="application_state_starting">Покрећем апликацију... </string>
   <string name="application_state_waiting">Чекам везу...</string>
-  <string name="chat_list">Списак преписки</string>
-  <string name="chat_list_is_empty">Нема активних преписки</string>
-  <string name="chat_viewer">Ћаскање</string>
-  <string name="close_chat">Затвори ћаскање</string>
-  <string name="CONNECTION_FAILED">Грешка при повезивању</string>
+    <string name="chat_viewer">Ћаскање</string>
+    <string name="CONNECTION_FAILED">Грешка при повезивању</string>
   <string name="contact_add">Додај контакт</string>
   <string name="contact_delete">Обриши</string>
   <string name="contact_block">Блокирај контакт</string>
   <string name="contact_delete_confirm">Желите ли заиста да обришете контакт %1$s са налога %2$s?</string>
-  <string name="contact_list">Списак контаката</string>
-  <string name="discard_subscription">Одбиј контакт</string>
+    <string name="discard_subscription">Одбиј контакт</string>
   <string name="exit">Изађи</string>
   <string name="group_active_chat">Активне преписке</string>
   <string name="group_none">Нема група</string>
@@ -40,14 +36,7 @@
   <string name="request_subscription">Затражи претплату</string>
   <string name="XMPP_EXCEPTION">Грешка тока</string>
   <string name="application_state_closing">Уписујем измене&#8230;\nАпликација ће да се затвори ускоро.</string>
-  <string name="certificate_details">\n\nИздат за:\nУобичајени назив (CN): %1$s\nОрганизација (O): %2$s\nОрганизациона јединица (OU): %3$s\nСеријски број: %4$s\n\nИздавач:\nУобичајени назив (CN): %5$s\nОрганизација (O): %6$s\nОрганизациона јединица (OU): %7$s\n\nВажност:\nИздат: %8$s\nИстиче: %9$s.</string>
-  <string name="certificate_invalid_chane">Потврђивање потписа ланца није успело</string>
-  <string name="certificate_invalid_target">Потврђивање мете није успело</string>
-  <string name="certificate_self_signed">Самопотписан сертификат</string>
-  <string name="certificate_show_details">Детаљи...</string>
-  <string name="close_chats">Затвори све преписке</string>
-  <string name="contact_integration_suggest">Желите ли да се Ксабер интегрише у системске контакте?\nОво се може изменити у „Поставке“ → „ИксМПП налози“ → Ваш налог → „Интеграција контаката“.\nНапомена: Листање системских контаката биће спорије неколико минута.</string>
-  <string name="group_room">Групна ћаскања</string>
+    <string name="group_room">Групна ћаскања</string>
   <string name="OTR_ERROR">ОТР грешка</string>
   <string name="select_contact">Тапните за избор контакта</string>
   <string name="show_offline_always">увек</string>
@@ -62,8 +51,7 @@
   <string name="block_list">Блокирај листу</string>
   <string name="contact_blocked_successfully">Контакт успешно блокиран</string>
   <string name="error_blocking_contact">Грешка при блокирању контакта</string>
-  <string name="unblock_contact">Одблокирај контакт</string>
-  <string name="contacts_unblocked_successfully">Контакт успешно одблокирана</string>
+    <string name="contacts_unblocked_successfully">Контакт успешно одблокирана</string>
   <string name="error_unblocking_contacts">Грешка при одблокирању контакта</string>
   <string name="block_contact_confirm">Желите ли заиста да блокирате %1$s са налога %2$s?</string>
   <string name="unblock_all_contacts_confirm">Желите ли заиста да одблокирате све контакте са налога %1$s?</string>
@@ -74,12 +62,6 @@
   <string name="dark_theme_suggest_dialog_join_dark_side">Придружи се Тамној страни</string>
   <string name="dark_theme_suggest_dialog_stay_on_light_side">Остани на Светлој страни</string>
   <string name="battery_optimization_disable_dialog_title">Оптимизација батерије</string>
-  <string name="save_log_to_file">Сачувај у фајл</string>
-  <string name="open_log_file">Отвори</string>
+    <string name="open_log_file">Отвори</string>
   <string name="send_log_file">Пошаљи</string>
-  <string name="intro_welcome">Добро дошли у Ксабер</string>
-  <string name="intro_xabber_description">ИксМПП клијент за Андроид отвореног кôда</string>
-  <string name="intro_register_account">Региструј ИксМПП налог</string>
-  <string name="intro_faq">Ако немате ИксМПП налог <a href="https://www.xabber.com/faq/">прочитајте честа питања</a> како да га набавите.</string>
-  <string name="intro_web_search_register_xmpp">Региструј ИксМПП налог</string>
 </resources>

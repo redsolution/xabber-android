@@ -34,10 +34,7 @@
   <!-- Used for plural form in russian. -->
   <string name="connection_state_waiting_5">-</string>
   <string name="connection_state_offline">%1$d %2$s tidak aktif</string>
-  <string name="archive_available_request_message">Apakah Anda Ingin menyimpan riwayat pesan ke server?\nIni mengizinkan Xabber memuat riwayat pesan dari semua perangkat dengan akun ini.\nFitur ini akan menggunakan data lebih banyak dan sedikit mengurangi kecepatan koneksi.\nPERINGATAN: Semua riwayat lokal Anda akan terhapus.</string>
-  <string name="archive_available_request_title">Aktifkan arsip pesan?</string>
-  <string name="INVALID_CERTIFICATE">Sertifikat tidak berlaku</string>
-  <string name="muc_invite_message">Apakah anda ingin memasuki konferensi?</string>
+    <string name="muc_invite_message">Apakah anda ingin memasuki konferensi?</string>
   <string name="otr_verification_in_progress">Klik di sini untuk membatalkannya.</string>
   <string name="PASSWORD_REQUIRED">Kata sandi diperlukan</string>
   <string name="pay_attention">Perhatikan</string>

@@ -18,17 +18,13 @@
   <string name="application_state_roster">متصل.</string>
   <string name="application_state_starting">جارِ تشغيل التطبيق&#8230; </string>
   <string name="application_state_waiting">بانتظار الاتصال&#8230;</string>
-  <string name="chat_list">قائمة المحادثات</string>
-  <string name="chat_list_is_empty">لا توجد محادثات دائرة</string>
-  <string name="chat_viewer">محادثة</string>
-  <string name="close_chat">أغلق المحادثة</string>
-  <string name="CONNECTION_FAILED">خطأ في الاتصال</string>
+    <string name="chat_viewer">محادثة</string>
+    <string name="CONNECTION_FAILED">خطأ في الاتصال</string>
   <string name="contact_add">إضف طرف اتصال</string>
   <string name="contact_delete">حذف</string>
   <string name="contact_block">حظر جهة الاتصال</string>
   <string name="contact_delete_confirm">هل حقاً تريد أن تحذف طرف الاتصال %1$s من حساب %2$s؟</string>
-  <string name="contact_list">قائمة الاتصال</string>
-  <string name="discard_subscription">رفض الاتصال</string>
+    <string name="discard_subscription">رفض الاتصال</string>
   <string name="exit">خروج</string>
   <string name="group_active_chat">محادثات دائرة</string>
   <string name="group_none">لا توجد مجموعات</string>
@@ -40,14 +36,7 @@
   <string name="request_subscription">طلب الاشتراك</string>
   <string name="XMPP_EXCEPTION">خطأ في تدفق البيانات</string>
   <string name="application_state_closing">حفظ التغييرات&#8230;\nسيتم إغلاق التطبيق قريباً.</string>
-  <string name="certificate_details">\n\nأصدرت لـ:\nCommon Name (CN): %1$s\nOrganization (O): %2$s\nOrganizational Unit (OU): %3$s\nSerial Number: %4$s\n\nIssued by:\nCommon Name (CN): %5$s\nOrganization (O): %6$s\nOrganizational Unit (OU): %7$s\n\nسريان المفعول:\nصدرت في: %8$s\nتنتهي في: %9$s.</string>
-  <string name="certificate_invalid_chane">فشل التحقق من سلسلة التوقيع</string>
-  <string name="certificate_invalid_target">فشل التحقق من الهدف</string>
-  <string name="certificate_self_signed">شهادة موقعة ذاتياً</string>
-  <string name="certificate_show_details">تفاصيل ...</string>
-  <string name="close_chats">إنهاء جميع المحادثات</string>
-  <string name="contact_integration_suggest">هل تريد دمج Xabber في قائمة اتصالات النظام؟\nيمكن تغيير هذا الإعداد من \"الإعدادات\" → \"حسابات XMPP\" → حسابك → \"دمج في حسابات النظام\".\nتنبيه: قائمة اتصالات النظام قد تصبح أبطأ لبضع دقائق.</string>
-  <string name="group_room">اجتماعات</string>
+    <string name="group_room">اجتماعات</string>
   <string name="OTR_ERROR">خطأ OTR</string>
   <string name="select_contact">برجاء النقر لاختيار طرف اتصال</string>
   <string name="show_offline_always">أظهر دائماً</string>
@@ -62,8 +51,7 @@
   <string name="block_list">قائمة الحظر</string>
   <string name="contact_blocked_successfully">تم حظر جهة الاتصال بنجاح</string>
   <string name="error_blocking_contact">خطأ في حظر جهة اتصال</string>
-  <string name="unblock_contact">إلغاء حظر جهة الإتصال</string>
-  <string name="contacts_unblocked_successfully">تم إلغاء حظر جهات الاتصال بنجاح</string>
+    <string name="contacts_unblocked_successfully">تم إلغاء حظر جهات الاتصال بنجاح</string>
   <string name="error_unblocking_contacts">خطأ في إلغاء حظر جهات الاتصال</string>
   <string name="block_contact_confirm">هل حقاً تريد أن تحظر طرف الاتصال %1$s من حساب %2$s؟</string>
 </resources>

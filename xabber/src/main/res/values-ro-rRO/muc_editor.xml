@@ -20,12 +20,10 @@
   <string name="muc_invite_confirm">%2$s te-a invitat în conferința %3$s. Doriți să o accesați utilizând contul %1$s?</string>
   <string name="muc_invite_confirm_reason">%2$s te-a invitat în conferința %3$s: %4$s. Doriți să o accesați utilizând contul %1$s?</string>
   <string name="muc_leave">Părăsește conferința</string>
-  <string name="muc_save">Salvare conferință</string>
-  <string name="muc_choose_conference">Selectare conferință</string>
+    <string name="muc_choose_conference">Selectare conferință</string>
   <string name="muc_next">Continuare</string>
   <string name="muc_get_hosted_conferences">Obține conferințe existente</string>
   <string name="muc_error_getting_conferences">Eroare obținere conferințe</string>
   <string name="muc_type_conference_name">Introdu nume conferiță</string>
-  <string name="contact_is_blocked">Contact blocat!</string>
-  <string name="conference_invitation">Invitație în conferință</string>
+    <string name="conference_invitation">Invitație în conferință</string>
 </resources>

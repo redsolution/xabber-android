@@ -17,12 +17,9 @@
   <string name="vcard_organization_unit">Tipo de empleo</string>
   <string name="vcard_title">Puesto de trabajo, función</string>
   <string name="vcard_role">Rol</string>
-  <string name="vcard_other">Más información</string>
-  <string name="vcard_categories">Categorías</string>
-  <string name="vcard_decsription">Descripción</string>
+    <string name="vcard_decsription">Descripción</string>
   <string name="vcard_note">Notas</string>
-  <string name="vcard_address">Dirección</string>
-  <string name="vcard_address_pobox">Apartado de correos</string>
+    <string name="vcard_address_pobox">Apartado de correos</string>
   <string name="vcard_address_extadr">Dirección completa</string>
   <string name="vcard_address_street">Calle</string>
   <string name="vcard_address_locality">Localidad</string>

@@ -20,12 +20,10 @@
   <string name="muc_invite_confirm">%2$s zaprosił cię do wzięcia udziału w konferencji %3$s. Dołączyć z konta %1$s?</string>
   <string name="muc_invite_confirm_reason">%2$s zaprosił cię do wzięcia udziału w konferencji %3$s: %4$s. Dołączyć z konta %1$s?</string>
   <string name="muc_leave">Wyjdź z konferencji</string>
-  <string name="muc_save">Zachowaj konferencję</string>
-  <string name="muc_choose_conference">Wybierz konferencję</string>
+    <string name="muc_choose_conference">Wybierz konferencję</string>
   <string name="muc_next">Dalej</string>
   <string name="muc_get_hosted_conferences">Pobierz konferencje</string>
   <string name="muc_error_getting_conferences">Błąd pobierania konferencji</string>
   <string name="muc_type_conference_name">Wpisz nazwę konferencji</string>
-  <string name="contact_is_blocked">Kontakt jest zablokowany!</string>
-  <string name="conference_invitation">Zaproszenie do konferencji</string>
+    <string name="conference_invitation">Zaproszenie do konferencji</string>
 </resources>

@@ -16,12 +16,9 @@
   <string name="vcard_organization_unit">Organizacijos padalinys</string>
   <string name="vcard_title">Darbo pavadinimas, funkcija</string>
   <string name="vcard_role">Vaidmuo</string>
-  <string name="vcard_other">Kita informacija</string>
-  <string name="vcard_categories">Kategorijos</string>
-  <string name="vcard_decsription">Aprašymas</string>
+    <string name="vcard_decsription">Aprašymas</string>
   <string name="vcard_note">Užrašai</string>
-  <string name="vcard_address">Adresas</string>
-  <string name="vcard_address_pobox">Nuotolinė paštadėžė</string>
+    <string name="vcard_address_pobox">Nuotolinė paštadėžė</string>
   <string name="vcard_address_extadr">Išplėstas adresas</string>
   <string name="vcard_address_street">Gatvė</string>
   <string name="vcard_address_locality">Vietovė</string>

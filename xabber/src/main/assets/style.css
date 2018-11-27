@@ -1,0 +1,18 @@
+li {
+    padding-left: 6px;
+    padding-right: 6px;
+    line-height: 1.5;
+    color: #616161;
+}
+
+ul {
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
+
+p {
+    margin-top: 8px;
+    margin-bottom: 4px;
+    line-height: 1.5;
+    color: #616161;
+}

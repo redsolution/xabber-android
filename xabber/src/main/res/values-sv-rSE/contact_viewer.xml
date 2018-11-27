@@ -17,12 +17,9 @@
   <string name="vcard_organization_unit">Avdelning</string>
   <string name="vcard_title">Titel (jobb), funktion</string>
   <string name="vcard_role">Roll</string>
-  <string name="vcard_other">Övrig information</string>
-  <string name="vcard_categories">Kategorier</string>
-  <string name="vcard_decsription">Beskrivning</string>
+    <string name="vcard_decsription">Beskrivning</string>
   <string name="vcard_note">Anteckning</string>
-  <string name="vcard_address">Adress</string>
-  <string name="vcard_address_pobox">Boxadress</string>
+    <string name="vcard_address_pobox">Boxadress</string>
   <string name="vcard_address_extadr">Utökad adress</string>
   <string name="vcard_address_street">Gata</string>
   <string name="vcard_address_locality">Område</string>

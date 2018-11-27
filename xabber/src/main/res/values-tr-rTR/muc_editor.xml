@@ -20,12 +20,10 @@
   <string name="muc_invite_confirm">%2$s, sizi %3$s konferansına katılmaya davet ediyor. %1$s hesabı ile katılır mısın?</string>
   <string name="muc_invite_confirm_reason">%2$s sizi bu konferansa katılmaya davet ediyor %3$s:%4$s. %1$s hesabı ile katılır mısın?</string>
   <string name="muc_leave">Konferanstan ayrıl</string>
-  <string name="muc_save">Konferansı kaydet</string>
-  <string name="muc_choose_conference">Konferans seçin</string>
+    <string name="muc_choose_conference">Konferans seçin</string>
   <string name="muc_next">İleri</string>
   <string name="muc_get_hosted_conferences">Barındırılan konferansları al</string>
   <string name="muc_error_getting_conferences">Konferanslar alınırken hata oluştu</string>
   <string name="muc_type_conference_name">Konferans adını yazın</string>
-  <string name="contact_is_blocked">İlgili kişi engellendi!</string>
-  <string name="conference_invitation">Konferansa davet</string>
+    <string name="conference_invitation">Konferansa davet</string>
 </resources>

@@ -13,12 +13,9 @@
   <string name="vcard_organization">سازمان</string>
   <string name="vcard_title">عنوان شغل،وظیفه</string>
   <string name="vcard_role">نقش</string>
-  <string name="vcard_other">معلومات دیگر</string>
-  <string name="vcard_categories">دسته‌ها</string>
-  <string name="vcard_decsription">شرح</string>
+    <string name="vcard_decsription">شرح</string>
   <string name="vcard_note">یادداشت ها</string>
-  <string name="vcard_address">آدرس</string>
-  <string name="vcard_address_pobox">صندوق پستی</string>
+    <string name="vcard_address_pobox">صندوق پستی</string>
   <string name="vcard_address_extadr">آدرس کامل</string>
   <string name="vcard_address_street">خیابان</string>
   <string name="vcard_address_locality">محله</string>

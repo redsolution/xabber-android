@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.OnLoadListener;
@@ -36,11 +37,13 @@ import java.util.Map;
 import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmResults;
+import okhttp3.ResponseBody;
 import rx.Single;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
+import rx.subjects.BehaviorSubject;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -53,6 +56,7 @@ public class XabberAccountManager implements OnLoadListener {
     private static XabberAccountManager instance;
 
     private XabberAccount account;
+    private BehaviorSubject<XabberAccount> accountSubject = BehaviorSubject.create();
 
     private List<XMPPAccountSettings> xmppAccountsForSync;
     private List<XMPPAccountSettings> xmppAccountsForCreate;
@@ -201,7 +205,7 @@ public class XabberAccountManager implements OnLoadListener {
     @Override
     public void onLoad() {
         XabberAccount account = loadXabberAccountFromRealm();
-        this.account = account;
+        setAccount(account);
 
         this.lastOrderChangeTimestamp = SettingsManager.getLastOrderChangeTimestamp();
 
@@ -209,16 +213,16 @@ public class XabberAccountManager implements OnLoadListener {
         this.accountsSyncState = loadSyncStatesFromRealm();
 
         if (account != null) {
-            getAccountFromNet(account.getToken());
+            getAccountFromNet(account.getToken(), true);
         }
     }
 
-    private void getAccountFromNet(String token) {
+    private void getAccountFromNet(String token, final boolean needUpdateSettings) {
         Subscription getAccountSubscription = AuthManager.getAccount(token)
                 .subscribe(new Action1<XabberAccount>() {
                     @Override
                     public void call(XabberAccount xabberAccount) {
-                        handleSuccessGetAccount(xabberAccount);
+                        handleSuccessGetAccount(xabberAccount, needUpdateSettings);
                     }
                 }, new Action1<Throwable>() {
                     @Override
@@ -227,6 +231,10 @@ public class XabberAccountManager implements OnLoadListener {
                     }
                 });
         compositeSubscription.add(getAccountSubscription);
+    }
+
+    public void updateAccountInfo() {
+        getAccountFromNet(account.getToken(), false);
     }
 
     public void updateAccountSettings() {
@@ -257,10 +265,10 @@ public class XabberAccountManager implements OnLoadListener {
         }
     }
 
-    private void handleSuccessGetAccount(@NonNull XabberAccount xabberAccount) {
+    private void handleSuccessGetAccount(@NonNull XabberAccount xabberAccount, boolean needUpdateSettings) {
         Log.d(LOG_TAG, "Xabber account loading from net: successfully");
-        this.account = xabberAccount;
-        updateAccountSettings();
+        setAccount(xabberAccount);
+        if (needUpdateSettings) updateAccountSettings();
     }
 
     private void handleErrorGetAccount(Throwable throwable) {
@@ -273,13 +281,56 @@ public class XabberAccountManager implements OnLoadListener {
         }
     }
 
+    public void deleteAccountSettings(String jid) {
+        if (XabberAccountManager.getInstance().getAccountSyncState(jid) != null) {
+
+            Subscription deleteSubscription = AuthManager.deleteClientSettings(jid)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Action1<List<XMPPAccountSettings>>() {
+                        @Override
+                        public void call(List<XMPPAccountSettings> settings) {
+                            handleSuccessDelete(settings);
+                        }
+                    }, new Action1<Throwable>() {
+                        @Override
+                        public void call(Throwable throwable) {
+                            handleErrorDelete(throwable);
+                        }
+                    });
+            compositeSubscription.add(deleteSubscription);
+        }
+    }
+
+    private void handleSuccessDelete(List<XMPPAccountSettings> settings) {
+        Log.d(LOG_TAG, "Settings deleted successfuly");
+    }
+
+    private void handleErrorDelete(Throwable throwable) {
+        String message = RetrofitErrorConverter.throwableToHttpError(throwable);
+        if (message != null) {
+            if (message.equals("Invalid token"))
+                XabberAccountManager.getInstance().onInvalidToken();
+            else Log.d(LOG_TAG, "Error while deleting settings: " + message);
+        } else Log.d(LOG_TAG, "Error while deleting settings: " + throwable.toString());
+    }
+
     @Nullable
     public XabberAccount getAccount() {
         return account;
     }
 
+    public BehaviorSubject<XabberAccount> subscribeForAccount() {
+        return accountSubject;
+    }
+
+    private void setAccount(XabberAccount account) {
+        this.account = account;
+        accountSubject.onNext(this.account);
+    }
+
     public void removeAccount() {
-        this.account = null;
+        setAccount(null);
         this.accountsSyncState.clear();
     }
 
@@ -290,12 +341,14 @@ public class XabberAccountManager implements OnLoadListener {
         xabberAccountRealm.setToken(token);
         xabberAccountRealm.setAccountStatus(xabberAccount.getAccountStatus());
         xabberAccountRealm.setUsername(xabberAccount.getUsername());
+        xabberAccountRealm.setDomain(xabberAccount.getDomain());
         xabberAccountRealm.setFirstName(xabberAccount.getFirstName());
         xabberAccountRealm.setLastName(xabberAccount.getLastName());
         xabberAccountRealm.setLanguage(xabberAccount.getLanguage());
         xabberAccountRealm.setRegisterDate(xabberAccount.getRegistrationDate());
         xabberAccountRealm.setNeedToVerifyPhone(xabberAccount.isNeedToVerifyPhone());
         xabberAccountRealm.setPhone(xabberAccount.getPhone());
+        xabberAccountRealm.setHasPassword(xabberAccount.hasPassword());
 
         RealmList<XMPPUserRealm> realmUsers = new RealmList<>();
         for (XMPPUserDTO user : xabberAccount.getXmppUsers()) {
@@ -335,7 +388,7 @@ public class XabberAccountManager implements OnLoadListener {
         realm.commitTransaction();
         realm.close();
 
-        this.account = account;
+        setAccount(account);
         return Single.just(account);
     }
 
@@ -382,6 +435,7 @@ public class XabberAccountManager implements OnLoadListener {
                 Integer.parseInt(accountRealm.getId()),
                 accountRealm.getAccountStatus(),
                 accountRealm.getUsername(),
+                accountRealm.getDomain(),
                 accountRealm.getFirstName(),
                 accountRealm.getLastName(),
                 accountRealm.getRegisterDate(),
@@ -391,7 +445,8 @@ public class XabberAccountManager implements OnLoadListener {
                 socials,
                 accountRealm.getToken(),
                 accountRealm.isNeedToVerifyPhone(),
-                accountRealm.getPhone()
+                accountRealm.getPhone(),
+                accountRealm.hasPassword()
         );
 
         return xabberAccount;
@@ -445,7 +500,9 @@ public class XabberAccountManager implements OnLoadListener {
             // create new xmpp-account
             if (accountJid == null && !account.isDeleted()) {
                 try {
-                    AccountJid jid = AccountManager.getInstance().addAccount(account.getJid(), "", account.getToken(), false, true, true, false, false, true);
+                    AccountJid jid = AccountManager.getInstance().addAccount(account.getJid(),
+                            "", account.getToken(), false, true,
+                            true, false, false, true, false);
                     AccountManager.getInstance().setColor(jid, ColorManager.getInstance().convertColorNameToIndex(account.getColor()));
                     AccountManager.getInstance().setOrder(jid, account.getOrder());
                     AccountManager.getInstance().setTimestamp(jid, account.getTimestamp());
@@ -533,6 +590,7 @@ public class XabberAccountManager implements OnLoadListener {
                 removeAccount();
             }
         });
+        unregisterEndpoint();
     }
 
     public static class XabberAccountDeletedEvent {}
@@ -722,6 +780,42 @@ public class XabberAccountManager implements OnLoadListener {
 
 
         return resultList;
+    }
+
+    public void registerEndpoint() {
+        compositeSubscription.add(
+            AuthManager.registerFCMEndpoint(FirebaseInstanceId.getInstance().getToken())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<ResponseBody>() {
+                    @Override
+                    public void call(ResponseBody responseBody) {
+                        Log.d(LOG_TAG, "Endpoint successfully registered");
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        Log.d(LOG_TAG, "Endpoint register failed: " + throwable.toString());
+                    }
+                }));
+    }
+
+    public void unregisterEndpoint() {
+        compositeSubscription.add(
+            AuthManager.unregisterFCMEndpoint(FirebaseInstanceId.getInstance().getToken())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<ResponseBody>() {
+                    @Override
+                    public void call(ResponseBody responseBody) {
+                        Log.d(LOG_TAG, "Endpoint successfully unregistered");
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        Log.d(LOG_TAG, "Endpoint unregister failed: " + throwable.toString());
+                    }
+                }));
     }
 }
 

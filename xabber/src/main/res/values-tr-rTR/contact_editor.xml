@@ -17,12 +17,8 @@
   <string name="processing_image">Görüntü İşleniyor...</string>
   <string name="error_during_crop">Görüntü kırpma sırasında hata oluştu</string>
   <string name="error_during_image_processing">Görüntü işleme sırasında hata oluştu</string>
-  <string name="account_settings">Hesap ayarları</string>
-  <string name="account_user_info">Hesap bilgisi</string>
-  <string name="account_server_info">Sunucu bilgisi (Automatic Translation)</string>
+    <string name="account_server_info">Sunucu bilgisi (Automatic Translation)</string>
   <string name="account_server_info_description">Server capabilities listesi</string>
   <string name="conference_private_chat_invitation">%1$s kişisi %2$s sizinle özel sohbet başlamak istiyor</string>
   <string name="accept_muc_private_chat">Kabut Et</string>
-  <string name="block_muc_private_chat">Engelle</string>
-  <string name="no_permission_camera">Kameraya erişim izni yok</string>
 </resources>

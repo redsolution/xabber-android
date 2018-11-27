@@ -17,12 +17,9 @@
   <string name="vcard_organization_unit">Організаційна одиниця</string>
   <string name="vcard_title">Посада</string>
   <string name="vcard_role">Роль</string>
-  <string name="vcard_other">Інша інформація</string>
-  <string name="vcard_categories">Категорії</string>
-  <string name="vcard_decsription">Опис</string>
+    <string name="vcard_decsription">Опис</string>
   <string name="vcard_note">Нотатки</string>
-  <string name="vcard_address">Адреса</string>
-  <string name="vcard_address_pobox">Абонентська скринька</string>
+    <string name="vcard_address_pobox">Абонентська скринька</string>
   <string name="vcard_address_extadr">Розширена адреса</string>
   <string name="vcard_address_street">Вулиця</string>
   <string name="vcard_address_locality">Місто</string>

@@ -20,7 +20,6 @@
   <string name="muc_invite_confirm">%2$s convidou você para entrar na conferência %3$s. Entrar pela conta %1$s?</string>
   <string name="muc_invite_confirm_reason">%2$s convidou você para entrar na conferência %3$s: %4$s. Entrar pela conta %1$s?</string>
   <string name="muc_leave">Sair da conferência</string>
-  <string name="muc_save">Salvar conferência</string>
-  <string name="muc_get_hosted_conferences">Baixar lista de conferências</string>
+    <string name="muc_get_hosted_conferences">Baixar lista de conferências</string>
   <string name="muc_error_getting_conferences">Erro ao baixar conferências</string>
 </resources>

@@ -34,10 +34,7 @@
   <!-- Used for plural form in russian. -->
   <string name="connection_state_waiting_5">-</string>
   <string name="connection_state_offline">%1$d %2$s غير متصل</string>
-  <string name="archive_available_request_message">هل تريد حفظ سجل الرسائل على الخادم؟\nهذا يمكن Xabber من تحميل سجل الرسائل من كل الأجهزة التي تستعمل هذا الحساب.\nتلك الخاصية ستستهلك كمية أكثر من البيانات وستقلل سرعة الاتصال بشكل طفيف.\nتحذير: كل السجل سيُحذف من على جهازك.</string>
-  <string name="archive_available_request_title">تفعيل أرشفة الرسائل؟</string>
-  <string name="INVALID_CERTIFICATE">شهادة غير صالحة</string>
-  <string name="muc_invite_message">هل ترغب في الانضمام للاجتماع؟</string>
+    <string name="muc_invite_message">هل ترغب في الانضمام للاجتماع؟</string>
   <string name="otr_verification_in_progress">اضغط هنا للإلغاء.</string>
   <string name="PASSWORD_REQUIRED">مطلوب كلمة المرور</string>
   <string name="pay_attention">انتبه</string>

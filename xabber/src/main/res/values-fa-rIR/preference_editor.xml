@@ -11,8 +11,7 @@
   <string name="events_lightning">چراغ نشانگر\nچشمک زدن LED هنگام دریافت آگهداد</string>
   <string name="interface_theme_dark">تیره</string>
   <string name="interface_theme_light">روشن</string>
-  <string name="interface_theme_normal">پیش‌فرض</string>
-  <string name="interface_smiles_android">شکلک های اندروید</string>
+    <string name="interface_smiles_android">شکلک های اندروید</string>
   <string name="interface_smiles_none">شکلک های ساده</string>
   <string name="preference_connection">تنظیمات اتصال\nتنظیمات اتصال</string>
   <string name="preference_contacts">لیست مخاطبین \nظاهر لیست مخاطبین را سفارشی کنید</string>
@@ -30,9 +29,4 @@
   <string name="connection_go_away_immediately">به محض قفل شدن صفحه</string>
   <string name="contacts_reset_offline">تنظیم مجدد تنظیمات آفلاین\nپاک سازی تنظیمات شخصی موجود برای گروه ها و حساب ها</string>
   <string name="contacts_reset_offline_warning">آیا مطمئنید میخواهید تنظیمات شخصی برای گروه ها و حساب ها را پاک نمایید؟</string>
-  <string name="events_ignore_system_vibro">نادیده انگاری تنظیمات ویبره دستگاه \nدر صورتی که لرزش کار نمیکند از این گزینه استفاده کنید</string>
-  <string name="events_message_chat">فقط چت ها</string>
-  <string name="events_message_chat_and_muc">چت ها و چت روم ها</string>
-  <string name="events_message_none">اطلاع نده</string>
-  <string name="events_visible_chat">باخبر سازی در پنجره چت جاری \nباخبر سازی از پیام ورودی در پنجره چت جاری</string>
 </resources>

@@ -20,12 +20,10 @@
   <string name="muc_invite_confirm">%2$s inviterer deg til å bli med i konferanseen %3$s. ta del med kontoen %1$s?</string>
   <string name="muc_invite_confirm_reason">%2$s inviterer deg til å bli med i konferansen %3$s: %4$s. ta del med kontoen %1$s?</string>
   <string name="muc_leave">Forlat konferansen</string>
-  <string name="muc_save">Lagre konferansen</string>
-  <string name="muc_choose_conference">Velg konferanse</string>
+    <string name="muc_choose_conference">Velg konferanse</string>
   <string name="muc_next">Neste</string>
   <string name="muc_get_hosted_conferences">Hent arrangerte konferanser</string>
   <string name="muc_error_getting_conferences">Feil ved innhenting av konferanser</string>
   <string name="muc_type_conference_name">Skriv navnet på konferansen</string>
-  <string name="contact_is_blocked">Kontakten er blokkert!</string>
-  <string name="conference_invitation">Konferanseinvitasjon</string>
+    <string name="conference_invitation">Konferanseinvitasjon</string>
 </resources>

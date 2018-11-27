@@ -18,10 +18,9 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.xaccount.XabberAccount;
 import com.xabber.android.data.xaccount.XabberAccountManager;
-import com.xabber.android.ui.activity.AccountAddActivity;
 import com.xabber.android.ui.activity.AccountActivity;
+import com.xabber.android.ui.activity.AccountAddActivity;
 import com.xabber.android.ui.dialog.OrbotInstallerDialog;
 import com.xabber.android.ui.helper.OrbotHelper;
 
@@ -29,7 +28,8 @@ public class AccountAddFragment extends Fragment implements View.OnClickListener
 
     private CheckBox storePasswordView;
     private CheckBox chkSync;
-    private CheckBox useOrbotView;
+    private CheckBox chkRequireTLS;
+    private CheckBox chkUseTOR;
     private CheckBox createAccountCheckBox;
     private LinearLayout passwordConfirmView;
     private EditText userView;
@@ -51,7 +51,8 @@ public class AccountAddFragment extends Fragment implements View.OnClickListener
             chkSync.setChecked(false);
         }
 
-        useOrbotView = (CheckBox) view.findViewById(R.id.use_orbot);
+        chkRequireTLS = view.findViewById(R.id.chkRequireTLS);
+        chkUseTOR = view.findViewById(R.id.chkUseTOR);
         createAccountCheckBox = (CheckBox) view.findViewById(R.id.register_account);
         createAccountCheckBox.setOnClickListener(this);
 
@@ -82,7 +83,7 @@ public class AccountAddFragment extends Fragment implements View.OnClickListener
     }
 
     public void addAccount() {
-        if (useOrbotView.isChecked() && !OrbotHelper.isOrbotInstalled()) {
+        if (chkUseTOR.isChecked() && !OrbotHelper.isOrbotInstalled()) {
             OrbotInstallerDialog.newInstance().show(getFragmentManager(), OrbotInstallerDialog.class.getName());
             return;
         }
@@ -102,8 +103,9 @@ public class AccountAddFragment extends Fragment implements View.OnClickListener
                     false,
                     storePasswordView.isChecked(),
                     chkSync.isChecked(),
-                    useOrbotView.isChecked(),
-                    createAccountCheckBox.isChecked(), true);
+                    chkUseTOR.isChecked(),
+                    createAccountCheckBox.isChecked(), true,
+                    chkRequireTLS.isChecked());
         } catch (NetworkException e) {
             Application.getInstance().onError(e);
             return;

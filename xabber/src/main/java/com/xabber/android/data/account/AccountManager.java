@@ -21,16 +21,9 @@ import android.text.TextUtils;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
-import com.xabber.android.data.OnUnloadListener;
-import com.xabber.android.data.connection.ConnectionSettings;
-import com.xabber.android.data.database.MessageDatabaseManager;
-import com.xabber.android.data.database.RealmManager;
-import com.xabber.android.data.database.realm.AccountRealm;
-import com.xabber.android.data.extension.mam.LoadHistorySettings;
-import com.xabber.android.data.extension.mam.MamManager;
-import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.OnLoadListener;
+import com.xabber.android.data.OnUnloadListener;
 import com.xabber.android.data.OnWipeListener;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.listeners.OnAccountAddedListener;
@@ -41,14 +34,21 @@ import com.xabber.android.data.account.listeners.OnAccountOfflineListener;
 import com.xabber.android.data.account.listeners.OnAccountOnlineListener;
 import com.xabber.android.data.account.listeners.OnAccountRemovedListener;
 import com.xabber.android.data.account.listeners.OnAccountSyncableChangedListener;
+import com.xabber.android.data.connection.ConnectionSettings;
 import com.xabber.android.data.connection.ConnectionState;
 import com.xabber.android.data.connection.ProxyType;
 import com.xabber.android.data.connection.ReconnectionManager;
 import com.xabber.android.data.connection.TLSMode;
+import com.xabber.android.data.database.MessageDatabaseManager;
+import com.xabber.android.data.database.RealmManager;
+import com.xabber.android.data.database.realm.AccountRealm;
 import com.xabber.android.data.database.sqlite.AccountTable;
 import com.xabber.android.data.database.sqlite.StatusTable;
 import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.extension.mam.LoadHistorySettings;
+import com.xabber.android.data.extension.mam.MamManager;
 import com.xabber.android.data.extension.vcard.VCardManager;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.notification.BaseAccountNotificationProvider;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.PresenceManager;
@@ -217,7 +217,8 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
                     accountRealm.isSyncable(),
                     accountRealm.getKeyPair(),
                     accountRealm.getLastSync(),
-                    accountRealm.getArchiveMode());
+                    accountRealm.getArchiveMode(),
+                    accountRealm.isXabberAutoLoginEnabled());
             accountItem.setId(accountRealm.getId());
             accountItem.setClearHistoryOnExit(accountRealm.isClearHistoryOnExit());
             if (accountRealm.getMamDefaultBehavior() != null) {
@@ -316,6 +317,15 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
         return accountItems.get(account);
     }
 
+    public boolean isAccountExist(String user) {
+        Collection<AccountJid> accounts = getAllAccounts();
+        for (AccountJid account : accounts) {
+            if (account.getFullJid().asBareJid().equals(user))
+                return true;
+        }
+        return false;
+    }
+
     /**
      * Save account item to database.
      */
@@ -344,7 +354,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
         AccountItem accountItem = new AccountItem(custom, host, port, serverName, userName,
                 resource, storePassword, password, token, color, order, syncNotAllowed, timestamp, priority, statusMode, statusText, enabled,
                 saslEnabled, tlsMode, compression, proxyType, proxyHost, proxyPort, proxyUser,
-                proxyPassword, syncable, keyPair, lastSync, archiveMode);
+                proxyPassword, syncable, keyPair, lastSync, archiveMode, true);
 
         requestToWriteAccount(accountItem);
         addAccount(accountItem);
@@ -360,7 +370,8 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
      * @throws NetworkException if user or server part are invalid.
      */
     public AccountJid addAccount(String user, String password, String token, boolean syncable,
-                                 boolean storePassword, boolean xabberSync, boolean useOrbot, boolean registerNewAccount, boolean enabled)
+                                 boolean storePassword, boolean xabberSync, boolean useOrbot,
+                                 boolean registerNewAccount, boolean enabled, boolean tlsRequired)
             throws NetworkException {
         if (user == null) {
             throw new NetworkException(R.string.EMPTY_USER_NAME);
@@ -379,6 +390,9 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
             throw new NetworkException(R.string.INCORRECT_USER_NAME);
         }
 
+        if (isAccountExist(user))
+            throw new NetworkException(R.string.ACCOUNT_EXIST);
+
         Resourcepart resource = null;
         String resourceString = XmppStringUtils.parseResource(user).trim();
         if (!TextUtils.isEmpty(resourceString)) {
@@ -390,24 +404,12 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
         }
         String host = serverName.getDomain().toString();
         int port = 5222;
-        boolean tlsRequired = false;
-        if (useOrbot) {
-            tlsRequired = true;
-        }
 
         if (resource == null) {
             resource = generateResource();
         }
 
         AccountItem accountItem;
-        while(true) {
-
-            if (getAccount(AccountJid.from(userName, serverName, resource)) == null) {
-                break;
-            }
-            resource = generateResource();
-        }
-
 
         boolean useCustomHost = application.getResources().getBoolean(R.bool.account_use_custom_host_default);
 
@@ -417,7 +419,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
 
         accountItem = addAccount(useCustomHost, host, port, serverName, userName,
                 storePassword, password, token, resource, getNextColorIndex(), getNextOrder(), false,
-                XabberAccountManager.getInstance().getCurrentTime(), 0, StatusMode.available,
+                0, 0, StatusMode.available,
                 SettingsManager.statusText(), enabled, true, tlsRequired ? TLSMode.required : TLSMode.enabled,
                 useCompression, useOrbot ? ProxyType.orbot : ProxyType.none, "localhost", 8080,
                 "", "", syncable, null, null, archiveMode, registerNewAccount);
@@ -441,7 +443,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
     @NonNull
     private Resourcepart generateResource() {
         try {
-            return Resourcepart.from(application.getString(R.string.account_resource_default) + "_" + StringUtils.randomString(8));
+            return Resourcepart.from(application.getString(R.string.account_resource_default) + "-" + StringUtils.randomString(8));
         } catch (XmppStringprepException e) {
             LogManager.exception(this, e);
             return Resourcepart.EMPTY;
@@ -1182,4 +1184,12 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
             }
         }
     }
+
+    public void setAllAccountAutoLoginToXabber(boolean autoLogin) {
+        for (AccountItem accountItem : getAllAccountItems()) {
+            accountItem.setXabberAutoLoginEnabled(autoLogin);
+            requestToWriteAccount(accountItem);
+        }
+    }
+
 }

@@ -5,8 +5,7 @@
   <string name="application_action_empty">Հաշիվ ավելացնել</string>
   <string name="application_state_empty">Ոչ մի հաշիվ չունես</string>
   <string name="application_state_no_online">Առցանց մարդ չկա</string>
-  <string name="close_chat">Փակել չաթը</string>
-  <string name="exit">Դուրս գալ</string>
+    <string name="exit">Դուրս գալ</string>
   <string name="sender_is_you">Դու</string>
   <string name="block_list">Սեւ ցուցակ</string>
   <string name="dark_theme_suggest_dialog_title">Ընտրիր քո ճակատագիրը</string>

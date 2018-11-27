@@ -17,12 +17,8 @@
   <string name="processing_image">עיבוד תמונה...</string>
   <string name="error_during_crop">שגיאה בעת חיתוך תמונות</string>
   <string name="error_during_image_processing">שגיאה במהלך עיבוד תמונה</string>
-  <string name="account_settings">הגדרות חשבון</string>
-  <string name="account_user_info">פרטי חשבון</string>
-  <string name="account_server_info">שרת פרטי</string>
+    <string name="account_server_info">שרת פרטי</string>
   <string name="account_server_info_description">רשימה של יכולות שרת</string>
   <string name="conference_private_chat_invitation">%1$s מן %2$s רוצה להתחיל שיחה פרטית איתך</string>
   <string name="accept_muc_private_chat">אשר</string>
-  <string name="block_muc_private_chat">חסום</string>
-  <string name="no_permission_camera">אין אישור גישה למצלמה</string>
 </resources>

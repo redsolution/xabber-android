@@ -2,12 +2,14 @@ package com.xabber.android.data.extension.httpfileupload;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.ExifInterface;
 import android.util.Log;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 
 public class ImageCompressor {
 
@@ -93,10 +95,25 @@ public class ImageCompressor {
             fOut.close();
             source.recycle();
             resizedBmp.recycle();
-            return result;
+
         } catch (Exception e) {
             return null;
         }
+
+        // copy EXIF orientation from original image
+        try {
+            ExifInterface oldExif = new ExifInterface(file.getPath());
+            String exifOrientation = oldExif.getAttribute(ExifInterface.TAG_ORIENTATION);
+            if (exifOrientation != null) {
+                ExifInterface newExif = new ExifInterface(result.getPath());
+                newExif.setAttribute(ExifInterface.TAG_ORIENTATION, exifOrientation);
+                newExif.saveAttributes();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return result;
     }
 
     private static Bitmap resizeBitmap(Bitmap source, int maxSizePixels) {

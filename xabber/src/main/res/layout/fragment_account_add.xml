@@ -75,11 +75,18 @@
             android:text="@string/sync_with_xabber_account" />
 
         <CheckBox
-            android:id="@+id/use_orbot"
+            android:id="@+id/chkRequireTLS"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:checked="false"
-            android:text="@string/account_use_orbot" />
+            android:text="@string/account_enable_tls" />
+
+        <CheckBox
+            android:id="@+id/chkUseTOR"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:checked="false"
+            android:text="@string/account_use_tor" />
 
         <CheckBox
             android:id="@+id/register_account"

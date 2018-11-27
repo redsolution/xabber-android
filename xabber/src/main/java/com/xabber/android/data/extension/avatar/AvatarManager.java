@@ -330,10 +330,25 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
         }
     }
 
+    public Drawable getAccountAvatarForSync(AccountJid account, int color) {
+        Bitmap value = getBitmap(account.getFullJid().asBareJid());
+        if (value != null) {
+            return new BitmapDrawable(application.getResources(), value);
+        } else {
+            return getDefaultAccountAvatarForSync(account, color);
+        }
+    }
+
     @NonNull
     public Drawable getDefaultAccountAvatar(AccountJid account) {
         String name = AccountManager.getInstance().getVerboseName(account);
         int color = ColorManager.getInstance().getAccountPainter().getAccountMainColor(account);
+        return generateDefaultAvatar(account.getFullJid().asBareJid().toString(), name, color);
+    }
+
+    @NonNull
+    public Drawable getDefaultAccountAvatarForSync(AccountJid account, int color) {
+        String name = AccountManager.getInstance().getVerboseName(account);
         return generateDefaultAvatar(account.getFullJid().asBareJid().toString(), name, color);
     }
 

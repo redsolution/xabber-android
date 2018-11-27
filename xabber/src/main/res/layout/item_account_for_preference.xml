@@ -19,7 +19,7 @@
     android:gravity="center_vertical"
     android:background="@drawable/ripple_background">
 
-    <FrameLayout
+    <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
@@ -27,12 +27,23 @@
         android:layout_marginRight="16dp">
 
         <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/avatar"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            app:civ_border_width="2dp"/>
+            android:id="@+id/avatarBorder"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:layout_centerInParent="true"
+            app:civ_border_color="@color/transparent"
+            app:civ_border_width="2dp"
+            android:src="@color/transparent"
+            />
 
-    </FrameLayout>
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/avatar"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            android:layout_centerInParent="true"
+            />
+
+    </RelativeLayout>
 
     <LinearLayout
         android:orientation="vertical"

@@ -1,8 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <item android:id="@+id/action_cancel_register"
-        android:title="@string/button_cancel_registration"
-        app:showAsAction="never"
-        android:visible="false"/>
+
+    <group android:id="@+id/group1">
+
+        <item android:id="@+id/action_sync"
+            android:title="@string/button_sync"
+            app:showAsAction="never"
+            />
+
+        <item android:id="@+id/action_set_pass"
+            android:title="@string/button_set_pass"
+            app:showAsAction="never"
+            />
+
+        <item android:id="@+id/action_change_pass"
+            android:title="@string/button_change_pass"
+            app:showAsAction="never"
+            />
+
+        <item android:id="@+id/action_reset_pass"
+            android:title="@string/button_reset_pass"
+            app:showAsAction="never"
+            />
+
+        <item android:id="@+id/action_quit"
+            android:title="@string/button_quit"
+            app:showAsAction="never"
+            />
+    </group>
+
 </menu>

@@ -34,10 +34,7 @@
   <!-- Used for plural form in russian. -->
   <string name="connection_state_waiting_5">-</string>
   <string name="connection_state_offline">%1$d %2$s non è in linea</string>
-  <string name="archive_available_request_message">Vuoi memorizzare la cronologia sul server?\nQuesto permette a Xabber di condividere la cronologia dei messaggi fra tutti i dispositivi che usano questo account. \nQuesta caratteristica richiederà traffico aggiuntivo e ridurrà leggermente la velocità della connessione.\nATTENZIONE: Tutta la tua cronologia locale verrà rimossa.</string>
-  <string name="archive_available_request_title">Abilitare l\'archiviazione dei messaggi?</string>
-  <string name="INVALID_CERTIFICATE">Certificato non valido</string>
-  <string name="muc_invite_message">Vuoi entrare nella conferenza?</string>
+    <string name="muc_invite_message">Vuoi entrare nella conferenza?</string>
   <string name="otr_verification_in_progress">Clicca qui per annullare.</string>
   <string name="PASSWORD_REQUIRED">Password richiesta</string>
   <string name="pay_attention">Presta attenzione</string>

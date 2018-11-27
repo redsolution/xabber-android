@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_centerInParent="true"
+        android:layout_marginLeft="@dimen/login_horizontal_margin"
+        android:layout_marginRight="@dimen/login_horizontal_margin"
+        android:focusableInTouchMode="true"
+        >
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            >
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/edtUsername"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:imeOptions="actionNext"
+                android:inputType="textEmailAddress"
+                android:nextFocusForward="@+id/edtPass"
+                android:singleLine="true"
+                android:hint="@string/label_xmpp_id"
+                android:textSize="16sp"
+                android:theme="@style/Theme"
+                />
+
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:passwordToggleEnabled="true"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+            >
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/edtPass"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:imeOptions="actionDone"
+                android:singleLine="true"
+                android:textSize="16sp"
+                android:theme="@style/Theme"
+                android:hint="@string/hint_pass"
+                android:inputType="textPassword"
+                />
+
+        </android.support.design.widget.TextInputLayout>
+
+        <LinearLayout
+            android:id="@+id/optionsView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone"
+            >
+
+            <CheckBox
+                android:id="@+id/store_password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="@string/account_store_password" />
+
+            <CheckBox
+                android:id="@+id/chkSync"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="@string/sync_with_xabber_account" />
+
+            <CheckBox
+                android:id="@+id/chkRequireTLS"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:checked="false"
+                android:text="@string/account_enable_tls" />
+
+            <CheckBox
+                android:id="@+id/chkUseTOR"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:checked="false"
+                android:text="@string/account_use_tor" />
+
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="16dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:id="@+id/btnOptions"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:theme="@style/BlueButton"
+                android:textColor="@color/grey_500"
+                android:text="@string/button_advanced_options"
+                android:layout_centerVertical="true"
+                android:layout_toLeftOf="@id/btnLogin"
+                android:layout_toStartOf="@id/btnLogin"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                />
+
+            <Button
+                android:id="@+id/btnLogin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/Widget.AppCompat.Button.Colored"
+                android:theme="@style/BlueButton"
+                android:paddingRight="18dp"
+                android:paddingLeft="18dp"
+                android:layout_centerVertical="true"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:textColor="@color/white"
+                android:text="@string/button_connect"
+                />
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            >
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_error_grey_24dp"
+                android:paddingTop="16dp"
+                android:paddingBottom="16dp"
+                android:paddingLeft="4dp"
+                android:paddingRight="4dp"
+                />
+
+            <TextView
+                android:id="@+id/account_help"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="@string/account_xmpp_register_warning"
+                android:layout_gravity="center_vertical"
+                android:gravity="center_vertical"
+                />
+
+        </LinearLayout>
+
+        <include layout="@layout/include_social"/>
+
+        <Button
+            android:id="@+id/btnForgotPass"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:theme="@style/BlueButton"
+            android:textColor="@color/grey_500"
+            android:text="@string/forgot_pass"
+            android:layout_gravity="center_horizontal"
+            android:layout_centerVertical="true"
+            />
+
+    </LinearLayout>
+
+
+</RelativeLayout>

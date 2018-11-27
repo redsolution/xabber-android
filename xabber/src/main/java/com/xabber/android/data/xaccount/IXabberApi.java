@@ -2,11 +2,13 @@ package com.xabber.android.data.xaccount;
 
 import okhttp3.ResponseBody;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.HTTP;
 import retrofit2.http.Header;
 import retrofit2.http.PATCH;
 import retrofit2.http.POST;
+import retrofit2.http.Path;
 import rx.Single;
 
 /**
@@ -33,12 +35,6 @@ public interface IXabberApi {
     @PATCH("accounts/current/")
     Single<XabberAccountDTO> updateAccount(@Header("Authorization") String token, @Body AuthManager.Account account);
 
-    @POST("accounts/current/phone/")
-    Single<ResponseBody> setPhoneNumber(@Header("Authorization") String token, @Body AuthManager.SetPhoneNumber setPhoneNumber);
-
-    @POST("accounts/current/phone/")
-    Single<ResponseBody> confirmPhoneNumber(@Header("Authorization") String token, @Body AuthManager.ConfirmPhoneNumber confirmPhoneNumber);
-
     @GET("accounts/current/client-settings/")
     Single<AuthManager.ListClientSettingsDTO> getClientSettings(@Header("Authorization") String token);
 
@@ -57,11 +53,42 @@ public interface IXabberApi {
     @POST("accounts/email_confirmation/")
     Single<XabberAccountDTO> confirmEmail(@Body AuthManager.Key key);
 
-    @POST("accounts/current/complete_registration/")
-    Single<XabberAccountDTO> completeRegister(@Header("Authorization") String token, @Body AuthManager.CompleteRegister register);
-
     @POST("accounts/current/email_list/")
     Single<ResponseBody> addEmail(@Header("Authorization") String token, @Body AuthManager.Email email);
 
+    @DELETE("accounts/current/email_list/{email_id}/")
+    Single<ResponseBody> deleteEmail(@Header("Authorization") String token, @Path(value = "email_id", encoded = true) int emailId);
+
+    @POST("fcm/subscription/")
+    Single<ResponseBody> registerFCMEndpoint(@Header("Authorization") String token, @Body AuthManager.Endpoint endpoint);
+
+    @HTTP(method = "DELETE", path = "fcm/subscription/", hasBody = true)
+    Single<ResponseBody> unregisterFCMEndpoint(@Body AuthManager.Endpoint endpoint);
+
+    @POST("accounts/current/set_password/")
+    Single<ResponseBody> changePassword(@Header("Authorization") String token, @Body AuthManager.ChangePassFields fields);
+
+    @POST("accounts/password_reset_request/")
+    Single<ResponseBody> requestResetPassword(@Body AuthManager.ResetPassFields fields);
+
+    /* Xabber API v2 */
+
+    @POST("accounts/xmpp_code_request/")
+    Single<AuthManager.XMPPCode> requestXMPPCode(@Body AuthManager.Jid jid);
+
+    @POST("accounts/xmpp_auth/")
+    Single<XabberAccountDTO> confirmXMPP(@Body AuthManager.CodeConfirm codeConfirm);
+
+    @GET("accounts/xmpp/hosts/")
+    Single<AuthManager.HostResponse> getHosts();
+
+    @POST("accounts/signup/")
+    Single<XabberAccountDTO> signupv2(@Body AuthManager.SignUpFields fields);
+
+    @POST("accounts/current/social_bind/")
+    Single<ResponseBody> bindSocial(@Header("Authorization") String token, @Body AuthManager.SocialAuthRequest body);
+
+    @POST("accounts/current/social_unbind/")
+    Single<ResponseBody> unbindSocial(@Header("Authorization") String token, @Body AuthManager.Provider provider);
 }
 

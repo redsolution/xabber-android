@@ -29,7 +29,7 @@ import io.realm.annotations.RealmModule;
 
 public class RealmManager {
     private static final String REALM_DATABASE_NAME = "realm_database.realm";
-    private static final int REALM_DATABASE_VERSION = 14;
+    private static final int REALM_DATABASE_VERSION = 17;
     private static final String LOG_TAG = RealmManager.class.getSimpleName();
     private final RealmConfiguration realmConfiguration;
 
@@ -210,6 +210,33 @@ public class RealmManager {
 
                             if (!chatDataSchema.hasField("lastPosition"))
                                 chatDataSchema.addField("lastPosition", int.class);
+
+                            oldVersion++;
+                        }
+
+                        if (oldVersion == 14) {
+                            RealmObjectSchema xabberAccountSchema =
+                                    schema.get(XabberAccountRealm.class.getSimpleName());
+
+                                xabberAccountSchema.addField("domain", String.class);
+
+                            oldVersion++;
+                        }
+
+                        if (oldVersion == 15) {
+                            RealmObjectSchema accountSchema =
+                                    schema.get(AccountRealm.class.getSimpleName());
+
+                            accountSchema.addField("xabberAutoLoginEnabled", boolean.class);
+
+                            oldVersion++;
+                        }
+
+                        if (oldVersion == 16) {
+                            RealmObjectSchema xabberAccountSchema =
+                                    schema.get(XabberAccountRealm.class.getSimpleName());
+
+                            xabberAccountSchema.addField("hasPassword", boolean.class);
 
                             oldVersion++;
                         }

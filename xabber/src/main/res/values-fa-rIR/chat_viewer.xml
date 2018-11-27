@@ -17,8 +17,7 @@
   <string name="message_remove">حذف از تاریخچه</string>
   <string name="message_repeat">سعی مجدد برای ارسال</string>
   <string name="save_history">ذخیره تاریخچه محلی\nذخیره کردن پیام ها بصورت محلی</string>
-  <string name="show_history">نمایش تاریخچه</string>
-  <string name="action_ban">%1$s از ورود به روم منع شد</string>
+    <string name="action_ban">%1$s از ورود به روم منع شد</string>
   <string name="action_ban_by">%1$s بوسیله %2$s از ورود به چت روم منع شد</string>
   <string name="action_invite_error">%s دعوت را دریافت نکرد</string>
   <string name="action_invite_sent">دعوت برای %s ارسال شد</string>

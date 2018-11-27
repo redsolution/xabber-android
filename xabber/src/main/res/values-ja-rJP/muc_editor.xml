@@ -20,12 +20,10 @@
   <string name="muc_invite_confirm">%2$s があなたを会議 %3$s に参加するように招待しています. アカウント %1$s から参加しますか?</string>
   <string name="muc_invite_confirm_reason">%2$s があなたを会議 %3$s に参加するように招待しています: %4$s. アカウント %1$s から参加しますか?</string>
   <string name="muc_leave">会議を離れる</string>
-  <string name="muc_save">会議を保存</string>
-  <string name="muc_choose_conference">会議を選択</string>
+    <string name="muc_choose_conference">会議を選択</string>
   <string name="muc_next">次へ</string>
   <string name="muc_get_hosted_conferences">ホストされている会議を取得</string>
   <string name="muc_error_getting_conferences">会議の取得エラー</string>
   <string name="muc_type_conference_name">会議の種類名</string>
-  <string name="contact_is_blocked">連絡先をブロックしました!</string>
-  <string name="conference_invitation">会議の招待状</string>
+    <string name="conference_invitation">会議の招待状</string>
 </resources>

@@ -34,10 +34,7 @@
   <!-- Used for plural form in russian. -->
   <string name="connection_state_waiting_5">-</string>
   <string name="connection_state_offline">%1$d %2$s בלתי מקוונים</string>
-  <string name="archive_available_request_message">האם ברצונך לאחסן הודעות היסטוריה בשרת?\nזו מתירה ל-Xabber לטעון היסטוריית הודעה מתוך כל המכשירים אשר משתמשים בחשבון זה.\nתכונה זו תצרוך תעבורה נוספת ותקטין מהירות חיבור במידת מה.\nאזהרה: כל ההיסטוריה המקומית שלך תוסר.   ‎</string>
-  <string name="archive_available_request_title">לאפשר ארכיב הודעה?</string>
-  <string name="INVALID_CERTIFICATE">אישור לא חוקי</string>
-  <string name="muc_invite_message">האם ברצונך להיכנס לועידה?</string>
+    <string name="muc_invite_message">האם ברצונך להיכנס לועידה?</string>
   <string name="otr_verification_in_progress">לחץ כאן כדי לבטל את זה.</string>
   <string name="PASSWORD_REQUIRED">נדרשת סיסמה</string>
   <string name="pay_attention">שימו לב</string>

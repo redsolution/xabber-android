@@ -17,12 +17,9 @@
   <string name="vcard_organization_unit">Отдел</string>
   <string name="vcard_title">Длъжност</string>
   <string name="vcard_role">Роля</string>
-  <string name="vcard_other">Друга информация</string>
-  <string name="vcard_categories">Категории</string>
-  <string name="vcard_decsription">Описание</string>
+    <string name="vcard_decsription">Описание</string>
   <string name="vcard_note">Бележки</string>
-  <string name="vcard_address">Адрес</string>
-  <string name="vcard_address_pobox">Пощенска кутия</string>
+    <string name="vcard_address_pobox">Пощенска кутия</string>
   <string name="vcard_address_extadr">Разширен адрес</string>
   <string name="vcard_address_street">Улица</string>
   <string name="vcard_address_locality">Местоположение</string>

@@ -20,12 +20,10 @@
   <string name="muc_invite_confirm">%2$s vos a convidat a rejónher la conferéncia %3$s. Lo rejónher amb lo compte %1$s ?</string>
   <string name="muc_invite_confirm_reason">%2$s vos a convidat a rejónher la conferéncia %3$s : %4$s. La rejónher amb lo compte %1$s ?</string>
   <string name="muc_leave">Quitar la conferéncia</string>
-  <string name="muc_save">Enregistrar la conferéncia</string>
-  <string name="muc_choose_conference">Causir una conferéncia</string>
+    <string name="muc_choose_conference">Causir una conferéncia</string>
   <string name="muc_next">Seguent</string>
   <string name="muc_get_hosted_conferences">Obténer la lista de las conferéncias albergadas</string>
   <string name="muc_error_getting_conferences">Error al moment de l\'obtencion de la lista de las conferéncias</string>
   <string name="muc_type_conference_name">Entratz lo nom de la conferéncia</string>
-  <string name="contact_is_blocked">Aqueste contacte es blocat !</string>
-  <string name="conference_invitation">Convit a una conferéncia</string>
+    <string name="conference_invitation">Convit a una conferéncia</string>
 </resources>

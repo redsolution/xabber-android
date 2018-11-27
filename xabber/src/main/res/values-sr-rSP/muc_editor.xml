@@ -20,12 +20,10 @@
   <string name="muc_invite_confirm">%2$s вас позива у групно ћаскање %3$s. Да се придружим се са налога %1$s?</string>
   <string name="muc_invite_confirm_reason">%2$s вас позива у групно ћаскање %3$s: %4$s. Да се придружим се са налога %1$s?</string>
   <string name="muc_leave">Напусти групно ћаскање</string>
-  <string name="muc_save">Сачувај групно ћаскање</string>
-  <string name="muc_choose_conference">Изаберите групно ћаскање</string>
+    <string name="muc_choose_conference">Изаберите групно ћаскање</string>
   <string name="muc_next">Следеће</string>
   <string name="muc_get_hosted_conferences">Добави хостована групна ћаскања</string>
   <string name="muc_error_getting_conferences">Грешка при добављању групних ћаскања</string>
   <string name="muc_type_conference_name">Укуцајте назив групног ћаскања</string>
-  <string name="contact_is_blocked">Контакт је блокиран!</string>
-  <string name="conference_invitation">Позивница за групно ћаскање</string>
+    <string name="conference_invitation">Позивница за групно ћаскање</string>
 </resources>

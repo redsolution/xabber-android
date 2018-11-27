@@ -16,11 +16,8 @@
     <string name="vcard_organization_unit">Organization unit</string>
     <string name="vcard_title">Job title, function</string>
     <string name="vcard_role">Role</string>
-    <string name="vcard_other">Other information</string>
-    <string name="vcard_categories">Categories</string>
     <string name="vcard_decsription">Description</string>
     <string name="vcard_note">Notes</string>
-    <string name="vcard_address">Address</string>
     <string name="vcard_address_pobox">PO Box</string>
     <string name="vcard_address_extadr">Extended Address</string>
     <string name="vcard_address_street">Street</string>

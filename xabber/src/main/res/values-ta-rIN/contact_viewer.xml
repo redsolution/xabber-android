@@ -16,12 +16,9 @@
   <string name="vcard_organization_unit">நிறுவன பிரிவு</string>
   <string name="vcard_title">வேலை தலைப்பு, செயல்பாடு</string>
   <string name="vcard_role">செயல்பங்கு</string>
-  <string name="vcard_other">பிற தகவல்</string>
-  <string name="vcard_categories">பிரிவுகள்</string>
-  <string name="vcard_decsription">விளக்கம்</string>
+    <string name="vcard_decsription">விளக்கம்</string>
   <string name="vcard_note">குறிப்பு</string>
-  <string name="vcard_address">முகவரி</string>
-  <string name="vcard_address_pobox">அஞ்சல் பெட்டி</string>
+    <string name="vcard_address_pobox">அஞ்சல் பெட்டி</string>
   <string name="vcard_address_extadr">விரிவாக்கப்பட்ட முகவரி</string>
   <string name="vcard_address_street">தெரு</string>
   <string name="vcard_address_locality">உள்ளூர் பகுதி</string>
