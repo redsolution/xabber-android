@@ -173,6 +173,37 @@ public class FileInteractionActivity extends ManagedActivity implements FileMess
         }
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        switch (requestCode) {
+//            case PERMISSIONS_REQUEST_ATTACH_FILE:
+//                if (PermissionsRequester.isPermissionGranted(grantResults))
+//                    ((ChatActivity)getActivity()).showAttachDialog();
+//                else Toast.makeText(this, R.string.no_permission_to_read_files, Toast.LENGTH_SHORT).show();
+//
+//                break;
+//
+//            case PERMISSIONS_REQUEST_EXPORT_CHAT:
+//                if (PermissionsRequester.isPermissionGranted(grantResults)) showExportChatDialog();
+//                else Toast.makeText(this, R.string.no_permission_to_write_files, Toast.LENGTH_SHORT).show();
+//                break;
+//
+//            case PERMISSIONS_REQUEST_CAMERA:
+//                if (PermissionsRequester.isPermissionGranted(grantResults))
+//                    startCamera();
+//                else Toast.makeText(this, R.string.no_permission_to_camera, Toast.LENGTH_SHORT).show();
+//                break;
+
+            case PERMISSIONS_REQUEST_DOWNLOAD_FILE:
+                if (PermissionsRequester.isPermissionGranted(grantResults))
+                    openFileOrDownload(clickedMessageUID, clickedAttachmentPos);
+                else Toast.makeText(this, R.string.no_permission_to_write_files, Toast.LENGTH_SHORT).show();
+                break;
+        }
+    }
+
     private void onShareClick(Attachment attachment) {
         if (attachment == null) return;
         String path = attachment.getFilePath();
