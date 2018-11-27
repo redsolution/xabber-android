@@ -33,8 +33,10 @@ import com.xabber.android.data.filedownload.DownloadManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.ui.activity.ChatActivity;
+import com.xabber.android.ui.activity.ForwardedActivity;
 import com.xabber.android.ui.activity.ImageViewerActivity;
 import com.xabber.android.ui.adapter.chat.FileMessageVH;
+import com.xabber.android.ui.adapter.chat.ForwardedAdapter;
 import com.xabber.android.ui.dialog.AttachDialog;
 import com.xabber.android.ui.helper.PermissionsRequester;
 
@@ -47,7 +49,8 @@ import java.util.Locale;
 
 import io.realm.RealmList;
 
-public class FileInteractionFragment extends Fragment implements FileMessageVH.FileListener, AttachDialog.Listener {
+public class FileInteractionFragment extends Fragment implements FileMessageVH.FileListener,
+        AttachDialog.Listener, ForwardedAdapter.ForwardListener {
 
     private static final String LOG_TAG = FileInteractionFragment.class.getSimpleName();
 
@@ -265,6 +268,13 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
     public void onCameraClick() {
         if (PermissionsRequester.requestCameraPermissionIfNeeded(this,
                 PERMISSIONS_REQUEST_CAMERA)) startCamera();
+    }
+
+    /** Forwarded Listener */
+
+    @Override
+    public void onForwardClick(String messageId) {
+        startActivity(ForwardedActivity.createIntent(getActivity(), messageId, user, account));
     }
 
     protected void onAttachButtonPressed() {
