@@ -3,6 +3,7 @@ package com.xabber.android.data.xaccount;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.xabber.android.BuildConfig;
+import com.xabber.android.data.http.ICrowdfundingApi;
 import com.xabber.android.data.http.IXabberCom;
 
 import okhttp3.OkHttpClient;
@@ -22,10 +23,15 @@ public class HttpApiManager {
     //public static final String XABBER_API_URL = "https://api.xabber.com/api/v1/";
     public static final String XABBER_API_URL = "https://api.dev.xabber.com/api/v2/";
     private static final String XABBER_COM_URL = "https://www.xabber.com/";
+    private static final String CROWDFUNDING_URL = "https://crowdfunding.xabber.com/api/v1/";
+
     private static IXabberApi xabberApi;
     private static IXabberCom xabberCom;
+    private static ICrowdfundingApi crowdfundingApi;
+
     private static Retrofit retrofit;
     private static Retrofit retrofitXabberCom;
+    private static Retrofit retrofitCrowdfunding;
 
     public static IXabberApi getXabberApi() {
         if (xabberApi == null)
@@ -37,6 +43,12 @@ public class HttpApiManager {
         if (xabberCom == null)
             xabberCom = getRetrofitXabberCom().create(IXabberCom.class);
         return xabberCom;
+    }
+
+    public static ICrowdfundingApi getCrowdfundingApi() {
+        if (crowdfundingApi == null)
+            crowdfundingApi = getCrowdfundingRetrofit().create(ICrowdfundingApi.class);
+        return crowdfundingApi;
     }
 
     public static Retrofit getRetrofit() {
@@ -94,6 +106,34 @@ public class HttpApiManager {
                     .build();
         }
         return retrofitXabberCom;
+    }
+
+    private static Retrofit getCrowdfundingRetrofit() {
+        if (retrofitCrowdfunding == null) {
+
+            HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+
+            OkHttpClient.Builder httpClientBuilder = new OkHttpClient.Builder();
+
+            // if debug enable http logging
+            if (BuildConfig.DEBUG)
+                httpClientBuilder.addInterceptor(loggingInterceptor);
+
+            OkHttpClient httpClient = httpClientBuilder.build();
+
+            Gson gson = new GsonBuilder()
+                    .setLenient()
+                    .create();
+
+            retrofitCrowdfunding = new Retrofit.Builder()
+                    .baseUrl(CROWDFUNDING_URL)
+                    .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                    .addConverterFactory(GsonConverterFactory.create(gson))
+                    .client(httpClient)
+                    .build();
+        }
+        return retrofitCrowdfunding;
     }
 }
 
