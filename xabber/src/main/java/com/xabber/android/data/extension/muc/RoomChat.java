@@ -31,6 +31,7 @@ import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.ChatAction;
+import com.xabber.android.data.message.ForwardManager;
 import com.xabber.android.data.message.NewIncomingMessageEvent;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.roster.RosterManager;
@@ -234,7 +235,7 @@ public class RoomChat extends AbstractChat {
                     // 'This room is not anonymous'
                     return true;
             }
-            final String text = message.getBody();
+            String text = message.getBody();
             final String subject = message.getSubject();
             if (text == null && subject == null) {
                 return true;
@@ -262,6 +263,11 @@ public class RoomChat extends AbstractChat {
                 if (delay != null) {
                     notify = false;
                 }
+
+                // forward comment
+                String forwardComment = ForwardManager.parseForwardComment(stanza);
+                if (forwardComment != null && !forwardComment.isEmpty())
+                    text = forwardComment;
 
                 String messageUId = getMessageIdIfInHistory(stanzaId, text);
                 if (messageUId != null) {
@@ -360,7 +366,7 @@ public class RoomChat extends AbstractChat {
 
         final org.jxmpp.jid.Jid from = message.getFrom();
         final Resourcepart resource = from.getResourceOrNull();
-        final String text = message.getBody();
+        String text = message.getBody();
         final String subject = message.getSubject();
 
         if (text == null) return null;
@@ -378,6 +384,9 @@ public class RoomChat extends AbstractChat {
         String originalStanza = message.toXML().toString();
         String originalFrom = message.getFrom().toString();
         boolean fromMUC = message.getType().equals(Type.groupchat);
+        String forwardComment = ForwardManager.parseForwardComment(message);
+        if (forwardComment != null && !forwardComment.isEmpty())
+            text = forwardComment;
 
         // create message with file-attachments
         if (attachments.size() > 0)

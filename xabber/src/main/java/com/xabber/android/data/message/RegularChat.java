@@ -264,6 +264,9 @@ public class RegularChat extends AbstractChat {
         String originalFrom = "";
         if (fromJid != null) originalFrom = fromJid.toString();
         boolean fromMuc = message.getType().equals(Type.groupchat);
+        String forwardComment = ForwardManager.parseForwardComment(message);
+        if (forwardComment != null && !forwardComment.isEmpty())
+            text = forwardComment;
 
         // create message with file-attachments
         if (attachments.size() > 0)
