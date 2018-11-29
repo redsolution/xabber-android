@@ -19,6 +19,8 @@ import android.util.Log;
 
 import com.xabber.android.data.account.AccountErrorEvent;
 import com.xabber.android.data.account.AccountItem;
+import com.xabber.android.data.extension.forward.ForwardComment;
+import com.xabber.android.data.extension.forward.ForwardCommentProvider;
 import com.xabber.android.data.extension.httpfileupload.CustomDataProvider;
 import com.xabber.android.data.log.AndroidLoggingHandler;
 import com.xabber.android.data.log.LogManager;
@@ -138,6 +140,9 @@ class ConnectionThread {
                 // not authorization or not receiving a iq's
                 ProviderManager.addExtensionProvider(DataForm.ELEMENT,
                         DataForm.NAMESPACE, new CustomDataProvider());
+
+                ProviderManager.addExtensionProvider(ForwardComment.ELEMENT,
+                        ForwardComment.NAMESPACE, new ForwardCommentProvider());
             } else {
                 LogManager.i(this, "Already authenticated");
             }

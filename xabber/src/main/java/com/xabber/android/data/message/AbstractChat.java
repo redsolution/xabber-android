@@ -18,6 +18,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
@@ -33,6 +34,7 @@ import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.carbons.CarbonManager;
 import com.xabber.android.data.extension.cs.ChatStateManager;
 import com.xabber.android.data.extension.file.FileManager;
+import com.xabber.android.data.extension.forward.ForwardComment;
 import com.xabber.android.data.extension.httpfileupload.ExtendedFormField;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.otr.OTRManager;
@@ -616,15 +618,14 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
             message = createFileMessagePacket(messageItem.getStanzaId(),
                     messageItem.getAttachments(), text);
 
-        } else if (text != null) {
-            message = createMessagePacket(text, messageItem.getStanzaId());
-        }
+        } else if (messageItem.haveForwardedMessages()) {
 
-        // forwarded
-        if (messageItem.haveForwardedMessages()) {
+            int count = messageItem.getForwardedIds().size();
+            String body = String.format(Application.getInstance().getResources()
+                    .getString(R.string.forwarded_support_text), count);
+            if (text != null && !text.isEmpty()) body += "\n" + text;
 
-            // TODO: 14.11.18 изменить body в соответствии с расширением
-            if (message == null) message = createMessagePacket("", messageItem.getStanzaId());
+            message = createMessagePacket(body, messageItem.getStanzaId());
 
             for (ForwardId id : messageItem.getForwardedIds()) {
                 Realm realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
@@ -637,7 +638,10 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
                     e.printStackTrace();
                 }
             }
-            // TODO: 13.11.18 добавить аттрибут reply или forward
+            message.addExtension(new ForwardComment(text));
+
+        } else if (text != null) {
+            message = createMessagePacket(text, messageItem.getStanzaId());
         }
 
         if (message != null) {

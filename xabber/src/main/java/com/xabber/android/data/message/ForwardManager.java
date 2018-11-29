@@ -4,8 +4,11 @@ import com.xabber.android.data.database.messagerealm.ForwardId;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.extension.forward.ForwardComment;
 
 import org.greenrobot.eventbus.EventBus;
+import org.jivesoftware.smack.packet.ExtensionElement;
+import org.jivesoftware.smack.packet.Stanza;
 
 import java.util.List;
 
@@ -27,6 +30,14 @@ public class ForwardManager {
         chat.saveMessageItem(true, messageItem);
         chat.sendMessages();
         EventBus.getDefault().post(new NewMessageEvent());
+    }
+
+    public static String parseForwardComment(Stanza packet) {
+        ExtensionElement comment = packet.getExtension(ForwardComment.ELEMENT, ForwardComment.NAMESPACE);
+        if (comment instanceof ForwardComment) {
+            return ((ForwardComment) comment).getComment();
+        }
+        return null;
     }
 
 }

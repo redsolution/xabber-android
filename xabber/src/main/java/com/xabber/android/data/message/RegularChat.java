@@ -213,6 +213,9 @@ public class RegularChat extends AbstractChat {
             RealmList<ForwardId> forwardIds = parseForwardedMessage(true, packet, uid);
             String originalStanza = packet.toXML().toString();
             String originalFrom = packet.getFrom().toString();
+            String forwardComment = ForwardManager.parseForwardComment(packet);
+            if (forwardComment != null && !forwardComment.isEmpty())
+                text = forwardComment;
 
             // System message received.
             if ((text == null || text.trim().equals("")) && forwardIds.isEmpty())
