@@ -2,6 +2,7 @@ package com.xabber.android.data.http;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.database.realm.CrowdfundingMessage;
 import com.xabber.android.data.xaccount.HttpApiManager;
 
 import java.util.List;
@@ -11,26 +12,36 @@ import rx.functions.Func1;
 
 public class CrowdfundingClient {
 
-    public static Single<Message> getLeader() {
+    public static Single<List<CrowdfundingMessage>> getLeaderAndFeed() {
         return HttpApiManager.getCrowdfundingApi().getLeader(getAPIKey())
-                .flatMap(new Func1<Message, Single<? extends Message>>() {
-                    @Override
-                    public Single<? extends Message> call(Message message) {
-                        // save to realm
-                        return Single.just(message);
-                    }
-                });
+            .flatMap(new Func1<Message, Single<? extends CrowdfundingMessage>>() {
+                @Override
+                public Single<? extends CrowdfundingMessage> call(Message message) {
+                    return CrowdfundingManager.getInstance().saveCrowdfundingMessageToRealm(message);
+                }
+            })
+            .flatMap(new Func1<CrowdfundingMessage, Single<? extends List<Message>>>() {
+                @Override
+                public Single<? extends List<Message>> call(CrowdfundingMessage crowdfundingMessage) {
+                    return HttpApiManager.getCrowdfundingApi().getFeed(getAPIKey(), "");
+                }
+            })
+            .flatMap(new Func1<List<Message>, Single<? extends List<CrowdfundingMessage>>>() {
+                @Override
+                public Single<? extends List<CrowdfundingMessage>> call(List<Message> messages) {
+                    return CrowdfundingManager.getInstance().saveCrowdfundingMessageToRealm(messages);
+                }
+            });
     }
 
-    public static Single<List<Message>> getFeed() {
-        return HttpApiManager.getCrowdfundingApi().getFeed(getAPIKey())
-                .flatMap(new Func1<List<Message>, Single<? extends List<Message>>>() {
-                    @Override
-                    public Single<? extends List<Message>> call(List<Message> messages) {
-                        // save to realm
-                        return Single.just(messages);
-                    }
-                });
+    public static Single<List<CrowdfundingMessage>> getFeed(String timestamp) {
+        return HttpApiManager.getCrowdfundingApi().getFeed(getAPIKey(), timestamp)
+            .flatMap(new Func1<List<Message>, Single<? extends List<CrowdfundingMessage>>>() {
+                @Override
+                public Single<? extends List<CrowdfundingMessage>> call(List<Message> messages) {
+                    return CrowdfundingManager.getInstance().saveCrowdfundingMessageToRealm(messages);
+                }
+            });
     }
 
     private static String getAPIKey() {
@@ -61,7 +72,7 @@ public class CrowdfundingClient {
         }
     }
 
-    private static class Locale {
+    public static class Locale {
         private final String locale;
         private final String message;
 

@@ -6,6 +6,7 @@ import android.os.Looper;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.database.realm.AccountRealm;
 import com.xabber.android.data.database.realm.ChatDataRealm;
+import com.xabber.android.data.database.realm.CrowdfundingMessage;
 import com.xabber.android.data.database.realm.DiscoveryInfoCache;
 import com.xabber.android.data.database.realm.EmailRealm;
 import com.xabber.android.data.database.realm.NotificationStateRealm;
@@ -29,7 +30,7 @@ import io.realm.annotations.RealmModule;
 
 public class RealmManager {
     private static final String REALM_DATABASE_NAME = "realm_database.realm";
-    private static final int REALM_DATABASE_VERSION = 17;
+    private static final int REALM_DATABASE_VERSION = 18;
     private static final String LOG_TAG = RealmManager.class.getSimpleName();
     private final RealmConfiguration realmConfiguration;
 
@@ -62,7 +63,8 @@ public class RealmManager {
 
     @RealmModule(classes = {DiscoveryInfoCache.class, AccountRealm.class, XabberAccountRealm.class,
             XMPPUserRealm.class, EmailRealm.class, SocialBindingRealm.class, SyncStateRealm.class,
-            PatreonGoalRealm.class, PatreonRealm.class, ChatDataRealm.class, NotificationStateRealm.class})
+            PatreonGoalRealm.class, PatreonRealm.class, ChatDataRealm.class, NotificationStateRealm.class,
+            CrowdfundingMessage.class})
     static class RealmDatabaseModule {
     }
 
@@ -237,6 +239,17 @@ public class RealmManager {
                                     schema.get(XabberAccountRealm.class.getSimpleName());
 
                             xabberAccountSchema.addField("hasPassword", boolean.class);
+
+                            oldVersion++;
+                        }
+
+                        if (oldVersion == 17) {
+                            schema.create(CrowdfundingMessage.class.getSimpleName())
+                                    .addField("id", String.class, FieldAttribute.PRIMARY_KEY, FieldAttribute.REQUIRED)
+                                    .addField("timestamp", String.class)
+                                    .addField("messageRu", String.class)
+                                    .addField("messageEn", String.class)
+                                    .addField("read", boolean.class);
 
                             oldVersion++;
                         }
