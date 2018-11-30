@@ -121,6 +121,8 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
         } else if (item instanceof ButtonVO) {
             ButtonVO button = (ButtonVO) item;
             if (view != null) view.onButtonItemClick(button);
+        } else if (item instanceof CrowdfundingChatVO) {
+            if (view != null) view.onCrowdfundingChatClick();
         }
     }
 

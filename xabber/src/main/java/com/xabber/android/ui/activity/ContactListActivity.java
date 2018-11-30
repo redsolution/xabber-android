@@ -660,6 +660,11 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
     }
 
     @Override
+    public void onCrowdfundingChatClick() {
+        Toast.makeText(this, "crowd!", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
     public void onContactListChange(CommonState commonState) {}
 
     @Override

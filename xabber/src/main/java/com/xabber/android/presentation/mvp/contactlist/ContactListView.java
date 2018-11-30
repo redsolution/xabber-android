@@ -18,6 +18,7 @@ import eu.davidea.flexibleadapter.items.IFlexible;
 public interface ContactListView {
 
     void updateItems(List<IFlexible> items);
+    void onCrowdfundingChatClick();
     void onContactClick(AbstractContact contact);
     void onItemContextMenu(int adapterPosition, ContextMenu menu);
     void onContactAvatarClick(int adapterPosition);
