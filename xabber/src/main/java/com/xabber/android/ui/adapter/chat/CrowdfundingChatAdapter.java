@@ -8,12 +8,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.amulyakhare.textdrawable.util.ColorGenerator;
 import com.xabber.android.R;
 import com.xabber.android.data.database.realm.CrowdfundingMessage;
 import com.xabber.android.ui.color.ColorManager;
+import com.xabber.android.utils.Utils;
 
 import io.realm.RealmRecyclerViewAdapter;
 import io.realm.RealmResults;
@@ -75,6 +77,17 @@ public class CrowdfundingChatAdapter extends RealmRecyclerViewAdapter<Crowdfundi
             holder.avatarBackground.setVisibility(View.GONE);
         }
 
+        // setup BALLOON margins
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+
+        layoutParams.setMargins(
+                Utils.dipToPx(2f, context),
+                Utils.dipToPx(2f, context),
+                Utils.dipToPx(0f, context),
+                Utils.dipToPx(2f, context));
+        holder.messageShadow.setLayoutParams(layoutParams);
+
     }
 
     public class CrowdMessageVH extends RecyclerView.ViewHolder {
@@ -84,8 +97,9 @@ public class CrowdfundingChatAdapter extends RealmRecyclerViewAdapter<Crowdfundi
         TextView messageTime;
         ImageView statusIcon;
         ImageView ivEncrypted;
-        public ImageView avatar;
-        public ImageView avatarBackground;
+        ImageView avatar;
+        ImageView avatarBackground;
+        View messageShadow;
 
         CrowdMessageVH(View itemView) {
             super(itemView);
@@ -97,6 +111,7 @@ public class CrowdfundingChatAdapter extends RealmRecyclerViewAdapter<Crowdfundi
             messageTime = itemView.findViewById(R.id.message_time);
             avatar = itemView.findViewById(R.id.avatar);
             avatarBackground = itemView.findViewById(R.id.avatarBackground);
+            messageShadow = itemView.findViewById(R.id.message_shadow);
 
         }
     }
