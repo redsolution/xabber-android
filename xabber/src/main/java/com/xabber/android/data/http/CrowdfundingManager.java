@@ -124,6 +124,20 @@ public class CrowdfundingManager implements OnLoadListener {
         return count.intValue();
     }
 
+    public void reloadMessages() {
+        removeAllMessages();
+        requestLeaderAndFeed();
+    }
+
+    private void removeAllMessages() {
+        Realm realm = RealmManager.getInstance().getNewRealm();
+        RealmResults<CrowdfundingMessage> messages = realm.where(CrowdfundingMessage.class).findAllSorted("timestamp");
+        realm.beginTransaction();
+        for (CrowdfundingMessage message : messages)
+            message.deleteFromRealm();
+        realm.commitTransaction();
+    }
+
     private boolean isCacheExpired() {
         // TODO: 29.11.18 implement
         // expire date is 1 day

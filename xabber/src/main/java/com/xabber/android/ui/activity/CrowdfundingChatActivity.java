@@ -8,6 +8,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
@@ -26,6 +27,7 @@ public class CrowdfundingChatActivity extends ManagedActivity {
     private TextView status_text;
     private ImageView ivAvatar;
     private ImageView ivStatus;
+    private ImageView ivReload;
 
     private StatusBarPainter statusBarPainter;
 
@@ -52,6 +54,14 @@ public class CrowdfundingChatActivity extends ManagedActivity {
         status_text = findViewById(R.id.status_text);
         ivAvatar = findViewById(R.id.ivAvatar);
         ivStatus = findViewById(R.id.ivStatus);
+        ivReload = findViewById(R.id.ivReload);
+        ivReload.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(CrowdfundingChatActivity.this, "RELOAD", Toast.LENGTH_SHORT).show();
+                CrowdfundingManager.getInstance().reloadMessages();
+            }
+        });
     }
 
     @Override

@@ -34,11 +34,21 @@
         android:layout_height="match_parent"
         android:paddingLeft="4dp"
         android:paddingRight="4dp"
-        android:paddingTop="4dp"
-        android:paddingBottom="4dp"
         android:overScrollMode="never"
         android:layout_below="@id/toolbar_default"
         android:layout_above="@id/supportLayout"
+        />
+
+    <ImageView
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:id="@+id/ivReload"
+        android:src="@drawable/ic_sync"
+        android:tint="@color/black"
+        android:layout_below="@id/toolbar_default"
+        android:layout_alignParentRight="true"
+        android:layout_margin="16dp"
+        android:background="?android:selectableItemBackgroundBorderless"
         />
 
     <View
