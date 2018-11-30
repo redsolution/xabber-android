@@ -12,6 +12,7 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.CommonState;
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.database.messagerealm.MessageItem;
+import com.xabber.android.data.database.realm.CrowdfundingMessage;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.blocking.BlockingManager;
@@ -363,17 +364,20 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
                             showAccounts, showGroups);
                 }
 
-            // crowdfunding chat
-            int unreadCount = CrowdfundingManager.getInstance().getUnreadMessageCount();
-            CrowdfundingChatVO crowdfundingChat = CrowdfundingChatVO.convert(
-                    CrowdfundingManager.getInstance().getLastMessageFromRealm(), unreadCount);
-
             // BUILD STRUCTURE //
 
             // Remove empty groups, sort and apply structure.
             items.clear();
             items.add(new ToolbarVO(Application.getInstance().getApplicationContext(), this, currentChatsState));
-            items.add(crowdfundingChat);
+
+            // crowdfunding chat
+            int unreadCount = CrowdfundingManager.getInstance().getUnreadMessageCount();
+            CrowdfundingMessage message = CrowdfundingManager.getInstance().getLastMessageFromRealm();
+            if (message != null) {
+                CrowdfundingChatVO crowdfundingChat = CrowdfundingChatVO.convert(message, unreadCount);
+                items.add(crowdfundingChat);
+            }
+
             if (hasVisibleContacts) {
 
                 if (currentChatsState == ChatListState.recent) {

@@ -115,7 +115,8 @@ public class CrowdfundingManager implements OnLoadListener {
     public CrowdfundingMessage getLastMessageFromRealm() {
         Realm realm = RealmManager.getInstance().getNewRealm();
         RealmResults<CrowdfundingMessage> messages = realm.where(CrowdfundingMessage.class).findAllSorted("timestamp");
-        return messages.last();
+        if (messages != null && !messages.isEmpty()) return messages.last();
+        else return null;
     }
 
     public int getUnreadMessageCount() {
