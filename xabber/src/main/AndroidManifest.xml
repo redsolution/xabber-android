@@ -569,6 +569,11 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.xabber.android.ui.activity.ChatActivity" />
         </activity>
+        <activity android:name=".ui.activity.CrowdfundingChatActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.xabber.android.ui.activity.ChatActivity" />
+        </activity>
     </application>
 
 </manifest>

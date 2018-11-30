@@ -5,14 +5,12 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.xabber.android.R;
-import com.xabber.android.data.Application;
 import com.xabber.android.data.database.realm.CrowdfundingMessage;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.utils.StringUtils;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.UUID;
 
 import eu.davidea.flexibleadapter.FlexibleAdapter;
@@ -41,14 +39,7 @@ public class CrowdfundingChatVO extends AbstractFlexibleItem<CrowdfundingChatVO.
     public static CrowdfundingChatVO convert(CrowdfundingMessage message, int unreadCount) {
         int accountColorIndicator = ColorManager.getInstance().getAccountPainter().getDefaultMainColor();
         int accountColorIndicatorBack = ColorManager.getInstance().getAccountPainter().getDefaultIndicatorBackColor();
-
-        String text;
-        Locale currentLocale = Application.getInstance().getResources().getConfiguration().locale;
-        if (currentLocale.getLanguage().equals("ru"))
-            text = message.getMessageRu();
-        else text = message.getMessageEn();
-
-        return new CrowdfundingChatVO(text, null, unreadCount,
+        return new CrowdfundingChatVO(message.getMessageForCurrentLocale(), null, unreadCount,
                 accountColorIndicator, accountColorIndicatorBack);
     }
 

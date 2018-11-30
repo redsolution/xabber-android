@@ -1,5 +1,8 @@
 package com.xabber.android.data.database.realm;
 
+import com.xabber.android.data.Application;
+
+import java.util.Locale;
 import java.util.UUID;
 
 import io.realm.RealmObject;
@@ -54,5 +57,12 @@ public class CrowdfundingMessage extends RealmObject {
 
     public void setRead(boolean read) {
         this.read = read;
+    }
+
+    public String getMessageForCurrentLocale() {
+        Locale currentLocale = Application.getInstance().getResources().getConfiguration().locale;
+        if (currentLocale.getLanguage().equals("ru"))
+            return getMessageRu();
+        else return getMessageEn();
     }
 }

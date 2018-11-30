@@ -131,4 +131,5 @@
 
     <string name="xabber_chat_title">Xabber official</string>
     <string name="xabber_chat_description">News feed</string>
+    <string name="xabber_join_button">Support Xabber</string>
 </resources>

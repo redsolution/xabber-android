@@ -107,6 +107,11 @@ public class CrowdfundingManager implements OnLoadListener {
         return realmMessage;
     }
 
+    public RealmResults<CrowdfundingMessage> getAllMessages() {
+        Realm realm = RealmManager.getInstance().getNewRealm();
+        return realm.where(CrowdfundingMessage.class).findAllSorted("timestamp");
+    }
+
     public CrowdfundingMessage getLastMessageFromRealm() {
         Realm realm = RealmManager.getInstance().getNewRealm();
         RealmResults<CrowdfundingMessage> messages = realm.where(CrowdfundingMessage.class).findAllSorted("timestamp");
