@@ -107,10 +107,16 @@ public class CrowdfundingManager implements OnLoadListener {
         return realmMessage;
     }
 
-    private CrowdfundingMessage getLastMessageFromRealm() {
+    public CrowdfundingMessage getLastMessageFromRealm() {
         Realm realm = RealmManager.getInstance().getNewRealm();
         RealmResults<CrowdfundingMessage> messages = realm.where(CrowdfundingMessage.class).findAllSorted("timestamp");
         return messages.last();
+    }
+
+    public int getUnreadMessageCount() {
+        Realm realm = RealmManager.getInstance().getNewRealm();
+        Long count = realm.where(CrowdfundingMessage.class).equalTo("read", false).count();
+        return count.intValue();
     }
 
     private boolean isCacheExpired() {

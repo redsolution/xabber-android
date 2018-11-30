@@ -18,6 +18,7 @@ import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.muc.RoomChat;
 import com.xabber.android.data.extension.muc.RoomContact;
+import com.xabber.android.data.http.CrowdfundingManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.ChatContact;
 import com.xabber.android.data.message.MessageManager;
@@ -36,6 +37,7 @@ import com.xabber.android.presentation.ui.contactlist.viewobjects.CategoryVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.ChatVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.ChatWithButtonVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.ContactVO;
+import com.xabber.android.presentation.ui.contactlist.viewobjects.CrowdfundingChatVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.ExtContactVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.GroupVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.ToolbarVO;
@@ -359,11 +361,17 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
                             showAccounts, showGroups);
                 }
 
+            // crowdfunding chat
+            int unreadCount = CrowdfundingManager.getInstance().getUnreadMessageCount();
+            CrowdfundingChatVO crowdfundingChat = CrowdfundingChatVO.convert(
+                    CrowdfundingManager.getInstance().getLastMessageFromRealm(), unreadCount);
+
             // BUILD STRUCTURE //
 
             // Remove empty groups, sort and apply structure.
             items.clear();
             items.add(new ToolbarVO(Application.getInstance().getApplicationContext(), this, currentChatsState));
+            items.add(crowdfundingChat);
             if (hasVisibleContacts) {
 
                 if (currentChatsState == ChatListState.recent) {
