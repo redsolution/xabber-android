@@ -13,6 +13,6 @@ public interface ICrowdfundingApi {
     Single<CrowdfundingClient.Message> getLeader(@Header("Authorization") String apiKey);
 
     @GET("feed/")
-    Single<List<CrowdfundingClient.Message>> getFeed(@Header("Authorization") String apiKey, @Query("timestamp") String timestamp);
+    Single<List<CrowdfundingClient.Message>> getFeed(@Header("Authorization") String apiKey, @Query("timestamp") int timestamp);
 
 }

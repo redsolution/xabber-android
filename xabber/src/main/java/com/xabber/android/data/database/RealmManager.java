@@ -246,7 +246,7 @@ public class RealmManager {
                         if (oldVersion == 17) {
                             schema.create(CrowdfundingMessage.class.getSimpleName())
                                     .addField("id", String.class, FieldAttribute.PRIMARY_KEY, FieldAttribute.REQUIRED)
-                                    .addField("timestamp", String.class)
+                                    .addField("timestamp", int.class)
                                     .addField("messageRu", String.class)
                                     .addField("messageEn", String.class)
                                     .addField("read", boolean.class);

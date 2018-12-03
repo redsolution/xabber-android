@@ -23,7 +23,7 @@ public class CrowdfundingClient {
             .flatMap(new Func1<CrowdfundingMessage, Single<? extends List<Message>>>() {
                 @Override
                 public Single<? extends List<Message>> call(CrowdfundingMessage crowdfundingMessage) {
-                    return HttpApiManager.getCrowdfundingApi().getFeed(getAPIKey(), "");
+                    return HttpApiManager.getCrowdfundingApi().getFeed(getAPIKey(), crowdfundingMessage.getTimestamp());
                 }
             })
             .flatMap(new Func1<List<Message>, Single<? extends List<CrowdfundingMessage>>>() {
@@ -34,7 +34,7 @@ public class CrowdfundingClient {
             });
     }
 
-    public static Single<List<CrowdfundingMessage>> getFeed(String timestamp) {
+    public static Single<List<CrowdfundingMessage>> getFeed(int timestamp) {
         return HttpApiManager.getCrowdfundingApi().getFeed(getAPIKey(), timestamp)
             .flatMap(new Func1<List<Message>, Single<? extends List<CrowdfundingMessage>>>() {
                 @Override
@@ -50,10 +50,10 @@ public class CrowdfundingClient {
 
     public static class Message {
         private final String uuid;
-        private final String timestamp;
+        private final int timestamp;
         private final List<Locale> feed;
 
-        public Message(String uuid, String timestamp, List<Locale> feed) {
+        public Message(String uuid, int timestamp, List<Locale> feed) {
             this.uuid = uuid;
             this.timestamp = timestamp;
             this.feed = feed;
@@ -63,7 +63,7 @@ public class CrowdfundingClient {
             return uuid;
         }
 
-        public String getTimestamp() {
+        public int getTimestamp() {
             return timestamp;
         }
 

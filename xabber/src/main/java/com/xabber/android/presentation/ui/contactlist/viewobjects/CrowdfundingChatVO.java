@@ -40,7 +40,7 @@ public class CrowdfundingChatVO extends AbstractFlexibleItem<CrowdfundingChatVO.
     public static CrowdfundingChatVO convert(@NonNull CrowdfundingMessage message, int unreadCount) {
         int accountColorIndicator = ColorManager.getInstance().getAccountPainter().getDefaultMainColor();
         int accountColorIndicatorBack = ColorManager.getInstance().getAccountPainter().getDefaultIndicatorBackColor();
-        return new CrowdfundingChatVO(message.getMessageForCurrentLocale(), null, unreadCount,
+        return new CrowdfundingChatVO(message.getMessageForCurrentLocale(), new Date((long)message.getTimestamp()*1000), unreadCount,
                 accountColorIndicator, accountColorIndicatorBack);
     }
 
@@ -67,8 +67,7 @@ public class CrowdfundingChatVO extends AbstractFlexibleItem<CrowdfundingChatVO.
     public void bindViewHolder(FlexibleAdapter adapter, ViewHolder holder, int position, List<Object> payloads) {
         Context context = holder.itemView.getContext();
 
-        holder.tvTime.setText(StringUtils
-                .getSmartTimeTextForRoster(context, time));
+        holder.tvTime.setText(StringUtils.getSmartTimeTextForRoster(context, time));
 
         /** set up UNREAD COUNT */
         if (unreadCount > 0) {

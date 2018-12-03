@@ -53,7 +53,7 @@ public class CrowdfundingManager implements OnLoadListener {
             }));
     }
 
-    private void requestFeed(String timestamp) {
+    private void requestFeed(int timestamp) {
         compositeSubscription.add(CrowdfundingClient.getFeed(timestamp)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())

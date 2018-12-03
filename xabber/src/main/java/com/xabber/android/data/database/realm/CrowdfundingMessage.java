@@ -14,7 +14,7 @@ public class CrowdfundingMessage extends RealmObject {
     @PrimaryKey
     @Required
     private String id;
-    private String timestamp;
+    private int timestamp;
     private String messageRu;
     private String messageEn;
     private boolean read;
@@ -27,11 +27,11 @@ public class CrowdfundingMessage extends RealmObject {
         this.id = UUID.randomUUID().toString();
     }
 
-    public String getTimestamp() {
+    public int getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(String timestamp) {
+    public void setTimestamp(int timestamp) {
         this.timestamp = timestamp;
     }
 
