@@ -91,6 +91,11 @@ public class CrowdfundingChatActivity extends ManagedActivity {
 
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
+
+        // mark messages read
+        if (CrowdfundingManager.getInstance().getUnreadMessageCount() > 0) {
+            CrowdfundingManager.getInstance().markMessagesAsRead();
+        }
     }
 
     private void setupToolbar() {
