@@ -51,12 +51,14 @@ public class CrowdfundingClient {
     public static class Message {
         private final String uuid;
         private final int timestamp;
-        private final List<Locale> feed;
+        private final List<LocalizedMessage> feed;
+        private final Author author;
 
-        public Message(String uuid, int timestamp, List<Locale> feed) {
+        public Message(String uuid, int timestamp, List<LocalizedMessage> feed, Author author) {
             this.uuid = uuid;
             this.timestamp = timestamp;
             this.feed = feed;
+            this.author = author;
         }
 
         public String getUuid() {
@@ -67,16 +69,20 @@ public class CrowdfundingClient {
             return timestamp;
         }
 
-        public List<Locale> getFeed() {
+        public List<LocalizedMessage> getFeed() {
             return feed;
+        }
+
+        public Author getAuthor() {
+            return author;
         }
     }
 
-    public static class Locale {
+    public static class LocalizedMessage {
         private final String locale;
         private final String message;
 
-        public Locale(String locale, String message) {
+        public LocalizedMessage(String locale, String message) {
             this.locale = locale;
             this.message = message;
         }
@@ -87,6 +93,48 @@ public class CrowdfundingClient {
 
         public String getMessage() {
             return message;
+        }
+    }
+
+    public static class Author {
+        private final String avatar;
+        private final String jabber_id;
+        private List<LocalizedName> name;
+
+        public Author(String avatar, String jabber_id, List<LocalizedName> name) {
+            this.avatar = avatar;
+            this.jabber_id = jabber_id;
+            this.name = name;
+        }
+
+        public String getAvatar() {
+            return avatar;
+        }
+
+        public String getJabberId() {
+            return jabber_id;
+        }
+
+        public List<LocalizedName> getName() {
+            return name;
+        }
+    }
+
+    public static class LocalizedName {
+        private final String locale;
+        private final String name;
+
+        public LocalizedName(String locale, String name) {
+            this.locale = locale;
+            this.name = name;
+        }
+
+        public String getLocale() {
+            return locale;
+        }
+
+        public String getName() {
+            return name;
         }
     }
 }

@@ -98,10 +98,17 @@ public class CrowdfundingManager implements OnLoadListener {
         CrowdfundingMessage realmMessage = new CrowdfundingMessage(message.getUuid());
         realmMessage.setRead(false);
         realmMessage.setTimestamp(message.getTimestamp());
+        realmMessage.setAuthorAvatar(message.getAuthor().getAvatar());
+        realmMessage.setAuthorJid(message.getAuthor().getJabberId());
 
-        for (CrowdfundingClient.Locale locale : message.getFeed()) {
+        for (CrowdfundingClient.LocalizedMessage locale : message.getFeed()) {
             if ("en".equals(locale.getLocale())) realmMessage.setMessageEn(locale.getMessage());
             if ("ru".equals(locale.getLocale())) realmMessage.setMessageRu(locale.getMessage());
+        }
+
+        for (CrowdfundingClient.LocalizedName name : message.getAuthor().getName()) {
+            if ("en".equals(name.getLocale())) realmMessage.setAuthorNameEn(name.getName());
+            if ("ru".equals(name.getLocale())) realmMessage.setAuthorNameRu(name.getName());
         }
 
         return realmMessage;

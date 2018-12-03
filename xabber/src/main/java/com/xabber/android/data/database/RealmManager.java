@@ -249,7 +249,11 @@ public class RealmManager {
                                     .addField("timestamp", int.class)
                                     .addField("messageRu", String.class)
                                     .addField("messageEn", String.class)
-                                    .addField("read", boolean.class);
+                                    .addField("read", boolean.class)
+                                    .addField("authorAvatar", String.class)
+                                    .addField("authorJid", String.class)
+                                    .addField("authorNameRu", String.class)
+                                    .addField("authorNameEn", String.class);
 
                             oldVersion++;
                         }

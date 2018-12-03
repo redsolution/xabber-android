@@ -19,6 +19,11 @@ public class CrowdfundingMessage extends RealmObject {
     private String messageEn;
     private boolean read;
 
+    private String authorAvatar;
+    private String authorJid;
+    private String authorNameRu;
+    private String authorNameEn;
+
     public CrowdfundingMessage(String id) {
         this.id = id;
     }
@@ -57,6 +62,45 @@ public class CrowdfundingMessage extends RealmObject {
 
     public void setRead(boolean read) {
         this.read = read;
+    }
+
+    public String getAuthorAvatar() {
+        return authorAvatar;
+    }
+
+    public void setAuthorAvatar(String authorAvatar) {
+        this.authorAvatar = authorAvatar;
+    }
+
+    public String getAuthorJid() {
+        return authorJid;
+    }
+
+    public void setAuthorJid(String authorJid) {
+        this.authorJid = authorJid;
+    }
+
+    public String getAuthorNameRu() {
+        return authorNameRu;
+    }
+
+    public void setAuthorNameRu(String authorNameRu) {
+        this.authorNameRu = authorNameRu;
+    }
+
+    public String getAuthorNameEn() {
+        return authorNameEn;
+    }
+
+    public void setAuthorNameEn(String authorNameEn) {
+        this.authorNameEn = authorNameEn;
+    }
+
+    public String getNameForCurrentLocale() {
+        Locale currentLocale = Application.getInstance().getResources().getConfiguration().locale;
+        if (currentLocale.getLanguage().equals("ru"))
+            return getAuthorNameRu();
+        else return getAuthorNameEn();
     }
 
     public String getMessageForCurrentLocale() {
