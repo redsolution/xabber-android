@@ -12,10 +12,14 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.amulyakhare.textdrawable.util.ColorGenerator;
+import com.bumptech.glide.Glide;
 import com.xabber.android.R;
 import com.xabber.android.data.database.realm.CrowdfundingMessage;
 import com.xabber.android.ui.color.ColorManager;
+import com.xabber.android.utils.StringUtils;
 import com.xabber.android.utils.Utils;
+
+import java.util.Date;
 
 import io.realm.RealmRecyclerViewAdapter;
 import io.realm.RealmResults;
@@ -52,7 +56,7 @@ public class CrowdfundingChatAdapter extends RealmRecyclerViewAdapter<Crowdfundi
         holder.messageText.setText(message.getMessageForCurrentLocale());
 
         // nickname
-        String nick = null;
+        String nick = message.getNameForCurrentLocale();
         if (nick != null) {
             holder.messageHeader.setText(nick);
             holder.messageHeader.setTextColor(ColorManager.changeColor(
@@ -61,15 +65,17 @@ public class CrowdfundingChatAdapter extends RealmRecyclerViewAdapter<Crowdfundi
         } else holder.messageHeader.setVisibility(View.GONE);
 
         // time
-        holder.messageTime.setText("12:22");
+        String time = StringUtils.getTimeText(new Date((long)message.getTimestamp()*1000));
+        holder.messageTime.setText(time);
 
         // status
         holder.statusIcon.setVisibility(View.GONE);
         holder.ivEncrypted.setVisibility(View.GONE);
 
         // avatar
-        String avatarUrl = null;
+        String avatarUrl = message.getAuthorAvatar();
         if (avatarUrl != null) {
+            setupAvatar(holder.avatar, avatarUrl);
             holder.avatar.setVisibility(View.VISIBLE);
             holder.avatarBackground.setVisibility(View.VISIBLE);
         } else {
@@ -88,6 +94,10 @@ public class CrowdfundingChatAdapter extends RealmRecyclerViewAdapter<Crowdfundi
                 Utils.dipToPx(2f, context));
         holder.messageShadow.setLayoutParams(layoutParams);
 
+    }
+
+    private void setupAvatar(ImageView view, String url) {
+        Glide.with(context).load(url).into(view);
     }
 
     public class CrowdMessageVH extends RecyclerView.ViewHolder {
