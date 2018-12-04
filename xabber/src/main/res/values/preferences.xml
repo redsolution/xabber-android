@@ -30,6 +30,7 @@
     <string name="order_last_timestamp_key">order_last_timestamp_key</string>
 
     <string name="patreon_last_load_timestamp_key">patreon_last_load_timestamp_key</string>
+    <string name="crowdfunding_last_load_timestamp_key">crowdfunding_last_load_timestamp_key</string>
 
     <string name="last_sync_date_key">last_sync_date_key</string>
     <string name="last_sync_date_default">@string/last_sync_date_never</string>

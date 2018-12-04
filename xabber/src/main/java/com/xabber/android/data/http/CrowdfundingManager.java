@@ -3,10 +3,12 @@ package com.xabber.android.data.http;
 import android.util.Log;
 
 import com.xabber.android.data.OnLoadListener;
+import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.database.RealmManager;
 import com.xabber.android.data.database.realm.CrowdfundingMessage;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import io.realm.Realm;
 import io.realm.RealmList;
@@ -18,6 +20,8 @@ import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
 public class CrowdfundingManager implements OnLoadListener {
+
+    private static final int CACHE_LIFETIME = (int) TimeUnit.DAYS.toSeconds(1);
 
     private static CrowdfundingManager instance;
     private CompositeSubscription compositeSubscription = new CompositeSubscription();
@@ -61,6 +65,7 @@ public class CrowdfundingManager implements OnLoadListener {
                 @Override
                 public void call(List<CrowdfundingMessage> crowdfundingMessages) {
                     Log.d("crowd", "ok");
+                    SettingsManager.setLastCrowdfundingLoadTimestamp(getCurrentTime());
                 }
             }, new Action1<Throwable>() {
                 @Override
@@ -158,9 +163,11 @@ public class CrowdfundingManager implements OnLoadListener {
     }
 
     private boolean isCacheExpired() {
-        // TODO: 29.11.18 implement
-        // expire date is 1 day
-        return true;
+        return getCurrentTime() > SettingsManager.getLastCrowdfundingLoadTimestamp() + CACHE_LIFETIME;
+    }
+
+    public int getCurrentTime() {
+        return (int) (System.currentTimeMillis() / 1000L);
     }
 
 }
