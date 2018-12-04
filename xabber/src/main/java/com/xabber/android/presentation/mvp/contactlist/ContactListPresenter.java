@@ -482,7 +482,7 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
                 }
             }
         }
-        EventBus.getDefault().post(new UpdateUnreadCountEvent(unreadMessageCount));
+
 
         // crowdfunding chat
         int unreadCount = CrowdfundingManager.getInstance().getUnreadMessageCount();
@@ -500,9 +500,10 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
                     break;
             }
         }
+        unreadMessageCount += unreadCount;
 
+        EventBus.getDefault().post(new UpdateUnreadCountEvent(unreadMessageCount));
         Collections.sort(newChats, ChatComparator.CHAT_COMPARATOR);
-
         chatsGroup.setNotEmpty();
 
         int itemsCount = 0;
