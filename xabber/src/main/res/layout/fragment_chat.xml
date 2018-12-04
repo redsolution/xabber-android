@@ -52,7 +52,7 @@
         android:layout="@layout/layout_chat_notify"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/input_layout"
+        android:layout_above="@+id/secondBottomPanel"
         />
 
     <View
@@ -148,7 +148,7 @@
         android:id="@+id/chat_last_history_progress_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@id/input_layout"
+        android:layout_above="@id/secondBottomPanel"
         android:indeterminate="true"
         android:layout_marginBottom="-8dp"
         android:visibility="gone"
