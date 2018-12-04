@@ -46,7 +46,7 @@
     <dimen name="account_status">12dp</dimen>
     <dimen name="account_status_without_border">10dp</dimen>
 
-    <dimen name="message_padding">80dp</dimen>
+    <dimen name="message_padding">50dp</dimen>
 
     <dimen tools:override="true" name="design_fab_size_normal">40dp</dimen>
 </resources>

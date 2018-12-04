@@ -1,6 +1,8 @@
 package com.xabber.android.ui.adapter.chat;
 
 import android.content.Context;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
@@ -72,27 +74,50 @@ public class CrowdfundingChatAdapter extends RealmRecyclerViewAdapter<Crowdfundi
         holder.statusIcon.setVisibility(View.GONE);
         holder.ivEncrypted.setVisibility(View.GONE);
 
+        // need tail
+        boolean needTail = false;
+        CrowdfundingMessage nextMessage = getMessage(i + 1);
+        if (nextMessage != null)
+            needTail = !message.getAuthorJid().equals(nextMessage.getAuthorJid());
+        else needTail = true;
+
         // avatar
         String avatarUrl = message.getAuthorAvatar();
-        if (avatarUrl != null) {
+        if (needTail && avatarUrl != null) {
             setupAvatar(holder.avatar, avatarUrl);
             holder.avatar.setVisibility(View.VISIBLE);
             holder.avatarBackground.setVisibility(View.VISIBLE);
         } else {
-            holder.avatar.setVisibility(View.GONE);
-            holder.avatarBackground.setVisibility(View.GONE);
+            holder.avatar.setVisibility(View.INVISIBLE);
+            holder.avatarBackground.setVisibility(View.INVISIBLE);
         }
+
+        // setup BACKGROUND
+        Drawable balloonDrawable = context.getResources()
+                .getDrawable(needTail ? R.drawable.msg_in : R.drawable.msg);
+        Drawable shadowDrawable = context.getResources()
+                .getDrawable(needTail ? R.drawable.msg_in_shadow : R.drawable.msg_shadow);
+        shadowDrawable.setColorFilter(context.getResources().getColor(R.color.black), PorterDuff.Mode.MULTIPLY);
+        holder.messageBalloon.setBackgroundDrawable(balloonDrawable);
+        holder.messageShadow.setBackgroundDrawable(shadowDrawable);
 
         // setup BALLOON margins
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
 
         layoutParams.setMargins(
-                Utils.dipToPx(2f, context),
+                Utils.dipToPx(needTail ? 2f : 11f, context),
                 Utils.dipToPx(2f, context),
                 Utils.dipToPx(0f, context),
                 Utils.dipToPx(2f, context));
         holder.messageShadow.setLayoutParams(layoutParams);
+
+        // setup MESSAGE padding
+        holder.messageBalloon.setPadding(
+                Utils.dipToPx(needTail ? 20f : 12f, context),
+                Utils.dipToPx(8f, context),
+                Utils.dipToPx(12f, context),
+                Utils.dipToPx(8f, context));
 
     }
 
@@ -110,6 +135,7 @@ public class CrowdfundingChatAdapter extends RealmRecyclerViewAdapter<Crowdfundi
         ImageView avatar;
         ImageView avatarBackground;
         View messageShadow;
+        View messageBalloon;
 
         CrowdMessageVH(View itemView) {
             super(itemView);
@@ -122,6 +148,7 @@ public class CrowdfundingChatAdapter extends RealmRecyclerViewAdapter<Crowdfundi
             avatar = itemView.findViewById(R.id.avatar);
             avatarBackground = itemView.findViewById(R.id.avatarBackground);
             messageShadow = itemView.findViewById(R.id.message_shadow);
+            messageBalloon = itemView.findViewById(R.id.message_balloon);
 
         }
     }
