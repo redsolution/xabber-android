@@ -22,9 +22,11 @@ import com.xabber.android.data.extension.muc.RoomContact;
 import com.xabber.android.data.http.CrowdfundingManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.ChatContact;
+import com.xabber.android.data.message.CrowdfundingChat;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.NewMessageEvent;
 import com.xabber.android.data.roster.AbstractContact;
+import com.xabber.android.data.roster.CrowdfundingContact;
 import com.xabber.android.data.roster.GroupManager;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.RosterContact;
@@ -42,6 +44,7 @@ import com.xabber.android.presentation.ui.contactlist.viewobjects.CrowdfundingCh
 import com.xabber.android.presentation.ui.contactlist.viewobjects.ExtContactVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.GroupVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.ToolbarVO;
+import com.xabber.android.ui.activity.ChatActivity;
 import com.xabber.android.ui.adapter.ChatComparator;
 import com.xabber.android.ui.adapter.contactlist.AccountConfiguration;
 import com.xabber.android.ui.adapter.contactlist.ContactListGroupUtils;
@@ -370,14 +373,6 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
             items.clear();
             items.add(new ToolbarVO(Application.getInstance().getApplicationContext(), this, currentChatsState));
 
-            // crowdfunding chat
-            int unreadCount = CrowdfundingManager.getInstance().getUnreadMessageCount();
-            CrowdfundingMessage message = CrowdfundingManager.getInstance().getLastMessageFromRealm();
-            if (message != null) {
-                CrowdfundingChatVO crowdfundingChat = CrowdfundingChatVO.convert(message, unreadCount);
-                items.add(crowdfundingChat);
-            }
-
             if (hasVisibleContacts) {
 
                 if (currentChatsState == ChatListState.recent) {
@@ -385,7 +380,9 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
                     // add recent chats
                     int i = 0;
                     for (AbstractContact contact : chatsGroup.getAbstractContacts()) {
-                        if (i == MAX_RECENT_ITEMS - 1) {
+                        if (contact instanceof CrowdfundingContact) {
+                            items.add(CrowdfundingChatVO.convert((CrowdfundingContact) contact));
+                        } else if (i == MAX_RECENT_ITEMS - 1) {
                             if (getAllChatsSize() > MAX_RECENT_ITEMS)
                                 items.add(ChatWithButtonVO.convert(contact, this));
                             else items.add(ChatVO.convert(contact, this, null));
@@ -394,14 +391,7 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
                     }
 
                     if (showAccounts) {
-                        //boolean isFirst = items.isEmpty();
                         for (AccountConfiguration rosterAccount : accounts.values()) {
-//                            if (isFirst) {
-//                                isFirst = false;
-//                            } else {
-//                                items.add(new TopAccountSeparatorVO());
-//                            }
-
                             if (rosterAccount.getTotal() != 0) {
                                 if (showGroups) {
                                     createContactListWithAccountsAndGroups(items, rosterAccount, showEmptyGroups, comparator);
@@ -423,8 +413,13 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
                             createContactList(items, contacts, comparator);
                         }
                     }
-                } else
-                    items.addAll(ChatVO.convert(chatsGroup.getAbstractContacts(), this, null));
+                } else {
+                    for (AbstractContact contact : chatsGroup.getAbstractContacts()) {
+                        if (contact instanceof CrowdfundingContact)
+                            items.add(CrowdfundingChatVO.convert((CrowdfundingContact) contact));
+                        else items.add(ChatVO.convert(contact, this, null));
+                    }
+                }
             }
         } else { // Search
             final ArrayList<AbstractContact> baseEntities = getSearchResults(rosterContacts, comparator, abstractChats);
@@ -489,6 +484,23 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
         }
         EventBus.getDefault().post(new UpdateUnreadCountEvent(unreadMessageCount));
 
+        // crowdfunding chat
+        int unreadCount = CrowdfundingManager.getInstance().getUnreadMessageCount();
+        CrowdfundingMessage message = CrowdfundingManager.getInstance().getLastMessageFromRealm();
+        if (message != null) {
+            switch (state) {
+                case unread:
+                    if (unreadCount > 0) newChats.add(CrowdfundingChat.createCrowdfundingChat(unreadCount, message));
+                    break;
+                case archived:
+                    break;
+                default:
+                    // recent
+                    newChats.add(CrowdfundingChat.createCrowdfundingChat(unreadCount, message));
+                    break;
+            }
+        }
+
         Collections.sort(newChats, ChatComparator.CHAT_COMPARATOR);
 
         chatsGroup.setNotEmpty();
@@ -496,7 +508,9 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
         int itemsCount = 0;
         for (AbstractChat chat : newChats) {
             if (itemsCount < MAX_RECENT_ITEMS || state != ChatListState.recent) {
-                chatsGroup.addAbstractContact(RosterManager.getInstance()
+                if (chat instanceof CrowdfundingChat)
+                    chatsGroup.addAbstractContact(new CrowdfundingContact((CrowdfundingChat) chat));
+                else chatsGroup.addAbstractContact(RosterManager.getInstance()
                         .getBestContact(chat.getAccount(), chat.getUser()));
                 chatsGroup.increment(true);
                 itemsCount++;
