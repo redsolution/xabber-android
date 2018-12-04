@@ -13,6 +13,7 @@ import rx.functions.Func1;
 public class CrowdfundingClient {
 
     public static Single<List<CrowdfundingMessage>> getLeaderAndFeed() {
+        if (getAPIKey().length() < 20) return Single.error(new Throwable("API key not provided"));
         return HttpApiManager.getCrowdfundingApi().getLeader(getAPIKey())
             .flatMap(new Func1<Message, Single<? extends CrowdfundingMessage>>() {
                 @Override
