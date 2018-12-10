@@ -104,8 +104,8 @@ public class MessageDatabaseManager {
                 .equalTo(MessageItem.Fields.ACCOUNT, accountJid.toString())
                 .equalTo(MessageItem.Fields.USER, userJid.toString())
                 .isNull(MessageItem.Fields.PARENT_MESSAGE_ID)
-                .isNotNull(MessageItem.Fields.TEXT)
-                .isNotEmpty(MessageItem.Fields.TEXT);
+                .isNotNull(MessageItem.Fields.TEXT);
+                //.isNotEmpty(MessageItem.Fields.TEXT);
     }
 
 

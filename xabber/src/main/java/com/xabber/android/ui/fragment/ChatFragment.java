@@ -814,7 +814,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         clearInputText();
 
         if (forwardIds != null && !forwardIds.isEmpty()) {
-            sendForwardMessage(forwardIds, !text.isEmpty() ? text : " ");
+            sendForwardMessage(forwardIds, text);
         } else if (!text.isEmpty()) {
             sendMessage(text);
         } else {
