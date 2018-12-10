@@ -14,6 +14,7 @@ public class CrowdfundingMessage extends RealmObject {
     @PrimaryKey
     @Required
     private String id;
+    private boolean isLeader;
     private int timestamp;
     private String messageRu;
     private String messageEn;
@@ -94,6 +95,14 @@ public class CrowdfundingMessage extends RealmObject {
 
     public void setAuthorNameEn(String authorNameEn) {
         this.authorNameEn = authorNameEn;
+    }
+
+    public boolean isLeader() {
+        return isLeader;
+    }
+
+    public void setLeader(boolean leader) {
+        isLeader = leader;
     }
 
     public String getNameForCurrentLocale() {
