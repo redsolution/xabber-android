@@ -8,6 +8,8 @@ import com.xabber.android.data.database.RealmManager;
 import com.xabber.android.data.database.realm.CrowdfundingMessage;
 
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
 import io.realm.Realm;
@@ -22,10 +24,12 @@ import rx.subscriptions.CompositeSubscription;
 public class CrowdfundingManager implements OnLoadListener {
 
     private static final int CACHE_LIFETIME = (int) TimeUnit.DAYS.toSeconds(1);
+    private final long DELAY_BEFORE_FEED_LOAD = 15000; // in ms
 
     private static CrowdfundingManager instance;
     private CompositeSubscription compositeSubscription = new CompositeSubscription();
     // TODO: 29.11.18 composite subscription must depends on application lifecycle
+    private Timer timer;
 
     public static CrowdfundingManager getInstance() {
         if (instance == null)
@@ -38,6 +42,23 @@ public class CrowdfundingManager implements OnLoadListener {
         CrowdfundingMessage lastMessage = getLastMessageFromRealm();
         if (lastMessage == null) requestLeader();
         else if (isCacheExpired() && !lastMessage.isLeader()) requestFeed(lastMessage.getTimestamp());
+    }
+
+    public void onChatOpen() {
+        CrowdfundingMessage lastMessage = getLastMessageFromRealm();
+        if (lastMessage != null && lastMessage.isLeader()) {
+            final int timestamp = lastMessage.getTimestamp();
+
+            if (timer != null) timer.cancel();
+            timer = new Timer();
+            timer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    // delay for 15 sec after chat opened before load feed
+                    requestFeed(timestamp);
+                }
+            }, DELAY_BEFORE_FEED_LOAD);
+        }
     }
 
     private void requestLeaderAndFeed() {

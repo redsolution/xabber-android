@@ -96,6 +96,9 @@ public class CrowdfundingChatActivity extends ManagedActivity {
         if (CrowdfundingManager.getInstance().getUnreadMessageCount() > 0) {
             CrowdfundingManager.getInstance().markMessagesAsRead();
         }
+
+        // start timer for load feed
+        CrowdfundingManager.getInstance().onChatOpen();
     }
 
     private void setupToolbar() {
