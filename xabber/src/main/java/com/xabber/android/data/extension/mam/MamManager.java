@@ -20,6 +20,7 @@ import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
+import com.xabber.android.data.message.ForwardManager;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.roster.OnRosterReceivedListener;
 import com.xabber.android.data.roster.RosterContact;
@@ -349,6 +350,10 @@ public class MamManager implements OnRosterReceivedListener {
                 RealmList<ForwardId> forwardIds = chat.parseForwardedMessage(false, message, remoteMessage.getUniqueId());
                 if (!forwardIds.isEmpty())
                     remoteMessage.setForwardedIds(forwardIds);
+
+                // comment
+                String comment = ForwardManager.parseForwardComment(message);
+                if (comment != null) remoteMessage.setText(comment);
             } catch (Exception e) {
                 e.printStackTrace();
             }
