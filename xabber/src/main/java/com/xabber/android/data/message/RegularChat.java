@@ -214,8 +214,7 @@ public class RegularChat extends AbstractChat {
             String originalStanza = packet.toXML().toString();
             String originalFrom = packet.getFrom().toString();
             String forwardComment = ForwardManager.parseForwardComment(packet);
-            if (forwardComment != null && !forwardComment.isEmpty())
-                text = forwardComment;
+            if (forwardComment != null) text = forwardComment;
 
             // System message received.
             if ((text == null || text.trim().equals("")) && forwardIds.isEmpty())
