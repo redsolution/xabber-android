@@ -385,8 +385,7 @@ public class RoomChat extends AbstractChat {
         String originalFrom = message.getFrom().toString();
         boolean fromMUC = message.getType().equals(Type.groupchat);
         String forwardComment = ForwardManager.parseForwardComment(message);
-        if (forwardComment != null && !forwardComment.isEmpty())
-            text = forwardComment;
+        if (forwardComment != null) text = forwardComment;
 
         // create message with file-attachments
         if (attachments.size() > 0)
