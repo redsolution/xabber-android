@@ -74,12 +74,14 @@ public class ForwardPanel extends Fragment {
                             .in(MessageItem.Fields.UNIQUE_ID, forwardedIds.toArray(new String[0])).findAll();
 
             tvForwardedFrom.setText(Html.fromHtml(getNames(forwardedMessages)));
-            if (forwardedMessages.size() > 1) {
+
+            String forwardedText = forwardedMessages.get(0).getText();
+            if (forwardedMessages.size() > 1 || forwardedText.isEmpty()) {
                 Context context = getContext();
                 if (context != null)
                     tvForwardedText.setText(String.format(context.getResources()
                         .getString(R.string.forwarded_messages_count), forwardedMessages.size()));
-            } else tvForwardedText.setText(forwardedMessages.get(0).getText());
+            } else tvForwardedText.setText(forwardedText);
         }
 
         ivCloseForwardPanel.setOnClickListener(new View.OnClickListener() {
