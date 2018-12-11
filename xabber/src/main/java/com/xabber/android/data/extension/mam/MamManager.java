@@ -303,6 +303,16 @@ public class MamManager implements OnRosterReceivedListener {
         while (iterator.hasNext()) {
             MessageItem remoteMessage = iterator.next();
 
+            // set text from comment to text in message for prevent doubling messages from MAM
+            Message originalMessage = null;
+            try {
+                originalMessage = (Message) PacketParserUtils.parseStanza(remoteMessage.getOriginalStanza());
+                String comment = ForwardManager.parseForwardComment(originalMessage);
+                if (comment != null) remoteMessage.setText(comment);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
             // assume that Stanza ID could be not unique
             if (localMessages.where()
                     .equalTo(MessageItem.Fields.STANZA_ID, remoteMessage.getStanzaId())
@@ -345,17 +355,10 @@ public class MamManager implements OnRosterReceivedListener {
             }
 
             // forwarded
-            try {
-                Message message = (Message) PacketParserUtils.parseStanza(remoteMessage.getOriginalStanza());
-                RealmList<ForwardId> forwardIds = chat.parseForwardedMessage(false, message, remoteMessage.getUniqueId());
+            if (originalMessage != null) {
+                RealmList<ForwardId> forwardIds = chat.parseForwardedMessage(false, originalMessage, remoteMessage.getUniqueId());
                 if (!forwardIds.isEmpty())
                     remoteMessage.setForwardedIds(forwardIds);
-
-                // comment
-                String comment = ForwardManager.parseForwardComment(message);
-                if (comment != null) remoteMessage.setText(comment);
-            } catch (Exception e) {
-                e.printStackTrace();
             }
         }
 
