@@ -156,6 +156,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     private ImageView ivClose;
     private ImageView ivReply;
     private ImageView ivForward;
+    private ImageView ivDelete;
+    private ImageView ivCopy;
 
     boolean isInputEmpty = true;
     private boolean skipOnTextChanges = false;
@@ -282,6 +284,16 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                 openChooserForForward((ArrayList<String>) forwardIds);
             }
         });
+        ivDelete = view.findViewById(R.id.ivDelete);
+        ivDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MessageManager.getInstance()
+                        .removeMessage(new ArrayList<>(chatMessageAdapter.getCheckedItemIds()));
+                closeInteractionPanel();
+            }
+        });
+        ivCopy = view.findViewById(R.id.ivCopy);
 
         view.findViewById(R.id.button_send_message).setOnClickListener(
                 new View.OnClickListener() {
