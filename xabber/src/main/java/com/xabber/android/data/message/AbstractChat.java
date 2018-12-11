@@ -627,8 +627,8 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
 
             message = createMessagePacket(body, messageItem.getStanzaId());
 
+            Realm realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
             for (ForwardId id : messageItem.getForwardedIds()) {
-                Realm realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
                 MessageItem forwardedMessage = realm.where(MessageItem.class)
                         .equalTo(MessageItem.Fields.UNIQUE_ID, id.getForwardMessageId()).findFirst();
                 try {
