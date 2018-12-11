@@ -633,7 +633,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
                         .equalTo(MessageItem.Fields.UNIQUE_ID, id.getForwardMessageId()).findFirst();
                 try {
                     Message forwarded = (Message) PacketParserUtils.parseStanza(forwardedMessage.getOriginalStanza());
-                    message.addExtension(new Forwarded(forwarded));
+                    message.addExtension(new Forwarded(new DelayInformation(new Date(forwardedMessage.getTimestamp())), forwarded));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
