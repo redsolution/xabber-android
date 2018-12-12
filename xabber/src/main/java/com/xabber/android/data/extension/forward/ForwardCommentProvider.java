@@ -24,6 +24,8 @@ public class ForwardCommentProvider extends ExtensionElementProvider<ForwardComm
                         break outerloop;
                     }
                     break;
+                case XmlPullParser.END_DOCUMENT:
+                    break outerloop;
             }
             parser.next();
         }

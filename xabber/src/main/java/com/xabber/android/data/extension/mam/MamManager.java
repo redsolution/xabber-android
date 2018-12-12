@@ -357,7 +357,7 @@ public class MamManager implements OnRosterReceivedListener {
             // forwarded
             if (originalMessage != null) {
                 RealmList<ForwardId> forwardIds = chat.parseForwardedMessage(false, originalMessage, remoteMessage.getUniqueId());
-                if (!forwardIds.isEmpty())
+                if (forwardIds != null && !forwardIds.isEmpty())
                     remoteMessage.setForwardedIds(forwardIds);
             }
         }
