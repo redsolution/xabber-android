@@ -16,8 +16,12 @@ import android.widget.TextView;
 
 import com.amulyakhare.textdrawable.util.ColorGenerator;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.xabber.android.R;
 import com.xabber.android.data.database.realm.CrowdfundingMessage;
+import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.utils.StringUtils;
 import com.xabber.android.utils.Utils;
@@ -55,8 +59,31 @@ public class CrowdfundingChatAdapter extends RealmRecyclerViewAdapter<Crowdfundi
         CrowdfundingMessage message = getMessage(i);
         if (message == null) return;
 
-        // text
-        holder.messageText.setText(Html.fromHtml(message.getMessageForCurrentLocale()));
+        // text or image
+        if (FileManager.isImageUrl(message.getMessageForCurrentLocale())) {
+            holder.messageImage.setVisibility(View.VISIBLE);
+            final ImageView image = holder.messageImage;
+            final TextView text = holder.messageText;
+            Glide.with(context)
+                .load(message.getMessageForCurrentLocale())
+                .listener(new RequestListener<String, GlideDrawable>() {
+                    @Override
+                    public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                        image.setVisibility(View.GONE);
+                        text.setVisibility(View.VISIBLE);
+                        return true;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                        return false;
+                    }
+                })
+                .into(holder.messageImage);
+        } else {
+            holder.messageImage.setVisibility(View.GONE);
+            holder.messageText.setText(Html.fromHtml(message.getMessageForCurrentLocale()));
+        }
 
         // nickname
         String nick = message.getNameForCurrentLocale();
@@ -135,6 +162,7 @@ public class CrowdfundingChatAdapter extends RealmRecyclerViewAdapter<Crowdfundi
         ImageView ivEncrypted;
         ImageView avatar;
         ImageView avatarBackground;
+        ImageView messageImage;
         View messageShadow;
         View messageBalloon;
 
@@ -150,7 +178,7 @@ public class CrowdfundingChatAdapter extends RealmRecyclerViewAdapter<Crowdfundi
             avatarBackground = itemView.findViewById(R.id.avatarBackground);
             messageShadow = itemView.findViewById(R.id.message_shadow);
             messageBalloon = itemView.findViewById(R.id.message_balloon);
-
+            messageImage = itemView.findViewById(R.id.message_image);
         }
     }
 
