@@ -12,16 +12,20 @@ import android.widget.Toast;
 
 import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
+import com.xabber.android.data.database.realm.CrowdfundingMessage;
 import com.xabber.android.data.http.CrowdfundingManager;
 import com.xabber.android.ui.adapter.chat.CrowdfundingChatAdapter;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.color.StatusBarPainter;
+
+import io.realm.RealmResults;
 
 public class CrowdfundingChatActivity extends ManagedActivity {
 
     private Toolbar toolbar;
     private RecyclerView recyclerView;
     private View backgroundView;
+    private RealmResults<CrowdfundingMessage> messages = null;
 
     private TextView name;
     private TextView status_text;
@@ -30,6 +34,7 @@ public class CrowdfundingChatActivity extends ManagedActivity {
     private ImageView ivReload;
 
     private StatusBarPainter statusBarPainter;
+    private final int UPDATE_MESSAGE_DELAY = 5; // in sec
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +70,13 @@ public class CrowdfundingChatActivity extends ManagedActivity {
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        CrowdfundingManager.getInstance().startUpdateTimer(0, UPDATE_MESSAGE_DELAY);
+        messages = CrowdfundingManager.getInstance().getLeaderWithDelay(0);
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
 
@@ -83,8 +95,7 @@ public class CrowdfundingChatActivity extends ManagedActivity {
         }
 
         // messages
-        CrowdfundingChatAdapter adapter = new CrowdfundingChatAdapter(this,
-                CrowdfundingManager.getInstance().getAllMessages(), true);
+        CrowdfundingChatAdapter adapter = new CrowdfundingChatAdapter(this, messages, true);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setStackFromEnd(true);
@@ -96,9 +107,6 @@ public class CrowdfundingChatActivity extends ManagedActivity {
         if (CrowdfundingManager.getInstance().getUnreadMessageCount() > 0) {
             CrowdfundingManager.getInstance().markMessagesAsRead();
         }
-
-        // start timer for load feed
-        CrowdfundingManager.getInstance().onChatOpen();
     }
 
     private void setupToolbar() {

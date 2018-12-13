@@ -36,17 +36,6 @@ public class CrowdfundingClient {
             });
     }
 
-//    public static Single<CrowdfundingMessage> getLeader() {
-//        if (getAPIKey().length() < 20) return Single.error(new Throwable("API key not provided"));
-//        return HttpApiManager.getCrowdfundingApi().getLeader(getAPIKey())
-//                .flatMap(new Func1<Message, Single<? extends CrowdfundingMessage>>() {
-//                    @Override
-//                    public Single<? extends CrowdfundingMessage> call(Message message) {
-//                        return CrowdfundingManager.getInstance().saveCrowdfundingMessageToRealm(message);
-//                    }
-//                });
-//    }
-
     public static Single<List<CrowdfundingMessage>> getFeed(int timestamp) {
         if (getAPIKey().length() < 20) return Single.error(new Throwable("API key not provided"));
         return HttpApiManager.getCrowdfundingApi().getFeed(getAPIKey(), timestamp)
@@ -70,12 +59,13 @@ public class CrowdfundingClient {
         private final Author author;
         private int delay;
 
-        public Message(String uuid, boolean is_leader, int timestamp, List<LocalizedMessage> feed, Author author) {
+        public Message(String uuid, boolean is_leader, int timestamp, List<LocalizedMessage> feed, Author author, int delay) {
             this.uuid = uuid;
             this.is_leader = is_leader;
             this.timestamp = timestamp;
             this.feed = feed;
             this.author = author;
+            this.delay = delay;
         }
 
         public String getUuid() {
