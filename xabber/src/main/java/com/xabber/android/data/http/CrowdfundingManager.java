@@ -172,7 +172,8 @@ public class CrowdfundingManager implements OnLoadListener {
 
     public int getUnreadMessageCount() {
         Realm realm = RealmManager.getInstance().getNewRealm();
-        Long count = realm.where(CrowdfundingMessage.class).equalTo("read", false).count();
+        Long count = realm.where(CrowdfundingMessage.class).equalTo("read", false)
+                .equalTo("delay", 0).count();
         return count.intValue();
     }
 
@@ -183,7 +184,8 @@ public class CrowdfundingManager implements OnLoadListener {
 
     public void markMessagesAsRead() {
         Realm realm = RealmManager.getInstance().getNewRealm();
-        RealmResults<CrowdfundingMessage> messages = realm.where(CrowdfundingMessage.class).equalTo("read", false).findAll();
+        RealmResults<CrowdfundingMessage> messages = realm.where(CrowdfundingMessage.class)
+                .equalTo("read", false).equalTo("delay", 0).findAll();
 
         realm.beginTransaction();
         for (CrowdfundingMessage message : messages) {
