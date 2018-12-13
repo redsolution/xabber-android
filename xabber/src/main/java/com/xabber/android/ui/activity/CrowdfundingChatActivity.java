@@ -73,7 +73,7 @@ public class CrowdfundingChatActivity extends ManagedActivity {
     protected void onStart() {
         super.onStart();
         CrowdfundingManager.getInstance().startUpdateTimer(0, UPDATE_MESSAGE_DELAY);
-        messages = CrowdfundingManager.getInstance().getLeaderWithDelay(0);
+        messages = CrowdfundingManager.getInstance().getMessagesWithDelay(0);
     }
 
     @Override

@@ -24,6 +24,7 @@ import rx.subscriptions.CompositeSubscription;
 public class CrowdfundingManager implements OnLoadListener {
 
     private static final int CACHE_LIFETIME = (int) TimeUnit.DAYS.toSeconds(1);
+    public static final int NO_DEFAULT_DELAY = -1;
 
     private static CrowdfundingManager instance;
     private CompositeSubscription compositeSubscription = new CompositeSubscription();
@@ -93,20 +94,11 @@ public class CrowdfundingManager implements OnLoadListener {
             }));
     }
 
-    public Single<CrowdfundingMessage> saveCrowdfundingMessageToRealm(CrowdfundingClient.Message message) {
-        Realm realm = RealmManager.getInstance().getNewRealm();
-        realm.beginTransaction();
-        CrowdfundingMessage result = realm.copyToRealmOrUpdate(messageToRealm(message));
-        realm.commitTransaction();
-
-        return Single.just(result);
-    }
-
-    public Single<List<CrowdfundingMessage>> saveCrowdfundingMessageToRealm(List<CrowdfundingClient.Message> messages) {
+    public Single<List<CrowdfundingMessage>> saveCrowdfundingMessageToRealm(List<CrowdfundingClient.Message> messages, int delay) {
 
         RealmList<CrowdfundingMessage> realmMessages = new RealmList<>();
         for (CrowdfundingClient.Message message : messages) {
-            realmMessages.add(messageToRealm(message));
+            realmMessages.add(messageToRealm(message, delay));
         }
 
         Realm realm = RealmManager.getInstance().getNewRealm();
@@ -117,10 +109,10 @@ public class CrowdfundingManager implements OnLoadListener {
         return Single.just(result);
     }
 
-    private CrowdfundingMessage messageToRealm(CrowdfundingClient.Message message) {
+    private CrowdfundingMessage messageToRealm(CrowdfundingClient.Message message, int delay) {
         CrowdfundingMessage realmMessage = new CrowdfundingMessage(message.getUuid());
         realmMessage.setRead(false);
-        realmMessage.setDelay(message.getDelay());
+        realmMessage.setDelay((delay != NO_DEFAULT_DELAY && !message.isLeader()) ? delay : message.getDelay());
         realmMessage.setLeader(message.isLeader());
         realmMessage.setTimestamp(message.getTimestamp());
         realmMessage.setAuthorAvatar(message.getAuthor().getAvatar());
@@ -139,30 +131,30 @@ public class CrowdfundingManager implements OnLoadListener {
         return realmMessage;
     }
 
-    public RealmResults<CrowdfundingMessage> getAllMessages() {
+    public int getMaxLeaderDelay() {
         Realm realm = RealmManager.getInstance().getNewRealm();
-        return realm.where(CrowdfundingMessage.class).findAllSorted("timestamp");
+        return realm.where(CrowdfundingMessage.class)
+                .equalTo("isLeader", true)
+                .max("delay").intValue();
     }
 
     public boolean haveDelayedMessages() {
         Realm realm = RealmManager.getInstance().getNewRealm();
         CrowdfundingMessage message = realm.where(CrowdfundingMessage.class)
-                .equalTo("isLeader", true)
                 .notEqualTo("delay", 0).findFirst();
         return message != null;
     }
 
-    public RealmResults<CrowdfundingMessage> getLeaderWithDelay(int delay) {
+    public RealmResults<CrowdfundingMessage> getMessagesWithDelay(int delay) {
         Realm realm = RealmManager.getInstance().getNewRealm();
         return realm.where(CrowdfundingMessage.class)
-                .equalTo("isLeader", true)
                 .lessThanOrEqualTo("delay", delay)
                 .findAllSorted("timestamp");
     }
 
     public void removeDelay(int delay) {
         Realm realm = RealmManager.getInstance().getNewRealm();
-        RealmResults<CrowdfundingMessage> messages = getLeaderWithDelay(delay);
+        RealmResults<CrowdfundingMessage> messages = getMessagesWithDelay(delay);
         realm.beginTransaction();
         for (CrowdfundingMessage message : messages) {
             message.setDelay(0);

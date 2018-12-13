@@ -18,7 +18,8 @@ public class CrowdfundingClient {
             .flatMap(new Func1<List<Message>, Single<? extends List<CrowdfundingMessage>>>() {
                 @Override
                 public Single<? extends List<CrowdfundingMessage>> call(List<Message> messages) {
-                    return CrowdfundingManager.getInstance().saveCrowdfundingMessageToRealm(messages);
+                    return CrowdfundingManager.getInstance().saveCrowdfundingMessageToRealm(messages,
+                            CrowdfundingManager.NO_DEFAULT_DELAY);
                 }
             })
             .flatMap(new Func1<List<CrowdfundingMessage>, Single<? extends List<Message>>>() {
@@ -31,7 +32,8 @@ public class CrowdfundingClient {
             .flatMap(new Func1<List<Message>, Single<? extends List<CrowdfundingMessage>>>() {
                 @Override
                 public Single<? extends List<CrowdfundingMessage>> call(List<Message> messages) {
-                    return CrowdfundingManager.getInstance().saveCrowdfundingMessageToRealm(messages);
+                    int delay = CrowdfundingManager.getInstance().getMaxLeaderDelay();
+                    return CrowdfundingManager.getInstance().saveCrowdfundingMessageToRealm(messages, delay);
                 }
             });
     }
@@ -42,7 +44,8 @@ public class CrowdfundingClient {
             .flatMap(new Func1<List<Message>, Single<? extends List<CrowdfundingMessage>>>() {
                 @Override
                 public Single<? extends List<CrowdfundingMessage>> call(List<Message> messages) {
-                    return CrowdfundingManager.getInstance().saveCrowdfundingMessageToRealm(messages);
+                    int delay = CrowdfundingManager.getInstance().getMaxLeaderDelay();
+                    return CrowdfundingManager.getInstance().saveCrowdfundingMessageToRealm(messages, delay);
                 }
             });
     }
