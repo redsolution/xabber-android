@@ -486,7 +486,7 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
 
         // crowdfunding chat
         int unreadCount = CrowdfundingManager.getInstance().getUnreadMessageCount();
-        CrowdfundingMessage message = CrowdfundingManager.getInstance().getLastMessageFromRealm();
+        CrowdfundingMessage message = CrowdfundingManager.getInstance().getLastNotDelayedMessageFromRealm();
         if (message != null) {
             switch (state) {
                 case unread:
