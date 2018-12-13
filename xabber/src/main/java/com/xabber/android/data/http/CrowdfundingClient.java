@@ -97,6 +97,10 @@ public class CrowdfundingClient {
         public boolean isLeader() {
             return is_leader;
         }
+
+        public int getDelay() {
+            return delay;
+        }
     }
 
     public static class LocalizedMessage {

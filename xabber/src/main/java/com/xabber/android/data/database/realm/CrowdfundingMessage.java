@@ -19,6 +19,7 @@ public class CrowdfundingMessage extends RealmObject {
     private String messageRu;
     private String messageEn;
     private boolean read;
+    private int delay;
 
     private String authorAvatar;
     private String authorJid;
@@ -103,6 +104,14 @@ public class CrowdfundingMessage extends RealmObject {
 
     public void setLeader(boolean leader) {
         isLeader = leader;
+    }
+
+    public int getDelay() {
+        return delay;
+    }
+
+    public void setDelay(int delay) {
+        this.delay = delay;
     }
 
     public String getNameForCurrentLocale() {

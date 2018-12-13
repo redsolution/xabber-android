@@ -140,6 +140,7 @@ public class CrowdfundingManager implements OnLoadListener {
     private CrowdfundingMessage messageToRealm(CrowdfundingClient.Message message) {
         CrowdfundingMessage realmMessage = new CrowdfundingMessage(message.getUuid());
         realmMessage.setRead(false);
+        realmMessage.setDelay(message.getDelay());
         realmMessage.setLeader(message.isLeader());
         realmMessage.setTimestamp(message.getTimestamp());
         realmMessage.setAuthorAvatar(message.getAuthor().getAvatar());
