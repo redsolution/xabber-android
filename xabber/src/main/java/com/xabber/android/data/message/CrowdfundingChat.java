@@ -43,7 +43,7 @@ public class CrowdfundingChat extends AbstractChat {
     }
 
     public Date getLastTime() {
-        return new Date((long) lastMessage.getTimestamp() * 1000);
+        return new Date((long) lastMessage.getReceivedTimestamp() * 1000);
     }
 
     public int getUnreadCount() {

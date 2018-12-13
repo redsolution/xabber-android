@@ -43,7 +43,7 @@ public class CrowdfundingChatVO extends AbstractFlexibleItem<CrowdfundingChatVO.
         int unreadCount = contact.getUnreadCount();
         int accountColorIndicator = ColorManager.getInstance().getAccountPainter().getDefaultMainColor();
         int accountColorIndicatorBack = ColorManager.getInstance().getAccountPainter().getDefaultIndicatorBackColor();
-        return new CrowdfundingChatVO(message.getMessageForCurrentLocale(), new Date((long)message.getTimestamp()*1000), unreadCount,
+        return new CrowdfundingChatVO(message.getMessageForCurrentLocale(), new Date((long)message.getReceivedTimestamp()*1000), unreadCount,
                 accountColorIndicator, accountColorIndicatorBack);
     }
 

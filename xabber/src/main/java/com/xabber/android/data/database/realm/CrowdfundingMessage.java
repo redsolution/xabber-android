@@ -16,6 +16,7 @@ public class CrowdfundingMessage extends RealmObject {
     private String id;
     private boolean isLeader;
     private int timestamp;
+    private int receivedTimestamp;
     private String messageRu;
     private String messageEn;
     private boolean read;
@@ -112,6 +113,14 @@ public class CrowdfundingMessage extends RealmObject {
 
     public void setDelay(int delay) {
         this.delay = delay;
+    }
+
+    public int getReceivedTimestamp() {
+        return receivedTimestamp;
+    }
+
+    public void setReceivedTimestamp(int receivedTimestamp) {
+        this.receivedTimestamp = receivedTimestamp;
     }
 
     public String getNameForCurrentLocale() {

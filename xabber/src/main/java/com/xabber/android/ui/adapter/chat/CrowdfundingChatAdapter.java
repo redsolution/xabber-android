@@ -95,7 +95,7 @@ public class CrowdfundingChatAdapter extends RealmRecyclerViewAdapter<Crowdfundi
         } else holder.messageHeader.setVisibility(View.GONE);
 
         // time
-        String time = StringUtils.getTimeText(new Date((long)message.getTimestamp()*1000));
+        String time = StringUtils.getTimeText(new Date((long)message.getReceivedTimestamp()*1000));
         holder.messageTime.setText(time);
 
         // status

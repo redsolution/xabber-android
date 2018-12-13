@@ -52,6 +52,7 @@ public class CrowdfundingManager implements OnLoadListener {
                 @Override
                 public void call(List<CrowdfundingMessage> crowdfundingMessages) {
                     Log.d("crowd", "ok");
+                    SettingsManager.setLastCrowdfundingLoadTimestamp(getCurrentTime());
                 }
             }, new Action1<Throwable>() {
                 @Override
@@ -115,6 +116,7 @@ public class CrowdfundingManager implements OnLoadListener {
         realmMessage.setDelay((delay != NO_DEFAULT_DELAY && !message.isLeader()) ? delay : message.getDelay());
         realmMessage.setLeader(message.isLeader());
         realmMessage.setTimestamp(message.getTimestamp());
+        realmMessage.setReceivedTimestamp(getCurrentTime());
         realmMessage.setAuthorAvatar(message.getAuthor().getAvatar());
         realmMessage.setAuthorJid(message.getAuthor().getJabberId());
 
