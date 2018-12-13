@@ -59,18 +59,21 @@ public class CrowdfundingChatAdapter extends RealmRecyclerViewAdapter<Crowdfundi
         CrowdfundingMessage message = getMessage(i);
         if (message == null) return;
 
+        String text = message.getMessageForCurrentLocale();
+        if (text == null) text = "";
+
         // text or image
-        if (FileManager.isImageUrl(message.getMessageForCurrentLocale())) {
+        if (FileManager.isImageUrl(text)) {
             holder.messageImage.setVisibility(View.VISIBLE);
             final ImageView image = holder.messageImage;
-            final TextView text = holder.messageText;
+            final TextView textMessage = holder.messageText;
             Glide.with(context)
-                .load(message.getMessageForCurrentLocale())
+                .load(text)
                 .listener(new RequestListener<String, GlideDrawable>() {
                     @Override
                     public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
                         image.setVisibility(View.GONE);
-                        text.setVisibility(View.VISIBLE);
+                        textMessage.setVisibility(View.VISIBLE);
                         return true;
                     }
 
@@ -82,7 +85,7 @@ public class CrowdfundingChatAdapter extends RealmRecyclerViewAdapter<Crowdfundi
                 .into(holder.messageImage);
         } else {
             holder.messageImage.setVisibility(View.GONE);
-            holder.messageText.setText(Html.fromHtml(message.getMessageForCurrentLocale()));
+            holder.messageText.setText(Html.fromHtml(text));
         }
 
         // nickname

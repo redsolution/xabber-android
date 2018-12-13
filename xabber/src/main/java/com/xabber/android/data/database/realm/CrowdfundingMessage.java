@@ -125,14 +125,14 @@ public class CrowdfundingMessage extends RealmObject {
 
     public String getNameForCurrentLocale() {
         Locale currentLocale = Application.getInstance().getResources().getConfiguration().locale;
-        if (currentLocale.getLanguage().equals("ru"))
+        if (currentLocale.getLanguage().equals("ru") && getAuthorNameRu() != null)
             return getAuthorNameRu();
         else return getAuthorNameEn();
     }
 
     public String getMessageForCurrentLocale() {
         Locale currentLocale = Application.getInstance().getResources().getConfiguration().locale;
-        if (currentLocale.getLanguage().equals("ru"))
+        if (currentLocale.getLanguage().equals("ru") && getMessageRu() != null)
             return getMessageRu();
         else return getMessageEn();
     }

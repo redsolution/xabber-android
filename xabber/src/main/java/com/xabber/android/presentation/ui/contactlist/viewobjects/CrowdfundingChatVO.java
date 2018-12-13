@@ -79,7 +79,7 @@ public class CrowdfundingChatVO extends AbstractFlexibleItem<CrowdfundingChatVO.
         } else holder.tvUnreadCount.setVisibility(View.INVISIBLE);
 
         /** set up MESSAGE TEXT */
-        if (messageText.isEmpty())
+        if (messageText != null && messageText.isEmpty())
             holder.tvMessageText.setText(R.string.xabber_chat_description);
         else holder.tvMessageText.setText(messageText);
 
