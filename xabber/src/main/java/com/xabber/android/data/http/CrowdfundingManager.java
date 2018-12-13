@@ -40,8 +40,8 @@ public class CrowdfundingManager implements OnLoadListener {
     @Override
     public void onLoad() {
         CrowdfundingMessage lastMessage = getLastMessageFromRealm();
-        if (lastMessage == null) requestLeader();
-        else if (isCacheExpired() && !lastMessage.isLeader()) requestFeed(lastMessage.getTimestamp());
+        if (lastMessage == null) requestLeaderAndFeed();
+        else if (isCacheExpired()) requestFeed(lastMessage.getTimestamp());
     }
 
     public void onChatOpen() {
@@ -78,22 +78,22 @@ public class CrowdfundingManager implements OnLoadListener {
             }));
     }
 
-    private void requestLeader() {
-        compositeSubscription.add(CrowdfundingClient.getLeader()
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(new Action1<CrowdfundingMessage>() {
-                @Override
-                public void call(CrowdfundingMessage message) {
-                    Log.d("crowd", "ok");
-                }
-            }, new Action1<Throwable>() {
-                @Override
-                public void call(Throwable throwable) {
-                    Log.d("crowd", throwable.toString());
-                }
-            }));
-    }
+//    private void requestLeader() {
+//        compositeSubscription.add(CrowdfundingClient.getLeader()
+//            .subscribeOn(Schedulers.io())
+//            .observeOn(AndroidSchedulers.mainThread())
+//            .subscribe(new Action1<CrowdfundingMessage>() {
+//                @Override
+//                public void call(CrowdfundingMessage message) {
+//                    Log.d("crowd", "ok");
+//                }
+//            }, new Action1<Throwable>() {
+//                @Override
+//                public void call(Throwable throwable) {
+//                    Log.d("crowd", throwable.toString());
+//                }
+//            }));
+//    }
 
     private void requestFeed(int timestamp) {
         compositeSubscription.add(CrowdfundingClient.getFeed(timestamp)
@@ -178,7 +178,7 @@ public class CrowdfundingManager implements OnLoadListener {
 
     public void reloadMessages() {
         removeAllMessages();
-        requestLeader();
+        requestLeaderAndFeed();
     }
 
     public void markMessagesAsRead() {

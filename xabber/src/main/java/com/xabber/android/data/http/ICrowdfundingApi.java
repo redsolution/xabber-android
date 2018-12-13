@@ -10,7 +10,7 @@ import rx.Single;
 public interface ICrowdfundingApi {
 
     @GET("leader/")
-    Single<CrowdfundingClient.Message> getLeader(@Header("Authorization") String apiKey);
+    Single<List<CrowdfundingClient.Message>> getLeader(@Header("Authorization") String apiKey);
 
     @GET("feed/")
     Single<List<CrowdfundingClient.Message>> getFeed(@Header("Authorization") String apiKey, @Query("timestamp") int timestamp);

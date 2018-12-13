@@ -15,16 +15,17 @@ public class CrowdfundingClient {
     public static Single<List<CrowdfundingMessage>> getLeaderAndFeed() {
         if (getAPIKey().length() < 20) return Single.error(new Throwable("API key not provided"));
         return HttpApiManager.getCrowdfundingApi().getLeader(getAPIKey())
-            .flatMap(new Func1<Message, Single<? extends CrowdfundingMessage>>() {
+            .flatMap(new Func1<List<Message>, Single<? extends List<CrowdfundingMessage>>>() {
                 @Override
-                public Single<? extends CrowdfundingMessage> call(Message message) {
-                    return CrowdfundingManager.getInstance().saveCrowdfundingMessageToRealm(message);
+                public Single<? extends List<CrowdfundingMessage>> call(List<Message> messages) {
+                    return CrowdfundingManager.getInstance().saveCrowdfundingMessageToRealm(messages);
                 }
             })
-            .flatMap(new Func1<CrowdfundingMessage, Single<? extends List<Message>>>() {
+            .flatMap(new Func1<List<CrowdfundingMessage>, Single<? extends List<Message>>>() {
                 @Override
-                public Single<? extends List<Message>> call(CrowdfundingMessage crowdfundingMessage) {
-                    return HttpApiManager.getCrowdfundingApi().getFeed(getAPIKey(), crowdfundingMessage.getTimestamp());
+                public Single<? extends List<Message>> call(List<CrowdfundingMessage> messages) {
+                    int timestamp = messages.get(messages.size() - 1).getTimestamp();
+                    return HttpApiManager.getCrowdfundingApi().getFeed(getAPIKey(), timestamp);
                 }
             })
             .flatMap(new Func1<List<Message>, Single<? extends List<CrowdfundingMessage>>>() {
@@ -35,16 +36,16 @@ public class CrowdfundingClient {
             });
     }
 
-    public static Single<CrowdfundingMessage> getLeader() {
-        if (getAPIKey().length() < 20) return Single.error(new Throwable("API key not provided"));
-        return HttpApiManager.getCrowdfundingApi().getLeader(getAPIKey())
-                .flatMap(new Func1<Message, Single<? extends CrowdfundingMessage>>() {
-                    @Override
-                    public Single<? extends CrowdfundingMessage> call(Message message) {
-                        return CrowdfundingManager.getInstance().saveCrowdfundingMessageToRealm(message);
-                    }
-                });
-    }
+//    public static Single<CrowdfundingMessage> getLeader() {
+//        if (getAPIKey().length() < 20) return Single.error(new Throwable("API key not provided"));
+//        return HttpApiManager.getCrowdfundingApi().getLeader(getAPIKey())
+//                .flatMap(new Func1<Message, Single<? extends CrowdfundingMessage>>() {
+//                    @Override
+//                    public Single<? extends CrowdfundingMessage> call(Message message) {
+//                        return CrowdfundingManager.getInstance().saveCrowdfundingMessageToRealm(message);
+//                    }
+//                });
+//    }
 
     public static Single<List<CrowdfundingMessage>> getFeed(int timestamp) {
         if (getAPIKey().length() < 20) return Single.error(new Throwable("API key not provided"));
@@ -67,6 +68,7 @@ public class CrowdfundingClient {
         private final int timestamp;
         private final List<LocalizedMessage> feed;
         private final Author author;
+        private int delay;
 
         public Message(String uuid, boolean is_leader, int timestamp, List<LocalizedMessage> feed, Author author) {
             this.uuid = uuid;
