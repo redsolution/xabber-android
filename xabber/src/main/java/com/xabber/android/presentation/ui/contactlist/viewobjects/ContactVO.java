@@ -20,6 +20,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.xabber.android.R;
+import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
@@ -75,6 +76,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
     private final String messageOwner;
     private final String lastActivity;
     protected boolean archived;
+    protected int forwardedCount;
 
     protected final ContactClickListener listener;
 
@@ -90,7 +92,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
                         int mucIndicatorLevel, UserJid userJid, AccountJid accountJid, int unreadCount,
                         boolean mute, NotificationState.NotificationMode notificationMode, String messageText,
                         boolean isOutgoing, Date time, int messageStatus, String messageOwner,
-                        boolean archived, String lastActivity, ContactClickListener listener) {
+                        boolean archived, String lastActivity, ContactClickListener listener, int forwardedCount) {
         this.id = UUID.randomUUID().toString();
         this.accountColorIndicator = accountColorIndicator;
         this.accountColorIndicatorBack = accountColorIndicatorBack;
@@ -114,6 +116,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
         this.archived = archived;
         this.lastActivity = lastActivity;
         this.listener = listener;
+        this.forwardedCount = forwardedCount;
     }
 
     public static ContactVO convert(AbstractContact contact, ContactClickListener listener) {
@@ -127,6 +130,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
         Date time = null;
         int messageStatus = 0;
         int unreadCount = 0;
+        int forwardedCount = 0;
         String messageOwner = null;
 
         AccountItem accountItem = AccountManager.getInstance().getAccount(contact.getAccount());
@@ -201,6 +205,9 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
                     messageStatus = 5;
                 }
             }
+
+            // forwarded
+            if (lastMessage.haveForwardedMessages()) forwardedCount = lastMessage.getForwardedIds().size();
         }
 
         if (!isOutgoing) unreadCount = chat.getUnreadMessageCount();
@@ -217,7 +224,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
                 showOfflineShadow, name, statusText, statusId,
                 statusLevel, avatar, mucIndicatorLevel, contact.getUser(), contact.getAccount(),
                 unreadCount, !chat.notifyAboutMessage(), mode, messageText, isOutgoing, time,
-                messageStatus, messageOwner, chat.isArchived(), lastActivity, listener);
+                messageStatus, messageOwner, chat.isArchived(), lastActivity, listener, forwardedCount);
     }
 
     public static ArrayList<IFlexible> convert(Collection<AbstractContact> contacts, ContactClickListener listener) {

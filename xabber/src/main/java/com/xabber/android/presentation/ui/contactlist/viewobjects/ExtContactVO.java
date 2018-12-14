@@ -31,12 +31,12 @@ public class ExtContactVO extends ContactVO {
                         int mucIndicatorLevel, UserJid userJid, AccountJid accountJid, int unreadCount,
                         boolean mute, NotificationState.NotificationMode notificationMode, String messageText,
                         boolean isOutgoing, Date time, int messageStatus, String messageOwner,
-                        boolean archived, String lastActivity, ContactClickListener listener) {
+                        boolean archived, String lastActivity, ContactClickListener listener, int forwardedCount) {
 
         super(accountColorIndicator, accountColorIndicatorBack, showOfflineShadow, name, status,
                 statusId, statusLevel, avatar,
                 mucIndicatorLevel, userJid, accountJid, unreadCount, mute, notificationMode, messageText,
-                isOutgoing, time, messageStatus, messageOwner, archived, lastActivity, listener);
+                isOutgoing, time, messageStatus, messageOwner, archived, lastActivity, listener, forwardedCount);
     }
 
     public static ExtContactVO convert(AbstractContact contact, ContactClickListener listener) {
@@ -50,7 +50,7 @@ public class ExtContactVO extends ContactVO {
                 contactVO.isMute(), contactVO.getNotificationMode(), contactVO.getMessageText(),
                 contactVO.isOutgoing(), contactVO.getTime(), contactVO.getMessageStatus(),
                 contactVO.getMessageOwner(), contactVO.isArchived(), contactVO.getLastActivity(),
-                contactVO.listener);
+                contactVO.listener, contactVO.forwardedCount);
     }
 
     @Override
@@ -85,7 +85,10 @@ public class ExtContactVO extends ContactVO {
         /** set up MESSAGE TEXT */
         String text = getMessageText();
         if (text.isEmpty()) {
-            viewHolder.tvMessageText.setText(R.string.no_messages);
+            if (forwardedCount > 0)
+                viewHolder.tvMessageText.setText(String.format(context.getResources()
+                        .getString(R.string.forwarded_messages_count), forwardedCount));
+            else viewHolder.tvMessageText.setText(R.string.no_messages);
             viewHolder.tvMessageText.
                     setTypeface(viewHolder.tvMessageText.getTypeface(), Typeface.ITALIC);
         } else {

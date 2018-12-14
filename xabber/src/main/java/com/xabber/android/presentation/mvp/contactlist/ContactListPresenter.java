@@ -461,7 +461,7 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
         for (AbstractChat abstractChat : chats) {
             MessageItem lastMessage = abstractChat.getLastMessage();
 
-            if (lastMessage != null && !TextUtils.isEmpty(lastMessage.getText())) {
+            if (lastMessage != null) {
                 AccountItem accountItem = AccountManager.getInstance().getAccount(abstractChat.getAccount());
                 if (accountItem != null && accountItem.isEnabled()) {
                     int unread = abstractChat.getUnreadMessageCount();
