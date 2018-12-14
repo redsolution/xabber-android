@@ -294,12 +294,12 @@ public class RoomChat extends AbstractChat {
                 if (attachments.size() > 0)
                     createAndSaveFileMessage(true, uid, resource, text, null, delay, true, notify,
                             false, false, stanzaId, attachments,
-                            originalStanza, null, originalFrom, true);
+                            originalStanza, null, originalFrom, true, false);
 
                     // create message without attachments
                 else createAndSaveNewMessage(true, uid, resource, text, null, delay, true, notify,
                         false, false, stanzaId,
-                        originalStanza, null, originalFrom, forwardIds, true);
+                        originalStanza, null, originalFrom, forwardIds, true, false);
 
                 EventBus.getDefault().post(new NewIncomingMessageEvent(account, user));
             }
@@ -391,12 +391,12 @@ public class RoomChat extends AbstractChat {
         if (attachments.size() > 0)
             createAndSaveFileMessage(ui, uid, resource, text, null, null,
                     true, false, false, false, stanzaId, attachments,
-                    originalStanza, parentMessageId, originalFrom, fromMUC);
+                    originalStanza, parentMessageId, originalFrom, fromMUC, true);
 
             // create message without attachments
         else createAndSaveNewMessage(ui, uid, resource, text, null, null,
                 true, false, false, false, stanzaId,
-                originalStanza, parentMessageId, originalFrom, forwardIds, fromMUC);
+                originalStanza, parentMessageId, originalFrom, forwardIds, fromMUC, true);
 
         return uid;
     }
@@ -466,7 +466,7 @@ public class RoomChat extends AbstractChat {
                                     R.string.action_join_complete_to, user),
                             ChatAction.complete, null, true, true,
                             false, false, null,
-                            null, null, null, null, true);
+                            null, null, null, null, true, false);
                 }
                 active = true;
                 setRequested(false);

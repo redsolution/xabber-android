@@ -226,14 +226,14 @@ public class RegularChat extends AbstractChat {
                         true, true, encrypted,
                         isOfflineMessage(account.getFullJid().getDomain(), packet),
                         packet.getStanzaId(), attachments, originalStanza, null,
-                        originalFrom, false);
+                        originalFrom, false, false);
 
                 // create message without attachments
             else createAndSaveNewMessage(true, uid, resource, text, null, getDelayStamp(message),
                     true, true, encrypted,
                     isOfflineMessage(account.getFullJid().getDomain(), packet),
                     packet.getStanzaId(), originalStanza, null,
-                    originalFrom, forwardIds,false);
+                    originalFrom, forwardIds,false, false);
 
             EventBus.getDefault().post(new NewIncomingMessageEvent(account, user));
         }
@@ -271,12 +271,12 @@ public class RegularChat extends AbstractChat {
         if (attachments.size() > 0)
             createAndSaveFileMessage(ui, uid, resource, text, null, null, true,
                     false, encrypted, false, message.getStanzaId(), attachments,
-                    originalStanza, parentMessageId, originalFrom, fromMuc);
+                    originalStanza, parentMessageId, originalFrom, fromMuc, true);
 
             // create message without attachments
         else createAndSaveNewMessage(ui, uid, resource, text, null, null, true,
                 false, encrypted, false, message.getStanzaId(), originalStanza,
-                parentMessageId, originalFrom, forwardIds, fromMuc);
+                parentMessageId, originalFrom, forwardIds, fromMuc, true);
 
         return uid;
     }
