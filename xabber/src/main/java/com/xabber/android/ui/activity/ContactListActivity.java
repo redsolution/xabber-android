@@ -661,7 +661,7 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
 
     @Override
     public void onCrowdfundingChatClick() {
-        startActivity(new Intent(this, CrowdfundingChatActivity.class));
+        //startActivity(new Intent(this, CrowdfundingChatActivity.class));
     }
 
     @Override

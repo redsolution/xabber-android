@@ -36,6 +36,8 @@ import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.xabber.android.R;
@@ -58,6 +60,7 @@ import com.xabber.android.data.extension.muc.RoomState;
 import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
+import com.xabber.android.data.message.CrowdfundingChat;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.NewMessageEvent;
 import com.xabber.android.data.message.NotificationState;
@@ -616,15 +619,31 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     }
 
     private void updateToolbar() {
-        NewContactTitleInflater.updateTitle(contactTitleView, this,
-                RosterManager.getInstance().getBestContact(account, user), getNotifMode());
-        toolbar.setBackgroundColor(ColorManager.getInstance().getAccountPainter().getAccountMainColor(account));
-        if (selectedPagePosition == 1)
-            toolbar.setOverflowIcon(getResources().getDrawable(R.drawable.ic_overflow_menu_white_24dp));
-        else if (selectedPagePosition == 2)
-            toolbar.setOverflowIcon(getResources().getDrawable(R.drawable.ic_settings_white_24dp));
+        if (CrowdfundingChat.USER.equals(user.getBareJid().toString())) setCrowdfundingToolbar();
+        else {
+            NewContactTitleInflater.updateTitle(contactTitleView, this,
+                    RosterManager.getInstance().getBestContact(account, user), getNotifMode());
+            toolbar.setBackgroundColor(ColorManager.getInstance().getAccountPainter().getAccountMainColor(account));
+            if (selectedPagePosition == 1)
+                toolbar.setOverflowIcon(getResources().getDrawable(R.drawable.ic_overflow_menu_white_24dp));
+            else if (selectedPagePosition == 2)
+                toolbar.setOverflowIcon(getResources().getDrawable(R.drawable.ic_settings_white_24dp));
 
-        setUpOptionsMenu(toolbar.getMenu());
+            setUpOptionsMenu(toolbar.getMenu());
+        }
+    }
+
+    private void setCrowdfundingToolbar() {
+        toolbar.setBackgroundColor(ColorManager.getInstance().getAccountPainter().getDefaultMainColor());
+        final TextView nameView = (TextView) contactTitleView.findViewById(R.id.name);
+        final ImageView avatarView = (ImageView) contactTitleView.findViewById(R.id.ivAvatar);
+        final TextView statusTextView = (TextView) contactTitleView.findViewById(R.id.status_text);
+        final ImageView statusModeView = (ImageView) contactTitleView.findViewById(R.id.ivStatus);
+
+        nameView.setText(R.string.xabber_chat_title);
+        statusTextView.setText(R.string.xabber_chat_description);
+        avatarView.setImageDrawable(getResources().getDrawable(R.drawable.xabber_logo_80dp));
+        statusModeView.setVisibility(View.GONE);
     }
 
     private void updateStatusBar() {

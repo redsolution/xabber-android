@@ -16,6 +16,9 @@ import java.util.Date;
 
 public class CrowdfundingChat extends AbstractChat {
 
+    public final static String ACCOUNT = "user@xabber.com/something";
+    public final static String USER = "crowdfunding@xabber.com";
+
     private CrowdfundingMessage lastMessage;
     private int unreadCount;
 
@@ -28,18 +31,13 @@ public class CrowdfundingChat extends AbstractChat {
     }
 
     public static CrowdfundingChat createCrowdfundingChat(int unreadCount, CrowdfundingMessage message) {
-        try {
-            AccountJid accountJid = AccountJid.from("user@xabber.com/something");
-            UserJid userJid = UserJid.from("crowdfunding@xabber.com");
+        AccountJid accountJid = getDefaultAccount();
+        UserJid userJid = getDefaultUser();
+        if (accountJid != null && userJid != null) {
             CrowdfundingChat chat = new CrowdfundingChat(accountJid, userJid, false,
                     message, unreadCount);
             return chat;
-        } catch (XmppStringprepException e) {
-            e.printStackTrace();
-        } catch (UserJid.UserJidCreateException e) {
-            e.printStackTrace();
-        }
-        return null;
+        } else return null;
     }
 
     public Date getLastTime() {
@@ -76,5 +74,23 @@ public class CrowdfundingChat extends AbstractChat {
         return null;
     }
 
+    @Nullable
+    public static AccountJid getDefaultAccount() {
+        try {
+            return AccountJid.from(ACCOUNT);
+        } catch (XmppStringprepException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
+    @Nullable
+    public static UserJid getDefaultUser() {
+        try {
+            return UserJid.from(USER);
+        } catch (UserJid.UserJidCreateException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 }

@@ -1,6 +1,5 @@
 package com.xabber.android.presentation.mvp.contactlist;
 
-import android.text.TextUtils;
 import android.view.ContextMenu;
 import android.view.View;
 
@@ -44,7 +43,6 @@ import com.xabber.android.presentation.ui.contactlist.viewobjects.CrowdfundingCh
 import com.xabber.android.presentation.ui.contactlist.viewobjects.ExtContactVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.GroupVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.ToolbarVO;
-import com.xabber.android.ui.activity.ChatActivity;
 import com.xabber.android.ui.adapter.ChatComparator;
 import com.xabber.android.ui.adapter.contactlist.AccountConfiguration;
 import com.xabber.android.ui.adapter.contactlist.ContactListGroupUtils;
@@ -53,6 +51,7 @@ import com.xabber.android.ui.adapter.contactlist.GroupConfiguration;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.jxmpp.stringprep.XmppStringprepException;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -126,7 +125,12 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
             ButtonVO button = (ButtonVO) item;
             if (view != null) view.onButtonItemClick(button);
         } else if (item instanceof CrowdfundingChatVO) {
-            if (view != null) view.onCrowdfundingChatClick();
+            if (view != null) {
+                AccountJid accountJid = CrowdfundingChat.getDefaultAccount();
+                UserJid userJid = CrowdfundingChat.getDefaultUser();
+                if (accountJid != null && userJid != null)
+                    view.onContactClick(RosterManager.getInstance().getAbstractContact(accountJid, userJid));
+            }
         }
     }
 
