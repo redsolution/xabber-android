@@ -114,7 +114,6 @@ public class ContactListFragment extends Fragment implements ContactListView,
     private Animation animation;
 
     public interface ContactListFragmentListener {
-        void onCrowdfundingChatClick();
         void onContactClick(AbstractContact contact);
         void onContactListChange(CommonState commonState);
         void onManageAccountsClick();
@@ -274,11 +273,6 @@ public class ContactListFragment extends Fragment implements ContactListView,
     @Override
     public void onContactClick(AbstractContact contact) {
         contactListFragmentListener.onContactClick(contact);
-    }
-
-    @Override
-    public void onCrowdfundingChatClick() {
-        contactListFragmentListener.onCrowdfundingChatClick();
     }
 
     @Override
