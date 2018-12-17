@@ -1,12 +1,10 @@
 package com.xabber.android.presentation.ui.contactlist.viewobjects;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.TextView;
 
 import com.xabber.android.R;
-import com.xabber.android.data.database.realm.CrowdfundingMessage;
 import com.xabber.android.data.roster.CrowdfundingContact;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.utils.StringUtils;
@@ -39,11 +37,10 @@ public class CrowdfundingChatVO extends AbstractFlexibleItem<CrowdfundingChatVO.
     }
 
     public static CrowdfundingChatVO convert(CrowdfundingContact contact) {
-        CrowdfundingMessage message = contact.getLastMessage();
         int unreadCount = contact.getUnreadCount();
         int accountColorIndicator = ColorManager.getInstance().getAccountPainter().getDefaultMainColor();
         int accountColorIndicatorBack = ColorManager.getInstance().getAccountPainter().getDefaultIndicatorBackColor();
-        return new CrowdfundingChatVO(message.getMessageForCurrentLocale(), new Date((long)message.getReceivedTimestamp()*1000), unreadCount,
+        return new CrowdfundingChatVO(contact.getLastMessageText(), contact.getLastMessageTime(), unreadCount,
                 accountColorIndicator, accountColorIndicatorBack);
     }
 

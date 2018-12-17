@@ -1,17 +1,16 @@
 package com.xabber.android.ui.fragment;
 
 import android.app.Activity;
-import android.support.v4.app.Fragment;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -23,15 +22,20 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.database.messagerealm.MessageItem;
+import com.xabber.android.data.database.realm.CrowdfundingMessage;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.muc.MUCManager;
+import com.xabber.android.data.http.CrowdfundingManager;
 import com.xabber.android.data.message.AbstractChat;
+import com.xabber.android.data.message.CrowdfundingChat;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.roster.AbstractContact;
+import com.xabber.android.data.roster.CrowdfundingContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.ChatVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.ContactVO;
+import com.xabber.android.presentation.ui.contactlist.viewobjects.CrowdfundingChatVO;
 import com.xabber.android.ui.activity.ChatActivity;
 import com.xabber.android.ui.activity.ContactActivity;
 import com.xabber.android.ui.activity.ContactEditActivity;
@@ -149,7 +153,12 @@ public class RecentChatFragment extends Fragment implements Toolbar.OnMenuItemCl
 
     public void updateItems(List<AbstractContact> items) {
         this.items.clear();
-        this.items.addAll(ChatVO.convert(items, this, this));
+
+        for (AbstractContact contact : items) {
+            if (contact instanceof CrowdfundingContact)
+                this.items.add(CrowdfundingChatVO.convert((CrowdfundingContact) contact));
+            else this.items.add(ChatVO.convert(contact, this, this));
+        }
         adapter.updateDataSet(this.items);
     }
 
@@ -165,7 +174,7 @@ public class RecentChatFragment extends Fragment implements Toolbar.OnMenuItemCl
                 for (AbstractChat abstractChat : chats) {
                     MessageItem lastMessage = abstractChat.getLastMessage();
 
-                    if (lastMessage != null && !TextUtils.isEmpty(lastMessage.getText())) {
+                    if (lastMessage != null) {
                         AccountItem accountItem = AccountManager.getInstance().getAccount(abstractChat.getAccount());
                         if (accountItem != null && accountItem.isEnabled()) {
                             recentChats.add(abstractChat);
@@ -173,13 +182,18 @@ public class RecentChatFragment extends Fragment implements Toolbar.OnMenuItemCl
                     }
                 }
 
+                // crowdfunding chat
+                int unreadCount = CrowdfundingManager.getInstance().getUnreadMessageCount();
+                CrowdfundingMessage message = CrowdfundingManager.getInstance().getLastNotDelayedMessageFromRealm();
+                recentChats.add(CrowdfundingChat.createCrowdfundingChat(unreadCount, message));
+
                 Collections.sort(recentChats, ChatComparator.CHAT_COMPARATOR);
-
-
                 final List<AbstractContact> newContacts = new ArrayList<>();
 
                 for (AbstractChat chat : recentChats) {
-                    if (!chat.isArchived() || ((ChatActivity)getActivity()).isShowArchived())
+                    if (chat instanceof CrowdfundingChat)
+                        newContacts.add(new CrowdfundingContact((CrowdfundingChat) chat));
+                    else if (!chat.isArchived() || ((ChatActivity)getActivity()).isShowArchived())
                         newContacts.add(RosterManager.getInstance()
                                 .getBestContact(chat.getAccount(), chat.getUser()));
                 }
@@ -196,9 +210,19 @@ public class RecentChatFragment extends Fragment implements Toolbar.OnMenuItemCl
 
     @Override
     public boolean onItemClick(int position) {
-        ChatVO chat = (ChatVO) adapter.getItem(position);
-        if (listener != null && chat != null)
-            listener.onChatSelected(chat.getAccountJid(), chat.getUserJid());
+
+        if (adapter.getItem(position) instanceof ChatVO) {
+            ChatVO chat = (ChatVO) adapter.getItem(position);
+            if (listener != null && chat != null)
+                listener.onChatSelected(chat.getAccountJid(), chat.getUserJid());
+        } else if (adapter.getItem(position) instanceof CrowdfundingChatVO) {
+            if (listener != null) {
+                AccountJid accountJid = CrowdfundingChat.getDefaultAccount();
+                UserJid userJid = CrowdfundingChat.getDefaultUser();
+                if (accountJid != null && userJid != null)
+                    listener.onChatSelected(accountJid, userJid);
+            }
+        }
         return true;
     }
 
