@@ -29,7 +29,6 @@ public class CrowdfundingManager implements OnLoadListener {
     private static CrowdfundingManager instance;
     private CompositeSubscription compositeSubscription = new CompositeSubscription();
     private Timer timer;
-    // TODO: 29.11.18 composite subscription must depends on application lifecycle
 
     public static CrowdfundingManager getInstance() {
         if (instance == null)

@@ -25,7 +25,7 @@ public class CrowdfundingClient {
             .flatMap(new Func1<List<CrowdfundingMessage>, Single<? extends List<Message>>>() {
                 @Override
                 public Single<? extends List<Message>> call(List<CrowdfundingMessage> messages) {
-                    int timestamp = messages.get(messages.size() - 1).getTimestamp();
+                    int timestamp = messages.get(messages.size() - 1).getReceivedTimestamp();
                     return HttpApiManager.getCrowdfundingApi().getFeed(getAPIKey(), timestamp);
                 }
             })
