@@ -628,9 +628,8 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
                 toolbar.setOverflowIcon(getResources().getDrawable(R.drawable.ic_overflow_menu_white_24dp));
             else if (selectedPagePosition == 2)
                 toolbar.setOverflowIcon(getResources().getDrawable(R.drawable.ic_settings_white_24dp));
-
-            setUpOptionsMenu(toolbar.getMenu());
         }
+        setUpOptionsMenu(toolbar.getMenu());
     }
 
     private void setCrowdfundingToolbar() {
@@ -838,6 +837,9 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
             if (selectedPagePosition == PAGE_POSITION_RECENT_CHATS) {
                 inflater.inflate(R.menu.menu_chat_recent_list, menu);
                 setUpRecentChatsMenu(menu, abstractChat);
+                return;
+            } else if (CrowdfundingChat.USER.equals(user.getBareJid().toString())) {
+                menu.clear();
                 return;
             }
             if (selectedPagePosition == PAGE_POSITION_CHAT_INFO) {
