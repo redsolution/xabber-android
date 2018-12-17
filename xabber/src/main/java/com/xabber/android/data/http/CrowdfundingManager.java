@@ -158,7 +158,9 @@ public class CrowdfundingManager implements OnLoadListener {
         RealmResults<CrowdfundingMessage> messages = getMessagesWithDelay(delay);
         realm.beginTransaction();
         for (CrowdfundingMessage message : messages) {
+            // remove delay and update received time
             message.setDelay(0);
+            message.setReceivedTimestamp(getCurrentTime());
         }
         realm.commitTransaction();
         realm.close();
