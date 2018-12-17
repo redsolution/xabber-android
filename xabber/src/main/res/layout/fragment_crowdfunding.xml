@@ -2,8 +2,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/backgroundView"
-    >
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/backgroundView">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerView"
@@ -38,5 +38,45 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"/>
+
+    <RelativeLayout
+        android:id="@+id/btnScrollDown"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/supportLayout"
+        android:layout_alignParentRight="true"
+        android:clickable="true"
+        android:visibility="gone"
+        >
+
+        <android.support.design.widget.FloatingActionButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:backgroundTint="?attr/chat_input_background"
+            android:src="@drawable/ic_arrow_down"
+            android:tint="?attr/chat_input_button_color"
+            app:borderWidth="0dp"
+            />
+
+        <TextView
+            android:id="@+id/tvNewReceivedCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            android:paddingTop="0dp"
+            android:paddingBottom="1dp"
+            android:paddingRight="5dp"
+            android:paddingLeft="5dp"
+            android:background="@drawable/rounded_background_green"
+            android:textColor="@color/white"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:elevation="6dp"
+            android:visibility="gone"
+            />
+
+    </RelativeLayout>
 
 </RelativeLayout>

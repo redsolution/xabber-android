@@ -8,6 +8,7 @@ import com.xabber.android.data.database.RealmManager;
 import com.xabber.android.data.database.realm.CrowdfundingMessage;
 
 import java.util.List;
+
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
@@ -15,6 +16,7 @@ import java.util.concurrent.TimeUnit;
 import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmResults;
+import rx.Observable;
 import rx.Single;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
@@ -189,6 +191,12 @@ public class CrowdfundingManager implements OnLoadListener {
         return count.intValue();
     }
 
+    public Observable<RealmResults<CrowdfundingMessage>> getUnreadMessageCountAsObservable() {
+        Realm realm = RealmManager.getInstance().getNewRealm();
+        return realm.where(CrowdfundingMessage.class).equalTo("read", false)
+                .equalTo("delay", 0).findAll().asObservable();
+    }
+
     public void reloadMessages() {
         removeAllMessages();
         requestLeaderAndFeed();
@@ -204,6 +212,18 @@ public class CrowdfundingManager implements OnLoadListener {
             message.setRead(true);
         }
         realm.commitTransaction();
+    }
+
+    public void markMessageAsRead(String id) {
+        Realm realm = RealmManager.getInstance().getNewRealm();
+        CrowdfundingMessage message = realm.where(CrowdfundingMessage.class)
+                .equalTo("read", false).equalTo("id", id).findFirst();
+
+        if (message != null) {
+            realm.beginTransaction();
+            message.setRead(true);
+            realm.commitTransaction();
+        }
     }
 
     private void removeAllMessages() {

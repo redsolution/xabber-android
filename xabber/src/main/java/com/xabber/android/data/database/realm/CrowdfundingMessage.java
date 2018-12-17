@@ -35,6 +35,10 @@ public class CrowdfundingMessage extends RealmObject {
         this.id = UUID.randomUUID().toString();
     }
 
+    public String getId() {
+        return id;
+    }
+
     public int getTimestamp() {
         return timestamp;
     }
