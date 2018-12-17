@@ -164,48 +164,38 @@ public class RecentChatFragment extends Fragment implements Toolbar.OnMenuItemCl
 
     public void updateChats() {
 
-        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
-            @Override
-            public void run() {
-                Collection<AbstractChat> chats = MessageManager.getInstance().getChats();
+        Collection<AbstractChat> chats = MessageManager.getInstance().getChats();
 
-                List<AbstractChat> recentChats = new ArrayList<>();
+        List<AbstractChat> recentChats = new ArrayList<>();
 
-                for (AbstractChat abstractChat : chats) {
-                    MessageItem lastMessage = abstractChat.getLastMessage();
+        for (AbstractChat abstractChat : chats) {
+            MessageItem lastMessage = abstractChat.getLastMessage();
 
-                    if (lastMessage != null) {
-                        AccountItem accountItem = AccountManager.getInstance().getAccount(abstractChat.getAccount());
-                        if (accountItem != null && accountItem.isEnabled()) {
-                            recentChats.add(abstractChat);
-                        }
-                    }
+            if (lastMessage != null) {
+                AccountItem accountItem = AccountManager.getInstance().getAccount(abstractChat.getAccount());
+                if (accountItem != null && accountItem.isEnabled()) {
+                    recentChats.add(abstractChat);
                 }
-
-                // crowdfunding chat
-                int unreadCount = CrowdfundingManager.getInstance().getUnreadMessageCount();
-                CrowdfundingMessage message = CrowdfundingManager.getInstance().getLastNotDelayedMessageFromRealm();
-                recentChats.add(CrowdfundingChat.createCrowdfundingChat(unreadCount, message));
-
-                Collections.sort(recentChats, ChatComparator.CHAT_COMPARATOR);
-                final List<AbstractContact> newContacts = new ArrayList<>();
-
-                for (AbstractChat chat : recentChats) {
-                    if (chat instanceof CrowdfundingChat)
-                        newContacts.add(new CrowdfundingContact((CrowdfundingChat) chat));
-                    else if (!chat.isArchived() || ((ChatActivity)getActivity()).isShowArchived())
-                        newContacts.add(RosterManager.getInstance()
-                                .getBestContact(chat.getAccount(), chat.getUser()));
-                }
-
-                Application.getInstance().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        updateItems(newContacts);
-                    }
-                });
             }
-        });
+        }
+
+        // crowdfunding chat
+        int unreadCount = CrowdfundingManager.getInstance().getUnreadMessageCount();
+        CrowdfundingMessage message = CrowdfundingManager.getInstance().getLastNotDelayedMessageFromRealm();
+        recentChats.add(CrowdfundingChat.createCrowdfundingChat(unreadCount, message));
+
+        Collections.sort(recentChats, ChatComparator.CHAT_COMPARATOR);
+        final List<AbstractContact> newContacts = new ArrayList<>();
+
+        for (AbstractChat chat : recentChats) {
+            if (chat instanceof CrowdfundingChat)
+                newContacts.add(new CrowdfundingContact((CrowdfundingChat) chat));
+            else if (!chat.isArchived() || ((ChatActivity)getActivity()).isShowArchived())
+                newContacts.add(RosterManager.getInstance()
+                        .getBestContact(chat.getAccount(), chat.getUser()));
+        }
+
+        updateItems(newContacts);
     }
 
     @Override
