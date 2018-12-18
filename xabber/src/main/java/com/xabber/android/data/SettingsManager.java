@@ -790,6 +790,14 @@ public class SettingsManager implements OnInitializedListener,
         return getInteger(R.string.crowdfunding_last_load_timestamp_key, 1);
     }
 
+    public static void setLastCrowdfundingPosition(int position) {
+        setInt(R.string.crowdfunding_last_position_key, position);
+    }
+
+    public static int getLastCrowdfundingPosition() {
+        return getInteger(R.string.crowdfunding_last_position_key, 0);
+    }
+
     @Override
     public void onInitialized() {
         incrementBootCount();

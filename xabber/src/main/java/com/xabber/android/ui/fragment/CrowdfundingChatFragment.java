@@ -43,7 +43,7 @@ public class CrowdfundingChatFragment extends Fragment implements CrowdfundingCh
     private List<String> waitToMarkAsRead = new ArrayList<>();
     private CompositeSubscription compositeSubscription = new CompositeSubscription();
 
-    private final int UPDATE_MESSAGE_DELAY = 5; // in sec
+    private final int UPDATE_MESSAGE_DELAY = 1; // in sec
 
     public static CrowdfundingChatFragment newInstance() {
         return new CrowdfundingChatFragment();
@@ -115,8 +115,7 @@ public class CrowdfundingChatFragment extends Fragment implements CrowdfundingCh
             }
         });
 
-        //scrollToFirstUnread();
-        layoutManager.scrollToPositionWithOffset(0, 200);
+        scrollToLastPosition();
         subscribeForUnreadCount();
         updateButton();
     }
@@ -126,6 +125,7 @@ public class CrowdfundingChatFragment extends Fragment implements CrowdfundingCh
         super.onPause();
         compositeSubscription.clear();
         writeAsRead();
+        saveCurrentPosition();
     }
 
     @Override
@@ -143,10 +143,6 @@ public class CrowdfundingChatFragment extends Fragment implements CrowdfundingCh
                         updateButton();
                     }
                 }));
-    }
-
-    private void scrollToFirstUnread() {
-        layoutManager.scrollToPositionWithOffset(unread - 1, 0);
     }
 
     private void markAsRead(CrowdfundingMessage message) {
@@ -184,5 +180,20 @@ public class CrowdfundingChatFragment extends Fragment implements CrowdfundingCh
         if (isBottom) {
             btnScrollDown.setVisibility(View.GONE);
         } else btnScrollDown.setVisibility(View.VISIBLE);
+    }
+
+    private void saveCurrentPosition() {
+        int position = layoutManager.findFirstVisibleItemPosition();
+        SettingsManager.setLastCrowdfundingPosition(position);
+    }
+
+    private void scrollToLastPosition() {
+        int position = SettingsManager.getLastCrowdfundingPosition();
+        layoutManager.scrollToPositionWithOffset(position, 0);
+    }
+
+    private void scrollToFirstUnread() {
+        if (unread == 0) layoutManager.scrollToPosition(adapter.getItemCount() - 1);
+        else layoutManager.scrollToPosition(adapter.getItemCount() - unread);
     }
 }
