@@ -1,5 +1,7 @@
 package com.xabber.android.ui.fragment;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -18,6 +20,7 @@ import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.database.realm.CrowdfundingMessage;
 import com.xabber.android.data.http.CrowdfundingManager;
+import com.xabber.android.data.http.IXabberCom;
 import com.xabber.android.ui.adapter.chat.CrowdfundingChatAdapter;
 import com.xabber.android.ui.color.ColorManager;
 
@@ -79,6 +82,14 @@ public class CrowdfundingChatFragment extends Fragment implements CrowdfundingCh
             }
         });
         tvNewReceivedCount = view.findViewById(R.id.tvNewReceivedCount);
+        View actionJoin = view.findViewById(R.id.actionJoin);
+        actionJoin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(IXabberCom.SHARE_URL));
+                startActivity(intent);
+            }
+        });
 
         return view;
     }
