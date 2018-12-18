@@ -286,7 +286,8 @@ public class MessageDatabaseManager {
                         if (oldVersion == 16) {
                             schema.create(ForwardId.class.getSimpleName())
                                     .addField("id", String.class,
-                                            FieldAttribute.PRIMARY_KEY, FieldAttribute.REQUIRED);
+                                            FieldAttribute.PRIMARY_KEY, FieldAttribute.REQUIRED)
+                                    .addField("forwardMessageId", String.class);
 
                             schema.get(MessageItem.class.getSimpleName())
                                     .addField(MessageItem.Fields.ORIGINAL_STANZA, String.class)
