@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:paddingRight="8dp"
+    android:paddingEnd="8dp"
+    android:layout_marginTop="2dp"
+    android:layout_marginBottom="2dp">
+
+    <LinearLayout
+        android:id="@+id/message"
+        android:orientation="vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        >
+
+        <LinearLayout
+            android:id="@+id/forwardLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:visibility="gone"
+            android:layout_marginLeft="1dp"
+            android:layout_marginRight="1dp"
+            >
+
+            <View
+                android:id="@+id/forwardLeftBorder"
+                android:layout_width="4dp"
+                android:layout_height="match_parent"
+                android:background="@color/grey_500"
+                />
+
+            <TextView
+                android:id="@+id/tvForwardedCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:text="@string/forwarded_messages_count"
+                tools:text="3 forwarded message"
+                android:textColor="@color/forwarded_background_color"
+                />
+
+        </LinearLayout>
+
+        <include layout="@layout/item_message" />
+
+    </LinearLayout>
+
+</RelativeLayout>

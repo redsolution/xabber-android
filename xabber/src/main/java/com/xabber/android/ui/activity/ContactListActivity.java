@@ -648,6 +648,10 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
                 finish();
                 break;
             }
+            case ChatActivity.ACTION_FORWARD: {
+                forwardMessages(abstractContact, getIntent());
+                break;
+            }
             default:
                 startActivityForResult(ChatActivity.createSpecificChatIntent(this, abstractContact.getAccount(),
                         abstractContact.getUser()), CODE_OPEN_CHAT);
@@ -678,6 +682,13 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
         intent.putExtra(Intent.EXTRA_SHORTCUT_ICON,
                     AvatarManager.getInstance().createShortcutBitmap(bitmap));
         setResult(RESULT_OK, intent);
+    }
+
+    private void forwardMessages(AbstractContact abstractContact, Intent intent) {
+        ArrayList<String> messages = intent.getStringArrayListExtra(ChatActivity.KEY_MESSAGES_ID);
+        if (messages != null)
+            startActivity(ChatActivity.createForwardIntent(this,
+                    abstractContact.getAccount(), abstractContact.getUser(), messages));
     }
 
     @Override

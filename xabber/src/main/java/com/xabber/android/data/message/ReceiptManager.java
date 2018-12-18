@@ -24,7 +24,6 @@ import com.xabber.android.data.database.MessageDatabaseManager;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.ui.adapter.ChatMessageAdapter;
 
 import org.greenrobot.eventbus.EventBus;
 import org.jivesoftware.smack.ConnectionCreationListener;

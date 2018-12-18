@@ -452,7 +452,7 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
         multiUserChat = roomChat.getMultiUserChat();
         roomChat.setState(RoomState.unavailable);
         roomChat.setRequested(false);
-        roomChat.newAction(roomChat.getNickname(), null, ChatAction.leave);
+        roomChat.newAction(roomChat.getNickname(), null, ChatAction.leave, true);
         requestToWriteRoom(account, room, roomChat.getNickname(), roomChat.getPassword(), false);
         if (multiUserChat != null) {
             Application.getInstance().runInBackgroundUserRequest(new Runnable() {
@@ -535,7 +535,7 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
         message.addExtension(mucUser);
         StanzaSender.sendStanza(account, message);
         roomChat.putInvite(message.getStanzaId(), user);
-        roomChat.newAction(roomChat.getNickname(), user.toString(), ChatAction.invite_sent);
+        roomChat.newAction(roomChat.getNickname(), user.toString(), ChatAction.invite_sent, true);
     }
 
     public void removeAuthorizationError(AccountJid account, EntityBareJid room) {

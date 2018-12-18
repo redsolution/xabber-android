@@ -25,7 +25,7 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.FileViewHold
     private RealmList<Attachment> items;
     private FileListListener listener;
 
-    interface FileListListener {
+    public interface FileListListener {
         void onFileClick(int position);
         void onFileLongClick(Attachment attachment, View caller);
         void onDownloadCancel();

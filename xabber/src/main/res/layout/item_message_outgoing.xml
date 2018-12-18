@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingLeft="@dimen/message_padding"
+    android:paddingStart="@dimen/message_padding"
+    >
+
+    <TextView
+        android:id="@+id/tvFirstUnread"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="4dp"
+        android:paddingTop="2dp"
+        android:paddingBottom="2dp"
+        android:paddingRight="2dp"
+        android:paddingLeft="8dp"
+        android:textStyle="bold"
+        android:text="@string/unread_messages"
+        android:drawableRight="@drawable/ic_chevron_down"
+        android:background="@drawable/rounded_background_grey_transparent"
+        android:visibility="gone"
+        />
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@id/tvFirstUnread"
+        >
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="right">
+
+            <include
+                android:id="@+id/forwardLayout"
+                layout="@layout/forwarded_layout"
+                android:visibility="gone" />
+
+            <include layout="@layout/item_message" />
+
+        </LinearLayout>
+
+        <ProgressBar
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:id="@+id/uploadProgressBar"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:indeterminate="true"
+            android:max="100"
+            android:progress="50"
+            android:background="@drawable/round_shape_transparent"
+            android:indeterminateTint="@color/white"
+            android:layout_centerInParent="true"
+            android:visibility="gone"
+            android:elevation="1dp"
+            />
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/ivCancelUpload"
+            android:src="@drawable/ic_close"
+            android:tint="@color/white"
+            android:background="@drawable/ripple_background_circle"
+            android:padding="16dp"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:visibility="gone"
+            android:elevation="1dp"
+            />
+
+    </RelativeLayout>
+
+</RelativeLayout>

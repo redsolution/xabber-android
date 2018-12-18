@@ -27,6 +27,7 @@ import com.xabber.android.data.message.ChatAction;
 import org.jxmpp.jid.parts.Resourcepart;
 import org.jxmpp.stringprep.XmppStringprepException;
 
+import java.util.List;
 import java.util.UUID;
 
 import io.realm.RealmList;
@@ -67,6 +68,11 @@ public class MessageItem extends RealmObject {
         public static final String ACKNOWLEDGED = "acknowledged";
         public static final String IS_IN_PROGRESS = "isInProgress";
         public static final String ATTACHMENTS = "attachments";
+        public static final String FORWARDED_IDS = "forwardedIds";
+        public static final String ORIGINAL_STANZA = "originalStanza";
+        public static final String ORIGINAL_FROM = "originalFrom";
+        public static final String PARENT_MESSAGE_ID = "parentMessageId";
+        public static final String FROM_MUC = "fromMUC";
     }
 
     /**
@@ -189,6 +195,19 @@ public class MessageItem extends RealmObject {
     private boolean isInProgress;
 
     private RealmList<Attachment> attachments;
+
+    /** Message forwarding */
+
+    private String originalStanza;
+
+    /** If message was forwarded contains jid of original message author */
+    private String originalFrom;
+
+    private String parentMessageId;
+
+    private RealmList<ForwardId> forwardedIds;
+
+    private boolean fromMUC;
 
     public MessageItem(String uniqueId) {
         this.uniqueId = uniqueId;
@@ -473,5 +492,61 @@ public class MessageItem extends RealmObject {
 
     public boolean haveAttachments() {
         return attachments != null && attachments.size() > 0;
+    }
+
+    public RealmList<ForwardId> getForwardedIds() {
+        return forwardedIds;
+    }
+
+    public String[] getForwardedIdsAsArray() {
+        String forwardedIds[] = new String[getForwardedIds().size()];
+
+        int i = 0;
+        for (ForwardId id : getForwardedIds()) {
+            forwardedIds[i] = id.getForwardMessageId();
+            i++;
+        }
+
+        return forwardedIds;
+    }
+
+    public void setForwardedIds(RealmList<ForwardId> forwardedMessages) {
+        this.forwardedIds = forwardedMessages;
+    }
+
+    public boolean haveForwardedMessages() {
+        return forwardedIds != null && forwardedIds.size() > 0;
+    }
+
+    public String getOriginalStanza() {
+        return originalStanza;
+    }
+
+    public void setOriginalStanza(String originalStanza) {
+        this.originalStanza = originalStanza;
+    }
+
+    public String getOriginalFrom() {
+        return originalFrom;
+    }
+
+    public void setOriginalFrom(String originalFrom) {
+        this.originalFrom = originalFrom;
+    }
+
+    public String getParentMessageId() {
+        return parentMessageId;
+    }
+
+    public void setParentMessageId(String parentMessageId) {
+        this.parentMessageId = parentMessageId;
+    }
+
+    public boolean isFromMUC() {
+        return fromMUC;
+    }
+
+    public void setFromMUC(boolean fromMUC) {
+        this.fromMUC = fromMUC;
     }
 }
