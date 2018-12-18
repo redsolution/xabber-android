@@ -33,9 +33,16 @@ import io.realm.RealmResults;
 
 public class CrowdfundingChatAdapter extends RealmRecyclerViewAdapter<CrowdfundingMessage, CrowdfundingChatAdapter.CrowdMessageVH> {
 
+    private BindListener listener;
+
     public CrowdfundingChatAdapter(Context context, RealmResults<CrowdfundingMessage> realmResults,
-                                   boolean automaticUpdate) {
+                                   boolean automaticUpdate, BindListener listener) {
         super(context, realmResults, automaticUpdate);
+        this.listener = listener;
+    }
+
+    public interface BindListener {
+        void onBind(CrowdfundingMessage message);
     }
 
     @Nullable
@@ -150,6 +157,7 @@ public class CrowdfundingChatAdapter extends RealmRecyclerViewAdapter<Crowdfundi
                 Utils.dipToPx(12f, context),
                 Utils.dipToPx(8f, context));
 
+        if (listener != null) listener.onBind(message);
     }
 
     private void setupAvatar(ImageView view, String url) {

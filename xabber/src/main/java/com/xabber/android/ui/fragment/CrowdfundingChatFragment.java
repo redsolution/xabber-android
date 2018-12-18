@@ -18,15 +18,17 @@ import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.database.realm.CrowdfundingMessage;
 import com.xabber.android.data.http.CrowdfundingManager;
-import com.xabber.android.ui.activity.ChatActivity;
 import com.xabber.android.ui.adapter.chat.CrowdfundingChatAdapter;
 import com.xabber.android.ui.color.ColorManager;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import io.realm.RealmResults;
 import rx.functions.Action1;
 import rx.subscriptions.CompositeSubscription;
 
-public class CrowdfundingChatFragment extends Fragment {
+public class CrowdfundingChatFragment extends Fragment implements CrowdfundingChatAdapter.BindListener {
 
     private RecyclerView recyclerView;
     private View backgroundView;
@@ -37,6 +39,8 @@ public class CrowdfundingChatFragment extends Fragment {
     private RelativeLayout btnScrollDown;
     private TextView tvNewReceivedCount;
 
+    private int unread = 0;
+    private List<String> waitToMarkAsRead = new ArrayList<>();
     private CompositeSubscription compositeSubscription = new CompositeSubscription();
 
     private final int UPDATE_MESSAGE_DELAY = 5; // in sec
@@ -50,6 +54,7 @@ public class CrowdfundingChatFragment extends Fragment {
         super.onStart();
         CrowdfundingManager.getInstance().startUpdateTimer(0, UPDATE_MESSAGE_DELAY);
         messages = CrowdfundingManager.getInstance().getMessagesWithDelay(0);
+        unread = CrowdfundingManager.getInstance().getUnreadMessageCount();
     }
 
     @Nullable
@@ -70,18 +75,12 @@ public class CrowdfundingChatFragment extends Fragment {
         btnScrollDown.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //scrollToFirstUnread(chat.getUnreadMessageCount());
+                scrollToFirstUnread();
             }
         });
         tvNewReceivedCount = view.findViewById(R.id.tvNewReceivedCount);
 
         return view;
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        compositeSubscription.clear();
     }
 
     @Override
@@ -100,7 +99,7 @@ public class CrowdfundingChatFragment extends Fragment {
         }
 
         // messages
-        adapter = new CrowdfundingChatAdapter(getActivity(), messages, true);
+        adapter = new CrowdfundingChatAdapter(getActivity(), messages, true, this);
 
         layoutManager = new LinearLayoutManager(getActivity());
         layoutManager.setStackFromEnd(true);
@@ -112,53 +111,26 @@ public class CrowdfundingChatFragment extends Fragment {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-                showScrollDownButtonIfNeed();
-                hideUnreadMessageCountIfNeed();
+                updateButton();
             }
         });
 
-        // mark messages read
-//        if (CrowdfundingManager.getInstance().getUnreadMessageCount() > 0) {
-//            CrowdfundingManager.getInstance().markMessagesAsRead();
-//        }
-
+        //scrollToFirstUnread();
+        layoutManager.scrollToPositionWithOffset(0, 200);
         subscribeForUnreadCount();
-        restoreScrollState();
+        updateButton();
     }
 
-    private void increaseUnreadMessageCountIfNeed(int unread) {
-        if (btnScrollDown.getVisibility() == View.VISIBLE) {
-            updateNewReceivedMessageCounter(unread);
-        }
+    @Override
+    public void onPause() {
+        super.onPause();
+        compositeSubscription.clear();
+        writeAsRead();
     }
 
-    private void updateNewReceivedMessageCounter(int count) {
-        tvNewReceivedCount.setText(String.valueOf(count));
-        if (count > 0)
-            tvNewReceivedCount.setVisibility(View.VISIBLE);
-        else tvNewReceivedCount.setVisibility(View.GONE);
-    }
-
-    private void hideUnreadMessageCountIfNeed() {
-        int pastVisibleItems = layoutManager.findLastVisibleItemPosition();
-        if (pastVisibleItems >= adapter.getItemCount() - CrowdfundingManager.getInstance().getUnreadMessageCount()) {
-            resetUnreadMessageCount();
-        }
-    }
-
-    private void resetUnreadMessageCount() {
-        //CrowdfundingManager.getInstance().markMessagesAsRead();
-        ((ChatActivity)getActivity()).updateRecentChats();
-    }
-
-    private void showScrollDownButtonIfNeed() {
-        int pastVisibleItems = layoutManager.findLastVisibleItemPosition();
-        boolean isBottom = pastVisibleItems >= adapter.getItemCount() - 1;
-
-        if (isBottom) {
-            btnScrollDown.setVisibility(View.GONE);
-            //hideUnreadMessageBackground();
-        } else btnScrollDown.setVisibility(View.VISIBLE);
+    @Override
+    public void onBind(CrowdfundingMessage message) {
+        markAsRead(message);
     }
 
     private void subscribeForUnreadCount() {
@@ -167,20 +139,50 @@ public class CrowdfundingChatFragment extends Fragment {
                 .subscribe(new Action1<RealmResults<CrowdfundingMessage>>() {
                     @Override
                     public void call(RealmResults<CrowdfundingMessage> crowdfundingMessages) {
-                        showScrollDownButtonIfNeed();
-                        increaseUnreadMessageCountIfNeed(crowdfundingMessages.size());
+                        unread = crowdfundingMessages.size();
+                        updateButton();
                     }
                 }));
     }
 
-    private void scrollToFirstUnread(int unreadCount) {
-        layoutManager.scrollToPositionWithOffset(
-                adapter.getItemCount() - unreadCount, 200);
+    private void scrollToFirstUnread() {
+        layoutManager.scrollToPositionWithOffset(unread - 1, 0);
     }
 
-    public void restoreScrollState() {
-        int unread = CrowdfundingManager.getInstance().getUnreadMessageCount();
-        scrollToFirstUnread(unread);
-        updateNewReceivedMessageCounter(unread);
+    private void markAsRead(CrowdfundingMessage message) {
+        if (message != null && !message.isRead()) {
+            if (!waitToMarkAsRead.contains(message.getId())) {
+                waitToMarkAsRead.add(message.getId());
+                updateButton();
+            }
+        }
+    }
+
+    private void writeAsRead() {
+        String[] ids = waitToMarkAsRead.toArray(new String[0]);
+        CrowdfundingManager.getInstance().markMessagesAsRead(ids);
+    }
+
+    private void updateButton() {
+        showScrollDownButtonIfNeed();
+        updateNewReceivedMessageCounter();
+    }
+
+    private void updateNewReceivedMessageCounter() {
+        int count = unread - waitToMarkAsRead.size();
+
+        tvNewReceivedCount.setText(String.valueOf(count));
+        if (count > 0)
+            tvNewReceivedCount.setVisibility(View.VISIBLE);
+        else tvNewReceivedCount.setVisibility(View.GONE);
+    }
+
+    private void showScrollDownButtonIfNeed() {
+        int pastVisibleItems = layoutManager.findLastVisibleItemPosition();
+        boolean isBottom = pastVisibleItems >= adapter.getItemCount() - 1;
+
+        if (isBottom) {
+            btnScrollDown.setVisibility(View.GONE);
+        } else btnScrollDown.setVisibility(View.VISIBLE);
     }
 }
