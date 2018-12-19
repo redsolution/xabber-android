@@ -65,7 +65,7 @@ public class CrowdfundingChatAdapter extends RealmRecyclerViewAdapter<Crowdfundi
 
     @Override
     public void onBindViewHolder(@NonNull CrowdMessageVH holder, int i) {
-        CrowdfundingMessage message = getMessage(i);
+        final CrowdfundingMessage message = getMessage(i);
         if (message == null) return;
 
         // appearance
@@ -162,7 +162,13 @@ public class CrowdfundingChatAdapter extends RealmRecyclerViewAdapter<Crowdfundi
                 Utils.dipToPx(12f, context),
                 Utils.dipToPx(8f, context));
 
-        if (listener != null) listener.onBind(message);
+        holder.itemView.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
+            @Override
+            public void onViewAttachedToWindow(View view) { listener.onBind(message); }
+
+            @Override
+            public void onViewDetachedFromWindow(View v) { }
+        });
     }
 
     private void setupAvatar(ImageView view, String url) {

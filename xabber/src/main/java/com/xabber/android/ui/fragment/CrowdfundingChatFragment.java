@@ -79,7 +79,7 @@ public class CrowdfundingChatFragment extends Fragment implements CrowdfundingCh
         btnScrollDown.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                scrollToFirstUnread();
+                scrollDown();
             }
         });
         tvNewReceivedCount = view.findViewById(R.id.tvNewReceivedCount);
@@ -204,8 +204,12 @@ public class CrowdfundingChatFragment extends Fragment implements CrowdfundingCh
         layoutManager.scrollToPositionWithOffset(position, 0);
     }
 
-    private void scrollToFirstUnread() {
-        if (fakeUnread == 0) layoutManager.scrollToPosition(adapter.getItemCount() - 1);
-        else layoutManager.scrollToPosition(adapter.getItemCount() - fakeUnread);
+    private void scrollDown() {
+        int lastVisiblePosition = layoutManager.findLastVisibleItemPosition();
+        if (fakeUnread == 0 || lastVisiblePosition + 2 >= adapter.getItemCount() - fakeUnread) {
+            // scroll down
+            layoutManager.scrollToPosition(adapter.getItemCount() - 1);
+            // scroll to unread
+        } else layoutManager.scrollToPosition(adapter.getItemCount() - fakeUnread);
     }
 }
