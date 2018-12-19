@@ -199,8 +199,8 @@ public class FileMessageVH extends MessageVH
                 Glide.with(context)
                         .load(imageUrl)
                         .asBitmap()
-                        .placeholder(R.drawable.ic_recent_image_placeholder_120dp)
-                        .error(R.drawable.ic_recent_image_placeholder_120dp)
+                        .placeholder(R.drawable.ic_recent_image_placeholder)
+                        .error(R.drawable.ic_recent_image_placeholder)
                         .into(new SimpleTarget<Bitmap>() {
                             @Override
                             public void onLoadStarted(Drawable placeholder) {
