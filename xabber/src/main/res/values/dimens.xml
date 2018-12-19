@@ -28,6 +28,7 @@
 
     <dimen name="min_chat_image_size">48dp</dimen>
     <dimen name="max_chat_image_size">288dp</dimen>
+    <dimen name="default_chat_image_size">120dp</dimen>
 
     <dimen name="intro_screen_bottom_space_height">48dp</dimen>
     <dimen name="intro_screen_right_space_wight">0dp</dimen>

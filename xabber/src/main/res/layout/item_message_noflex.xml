@@ -77,21 +77,21 @@
             tools:text="some_file_name.txt"
             android:visibility="gone" />
 
+        <com.xabber.android.ui.widget.CorrectlyMeasuringTextView
+            android:id="@+id/message_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="Some text"
+            android:textColor="@color/black_text"
+            android:layout_marginRight="4dp"
+            android:layout_marginEnd="4dp"
+            />
+
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             >
-
-            <com.xabber.android.ui.widget.CorrectlyMeasuringTextView
-                android:id="@+id/message_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                tools:text="Some text"
-                android:textColor="@color/black_text"
-                android:layout_marginRight="4dp"
-                android:layout_marginEnd="4dp"
-                />
 
             <LinearLayout
                 android:id="@+id/message_info"
