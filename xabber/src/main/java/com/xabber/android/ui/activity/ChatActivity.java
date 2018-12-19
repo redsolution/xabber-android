@@ -646,7 +646,9 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     }
 
     private void updateStatusBar() {
-        statusBarPainter.updateWithAccountName(account);
+        if (CrowdfundingChat.USER.equals(user.getBareJid().toString()))
+            statusBarPainter.updateWithDefaultColor();
+        else statusBarPainter.updateWithAccountName(account);
     }
 
     private void updateChat() {
