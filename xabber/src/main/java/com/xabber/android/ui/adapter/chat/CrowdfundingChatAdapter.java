@@ -20,6 +20,7 @@ import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.xabber.android.R;
+import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.database.realm.CrowdfundingMessage;
 import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.ui.color.ColorManager;
@@ -34,6 +35,7 @@ import io.realm.RealmResults;
 public class CrowdfundingChatAdapter extends RealmRecyclerViewAdapter<CrowdfundingMessage, CrowdfundingChatAdapter.CrowdMessageVH> {
 
     private BindListener listener;
+    private final int appearanceStyle = SettingsManager.chatsAppearanceStyle();
 
     public CrowdfundingChatAdapter(Context context, RealmResults<CrowdfundingMessage> realmResults,
                                    boolean automaticUpdate, BindListener listener) {
@@ -65,6 +67,9 @@ public class CrowdfundingChatAdapter extends RealmRecyclerViewAdapter<Crowdfundi
     public void onBindViewHolder(@NonNull CrowdMessageVH holder, int i) {
         CrowdfundingMessage message = getMessage(i);
         if (message == null) return;
+
+        // appearance
+        holder.messageText.setTextAppearance(context, appearanceStyle);
 
         String text = message.getMessageForCurrentLocale();
         if (text == null) text = "";
