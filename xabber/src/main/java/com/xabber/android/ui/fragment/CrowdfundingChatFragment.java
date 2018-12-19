@@ -42,7 +42,8 @@ public class CrowdfundingChatFragment extends Fragment implements CrowdfundingCh
     private RelativeLayout btnScrollDown;
     private TextView tvNewReceivedCount;
 
-    private int unread = 0;
+    private int fakeUnread = 0;
+    private int realUnread = 0;
     private List<String> waitToMarkAsRead = new ArrayList<>();
     private CompositeSubscription compositeSubscription = new CompositeSubscription();
 
@@ -57,7 +58,7 @@ public class CrowdfundingChatFragment extends Fragment implements CrowdfundingCh
         super.onStart();
         CrowdfundingManager.getInstance().startUpdateTimer(0, UPDATE_MESSAGE_DELAY);
         messages = CrowdfundingManager.getInstance().getMessagesWithDelay(0);
-        unread = CrowdfundingManager.getInstance().getUnreadMessageCount();
+        realUnread = CrowdfundingManager.getInstance().getUnreadMessageCount();
     }
 
     @Nullable
@@ -150,7 +151,7 @@ public class CrowdfundingChatFragment extends Fragment implements CrowdfundingCh
                 .subscribe(new Action1<RealmResults<CrowdfundingMessage>>() {
                     @Override
                     public void call(RealmResults<CrowdfundingMessage> crowdfundingMessages) {
-                        unread = crowdfundingMessages.size();
+                        realUnread = crowdfundingMessages.size();
                         updateButton();
                     }
                 }));
@@ -176,10 +177,10 @@ public class CrowdfundingChatFragment extends Fragment implements CrowdfundingCh
     }
 
     private void updateNewReceivedMessageCounter() {
-        int count = unread - waitToMarkAsRead.size();
+        fakeUnread = realUnread - waitToMarkAsRead.size();
 
-        tvNewReceivedCount.setText(String.valueOf(count));
-        if (count > 0)
+        tvNewReceivedCount.setText(String.valueOf(fakeUnread));
+        if (fakeUnread > 0)
             tvNewReceivedCount.setVisibility(View.VISIBLE);
         else tvNewReceivedCount.setVisibility(View.GONE);
     }
@@ -204,7 +205,7 @@ public class CrowdfundingChatFragment extends Fragment implements CrowdfundingCh
     }
 
     private void scrollToFirstUnread() {
-        if (unread == 0) layoutManager.scrollToPosition(adapter.getItemCount() - 1);
-        else layoutManager.scrollToPosition(adapter.getItemCount() - unread);
+        if (fakeUnread == 0) layoutManager.scrollToPosition(adapter.getItemCount() - 1);
+        else layoutManager.scrollToPosition(adapter.getItemCount() - fakeUnread);
     }
 }
