@@ -181,7 +181,9 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
             if (nextMessage != null)
                 needTail = !messageItem.getResource().equals(nextMessage.getResource());
             else needTail = true;
-        } else needTail = viewType != getItemViewType(position + 1);
+        } else if (viewType != VIEW_TYPE_ACTION_MESSAGE) {
+            needTail = getSimpleType(viewType) != getSimpleType(getItemViewType(position + 1));
+        }
 
         MessageExtraData extraData = new MessageExtraData(fileListener, fwdListener, context,
                 userName, colorStateList, accountMainColor, isMUC, showOriginalOTR, unread,
@@ -413,6 +415,23 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
 
         public boolean isNeedTail() {
             return needTail;
+        }
+    }
+
+    private int getSimpleType(int type) {
+        switch (type) {
+            case VIEW_TYPE_INCOMING_MESSAGE:
+                return 1;
+            case VIEW_TYPE_INCOMING_MESSAGE_NOFLEX:
+                return 1;
+            case VIEW_TYPE_OUTGOING_MESSAGE:
+                return 2;
+            case VIEW_TYPE_OUTGOING_MESSAGE_NOFLEX:
+                return 2;
+            case VIEW_TYPE_ACTION_MESSAGE:
+                return 3;
+            default:
+                return 0;
         }
     }
 }
