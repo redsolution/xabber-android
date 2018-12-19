@@ -549,9 +549,6 @@
                 <data android:pathPrefix="/account/emails/confirmation" />
             </intent-filter>
         </activity>
-
-        <meta-data android:name="com.facebook.sdk.ApplicationId"
-            android:value="@string/SOCIAL_AUTH_FACEBOOK_KEY"/>
         <activity android:name="com.facebook.FacebookActivity"
             android:configChanges=
                 "keyboard|keyboardHidden|screenLayout|screenSize|orientation"

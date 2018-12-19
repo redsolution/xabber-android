@@ -1,7 +1,6 @@
 package com.xabber.android.ui.activity;
 
 import android.content.Intent;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.Toast;
@@ -9,6 +8,7 @@ import android.widget.Toast;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
+import com.facebook.FacebookSdk;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.google.android.gms.auth.api.Auth;
@@ -82,16 +82,6 @@ public abstract class BaseLoginActivity extends ManagedActivity implements
     protected CompositeSubscription compositeSubscription = new CompositeSubscription();
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        // social auth
-        initFacebookAuth();
-        initTwitterAuth();
-        initGoogleAuth();
-    }
-
-    @Override
     protected void onDestroy() {
         super.onDestroy();
         compositeSubscription.clear();
@@ -114,15 +104,20 @@ public abstract class BaseLoginActivity extends ManagedActivity implements
     }
 
     public void loginFacebook() {
+        FacebookSdk.setApplicationId(getString(R.string.SOCIAL_AUTH_FACEBOOK_KEY));
+        FacebookSdk.sdkInitialize(this);
+        initFacebookAuth();
         LoginManager.getInstance().logInWithReadPermissions(this, Collections.singletonList("public_profile"));
     }
 
     public void loginGoogle() {
+        initGoogleAuth();
         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
 
     public void loginTwitter() {
+        initTwitterAuth();
         twitterAuthClient.authorize(this, twitterSessionCallback);
     }
 
