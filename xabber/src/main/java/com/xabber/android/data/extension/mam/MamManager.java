@@ -2,6 +2,7 @@ package com.xabber.android.data.extension.mam;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountItem;
@@ -61,6 +62,9 @@ public class MamManager implements OnRosterReceivedListener {
     public static int PAGE_SIZE = AbstractChat.PRELOADED_MESSAGES;
 
     private Map<AccountJid, Boolean> supportedByAccount;
+
+    private boolean isRequested = false;
+    private final Object lock = new Object();
 
     public static MamManager getInstance() {
         if (instance == null) {
@@ -442,6 +446,11 @@ public class MamManager implements OnRosterReceivedListener {
                     return;
                 }
 
+                synchronized (lock) {
+                    if (isRequested) return;
+                    else isRequested = true;
+                }
+
                 String firstMamMessageMamId;
                 boolean remoteHistoryCompletelyLoaded;
                 {
@@ -457,6 +466,7 @@ public class MamManager implements OnRosterReceivedListener {
                 }
 
                 if (firstMamMessageMamId == null || remoteHistoryCompletelyLoaded) {
+                    disableLock();
                     return;
                 }
 
@@ -470,25 +480,34 @@ public class MamManager implements OnRosterReceivedListener {
                 } catch (SmackException.NotLoggedInException | SmackException.NoResponseException | XMPPException.XMPPErrorException | InterruptedException | SmackException.NotConnectedException e) {
                     LogManager.exception(this, e);
                     EventBus.getDefault().post(new PreviousHistoryLoadFinishedEvent(chat));
+                    disableLock();
                     return;
                 }
-
-                EventBus.getDefault().post(new PreviousHistoryLoadFinishedEvent(chat));
 
                 LogManager.i("MAM", "queryArchive finished. fin count expected: " + mamQueryResult.mamFin.getRSMSet().getCount() + " real: " + mamQueryResult.forwardedMessages.size());
 
                 Realm realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
+                updatePreviousHistorySyncInfo(realm, chat, mamQueryResult);
                 List<MessageItem> messageItems = getMessageItems(mamQueryResult, chat);
                 syncMessages(realm, chat, messageItems);
-                updatePreviousHistorySyncInfo(realm, chat, mamQueryResult, messageItems);
                 realm.close();
+
+                EventBus.getDefault().post(new PreviousHistoryLoadFinishedEvent(chat));
+                disableLock();
             }
 
         });
 
     }
 
-    private void updatePreviousHistorySyncInfo(Realm realm, BaseEntity chat, org.jivesoftware.smackx.mam.MamManager.MamQueryResult mamQueryResult, List<MessageItem> messageItems) {
+    private void disableLock() {
+        synchronized (lock) {
+            isRequested = false;
+        }
+    }
+
+    private void updatePreviousHistorySyncInfo(Realm realm, BaseEntity chat,
+                           org.jivesoftware.smackx.mam.MamManager.MamQueryResult mamQueryResult) {
         SyncInfo syncInfo = getSyncInfo(realm, chat.getAccount(), chat.getUser());
 
         realm.beginTransaction();
@@ -634,7 +653,7 @@ public class MamManager implements OnRosterReceivedListener {
         Realm realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
         List<MessageItem> messageItems = getMessageItems(mamQueryResult, chat);
         syncMessages(realm, chat, messageItems);
-        updatePreviousHistorySyncInfo(realm, chat, mamQueryResult, messageItems);
+        updatePreviousHistorySyncInfo(realm, chat, mamQueryResult);
         realm.close();
     }
 }
