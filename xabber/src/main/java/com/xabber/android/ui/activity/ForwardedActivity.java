@@ -15,6 +15,7 @@ import com.xabber.android.R;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.ui.color.ColorManager;
+import com.xabber.android.ui.color.StatusBarPainter;
 import com.xabber.android.ui.fragment.ForwardedFragment;
 
 public class ForwardedActivity extends ManagedActivity {
@@ -25,6 +26,8 @@ public class ForwardedActivity extends ManagedActivity {
 
     private Toolbar toolbar;
     private Fragment fragment;
+
+    private StatusBarPainter statusBarPainter;
 
     private final static String KEY_MESSAGE_ID = "messageId";
     private final static String KEY_ACCOUNT = "account";
@@ -59,6 +62,8 @@ public class ForwardedActivity extends ManagedActivity {
                 NavUtils.navigateUpFromSameTask(ForwardedActivity.this);
             }
         });
+        statusBarPainter = new StatusBarPainter(this);
+        statusBarPainter.updateWithDefaultColor();
     }
 
     @Override
