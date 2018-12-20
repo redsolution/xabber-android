@@ -26,7 +26,7 @@
         android:layout_below="@id/toolbar_default"
         android:layout_alignParentRight="true"
         android:layout_margin="16dp"
-        android:background="?android:selectableItemBackgroundBorderless"
+        android:background="?android:selectableItemBackground"
         />
 
     <View
