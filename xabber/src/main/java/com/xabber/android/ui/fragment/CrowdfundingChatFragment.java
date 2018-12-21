@@ -166,6 +166,12 @@ public class CrowdfundingChatFragment extends Fragment implements CrowdfundingCh
         }
     }
 
+    private void markSkippedAsRead(int lastpos) {
+        for (int i = 0; i <= lastpos; i++) {
+            markAsRead(adapter.getItem(i));
+        }
+    }
+
     private void writeAsRead() {
         String[] ids = waitToMarkAsRead.toArray(new String[0]);
         CrowdfundingManager.getInstance().markMessagesAsRead(ids);
@@ -209,6 +215,7 @@ public class CrowdfundingChatFragment extends Fragment implements CrowdfundingCh
         if (fakeUnread == 0 || lastVisiblePosition + 2 >= adapter.getItemCount() - fakeUnread) {
             // scroll down
             layoutManager.scrollToPosition(adapter.getItemCount() - 1);
+            markSkippedAsRead(adapter.getItemCount() - 1);
             // scroll to unread
         } else layoutManager.scrollToPosition(adapter.getItemCount() - fakeUnread);
     }
