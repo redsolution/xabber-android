@@ -25,7 +25,7 @@ import rx.subscriptions.CompositeSubscription;
 public class CrowdfundingManager implements OnLoadListener {
 
     private static final int CACHE_LIFETIME = (int) TimeUnit.DAYS.toSeconds(1);
-    public static final int NO_DEFAULT_DELAY = -1;
+    private static final int CROWDFUNDING_DELAY = (int) TimeUnit.HOURS.toSeconds(1);
 
     private static CrowdfundingManager instance;
     private CompositeSubscription compositeSubscription = new CompositeSubscription();
@@ -40,7 +40,11 @@ public class CrowdfundingManager implements OnLoadListener {
     @Override
     public void onLoad() {
         CrowdfundingMessage lastMessage = getLastMessageFromRealm();
-        if (lastMessage == null) requestLeader();
+        if (lastMessage == null) {
+            if (SettingsManager.getFirstCrowdfundingRunTimestamp() == 0)
+                SettingsManager.setFirstCrowdfundingRunTimestamp(getCurrentTime());
+            else if (isTimeToCrowdfunding()) requestLeader();
+        }
         else if (!CrowdfundingManager.getInstance().haveDelayedMessages() && isCacheExpired())
             requestFeed(lastMessage.getTimestamp());
     }
@@ -74,7 +78,6 @@ public class CrowdfundingManager implements OnLoadListener {
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                Log.d("VALERATEST", "timer - " + delay);
                 CrowdfundingManager.getInstance().removeDelay(delay + step);
                 startUpdateTimer(delay + step, step);
             }
@@ -229,6 +232,10 @@ public class CrowdfundingManager implements OnLoadListener {
 
     private boolean isCacheExpired() {
         return getCurrentTime() > SettingsManager.getLastCrowdfundingLoadTimestamp() + CACHE_LIFETIME;
+    }
+
+    private boolean isTimeToCrowdfunding() {
+        return getCurrentTime() > SettingsManager.getFirstCrowdfundingRunTimestamp() + CROWDFUNDING_DELAY;
     }
 
     public int getCurrentTime() {
