@@ -158,7 +158,7 @@ public class CrowdfundingChatFragment extends Fragment implements CrowdfundingCh
     }
 
     private void markAsRead(CrowdfundingMessage message) {
-        if (message != null && !message.isRead()) {
+        if (message != null && message.isValid() && !message.isRead()) {
             if (!waitToMarkAsRead.contains(message.getId())) {
                 waitToMarkAsRead.add(message.getId());
                 updateButton();
