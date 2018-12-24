@@ -99,7 +99,7 @@ public class XAccountSignUpFragment1 extends Fragment implements View.OnClickLis
         if (username != null) edtUsername.setText(username);
 
         String errorMessage = SignUpRepo.getInstance().getLastErrorMessage();
-        if (errorMessage != null) edtUsername.setError(errorMessage);
+        edtUsername.setError(errorMessage);
     }
 
     @Override
