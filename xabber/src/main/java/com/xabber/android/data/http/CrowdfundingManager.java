@@ -40,19 +40,19 @@ public class CrowdfundingManager implements OnLoadListener {
     @Override
     public void onLoad() {
         CrowdfundingMessage lastMessage = getLastMessageFromRealm();
-        if (lastMessage == null) requestLeaderAndFeed();
-        else if (isCacheExpired()) requestFeed(lastMessage.getTimestamp());
+        if (lastMessage == null) requestLeader();
+        else if (!CrowdfundingManager.getInstance().haveDelayedMessages() && isCacheExpired())
+            requestFeed(lastMessage.getTimestamp());
     }
 
-    private void requestLeaderAndFeed() {
-        compositeSubscription.add(CrowdfundingClient.getLeaderAndFeed()
+    private void requestLeader() {
+        compositeSubscription.add(CrowdfundingClient.getLeader()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(new Action1<List<CrowdfundingMessage>>() {
                 @Override
                 public void call(List<CrowdfundingMessage> crowdfundingMessages) {
                     Log.d("crowd", "ok");
-                    SettingsManager.setLastCrowdfundingLoadTimestamp(getCurrentTime());
                 }
             }, new Action1<Throwable>() {
                 @Override
@@ -64,7 +64,11 @@ public class CrowdfundingManager implements OnLoadListener {
 
     public void startUpdateTimer(final int delay, final int step) {
         if (timer != null) timer.cancel();
-        if (!CrowdfundingManager.getInstance().haveDelayedMessages()) return;
+        if (!CrowdfundingManager.getInstance().haveDelayedMessages()) {
+            CrowdfundingMessage lastMessage = getLastMessageFromRealm();
+            if (lastMessage != null && isCacheExpired()) requestFeed(lastMessage.getTimestamp());
+            return;
+        }
 
         timer = new Timer();
         timer.schedule(new TimerTask() {
@@ -95,11 +99,11 @@ public class CrowdfundingManager implements OnLoadListener {
             }));
     }
 
-    public Single<List<CrowdfundingMessage>> saveCrowdfundingMessageToRealm(List<CrowdfundingClient.Message> messages, int delay) {
+    public Single<List<CrowdfundingMessage>> saveCrowdfundingMessageToRealm(List<CrowdfundingClient.Message> messages) {
 
         RealmList<CrowdfundingMessage> realmMessages = new RealmList<>();
         for (CrowdfundingClient.Message message : messages) {
-            realmMessages.add(messageToRealm(message, delay));
+            realmMessages.add(messageToRealm(message));
         }
 
         Realm realm = RealmManager.getInstance().getNewRealm();
@@ -110,10 +114,10 @@ public class CrowdfundingManager implements OnLoadListener {
         return Single.just(result);
     }
 
-    private CrowdfundingMessage messageToRealm(CrowdfundingClient.Message message, int delay) {
+    private CrowdfundingMessage messageToRealm(CrowdfundingClient.Message message) {
         CrowdfundingMessage realmMessage = new CrowdfundingMessage(message.getUuid());
         realmMessage.setRead(false);
-        realmMessage.setDelay((delay != NO_DEFAULT_DELAY && !message.isLeader()) ? delay : message.getDelay());
+        realmMessage.setDelay(message.getDelay());
         realmMessage.setLeader(message.isLeader());
         realmMessage.setTimestamp(message.getTimestamp());
         realmMessage.setReceivedTimestamp(getCurrentTime());
@@ -198,7 +202,7 @@ public class CrowdfundingManager implements OnLoadListener {
 
     public void reloadMessages() {
         removeAllMessages();
-        requestLeaderAndFeed();
+        requestLeader();
     }
 
     public void markMessagesAsRead(String[] ids) {

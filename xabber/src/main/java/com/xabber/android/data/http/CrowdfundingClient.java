@@ -12,28 +12,13 @@ import rx.functions.Func1;
 
 public class CrowdfundingClient {
 
-    public static Single<List<CrowdfundingMessage>> getLeaderAndFeed() {
+    public static Single<List<CrowdfundingMessage>> getLeader() {
         if (getAPIKey().length() < 20) return Single.error(new Throwable("API key not provided"));
         return HttpApiManager.getCrowdfundingApi().getLeader(getAPIKey())
             .flatMap(new Func1<List<Message>, Single<? extends List<CrowdfundingMessage>>>() {
                 @Override
                 public Single<? extends List<CrowdfundingMessage>> call(List<Message> messages) {
-                    return CrowdfundingManager.getInstance().saveCrowdfundingMessageToRealm(messages,
-                            CrowdfundingManager.NO_DEFAULT_DELAY);
-                }
-            })
-            .flatMap(new Func1<List<CrowdfundingMessage>, Single<? extends List<Message>>>() {
-                @Override
-                public Single<? extends List<Message>> call(List<CrowdfundingMessage> messages) {
-                    int timestamp = messages.get(messages.size() - 1).getReceivedTimestamp();
-                    return HttpApiManager.getCrowdfundingApi().getFeed(getAPIKey(), timestamp);
-                }
-            })
-            .flatMap(new Func1<List<Message>, Single<? extends List<CrowdfundingMessage>>>() {
-                @Override
-                public Single<? extends List<CrowdfundingMessage>> call(List<Message> messages) {
-                    int delay = CrowdfundingManager.getInstance().getMaxLeaderDelay();
-                    return CrowdfundingManager.getInstance().saveCrowdfundingMessageToRealm(messages, delay);
+                    return CrowdfundingManager.getInstance().saveCrowdfundingMessageToRealm(messages);
                 }
             });
     }
@@ -44,8 +29,7 @@ public class CrowdfundingClient {
             .flatMap(new Func1<List<Message>, Single<? extends List<CrowdfundingMessage>>>() {
                 @Override
                 public Single<? extends List<CrowdfundingMessage>> call(List<Message> messages) {
-                    int delay = CrowdfundingManager.getInstance().getMaxLeaderDelay();
-                    return CrowdfundingManager.getInstance().saveCrowdfundingMessageToRealm(messages, delay);
+                    return CrowdfundingManager.getInstance().saveCrowdfundingMessageToRealm(messages);
                 }
             });
     }
