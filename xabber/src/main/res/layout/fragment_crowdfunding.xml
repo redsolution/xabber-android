@@ -27,6 +27,7 @@
         android:layout_alignParentRight="true"
         android:layout_margin="16dp"
         android:background="?android:selectableItemBackground"
+        android:visibility="gone"
         />
 
     <View
