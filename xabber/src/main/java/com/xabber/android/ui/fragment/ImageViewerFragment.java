@@ -71,7 +71,7 @@ public class ImageViewerFragment extends Fragment {
                 @Override
                 public boolean onException(Exception e, String model, Target<GlideDrawable> target,
                                            boolean isFirstResource) {
-                    showError(e.toString());
+                    if (e != null) showError(e.toString());
                     if (path != null) MessageManager.setAttachmentLocalPathToNull(attachmentId);
                     progressBar.setVisibility(View.GONE);
                     return false;
