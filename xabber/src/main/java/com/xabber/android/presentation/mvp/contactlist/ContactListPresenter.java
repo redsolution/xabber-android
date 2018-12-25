@@ -377,6 +377,10 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
             items.clear();
             items.add(new ToolbarVO(Application.getInstance().getApplicationContext(), this, currentChatsState));
 
+            // set hasVisibleContacts as true if have crowdfunding message
+            CrowdfundingMessage message = CrowdfundingManager.getInstance().getLastNotDelayedMessageFromRealm();
+            if (message != null) hasVisibleContacts = true;
+
             if (hasVisibleContacts) {
 
                 if (currentChatsState == ChatListState.recent) {
