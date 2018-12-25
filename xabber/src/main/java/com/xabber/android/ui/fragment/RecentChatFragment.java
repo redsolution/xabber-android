@@ -182,7 +182,7 @@ public class RecentChatFragment extends Fragment implements Toolbar.OnMenuItemCl
         // crowdfunding chat
         int unreadCount = CrowdfundingManager.getInstance().getUnreadMessageCount();
         CrowdfundingMessage message = CrowdfundingManager.getInstance().getLastNotDelayedMessageFromRealm();
-        recentChats.add(CrowdfundingChat.createCrowdfundingChat(unreadCount, message));
+        if (message != null) recentChats.add(CrowdfundingChat.createCrowdfundingChat(unreadCount, message));
 
         Collections.sort(recentChats, ChatComparator.CHAT_COMPARATOR);
         final List<AbstractContact> newContacts = new ArrayList<>();
