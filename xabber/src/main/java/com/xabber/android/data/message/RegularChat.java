@@ -217,7 +217,7 @@ public class RegularChat extends AbstractChat {
             if (forwardComment != null) text = forwardComment;
 
             // System message received.
-            if ((text == null || text.trim().equals("")) && forwardIds.isEmpty())
+            if ((text == null || text.trim().equals("")) && (forwardIds == null || forwardIds.isEmpty()))
                 return true;
 
             // create message with file-attachments
