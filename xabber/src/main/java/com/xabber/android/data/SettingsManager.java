@@ -560,6 +560,10 @@ public class SettingsManager implements OnInitializedListener,
         return getBoolean(R.string.debug_crash_reports_key, R.bool.debug_crash_reports_default);
     }
 
+    public static boolean useDevelopAPI() {
+        return getBoolean(R.string.debug_use_develop_api_key, R.bool.debug_use_develop_api_default);
+    }
+
     public static boolean isCrashReportsSupported() {
         return BuildConfig.FLAVOR.equals("beta")
                 || BuildConfig.FLAVOR.equals("vip")

@@ -3,6 +3,7 @@ package com.xabber.android.data.xaccount;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.xabber.android.BuildConfig;
+import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.http.ICrowdfundingApi;
 import com.xabber.android.data.http.IXabberCom;
 
@@ -22,6 +23,7 @@ public class HttpApiManager {
     public static final String XABBER_EMAIL_CONFIRM_URL = "https://www.xabber.com/account/emails/confirmation/";
 
     public static final String XABBER_API_URL = "https://api.xabber.com/api/v2/";
+    public static final String XABBER_DEV_API_URL = "https://api.dev.xabber.com/api/v2/";
     private static final String XABBER_COM_URL = "https://www.xabber.com/";
     private static final String CROWDFUNDING_URL = "https://crowdfunding.xabber.com/api/v1/";
 
@@ -71,7 +73,7 @@ public class HttpApiManager {
                     .create();
 
             retrofit = new Retrofit.Builder()
-                .baseUrl(XABBER_API_URL)
+                .baseUrl(SettingsManager.useDevelopAPI() ? XABBER_DEV_API_URL : XABBER_API_URL)
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .client(httpClient)

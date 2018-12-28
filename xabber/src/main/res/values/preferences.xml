@@ -374,8 +374,10 @@
 
     <string name="debug_crash_reports_dialog_key">debug_crash_reports_dialog</string>
     <string name="debug_download_all_messages_key">debug_download_all_messages_key</string>
+    <string name="debug_use_develop_api_key">debug_develop_xabber_api_key</string>
+    <bool name="debug_use_develop_api_default">false</bool>
 
-<!-- preference_about -->
+    <!-- preference_about -->
     <string name="preference_about">@string/about_viewer</string>
     <string name="preference_about_key">preference_about</string>
 
