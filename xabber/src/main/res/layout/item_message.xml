@@ -88,6 +88,7 @@
                 android:textColor="@color/black_text"
                 android:layout_marginRight="4dp"
                 android:layout_marginEnd="4dp"
+                android:autoLink="all"
                 />
 
             <LinearLayout
