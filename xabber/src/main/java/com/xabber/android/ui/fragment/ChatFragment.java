@@ -1513,6 +1513,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     private void sendForwardMessage(List<String> messages, String text) {
         ForwardManager.forwardMessage(messages, account, user, text);
         hideForwardPanel();
+        hideUnreadMessageBackground();
+        scrollDown();
     }
 
     private void openChooserForForward(ArrayList<String> forwardIds) {
