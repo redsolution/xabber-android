@@ -21,7 +21,6 @@
         android:tint="@color/account_register_blue"
         android:layout_alignParentRight="true"
         android:layout_margin="8dp"
-        android:visibility="gone"
         />
 
     <me.relex.circleindicator.CircleIndicator

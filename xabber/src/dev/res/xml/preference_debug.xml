@@ -42,4 +42,10 @@
         android:title="@string/debug_download_all_messages_title">
     </Preference>
 
+    <CheckBoxPreference
+        android:title="@string/debug_use_develop_api_title"
+        android:key="@string/debug_use_develop_api_key"
+        android:defaultValue="@bool/debug_use_develop_api_default"
+        />
+
 </PreferenceScreen>
