@@ -22,6 +22,10 @@ import android.util.Log;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.database.messagerealm.MessageItem;
+import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.receiver.NotificationReceiver;
 import com.xabber.android.ui.activity.ContactListActivity;
 
@@ -43,7 +47,7 @@ public class NotifManagerCompat {
     private final Application context;
     private final NotificationManager notificationManager;
     private static NotifManagerCompat instance;
-    private Map<Integer, Chat> chats = new HashMap<>();
+    private Map<String, Chat> chats = new HashMap<>();
     private Message lastMessage = null;
 
     public NotifManagerCompat() {
@@ -70,18 +74,18 @@ public class NotifManagerCompat {
         // send message to xmpp
 
         // update notification
-        addMessage(notificationId, "", DISPLAY_NAME, replyText);
+        addMessage(getChatKey(notificationId), "", DISPLAY_NAME, replyText);
     }
 
     public void onNotificationCanceled(int notificationId) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            chats.remove(notificationId);
+            chats.remove(getChatKey(notificationId));
 
             if (chats.size() > 1) createGroupNotification();
             else {
                 notificationManager.cancel(MESSAGE_GROUP_NOTIFICATION_ID);
                 if (chats.size() == 1) {
-                    Map.Entry<Integer, Chat> entry = chats.entrySet().iterator().next();
+                    Map.Entry<String, Chat> entry = chats.entrySet().iterator().next();
                     createChatNotification(entry.getValue());
                 }
             }
@@ -100,10 +104,15 @@ public class NotifManagerCompat {
 
     /** MAIN METHODS */
 
-    public void addMessage(int chatId, CharSequence chatTitle, CharSequence author, CharSequence messageText) {
+    public void onNewMessage(MessageItem messageItem) {
+        String name = RosterManager.getInstance().getBestContact(messageItem.getAccount(), messageItem.getUser()).getName();
+        addMessage(getKey(messageItem.getAccount(), messageItem.getUser()), name, name, messageItem.getText());
+    }
+
+    private void addMessage(String chatId, CharSequence chatTitle, CharSequence author, CharSequence messageText) {
         Chat chat = chats.get(chatId);
         if (chat == null) {
-            chat = new Chat(chatId, chatTitle);
+            chat = new Chat(getNextChatNotificationId(), chatId, chatTitle);
             chats.put(chatId, chat);
         }
         lastMessage = new Message(author, messageText, System.currentTimeMillis());
@@ -144,13 +153,13 @@ public class NotifManagerCompat {
                 .setLargeIcon(drawableToBitmap(context.getDrawable(R.mipmap.ic_launcher_round)))
                 .setStyle(messageStyle)
                 .setGroup(MESSAGE_GROUP_ID)
-                .addAction(createReplyAction(chat.getChatId()))
-                .addAction(createMarkAsReadAction(chat.getChatId()))
-                .addAction(createMuteAction(chat.getChatId()))
-                .setDeleteIntent(NotificationReceiver.createDeleteIntent(context, chat.getChatId()))
+                .addAction(createReplyAction(chat.getNotificationId()))
+                .addAction(createMarkAsReadAction(chat.getNotificationId()))
+                .addAction(createMuteAction(chat.getNotificationId()))
+                .setDeleteIntent(NotificationReceiver.createDeleteIntent(context, chat.getNotificationId()))
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
-        sendNotification(builder, chat.getChatId());
+        sendNotification(builder, chat.getNotificationId());
     }
 
     private void createChatNotificationOldAPI(Chat chat) {
@@ -169,12 +178,12 @@ public class NotifManagerCompat {
                 .setContentText(content)
                 .setStyle(createInboxStyle(chat))
                 .setGroup(MESSAGE_GROUP_ID)
-                .addAction(createMarkAsReadAction(chat.getChatId()))
-                .addAction(createMuteAction(chat.getChatId()))
-                .setDeleteIntent(NotificationReceiver.createDeleteIntent(context, chat.getChatId()))
+                .addAction(createMarkAsReadAction(chat.getNotificationId()))
+                .addAction(createMuteAction(chat.getNotificationId()))
+                .setDeleteIntent(NotificationReceiver.createDeleteIntent(context, chat.getNotificationId()))
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
-        sendNotification(builder, chat.getChatId());
+        sendNotification(builder, chat.getNotificationId());
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
@@ -249,18 +258,18 @@ public class NotifManagerCompat {
 
     /** UTILS */
 
-    private void sendNotification(NotificationCompat.Builder builder, int chatId) {
+    private void sendNotification(NotificationCompat.Builder builder, int notificationId) {
         Intent resultIntent = new Intent(context, ContactListActivity.class);
 
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
         stackBuilder.addParentStack(ContactListActivity.class);
         stackBuilder.addNextIntent(resultIntent);
 
-        PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(chatId,
+        PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(notificationId,
                 PendingIntent.FLAG_UPDATE_CURRENT);
         builder.setContentIntent(resultPendingIntent);
 
-        notificationManager.notify(chatId, builder.build());
+        notificationManager.notify(notificationId, builder.build());
     }
 
     private NotificationCompat.Style createInboxStyle(Chat chat) {
@@ -298,7 +307,7 @@ public class NotifManagerCompat {
 
     private int getMessageCount() {
         int result = 0;
-        for (Map.Entry<Integer, Chat> entry : chats.entrySet()) {
+        for (Map.Entry<String, Chat> entry : chats.entrySet()) {
             result += entry.getValue().getMessages().size();
         }
         return result;
@@ -318,14 +327,34 @@ public class NotifManagerCompat {
         return bitmap;
     }
 
+    private String getKey(AccountJid account, UserJid user) {
+        String bareJidAccount = account.getFullJid().asBareJid().toString();
+        String bareJidUser = user.getBareJid().toString();
+        return bareJidAccount + "-" + bareJidUser;
+    }
+
+    private int getNextChatNotificationId() {
+        return 100 + chats.size() + 1;
+    }
+
+    private String getChatKey(int notificationId) {
+        for (Map.Entry<String, Chat> entry : chats.entrySet()) {
+            if (notificationId == entry.getValue().getNotificationId())
+                return entry.getKey();
+        }
+        return null;
+    }
+
     /** INTERNAL CLASSES */
 
     private class Chat {
-        private int chatId;
+        private String chatId;
+        private int notificationId;
         private CharSequence chatTitle;
         private List<Message> messages = new ArrayList<>();
 
-        public Chat(int chatId, CharSequence chatTitle) {
+        public Chat(int notificationId, String chatId, CharSequence chatTitle) {
+            this.notificationId = notificationId;
             this.chatId = chatId;
             this.chatTitle = chatTitle;
         }
@@ -334,7 +363,11 @@ public class NotifManagerCompat {
             messages.add(message);
         }
 
-        public int getChatId() {
+        public int getNotificationId() {
+            return notificationId;
+        }
+
+        public String getChatId() {
             return chatId;
         }
 
