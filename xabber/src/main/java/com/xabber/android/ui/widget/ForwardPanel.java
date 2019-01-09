@@ -96,6 +96,7 @@ public class ForwardPanel extends Fragment {
         HashSet<String> names = new HashSet<>();
         for (MessageItem message : messages) {
             String name = RosterManager.getDisplayAuthorName(message);
+            if (name == null) name = "null";
             int color = ColorManager.changeColor(ColorGenerator.MATERIAL.getColor(name), 0.8f);
             names.add("<font color='#" + Integer.toHexString(color).substring(2) + "'>" + name + "</font>");
         }
