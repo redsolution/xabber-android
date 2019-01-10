@@ -26,6 +26,7 @@ public class HttpApiManager {
     public static final String XABBER_DEV_API_URL = "https://api.dev.xabber.com/api/v2/";
     private static final String XABBER_COM_URL = "https://www.xabber.com/";
     private static final String CROWDFUNDING_URL = "https://crowdfunding.xabber.com/api/v1/";
+    private static final String CROWDFUNDING_DEV_URL = "https://crowdfunding.dev.xabber.com/api/v1/";
 
     private static IXabberApi xabberApi;
     private static IXabberCom xabberCom;
@@ -129,7 +130,7 @@ public class HttpApiManager {
                     .create();
 
             retrofitCrowdfunding = new Retrofit.Builder()
-                    .baseUrl(CROWDFUNDING_URL)
+                    .baseUrl(SettingsManager.useDevelopAPI() ? CROWDFUNDING_DEV_URL : CROWDFUNDING_URL)
                     .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                     .addConverterFactory(GsonConverterFactory.create(gson))
                     .client(httpClient)
