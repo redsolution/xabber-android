@@ -207,18 +207,15 @@ public class StringUtils {
             String sTime;
             Date date = new Date(lastActivityTime * 1000);
             Date today = new Date();
-            long justDate = lastActivityTime / (24 * 60 * 60 * 1000);
-            long justToday = today.getTime() / (24 * 60 * 60 * 1000);
-            long justYesterday = justToday - 1;
             Locale locale = Application.getInstance().getResources().getConfiguration().locale;
 
-            if (justDate == justToday) {
+            if (isToday(date)) {
                 SimpleDateFormat pattern = new SimpleDateFormat("HH:mm", locale);
                 sTime = pattern.format(date);
                 return Application.getInstance().getString(R.string.last_seen_today, sTime);
             }
 
-            if (justDate == justYesterday) {
+            if (isYesterday(date)) {
                 SimpleDateFormat pattern = new SimpleDateFormat("HH:mm", locale);
                 sTime = pattern.format(date);
                 return Application.getInstance().getString(R.string.last_seen_yesterday, sTime);
@@ -238,5 +235,23 @@ public class StringUtils {
             return "";
         }
         else return "";
+    }
+
+    public static boolean isToday(Date date) {
+        Calendar calendarOne = Calendar.getInstance();
+        Calendar calendarTwo = Calendar.getInstance();
+        calendarOne.setTime(date);
+        calendarTwo.setTime(new Date());
+        return calendarOne.get(Calendar.DAY_OF_YEAR) == calendarTwo.get(Calendar.DAY_OF_YEAR) &&
+                calendarOne.get(Calendar.YEAR) == calendarTwo.get(Calendar.YEAR);
+    }
+
+    public static boolean isYesterday(Date date) {
+        Calendar calendarOne = Calendar.getInstance();
+        Calendar calendarTwo = Calendar.getInstance();
+        calendarOne.setTime(date);
+        calendarTwo.setTime(new Date());
+        return calendarOne.get(Calendar.DAY_OF_YEAR) == calendarTwo.get(Calendar.DAY_OF_YEAR) - 1 &&
+                calendarOne.get(Calendar.YEAR) == calendarTwo.get(Calendar.YEAR);
     }
 }
