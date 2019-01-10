@@ -33,7 +33,7 @@
   <string name="progress_title_connect">Вход в аккаунт Xabber</string>
   <string name="hint_username">Имя пользователя</string>
   <string name="hint_old_pass">Старый пароль</string>
-  <string name="hint_pass">Новый пароль</string>
+  <string name="hint_pass">Пароль</string>
   <string name="hint_confirm_pass">Подтвердите пароль</string>
   <string name="label_xmpp_id">Действительный XMPP ID</string>
   <string name="title_xabber_account">Аккаунт Xabber</string>

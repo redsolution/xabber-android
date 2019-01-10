@@ -40,7 +40,7 @@
     <string name="hint_username">Username</string>
 
     <string name="hint_old_pass">Old password</string>
-    <string name="hint_pass">New password</string>
+    <string name="hint_pass">Password</string>
     <string name="hint_confirm_pass">Confirm password</string>
 
     <string name="label_xmpp_id">Existing XMPP ID</string>
