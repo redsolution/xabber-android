@@ -335,22 +335,14 @@ public class Application extends android.app.Application {
         }
 
         /** Crashlytics */
-        // Set up Crashlytics, disabled for debug builds
-        Crashlytics crashlyticsKit = new Crashlytics.Builder()
-                .core(new CrashlyticsCore.Builder().disabled(BuildConfig.DEBUG).build())
+        CrashlyticsCore crashlyticsCore = new CrashlyticsCore.Builder()
+                .disabled(BuildConfig.DEBUG || BuildConfig.FLAVOR == "open")
                 .build();
-
-        // Initialize Fabric with the debug-disabled crashlytics.
-        if (BuildConfig.USE_CRASHLYTICS) {
-            Fabric.with(this, crashlyticsKit);
-        }
+        Fabric.with(this, new Crashlytics.Builder().core(crashlyticsCore).build());
 
         Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
-
         addManagers();
-
         DatabaseManager.getInstance().addTables();
-
         LogManager.i(this, "onCreate finished...");
     }
 

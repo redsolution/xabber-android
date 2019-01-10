@@ -8,11 +8,13 @@ import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 
 import com.xabber.android.R;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.xaccount.XabberAccountManager;
 import com.xabber.android.ui.adapter.TutorialAdapter;
+import com.xabber.android.ui.preferences.PreferenceEditor;
 
 import me.relex.circleindicator.CircleIndicator;
 
@@ -24,6 +26,7 @@ public class TutorialActivity extends ManagedActivity {
 
     private Button btnLogin;
     private Button btnRegister;
+    private ImageView ivSettings;
 
     public static Intent createIntent(Context context) {
         return new Intent(context, TutorialActivity.class);
@@ -62,6 +65,14 @@ public class TutorialActivity extends ManagedActivity {
             @Override
             public void onClick(View v) {
                 startActivity(XabberLoginActivity.createIntent(TutorialActivity.this, XabberLoginActivity.FRAGMENT_SIGNUP_STEP1));
+            }
+        });
+
+        ivSettings = (ImageView) findViewById(R.id.ivSettings);
+        ivSettings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(PreferenceEditor.createIntent(TutorialActivity.this));
             }
         });
     }
