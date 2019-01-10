@@ -19,7 +19,7 @@
             android:layout_height="wrap_content"
             >
 
-            <android.support.design.widget.TextInputEditText
+            <android.support.v7.widget.AppCompatEditText
                 android:id="@+id/edtUsername"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -42,7 +42,7 @@
             android:layout_marginBottom="16dp"
             >
 
-            <android.support.design.widget.TextInputEditText
+            <android.support.v7.widget.AppCompatEditText
                 android:id="@+id/edtPass"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
