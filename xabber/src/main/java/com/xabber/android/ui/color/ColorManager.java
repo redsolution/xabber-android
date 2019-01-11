@@ -254,7 +254,7 @@ public class ColorManager {
 
         Integer colorId = colors.get(colorName);
         if (colorId != null) return colorId;
-        else return 1;
+        else return 0;
     }
 
     public String convertIndexToColorName(int colorIndex) {

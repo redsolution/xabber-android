@@ -516,7 +516,9 @@ public class XabberAccountManager implements OnLoadListener {
             } else if (accountJid != null && !account.isDeleted()) {
                 AccountManager.getInstance().setOrder(accountJid, account.getOrder());
                 AccountManager.getInstance().setTimestamp(accountJid, account.getTimestamp());
-                AccountManager.getInstance().setColor(accountJid, ColorManager.getInstance().convertColorNameToIndex(account.getColor()));
+                if (account.getColor() != null)
+                    AccountManager.getInstance().setColor(accountJid,
+                            ColorManager.getInstance().convertColorNameToIndex(account.getColor()));
                 AccountManager.getInstance().onAccountChanged(accountJid);
 
                 // delete existing account
