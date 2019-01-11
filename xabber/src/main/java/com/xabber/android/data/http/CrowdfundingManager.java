@@ -2,6 +2,7 @@ package com.xabber.android.data.http;
 
 import android.util.Log;
 
+import com.xabber.android.BuildConfig;
 import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.database.RealmManager;
@@ -25,7 +26,8 @@ import rx.subscriptions.CompositeSubscription;
 public class CrowdfundingManager implements OnLoadListener {
 
     private static final int CACHE_LIFETIME = (int) TimeUnit.DAYS.toSeconds(1);
-    private static final int CROWDFUNDING_DELAY = (int) TimeUnit.HOURS.toSeconds(1);
+    private static final int CROWDFUNDING_DELAY = BuildConfig.FLAVOR.equals("dev") ?
+            (int) TimeUnit.MINUTES.toSeconds(1) : (int) TimeUnit.HOURS.toSeconds(1);
 
     private static CrowdfundingManager instance;
     private CompositeSubscription compositeSubscription = new CompositeSubscription();
