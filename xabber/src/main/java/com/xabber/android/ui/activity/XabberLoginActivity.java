@@ -84,6 +84,7 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
     private Toolbar toolbar;
 
     private List<AuthManager.Host> hosts = new ArrayList<>();
+    private boolean signupIsRun = false;
 
     public static Intent createIntent(Context context, @Nullable String currentFragment) {
         Intent intent = new Intent(context, XabberLoginActivity.class);
@@ -398,6 +399,9 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
     /** SIGN UP */
 
     private void signUp(SignUpRepo signUpRepo) {
+        if (signupIsRun) return;
+        signupIsRun = true;
+
         String username = signUpRepo.getUsername();
         String host = signUpRepo.getHost();
         String pass = signUpRepo.getPass();
@@ -418,11 +422,13 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
                 .subscribe(new Action1<XabberAccount>() {
                     @Override
                     public void call(XabberAccount account) {
+                        signupIsRun = false;
                         handleSuccessSignUp();
                     }
                 }, new Action1<Throwable>() {
                     @Override
                     public void call(Throwable throwable) {
+                        signupIsRun = false;
                         handleErrorSignUp(throwable);
                     }
                 });
