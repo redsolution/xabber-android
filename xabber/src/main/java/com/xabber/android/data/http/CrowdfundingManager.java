@@ -6,6 +6,9 @@ import com.xabber.android.BuildConfig;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.database.RealmManager;
 import com.xabber.android.data.database.realm.CrowdfundingMessage;
+import com.xabber.android.data.message.NewMessageEvent;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.List;
 import java.util.Timer;
@@ -57,6 +60,7 @@ public class CrowdfundingManager {
                 @Override
                 public void call(List<CrowdfundingMessage> crowdfundingMessages) {
                     Log.d("crowd", "ok");
+                    EventBus.getDefault().post(new NewMessageEvent());
                 }
             }, new Action1<Throwable>() {
                 @Override
@@ -79,6 +83,7 @@ public class CrowdfundingManager {
             @Override
             public void run() {
                 CrowdfundingManager.getInstance().removeDelay(delay + step);
+                EventBus.getDefault().post(new NewMessageEvent());
                 startUpdateTimer(delay + step, step);
             }
         }, step * 1000);
@@ -93,6 +98,7 @@ public class CrowdfundingManager {
                 public void call(List<CrowdfundingMessage> crowdfundingMessages) {
                     Log.d("crowd", "ok");
                     SettingsManager.setLastCrowdfundingLoadTimestamp(getCurrentTime());
+                    EventBus.getDefault().post(new NewMessageEvent());
                 }
             }, new Action1<Throwable>() {
                 @Override
