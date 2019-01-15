@@ -88,6 +88,12 @@ public abstract class BaseLoginActivity extends ManagedActivity implements
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+        disableGoogleAuth();
+    }
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         // facebook auth
@@ -122,6 +128,7 @@ public abstract class BaseLoginActivity extends ManagedActivity implements
     }
 
     private void initGoogleAuth() {
+        if (mGoogleApiClient != null) return;
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestServerAuthCode(getString(R.string.SOCIAL_AUTH_GOOGLE_KEY), false)
                 .build();
@@ -129,6 +136,12 @@ public abstract class BaseLoginActivity extends ManagedActivity implements
                 .enableAutoManage(this, this)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
+    }
+
+    private void disableGoogleAuth() {
+        if (mGoogleApiClient == null) return;
+        mGoogleApiClient.stopAutoManage(this);
+        mGoogleApiClient.disconnect();
     }
 
     @Override
@@ -171,6 +184,7 @@ public abstract class BaseLoginActivity extends ManagedActivity implements
     }
 
     private void initFacebookAuth() {
+        if (callbackManager != null) return;
         callbackManager = CallbackManager.Factory.create();
         LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
@@ -195,6 +209,7 @@ public abstract class BaseLoginActivity extends ManagedActivity implements
     }
 
     private void initTwitterAuth() {
+        if (twitterAuthClient != null && twitterSessionCallback != null) return;
         TwitterConfig config = new TwitterConfig.Builder(this)
                 .logger(new DefaultLogger(Log.DEBUG))
                 .twitterAuthConfig(new TwitterAuthConfig(
