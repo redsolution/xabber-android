@@ -374,10 +374,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         this.user = userJid;
 
         AbstractChat abstractChat = getChat();
-
-        if (!(abstractChat instanceof RegularChat)) {
-            securityButton.setVisibility(View.GONE);
-        }
+        showSecurityButton(true);
 
         if (abstractChat != null) {
             messageItems = abstractChat.getMessages();
@@ -790,12 +787,12 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         if (isInputEmpty) {
             sendButton.setColorFilter(ColorManager.getInstance().getAccountPainter().getGreyMain());
             sendButton.setEnabled(false);
-            securityButton.setVisibility(View.VISIBLE);
+            showSecurityButton(true);
             attachButton.setVisibility(View.VISIBLE);
         } else {
             sendButton.setEnabled(true);
             sendButton.setColorFilter(ColorManager.getInstance().getAccountPainter().getAccountSendButtonColor(account));
-            securityButton.setVisibility(View.GONE);
+            showSecurityButton(false);
             attachButton.setVisibility(View.GONE);
         }
     }
@@ -871,6 +868,12 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
             // strange null ptr happens
             securityButton.setImageLevel(securityLevel.getImageLevel());
         }
+    }
+
+    private void showSecurityButton(boolean show) {
+        boolean isRoom = getChat() instanceof RoomChat;
+        if (isRoom) securityButton.setVisibility(View.GONE);
+        else securityButton.setVisibility(show ? View.VISIBLE : View.GONE);
     }
 
     private void updateSendButtonSecurityLevel() {
