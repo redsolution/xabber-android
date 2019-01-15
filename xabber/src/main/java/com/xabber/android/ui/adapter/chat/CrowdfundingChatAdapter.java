@@ -60,7 +60,7 @@ public class CrowdfundingChatAdapter extends RealmRecyclerViewAdapter<Crowdfundi
     @Override
     public CrowdMessageVH onCreateViewHolder(@NonNull ViewGroup parent, int i) {
         return new CrowdMessageVH(LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_message_incoming, parent, false));
+                .inflate(R.layout.item_message_incoming_noflex, parent, false));
     }
 
     @Override
@@ -71,12 +71,15 @@ public class CrowdfundingChatAdapter extends RealmRecyclerViewAdapter<Crowdfundi
         // appearance
         holder.messageText.setTextAppearance(context, appearanceStyle);
 
+        // text
         String text = message.getMessageForCurrentLocale();
         if (text == null) text = "";
+        holder.messageText.setText(Html.fromHtml(text));
 
         // text or image
         if (FileManager.isImageUrl(text)) {
             holder.messageImage.setVisibility(View.VISIBLE);
+            holder.messageText.setVisibility(View.GONE);
             final ImageView image = holder.messageImage;
             final TextView textMessage = holder.messageText;
             Glide.with(context)
@@ -97,7 +100,7 @@ public class CrowdfundingChatAdapter extends RealmRecyclerViewAdapter<Crowdfundi
                 .into(holder.messageImage);
         } else {
             holder.messageImage.setVisibility(View.GONE);
-            holder.messageText.setText(Html.fromHtml(text));
+            holder.messageText.setVisibility(View.VISIBLE);
         }
 
         // nickname
