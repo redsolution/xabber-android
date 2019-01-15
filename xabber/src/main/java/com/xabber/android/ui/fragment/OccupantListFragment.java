@@ -118,8 +118,11 @@ public class OccupantListFragment extends Fragment implements AdapterView.OnItem
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         com.xabber.android.data.extension.muc.Occupant occupant
                 = (com.xabber.android.data.extension.muc.Occupant) listAdapter.getItem(position);
-        LogManager.i(this, occupant.getNickname().toString());
-        if (listener != null) listener.onOccupantClick(occupant.getNickname().toString());
+
+        if (listener != null && occupant != null && occupant.getNickname() != null) {
+            listener.onOccupantClick(occupant.getNickname().toString());
+            LogManager.i(this, occupant.getNickname().toString());
+        }
 
 //        UserJid occupantFullJid = null;
 //        try {
