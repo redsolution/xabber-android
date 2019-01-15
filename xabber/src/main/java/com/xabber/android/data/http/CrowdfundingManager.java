@@ -3,7 +3,6 @@ package com.xabber.android.data.http;
 import android.util.Log;
 
 import com.xabber.android.BuildConfig;
-import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.database.RealmManager;
 import com.xabber.android.data.database.realm.CrowdfundingMessage;
@@ -23,7 +22,7 @@ import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
-public class CrowdfundingManager implements OnLoadListener {
+public class CrowdfundingManager {
 
     private static final int CACHE_LIFETIME = (int) TimeUnit.DAYS.toSeconds(1);
     private static final int CROWDFUNDING_DELAY = BuildConfig.FLAVOR.equals("dev") ?
@@ -39,7 +38,6 @@ public class CrowdfundingManager implements OnLoadListener {
         return instance;
     }
 
-    @Override
     public void onLoad() {
         CrowdfundingMessage lastMessage = getLastMessageFromRealm();
         if (lastMessage == null) {
