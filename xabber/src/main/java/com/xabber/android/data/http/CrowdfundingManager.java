@@ -212,6 +212,8 @@ public class CrowdfundingManager {
     public void reloadMessages() {
         removeAllMessages();
         requestLeader();
+        SettingsManager.setFirstCrowdfundingRunTimestamp(0);
+        SettingsManager.setLastCrowdfundingLoadTimestamp(1);
     }
 
     public void markMessagesAsRead(String[] ids) {
