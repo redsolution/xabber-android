@@ -17,8 +17,8 @@ import android.widget.TextView;
 import com.amulyakhare.textdrawable.util.ColorGenerator;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.target.Target;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
 import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.database.realm.CrowdfundingMessage;
@@ -98,22 +98,30 @@ public class CrowdfundingChatAdapter extends RealmRecyclerViewAdapter<Crowdfundi
             holder.messageText.setVisibility(View.GONE);
             final ImageView image = holder.messageImage;
             final TextView textMessage = holder.messageText;
+
             Glide.with(context)
                 .load(text)
-                .listener(new RequestListener<String, GlideDrawable>() {
+                .placeholder(R.drawable.ic_recent_image_placeholder)
+                .error(R.drawable.ic_recent_image_placeholder)
+                .into(new SimpleTarget<GlideDrawable>() {
                     @Override
-                    public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
-                        image.setVisibility(View.GONE);
-                        textMessage.setVisibility(View.VISIBLE);
-                        return true;
+                    public void onLoadStarted(Drawable placeholder) {
+                        super.onLoadStarted(placeholder);
+                        image.setImageDrawable(placeholder);
                     }
 
                     @Override
-                    public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
-                        return false;
+                    public void onLoadFailed(Exception e, Drawable errorDrawable) {
+                        super.onLoadFailed(e, errorDrawable);
+                        image.setImageDrawable(errorDrawable);
+                        textMessage.setVisibility(View.VISIBLE);
                     }
-                })
-                .into(holder.messageImage);
+
+                    @Override
+                    public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> glideAnimation) {
+                        image.setImageDrawable(resource);
+                    }
+                });
         } else {
             holder.messageImage.setVisibility(View.GONE);
             holder.messageText.setVisibility(View.VISIBLE);
