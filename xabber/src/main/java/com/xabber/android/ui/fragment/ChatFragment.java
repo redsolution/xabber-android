@@ -1019,9 +1019,9 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                     dialog.dismiss();
                     checkedResource = adapter.getCheckedItem();
                     try {
-                        RegularChat chat = (RegularChat) getChat();
-                        if (chat != null) {
-                            chat.setOTRresource(Resourcepart.from(items.get(checkedResource).get(ResourceAdapter.KEY_RESOURCE)));
+                        AbstractChat chat = getChat();
+                        if (chat instanceof RegularChat) {
+                            ((RegularChat)chat).setOTRresource(Resourcepart.from(items.get(checkedResource).get(ResourceAdapter.KEY_RESOURCE)));
                             if (restartSession) restartEncryption(account, user);
                             else startEncryption(account, user);
                         } else {
