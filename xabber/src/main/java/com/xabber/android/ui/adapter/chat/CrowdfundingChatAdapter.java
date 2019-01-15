@@ -34,6 +34,9 @@ import io.realm.RealmResults;
 
 public class CrowdfundingChatAdapter extends RealmRecyclerViewAdapter<CrowdfundingMessage, CrowdfundingChatAdapter.CrowdMessageVH> {
 
+    public static final int VIEW_TYPE_MESSAGE = 1;
+    public static final int VIEW_TYPE_MESSAGE_NOFLEX = 2;
+
     private BindListener listener;
     private final int appearanceStyle = SettingsManager.chatsAppearanceStyle();
 
@@ -58,9 +61,22 @@ public class CrowdfundingChatAdapter extends RealmRecyclerViewAdapter<Crowdfundi
 
     @NonNull
     @Override
-    public CrowdMessageVH onCreateViewHolder(@NonNull ViewGroup parent, int i) {
-        return new CrowdMessageVH(LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_message_incoming_noflex, parent, false));
+    public CrowdMessageVH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        if (viewType == VIEW_TYPE_MESSAGE_NOFLEX)
+            return new CrowdMessageVH(LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.item_message_incoming_noflex, parent, false));
+        else return new CrowdMessageVH(LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.item_message_incoming, parent, false));
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        final CrowdfundingMessage message = getMessage(position);
+        if (message == null) return 0;
+
+        String text = message.getMessageForCurrentLocale();
+        if (FileManager.isImageUrl(text)) return VIEW_TYPE_MESSAGE_NOFLEX;
+        else return VIEW_TYPE_MESSAGE;
     }
 
     @Override
