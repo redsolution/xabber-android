@@ -57,6 +57,7 @@ public class ImageViewerActivity extends AppCompatActivity implements Toolbar.On
     private CompositeSubscription subscriptions = new CompositeSubscription();
     private CompositeSubscription attachmentStateSubscription = new CompositeSubscription();
     private boolean waitForSharing;
+    private boolean isDownloading;
 
     @NonNull
     public static Intent createIntent(Context context, String id, int position) {
@@ -232,6 +233,7 @@ public class ImageViewerActivity extends AppCompatActivity implements Toolbar.On
         String filePath = attachment.getFilePath();
         Long size = attachment.getFileSize();
         menu.findItem(R.id.action_download_image).setVisible(filePath == null && size != null);
+        menu.findItem(R.id.action_download_image).setEnabled(!isDownloading);
         menu.findItem(R.id.action_done).setVisible(filePath != null);
         menu.findItem(R.id.action_share).setVisible(size != null);
     }
@@ -301,13 +303,18 @@ public class ImageViewerActivity extends AppCompatActivity implements Toolbar.On
         if (progressData.getAttachmentId().equals(attachment.getUniqueId())) {
             if (progressData.isCompleted()) {
                 showProgress(false);
+                isDownloading = false;
                 updateToolbar();
             } else if (progressData.getError() != null) {
                 showProgress(false);
                 showToast(progressData.getError());
+                isDownloading = false;
+                updateToolbar();
             } else {
                 progressBar.setProgress(progressData.getProgress());
                 showProgress(true);
+                isDownloading = true;
+                updateToolbar();
             }
         } else showProgress(false);
     }
