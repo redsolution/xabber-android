@@ -1,10 +1,13 @@
 package com.xabber.android.presentation.ui.contactlist.viewobjects;
 
 import android.content.Context;
+import android.text.Html;
 import android.view.View;
 import android.widget.TextView;
 
 import com.xabber.android.R;
+import com.xabber.android.data.extension.file.FileManager;
+import com.xabber.android.data.filedownload.FileCategory;
 import com.xabber.android.data.roster.CrowdfundingContact;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.utils.StringUtils;
@@ -76,9 +79,14 @@ public class CrowdfundingChatVO extends AbstractFlexibleItem<CrowdfundingChatVO.
         } else holder.tvUnreadCount.setVisibility(View.INVISIBLE);
 
         /** set up MESSAGE TEXT */
-        if (messageText != null && !messageText.isEmpty())
-            holder.tvMessageText.setText(messageText);
-        else holder.tvMessageText.setText(R.string.xabber_chat_description);
+        if (messageText != null && !messageText.isEmpty()) {
+            if (FileManager.isImageUrl(messageText)) {
+                StringBuilder builder = new StringBuilder();
+                builder.append(FileCategory.getCategoryName(FileCategory.image, true));
+                builder.append(messageText.substring(messageText.lastIndexOf('/') + 1));
+                holder.tvMessageText.setText(Html.fromHtml(builder.toString()));
+            } else holder.tvMessageText.setText(Html.fromHtml(messageText));
+        } else holder.tvMessageText.setText(R.string.xabber_chat_description);
 
         /** set up ACCOUNT COLOR indicator */
         holder.accountColorIndicator.setBackgroundColor(accountColorIndicator);
