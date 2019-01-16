@@ -146,13 +146,6 @@ public class CrowdfundingManager {
         return realmMessage;
     }
 
-    public int getMaxLeaderDelay() {
-        Realm realm = RealmManager.getInstance().getNewRealm();
-        return realm.where(CrowdfundingMessage.class)
-                .equalTo("isLeader", true)
-                .max("delay").intValue();
-    }
-
     public boolean haveDelayedMessages() {
         Realm realm = RealmManager.getInstance().getNewRealm();
         CrowdfundingMessage message = realm.where(CrowdfundingMessage.class)
@@ -214,6 +207,12 @@ public class CrowdfundingManager {
         requestLeader();
         SettingsManager.setFirstCrowdfundingRunTimestamp(0);
         SettingsManager.setLastCrowdfundingLoadTimestamp(1);
+    }
+
+    /** Ignore business rules. Use only for debug */
+    public void fetchFeedForDebug() {
+        CrowdfundingMessage lastMessage = getLastMessageFromRealm();
+        if (lastMessage != null) requestFeed(lastMessage.getReceivedTimestamp());
     }
 
     public void markMessagesAsRead(String[] ids) {

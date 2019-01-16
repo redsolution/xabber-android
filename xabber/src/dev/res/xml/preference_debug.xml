@@ -48,4 +48,9 @@
         android:defaultValue="@bool/debug_use_develop_api_default"
         />
 
+    <Preference
+        android:key="@string/debug_fetch_crowdfunding_feed_key"
+        android:title="@string/debug_fetch_crowdfunding_feed_title">
+    </Preference>
+
 </PreferenceScreen>
