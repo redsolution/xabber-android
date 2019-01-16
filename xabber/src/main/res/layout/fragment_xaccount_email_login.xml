@@ -17,6 +17,7 @@
             android:text="@string/title_login_email"
             android:textStyle="bold"
             android:textSize="16sp"
+            android:theme="@style/Theme"
             android:layout_marginLeft="16dp"
             android:layout_gravity="center_vertical"
             />
@@ -36,6 +37,7 @@
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:theme="@style/Theme"
             >
 
             <android.support.v7.widget.AppCompatEditText
@@ -59,6 +61,7 @@
             app:passwordToggleEnabled="true"
             android:layout_marginTop="16dp"
             android:layout_marginBottom="16dp"
+            android:theme="@style/Theme"
             >
 
             <android.support.v7.widget.AppCompatEditText

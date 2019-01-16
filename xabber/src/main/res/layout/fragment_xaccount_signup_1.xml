@@ -20,6 +20,7 @@
             android:layout_height="wrap_content"
             android:text="@string/title_signup_step_1"
             android:textStyle="bold"
+            android:theme="@style/Theme"
             android:textSize="16sp"
             android:layout_marginLeft="16dp"
             android:layout_gravity="center_vertical"
@@ -49,6 +50,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:theme="@style/Theme"
                 >
 
                 <EditText
@@ -91,6 +93,7 @@
                     android:layout_marginTop="8dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:theme="@style/Theme"
                     />
 
                 <View

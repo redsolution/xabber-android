@@ -18,6 +18,7 @@
             android:text="@string/title_signup_step_2"
             android:textSize="16sp"
             android:textStyle="bold"
+            android:theme="@style/Theme"
             android:layout_marginLeft="16dp"
             android:layout_gravity="center_vertical"
             />
@@ -37,6 +38,7 @@
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:theme="@style/Theme"
             app:passwordToggleEnabled="true">
 
             <android.support.v7.widget.AppCompatEditText
