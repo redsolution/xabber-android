@@ -49,7 +49,7 @@ public class CrowdfundingManager {
             else if (isTimeToCrowdfunding()) requestLeader();
         }
         else if (!CrowdfundingManager.getInstance().haveDelayedMessages() && isCacheExpired())
-            requestFeed(lastMessage.getTimestamp());
+            requestFeed(lastMessage.getReceivedTimestamp());
     }
 
     private void requestLeader() {
@@ -74,7 +74,7 @@ public class CrowdfundingManager {
         if (timer != null) timer.cancel();
         if (!CrowdfundingManager.getInstance().haveDelayedMessages()) {
             CrowdfundingMessage lastMessage = getLastMessageFromRealm();
-            if (lastMessage != null && isCacheExpired()) requestFeed(lastMessage.getTimestamp());
+            if (lastMessage != null && isCacheExpired()) requestFeed(lastMessage.getReceivedTimestamp());
             return;
         }
 
