@@ -5,8 +5,11 @@ import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Color;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
 import android.support.v4.content.ContextCompat;
 import android.util.SparseArray;
+import android.widget.ImageView;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
@@ -299,5 +302,11 @@ public class ColorManager {
                 Color.red(color),
                 Color.green(color),
                 Color.blue(color));
+    }
+
+    public static void setGrayScaleFilter(ImageView v) {
+        ColorMatrix matrix = new ColorMatrix();
+        matrix.setSaturation(0);
+        v.setColorFilter(new ColorMatrixColorFilter(matrix));
     }
 }
