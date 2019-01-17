@@ -245,7 +245,7 @@ public class AuthManager {
     // API v2
 
     public static Single<XMPPCode> requestXMPPCode(String jid) {
-        return HttpApiManager.getXabberApi().requestXMPPCode(new Jid(jid));
+        return HttpApiManager.getXabberApi().requestXMPPCode(new XMPPCodeRequest(jid, "iq"));
     }
 
     public static Single<XabberAccount> confirmXMPP(final String jid, String code) {
@@ -485,6 +485,16 @@ public class AuthManager {
 
         public String getApiJid() {
             return api_jid;
+        }
+    }
+
+    public static class XMPPCodeRequest {
+        final String jid;
+        final String type;
+
+        public XMPPCodeRequest(String jid, String type) {
+            this.jid = jid;
+            this.type = type;
         }
     }
 

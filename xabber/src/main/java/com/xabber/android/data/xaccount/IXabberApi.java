@@ -74,7 +74,7 @@ public interface IXabberApi {
     /* Xabber API v2 */
 
     @POST("accounts/xmpp_code_request/")
-    Single<AuthManager.XMPPCode> requestXMPPCode(@Body AuthManager.Jid jid);
+    Single<AuthManager.XMPPCode> requestXMPPCode(@Body AuthManager.XMPPCodeRequest request);
 
     @POST("accounts/xmpp_auth/")
     Single<XabberAccountDTO> confirmXMPP(@Body AuthManager.CodeConfirm codeConfirm);

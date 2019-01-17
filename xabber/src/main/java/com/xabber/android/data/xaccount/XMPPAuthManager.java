@@ -4,7 +4,6 @@ import android.util.Log;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
-import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
@@ -19,8 +18,6 @@ import com.xabber.android.data.roster.RosterManager;
 
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
-import org.jivesoftware.smack.packet.Message;
-import org.jivesoftware.smack.packet.StandardExtensionElement;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jxmpp.stringprep.XmppStringprepException;
 
@@ -36,8 +33,7 @@ import rx.schedulers.Schedulers;
 public class XMPPAuthManager implements OnPacketListener, OnConnectedListener {
 
     private static final String LOG_TAG = XMPPAuthManager.class.getSimpleName();
-    private static final String EXTENSION_NAMESPACE = "http://jabber.org/protocol/http-auth";
-    private static final String ATTRIBUTE_ID = "id";
+    private static final String URL_AUTH = "https://www.xabber.com/account/auth/login/";
 
     private static XMPPAuthManager instance;
 
@@ -62,17 +58,13 @@ public class XMPPAuthManager implements OnPacketListener, OnConnectedListener {
 
     @Override
     public void onStanza(ConnectionItem connection, Stanza packet) {
-        if (packet instanceof Message && ((Message) packet).getType() == Message.Type.headline) {
-            Message message = (Message) packet;
+        if (packet instanceof HttpConfirmIq && URL_AUTH.equals(((HttpConfirmIq) packet).getUrl())) {
+            HttpConfirmIq httpConfirmIq = (HttpConfirmIq) packet;
 
-            String apiJid = message.getFrom().toString();
-            String clientJid = message.getTo().toString();
-            String requestId = message.getStanzaId();
-            String code = null;
-
-            StandardExtensionElement extensionElement = (StandardExtensionElement)
-                    message.getExtension(EXTENSION_NAMESPACE);
-            if (extensionElement != null) code = extensionElement.getAttributeValue(ATTRIBUTE_ID);
+            String apiJid = packet.getFrom().toString();
+            String clientJid = packet.getTo().toString();
+            String requestId = packet.getStanzaId();
+            String code = httpConfirmIq.getId();
 
             if (requestId != null && code != null)
                 onRequestReceived(new Request(requestId, clientJid, apiJid, code));

@@ -24,6 +24,8 @@ import com.xabber.android.data.extension.forward.ForwardCommentProvider;
 import com.xabber.android.data.extension.httpfileupload.CustomDataProvider;
 import com.xabber.android.data.log.AndroidLoggingHandler;
 import com.xabber.android.data.log.LogManager;
+import com.xabber.android.data.xaccount.HttpConfirmIq;
+import com.xabber.android.data.xaccount.HttpConfirmIqProvider;
 
 import org.greenrobot.eventbus.EventBus;
 import org.jivesoftware.smack.AbstractXMPPConnection;
@@ -134,6 +136,9 @@ class ConnectionThread {
             }
 
             if (!connection.isAuthenticated()) {
+                ProviderManager.addIQProvider(HttpConfirmIq.ELEMENT,
+                        HttpConfirmIq.NAMESPACE, new HttpConfirmIqProvider());
+
                 connection.login();
 
                 // can be a cause of strange Smack behavior
