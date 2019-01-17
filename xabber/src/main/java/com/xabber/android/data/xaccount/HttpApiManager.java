@@ -20,7 +20,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class HttpApiManager {
 
     public static final String XABBER_FORGOT_PASS_URL = "https://www.xabber.com/account/auth/forgot-password/";
-    public static final String XABBER_EMAIL_CONFIRM_URL = "https://www.xabber.com/account/emails/confirmation/";
+    private static final String XABBER_EMAIL_CONFIRM_URL = "https://www.xabber.com/account/emails/confirmation/";
+    private static final String XABBER_DEV_EMAIL_CONFIRM_URL = "http://dev.xabber.com/account/emails/confirmation/";
 
     public static final String XABBER_API_URL = "https://api.xabber.com/api/v2/";
     public static final String XABBER_DEV_API_URL = "https://api.dev.xabber.com/api/v2/";
@@ -109,6 +110,10 @@ public class HttpApiManager {
                     .build();
         }
         return retrofitXabberCom;
+    }
+
+    public static String getXabberEmailConfirmUrl() {
+        return SettingsManager.useDevelopAPI() ? XABBER_DEV_EMAIL_CONFIRM_URL : XABBER_EMAIL_CONFIRM_URL;
     }
 
     private static Retrofit getCrowdfundingRetrofit() {

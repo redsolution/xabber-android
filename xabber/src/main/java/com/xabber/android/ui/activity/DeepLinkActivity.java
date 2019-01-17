@@ -61,11 +61,13 @@ public class DeepLinkActivity extends BaseLoginActivity {
         Uri appLinkData = intent.getData();
         if (Intent.ACTION_VIEW.equals(appLinkAction) && appLinkData != null) {
             String uri = appLinkData.toString();
-            String key = uri.replace(HttpApiManager.XABBER_EMAIL_CONFIRM_URL, "");
+            String key = uri.replace(HttpApiManager.getXabberEmailConfirmUrl(), "");
             key = key.replace("/", "");
 
             XabberAccount account = XabberAccountManager.getInstance().getAccount();
             if (account != null) confirmEmailWithKey(key);
+            else Toast.makeText(this, R.string.need_login_to_continue,
+                    Toast.LENGTH_SHORT).show();
         }
     }
 

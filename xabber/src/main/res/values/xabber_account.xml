@@ -15,6 +15,7 @@
     <string name="resend_success">Verification email sent</string>
     <string name="social_auth_fail">Social authentication failed</string>
     <string name="settings_delete_success">Settings deleted</string>
+    <string name="need_login_to_continue">You must be logged in Xabber account to continue</string>
 
     <string name="social_bind_success">Social network linked successfully</string>
     <string name="social_bind_fail">This account is already linked with different Xabber Account</string>
