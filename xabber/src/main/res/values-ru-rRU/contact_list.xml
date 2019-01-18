@@ -96,5 +96,6 @@
   <string name="last_seen_hours">был в сети час назад</string>
   <string name="last_seen_today">был в сети в %1$s</string>
   <string name="last_seen_yesterday">был в сети вчера в %1$s</string>
+  <string name="last_seen_on_week">был в сети в %1$s в %2$s</string>
   <string name="last_seen_date">был в сети %1$s</string>
 </resources>

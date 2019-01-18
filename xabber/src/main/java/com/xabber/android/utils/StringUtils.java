@@ -21,6 +21,7 @@ import com.xabber.android.R;
 import com.xabber.android.data.Application;
 
 import java.text.DateFormat;
+import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -221,14 +222,21 @@ public class StringUtils {
                 return Application.getInstance().getString(R.string.last_seen_yesterday, sTime);
             }
 
+            if (timeAgo < TimeUnit.DAYS.toSeconds(7)) {
+                SimpleDateFormat pattern = new SimpleDateFormat("HH:mm", locale);
+                sTime = pattern.format(date);
+                return Application.getInstance().getString(R.string.last_seen_on_week,
+                        getDayOfWeek(date, locale), sTime);
+            }
+
             if (date.getYear() == today.getYear()) {
-                SimpleDateFormat pattern = new SimpleDateFormat("d MMM", locale);
+                SimpleDateFormat pattern = new SimpleDateFormat("d MMMM", locale);
                 sTime = pattern.format(date);
                 return Application.getInstance().getString(R.string.last_seen_date, sTime);
             }
 
             if (date.getYear() < today.getYear()) {
-                SimpleDateFormat pattern = new SimpleDateFormat("dd.MM.yyyy", locale);
+                SimpleDateFormat pattern = new SimpleDateFormat("d MMMM yyyy", locale);
                 sTime = pattern.format(date);
                 return Application.getInstance().getString(R.string.last_seen_date, sTime);
             }
@@ -253,5 +261,12 @@ public class StringUtils {
         calendarTwo.setTime(new Date());
         return calendarOne.get(Calendar.DAY_OF_YEAR) == calendarTwo.get(Calendar.DAY_OF_YEAR) - 1 &&
                 calendarOne.get(Calendar.YEAR) == calendarTwo.get(Calendar.YEAR);
+    }
+
+    public static String getDayOfWeek(Date date, Locale locale) {
+        DateFormatSymbols symbols = new DateFormatSymbols(locale);
+        Calendar c = Calendar.getInstance();
+        c.setTime(date);
+        return symbols.getWeekdays()[c.get(Calendar.DAY_OF_WEEK)];
     }
 }
