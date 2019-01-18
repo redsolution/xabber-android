@@ -74,6 +74,7 @@
                             android:singleLine="true"
                             android:textSize="16sp"
                             android:textColor="@color/black_text"
+                            android:ellipsize="middle"
                             />
 
                         <TextView
