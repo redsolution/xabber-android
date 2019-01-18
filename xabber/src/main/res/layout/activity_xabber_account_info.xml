@@ -5,7 +5,7 @@
     android:background="?attr/settings_background_color"
     android:focusableInTouchMode="true">
 
-    <include layout="@layout/toolbar_default" />
+    <include layout="@layout/toolbar_with_progress" />
 
     <android.support.v4.widget.NestedScrollView
         android:id="@+id/scrollView"
