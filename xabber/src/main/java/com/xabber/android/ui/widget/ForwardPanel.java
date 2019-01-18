@@ -76,7 +76,7 @@ public class ForwardPanel extends Fragment {
             tvForwardedFrom.setText(Html.fromHtml(getNames(forwardedMessages)));
 
             String forwardedText = forwardedMessages.get(0).getText();
-            if (forwardedMessages.size() > 1 || forwardedText.isEmpty()) {
+            if (forwardedMessages.size() > 1 || forwardedText.trim().isEmpty()) {
                 Context context = getContext();
                 if (context != null)
                     tvForwardedText.setText(String.format(context.getResources()
