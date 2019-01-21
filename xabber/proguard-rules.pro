@@ -35,6 +35,9 @@
 -keep @io.realm.internal.Keep class * { *; }
 -dontwarn javax.**
 -dontwarn io.realm.**
+-keepnames public class * extends io.realm.RealmObject
+-keep public class * extends io.realm.RealmObject { *; }
+-keep class io.realm.** { *; }
 
 # EbentBus
 -keepattributes *Annotation*
