@@ -11,7 +11,7 @@
     <string name="sync_fail">Synchronization failed</string>
     <string name="quit_success">Quit successful</string>
     <string name="confirm_success">Email verified</string>
-    <string name="delete_success">Email deleted</string>
+    <string name="delete_success">Email unlinked</string>
     <string name="resend_success">Verification email sent</string>
     <string name="social_auth_fail">Social authentication failed</string>
     <string name="settings_delete_success">Settings deleted</string>

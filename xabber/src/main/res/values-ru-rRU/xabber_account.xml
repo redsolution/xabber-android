@@ -9,7 +9,7 @@
   <string name="sync_fail">Ошибка синхронизации</string>
   <string name="quit_success">Вы вышли из аккаунта</string>
   <string name="confirm_success">Емайл подтвержден</string>
-  <string name="delete_success">Email удален</string>
+  <string name="delete_success">Email отвязан</string>
   <string name="resend_success">Email с подтверждением отправлен</string>
   <string name="social_auth_fail">Ошибка социальной авторизации</string>
   <string name="settings_delete_success">Настройки удалены</string>
