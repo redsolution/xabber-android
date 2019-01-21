@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import com.amulyakhare.textdrawable.util.ColorGenerator;
 import com.xabber.android.R;
+import com.xabber.android.data.Application;
 import com.xabber.android.data.database.MessageDatabaseManager;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.extension.otr.OTRManager;
@@ -20,6 +21,7 @@ import com.xabber.android.data.log.LogManager;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.utils.StringUtils;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import io.realm.RealmResults;
@@ -31,6 +33,7 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
     private MessageLongClickListener longClickListener;
 
     TextView tvFirstUnread;
+    TextView tvDate;
     TextView messageTime;
     TextView messageHeader;
     TextView messageNotDecrypted;
@@ -57,6 +60,7 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
         this.longClickListener = longClickListener;
 
         tvFirstUnread = itemView.findViewById(R.id.tvFirstUnread);
+        tvDate = itemView.findViewById(R.id.tvDate);
         messageTime = itemView.findViewById(R.id.message_time);
         messageHeader = itemView.findViewById(R.id.message_header);
         messageNotDecrypted = itemView.findViewById(R.id.message_not_decrypted);
@@ -112,6 +116,14 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
         // setup UNREAD
         if (tvFirstUnread != null)
             tvFirstUnread.setVisibility(extraData.isUnread() ? View.VISIBLE : View.GONE);
+
+        // setup DATE
+        if (tvDate != null) {
+            if (extraData.isNeedDate()) {
+                tvDate.setText(StringUtils.getDateStringForMessage(messageItem.getTimestamp()));
+                tvDate.setVisibility(View.VISIBLE);
+            } else tvDate.setVisibility(View.GONE);
+        }
 
         // setup CHECKED
         if (extraData.isChecked()) itemView.setBackgroundColor(extraData.getContext().getResources()

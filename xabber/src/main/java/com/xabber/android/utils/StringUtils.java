@@ -269,4 +269,14 @@ public class StringUtils {
         c.setTime(date);
         return symbols.getWeekdays()[c.get(Calendar.DAY_OF_WEEK)];
     }
+
+    public static String getDateStringForMessage(Long timestamp) {
+        Date date = new Date(timestamp);
+        String strPattern = "d MMMM";
+        if (date.getYear() != new Date().getYear()) strPattern = "d MMMM yyyy";
+
+        SimpleDateFormat pattern = new SimpleDateFormat(strPattern,
+                Application.getInstance().getResources().getConfiguration().locale);
+        return pattern.format(date);
+    }
 }

@@ -101,7 +101,7 @@ public class ForwardedFragment extends FileInteractionFragment {
 
         MessagesAdapter.MessageExtraData extraData = new MessagesAdapter.MessageExtraData(this, this, getActivity(),
                 userName, colorStateList, accountMainColor, isMUC, false, false,
-                false, false);
+                false, false, false);
 
         if (forwardedMessages.size() > 0) {
             ForwardedAdapter adapter = new ForwardedAdapter(forwardedMessages, extraData);

@@ -19,6 +19,7 @@ import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.color.ColorManager;
+import com.xabber.android.utils.Utils;
 
 import org.jxmpp.jid.parts.Resourcepart;
 
@@ -185,9 +186,16 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
             needTail = getSimpleType(viewType) != getSimpleType(getItemViewType(position + 1));
         }
 
+        // need date
+        boolean needDate;
+        MessageItem previousMessage = getMessageItem(position - 1);
+        if (previousMessage != null) {
+            needDate = !Utils.isSameDay(messageItem.getTimestamp(), previousMessage.getTimestamp());
+        } else needDate = true;
+
         MessageExtraData extraData = new MessageExtraData(fileListener, fwdListener, context,
                 userName, colorStateList, accountMainColor, isMUC, showOriginalOTR, unread,
-                checked, needTail);
+                checked, needTail, needDate);
 
         switch (viewType) {
             case VIEW_TYPE_ACTION_MESSAGE:
@@ -354,12 +362,13 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
         private boolean unread;
         private boolean checked;
         private boolean needTail;
+        private boolean needDate;
 
         public MessageExtraData(FileMessageVH.FileListener listener,
                                 ForwardedAdapter.ForwardListener fwdListener,
                                 Context context, String username, ColorStateList colorStateList,
                                 int accountMainColor, boolean isMuc, boolean showOriginalOTR,
-                                boolean unread, boolean checked, boolean needTail) {
+                                boolean unread, boolean checked, boolean needTail, boolean needDate) {
             this.listener = listener;
             this.fwdListener = fwdListener;
             this.context = context;
@@ -371,6 +380,7 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
             this.unread = unread;
             this.checked = checked;
             this.needTail = needTail;
+            this.needDate = needDate;
         }
 
         public FileMessageVH.FileListener getListener() {
@@ -415,6 +425,10 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
 
         public boolean isNeedTail() {
             return needTail;
+        }
+
+        public boolean isNeedDate() {
+            return needDate;
         }
     }
 
