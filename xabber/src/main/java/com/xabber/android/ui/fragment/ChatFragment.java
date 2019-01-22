@@ -93,6 +93,7 @@ import com.xabber.android.ui.dialog.ChatHistoryClearDialog;
 import com.xabber.android.ui.helper.PermissionsRequester;
 import com.xabber.android.ui.widget.CustomMessageMenu;
 import com.xabber.android.ui.widget.ForwardPanel;
+import com.xabber.android.utils.StringUtils;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -158,6 +159,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     private ImageView ivForward;
     private ImageView ivDelete;
     private ImageView ivCopy;
+    private TextView tvTopDate;
 
     boolean isInputEmpty = true;
     private boolean skipOnTextChanges = false;
@@ -330,6 +332,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
                 showScrollDownButtonIfNeed();
                 hideUnreadMessageCountIfNeed();
+                updateTopDateIfNeed();
             }
         });
 
@@ -365,6 +368,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
         placeholder = view.findViewById(R.id.placeholder);
         placeholder.setOnClickListener(this);
+
+        tvTopDate = view.findViewById(R.id.tvTopDate);
 
         return view;
     }
@@ -1409,6 +1414,12 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                 notifyLayout.setVisibility(View.GONE);
             }
         });
+    }
+
+    private void updateTopDateIfNeed() {
+        int position = layoutManager.findFirstVisibleItemPosition();
+        MessageItem message = chatMessageAdapter.getItem(position);
+        tvTopDate.setText(StringUtils.getDateStringForMessage(message.getTimestamp()));
     }
 
     private void showScrollDownButtonIfNeed() {
