@@ -794,12 +794,20 @@ public class SettingsManager implements OnInitializedListener,
         return getInteger(R.string.crowdfunding_last_load_timestamp_key, 1);
     }
 
-    public static void setFirstCrowdfundingRunTimestamp(int timestamp) {
-        setInt(R.string.crowdfunding_first_run_timestamp_key, timestamp);
+    public static void setLastLeaderCrowdfundingLoadTimestamp(int timestamp) {
+        setInt(R.string.crowdfunding_leader_last_load_timestamp_key, timestamp);
     }
 
-    public static int getFirstCrowdfundingRunTimestamp() {
-        return getInteger(R.string.crowdfunding_first_run_timestamp_key, 0);
+    public static int getLastLeaderCrowdfundingLoadTimestamp() {
+        return getInteger(R.string.crowdfunding_leader_last_load_timestamp_key, 1);
+    }
+
+    public static void setFirstAppRunTimestamp(int timestamp) {
+        setInt(R.string.first_app_run_timestamp_key, timestamp);
+    }
+
+    public static int getFirstAppRunTimestamp() {
+        return getInteger(R.string.first_app_run_timestamp_key, 0);
     }
 
     public static void setLastCrowdfundingPosition(int position) {
