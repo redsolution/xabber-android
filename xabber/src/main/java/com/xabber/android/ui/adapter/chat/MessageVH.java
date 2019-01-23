@@ -8,12 +8,12 @@ import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.amulyakhare.textdrawable.util.ColorGenerator;
 import com.xabber.android.R;
-import com.xabber.android.data.Application;
 import com.xabber.android.data.database.MessageDatabaseManager;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.extension.otr.OTRManager;
@@ -21,7 +21,6 @@ import com.xabber.android.data.log.LogManager;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.utils.StringUtils;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import io.realm.RealmResults;
@@ -125,6 +124,17 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
             } else tvDate.setVisibility(View.GONE);
         }
 
+        // set DATE alpha
+        if (tvDate != null && extraData.isNeedDate() && extraData.getAnchorHolder() != null) {
+            final MessagesAdapter.MessageExtraData lExtraData = extraData;
+            tvDate.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    setDateAlpha(tvDate, lExtraData.getAnchorHolder().getAnchor());
+                }
+            });
+        }
+
         // setup CHECKED
         if (extraData.isChecked()) itemView.setBackgroundColor(extraData.getContext().getResources()
                 .getColor(R.color.unread_messages_background));
@@ -189,5 +199,25 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
             view.setPadding(pL, pT, pR, pB);
         }
 
+    }
+
+    private void setDateAlpha(View viewDate, View viewAnchor) {
+        if (viewDate != null && viewAnchor != null) {
+            int specialCoordinates[] = new int[2];
+            int titleCoordinates[] = new int[2];
+            viewAnchor.getLocationOnScreen(titleCoordinates);
+            viewDate.getLocationOnScreen(specialCoordinates);
+            int deltaY = titleCoordinates[1] - specialCoordinates[1];
+            if (deltaY < 0) deltaY *= -1;
+
+            int total = viewAnchor.getMeasuredHeight();
+            int step = total / 100;
+            if (step == 0) step = 1;
+
+            if (deltaY < total * 2) {
+                if (deltaY < total) viewDate.setAlpha(0);
+                else viewDate.setAlpha((float) (deltaY - total / step)/100);
+            } else viewDate.setAlpha(1);
+        }
     }
 }

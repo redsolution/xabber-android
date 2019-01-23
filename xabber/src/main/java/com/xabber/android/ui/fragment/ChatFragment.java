@@ -121,7 +121,7 @@ import io.realm.Sort;
 public class ChatFragment extends FileInteractionFragment implements PopupMenu.OnMenuItemClickListener,
         View.OnClickListener, Toolbar.OnMenuItemClickListener, MessageVH.MessageClickListener,
         MessagesAdapter.Listener, AdapterView.OnItemClickListener, PopupWindow.OnDismissListener,
-        OnAccountChangedListener, ForwardPanel.OnCloseListener {
+        OnAccountChangedListener, ForwardPanel.OnCloseListener, MessagesAdapter.AnchorHolder {
 
     public static final String ARGUMENT_ACCOUNT = "ARGUMENT_ACCOUNT";
     public static final String ARGUMENT_USER = "ARGUMENT_USER";
@@ -387,7 +387,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         }
 
         chatMessageAdapter = new MessagesAdapter(getActivity(), messageItems, abstractChat,
-                this, this, this, this);
+                this, this, this, this, this);
         realmRecyclerView.setAdapter(chatMessageAdapter);
 
         restoreInputState();
@@ -1418,8 +1418,9 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
     private void updateTopDateIfNeed() {
         int position = layoutManager.findFirstVisibleItemPosition();
-        MessageItem message = chatMessageAdapter.getItem(position);
-        tvTopDate.setText(StringUtils.getDateStringForMessage(message.getTimestamp()));
+        MessageItem message = chatMessageAdapter.getMessageItem(position);
+        if (message != null)
+            tvTopDate.setText(StringUtils.getDateStringForMessage(message.getTimestamp()));
     }
 
     private void showScrollDownButtonIfNeed() {
@@ -1533,5 +1534,12 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
     private void openChooserForForward(ArrayList<String> forwardIds) {
         ((ChatActivity)getActivity()).forwardMessages(forwardIds);
+    }
+
+    /** Anchor Holder */
+
+    @Override
+    public View getAnchor() {
+        return tvTopDate;
     }
 }
