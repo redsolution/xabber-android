@@ -58,6 +58,7 @@
         android:paddingLeft="8dp"
         android:textStyle="bold"
         android:text="21 January"
+        android:textColor="@color/white"
         android:background="@drawable/rounded_background_grey_transparent"
         android:visibility="visible"
         />
