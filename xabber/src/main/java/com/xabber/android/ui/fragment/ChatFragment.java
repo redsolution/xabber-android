@@ -71,6 +71,7 @@ import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.otr.SecurityLevel;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
+import com.xabber.android.data.message.ClipManager;
 import com.xabber.android.data.message.ForwardManager;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.MessageUpdateEvent;
@@ -296,6 +297,13 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
             }
         });
         ivCopy = view.findViewById(R.id.ivCopy);
+        ivCopy.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ClipManager.copyMessagesToClipboard(getChat(), new ArrayList<>(chatMessageAdapter.getCheckedItemIds()));
+                closeInteractionPanel();
+            }
+        });
 
         view.findViewById(R.id.button_send_message).setOnClickListener(
                 new View.OnClickListener() {
