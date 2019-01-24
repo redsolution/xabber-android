@@ -332,6 +332,10 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
                 showScrollDownButtonIfNeed();
                 hideUnreadMessageCountIfNeed();
+
+                /** Necessary for
+                 *  @see MessageVH#bind ()
+                 *  and set DATE alpha */
                 updateTopDateIfNeed();
             }
         });

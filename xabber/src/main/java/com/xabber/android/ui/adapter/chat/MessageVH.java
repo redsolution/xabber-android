@@ -19,6 +19,7 @@ import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.ui.color.ColorManager;
+import com.xabber.android.ui.fragment.ChatFragment;
 import com.xabber.android.utils.StringUtils;
 
 import java.util.Date;
@@ -130,6 +131,9 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
             tvDate.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                 @Override
                 public void onGlobalLayout() {
+                    /** Work only with
+                     *  @see ChatFragment#updateTopDateIfNeed()
+                     *  called in recyclerView.onScrolled */
                     setDateAlpha(tvDate, lExtraData.getAnchorHolder().getAnchor());
                 }
             });
