@@ -44,7 +44,8 @@ public class ClipManager {
                 }
                 realm.close();
 
-                if (!stringBuilder.toString().isEmpty()) insertDataToClipboard(stringBuilder.toString());
+                String text = stringBuilder.toString().trim();
+                if (!text.isEmpty()) insertDataToClipboard(text);
             }
         });
     }
