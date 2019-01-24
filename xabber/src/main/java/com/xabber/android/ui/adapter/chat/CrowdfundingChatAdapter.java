@@ -22,6 +22,7 @@ import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
+import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.database.realm.CrowdfundingMessage;
 import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.ui.color.ColorManager;
@@ -155,6 +156,22 @@ public class CrowdfundingChatAdapter extends RealmRecyclerViewAdapter<Crowdfundi
             needTail = !message.getAuthorJid().equals(nextMessage.getAuthorJid());
         else needTail = true;
 
+        // date
+        boolean needDate;
+        CrowdfundingMessage previousMessage = getMessage(i - 1);
+        if (previousMessage != null) {
+            needDate = !Utils.isSameDay((long) message.getReceivedTimestamp()*1000,
+                    (long) previousMessage.getReceivedTimestamp()*1000);
+        } else needDate = true;
+
+        if (holder.tvDate != null) {
+            if (needDate) {
+                holder.tvDate.setText(StringUtils.getDateStringForMessage(
+                        (long) message.getReceivedTimestamp()*1000));
+                holder.tvDate.setVisibility(View.VISIBLE);
+            } else holder.tvDate.setVisibility(View.GONE);
+        }
+
         // avatar
         String avatarUrl = message.getAuthorAvatar();
         if (needTail && avatarUrl != null) {
@@ -211,6 +228,7 @@ public class CrowdfundingChatAdapter extends RealmRecyclerViewAdapter<Crowdfundi
         TextView messageText;
         TextView messageHeader;
         TextView messageTime;
+        TextView tvDate;
         ImageView statusIcon;
         ImageView ivEncrypted;
         ImageView avatar;
@@ -222,7 +240,8 @@ public class CrowdfundingChatAdapter extends RealmRecyclerViewAdapter<Crowdfundi
         CrowdMessageVH(View itemView) {
             super(itemView);
 
-            messageText = (TextView) itemView.findViewById(R.id.message_text);
+            messageText = itemView.findViewById(R.id.message_text);
+            tvDate = itemView.findViewById(R.id.tvDate);
             messageHeader = itemView.findViewById(R.id.message_header);
             statusIcon = itemView.findViewById(R.id.message_status_icon);
             ivEncrypted = itemView.findViewById(R.id.message_encrypted_icon);
