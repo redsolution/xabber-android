@@ -72,6 +72,8 @@ public class ClipManager {
     private static String messageToText(Realm realm, MessageItem message, long previousMessageTimestamp,
                                         String accountName, String userName, boolean isMUC, int level) {
 
+        Context context = Application.getInstance().getApplicationContext();
+
         String space = getSpace(level);
         StringBuilder stringBuilder = new StringBuilder();
 
@@ -82,7 +84,7 @@ public class ClipManager {
             else name = accountName;
         }
 
-        final String date = StringUtils.getDateStringForMessage(message.getTimestamp());
+        final String date = StringUtils.getDateStringForClipboard(message.getTimestamp());
         if (!Utils.isSameDay(message.getTimestamp(), previousMessageTimestamp)) {
             stringBuilder.append("\n");
             stringBuilder.append(space);
@@ -92,7 +94,7 @@ public class ClipManager {
         stringBuilder.append("\n");
         stringBuilder.append(space);
         stringBuilder.append('[');
-        stringBuilder.append(StringUtils.getTimeText(new Date(message.getTimestamp())));
+        stringBuilder.append(StringUtils.getTimeTextWithSeconds(new Date(message.getTimestamp())));
         stringBuilder.append("] ");
         stringBuilder.append(name);
         stringBuilder.append(":\n");
@@ -104,8 +106,7 @@ public class ClipManager {
 
         if (message.haveForwardedMessages()) {
             stringBuilder.append(space);
-            stringBuilder.append(Application.getInstance()
-                    .getApplicationContext().getResources().getString(R.string.forwarded_messages_count, message.getForwardedIds().size()));
+            stringBuilder.append(context.getResources().getString(R.string.forwarded_messages_count, message.getForwardedIds().size()));
             stringBuilder.append(":\n");
             stringBuilder.append(messagesToText(realm, message.getForwardedIdsAsArray(),
                     accountName, userName, isMUC, level + 1));

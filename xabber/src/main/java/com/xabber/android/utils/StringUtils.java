@@ -43,7 +43,7 @@ public class StringUtils {
     static {
         DATE_TIME = DateFormat.getDateTimeInstance(DateFormat.MEDIUM,
                 DateFormat.SHORT);
-        TIME = new SimpleDateFormat("H:mm");
+        TIME = new SimpleDateFormat("HH:mm:ss");
         timeFormat = android.text.format.DateFormat.getTimeFormat(Application.getInstance());
     }
 
@@ -133,6 +133,10 @@ public class StringUtils {
 
     public static String getTimeText(Date timeStamp) {
         return timeFormat.format(timeStamp);
+    }
+
+    public static String getTimeTextWithSeconds(Date timeStamp) {
+        return TIME.format(timeStamp);
     }
 
     /**
@@ -274,6 +278,15 @@ public class StringUtils {
         Date date = new Date(timestamp);
         String strPattern = "d MMMM";
         if (date.getYear() != new Date().getYear()) strPattern = "d MMMM yyyy";
+
+        SimpleDateFormat pattern = new SimpleDateFormat(strPattern,
+                Application.getInstance().getResources().getConfiguration().locale);
+        return pattern.format(date);
+    }
+
+    public static String getDateStringForClipboard(Long timestamp) {
+        Date date = new Date(timestamp);
+        String strPattern = "EEEE, d MMMM, yyyy";
 
         SimpleDateFormat pattern = new SimpleDateFormat(strPattern,
                 Application.getInstance().getResources().getConfiguration().locale);
