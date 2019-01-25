@@ -300,7 +300,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         ivCopy.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ClipManager.copyMessagesToClipboard(getChat(), new ArrayList<>(chatMessageAdapter.getCheckedItemIds()));
+                ClipManager.copyMessagesToClipboard(new ArrayList<>(chatMessageAdapter.getCheckedItemIds()));
                 closeInteractionPanel();
             }
         });

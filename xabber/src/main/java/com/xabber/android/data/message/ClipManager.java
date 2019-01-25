@@ -3,12 +3,9 @@ package com.xabber.android.data.message;
 import android.content.ClipData;
 import android.content.Context;
 
-import com.xabber.android.R;
 import com.xabber.android.data.Application;
-import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.database.MessageDatabaseManager;
 import com.xabber.android.data.database.messagerealm.MessageItem;
-import com.xabber.android.data.extension.muc.RoomChat;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.utils.StringUtils;
 import com.xabber.android.utils.Utils;
@@ -21,18 +18,14 @@ import io.realm.RealmResults;
 
 public class ClipManager {
 
-    public static void copyMessagesToClipboard(AbstractChat chat, final List<String> messageIDs) {
-        if (chat == null) return;
+    public static void copyMessagesToClipboard(final List<String> messageIDs) {
 
-        final String accountName = AccountManager.getInstance().getNickName(chat.getAccount());
-        final String userName = RosterManager.getInstance().getName(chat.getAccount(), chat.getUser());
-        final boolean isMUC = chat instanceof RoomChat;
         final String[] ids = messageIDs.toArray(new String[0]);
         Application.getInstance().runInBackgroundUserRequest(new Runnable() {
             @Override
             public void run() {
                 Realm realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
-                String text = messagesToText(realm, ids, accountName, userName, isMUC, 0);
+                String text = messagesToText(realm, ids, 0);
                 realm.close();
                 if (!text.isEmpty()) insertDataToClipboard(text);
             }
@@ -51,8 +44,7 @@ public class ClipManager {
         });
     }
 
-    private static String messagesToText(Realm realm, String[] messagesIDs,
-                                         String accountName, String userName, boolean isMUC, int level) {
+    private static String messagesToText(Realm realm, String[] messagesIDs, int level) {
 
         RealmResults<MessageItem> items = realm.where(MessageItem.class)
                 .in(MessageItem.Fields.UNIQUE_ID, messagesIDs).findAll();
@@ -61,7 +53,7 @@ public class ClipManager {
         long previousTimestamp = 1;
         if (items != null && !items.isEmpty()) {
             for (MessageItem message : items) {
-                stringBuilder.append(messageToText(realm, message, previousTimestamp, accountName, userName, isMUC, level));
+                stringBuilder.append(messageToText(realm, message, previousTimestamp, level));
                 previousTimestamp = message.getTimestamp();
             }
         }
@@ -69,20 +61,13 @@ public class ClipManager {
         return stringBuilder.toString().trim();
     }
 
-    private static String messageToText(Realm realm, MessageItem message, long previousMessageTimestamp,
-                                        String accountName, String userName, boolean isMUC, int level) {
-
-        Context context = Application.getInstance().getApplicationContext();
+    private static String messageToText(Realm realm, MessageItem message,
+                                        long previousMessageTimestamp, int level) {
 
         String space = getSpace(level);
         StringBuilder stringBuilder = new StringBuilder();
 
-        final String name;
-        if (isMUC) name = message.getResource().toString();
-        else {
-            if (message.isIncoming()) name = userName;
-            else name = accountName;
-        }
+        final String name = RosterManager.getDisplayAuthorName(message);
 
         final String date = StringUtils.getDateStringForClipboard(message.getTimestamp());
         if (!Utils.isSameDay(message.getTimestamp(), previousMessageTimestamp)) {
@@ -100,8 +85,7 @@ public class ClipManager {
         stringBuilder.append(":\n");
 
         if (message.haveForwardedMessages()) {
-            stringBuilder.append(messagesToText(realm, message.getForwardedIdsAsArray(),
-                    accountName, userName, isMUC, level + 1));
+            stringBuilder.append(messagesToText(realm, message.getForwardedIdsAsArray(), level + 1));
             stringBuilder.append("\n");
         }
 
