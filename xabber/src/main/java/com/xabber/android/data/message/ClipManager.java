@@ -99,17 +99,15 @@ public class ClipManager {
         stringBuilder.append(name);
         stringBuilder.append(":\n");
 
+        if (message.haveForwardedMessages()) {
+            stringBuilder.append(messagesToText(realm, message.getForwardedIdsAsArray(),
+                    accountName, userName, isMUC, level + 1));
+            stringBuilder.append("\n");
+        }
+
         if (!message.getText().isEmpty()) {
             stringBuilder.append(space);
             stringBuilder.append(message.getText());
-        }
-
-        if (message.haveForwardedMessages()) {
-            stringBuilder.append(space);
-            stringBuilder.append(context.getResources().getString(R.string.forwarded_messages_count, message.getForwardedIds().size()));
-            stringBuilder.append(":\n");
-            stringBuilder.append(messagesToText(realm, message.getForwardedIdsAsArray(),
-                    accountName, userName, isMUC, level + 1));
         }
 
         return stringBuilder.toString();
