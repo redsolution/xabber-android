@@ -22,7 +22,10 @@ import android.util.Log;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.OnLoadListener;
+import com.xabber.android.data.database.RealmManager;
 import com.xabber.android.data.database.messagerealm.MessageItem;
+import com.xabber.android.data.database.realm.NotifChatRealm;
+import com.xabber.android.data.database.realm.NotifMessageRealm;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.roster.RosterManager;
@@ -34,6 +37,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+
+import io.realm.Realm;
+import io.realm.RealmList;
+import io.realm.RealmResults;
 
 public class MessageNotificationManager implements OnLoadListener {
 
@@ -68,8 +75,10 @@ public class MessageNotificationManager implements OnLoadListener {
 
         // update notification
         Chat chat = getChat(notificationId);
-        if (chat != null)
+        if (chat != null) {
             addMessage(chat, DISPLAY_NAME, replyText);
+            saveNotifChatToRealm(chat);
+        }
     }
 
     public void onNotificationCanceled(int notificationId) {
@@ -87,19 +96,26 @@ public class MessageNotificationManager implements OnLoadListener {
 
     @Override
     public void onLoad() {
-        // Load chats from Realm
+        final List<Chat> chats = loadNotifChatsFromRealm();
+        Application.getInstance().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                onLoaded(chats);
+            }
+        });
     }
 
     /** PUBLIC METHODS */
 
     public void onNewMessage(MessageItem messageItem) {
         String author = RosterManager.getInstance().getBestContact(messageItem.getAccount(), messageItem.getUser()).getName();
-        Chat cgat = getChat(messageItem.getAccount(), messageItem.getUser());
-        if (cgat == null) {
-            cgat = new Chat(messageItem.getAccount(), messageItem.getUser(), getNextChatNotificationId(), author);
-            chats.add(cgat);
+        Chat chat = getChat(messageItem.getAccount(), messageItem.getUser());
+        if (chat == null) {
+            chat = new Chat(messageItem.getAccount(), messageItem.getUser(), getNextChatNotificationId(), author);
+            chats.add(chat);
         }
-        addMessage(cgat, author, messageItem.getText());
+        addMessage(chat, author, messageItem.getText());
+        saveNotifChatToRealm(chat);
     }
 
     public void removeChat(final AccountJid account, final UserJid user) {
@@ -107,6 +123,7 @@ public class MessageNotificationManager implements OnLoadListener {
         if (chat != null) {
             chats.remove(chat);
             rebuildAllNotifications();
+            removeNotifChatFromRealm(account, user);
         }
     }
 
@@ -115,6 +132,7 @@ public class MessageNotificationManager implements OnLoadListener {
         if (chat != null) {
             chats.remove(chat);
             rebuildAllNotifications();
+            removeNotifChatFromRealm(chat.accountJid, chat.userJid);
         }
     }
 
@@ -124,20 +142,20 @@ public class MessageNotificationManager implements OnLoadListener {
                 chats.remove(chat);
         }
         rebuildAllNotifications();
+        removeNotifChatFromRealm(account);
     }
 
     public void onClearNotifications() {
         notificationManager.cancelAll();
         chats.clear();
-
-        // save to realm
-        // TODO: 29.01.19 implement
+        removeAllNotifChatFromRealm();
     }
 
     /** PRIVATE METHODS */
 
-    private void onLoaded() {
-
+    private void onLoaded(List<Chat> loadedChats) {
+        this.chats.addAll(loadedChats);
+        rebuildAllNotifications();
     }
 
     private void addMessage(Chat notification, CharSequence author, CharSequence messageText) {
@@ -270,6 +288,105 @@ public class MessageNotificationManager implements OnLoadListener {
         NotificationChannel channel = new NotificationChannel(MESSAGE_CHANNEL_ID, name, importance);
         channel.setDescription(description);
         notificationManager.createNotificationChannel(channel);
+    }
+
+    /** Called not from Main thread */
+    private List<Chat> loadNotifChatsFromRealm() {
+        List<Chat> results = new ArrayList<>();
+        Realm realm = RealmManager.getInstance().getNewRealm();
+        RealmResults<NotifChatRealm> items = realm.where(NotifChatRealm.class).findAll();
+        for (NotifChatRealm item : items) {
+            Chat chat = new Chat(item.getAccount(), item.getUser(),
+                    item.getNotificationID(), item.getChatTitle());
+            for (NotifMessageRealm message : item.getMessages()) {
+                chat.addMessage(new Message(message.getAuthor(), message.getText(), message.getTimestamp()));
+            }
+            results.add(chat);
+        }
+        realm.close();
+        return results;
+    }
+
+    private void removeNotifChatFromRealm(final AccountJid accountJid, final UserJid userJid) {
+        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
+            @Override
+            public void run() {
+                Realm realm = RealmManager.getInstance().getNewRealm();
+                RealmResults<NotifChatRealm> items = realm.where(NotifChatRealm.class)
+                        .equalTo(NotifChatRealm.Fields.ACCOUNT, accountJid.toString())
+                        .equalTo(NotifChatRealm.Fields.USER, userJid.toString())
+                        .findAll();
+
+                realm.beginTransaction();
+                for (NotifChatRealm item : items)
+                    item.deleteFromRealm();
+                realm.commitTransaction();
+            }
+        });
+    }
+
+    private void removeNotifChatFromRealm(final AccountJid accountJid) {
+        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
+            @Override
+            public void run() {
+                Realm realm = RealmManager.getInstance().getNewRealm();
+                RealmResults<NotifChatRealm> items = realm.where(NotifChatRealm.class)
+                        .equalTo(NotifChatRealm.Fields.ACCOUNT, accountJid.toString())
+                        .findAll();
+
+                realm.beginTransaction();
+                for (NotifChatRealm item : items)
+                    item.deleteFromRealm();
+                realm.commitTransaction();
+            }
+        });
+    }
+
+    private void removeAllNotifChatFromRealm() {
+        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
+            @Override
+            public void run() {
+                Realm realm = RealmManager.getInstance().getNewRealm();
+                RealmResults<NotifChatRealm> items = realm.where(NotifChatRealm.class)
+                        .findAll();
+
+                realm.beginTransaction();
+                for (NotifChatRealm item : items)
+                    item.deleteFromRealm();
+                realm.commitTransaction();
+            }
+        });
+    }
+
+    private void saveNotifChatToRealm(final Chat chat) {
+        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
+            @Override
+            public void run() {
+                NotifChatRealm chatRealm = new NotifChatRealm();
+                chatRealm.setAccount(chat.getAccountJid());
+                chatRealm.setUser(chat.getUserJid());
+                chatRealm.setChatTitle(chat.getChatTitle().toString());
+                chatRealm.setNotificationID(chat.getNotificationId());
+                RealmList<NotifMessageRealm> messages = new RealmList<>();
+                for (Message message : chat.getMessages()) {
+                    messages.add(messageToRealm(message));
+                }
+                chatRealm.setMessages(messages);
+
+                Realm realm = RealmManager.getInstance().getNewRealm();
+                realm.beginTransaction();
+                NotifChatRealm result = realm.copyToRealmOrUpdate(chatRealm);
+                realm.commitTransaction();
+            }
+        });
+    }
+
+    private NotifMessageRealm messageToRealm(Message message) {
+        NotifMessageRealm messageRealm = new NotifMessageRealm();
+        messageRealm.setAuthor(message.getAuthor().toString());
+        messageRealm.setText(message.getMessageText().toString());
+        messageRealm.setTimestamp(message.getTimestamp());
+        return messageRealm;
     }
 
     /** ACTIONS */

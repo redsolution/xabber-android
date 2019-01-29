@@ -202,41 +202,7 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
 
     @Override
     public void onLoad() {
-        final Collection<MessageNotification> messageNotifications = new ArrayList<>();
-        Cursor cursor = NotificationTable.getInstance().list();
-        try {
-            if (cursor.moveToFirst()) {
-                do {
-                    try {
-                        messageNotifications.add(new MessageNotification(
-                        AccountJid.from(NotificationTable.getAccount(cursor)),
-                        UserJid.from(NotificationTable.getUser(cursor)),
-                        NotificationTable.getText(cursor),
-                        NotificationTable.getTimeStamp(cursor),
-                        NotificationTable.getCount(cursor)));
-                    } catch (UserJid.UserJidCreateException | XmppStringprepException e) {
-                        LogManager.exception(this, e);
-                    }
-                } while (cursor.moveToNext());
-            }
-        } finally {
-            cursor.close();
-        }
-        Application.getInstance().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                onLoaded(messageNotifications);
-            }
-        });
-    }
-
-    private void onLoaded(Collection<MessageNotification> messageNotifications) {
-        //this.messageNotifications.addAll(messageNotifications);
-//        for (MessageNotification messageNotification : messageNotifications) {
-//            MessageManager.getInstance().openChat(
-//                    messageNotification.getAccount(),
-//                    messageNotification.getUser());
-//        }
+        MessageNotificationManager.getInstance().onLoad();
     }
 
     @Override
