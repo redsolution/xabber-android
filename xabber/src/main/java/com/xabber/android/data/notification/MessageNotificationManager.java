@@ -14,7 +14,6 @@ import android.support.annotation.RequiresApi;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.Person;
 import android.support.v4.app.RemoteInput;
-import android.support.v4.app.TaskStackBuilder;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.StyleSpan;
@@ -22,21 +21,21 @@ import android.util.Log;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.receiver.NotificationReceiver;
+import com.xabber.android.ui.activity.ChatActivity;
 import com.xabber.android.ui.activity.ContactListActivity;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-public class NotifManagerCompat {
+public class MessageNotificationManager implements OnLoadListener {
 
     private final static String MESSAGE_CHANNEL_ID = "MESSAGE_CHANNEL";
     private final static String MESSAGE_GROUP_ID = "MESSAGE_GROUP";
@@ -46,51 +45,35 @@ public class NotifManagerCompat {
 
     private final Application context;
     private final NotificationManager notificationManager;
-    private static NotifManagerCompat instance;
-    private Map<String, Chat> chats = new HashMap<>();
+    private static MessageNotificationManager instance;
+    private List<Chat> chats = new ArrayList<>();
     private Message lastMessage = null;
 
-    public NotifManagerCompat() {
+    public MessageNotificationManager() {
         context = Application.getInstance();
         notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
             createNotificationChannel();
     }
 
-    public static NotifManagerCompat getInstance() {
-        if (instance == null) instance = new NotifManagerCompat();
+    public static MessageNotificationManager getInstance() {
+        if (instance == null) instance = new MessageNotificationManager();
         return instance;
     }
 
     /** LISTENER */
 
-    public void onNotificationClick(int notificationId) {
-        // if (notificationId == MESSAGE_GROUP_NOTIFICATION_ID)
-            // Chat lastChat = chats.get(chats.size() - 1);
-            // if (lastChat != null) openChat(lastChat.getChatId());
-    }
-
     public void onNotificationReplied(int notificationId, CharSequence replyText) {
         // send message to xmpp
 
         // update notification
-        addMessage(getChatKey(notificationId), "", DISPLAY_NAME, replyText);
+        Chat chat = getChat(notificationId);
+        if (chat != null)
+            addMessage(chat, DISPLAY_NAME, replyText);
     }
 
     public void onNotificationCanceled(int notificationId) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            chats.remove(getChatKey(notificationId));
-
-            if (chats.size() > 1) createGroupNotification();
-            else {
-                notificationManager.cancel(MESSAGE_GROUP_NOTIFICATION_ID);
-                if (chats.size() == 1) {
-                    Map.Entry<String, Chat> entry = chats.entrySet().iterator().next();
-                    createChatNotification(entry.getValue());
-                }
-            }
-
-        } else chats.clear();
+        removeChat(notificationId);
     }
 
     public void onNotificationMarkedAsRead(int notificationId) {
@@ -102,35 +85,91 @@ public class NotifManagerCompat {
         onNotificationCanceled(notificationId);
     }
 
-    /** MAIN METHODS */
+    @Override
+    public void onLoad() {
+        // Load chats from Realm
+    }
+
+    /** PUBLIC METHODS */
 
     public void onNewMessage(MessageItem messageItem) {
-        String name = RosterManager.getInstance().getBestContact(messageItem.getAccount(), messageItem.getUser()).getName();
-        addMessage(getKey(messageItem.getAccount(), messageItem.getUser()), name, name, messageItem.getText());
-    }
-
-    private void addMessage(String chatId, CharSequence chatTitle, CharSequence author, CharSequence messageText) {
-        Chat chat = chats.get(chatId);
-        if (chat == null) {
-            chat = new Chat(getNextChatNotificationId(), chatId, chatTitle);
-            chats.put(chatId, chat);
+        String author = RosterManager.getInstance().getBestContact(messageItem.getAccount(), messageItem.getUser()).getName();
+        Chat cgat = getChat(messageItem.getAccount(), messageItem.getUser());
+        if (cgat == null) {
+            cgat = new Chat(messageItem.getAccount(), messageItem.getUser(), getNextChatNotificationId(), author);
+            chats.add(cgat);
         }
-        lastMessage = new Message(author, messageText, System.currentTimeMillis());
-        chat.addMessage(lastMessage);
-
-        updateNotifications(chat);
+        addMessage(cgat, author, messageItem.getText());
     }
 
-    private void updateNotifications(Chat newChat) {
+    public void removeChat(final AccountJid account, final UserJid user) {
+        Chat chat = getChat(account, user);
+        if (chat != null) {
+            chats.remove(chat);
+            rebuildAllNotifications();
+        }
+    }
 
+    public void removeChat(int notificationId) {
+        Chat chat = getChat(notificationId);
+        if (chat != null) {
+            chats.remove(chat);
+            rebuildAllNotifications();
+        }
+    }
+
+    public void removeNotificationsForAccount(final AccountJid account) {
+        for (Chat chat : chats) {
+            if (chat.getAccountJid().equals(account))
+                chats.remove(chat);
+        }
+        rebuildAllNotifications();
+    }
+
+    public void onClearNotifications() {
+        notificationManager.cancelAll();
+        chats.clear();
+
+        // save to realm
+        // TODO: 29.01.19 implement
+    }
+
+    /** PRIVATE METHODS */
+
+    private void onLoaded() {
+
+    }
+
+    private void addMessage(Chat notification, CharSequence author, CharSequence messageText) {
+        lastMessage = new Message(author, messageText, System.currentTimeMillis());
+        notification.addMessage(lastMessage);
+        rebuildAllNotifications();
+    }
+
+    private Chat getChat(AccountJid account, UserJid user) {
+        for (Chat item : chats) {
+            if (item.equals(account, user))
+                return item;
+        }
+        return null;
+    }
+
+    private Chat getChat(int notificationId) {
+        for (Chat item : chats) {
+            if (item.getNotificationId() == notificationId)
+                return item;
+        }
+        return null;
+    }
+
+    public void rebuildAllNotifications() {
+        notificationManager.cancelAll();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            createChatNotification(newChat);
+            for (Chat chat : chats) createChatNotification(chat);
             if (chats.size() > 1) createGroupNotification();
         } else {
-            if (chats.size() > 1) {
-                notificationManager.cancelAll();
-                createGroupNotificationOldAPI();
-            } else createChatNotificationOldAPI(newChat);
+            if (chats.size() > 1) createGroupNotificationOldAPI();
+            else createChatNotificationOldAPI(chats.get(0));
         }
     }
 
@@ -156,6 +195,7 @@ public class NotifManagerCompat {
                 .addAction(createReplyAction(chat.getNotificationId()))
                 .addAction(createMarkAsReadAction(chat.getNotificationId()))
                 .addAction(createMuteAction(chat.getNotificationId()))
+                .setContentIntent(createContentIntent(chat))
                 .setDeleteIntent(NotificationReceiver.createDeleteIntent(context, chat.getNotificationId()))
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
@@ -180,6 +220,7 @@ public class NotifManagerCompat {
                 .setGroup(MESSAGE_GROUP_ID)
                 .addAction(createMarkAsReadAction(chat.getNotificationId()))
                 .addAction(createMuteAction(chat.getNotificationId()))
+                .setContentIntent(createContentIntent(chat))
                 .setDeleteIntent(NotificationReceiver.createDeleteIntent(context, chat.getNotificationId()))
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
@@ -256,19 +297,18 @@ public class NotifManagerCompat {
                 .build();
     }
 
+    private PendingIntent createContentIntent(Chat chat) {
+        Intent backIntent = ContactListActivity.createIntent(Application.getInstance());
+        backIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        Intent intent = ChatActivity.createClearTopIntent(Application.getInstance(), chat.getAccountJid(), chat.getUserJid());
+        return PendingIntent.getActivities(Application.getInstance(), chat.getNotificationId(),
+                new Intent[]{backIntent, intent}, PendingIntent.FLAG_ONE_SHOT);
+    }
+
     /** UTILS */
 
     private void sendNotification(NotificationCompat.Builder builder, int notificationId) {
-        Intent resultIntent = new Intent(context, ContactListActivity.class);
-
-        TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
-        stackBuilder.addParentStack(ContactListActivity.class);
-        stackBuilder.addNextIntent(resultIntent);
-
-        PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(notificationId,
-                PendingIntent.FLAG_UPDATE_CURRENT);
-        builder.setContentIntent(resultPendingIntent);
-
         notificationManager.notify(notificationId, builder.build());
     }
 
@@ -285,7 +325,6 @@ public class NotifManagerCompat {
 
     private NotificationCompat.Style createInboxStyleForGroup() {
         NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
-        ArrayList<Chat> chats = new ArrayList<>(this.chats.values());
         Collections.sort(chats, Collections.reverseOrder(new SortByLastMessage()));
         int count = 0;
         for (Chat chat : chats) {
@@ -307,8 +346,8 @@ public class NotifManagerCompat {
 
     private int getMessageCount() {
         int result = 0;
-        for (Map.Entry<String, Chat> entry : chats.entrySet()) {
-            result += entry.getValue().getMessages().size();
+        for (Chat notification : chats) {
+            result += notification.getMessages().size();
         }
         return result;
     }
@@ -337,25 +376,19 @@ public class NotifManagerCompat {
         return 100 + chats.size() + 1;
     }
 
-    private String getChatKey(int notificationId) {
-        for (Map.Entry<String, Chat> entry : chats.entrySet()) {
-            if (notificationId == entry.getValue().getNotificationId())
-                return entry.getKey();
-        }
-        return null;
-    }
-
     /** INTERNAL CLASSES */
 
     private class Chat {
-        private String chatId;
+        private AccountJid accountJid;
+        private UserJid userJid;
         private int notificationId;
         private CharSequence chatTitle;
         private List<Message> messages = new ArrayList<>();
 
-        public Chat(int notificationId, String chatId, CharSequence chatTitle) {
+        public Chat(AccountJid accountJid, UserJid userJid, int notificationId, CharSequence chatTitle) {
+            this.accountJid = accountJid;
+            this.userJid = userJid;
             this.notificationId = notificationId;
-            this.chatId = chatId;
             this.chatTitle = chatTitle;
         }
 
@@ -367,8 +400,12 @@ public class NotifManagerCompat {
             return notificationId;
         }
 
-        public String getChatId() {
-            return chatId;
+        public AccountJid getAccountJid() {
+            return accountJid;
+        }
+
+        public UserJid getUserJid() {
+            return userJid;
         }
 
         public CharSequence getChatTitle() {
@@ -381,6 +418,10 @@ public class NotifManagerCompat {
 
         public long getLastMessageTimestamp() {
             return messages.get(messages.size() - 1).getTimestamp();
+        }
+
+        public boolean equals(AccountJid account, UserJid user) {
+            return this.accountJid.equals(account) && this.userJid.equals(user);
         }
     }
 

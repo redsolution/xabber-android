@@ -40,7 +40,7 @@ import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.ChatManager;
-import com.xabber.android.data.notification.NotifManagerCompat;
+import com.xabber.android.data.notification.MessageNotificationManager;
 import com.xabber.android.data.notification.NotificationManager;
 
 import org.greenrobot.eventbus.EventBus;
@@ -395,8 +395,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         messageItem.setParentMessageId(parentMessageId);
 
         if (notify && notifyAboutMessage() && !visible) {
-            //NotificationManager.getInstance().onMessageNotification(messageItem);
-            NotifManagerCompat.getInstance().onNewMessage(messageItem);
+            NotificationManager.getInstance().onMessageNotification(messageItem);
         }
 
         // unread message count

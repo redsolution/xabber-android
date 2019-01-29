@@ -7,7 +7,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.RemoteInput;
 
-import com.xabber.android.data.notification.NotifManagerCompat;
+import com.xabber.android.data.notification.MessageNotificationManager;
 
 public class NotificationReceiver extends BroadcastReceiver {
 
@@ -28,16 +28,16 @@ public class NotificationReceiver extends BroadcastReceiver {
 
         switch (action) {
             case ACTION_CANCEL:
-                NotifManagerCompat.getInstance().onNotificationCanceled(notificationId);
+                MessageNotificationManager.getInstance().onNotificationCanceled(notificationId);
                 break;
             case ACTION_REPLY:
                 Bundle remoteInput = RemoteInput.getResultsFromIntent(intent);
                 if (remoteInput != null)
-                    NotifManagerCompat.getInstance().onNotificationReplied(notificationId,
+                    MessageNotificationManager.getInstance().onNotificationReplied(notificationId,
                             remoteInput.getCharSequence(KEY_REPLY_TEXT));
                 break;
             case ACTION_MARK_AS_READ:
-                NotifManagerCompat.getInstance().onNotificationMarkedAsRead(notificationId);
+                MessageNotificationManager.getInstance().onNotificationMarkedAsRead(notificationId);
                 break;
         }
     }

@@ -41,12 +41,10 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.account.listeners.OnAccountRemovedListener;
 import com.xabber.android.data.connection.ConnectionState;
-import com.xabber.android.data.database.messagerealm.Attachment;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.database.sqlite.NotificationTable;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
-import com.xabber.android.data.filedownload.FileCategory;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.chat.ChatManager;
@@ -61,11 +59,8 @@ import org.jxmpp.stringprep.XmppStringprepException;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-
-import io.realm.RealmList;
 
 /**
  * Manage notifications about message, subscription and authentication.
@@ -105,9 +100,7 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
     /**
      * List of
      */
-    private final List<MessageNotification> messageNotifications;
     private NotificationCompat.Builder persistentNotificationBuilder;
-    private MessageNotificationCreator messageNotificationCreator;
     private int persistentNotificationColor;
 
     public static NotificationManager getInstance() {
@@ -127,7 +120,6 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
 
         handler = new Handler();
         providers = new ArrayList<>();
-        messageNotifications = new ArrayList<>();
         clearNotifications = PendingIntent.getActivity(
                 application, 0, ClearNotificationsActivity.createIntent(application), 0);
 
@@ -159,10 +151,6 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
             persistentNotificationBuilder = new NotificationCompat.Builder(application, createNotificationChannelService());
         else persistentNotificationBuilder = new NotificationCompat.Builder(application, "");
         initPersistentNotification();
-
-
-        messageNotificationCreator = new MessageNotificationCreator();
-
         persistentNotificationColor = application.getResources().getColor(R.color.persistent_notification_color);
     }
 
@@ -243,12 +231,12 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
     }
 
     private void onLoaded(Collection<MessageNotification> messageNotifications) {
-        this.messageNotifications.addAll(messageNotifications);
-        for (MessageNotification messageNotification : messageNotifications) {
-            MessageManager.getInstance().openChat(
-                    messageNotification.getAccount(),
-                    messageNotification.getUser());
-        }
+        //this.messageNotifications.addAll(messageNotifications);
+//        for (MessageNotification messageNotification : messageNotifications) {
+//            MessageManager.getInstance().openChat(
+//                    messageNotification.getAccount(),
+//                    messageNotification.getUser());
+//        }
     }
 
     @Override
@@ -354,31 +342,6 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
 
     public void startVibration() {
         handler.post(startVibration);
-    }
-
-    /**
-     * Chat was changed:
-     * <ul>
-     * <li>incoming message</li>
-     * <li>chat was opened</li>
-     * <li>account was changed</li>
-     * </ul>
-     * <p/>
-     * Update chat and persistent notifications.
-     *
-     * @param ticker message to be shown.
-     * @return
-     */
-    private void updateMessageNotification(MessageItem ticker) {
-        updatePersistentNotification();
-
-        Notification messageNotification = messageNotificationCreator.notifyMessageNotification(messageNotifications, ticker);
-
-        if (messageNotification != null) {
-            notify(MESSAGE_NOTIFICATION_ID, messageNotification);
-        } else {
-            notificationManager.cancel(MESSAGE_NOTIFICATION_ID);
-        }
     }
 
     private void updatePersistentNotification() {
@@ -504,99 +467,23 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
         }
     }
 
-    private MessageNotification getMessageNotification(AccountJid account, UserJid user) {
-        for (MessageNotification messageNotification : messageNotifications) {
-            if (messageNotification.equals(account, user)) {
-                return messageNotification;
-            }
-        }
-        return null;
-    }
-
     public void onMessageNotification(MessageItem messageItem) {
-        MessageNotification messageNotification = getMessageNotification(
-                messageItem.getAccount(), messageItem.getUser());
-        if (messageNotification == null) {
-            messageNotification = new MessageNotification(
-                    messageItem.getAccount(), messageItem.getUser(), null, null, 0);
-        } else {
-            messageNotifications.remove(messageNotification);
-        }
-
-        String messageText;
-        if (messageItem.haveAttachments() && messageItem.getAttachments().size() > 0) {
-            Attachment attachment = messageItem.getAttachments().get(0);
-            FileCategory category = FileCategory.determineFileCategory(attachment.getMimeType());
-            messageText = FileCategory.getCategoryName(category, false) + attachment.getTitle();
-        } else messageText = messageItem.getText();
-
-        messageNotification.addMessage(messageText);
-        messageNotifications.add(messageNotification);
-
-        final AccountJid account = messageNotification.getAccount();
-        final UserJid user = messageNotification.getUser();
-        final String text = messageNotification.getText();
-        final Date timestamp = messageNotification.getTimestamp();
-        final int count = messageNotification.getCount();
-
-        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
-            @Override
-            public void run() {
-                NotificationTable.getInstance().write(account.toString(), user.toString(), text, timestamp, count);
-            }
-        });
-
-        updateMessageNotification(messageItem);
+        MessageNotificationManager.getInstance().onNewMessage(messageItem);
     }
 
     /**
      * Updates message notification.
      */
     public void onMessageNotification() {
-        updateMessageNotification(null);
-    }
-
-    public int getNotificationMessageCount(AccountJid account, UserJid user) {
-        MessageNotification messageNotification = getMessageNotification(
-                account, user);
-        if (messageNotification == null)
-            return 0;
-        return messageNotification.getCount();
+        MessageNotificationManager.getInstance().rebuildAllNotifications();
     }
 
     public void removeMessageNotification(final AccountJid account, final UserJid user) {
-        MessageNotification messageNotification = getMessageNotification(account, user);
-        if (messageNotification == null)
-            return;
-        messageNotifications.remove(messageNotification);
-        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
-            @Override
-            public void run() {
-                NotificationTable.getInstance().remove(account.toString(), user.toString());
-            }
-        });
-
-        updateMessageNotification(null);
+        MessageNotificationManager.getInstance().removeChat(account, user);
     }
 
     public void removeMessageNotificationsForAccount(final AccountJid account) {
-        Iterator<MessageNotification> iterator = messageNotifications.iterator();
-        while(iterator.hasNext()) {
-            MessageNotification messageNotification = iterator.next();
-
-            if (messageNotification.getAccount().equals(account)) {
-                iterator.remove();
-            }
-        }
-
-        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
-            @Override
-            public void run() {
-                NotificationTable.getInstance().remove(account);
-            }
-        });
-
-        updateMessageNotification(null);
+        MessageNotificationManager.getInstance().removeNotificationsForAccount(account);
     }
 
     /**
@@ -606,14 +493,7 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
         for (NotificationProvider<? extends NotificationItem> provider : providers)
             if (provider.canClearNotifications())
                 provider.clearNotifications();
-        messageNotifications.clear();
-        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
-            @Override
-            public void run() {
-                NotificationTable.getInstance().clear();
-            }
-        });
-        updateMessageNotification(null);
+        MessageNotificationManager.getInstance().onClearNotifications();
     }
 
     @Override

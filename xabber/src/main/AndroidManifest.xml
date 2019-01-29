@@ -443,6 +443,7 @@
                 <action android:name="android.intent.action.QUICKBOOT_POWEROFF" />
             </intent-filter>
         </receiver>
+        <receiver android:name=".receiver.NotificationReceiver" />
 
         <activity android:name="de.duenndns.ssl.MemorizingActivity" />
         <activity android:name="com.soundcloud.android.crop.CropImageActivity" />
