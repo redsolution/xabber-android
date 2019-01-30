@@ -27,6 +27,9 @@ public class NotificationReceiver extends BroadcastReceiver {
         if (action == null) return;
 
         switch (action) {
+            case ACTION_MUTE:
+                MessageNotificationManager.getInstance().onNotificationMuted(notificationId);
+                break;
             case ACTION_CANCEL:
                 MessageNotificationManager.getInstance().onNotificationCanceled(notificationId);
                 break;

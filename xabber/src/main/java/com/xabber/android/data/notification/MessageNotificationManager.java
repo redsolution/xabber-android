@@ -5,10 +5,6 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.NotificationCompat;
@@ -30,6 +26,9 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.muc.MUCManager;
+import com.xabber.android.data.message.AbstractChat;
+import com.xabber.android.data.message.MessageManager;
+import com.xabber.android.data.message.NotificationState;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.receiver.NotificationReceiver;
 import com.xabber.android.ui.activity.ChatActivity;
@@ -88,8 +87,19 @@ public class MessageNotificationManager implements OnLoadListener {
         removeChat(notificationId);
     }
 
+    public void onNotificationMuted(int notificationId) {
+        Chat chatNotif = getChat(notificationId);
+        if (chatNotif != null) {
+            AbstractChat chat = MessageManager.getInstance().getChat(
+                    chatNotif.getAccountJid(), chatNotif.getUserJid());
+            if (chat != null) chat.setNotificationState(
+                    new NotificationState(NotificationState.NotificationMode.disabled,
+                            0), true);
+        }
+    }
+
     public void onNotificationMarkedAsRead(int notificationId) {
-        // mute chat
+        // mark chat as read
         Log.d("NOTIFICATION_TEST", "mark as read " + notificationId);
 
         // cancel notification
