@@ -13,7 +13,6 @@ import android.support.v4.app.RemoteInput;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.StyleSpan;
-import android.util.Log;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
@@ -100,7 +99,12 @@ public class MessageNotificationManager implements OnLoadListener {
 
     public void onNotificationMarkedAsRead(int notificationId) {
         // mark chat as read
-        Log.d("NOTIFICATION_TEST", "mark as read " + notificationId);
+        Chat chatNotif = getChat(notificationId);
+        if (chatNotif != null) {
+            AbstractChat chat = MessageManager.getInstance().getChat(
+                    chatNotif.getAccountJid(), chatNotif.getUserJid());
+            if (chat != null) chat.resetUnreadMessageCount();
+        }
 
         // cancel notification
         notificationManager.cancel(notificationId);
