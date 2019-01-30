@@ -72,11 +72,13 @@ public class MessageNotificationManager implements OnLoadListener {
     /** LISTENER */
 
     public void onNotificationReplied(int notificationId, CharSequence replyText) {
-        // send message to xmpp
-
-        // update notification
         Chat chat = getChat(notificationId);
         if (chat != null) {
+            // send message
+            MessageManager.getInstance().sendMessage(
+                    chat.getAccountJid(), chat.getUserJid(), replyText.toString());
+
+            // update notification
             addMessage(chat, DISPLAY_NAME, replyText);
             saveNotifChatToRealm(chat);
         }
