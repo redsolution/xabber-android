@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.UUID;
 
 import io.realm.Realm;
 import io.realm.RealmList;
@@ -296,10 +297,10 @@ public class MessageNotificationManager implements OnLoadListener {
         Realm realm = RealmManager.getInstance().getNewRealm();
         RealmResults<NotifChatRealm> items = realm.where(NotifChatRealm.class).findAll();
         for (NotifChatRealm item : items) {
-            Chat chat = new Chat(item.getAccount(), item.getUser(),
+            Chat chat = new Chat(item.getId(), item.getAccount(), item.getUser(),
                     item.getNotificationID(), item.getChatTitle());
             for (NotifMessageRealm message : item.getMessages()) {
-                chat.addMessage(new Message(message.getAuthor(), message.getText(), message.getTimestamp()));
+                chat.addMessage(new Message(message.getId(), message.getAuthor(), message.getText(), message.getTimestamp()));
             }
             results.add(chat);
         }
@@ -314,13 +315,8 @@ public class MessageNotificationManager implements OnLoadListener {
                 Realm realm = RealmManager.getInstance().getNewRealm();
                 RealmResults<NotifChatRealm> items = realm.where(NotifChatRealm.class)
                         .equalTo(NotifChatRealm.Fields.ACCOUNT, accountJid.toString())
-                        .equalTo(NotifChatRealm.Fields.USER, userJid.toString())
-                        .findAll();
-
-                realm.beginTransaction();
-                for (NotifChatRealm item : items)
-                    item.deleteFromRealm();
-                realm.commitTransaction();
+                        .equalTo(NotifChatRealm.Fields.USER, userJid.toString()).findAll();
+                removeNotifChatFromRealm(realm, items);
             }
         });
     }
@@ -331,13 +327,8 @@ public class MessageNotificationManager implements OnLoadListener {
             public void run() {
                 Realm realm = RealmManager.getInstance().getNewRealm();
                 RealmResults<NotifChatRealm> items = realm.where(NotifChatRealm.class)
-                        .equalTo(NotifChatRealm.Fields.ACCOUNT, accountJid.toString())
-                        .findAll();
-
-                realm.beginTransaction();
-                for (NotifChatRealm item : items)
-                    item.deleteFromRealm();
-                realm.commitTransaction();
+                        .equalTo(NotifChatRealm.Fields.ACCOUNT, accountJid.toString()).findAll();
+                removeNotifChatFromRealm(realm, items);
             }
         });
     }
@@ -347,22 +338,26 @@ public class MessageNotificationManager implements OnLoadListener {
             @Override
             public void run() {
                 Realm realm = RealmManager.getInstance().getNewRealm();
-                RealmResults<NotifChatRealm> items = realm.where(NotifChatRealm.class)
-                        .findAll();
-
-                realm.beginTransaction();
-                for (NotifChatRealm item : items)
-                    item.deleteFromRealm();
-                realm.commitTransaction();
+                RealmResults<NotifChatRealm> items = realm.where(NotifChatRealm.class).findAll();
+                removeNotifChatFromRealm(realm, items);
             }
         });
+    }
+
+    private void removeNotifChatFromRealm(Realm realm, RealmResults<NotifChatRealm> items) {
+        realm.beginTransaction();
+        for (NotifChatRealm item : items) {
+            item.getMessages().deleteAllFromRealm();
+            item.deleteFromRealm();
+        }
+        realm.commitTransaction();
     }
 
     private void saveNotifChatToRealm(final Chat chat) {
         Application.getInstance().runInBackgroundUserRequest(new Runnable() {
             @Override
             public void run() {
-                NotifChatRealm chatRealm = new NotifChatRealm();
+                NotifChatRealm chatRealm = new NotifChatRealm(chat.getId());
                 chatRealm.setAccount(chat.getAccountJid());
                 chatRealm.setUser(chat.getUserJid());
                 chatRealm.setChatTitle(chat.getChatTitle().toString());
@@ -382,7 +377,7 @@ public class MessageNotificationManager implements OnLoadListener {
     }
 
     private NotifMessageRealm messageToRealm(Message message) {
-        NotifMessageRealm messageRealm = new NotifMessageRealm();
+        NotifMessageRealm messageRealm = new NotifMessageRealm(message.getId());
         messageRealm.setAuthor(message.getAuthor().toString());
         messageRealm.setText(message.getMessageText().toString());
         messageRealm.setTimestamp(message.getTimestamp());
@@ -496,6 +491,7 @@ public class MessageNotificationManager implements OnLoadListener {
     /** INTERNAL CLASSES */
 
     private class Chat {
+        private String id;
         private AccountJid accountJid;
         private UserJid userJid;
         private int notificationId;
@@ -507,6 +503,19 @@ public class MessageNotificationManager implements OnLoadListener {
             this.userJid = userJid;
             this.notificationId = notificationId;
             this.chatTitle = chatTitle;
+            this.id = UUID.randomUUID().toString();
+        }
+
+        public Chat(String id, AccountJid accountJid, UserJid userJid, int notificationId, CharSequence chatTitle) {
+            this.id = id;
+            this.accountJid = accountJid;
+            this.userJid = userJid;
+            this.notificationId = notificationId;
+            this.chatTitle = chatTitle;
+        }
+
+        public String getId() {
+            return id;
         }
 
         public void addMessage(Message message) {
@@ -543,11 +552,20 @@ public class MessageNotificationManager implements OnLoadListener {
     }
 
     private class Message {
+        private String id;
         private CharSequence author;
         private CharSequence messageText;
         private long timestamp;
 
         public Message(CharSequence author, CharSequence messageText, long timestamp) {
+            this.author = author;
+            this.messageText = messageText;
+            this.timestamp = timestamp;
+            this.id = UUID.randomUUID().toString();
+        }
+
+        public Message(String id, CharSequence author, CharSequence messageText, long timestamp) {
+            this.id = id;
             this.author = author;
             this.messageText = messageText;
             this.timestamp = timestamp;
@@ -563,6 +581,10 @@ public class MessageNotificationManager implements OnLoadListener {
 
         public long getTimestamp() {
             return timestamp;
+        }
+
+        public String getId() {
+            return id;
         }
     }
 

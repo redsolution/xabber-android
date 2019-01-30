@@ -26,6 +26,14 @@ public class NotifMessageRealm extends RealmObject {
         this.id = UUID.randomUUID().toString();
     }
 
+    public NotifMessageRealm(String id) {
+        this.id = id;
+    }
+
+    public String getId() {
+        return id;
+    }
+
     public String getAuthor() {
         return author;
     }

@@ -37,6 +37,14 @@ public class NotifChatRealm extends RealmObject {
         this.id = UUID.randomUUID().toString();
     }
 
+    public NotifChatRealm(String id) {
+        this.id = id;
+    }
+
+    public String getId() {
+        return id;
+    }
+
     public AccountJid getAccount() {
         try {
             return AccountJid.from(account);
