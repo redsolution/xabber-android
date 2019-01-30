@@ -257,6 +257,8 @@ public class MessageNotificationManager implements OnLoadListener {
                         .setSubText(getMessageCount() + " new messages")
                         .setGroup(MESSAGE_GROUP_ID)
                         .setGroupSummary(true)
+                        .setContentIntent(createGroupContentIntent())
+                        .setDeleteIntent(NotificationReceiver.createDeleteIntent(context, MESSAGE_GROUP_NOTIFICATION_ID))
                         .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
         sendNotification(builder, MESSAGE_GROUP_NOTIFICATION_ID);
@@ -277,6 +279,7 @@ public class MessageNotificationManager implements OnLoadListener {
                 .setContentText(content)
                 .setStyle(createInboxStyleForGroup())
                 .setGroup(MESSAGE_GROUP_ID)
+                .setContentIntent(createGroupContentIntent())
                 .setDeleteIntent(NotificationReceiver.createDeleteIntent(context, MESSAGE_GROUP_NOTIFICATION_ID))
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
@@ -420,6 +423,12 @@ public class MessageNotificationManager implements OnLoadListener {
         Intent intent = ChatActivity.createClearTopIntent(Application.getInstance(), chat.getAccountJid(), chat.getUserJid());
         return PendingIntent.getActivities(Application.getInstance(), chat.getNotificationId(),
                 new Intent[]{backIntent, intent}, PendingIntent.FLAG_ONE_SHOT);
+    }
+
+    private PendingIntent createGroupContentIntent() {
+        return PendingIntent.getActivity(context, 0,
+                ContactListActivity.createPersistentIntent(context),
+                PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
     /** UTILS */
