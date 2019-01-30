@@ -28,6 +28,8 @@ import com.xabber.android.data.database.realm.NotifChatRealm;
 import com.xabber.android.data.database.realm.NotifMessageRealm;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.extension.avatar.AvatarManager;
+import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.receiver.NotificationReceiver;
 import com.xabber.android.ui.activity.ChatActivity;
@@ -208,7 +210,7 @@ public class MessageNotificationManager implements OnLoadListener {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, MESSAGE_CHANNEL_ID)
                 .setColor(COLOR)
                 .setSmallIcon(R.drawable.ic_message)
-                .setLargeIcon(drawableToBitmap(context.getDrawable(R.mipmap.ic_launcher_round)))
+                .setLargeIcon(getLargeIcon(chat))
                 .setStyle(messageStyle)
                 .setGroup(MESSAGE_GROUP_ID)
                 .addAction(createReplyAction(chat.getNotificationId()))
@@ -290,6 +292,8 @@ public class MessageNotificationManager implements OnLoadListener {
         channel.setDescription(description);
         notificationManager.createNotificationChannel(channel);
     }
+
+    /** REALM */
 
     /** Called not from Main thread */
     private List<Chat> loadNotifChatsFromRealm() {
@@ -456,32 +460,21 @@ public class MessageNotificationManager implements OnLoadListener {
         return spannable;
     }
 
+    private android.graphics.Bitmap getLargeIcon(Chat chat) {
+        String name = RosterManager.getInstance().getName(chat.getAccountJid(), chat.getUserJid());
+        if (MUCManager.getInstance().hasRoom(chat.getAccountJid(), chat.getUserJid().getJid().asEntityBareJidIfPossible())) {
+            return AvatarManager.getInstance().getRoomBitmap(chat.getUserJid());
+        } else {
+            return AvatarManager.getInstance().getUserBitmap(chat.getUserJid(), name);
+        }
+    }
+
     private int getMessageCount() {
         int result = 0;
         for (Chat notification : chats) {
             result += notification.getMessages().size();
         }
         return result;
-    }
-
-    private static Bitmap drawableToBitmap (Drawable drawable) {
-
-        if (drawable instanceof BitmapDrawable) {
-            return ((BitmapDrawable)drawable).getBitmap();
-        }
-
-        Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(bitmap);
-        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
-        drawable.draw(canvas);
-
-        return bitmap;
-    }
-
-    private String getKey(AccountJid account, UserJid user) {
-        String bareJidAccount = account.getFullJid().asBareJid().toString();
-        String bareJidUser = user.getBareJid().toString();
-        return bareJidAccount + "-" + bareJidUser;
     }
 
     private int getNextChatNotificationId() {
