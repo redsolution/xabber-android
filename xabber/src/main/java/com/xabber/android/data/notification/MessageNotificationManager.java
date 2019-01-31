@@ -450,8 +450,8 @@ public class MessageNotificationManager implements OnLoadListener {
     }
 
     private PendingIntent createGroupContentIntent() {
-        return PendingIntent.getActivity(context, 0,
-                ContactListActivity.createPersistentIntent(context),
+        return PendingIntent.getActivity(context, MESSAGE_GROUP_NOTIFICATION_ID,
+                ContactListActivity.createCancelNotificationIntent(context),
                 PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
