@@ -47,7 +47,7 @@ public class MessageNotificationManager implements OnLoadListener {
 
     private final static String MESSAGE_CHANNEL_ID = "MESSAGE_CHANNEL";
     private final static String MESSAGE_GROUP_ID = "MESSAGE_GROUP";
-    private final static int MESSAGE_GROUP_NOTIFICATION_ID = 0;
+    private final static int MESSAGE_GROUP_NOTIFICATION_ID = 2;
     private static final int COLOR = 299031;
     private static final String DISPLAY_NAME = "You";
 
@@ -85,7 +85,9 @@ public class MessageNotificationManager implements OnLoadListener {
     }
 
     public void onNotificationCanceled(int notificationId) {
-        removeChat(notificationId);
+        if (notificationId == MESSAGE_GROUP_NOTIFICATION_ID)
+            onClearNotifications();
+        else removeChat(notificationId);
     }
 
     public void onNotificationMuted(int notificationId) {
@@ -174,7 +176,13 @@ public class MessageNotificationManager implements OnLoadListener {
 
     private void onLoaded(List<Chat> loadedChats) {
         this.chats.addAll(loadedChats);
-        rebuildAllNotifications();
+        if (loadedChats != null && loadedChats.size() > 0) {
+            List<Message> messages = loadedChats.get(loadedChats.size() - 1).getMessages();
+            if (messages != null && messages.size() > 0) {
+                lastMessage = messages.get(messages.size() - 1);
+                rebuildAllNotifications();
+            }
+        }
     }
 
     private void addMessage(Chat notification, CharSequence author, CharSequence messageText) {
@@ -206,7 +214,7 @@ public class MessageNotificationManager implements OnLoadListener {
             if (chats.size() > 1) createGroupNotification();
         } else {
             if (chats.size() > 1) createGroupNotificationOldAPI();
-            else createChatNotificationOldAPI(chats.get(0));
+            else if (chats.size() > 0) createChatNotificationOldAPI(chats.get(0));
         }
     }
 
