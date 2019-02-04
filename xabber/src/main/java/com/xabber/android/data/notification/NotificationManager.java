@@ -503,26 +503,25 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
         if (isMUC) vibroMode = SettingsManager.eventsVibroMuc();
         else vibroMode = SettingsManager.eventsVibroChat();
 
+        notificationBuilder.setVibrate(getVibroValue(vibroMode, isPhoneInVibrateMode));
+    }
+
+    public static long[] getVibroValue(SettingsManager.VibroMode vibroMode, boolean isPhoneInVibrateMode) {
         switch (vibroMode) {
             case disabled:
-                notificationBuilder.setVibrate(new long[] {0, 0});
-                break;
+                return new long[] {0, 0};
             case defaultvibro:
-                notificationBuilder.setVibrate(new long[] {0, 500});
-                break;
+                return new long[] {0, 500};
             case shortvibro:
-                notificationBuilder.setVibrate(new long[] {0, 250});
-                break;
+                return new long[] {0, 250};
             case longvibro:
-                notificationBuilder.setVibrate(new long[] {0, 1000});
-                break;
+                return new long[] {0, 1000};
             case onlyifsilent:
                 if (isPhoneInVibrateMode)
-                    notificationBuilder.setVibrate(new long[] {0, 500});
-                break;
+                    return new long[] {0, 500};
+                else return new long[] {0, 0};
             default:
-                notificationBuilder.setVibrate(new long[] {0, 500});
-                break;
+                return new long[] {0, 500};
         }
     }
 
