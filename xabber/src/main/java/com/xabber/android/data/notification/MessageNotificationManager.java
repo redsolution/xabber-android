@@ -1,6 +1,5 @@
 package com.xabber.android.data.notification;
 
-import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -32,6 +31,7 @@ import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.receiver.NotificationReceiver;
 import com.xabber.android.ui.activity.ChatActivity;
 import com.xabber.android.ui.activity.ContactListActivity;
+import com.xabber.android.ui.preferences.NotificationChannelUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -45,7 +45,6 @@ import io.realm.RealmResults;
 
 public class MessageNotificationManager implements OnLoadListener {
 
-    private final static String MESSAGE_CHANNEL_ID = "MESSAGE_CHANNEL";
     private final static String MESSAGE_GROUP_ID = "MESSAGE_GROUP";
     private final static int MESSAGE_GROUP_NOTIFICATION_ID = 2;
     private static final int COLOR = 299031;
@@ -60,8 +59,16 @@ public class MessageNotificationManager implements OnLoadListener {
     public MessageNotificationManager() {
         context = Application.getInstance();
         notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-            createNotificationChannel();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannelUtils.createChannel(notificationManager,
+                    NotificationChannelUtils.ChannelType.privateChat,
+                    null, null, null);
+
+            NotificationChannelUtils.createChannel(notificationManager,
+                    NotificationChannelUtils.ChannelType.groupChat,
+                    null, null, null);
+        }
+
     }
 
     public static MessageNotificationManager getInstance() {
@@ -79,7 +86,7 @@ public class MessageNotificationManager implements OnLoadListener {
                     chat.getAccountJid(), chat.getUserJid(), replyText.toString());
 
             // update notification
-            addMessage(chat, DISPLAY_NAME, replyText);
+            addMessage(chat, DISPLAY_NAME, replyText, false);
             saveNotifChatToRealm(chat);
         }
     }
@@ -132,10 +139,10 @@ public class MessageNotificationManager implements OnLoadListener {
         String author = RosterManager.getInstance().getBestContact(messageItem.getAccount(), messageItem.getUser()).getName();
         Chat chat = getChat(messageItem.getAccount(), messageItem.getUser());
         if (chat == null) {
-            chat = new Chat(messageItem.getAccount(), messageItem.getUser(), getNextChatNotificationId(), author);
+            chat = new Chat(messageItem.getAccount(), messageItem.getUser(), getNextChatNotificationId(), author, messageItem.isFromMUC());
             chats.add(chat);
         }
-        addMessage(chat, author, messageItem.getText());
+        addMessage(chat, author, messageItem.getText(), true);
         saveNotifChatToRealm(chat);
     }
 
@@ -143,7 +150,7 @@ public class MessageNotificationManager implements OnLoadListener {
         Chat chat = getChat(account, user);
         if (chat != null) {
             chats.remove(chat);
-            rebuildAllNotifications();
+            removeNotification(chat);
             removeNotifChatFromRealm(account, user);
         }
     }
@@ -152,7 +159,7 @@ public class MessageNotificationManager implements OnLoadListener {
         Chat chat = getChat(notificationId);
         if (chat != null) {
             chats.remove(chat);
-            rebuildAllNotifications();
+            removeNotification(chat);
             removeNotifChatFromRealm(chat.accountJid, chat.userJid);
         }
     }
@@ -185,10 +192,10 @@ public class MessageNotificationManager implements OnLoadListener {
         }
     }
 
-    private void addMessage(Chat notification, CharSequence author, CharSequence messageText) {
+    private void addMessage(Chat notification, CharSequence author, CharSequence messageText, boolean alert) {
         lastMessage = new Message(author, messageText, System.currentTimeMillis());
         notification.addMessage(lastMessage);
-        rebuildAllNotifications();
+        addNotification(notification, alert);
     }
 
     private Chat getChat(AccountJid account, UserJid user) {
@@ -207,10 +214,30 @@ public class MessageNotificationManager implements OnLoadListener {
         return null;
     }
 
+    public void addNotification(Chat chat, boolean alert) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            if (chats.size() > 1) createGroupNotification();
+            createChatNotification(chat, alert);
+        } else {
+            if (chats.size() > 1) createGroupNotificationOldAPI();
+            else if (chats.size() > 0) createChatNotificationOldAPI(chats.get(0));
+        }
+    }
+
+    public void removeNotification(Chat chat) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            if (chats.size() > 1) createGroupNotification();
+            notificationManager.cancel(chat.getNotificationId());
+        } else {
+            if (chats.size() > 1) createGroupNotificationOldAPI();
+            else if (chats.size() > 0) createChatNotificationOldAPI(chats.get(0));
+        }
+    }
+
     public void rebuildAllNotifications() {
         notificationManager.cancelAll();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            for (Chat chat : chats) createChatNotification(chat);
+            for (Chat chat : chats) createChatNotification(chat, true);
             if (chats.size() > 1) createGroupNotification();
         } else {
             if (chats.size() > 1) createGroupNotificationOldAPI();
@@ -219,7 +246,7 @@ public class MessageNotificationManager implements OnLoadListener {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
-    private void createChatNotification(Chat chat) {
+    private void createChatNotification(Chat chat, boolean alert) {
         NotificationCompat.Style messageStyle = new NotificationCompat.MessagingStyle(DISPLAY_NAME);
         for (Message message : chat.getMessages()) {
 
@@ -231,12 +258,17 @@ public class MessageNotificationManager implements OnLoadListener {
                     new NotificationCompat.MessagingStyle.Message(message.getMessageText(), message.getTimestamp(), person));
         }
 
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, MESSAGE_CHANNEL_ID)
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context,
+                NotificationChannelUtils.getChannelID(
+                        chat.isGroupChat() ? NotificationChannelUtils.ChannelType.groupChat
+                                : NotificationChannelUtils.ChannelType.privateChat))
                 .setColor(COLOR)
                 .setSmallIcon(R.drawable.ic_message)
                 .setLargeIcon(getLargeIcon(chat))
                 .setStyle(messageStyle)
                 .setGroup(MESSAGE_GROUP_ID)
+                .setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_CHILDREN)
+                .setOnlyAlertOnce(!alert)
                 .addAction(createReplyAction(chat.getNotificationId()))
                 .addAction(createMarkAsReadAction(chat.getNotificationId()))
                 .addAction(createMuteAction(chat.getNotificationId()))
@@ -256,13 +288,17 @@ public class MessageNotificationManager implements OnLoadListener {
 
         CharSequence content = lastMessage.getMessageText();
 
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, MESSAGE_CHANNEL_ID)
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context,
+                NotificationChannelUtils.getChannelID(
+                        chat.isGroupChat() ? NotificationChannelUtils.ChannelType.groupChat
+                                : NotificationChannelUtils.ChannelType.privateChat))
                 .setColor(COLOR)
                 .setSmallIcon(R.drawable.ic_message)
                 .setContentTitle(title)
                 .setContentText(content)
                 .setStyle(createInboxStyle(chat))
                 .setGroup(MESSAGE_GROUP_ID)
+                .setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_CHILDREN)
                 .addAction(createMarkAsReadAction(chat.getNotificationId()))
                 .addAction(createMuteAction(chat.getNotificationId()))
                 .setContentIntent(createContentIntent(chat))
@@ -274,13 +310,18 @@ public class MessageNotificationManager implements OnLoadListener {
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void createGroupNotification() {
+        boolean isGroup = firstChatIsGroup();
         NotificationCompat.Builder builder =
-                new NotificationCompat.Builder(context, MESSAGE_CHANNEL_ID)
+                new NotificationCompat.Builder(context,
+                        NotificationChannelUtils.getChannelID(
+                                isGroup ? NotificationChannelUtils.ChannelType.groupChat
+                                        : NotificationChannelUtils.ChannelType.privateChat))
                         .setColor(COLOR)
                         .setSmallIcon(R.drawable.ic_message)
                         .setSubText(getMessageCount() + " new messages")
                         .setGroup(MESSAGE_GROUP_ID)
                         .setGroupSummary(true)
+                        .setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_CHILDREN)
                         .setContentIntent(createGroupContentIntent())
                         .setDeleteIntent(NotificationReceiver.createDeleteIntent(context, MESSAGE_GROUP_NOTIFICATION_ID))
                         .setPriority(NotificationCompat.PRIORITY_DEFAULT);
@@ -295,8 +336,12 @@ public class MessageNotificationManager implements OnLoadListener {
 
         CharSequence title = messageCount + " messages from " + chatCount + " chats";
         CharSequence content = createLine(lastMessage.getAuthor(), lastMessage.getMessageText());
+        boolean isGroup = firstChatIsGroup();
 
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, MESSAGE_CHANNEL_ID)
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context,
+                NotificationChannelUtils.getChannelID(
+                        isGroup ? NotificationChannelUtils.ChannelType.groupChat
+                                : NotificationChannelUtils.ChannelType.privateChat))
                 .setColor(COLOR)
                 .setSmallIcon(R.drawable.ic_message)
                 .setContentTitle(title)
@@ -310,16 +355,6 @@ public class MessageNotificationManager implements OnLoadListener {
         sendNotification(builder, MESSAGE_GROUP_NOTIFICATION_ID);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    private void createNotificationChannel() {
-        CharSequence name = "New message notification";
-        String description = "Shows notifications about new messages";
-        int importance = NotificationManager.IMPORTANCE_DEFAULT;
-        NotificationChannel channel = new NotificationChannel(MESSAGE_CHANNEL_ID, name, importance);
-        channel.setDescription(description);
-        notificationManager.createNotificationChannel(channel);
-    }
-
     /** REALM */
 
     /** Called not from Main thread */
@@ -329,7 +364,7 @@ public class MessageNotificationManager implements OnLoadListener {
         RealmResults<NotifChatRealm> items = realm.where(NotifChatRealm.class).findAll();
         for (NotifChatRealm item : items) {
             Chat chat = new Chat(item.getId(), item.getAccount(), item.getUser(),
-                    item.getNotificationID(), item.getChatTitle());
+                    item.getNotificationID(), item.getChatTitle(), false);
             for (NotifMessageRealm message : item.getMessages()) {
                 chat.addMessage(new Message(message.getId(), message.getAuthor(), message.getText(), message.getTimestamp()));
             }
@@ -472,11 +507,20 @@ public class MessageNotificationManager implements OnLoadListener {
         return inboxStyle;
     }
 
+    private boolean firstChatIsGroup() {
+        List<Chat> sortedChat = new ArrayList<>(chats);
+        Collections.sort(sortedChat, Collections.reverseOrder(new SortByLastMessage()));
+        if (sortedChat.size() > 0) {
+            return sortedChat.get(0).isGroupChat;
+        } else return false;
+    }
+
     private NotificationCompat.Style createInboxStyleForGroup() {
+        List<Chat> sortedChat = new ArrayList<>(chats);
+        Collections.sort(sortedChat, Collections.reverseOrder(new SortByLastMessage()));
         NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
-        Collections.sort(chats, Collections.reverseOrder(new SortByLastMessage()));
         int count = 0;
-        for (Chat chat : chats) {
+        for (Chat chat : sortedChat) {
             if (count >= 7) break;
             Message message = chat.getMessages().get(chat.getMessages().size() - 1);
             inboxStyle.addLine(createLine(chat.getChatTitle(), message.getMessageText()));
@@ -522,22 +566,27 @@ public class MessageNotificationManager implements OnLoadListener {
         private UserJid userJid;
         private int notificationId;
         private CharSequence chatTitle;
+        private boolean isGroupChat;
         private List<Message> messages = new ArrayList<>();
 
-        public Chat(AccountJid accountJid, UserJid userJid, int notificationId, CharSequence chatTitle) {
+        public Chat(AccountJid accountJid, UserJid userJid, int notificationId,
+                    CharSequence chatTitle, boolean isGroupChat) {
             this.accountJid = accountJid;
             this.userJid = userJid;
             this.notificationId = notificationId;
             this.chatTitle = chatTitle;
             this.id = UUID.randomUUID().toString();
+            this.isGroupChat = isGroupChat;
         }
 
-        public Chat(String id, AccountJid accountJid, UserJid userJid, int notificationId, CharSequence chatTitle) {
+        public Chat(String id, AccountJid accountJid, UserJid userJid, int notificationId,
+                    CharSequence chatTitle, boolean isGroupChat) {
             this.id = id;
             this.accountJid = accountJid;
             this.userJid = userJid;
             this.notificationId = notificationId;
             this.chatTitle = chatTitle;
+            this.isGroupChat = isGroupChat;
         }
 
         public String getId() {
@@ -566,6 +615,10 @@ public class MessageNotificationManager implements OnLoadListener {
 
         public List<Message> getMessages() {
             return messages;
+        }
+
+        public boolean isGroupChat() {
+            return isGroupChat;
         }
 
         public long getLastMessageTimestamp() {

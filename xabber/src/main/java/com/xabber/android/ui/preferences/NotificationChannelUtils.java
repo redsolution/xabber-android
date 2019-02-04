@@ -11,7 +11,6 @@ import android.support.annotation.RequiresApi;
 import com.xabber.android.data.Application;
 import java.util.UUID;
 
-@RequiresApi(api = Build.VERSION_CODES.O)
 public class NotificationChannelUtils {
 
     private static final String PRIVATE_MESSAGE_CHANNEL_ID_KEY = "PRIVATE_MESSAGE_CHANNEL_ID_KEY";
@@ -25,7 +24,7 @@ public class NotificationChannelUtils {
         groupChat
     }
 
-    private static String getChannelID(ChannelType type) {
+    public static String getChannelID(ChannelType type) {
         SharedPreferences sPref = PreferenceManager.getDefaultSharedPreferences(Application.getInstance());
 
         if (type == ChannelType.groupChat)
@@ -44,11 +43,13 @@ public class NotificationChannelUtils {
         return newID;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public static NotificationChannel getChannel(NotificationManager notifManager, ChannelType type) {
         if (notifManager == null) return null;
         else return notifManager.getNotificationChannel(getChannelID(type));
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public static String updateChannel(NotificationManager notifManager, ChannelType type,
                                Uri newSound, long[] newVibro, AudioAttributes newAudioAttrs) {
 
@@ -66,6 +67,7 @@ public class NotificationChannelUtils {
         return createChannel(notifManager, type, sound, vibro, audioAttrs);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public static String createChannel(NotificationManager notifManager, ChannelType type,
                                       Uri sound, long[] vibro, AudioAttributes audioAttrs) {
         CharSequence name;
