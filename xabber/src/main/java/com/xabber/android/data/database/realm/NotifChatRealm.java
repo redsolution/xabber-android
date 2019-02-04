@@ -21,6 +21,7 @@ public class NotifChatRealm extends RealmObject {
         public static final String USER = "user";
         public static final String NOTIFICATION_ID = "notificationID";
         public static final String CHAT_TITLE = "chatTitle";
+        public static final String IS_GROUP_CHAT = "isGroupChat";
         public static final String MESSAGES = "messages";
     }
 
@@ -31,6 +32,7 @@ public class NotifChatRealm extends RealmObject {
     private String user;
     private int notificationID;
     private String chatTitle;
+    private boolean isGroupChat;
     private RealmList<NotifMessageRealm> messages;
 
     public NotifChatRealm() {
@@ -85,6 +87,14 @@ public class NotifChatRealm extends RealmObject {
 
     public void setChatTitle(String chatTitle) {
         this.chatTitle = chatTitle;
+    }
+
+    public boolean isGroupChat() {
+        return isGroupChat;
+    }
+
+    public void setGroupChat(boolean groupChat) {
+        isGroupChat = groupChat;
     }
 
     public RealmList<NotifMessageRealm> getMessages() {

@@ -276,6 +276,7 @@ public class RealmManager {
                                     .addField(NotifChatRealm.Fields.USER, String.class)
                                     .addField(NotifChatRealm.Fields.NOTIFICATION_ID, int.class)
                                     .addField(NotifChatRealm.Fields.CHAT_TITLE, String.class)
+                                    .addField(NotifChatRealm.Fields.IS_GROUP_CHAT, boolean.class)
                                     .addRealmListField(NotifChatRealm.Fields.MESSAGES, schema.get(NotifMessageRealm.class.getSimpleName()));
 
                             oldVersion++;
