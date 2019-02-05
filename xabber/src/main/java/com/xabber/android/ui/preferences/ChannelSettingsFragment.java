@@ -78,6 +78,7 @@ public class ChannelSettingsFragment extends PreferenceFragment {
         return ringtone.getTitle(getActivity());
     }
 
+    // TODO: 05.02.2019 remove, because exist in MessageNotificationManager
     private boolean checkVibrateMode() {
         AudioManager am = (AudioManager) getActivity().getSystemService(Context.AUDIO_SERVICE);
         if (am != null)

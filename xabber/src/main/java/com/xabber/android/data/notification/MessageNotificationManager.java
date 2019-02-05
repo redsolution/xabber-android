@@ -1,9 +1,11 @@
 package com.xabber.android.data.notification;
 
+import android.app.ActivityManager;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.media.AudioManager;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
@@ -18,6 +20,7 @@ import android.text.style.StyleSpan;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.OnLoadListener;
+import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.database.RealmManager;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.database.realm.NotifChatRealm;
@@ -29,6 +32,8 @@ import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.NotificationState;
+import com.xabber.android.data.message.chat.ChatManager;
+import com.xabber.android.data.message.phrase.PhraseManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.receiver.NotificationReceiver;
 import com.xabber.android.ui.activity.ChatActivity;
@@ -302,7 +307,6 @@ public class MessageNotificationManager implements OnLoadListener {
         else title = chat.getChatTitle();
 
         CharSequence content = lastMessage.getMessageText();
-        Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context,
                 NotificationChannelUtils.getChannelID(
                         chat.isGroupChat() ? NotificationChannelUtils.ChannelType.groupChat
@@ -322,7 +326,8 @@ public class MessageNotificationManager implements OnLoadListener {
                 .setCategory(NotificationCompat.CATEGORY_MESSAGE)
                 .setPriority(NotificationCompat.PRIORITY_HIGH);
 
-        if (alert) builder.setSound(alarmSound);
+        if (alert) addEffects(builder, content.toString(), chat.getAccountJid(), chat.getUserJid(),
+                chat.isGroupChat(), checkVibrateMode(), isAppInForeground());
 
         sendNotification(builder, chat.getNotificationId());
     }
@@ -356,13 +361,11 @@ public class MessageNotificationManager implements OnLoadListener {
         CharSequence title = messageCount + " messages from " + chatCount + " chats";
         CharSequence content = createLine(lastMessage.getAuthor(), lastMessage.getMessageText());
         boolean isGroup = firstChatIsGroup();
-        Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context,
                 NotificationChannelUtils.getChannelID(
                         isGroup ? NotificationChannelUtils.ChannelType.groupChat
                                 : NotificationChannelUtils.ChannelType.privateChat))
                 .setColor(COLOR)
-                .setSound(alarmSound)
                 .setSmallIcon(R.drawable.ic_message)
                 .setContentTitle(title)
                 .setContentText(content)
@@ -373,6 +376,10 @@ public class MessageNotificationManager implements OnLoadListener {
                 .setDeleteIntent(NotificationReceiver.createDeleteIntent(context, MESSAGE_GROUP_NOTIFICATION_ID))
                 .setCategory(NotificationCompat.CATEGORY_MESSAGE)
                 .setPriority(NotificationCompat.PRIORITY_HIGH);
+
+        Chat lastChat = getLastChat();
+        if (alert && lastChat != null) addEffects(builder, content.toString(), lastChat.getAccountJid(), lastChat.getUserJid(),
+                lastChat.isGroupChat(), checkVibrateMode(), isAppInForeground());
 
         sendNotification(builder, MESSAGE_GROUP_NOTIFICATION_ID);
     }
@@ -538,6 +545,14 @@ public class MessageNotificationManager implements OnLoadListener {
         } else return false;
     }
 
+    private Chat getLastChat() {
+        List<Chat> sortedChat = new ArrayList<>(chats);
+        Collections.sort(sortedChat, Collections.reverseOrder(new SortByLastMessage()));
+        if (sortedChat.size() > 0) {
+            return sortedChat.get(0);
+        } else return null;
+    }
+
     private NotificationCompat.Style createInboxStyleForGroup() {
         List<Chat> sortedChat = new ArrayList<>(chats);
         Collections.sort(sortedChat, Collections.reverseOrder(new SortByLastMessage()));
@@ -579,6 +594,65 @@ public class MessageNotificationManager implements OnLoadListener {
 
     private int getNextChatNotificationId() {
         return 100 + chats.size() + 1;
+    }
+
+    public static void addEffects(NotificationCompat.Builder notificationBuilder, String text,
+                                  AccountJid account, UserJid user, boolean isMUC,
+                                  boolean isPhoneInVibrateMode, boolean isAppInForeground) {
+
+        if (account == null || user == null) return;
+
+        if (MessageManager.getInstance().getChat(account, user).getFirstNotification()
+                || !SettingsManager.eventsFirstOnly()) {
+            Uri sound = PhraseManager.getInstance().getSound(account,
+                    user, text, isMUC);
+            boolean makeVibration = ChatManager.getInstance().isMakeVibro(account, user);
+
+            boolean led;
+            if (isMUC) led = SettingsManager.eventsLightningForMuc();
+            else led = SettingsManager.eventsLightning();
+
+            com.xabber.android.data.notification.NotificationManager.getInstance()
+                    .setNotificationDefaults(notificationBuilder, led, sound, AudioManager.STREAM_NOTIFICATION);
+
+            // vibration
+            if (makeVibration)
+                com.xabber.android.data.notification.NotificationManager
+                        .setVibration(isMUC, isPhoneInVibrateMode, notificationBuilder);
+
+            // in-app notifications
+            if (isAppInForeground) {
+                // disable vibrate
+                if (!SettingsManager.eventsInAppVibrate()) {
+                    notificationBuilder.setVibrate(new long[] {0, 0});
+                }
+                // disable sounds
+                if (!SettingsManager.eventsInAppSounds()) {
+                    notificationBuilder.setSound(null);
+                }
+            }
+        }
+    }
+
+    private boolean checkVibrateMode() {
+        AudioManager am = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+        if (am != null) return am.getRingerMode() == AudioManager.RINGER_MODE_VIBRATE;
+        else return false;
+    }
+
+    private boolean isAppInForeground() {
+        ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningAppProcessInfo> appProcesses = activityManager.getRunningAppProcesses();
+        if (appProcesses == null) {
+            return false;
+        }
+        final String packageName = context.getPackageName();
+        for (ActivityManager.RunningAppProcessInfo appProcess : appProcesses) {
+            if (appProcess.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND && appProcess.processName.equals(packageName)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /** INTERNAL CLASSES */

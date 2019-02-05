@@ -498,7 +498,7 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
         notificationManager.cancelAll();
     }
 
-    private static void setVibration(boolean isMUC, boolean isPhoneInVibrateMode, NotificationCompat.Builder notificationBuilder) {
+    public static void setVibration(boolean isMUC, boolean isPhoneInVibrateMode, NotificationCompat.Builder notificationBuilder) {
         SettingsManager.VibroMode vibroMode;
         if (isMUC) vibroMode = SettingsManager.eventsVibroMuc();
         else vibroMode = SettingsManager.eventsVibroChat();
