@@ -245,6 +245,7 @@ public class MessageNotificationManager implements OnLoadListener {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             if (chats.size() > 1) createGroupNotification();
             notificationManager.cancel(chat.getNotificationId());
+            if (chats.size() == 0) notificationManager.cancel(MESSAGE_GROUP_NOTIFICATION_ID);
         } else {
             if (chats.size() > 1) createGroupNotificationOldAPI(false);
             else if (chats.size() > 0) {
