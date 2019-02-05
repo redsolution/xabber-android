@@ -4,6 +4,8 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.NotificationCompat;
@@ -106,6 +108,10 @@ public class MessageNotificationManager implements OnLoadListener {
                     new NotificationState(NotificationState.NotificationMode.disabled,
                             0), true);
         }
+
+        // cancel notification
+        notificationManager.cancel(notificationId);
+        onNotificationCanceled(notificationId);
     }
 
     public void onNotificationMarkedAsRead(int notificationId) {
@@ -219,7 +225,13 @@ public class MessageNotificationManager implements OnLoadListener {
             if (chats.size() > 1) createGroupNotification();
             createChatNotification(chat, alert);
         } else {
-            if (chats.size() > 1) createGroupNotificationOldAPI();
+            if (chats.size() > 1) {
+                if (chats.size() == 2) {
+                    notificationManager.cancel(chats.get(0).getNotificationId());
+                    notificationManager.cancel(chats.get(1).getNotificationId());
+                }
+                createGroupNotificationOldAPI();
+            }
             else if (chats.size() > 0) createChatNotificationOldAPI(chats.get(0));
         }
     }
@@ -287,23 +299,26 @@ public class MessageNotificationManager implements OnLoadListener {
         else title = chat.getChatTitle();
 
         CharSequence content = lastMessage.getMessageText();
-
+        Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context,
                 NotificationChannelUtils.getChannelID(
                         chat.isGroupChat() ? NotificationChannelUtils.ChannelType.groupChat
                                 : NotificationChannelUtils.ChannelType.privateChat))
                 .setColor(COLOR)
+                .setSound(alarmSound)
                 .setSmallIcon(R.drawable.ic_message)
                 .setContentTitle(title)
                 .setContentText(content)
                 .setStyle(createInboxStyle(chat))
                 .setGroup(MESSAGE_GROUP_ID)
                 .setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_CHILDREN)
+                .setAutoCancel(true)
                 .addAction(createMarkAsReadAction(chat.getNotificationId()))
                 .addAction(createMuteAction(chat.getNotificationId()))
                 .setContentIntent(createContentIntent(chat))
                 .setDeleteIntent(NotificationReceiver.createDeleteIntent(context, chat.getNotificationId()))
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+                .setCategory(NotificationCompat.CATEGORY_MESSAGE)
+                .setPriority(NotificationCompat.PRIORITY_HIGH);
 
         sendNotification(builder, chat.getNotificationId());
     }
@@ -337,12 +352,13 @@ public class MessageNotificationManager implements OnLoadListener {
         CharSequence title = messageCount + " messages from " + chatCount + " chats";
         CharSequence content = createLine(lastMessage.getAuthor(), lastMessage.getMessageText());
         boolean isGroup = firstChatIsGroup();
-
+        Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context,
                 NotificationChannelUtils.getChannelID(
                         isGroup ? NotificationChannelUtils.ChannelType.groupChat
                                 : NotificationChannelUtils.ChannelType.privateChat))
                 .setColor(COLOR)
+                .setSound(alarmSound)
                 .setSmallIcon(R.drawable.ic_message)
                 .setContentTitle(title)
                 .setContentText(content)
@@ -350,7 +366,8 @@ public class MessageNotificationManager implements OnLoadListener {
                 .setGroup(MESSAGE_GROUP_ID)
                 .setContentIntent(createGroupContentIntent())
                 .setDeleteIntent(NotificationReceiver.createDeleteIntent(context, MESSAGE_GROUP_NOTIFICATION_ID))
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+                .setCategory(NotificationCompat.CATEGORY_MESSAGE)
+                .setPriority(NotificationCompat.PRIORITY_HIGH);
 
         sendNotification(builder, MESSAGE_GROUP_NOTIFICATION_ID);
     }
