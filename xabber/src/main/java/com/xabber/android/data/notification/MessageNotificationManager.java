@@ -230,9 +230,9 @@ public class MessageNotificationManager implements OnLoadListener {
                     notificationManager.cancel(chats.get(0).getNotificationId());
                     notificationManager.cancel(chats.get(1).getNotificationId());
                 }
-                createGroupNotificationOldAPI();
+                createGroupNotificationOldAPI(true);
             }
-            else if (chats.size() > 0) createChatNotificationOldAPI(chats.get(0));
+            else if (chats.size() > 0) createChatNotificationOldAPI(chats.get(0), true);
         }
     }
 
@@ -241,8 +241,11 @@ public class MessageNotificationManager implements OnLoadListener {
             if (chats.size() > 1) createGroupNotification();
             notificationManager.cancel(chat.getNotificationId());
         } else {
-            if (chats.size() > 1) createGroupNotificationOldAPI();
-            else if (chats.size() > 0) createChatNotificationOldAPI(chats.get(0));
+            if (chats.size() > 1) createGroupNotificationOldAPI(false);
+            else if (chats.size() > 0) {
+                notificationManager.cancel(MESSAGE_GROUP_NOTIFICATION_ID);
+                createChatNotificationOldAPI(chats.get(0), false);
+            } else notificationManager.cancel(chat.getNotificationId());
         }
     }
 
@@ -252,8 +255,8 @@ public class MessageNotificationManager implements OnLoadListener {
             for (Chat chat : chats) createChatNotification(chat, true);
             if (chats.size() > 1) createGroupNotification();
         } else {
-            if (chats.size() > 1) createGroupNotificationOldAPI();
-            else if (chats.size() > 0) createChatNotificationOldAPI(chats.get(0));
+            if (chats.size() > 1) createGroupNotificationOldAPI(true);
+            else if (chats.size() > 0) createChatNotificationOldAPI(chats.get(0), true);
         }
     }
 
@@ -291,7 +294,7 @@ public class MessageNotificationManager implements OnLoadListener {
         sendNotification(builder, chat.getNotificationId());
     }
 
-    private void createChatNotificationOldAPI(Chat chat) {
+    private void createChatNotificationOldAPI(Chat chat, boolean alert) {
         int messageCount = chat.getMessages().size();
         CharSequence title;
         if (messageCount > 1)
@@ -305,7 +308,6 @@ public class MessageNotificationManager implements OnLoadListener {
                         chat.isGroupChat() ? NotificationChannelUtils.ChannelType.groupChat
                                 : NotificationChannelUtils.ChannelType.privateChat))
                 .setColor(COLOR)
-                .setSound(alarmSound)
                 .setSmallIcon(R.drawable.ic_message)
                 .setContentTitle(title)
                 .setContentText(content)
@@ -319,6 +321,8 @@ public class MessageNotificationManager implements OnLoadListener {
                 .setDeleteIntent(NotificationReceiver.createDeleteIntent(context, chat.getNotificationId()))
                 .setCategory(NotificationCompat.CATEGORY_MESSAGE)
                 .setPriority(NotificationCompat.PRIORITY_HIGH);
+
+        if (alert) builder.setSound(alarmSound);
 
         sendNotification(builder, chat.getNotificationId());
     }
@@ -344,7 +348,7 @@ public class MessageNotificationManager implements OnLoadListener {
         sendNotification(builder, MESSAGE_GROUP_NOTIFICATION_ID);
     }
 
-    private void createGroupNotificationOldAPI() {
+    private void createGroupNotificationOldAPI(boolean alert) {
 
         int messageCount = getMessageCount();
         int chatCount = chats.size();
@@ -362,6 +366,7 @@ public class MessageNotificationManager implements OnLoadListener {
                 .setSmallIcon(R.drawable.ic_message)
                 .setContentTitle(title)
                 .setContentText(content)
+                .setOnlyAlertOnce(!alert)
                 .setStyle(createInboxStyleForGroup())
                 .setGroup(MESSAGE_GROUP_ID)
                 .setContentIntent(createGroupContentIntent())
