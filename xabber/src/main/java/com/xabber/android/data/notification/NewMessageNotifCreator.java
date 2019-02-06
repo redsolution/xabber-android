@@ -22,6 +22,7 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.muc.MUCManager;
+import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.message.phrase.PhraseManager;
@@ -140,7 +141,8 @@ public class NewMessageNotifCreator {
             CharSequence title = messageCount + " messages from " + sortedChats.size() + " chats";
             builder.setContentTitle(title)
                     .setOnlyAlertOnce(!alert)
-                    .setStyle(createInboxStyleForBundle(sortedChats));
+                    .setStyle(createInboxStyleForBundle(sortedChats,
+                            lastChat != null ? lastChat.getAccountJid().toString() : ""));
             MessageNotificationManager.Message lastMessage = lastChat != null ? lastChat.getLastMessage() : null;
 
             if (lastMessage != null) {
@@ -186,7 +188,8 @@ public class NewMessageNotifCreator {
         return inboxStyle;
     }
 
-    private NotificationCompat.Style createInboxStyleForBundle(List<MessageNotificationManager.Chat> sortedChats) {
+    private NotificationCompat.Style createInboxStyleForBundle(
+            List<MessageNotificationManager.Chat> sortedChats, String accountName) {
         NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
         int count = 0;
         for (MessageNotificationManager.Chat chat : sortedChats) {
@@ -195,7 +198,7 @@ public class NewMessageNotifCreator {
             inboxStyle.addLine(createLine(chat.getChatTitle(), message.getMessageText()));
             count++;
         }
-        inboxStyle.setSummaryText("valery.miller@xabber.com");
+        inboxStyle.setSummaryText(accountName);
         return inboxStyle;
     }
 
@@ -209,37 +212,27 @@ public class NewMessageNotifCreator {
     private static void addEffects(NotificationCompat.Builder notificationBuilder, String text,
                                   AccountJid account, UserJid user, boolean isMUC,
                                   boolean isPhoneInVibrateMode, boolean isAppInForeground) {
-
         if (account == null || user == null) return;
 
-        if (MessageManager.getInstance().getChat(account, user).getFirstNotification()
-                || !SettingsManager.eventsFirstOnly()) {
-            Uri sound = PhraseManager.getInstance().getSound(account,
-                    user, text, isMUC);
-            boolean makeVibration = ChatManager.getInstance().isMakeVibro(account, user);
+        AbstractChat chat = MessageManager.getInstance().getChat(account, user);
+        if (chat != null && (chat.getFirstNotification() || !SettingsManager.eventsFirstOnly())) {
 
-            boolean led;
-            if (isMUC) led = SettingsManager.eventsLightningForMuc();
-            else led = SettingsManager.eventsLightning();
+            Uri sound = PhraseManager.getInstance().getSound(account, user, text, isMUC);
+            boolean makeVibration = ChatManager.getInstance().isMakeVibro(account, user);
+            boolean led = isMUC ? SettingsManager.eventsLightningForMuc() : SettingsManager.eventsLightning();
 
             com.xabber.android.data.notification.NotificationManager.getInstance()
                     .setNotificationDefaults(notificationBuilder, led, sound, AudioManager.STREAM_NOTIFICATION);
 
             // vibration
-            if (makeVibration)
-                com.xabber.android.data.notification.NotificationManager
-                        .setVibration(isMUC, isPhoneInVibrateMode, notificationBuilder);
+            if (makeVibration) com.xabber.android.data.notification.NotificationManager
+                    .setVibration(isMUC, isPhoneInVibrateMode, notificationBuilder);
 
-            // in-app notifications
             if (isAppInForeground) {
-                // disable vibrate
-                if (!SettingsManager.eventsInAppVibrate()) {
-                    notificationBuilder.setVibrate(new long[] {0, 0});
-                }
-                // disable sounds
-                if (!SettingsManager.eventsInAppSounds()) {
-                    notificationBuilder.setSound(null);
-                }
+                // disable vibrate if in-app notification
+                if (!SettingsManager.eventsInAppVibrate()) notificationBuilder.setVibrate(new long[] {0, 0});
+                // disable sound if in-app notification
+                if (!SettingsManager.eventsInAppSounds()) notificationBuilder.setSound(null);
             }
         }
     }
