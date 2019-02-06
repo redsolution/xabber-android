@@ -28,7 +28,7 @@ import io.realm.RealmResults;
 
 public class MessageNotificationManager implements OnLoadListener {
 
-    private final static int MESSAGE_GROUP_NOTIFICATION_ID = 2;
+    private final static int MESSAGE_BUNDLE_NOTIFICATION_ID = 2;
     private static final String DISPLAY_NAME = "You";
 
     private final Application context;
@@ -76,7 +76,7 @@ public class MessageNotificationManager implements OnLoadListener {
     }
 
     public void onNotificationCanceled(int notificationId) {
-        if (notificationId == MESSAGE_GROUP_NOTIFICATION_ID)
+        if (notificationId == MESSAGE_BUNDLE_NOTIFICATION_ID)
             onClearNotifications();
         else removeChat(notificationId);
     }
@@ -204,7 +204,7 @@ public class MessageNotificationManager implements OnLoadListener {
 
     public void addNotification(Chat chat, boolean alert) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            if (chats.size() > 1) creator.createBoundleNotification(chats, true);
+            if (chats.size() > 1) creator.createBundleNotification(chats, true);
             creator.createNotification(chat, alert);
         } else {
             if (chats.size() > 1) {
@@ -212,7 +212,7 @@ public class MessageNotificationManager implements OnLoadListener {
                     notificationManager.cancel(chats.get(0).getNotificationId());
                     notificationManager.cancel(chats.get(1).getNotificationId());
                 }
-                creator.createBoundleNotification(chats, true);
+                creator.createBundleNotification(chats, true);
             }
             else if (chats.size() > 0) creator.createNotification(chats.get(0), true);
         }
@@ -220,13 +220,13 @@ public class MessageNotificationManager implements OnLoadListener {
 
     public void removeNotification(Chat chat) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            if (chats.size() > 1) creator.createBoundleNotification(chats, true);
+            if (chats.size() > 1) creator.createBundleNotification(chats, true);
             notificationManager.cancel(chat.getNotificationId());
-            if (chats.size() == 0) notificationManager.cancel(MESSAGE_GROUP_NOTIFICATION_ID);
+            if (chats.size() == 0) notificationManager.cancel(MESSAGE_BUNDLE_NOTIFICATION_ID);
         } else {
-            if (chats.size() > 1) creator.createBoundleNotification(chats, true);
+            if (chats.size() > 1) creator.createBundleNotification(chats, true);
             else if (chats.size() > 0) {
-                notificationManager.cancel(MESSAGE_GROUP_NOTIFICATION_ID);
+                notificationManager.cancel(MESSAGE_BUNDLE_NOTIFICATION_ID);
                 creator.createNotification(chats.get(0), false);
             } else notificationManager.cancel(chat.getNotificationId());
         }
@@ -236,9 +236,9 @@ public class MessageNotificationManager implements OnLoadListener {
         notificationManager.cancelAll();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             for (Chat chat : chats) creator.createNotification(chat, true);
-            if (chats.size() > 1) creator.createBoundleNotification(chats, true);
+            if (chats.size() > 1) creator.createBundleNotification(chats, true);
         } else {
-            if (chats.size() > 1) creator.createBoundleNotification(chats, true);
+            if (chats.size() > 1) creator.createBundleNotification(chats, true);
             else if (chats.size() > 0) creator.createNotification(chats.get(0), true);
         }
     }

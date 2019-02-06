@@ -39,7 +39,7 @@ import java.util.List;
 public class NewMessageNotifCreator {
 
     private final static String MESSAGE_GROUP_ID = "MESSAGE_GROUP";
-    private final static int MESSAGE_GROUP_NOTIFICATION_ID = 2;
+    private final static int MESSAGE_BUNDLE_NOTIFICATION_ID = 2;
     private static final int COLOR = 299031;
     private static final String DISPLAY_NAME = "You";
 
@@ -105,7 +105,7 @@ public class NewMessageNotifCreator {
         sendNotification(builder, chat.getNotificationId());
     }
 
-    public void createBoundleNotification(List<MessageNotificationManager.Chat> chats, boolean alert) {
+    public void createBundleNotification(List<MessageNotificationManager.Chat> chats, boolean alert) {
 
         boolean isGroup = false;
         MessageNotificationManager.Chat lastChat = getLastChat(chats);
@@ -123,8 +123,8 @@ public class NewMessageNotifCreator {
                         .setGroup(MESSAGE_GROUP_ID)
                         .setGroupSummary(true)
                         .setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_CHILDREN)
-                        .setContentIntent(createGroupContentIntent())
-                        .setDeleteIntent(NotificationReceiver.createDeleteIntent(context, MESSAGE_GROUP_NOTIFICATION_ID))
+                        .setContentIntent(createBundleContentIntent())
+                        .setDeleteIntent(NotificationReceiver.createDeleteIntent(context, MESSAGE_BUNDLE_NOTIFICATION_ID))
                         .setCategory(NotificationCompat.CATEGORY_MESSAGE)
                         .setPriority(NotificationCompat.PRIORITY_HIGH);
 
@@ -142,7 +142,7 @@ public class NewMessageNotifCreator {
                     builder.setContentTitle(title)
                             .setContentText(content)
                             .setOnlyAlertOnce(!alert)
-                            .setStyle(createInboxStyleForGroup(chats));
+                            .setStyle(createInboxStyleForBundle(chats));
 
                     if (alert) addEffects(builder, content.toString(), lastChat.getAccountJid(),
                             lastChat.getUserJid(), lastChat.isGroupChat(), checkVibrateMode(),
@@ -151,7 +151,7 @@ public class NewMessageNotifCreator {
             }
         }
 
-        sendNotification(builder, MESSAGE_GROUP_NOTIFICATION_ID);
+        sendNotification(builder, MESSAGE_BUNDLE_NOTIFICATION_ID);
     }
 
     /** UTILS */
@@ -196,7 +196,7 @@ public class NewMessageNotifCreator {
         return inboxStyle;
     }
 
-    private NotificationCompat.Style createInboxStyleForGroup(List<MessageNotificationManager.Chat> chats) {
+    private NotificationCompat.Style createInboxStyleForBundle(List<MessageNotificationManager.Chat> chats) {
         List<MessageNotificationManager.Chat> sortedChat = new ArrayList<>(chats);
         Collections.sort(sortedChat, Collections.reverseOrder(new SortByLastMessage()));
         NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
@@ -311,8 +311,8 @@ public class NewMessageNotifCreator {
                 new Intent[]{backIntent, intent}, PendingIntent.FLAG_ONE_SHOT);
     }
 
-    private PendingIntent createGroupContentIntent() {
-        return PendingIntent.getActivity(context, MESSAGE_GROUP_NOTIFICATION_ID,
+    private PendingIntent createBundleContentIntent() {
+        return PendingIntent.getActivity(context, MESSAGE_BUNDLE_NOTIFICATION_ID,
                 ContactListActivity.createCancelNotificationIntent(context),
                 PendingIntent.FLAG_UPDATE_CURRENT);
     }
