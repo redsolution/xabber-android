@@ -205,7 +205,8 @@ public class MessageNotificationManager implements OnLoadListener {
 
     public void addNotification(Chat chat, boolean alert) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            if (chats.size() > 1) creator.createGroupNotification(firstChatIsGroup(), getMessageCount());
+            if (chats.size() > 1) creator.createBoundleNotification(true, getMessageCount(),
+                    chats.size(), lastMessage, firstChatIsGroup(), getLastChat(), chats);
             creator.createNotification(context, chat, lastMessage, alert);
         } else {
             if (chats.size() > 1) {
@@ -213,8 +214,8 @@ public class MessageNotificationManager implements OnLoadListener {
                     notificationManager.cancel(chats.get(0).getNotificationId());
                     notificationManager.cancel(chats.get(1).getNotificationId());
                 }
-                creator.createGroupNotificationOldAPI(true, getMessageCount(), chats.size(),
-                        lastMessage, firstChatIsGroup(), getLastChat(), chats);
+                creator.createBoundleNotification(true, getMessageCount(),
+                        chats.size(), lastMessage, firstChatIsGroup(), getLastChat(), chats);
             }
             else if (chats.size() > 0) creator.createNotification(context, chats.get(0), lastMessage, true);
         }
@@ -222,12 +223,13 @@ public class MessageNotificationManager implements OnLoadListener {
 
     public void removeNotification(Chat chat) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            if (chats.size() > 1) creator.createGroupNotification(firstChatIsGroup(), getMessageCount());
+            if (chats.size() > 1) creator.createBoundleNotification(true, getMessageCount(),
+                    chats.size(), lastMessage, firstChatIsGroup(), getLastChat(), chats);
             notificationManager.cancel(chat.getNotificationId());
             if (chats.size() == 0) notificationManager.cancel(MESSAGE_GROUP_NOTIFICATION_ID);
         } else {
-            if (chats.size() > 1) creator.createGroupNotificationOldAPI(false, getMessageCount(), chats.size(),
-                    lastMessage, firstChatIsGroup(), getLastChat(), chats);
+            if (chats.size() > 1) creator.createBoundleNotification(false, getMessageCount(),
+                    chats.size(), lastMessage, firstChatIsGroup(), getLastChat(), chats);
             else if (chats.size() > 0) {
                 notificationManager.cancel(MESSAGE_GROUP_NOTIFICATION_ID);
                 creator.createNotification(context, chats.get(0), lastMessage, false);
@@ -239,10 +241,11 @@ public class MessageNotificationManager implements OnLoadListener {
         notificationManager.cancelAll();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             for (Chat chat : chats) creator.createNotification(context, chat, lastMessage, true);
-            if (chats.size() > 1) creator.createGroupNotification(firstChatIsGroup(), getMessageCount());
+            if (chats.size() > 1) creator.createBoundleNotification(true, getMessageCount(),
+                    chats.size(), lastMessage, firstChatIsGroup(), getLastChat(), chats);
         } else {
-            if (chats.size() > 1) creator.createGroupNotificationOldAPI(true, getMessageCount(), chats.size(),
-                    lastMessage, firstChatIsGroup(), getLastChat(), chats);
+            if (chats.size() > 1) creator.createBoundleNotification(true, getMessageCount(),
+                    chats.size(), lastMessage, firstChatIsGroup(), getLastChat(), chats);
             else if (chats.size() > 0) creator.createNotification(context, chats.get(0), lastMessage, true);
         }
     }

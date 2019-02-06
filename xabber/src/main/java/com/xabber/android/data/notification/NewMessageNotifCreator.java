@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
-import android.support.annotation.RequiresApi;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.Person;
 import android.support.v4.app.RemoteInput;
@@ -113,8 +112,11 @@ public class NewMessageNotifCreator {
         sendNotification(builder, chat.getNotificationId());
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
-    public void createGroupNotification(boolean lastChatIsGroup, int messageCount) {
+    public void createBoundleNotification(boolean alert, int messageCount, int chatCount,
+                                          MessageNotificationManager.Message lastMessage,
+                                          boolean lastChatIsGroup,
+                                          MessageNotificationManager.Chat lastChat,
+                                          List<MessageNotificationManager.Chat> chats) {
         NotificationCompat.Builder builder =
                 new NotificationCompat.Builder(context,
                         NotificationChannelUtils.getChannelID(
@@ -128,36 +130,24 @@ public class NewMessageNotifCreator {
                         .setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_CHILDREN)
                         .setContentIntent(createGroupContentIntent())
                         .setDeleteIntent(NotificationReceiver.createDeleteIntent(context, MESSAGE_GROUP_NOTIFICATION_ID))
-                        .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+                        .setCategory(NotificationCompat.CATEGORY_MESSAGE)
+                        .setPriority(NotificationCompat.PRIORITY_HIGH);
 
-        sendNotification(builder, MESSAGE_GROUP_NOTIFICATION_ID);
-    }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            builder.setSubText(messageCount + " new messages")
+                    .setGroupSummary(true)
+                    .setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_CHILDREN);
+        } else {
+            CharSequence title = messageCount + " messages from " + chatCount + " chats";
+            CharSequence content = createLine(lastMessage.getAuthor(), lastMessage.getMessageText());
+            builder.setContentTitle(title)
+                    .setContentText(content)
+                    .setOnlyAlertOnce(!alert)
+                    .setStyle(createInboxStyleForGroup(chats));
 
-    public void createGroupNotificationOldAPI(boolean alert, int messageCount, int chatCount,
-                                               MessageNotificationManager.Message lastMessage,
-                                               boolean lastChatIsGroup,
-                                               MessageNotificationManager.Chat lastChat,
-                                               List<MessageNotificationManager.Chat> chats) {
-        CharSequence title = messageCount + " messages from " + chatCount + " chats";
-        CharSequence content = createLine(lastMessage.getAuthor(), lastMessage.getMessageText());
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context,
-                NotificationChannelUtils.getChannelID(
-                        lastChatIsGroup ? NotificationChannelUtils.ChannelType.groupChat
-                                : NotificationChannelUtils.ChannelType.privateChat))
-                .setColor(COLOR)
-                .setSmallIcon(R.drawable.ic_message)
-                .setContentTitle(title)
-                .setContentText(content)
-                .setOnlyAlertOnce(!alert)
-                .setStyle(createInboxStyleForGroup(chats))
-                .setGroup(MESSAGE_GROUP_ID)
-                .setContentIntent(createGroupContentIntent())
-                .setDeleteIntent(NotificationReceiver.createDeleteIntent(context, MESSAGE_GROUP_NOTIFICATION_ID))
-                .setCategory(NotificationCompat.CATEGORY_MESSAGE)
-                .setPriority(NotificationCompat.PRIORITY_HIGH);
-
-        if (alert && lastChat != null) addEffects(builder, content.toString(), lastChat.getAccountJid(), lastChat.getUserJid(),
-                lastChat.isGroupChat(), checkVibrateMode(), isAppInForeground());
+            if (alert && lastChat != null) addEffects(builder, content.toString(), lastChat.getAccountJid(), lastChat.getUserJid(),
+                    lastChat.isGroupChat(), checkVibrateMode(), isAppInForeground());
+        }
 
         sendNotification(builder, MESSAGE_GROUP_NOTIFICATION_ID);
     }
