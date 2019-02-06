@@ -45,20 +45,13 @@ public class NewMessageNotifCreator {
 
     private final Application context;
     private final NotificationManager notificationManager;
-    private static NewMessageNotifCreator instance;
 
-    public NewMessageNotifCreator() {
-        context = Application.getInstance();
-        notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+    public NewMessageNotifCreator(Application context, NotificationManager notificationManager) {
+        this.context = context;
+        this.notificationManager = notificationManager;
     }
 
-    public static NewMessageNotifCreator getInstance() {
-        if (instance == null) instance = new NewMessageNotifCreator();
-        return instance;
-    }
-
-    public void createNotification(Context context, MessageNotificationManager.Chat chat,
-                                   MessageNotificationManager.Message lastMessage, boolean alert) {
+    public void createNotification(MessageNotificationManager.Chat chat, boolean alert) {
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context,
                 NotificationChannelUtils.getChannelID(
@@ -98,7 +91,7 @@ public class NewMessageNotifCreator {
                 title = messageCount + " messages from " + chat.getChatTitle();
             else title = chat.getChatTitle();
 
-            CharSequence content = lastMessage.getMessageText();
+            CharSequence content = chat.getLastMessage().getMessageText();
 
             builder.setContentTitle(title)
                     .setContentText(content)
@@ -112,15 +105,17 @@ public class NewMessageNotifCreator {
         sendNotification(builder, chat.getNotificationId());
     }
 
-    public void createBoundleNotification(boolean alert, int messageCount, int chatCount,
-                                          MessageNotificationManager.Message lastMessage,
-                                          boolean lastChatIsGroup,
-                                          MessageNotificationManager.Chat lastChat,
-                                          List<MessageNotificationManager.Chat> chats) {
+    public void createBoundleNotification(List<MessageNotificationManager.Chat> chats, boolean alert) {
+
+        boolean isGroup = false;
+        MessageNotificationManager.Chat lastChat = getLastChat(chats);
+        if (lastChat != null) isGroup = lastChat.isGroupChat();
+        int messageCount = getMessageCount(chats);
+
         NotificationCompat.Builder builder =
                 new NotificationCompat.Builder(context,
                         NotificationChannelUtils.getChannelID(
-                                lastChatIsGroup ? NotificationChannelUtils.ChannelType.groupChat
+                                isGroup ? NotificationChannelUtils.ChannelType.groupChat
                                         : NotificationChannelUtils.ChannelType.privateChat))
                         .setColor(COLOR)
                         .setSmallIcon(R.drawable.ic_message)
@@ -138,18 +133,43 @@ public class NewMessageNotifCreator {
                     .setGroupSummary(true)
                     .setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_CHILDREN);
         } else {
-            CharSequence title = messageCount + " messages from " + chatCount + " chats";
-            CharSequence content = createLine(lastMessage.getAuthor(), lastMessage.getMessageText());
-            builder.setContentTitle(title)
-                    .setContentText(content)
-                    .setOnlyAlertOnce(!alert)
-                    .setStyle(createInboxStyleForGroup(chats));
+            if (lastChat != null) {
+                MessageNotificationManager.Message lastMessage = lastChat.getLastMessage();
 
-            if (alert && lastChat != null) addEffects(builder, content.toString(), lastChat.getAccountJid(), lastChat.getUserJid(),
-                    lastChat.isGroupChat(), checkVibrateMode(), isAppInForeground());
+                if (lastMessage != null) {
+                    CharSequence title = messageCount + " messages from " + chats.size() + " chats";
+                    CharSequence content = createLine(lastMessage.getAuthor(), lastMessage.getMessageText());
+                    builder.setContentTitle(title)
+                            .setContentText(content)
+                            .setOnlyAlertOnce(!alert)
+                            .setStyle(createInboxStyleForGroup(chats));
+
+                    if (alert) addEffects(builder, content.toString(), lastChat.getAccountJid(),
+                            lastChat.getUserJid(), lastChat.isGroupChat(), checkVibrateMode(),
+                            isAppInForeground());
+                }
+            }
         }
 
         sendNotification(builder, MESSAGE_GROUP_NOTIFICATION_ID);
+    }
+
+    /** UTILS */
+
+    private int getMessageCount(List<MessageNotificationManager.Chat> chats) {
+        int result = 0;
+        for (MessageNotificationManager.Chat notification : chats) {
+            result += notification.getMessages().size();
+        }
+        return result;
+    }
+
+    private MessageNotificationManager.Chat getLastChat(List<MessageNotificationManager.Chat> chats) {
+        List<MessageNotificationManager.Chat> sortedChat = new ArrayList<>(chats);
+        Collections.sort(sortedChat, Collections.reverseOrder(new SortByLastMessage()));
+        if (sortedChat.size() > 0) {
+            return sortedChat.get(0);
+        } else return null;
     }
 
     private android.graphics.Bitmap getLargeIcon(MessageNotificationManager.Chat chat) {

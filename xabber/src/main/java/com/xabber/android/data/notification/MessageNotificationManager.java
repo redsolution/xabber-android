@@ -19,8 +19,6 @@ import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.preferences.NotificationChannelUtils;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
@@ -43,7 +41,8 @@ public class MessageNotificationManager implements OnLoadListener {
     public MessageNotificationManager() {
         context = Application.getInstance();
         notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        creator = NewMessageNotifCreator.getInstance();
+        creator = new NewMessageNotifCreator(context, notificationManager);
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannelUtils.createChannel(notificationManager,
                     NotificationChannelUtils.ChannelType.privateChat,
@@ -205,34 +204,30 @@ public class MessageNotificationManager implements OnLoadListener {
 
     public void addNotification(Chat chat, boolean alert) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            if (chats.size() > 1) creator.createBoundleNotification(true, getMessageCount(),
-                    chats.size(), lastMessage, firstChatIsGroup(), getLastChat(), chats);
-            creator.createNotification(context, chat, lastMessage, alert);
+            if (chats.size() > 1) creator.createBoundleNotification(chats, true);
+            creator.createNotification(chat, alert);
         } else {
             if (chats.size() > 1) {
                 if (chats.size() == 2) {
                     notificationManager.cancel(chats.get(0).getNotificationId());
                     notificationManager.cancel(chats.get(1).getNotificationId());
                 }
-                creator.createBoundleNotification(true, getMessageCount(),
-                        chats.size(), lastMessage, firstChatIsGroup(), getLastChat(), chats);
+                creator.createBoundleNotification(chats, true);
             }
-            else if (chats.size() > 0) creator.createNotification(context, chats.get(0), lastMessage, true);
+            else if (chats.size() > 0) creator.createNotification(chats.get(0), true);
         }
     }
 
     public void removeNotification(Chat chat) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            if (chats.size() > 1) creator.createBoundleNotification(true, getMessageCount(),
-                    chats.size(), lastMessage, firstChatIsGroup(), getLastChat(), chats);
+            if (chats.size() > 1) creator.createBoundleNotification(chats, true);
             notificationManager.cancel(chat.getNotificationId());
             if (chats.size() == 0) notificationManager.cancel(MESSAGE_GROUP_NOTIFICATION_ID);
         } else {
-            if (chats.size() > 1) creator.createBoundleNotification(false, getMessageCount(),
-                    chats.size(), lastMessage, firstChatIsGroup(), getLastChat(), chats);
+            if (chats.size() > 1) creator.createBoundleNotification(chats, true);
             else if (chats.size() > 0) {
                 notificationManager.cancel(MESSAGE_GROUP_NOTIFICATION_ID);
-                creator.createNotification(context, chats.get(0), lastMessage, false);
+                creator.createNotification(chats.get(0), false);
             } else notificationManager.cancel(chat.getNotificationId());
         }
     }
@@ -240,13 +235,11 @@ public class MessageNotificationManager implements OnLoadListener {
     public void rebuildAllNotifications() {
         notificationManager.cancelAll();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            for (Chat chat : chats) creator.createNotification(context, chat, lastMessage, true);
-            if (chats.size() > 1) creator.createBoundleNotification(true, getMessageCount(),
-                    chats.size(), lastMessage, firstChatIsGroup(), getLastChat(), chats);
+            for (Chat chat : chats) creator.createNotification(chat, true);
+            if (chats.size() > 1) creator.createBoundleNotification(chats, true);
         } else {
-            if (chats.size() > 1) creator.createBoundleNotification(true, getMessageCount(),
-                    chats.size(), lastMessage, firstChatIsGroup(), getLastChat(), chats);
-            else if (chats.size() > 0) creator.createNotification(context, chats.get(0), lastMessage, true);
+            if (chats.size() > 1) creator.createBoundleNotification(chats, true);
+            else if (chats.size() > 0) creator.createNotification(chats.get(0), true);
         }
     }
 
@@ -346,32 +339,6 @@ public class MessageNotificationManager implements OnLoadListener {
         return messageRealm;
     }
 
-    /** UTILS */
-
-    private boolean firstChatIsGroup() {
-        List<Chat> sortedChat = new ArrayList<>(chats);
-        Collections.sort(sortedChat, Collections.reverseOrder(new SortByLastMessage()));
-        if (sortedChat.size() > 0) {
-            return sortedChat.get(0).isGroupChat;
-        } else return false;
-    }
-
-    private Chat getLastChat() {
-        List<Chat> sortedChat = new ArrayList<>(chats);
-        Collections.sort(sortedChat, Collections.reverseOrder(new SortByLastMessage()));
-        if (sortedChat.size() > 0) {
-            return sortedChat.get(0);
-        } else return null;
-    }
-
-    private int getMessageCount() {
-        int result = 0;
-        for (Chat notification : chats) {
-            result += notification.getMessages().size();
-        }
-        return result;
-    }
-
     private int getNextChatNotificationId() {
         return 100 + chats.size() + 1;
     }
@@ -443,6 +410,10 @@ public class MessageNotificationManager implements OnLoadListener {
             return messages.get(messages.size() - 1).getTimestamp();
         }
 
+        public Message getLastMessage() {
+            return messages.get(messages.size() - 1);
+        }
+
         public boolean equals(AccountJid account, UserJid user) {
             return this.accountJid.equals(account) && this.userJid.equals(user);
         }
@@ -482,13 +453,6 @@ public class MessageNotificationManager implements OnLoadListener {
 
         public String getId() {
             return id;
-        }
-    }
-
-    public class SortByLastMessage implements Comparator<Chat> {
-        @Override
-        public int compare(Chat chatA, Chat chatB) {
-            return (int) (chatA.getLastMessageTimestamp() - chatB.getLastMessageTimestamp());
         }
     }
 }
