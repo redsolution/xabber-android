@@ -102,8 +102,7 @@ public class NewMessageNotifCreator {
                     .setStyle(createInboxStyle(chat))
                     .setAutoCancel(true);
 
-            if (alert) addEffects(builder, content.toString(), chat.getAccountJid(), chat.getUserJid(),
-                    chat.isGroupChat(), checkVibrateMode(), isAppInForeground());
+            if (alert) addEffects(builder, content.toString(), chat, context);
         }
 
         sendNotification(builder, chat.getNotificationId());
@@ -148,9 +147,7 @@ public class NewMessageNotifCreator {
             if (lastMessage != null) {
                 CharSequence content = createLine(lastMessage.getAuthor(), lastMessage.getMessageText());
                 builder.setContentText(content);
-                if (alert) addEffects(builder, content.toString(), lastChat.getAccountJid(),
-                        lastChat.getUserJid(), lastChat.isGroupChat(), checkVibrateMode(),
-                        isAppInForeground());
+                if (alert) addEffects(builder, content.toString(), lastChat, context);
             }
         }
 
@@ -209,10 +206,12 @@ public class NewMessageNotifCreator {
         return spannable;
     }
 
-    private static void addEffects(NotificationCompat.Builder notificationBuilder, String text,
-                                  AccountJid account, UserJid user, boolean isMUC,
-                                  boolean isPhoneInVibrateMode, boolean isAppInForeground) {
-        if (account == null || user == null) return;
+    private void addEffects(NotificationCompat.Builder notificationBuilder, String text,
+                                  MessageNotificationManager.Chat notifChat, Context context) {
+
+        AccountJid account = notifChat.getAccountJid();
+        UserJid user = notifChat.getUserJid();
+        boolean isMUC = notifChat.isGroupChat();
 
         AbstractChat chat = MessageManager.getInstance().getChat(account, user);
         if (chat != null && (chat.getFirstNotification() || !SettingsManager.eventsFirstOnly())) {
@@ -226,9 +225,9 @@ public class NewMessageNotifCreator {
 
             // vibration
             if (makeVibration) com.xabber.android.data.notification.NotificationManager
-                    .setVibration(isMUC, isPhoneInVibrateMode, notificationBuilder);
+                    .setVibration(isMUC, checkVibrateMode(context), notificationBuilder);
 
-            if (isAppInForeground) {
+            if (isAppInForeground(context)) {
                 // disable vibrate if in-app notification
                 if (!SettingsManager.eventsInAppVibrate()) notificationBuilder.setVibrate(new long[] {0, 0});
                 // disable sound if in-app notification
@@ -237,13 +236,13 @@ public class NewMessageNotifCreator {
         }
     }
 
-    private boolean checkVibrateMode() {
+    public static boolean checkVibrateMode(Context context) {
         AudioManager am = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
         if (am != null) return am.getRingerMode() == AudioManager.RINGER_MODE_VIBRATE;
         else return false;
     }
 
-    private boolean isAppInForeground() {
+    private boolean isAppInForeground(Context context) {
         ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
         List<ActivityManager.RunningAppProcessInfo> appProcesses = activityManager.getRunningAppProcesses();
         if (appProcesses == null) {
@@ -251,7 +250,8 @@ public class NewMessageNotifCreator {
         }
         final String packageName = context.getPackageName();
         for (ActivityManager.RunningAppProcessInfo appProcess : appProcesses) {
-            if (appProcess.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND && appProcess.processName.equals(packageName)) {
+            if (appProcess.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND
+                    && appProcess.processName.equals(packageName)) {
                 return true;
             }
         }

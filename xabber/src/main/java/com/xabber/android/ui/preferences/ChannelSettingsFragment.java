@@ -3,7 +3,6 @@ package com.xabber.android.ui.preferences;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
-import android.media.AudioManager;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -18,6 +17,7 @@ import android.support.annotation.StringRes;
 
 import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
+import com.xabber.android.data.notification.NewMessageNotifCreator;
 
 @RequiresApi(api = Build.VERSION_CODES.O)
 public class ChannelSettingsFragment extends PreferenceFragment {
@@ -49,7 +49,8 @@ public class ChannelSettingsFragment extends PreferenceFragment {
             public boolean onPreferenceChange(Preference preference, Object newValue) {
                 NotificationChannelUtils.updateChannel(notificationManager, type, null,
                         com.xabber.android.data.notification.NotificationManager
-                                .getVibroValue(getVibroMode((String)newValue), checkVibrateMode()),
+                                .getVibroValue(getVibroMode((String)newValue),
+                                        NewMessageNotifCreator.checkVibrateMode(getActivity())),
                         null);
                 return true;
             }
@@ -76,14 +77,6 @@ public class ChannelSettingsFragment extends PreferenceFragment {
         Uri uri = channel.getSound();
         Ringtone ringtone = RingtoneManager.getRingtone(getActivity(), uri);
         return ringtone.getTitle(getActivity());
-    }
-
-    // TODO: 05.02.2019 remove, because exist in MessageNotificationManager
-    private boolean checkVibrateMode() {
-        AudioManager am = (AudioManager) getActivity().getSystemService(Context.AUDIO_SERVICE);
-        if (am != null)
-            return am.getRingerMode() == AudioManager.RINGER_MODE_VIBRATE;
-        else return false;
     }
 
     private SettingsManager.VibroMode getVibroMode(String mode) {
