@@ -57,17 +57,18 @@ public class NewMessageNotifCreator {
 
     public void createNotification(MessageNotificationManager.Chat chat, boolean alert) {
 
+        boolean showText = isNeedShowTextInNotification(chat);
+
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context,
                 NotificationChannelUtils.getChannelID(
                         chat.isGroupChat() ? NotificationChannelUtils.ChannelType.groupChat
                                 : NotificationChannelUtils.ChannelType.privateChat))
                 .setColor(COLOR)
-                .setSmallIcon(R.drawable.ic_message)
+                .setSmallIcon(R.drawable.ic_stat_chat)
                 .setLargeIcon(getLargeIcon(chat))
                 .setGroup(MESSAGE_GROUP_ID)
                 .setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_CHILDREN)
                 .setOnlyAlertOnce(!alert)
-                .addAction(createReplyAction(chat.getNotificationId()))
                 .addAction(createMarkAsReadAction(chat.getNotificationId()))
                 .addAction(createMuteAction(chat.getNotificationId()))
                 .setContentIntent(createContentIntent(chat))
@@ -84,21 +85,24 @@ public class NewMessageNotifCreator {
                         .build();
 
                 ((NotificationCompat.MessagingStyle) messageStyle).addMessage(
-                        new NotificationCompat.MessagingStyle.Message(message.getMessageText(), message.getTimestamp(), person));
+                        new NotificationCompat.MessagingStyle.Message(showText
+                                ? message.getMessageText() : "Новое сообщение",
+                                message.getTimestamp(), person));
             }
 
-            builder.setStyle(messageStyle);
+            builder.addAction(createReplyAction(chat.getNotificationId()))
+                    .setStyle(messageStyle);
         } else {
             int messageCount = chat.getMessages().size();
             CharSequence title;
             if (messageCount > 1)
-                title = messageCount + " messages from " + chat.getChatTitle();
+                title = messageCount + " messages in " + chat.getChatTitle();
             else title = chat.getChatTitle();
 
             CharSequence content = chat.getLastMessage().getMessageText();
 
             builder.setContentTitle(title)
-                    .setContentText(content)
+                    .setContentText(showText ? content : "Новое сообщение")
                     .setStyle(createInboxStyle(chat))
                     .setAutoCancel(true);
 
@@ -137,7 +141,7 @@ public class NewMessageNotifCreator {
                     .setGroupSummary(true)
                     .setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_CHILDREN);
         } else {
-            CharSequence title = messageCount + " messages from " + sortedChats.size() + " chats";
+            CharSequence title = messageCount + " messages in " + sortedChats.size() + " chats";
             builder.setContentTitle(title)
                     .setOnlyAlertOnce(!alert)
                     .setStyle(createInboxStyleForBundle(sortedChats,
@@ -145,7 +149,9 @@ public class NewMessageNotifCreator {
             MessageNotificationManager.Message lastMessage = lastChat != null ? lastChat.getLastMessage() : null;
 
             if (lastMessage != null) {
-                CharSequence content = createLine(lastMessage.getAuthor(), lastMessage.getMessageText());
+                boolean showText = isNeedShowTextInNotification(lastChat);
+                CharSequence content = createLine(lastMessage.getAuthor(), showText ?
+                        lastMessage.getMessageText() : "Новое сообщение");
                 builder.setContentText(content);
                 if (alert) addEffects(builder, content.toString(), lastChat, context);
             }
@@ -159,6 +165,18 @@ public class NewMessageNotifCreator {
     }
 
     /** UTILS */
+
+    private boolean isNeedShowTextInNotification(MessageNotificationManager.Chat chat) {
+        boolean showText = chat.isGroupChat() ?
+                ChatManager.getInstance().isShowTextOnMuc(chat.getAccountJid(), chat.getUserJid())
+                : ChatManager.getInstance().isShowText(chat.getAccountJid(), chat.getUserJid());
+
+        // disable message preview
+        if (isAppInForeground(context) && !SettingsManager.eventsInAppPreview())
+            showText = false;
+
+        return showText;
+    }
 
     private int getMessageCount(List<MessageNotificationManager.Chat> chats) {
         int result = 0;
@@ -191,8 +209,9 @@ public class NewMessageNotifCreator {
         int count = 0;
         for (MessageNotificationManager.Chat chat : sortedChats) {
             if (count >= 7) break;
+            boolean showText = isNeedShowTextInNotification(chat);
             MessageNotificationManager.Message message = chat.getMessages().get(chat.getMessages().size() - 1);
-            inboxStyle.addLine(createLine(chat.getChatTitle(), message.getMessageText()));
+            inboxStyle.addLine(createLine(chat.getChatTitle(), showText ? message.getMessageText() : "Новое сообщение"));
             count++;
         }
         inboxStyle.setSummaryText(accountName);
