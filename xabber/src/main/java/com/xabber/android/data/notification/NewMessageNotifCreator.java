@@ -5,6 +5,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
@@ -13,7 +14,7 @@ import android.support.v4.app.Person;
 import android.support.v4.app.RemoteInput;
 import android.text.Spannable;
 import android.text.SpannableString;
-import android.text.style.StyleSpan;
+import android.text.style.ForegroundColorSpan;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
@@ -31,6 +32,7 @@ import com.xabber.android.receiver.NotificationReceiver;
 import com.xabber.android.ui.activity.ChatActivity;
 import com.xabber.android.ui.activity.ContactListActivity;
 import com.xabber.android.ui.preferences.NotificationChannelUtils;
+import com.xabber.android.utils.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -45,20 +47,18 @@ public class NewMessageNotifCreator {
     private final static String MESSAGE_GROUP_ID = "MESSAGE_GROUP";
     private final static int MESSAGE_BUNDLE_NOTIFICATION_ID = 2;
     private static final int COLOR = 299031;
-    private static final String DISPLAY_NAME = "You";
 
     private final Application context;
     private final NotificationManager notificationManager;
+    private CharSequence messageHidden;
 
     public NewMessageNotifCreator(Application context, NotificationManager notificationManager) {
         this.context = context;
         this.notificationManager = notificationManager;
+        this.messageHidden = context.getString(R.string.message_hidden);
     }
 
     public void createNotification(MessageNotificationManager.Chat chat, boolean alert) {
-
-        boolean showText = isNeedShowTextInNotification(chat);
-
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context,
                 NotificationChannelUtils.getChannelID(
                         chat.isGroupChat() ? NotificationChannelUtils.ChannelType.groupChat
@@ -76,36 +76,16 @@ public class NewMessageNotifCreator {
                 .setCategory(NotificationCompat.CATEGORY_MESSAGE)
                 .setPriority(NotificationCompat.PRIORITY_HIGH);
 
+        boolean showText = isNeedShowTextInNotification(chat);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            NotificationCompat.Style messageStyle = new NotificationCompat.MessagingStyle(DISPLAY_NAME);
-            for (MessageNotificationManager.Message message : chat.getMessages()) {
-
-                Person person = new Person.Builder()
-                        .setName(message.getAuthor())
-                        .build();
-
-                ((NotificationCompat.MessagingStyle) messageStyle).addMessage(
-                        new NotificationCompat.MessagingStyle.Message(showText
-                                ? message.getMessageText() : "Новое сообщение",
-                                message.getTimestamp(), person));
-            }
-
             builder.addAction(createReplyAction(chat.getNotificationId()))
-                    .setStyle(messageStyle);
+                    .setStyle(createMessageStyle(chat.getMessages(), showText));
         } else {
-            int messageCount = chat.getMessages().size();
-            CharSequence title;
-            if (messageCount > 1)
-                title = messageCount + " messages in " + chat.getChatTitle();
-            else title = chat.getChatTitle();
-
             CharSequence content = chat.getLastMessage().getMessageText();
-
-            builder.setContentTitle(title)
-                    .setContentText(showText ? content : "Новое сообщение")
-                    .setStyle(createInboxStyle(chat))
+            builder.setContentTitle(createTitleSingleChat(chat.getMessages().size(), chat.getChatTitle()))
+                    .setContentText(showText ? content : messageHidden)
+                    .setStyle(createInboxStyle(chat, showText))
                     .setAutoCancel(true);
-
             if (alert) addEffects(builder, content.toString(), chat, context);
         }
 
@@ -127,7 +107,6 @@ public class NewMessageNotifCreator {
                                         : NotificationChannelUtils.ChannelType.privateChat))
                         .setColor(COLOR)
                         .setSmallIcon(R.drawable.ic_message)
-                        .setSubText(messageCount + " new messages")
                         .setGroup(MESSAGE_GROUP_ID)
                         .setGroupSummary(true)
                         .setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_CHILDREN)
@@ -137,24 +116,18 @@ public class NewMessageNotifCreator {
                         .setPriority(NotificationCompat.PRIORITY_HIGH);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            builder.setSubText(messageCount + " new messages")
+            builder.setSubText(createNewMessagesTitle(messageCount))
                     .setGroupSummary(true)
                     .setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_CHILDREN);
-        } else {
-            CharSequence title = messageCount + " messages in " + sortedChats.size() + " chats";
-            builder.setContentTitle(title)
-                    .setOnlyAlertOnce(!alert)
-                    .setStyle(createInboxStyleForBundle(sortedChats,
-                            lastChat != null ? lastChat.getAccountJid().toString() : ""));
-            MessageNotificationManager.Message lastMessage = lastChat != null ? lastChat.getLastMessage() : null;
 
-            if (lastMessage != null) {
-                boolean showText = isNeedShowTextInNotification(lastChat);
-                CharSequence content = createLine(lastMessage.getAuthor(), showText ?
-                        lastMessage.getMessageText() : "Новое сообщение");
-                builder.setContentText(content);
-                if (alert) addEffects(builder, content.toString(), lastChat, context);
-            }
+        } else {
+            builder.setContentTitle(createNewMessagesTitle(messageCount))
+                    .setOnlyAlertOnce(!alert)
+                    .setStyle(createInboxStyleForBundle(sortedChats))
+                    .setContentText(createSummarizedContentForBundle(sortedChats));
+            MessageNotificationManager.Message lastMessage = lastChat != null ? lastChat.getLastMessage() : null;
+            if (lastMessage != null && alert)
+                addEffects(builder, lastMessage.getMessageText().toString(), lastChat, context);
         }
 
         sendNotification(builder, MESSAGE_BUNDLE_NOTIFICATION_ID);
@@ -165,6 +138,39 @@ public class NewMessageNotifCreator {
     }
 
     /** UTILS */
+    private CharSequence createNewMessagesTitle(int messageCount) {
+        return context.getString(R.string.new_chat_messages, messageCount,
+                StringUtils.getQuantityString(context.getResources(), R.array.chat_message_quantity, messageCount));
+    }
+
+    private CharSequence createTitleSingleChat(int messageCount, CharSequence chatTitle) {
+        if (messageCount == 1) return chatTitle;
+        else return context.getString(R.string.new_chat_messages_from_contact, messageCount,
+                StringUtils.getQuantityString(context.getResources(), R.array.chat_message_quantity, messageCount), chatTitle);
+    }
+
+    private NotificationCompat.Style createMessageStyle(List<MessageNotificationManager.Message> messages, boolean showText) {
+        NotificationCompat.Style messageStyle = new NotificationCompat.MessagingStyle(context.getString(R.string.sender_is_you));
+        for (MessageNotificationManager.Message message : messages) {
+            Person person = new Person.Builder().setName(message.getAuthor()).build();
+            ((NotificationCompat.MessagingStyle) messageStyle).addMessage(
+                    new NotificationCompat.MessagingStyle.Message(
+                            showText ? message.getMessageText() : messageHidden,
+                            message.getTimestamp(), person));
+        }
+        return messageStyle;
+    }
+
+    private CharSequence createSummarizedContentForBundle(List<MessageNotificationManager.Chat> sortedChats) {
+        StringBuilder builder = new StringBuilder();
+        CharSequence divider = ", ";
+        for (MessageNotificationManager.Chat chat : sortedChats) {
+            builder.append(chat.getChatTitle());
+            builder.append(divider);
+        }
+        String result = builder.toString();
+        return result.substring(0, result.length() - divider.length());
+    }
 
     private boolean isNeedShowTextInNotification(MessageNotificationManager.Chat chat) {
         boolean showText = chat.isGroupChat() ?
@@ -193,35 +199,33 @@ public class NewMessageNotifCreator {
         else return AvatarManager.getInstance().getUserBitmap(chat.getUserJid(), name);
     }
 
-    private NotificationCompat.Style createInboxStyle(MessageNotificationManager.Chat chat) {
+    private NotificationCompat.Style createInboxStyle(MessageNotificationManager.Chat chat, boolean showText) {
         NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
         int startPos = chat.getMessages().size() <= 7 ? 0 : chat.getMessages().size() - 7;
         for (int i = startPos; i < chat.getMessages().size(); i++) {
             MessageNotificationManager.Message message = chat.getMessages().get(i);
-            inboxStyle.addLine(message.getMessageText());
+            inboxStyle.addLine(showText ? message.getMessageText() : messageHidden);
         }
         return inboxStyle;
     }
 
-    private NotificationCompat.Style createInboxStyleForBundle(
-            List<MessageNotificationManager.Chat> sortedChats, String accountName) {
+    private NotificationCompat.Style createInboxStyleForBundle(List<MessageNotificationManager.Chat> sortedChats) {
         NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
         int count = 0;
         for (MessageNotificationManager.Chat chat : sortedChats) {
             if (count >= 7) break;
             boolean showText = isNeedShowTextInNotification(chat);
             MessageNotificationManager.Message message = chat.getMessages().get(chat.getMessages().size() - 1);
-            inboxStyle.addLine(createLine(chat.getChatTitle(), showText ? message.getMessageText() : "Новое сообщение"));
+            inboxStyle.addLine(createLine(chat.getChatTitle(), showText ? message.getMessageText() : messageHidden));
             count++;
         }
-        inboxStyle.setSummaryText(accountName);
         return inboxStyle;
     }
 
     private Spannable createLine(CharSequence name, CharSequence message) {
         String contactAndMessage = context.getString(R.string.chat_contact_and_message, name, message);
         Spannable spannable =  new SpannableString(contactAndMessage);
-        spannable.setSpan(new StyleSpan(android.graphics.Typeface.BOLD), 0, name.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        spannable.setSpan(new ForegroundColorSpan(Color.DKGRAY), 0, name.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         return spannable;
     }
 
@@ -281,24 +285,24 @@ public class NewMessageNotifCreator {
 
     private NotificationCompat.Action createReplyAction(int notificationId) {
         RemoteInput remoteInput = new RemoteInput.Builder(NotificationReceiver.KEY_REPLY_TEXT)
-                .setLabel("Input your message here")
+                .setLabel(context.getString(R.string.chat_input_hint))
                 .build();
 
-        return new NotificationCompat.Action.Builder(R.drawable.ic_message,
-                "Reply", NotificationReceiver.createReplyIntent(context, notificationId))
+        return new NotificationCompat.Action.Builder(R.drawable.ic_message_forwarded_14dp,
+                context.getString(R.string.action_reply), NotificationReceiver.createReplyIntent(context, notificationId))
                 .addRemoteInput(remoteInput)
                 .build();
     }
 
     private NotificationCompat.Action createMarkAsReadAction(int notificationId) {
-        return new NotificationCompat.Action.Builder(R.drawable.ic_message,
-                "Mark as read", NotificationReceiver.createMarkAsReadIntent(context, notificationId))
+        return new NotificationCompat.Action.Builder(R.drawable.ic_mark_as_read,
+                context.getString(R.string.action_mark_as_read), NotificationReceiver.createMarkAsReadIntent(context, notificationId))
                 .build();
     }
 
     private NotificationCompat.Action createMuteAction(int notificationId) {
-        return new NotificationCompat.Action.Builder(R.drawable.ic_message,
-                "Mute", NotificationReceiver.createMuteIntent(context, notificationId))
+        return new NotificationCompat.Action.Builder(R.drawable.ic_snooze,
+                context.getString(R.string.action_snooze), NotificationReceiver.createMuteIntent(context, notificationId))
                 .build();
     }
 
