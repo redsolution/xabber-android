@@ -41,9 +41,6 @@ import java.util.List;
 
 public class NewMessageNotifCreator {
 
-    // TODO: 06.02.19 replace all hardcoded strings and check R.strings values
-    // TODO: 06.02.19 replace icons for actions
-
     private final static String MESSAGE_GROUP_ID = "MESSAGE_GROUP";
     private final static int MESSAGE_BUNDLE_NOTIFICATION_ID = 2;
     private static final int COLOR = 299031;
@@ -69,8 +66,6 @@ public class NewMessageNotifCreator {
                 .setGroup(MESSAGE_GROUP_ID)
                 .setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_CHILDREN)
                 .setOnlyAlertOnce(!alert)
-                .addAction(createMarkAsReadAction(chat.getNotificationId()))
-                .addAction(createMuteAction(chat.getNotificationId()))
                 .setContentIntent(createContentIntent(chat))
                 .setDeleteIntent(NotificationReceiver.createDeleteIntent(context, chat.getNotificationId()))
                 .setCategory(NotificationCompat.CATEGORY_MESSAGE)
@@ -89,6 +84,8 @@ public class NewMessageNotifCreator {
             if (alert) addEffects(builder, content.toString(), chat, context);
         }
 
+        builder.addAction(createMarkAsReadAction(chat.getNotificationId()))
+                .addAction(createMuteAction(chat.getNotificationId()));
         sendNotification(builder, chat.getNotificationId());
     }
 
@@ -107,9 +104,6 @@ public class NewMessageNotifCreator {
                                         : NotificationChannelUtils.ChannelType.privateChat))
                         .setColor(COLOR)
                         .setSmallIcon(R.drawable.ic_message)
-                        .setGroup(MESSAGE_GROUP_ID)
-                        .setGroupSummary(true)
-                        .setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_CHILDREN)
                         .setContentIntent(createBundleContentIntent())
                         .setDeleteIntent(NotificationReceiver.createDeleteIntent(context, MESSAGE_BUNDLE_NOTIFICATION_ID))
                         .setCategory(NotificationCompat.CATEGORY_MESSAGE)
@@ -117,6 +111,7 @@ public class NewMessageNotifCreator {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             builder.setSubText(createNewMessagesTitle(messageCount))
+                    .setGroup(MESSAGE_GROUP_ID)
                     .setGroupSummary(true)
                     .setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_CHILDREN);
 

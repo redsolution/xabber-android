@@ -224,7 +224,7 @@ public class MessageNotificationManager implements OnLoadListener {
             notificationManager.cancel(chat.getNotificationId());
             if (chats.size() == 0) notificationManager.cancel(MESSAGE_BUNDLE_NOTIFICATION_ID);
         } else {
-            if (chats.size() > 1) creator.createBundleNotification(chats, true);
+            if (chats.size() > 1) creator.createBundleNotification(chats, false);
             else if (chats.size() > 0) {
                 notificationManager.cancel(MESSAGE_BUNDLE_NOTIFICATION_ID);
                 creator.createNotification(chats.get(0), false);
