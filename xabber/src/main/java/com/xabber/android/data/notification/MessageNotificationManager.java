@@ -19,6 +19,7 @@ import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.preferences.NotificationChannelUtils;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -165,11 +166,16 @@ public class MessageNotificationManager implements OnLoadListener {
     }
 
     public void removeNotificationsForAccount(final AccountJid account) {
-        for (Chat chat : chats) {
-            if (chat.getAccountJid().equals(account))
-                chats.remove(chat);
+        List<Chat> chatsToRemove = new ArrayList<>();
+        Iterator it = chats.iterator();
+        while (it.hasNext()) {
+            Chat chat = (Chat) it.next();
+            if (chat.getAccountJid().equals(account)) {
+                chatsToRemove.add(chat);
+                it.remove();
+            }
         }
-        rebuildAllNotifications();
+        removeNotifications(chatsToRemove);
         removeNotifChatFromRealm(account);
     }
 
@@ -231,16 +237,29 @@ public class MessageNotificationManager implements OnLoadListener {
     }
 
     public void removeNotification(Chat chat) {
+        List<Chat> chatsToRemove = new ArrayList<>();
+        chatsToRemove.add(chat);
+        removeNotifications(chatsToRemove);
+    }
+
+    public void removeNotifications(List<Chat> chatsToRemove) {
+        if (chatsToRemove == null || chatsToRemove.isEmpty()) return;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             if (chats.size() > 1) creator.createBundleNotification(chats, true);
-            notificationManager.cancel(chat.getNotificationId());
+            for (Chat chat : chatsToRemove) {
+                notificationManager.cancel(chat.getNotificationId());
+            }
             if (chats.size() == 0) notificationManager.cancel(MESSAGE_BUNDLE_NOTIFICATION_ID);
         } else {
             if (chats.size() > 1) creator.createBundleNotification(chats, false);
             else if (chats.size() > 0) {
                 notificationManager.cancel(MESSAGE_BUNDLE_NOTIFICATION_ID);
                 creator.createNotification(chats.get(0), false);
-            } else notificationManager.cancel(chat.getNotificationId());
+            } else {
+                for (Chat chat : chatsToRemove) {
+                    notificationManager.cancel(chat.getNotificationId());
+                }
+            }
         }
     }
 
