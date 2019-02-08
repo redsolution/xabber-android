@@ -40,7 +40,6 @@ import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.ChatManager;
-import com.xabber.android.data.notification.MessageNotificationManager;
 import com.xabber.android.data.notification.NotificationManager;
 
 import org.greenrobot.eventbus.EventBus;
@@ -61,6 +60,8 @@ import org.jxmpp.jid.parts.Resourcepart;
 import java.io.File;
 import java.util.Date;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.UUID;
 
 import io.realm.Realm;
@@ -404,9 +405,21 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
             else resetUnreadMessageCount();
         }
 
-        // remove notifications if get outgoing message
-        if (!incoming)
-            NotificationManager.getInstance().removeMessageNotification(account, user);
+        // remove notifications if get outgoing message with 2 sec delay
+        if (!incoming) {
+            Timer timer = new Timer();
+            timer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    Application.getInstance().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            NotificationManager.getInstance().removeMessageNotification(account, user);
+                        }
+                    });
+                }
+            }, 1000);
+        }
 
         // when getting new message, unarchive chat if chat not muted
         if (this.notifyAboutMessage())

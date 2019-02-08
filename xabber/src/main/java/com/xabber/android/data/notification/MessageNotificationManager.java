@@ -21,8 +21,6 @@ import com.xabber.android.ui.preferences.NotificationChannelUtils;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.UUID;
 
 import io.realm.Realm;
@@ -68,23 +66,13 @@ public class MessageNotificationManager implements OnLoadListener {
     public void onNotificationReplied(int notificationId, final CharSequence replyText) {
         final Chat chat = getChat(notificationId);
         if (chat != null) {
+            // send message
+            MessageManager.getInstance().sendMessage(
+                    chat.getAccountJid(), chat.getUserJid(), replyText.toString());
+
             // update notification
             addMessage(chat, DISPLAY_NAME, replyText, false);
-
-            // send message after 1 sec delay
-            Timer timer = new Timer();
-            timer.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    Application.getInstance().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            MessageManager.getInstance().sendMessage(
-                                    chat.getAccountJid(), chat.getUserJid(), replyText.toString());
-                        }
-                    });
-                }
-            }, 1000);
+            saveNotifChatToRealm(chat);
         }
     }
 
