@@ -56,6 +56,8 @@ public class NewMessageNotifCreator {
     }
 
     public void createNotification(MessageNotificationManager.Chat chat, boolean alert) {
+        boolean inForeground = isAppInForeground(context);
+
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context,
                 NotificationChannelUtils.getChannelID(
                         chat.isGroupChat() ? NotificationChannelUtils.ChannelType.groupChat
@@ -69,7 +71,8 @@ public class NewMessageNotifCreator {
                 .setContentIntent(createContentIntent(chat))
                 .setDeleteIntent(NotificationReceiver.createDeleteIntent(context, chat.getNotificationId()))
                 .setCategory(NotificationCompat.CATEGORY_MESSAGE)
-                .setPriority(NotificationCompat.PRIORITY_HIGH);
+                .setPriority(inForeground ? NotificationCompat.PRIORITY_DEFAULT
+                        : NotificationCompat.PRIORITY_HIGH);
 
         boolean showText = isNeedShowTextInNotification(chat);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -90,6 +93,7 @@ public class NewMessageNotifCreator {
     }
 
     public void createBundleNotification(List<MessageNotificationManager.Chat> chats, boolean alert) {
+        boolean inForeground = isAppInForeground(context);
         List<MessageNotificationManager.Chat> sortedChats = new ArrayList<>(chats);
         Collections.sort(sortedChats, Collections.reverseOrder(new SortByLastMessage()));
 
@@ -107,7 +111,8 @@ public class NewMessageNotifCreator {
                         .setContentIntent(createBundleContentIntent())
                         .setDeleteIntent(NotificationReceiver.createDeleteIntent(context, MESSAGE_BUNDLE_NOTIFICATION_ID))
                         .setCategory(NotificationCompat.CATEGORY_MESSAGE)
-                        .setPriority(NotificationCompat.PRIORITY_HIGH);
+                        .setPriority(inForeground ? NotificationCompat.PRIORITY_DEFAULT
+                                : NotificationCompat.PRIORITY_HIGH);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             builder.setSubText(createNewMessagesTitle(messageCount))
@@ -168,15 +173,9 @@ public class NewMessageNotifCreator {
     }
 
     private boolean isNeedShowTextInNotification(MessageNotificationManager.Chat chat) {
-        boolean showText = chat.isGroupChat() ?
+        return chat.isGroupChat() ?
                 ChatManager.getInstance().isShowTextOnMuc(chat.getAccountJid(), chat.getUserJid())
                 : ChatManager.getInstance().isShowText(chat.getAccountJid(), chat.getUserJid());
-
-        // disable message preview
-        if (isAppInForeground(context) && !SettingsManager.eventsInAppPreview())
-            showText = false;
-
-        return showText;
     }
 
     private int getMessageCount(List<MessageNotificationManager.Chat> chats) {
@@ -244,13 +243,6 @@ public class NewMessageNotifCreator {
             // vibration
             if (makeVibration) com.xabber.android.data.notification.NotificationManager
                     .setVibration(isMUC, checkVibrateMode(context), notificationBuilder);
-
-            if (isAppInForeground(context)) {
-                // disable vibrate if in-app notification
-                if (!SettingsManager.eventsInAppVibrate()) notificationBuilder.setVibrate(new long[] {0, 0});
-                // disable sound if in-app notification
-                if (!SettingsManager.eventsInAppSounds()) notificationBuilder.setSound(null);
-            }
         }
     }
 
