@@ -306,6 +306,7 @@ public class NewMessageNotifCreator {
         backIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
         Intent intent = ChatActivity.createClearTopIntent(Application.getInstance(), chat.getAccountJid(), chat.getUserJid());
+        intent.putExtra(ChatActivity.EXTRA_NEED_SCROLL_TO_UNREAD, true);
         return PendingIntent.getActivities(Application.getInstance(), chat.getNotificationId(),
                 new Intent[]{backIntent, intent}, PendingIntent.FLAG_ONE_SHOT);
     }

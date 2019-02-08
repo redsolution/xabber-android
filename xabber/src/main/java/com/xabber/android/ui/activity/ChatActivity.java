@@ -119,6 +119,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     private static final String ACTION_SPECIFIC_CHAT = "com.xabber.android.data.ACTION_SPECIFIC_CHAT";
     public static final String ACTION_FORWARD = "com.xabber.android.data.ACTION_FORWARD";
 
+    public static final String EXTRA_NEED_SCROLL_TO_UNREAD = "com.xabber.android.data.EXTRA_NEED_SCROLL_TO_UNREAD";
     public static final String EXTRA_OTR_REQUEST = "com.xabber.android.data.EXTRA_OTR_REQUEST";
     public static final String EXTRA_OTR_PROGRESS = "com.xabber.android.data.EXTRA_OTR_PROGRESS";
 //    public static final String ACTION_OTR_REQUEST = "com.xabber.android.data.ACTION_OTR_REQUEST";
@@ -167,6 +168,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     private Button btnShowcaseGotIt;
 
     boolean showArchived = false;
+    private boolean needScrollToUnread = false;
 
     public boolean isShowArchived() {
         return showArchived;
@@ -379,6 +381,8 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
                 exitOnSend = true;
             }
         }
+
+        needScrollToUnread = intent.getBooleanExtra(EXTRA_NEED_SCROLL_TO_UNREAD, false);
 
         if (intent.getBooleanExtra(EXTRA_OTR_REQUEST, false) ||
                 intent.getBooleanExtra(EXTRA_OTR_PROGRESS, false)) {
@@ -1124,5 +1128,12 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
             AttachDialog dialog = AttachDialog.newInstance(chatFragment);
             dialog.show(getSupportFragmentManager(), "attach_fragment");
         }
+    }
+
+    public boolean needScrollToUnread() {
+        if (needScrollToUnread) {
+            needScrollToUnread = false;
+            return true;
+        } else return false;
     }
 }

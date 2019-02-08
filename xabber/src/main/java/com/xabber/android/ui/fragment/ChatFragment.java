@@ -418,7 +418,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
         updateContact();
         restoreInputState();
-        restoreScrollState();
+        restoreScrollState(((ChatActivity)getActivity()).needScrollToUnread());
 
         showHideNotifyIfNeed();
 
@@ -1282,14 +1282,14 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         if (chat != null) chat.saveLastPosition(position);
     }
 
-    public void restoreScrollState() {
+    public void restoreScrollState(boolean fromNotification) {
         AbstractChat chat = getChat();
         int position;
         int unread;
         if (chat != null) {
             position = chat.getLastPosition();
             unread = chat.getUnreadMessageCount();
-            if (position == 0 && unread > 0)
+            if ((position == 0 || fromNotification) && unread > 0)
                 scrollToFirstUnread(unread);
             else if (position > 0) {
                 layoutManager.scrollToPosition(position);
