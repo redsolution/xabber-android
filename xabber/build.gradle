@@ -10,8 +10,8 @@ android {
     defaultConfig {
         minSdkVersion 15
         targetSdkVersion 28
-        versionCode 575
-        versionName '2.6.1(575) notif test'
+        versionCode 576
+        versionName '2.6.1(576)'
     }
 
     lintOptions {
