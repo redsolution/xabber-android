@@ -78,7 +78,7 @@ public class NewMessageNotifCreator {
         boolean showText = isNeedShowTextInNotification(chat);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             builder.addAction(createReplyAction(chat.getNotificationId()))
-                    .setStyle(createMessageStyle(chat.getMessages(), showText));
+                    .setStyle(createMessageStyle(chat, showText));
         } else {
             CharSequence content = chat.getLastMessage().getMessageText();
             builder.setContentTitle(createTitleSingleChat(chat.getMessages().size(), chat.getChatTitle()))
@@ -151,15 +151,17 @@ public class NewMessageNotifCreator {
                 StringUtils.getQuantityString(context.getResources(), R.array.chat_message_quantity, messageCount), chatTitle);
     }
 
-    private NotificationCompat.Style createMessageStyle(List<MessageNotificationManager.Message> messages, boolean showText) {
+    private NotificationCompat.Style createMessageStyle(MessageNotificationManager.Chat chat, boolean showText) {
         NotificationCompat.Style messageStyle = new NotificationCompat.MessagingStyle(context.getString(R.string.sender_is_you));
-        for (MessageNotificationManager.Message message : messages) {
+        for (MessageNotificationManager.Message message : chat.getMessages()) {
             Person person = new Person.Builder().setName(message.getAuthor()).build();
             ((NotificationCompat.MessagingStyle) messageStyle).addMessage(
                     new NotificationCompat.MessagingStyle.Message(
                             showText ? message.getMessageText() : messageHidden,
                             message.getTimestamp(), person));
         }
+        ((NotificationCompat.MessagingStyle) messageStyle).setConversationTitle(chat.getChatTitle());
+        ((NotificationCompat.MessagingStyle) messageStyle).setGroupConversation(chat.isGroupChat());
         return messageStyle;
     }
 
