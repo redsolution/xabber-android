@@ -40,6 +40,7 @@ import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.ChatManager;
+import com.xabber.android.data.notification.MessageNotificationManager;
 import com.xabber.android.data.notification.NotificationManager;
 
 import org.greenrobot.eventbus.EventBus;
@@ -407,18 +408,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
 
         // remove notifications if get outgoing message with 2 sec delay
         if (!incoming) {
-            Timer timer = new Timer();
-            timer.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    Application.getInstance().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            NotificationManager.getInstance().removeMessageNotification(account, user);
-                        }
-                    });
-                }
-            }, 1000);
+            MessageNotificationManager.getInstance().removeChatWithTimer(account, user);
         }
 
         // when getting new message, unarchive chat if chat not muted

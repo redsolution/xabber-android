@@ -21,6 +21,8 @@ import com.xabber.android.ui.preferences.NotificationChannelUtils;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.UUID;
 
 import io.realm.Realm;
@@ -138,6 +140,11 @@ public class MessageNotificationManager implements OnLoadListener {
         saveNotifChatToRealm(chat);
     }
 
+    public void removeChatWithTimer(final AccountJid account, final UserJid user) {
+        Chat chat = getChat(account, user);
+        if (chat != null) chat.startRemoveTimer();
+    }
+
     public void removeChat(final AccountJid account, final UserJid user) {
         Chat chat = getChat(account, user);
         if (chat != null) {
@@ -192,6 +199,7 @@ public class MessageNotificationManager implements OnLoadListener {
     private void addMessage(Chat notification, CharSequence author, CharSequence messageText, boolean alert) {
         lastMessage = new Message(author, messageText, System.currentTimeMillis());
         notification.addMessage(lastMessage);
+        notification.stopRemoveTimer();
         addNotification(notification, alert);
     }
 
@@ -375,6 +383,7 @@ public class MessageNotificationManager implements OnLoadListener {
         private CharSequence chatTitle;
         private boolean isGroupChat;
         private List<Message> messages = new ArrayList<>();
+        private Timer removeTimer;
 
         public Chat(AccountJid accountJid, UserJid userJid, int notificationId,
                     CharSequence chatTitle, boolean isGroupChat) {
@@ -439,6 +448,27 @@ public class MessageNotificationManager implements OnLoadListener {
         public boolean equals(AccountJid account, UserJid user) {
             return this.accountJid.equals(account) && this.userJid.equals(user);
         }
+
+        public void startRemoveTimer() {
+            stopRemoveTimer();
+            removeTimer = new Timer();
+            removeTimer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    Application.getInstance().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            notificationManager.cancel(notificationId);
+                        }
+                    });
+                }
+            }, 5000);
+        }
+
+        public void stopRemoveTimer() {
+            if (removeTimer != null) removeTimer.cancel();
+        }
+
     }
 
     public class Message {
