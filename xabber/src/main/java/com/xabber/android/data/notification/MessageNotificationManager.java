@@ -45,11 +45,11 @@ public class MessageNotificationManager implements OnLoadListener {
         creator = new NewMessageNotifCreator(context, notificationManager);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannelUtils.createChannel(notificationManager,
+            NotificationChannelUtils.createMessageChannel(notificationManager,
                     NotificationChannelUtils.ChannelType.privateChat,
                     null, null, null);
 
-            NotificationChannelUtils.createChannel(notificationManager,
+            NotificationChannelUtils.createMessageChannel(notificationManager,
                     NotificationChannelUtils.ChannelType.groupChat,
                     null, null, null);
         }

@@ -47,7 +47,7 @@ public class ChannelSettingsFragment extends PreferenceFragment {
         preference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
-                NotificationChannelUtils.updateChannel(notificationManager, type, null,
+                NotificationChannelUtils.updateMessageChannel(notificationManager, type, null,
                         com.xabber.android.data.notification.NotificationManager
                                 .getVibroValue(getVibroMode((String)newValue),
                                         NewMessageNotifCreator.checkVibrateMode(getActivity())),
@@ -58,14 +58,14 @@ public class ChannelSettingsFragment extends PreferenceFragment {
     }
 
     private void loadSound(@StringRes int resid, final NotificationChannelUtils.ChannelType type) {
-        NotificationChannel channel = NotificationChannelUtils.getChannel(notificationManager, type);
+        NotificationChannel channel = NotificationChannelUtils.getMessageChannel(notificationManager, type);
         RingtonePreference preference = (RingtonePreference) getPreferenceScreen().findPreference(getString(resid));
 
         preference.setSummary(getSoundTitle(channel));
         preference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
-                NotificationChannelUtils.updateChannel(notificationManager, type,
+                NotificationChannelUtils.updateMessageChannel(notificationManager, type,
                         Uri.parse(newValue.toString()), null, null);
                 return true;
             }

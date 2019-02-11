@@ -14,19 +14,14 @@
  */
 package com.xabber.android.data.notification;
 
-import android.annotation.SuppressLint;
 import android.app.Notification;
-import android.app.NotificationChannel;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
-import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Vibrator;
-import android.support.annotation.RequiresApi;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 
@@ -42,20 +37,15 @@ import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.account.listeners.OnAccountRemovedListener;
 import com.xabber.android.data.connection.ConnectionState;
 import com.xabber.android.data.database.messagerealm.MessageItem;
-import com.xabber.android.data.database.sqlite.NotificationTable;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.message.MessageManager;
-import com.xabber.android.data.message.chat.ChatManager;
-import com.xabber.android.data.message.phrase.PhraseManager;
 import com.xabber.android.service.XabberService;
 import com.xabber.android.ui.activity.ClearNotificationsActivity;
 import com.xabber.android.ui.activity.ContactListActivity;
 import com.xabber.android.ui.color.ColorManager;
+import com.xabber.android.ui.preferences.NotificationChannelUtils;
 import com.xabber.android.utils.StringUtils;
-
-import org.jxmpp.stringprep.XmppStringprepException;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -71,7 +61,6 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
         OnCloseListener, OnLoadListener, Runnable, OnAccountRemovedListener {
 
     public static final int PERSISTENT_NOTIFICATION_ID = 1;
-    public static final int MESSAGE_NOTIFICATION_ID = 2;
     private static final int BASE_NOTIFICATION_PROVIDER_ID = 0x10;
 
     private static final long VIBRATION_DURATION = 500;
@@ -117,6 +106,10 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
         notificationManager = (android.app.NotificationManager)
                 application.getSystemService(Context.NOTIFICATION_SERVICE);
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && notificationManager != null) {
+            NotificationChannelUtils.createPresistentConnectionChannel(notificationManager);
+            NotificationChannelUtils.createEventsChannel(notificationManager);
+        }
 
         handler = new Handler();
         providers = new ArrayList<>();
@@ -147,46 +140,10 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
             }
         };
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-            persistentNotificationBuilder = new NotificationCompat.Builder(application, createNotificationChannelService());
-        else persistentNotificationBuilder = new NotificationCompat.Builder(application, "");
+        persistentNotificationBuilder = new NotificationCompat.Builder(application,
+                NotificationChannelUtils.PERSISTENT_CONNECTION_CHANNEL_ID);
         initPersistentNotification();
         persistentNotificationColor = application.getResources().getColor(R.color.persistent_notification_color);
-    }
-
-    public static void addEffects(NotificationCompat.Builder notificationBuilder,
-                                  MessageItem messageItem, boolean isMUC, boolean isPhoneInVibrateMode, boolean isAppInForeground) {
-        if (messageItem == null) {
-            return;
-        }
-        if (MessageManager.getInstance().getChat(messageItem.getAccount(), messageItem.getUser()).getFirstNotification() || !SettingsManager.eventsFirstOnly()) {
-            Uri sound = PhraseManager.getInstance().getSound(messageItem.getAccount(),
-                    messageItem.getUser(), messageItem.getText(), isMUC);
-            boolean makeVibration = ChatManager.getInstance().isMakeVibro(messageItem.getAccount(),
-                    messageItem.getUser());
-
-            boolean led;
-            if (isMUC) led = SettingsManager.eventsLightningForMuc();
-            else led = SettingsManager.eventsLightning();
-
-            NotificationManager.getInstance().setNotificationDefaults(notificationBuilder, led, sound, AudioManager.STREAM_NOTIFICATION);
-
-            // vibration
-            if (makeVibration)
-                setVibration(isMUC, isPhoneInVibrateMode, notificationBuilder);
-
-            // in-app notifications
-            if (isAppInForeground) {
-                // disable vibrate
-                if (!SettingsManager.eventsInAppVibrate()) {
-                    notificationBuilder.setVibrate(new long[] {0, 0});
-                }
-                // disable sounds
-                if (!SettingsManager.eventsInAppSounds()) {
-                    notificationBuilder.setSound(null);
-                }
-            }
-        }
     }
 
     private void initPersistentNotification() {
@@ -256,10 +213,8 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
             ticker = top.getTitle();
         }
 
-        NotificationCompat.Builder notificationBuilder;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-            notificationBuilder = new NotificationCompat.Builder(application, createNotificationChannel());
-        else notificationBuilder = new NotificationCompat.Builder(application, "");
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(application,
+                NotificationChannelUtils.EVENTS_CHANNEL_ID);
 
         notificationBuilder.setSmallIcon(provider.getIcon());
         notificationBuilder.setTicker(ticker);
@@ -523,32 +478,5 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
             default:
                 return new long[] {0, 500};
         }
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    private String createNotificationChannelService() {
-        String channelId = "xabber_service";
-        String channelName = "Xabber Background Service";
-        @SuppressLint("WrongConstant") NotificationChannel channel =
-                new NotificationChannel(channelId, channelName,
-                        android.app.NotificationManager.IMPORTANCE_NONE);
-        channel.setShowBadge(false);
-        android.app.NotificationManager service = (android.app.NotificationManager)
-                Application.getInstance().getSystemService(Context.NOTIFICATION_SERVICE);
-        if (service != null) service.createNotificationChannel(channel);
-        return channelId;
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    public String createNotificationChannel() {
-        String channelId = "xabber_notification";
-        String channelName = "Xabber Notification";
-        @SuppressLint("WrongConstant") NotificationChannel channel =
-                new NotificationChannel(channelId, channelName,
-                        android.app.NotificationManager.IMPORTANCE_HIGH);
-        android.app.NotificationManager service = (android.app.NotificationManager)
-                Application.getInstance().getSystemService(Context.NOTIFICATION_SERVICE);
-        if (service != null) service.createNotificationChannel(channel);
-        return channelId;
     }
 }
