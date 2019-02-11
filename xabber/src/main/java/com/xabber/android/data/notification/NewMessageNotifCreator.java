@@ -63,6 +63,7 @@ public class NewMessageNotifCreator {
                         chat.isGroupChat() ? NotificationChannelUtils.ChannelType.groupChat
                                 : NotificationChannelUtils.ChannelType.privateChat))
                 .setColor(COLOR)
+                .setWhen(chat.getLastMessageTimestamp())
                 .setSmallIcon(R.drawable.ic_stat_chat)
                 .setLargeIcon(getLargeIcon(chat))
                 .setGroup(MESSAGE_GROUP_ID)
@@ -107,6 +108,7 @@ public class NewMessageNotifCreator {
                                 isGroup ? NotificationChannelUtils.ChannelType.groupChat
                                         : NotificationChannelUtils.ChannelType.privateChat))
                         .setColor(COLOR)
+                        .setWhen(lastChat.getLastMessageTimestamp())
                         .setSmallIcon(R.drawable.ic_message)
                         .setContentIntent(createBundleContentIntent())
                         .setDeleteIntent(NotificationReceiver.createDeleteIntent(context, MESSAGE_BUNDLE_NOTIFICATION_ID))
