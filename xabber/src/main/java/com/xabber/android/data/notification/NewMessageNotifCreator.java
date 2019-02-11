@@ -80,12 +80,11 @@ public class NewMessageNotifCreator {
             builder.addAction(createReplyAction(chat.getNotificationId()))
                     .setStyle(createMessageStyle(chat, showText));
         } else {
-            CharSequence content = chat.getLastMessage().getMessageText();
             builder.setContentTitle(createTitleSingleChat(chat.getMessages().size(), chat.getChatTitle()))
-                    .setContentText(showText ? content : messageHidden)
+                    .setContentText(createMessageLine(chat.getLastMessage(), chat.isGroupChat(), showText))
                     .setStyle(createInboxStyle(chat, showText))
                     .setAutoCancel(true);
-            if (alert) addEffects(builder, content.toString(), chat, context);
+            if (alert) addEffects(builder, chat.getLastMessage().getMessageText().toString(), chat, context);
         }
 
         builder.addAction(createMarkAsReadAction(chat.getNotificationId()))
@@ -202,7 +201,7 @@ public class NewMessageNotifCreator {
         int startPos = chat.getMessages().size() <= 7 ? 0 : chat.getMessages().size() - 7;
         for (int i = startPos; i < chat.getMessages().size(); i++) {
             MessageNotificationManager.Message message = chat.getMessages().get(i);
-            inboxStyle.addLine(showText ? message.getMessageText() : messageHidden);
+            inboxStyle.addLine(createMessageLine(message, chat.isGroupChat(), showText));
         }
         return inboxStyle;
     }
@@ -212,18 +211,25 @@ public class NewMessageNotifCreator {
         int count = 0;
         for (MessageNotificationManager.Chat chat : sortedChats) {
             if (count >= 7) break;
-            boolean showText = isNeedShowTextInNotification(chat);
-            MessageNotificationManager.Message message = chat.getMessages().get(chat.getMessages().size() - 1);
-            inboxStyle.addLine(createLine(chat.getChatTitle(), showText ? message.getMessageText() : messageHidden));
+            inboxStyle.addLine(createChatLine(chat));
             count++;
         }
         return inboxStyle;
     }
 
-    private Spannable createLine(CharSequence name, CharSequence message) {
-        String contactAndMessage = context.getString(R.string.chat_contact_and_message, name, message);
+    private String createMessageLine(MessageNotificationManager.Message message, boolean isGroupChat, boolean showText) {
+        return (isGroupChat ? message.getAuthor() + ": " : "") + (showText ? message.getMessageText() : messageHidden);
+    }
+
+    private Spannable createChatLine(MessageNotificationManager.Chat chat) {
+        boolean showText = isNeedShowTextInNotification(chat);
+        CharSequence chatTitle = chat.getChatTitle();
+        CharSequence author = chat.getLastMessage().getAuthor();
+        CharSequence message = showText ? chat.getLastMessage().getMessageText() : messageHidden;
+        String contactAndMessage = (chat.isGroupChat() ? chatTitle + ": " : "") + author + " " + message;
         Spannable spannable =  new SpannableString(contactAndMessage);
-        spannable.setSpan(new ForegroundColorSpan(Color.DKGRAY), 0, name.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        spannable.setSpan(new ForegroundColorSpan(Color.DKGRAY), 0,
+                contactAndMessage.length() - message.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         return spannable;
     }
 
