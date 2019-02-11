@@ -9,7 +9,9 @@ import android.net.Uri;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.annotation.RequiresApi;
+import android.support.annotation.StringRes;
 
+import com.xabber.android.R;
 import com.xabber.android.data.Application;
 
 import java.util.UUID;
@@ -75,21 +77,13 @@ public class NotificationChannelUtils {
     @RequiresApi(api = Build.VERSION_CODES.O)
     public static String createMessageChannel(NotificationManager notifManager, ChannelType type,
                                               Uri sound, long[] vibro, AudioAttributes audioAttrs) {
-        CharSequence name;
-        String description;
-
-        if (type == ChannelType.groupChat) {
-            name = "Групповые чаты";
-            description = "Уведомления о сообщениях в групповых чатах";
-        } else {
-            name = "Личные чаты";
-            description = "Уведомления о сообщениях в личных чатах";
-        }
-
         @SuppressLint("WrongConstant") NotificationChannel channel =
-                new NotificationChannel(getChannelID(type), name,
+                new NotificationChannel(getChannelID(type),
+                        getString(type == ChannelType.groupChat ? R.string.channel_group_chat_title
+                                : R.string.channel_private_chat_title),
                         android.app.NotificationManager.IMPORTANCE_HIGH);
-        channel.setDescription(description);
+        channel.setDescription(getString(type == ChannelType.groupChat ? R.string.channel_group_chat_description
+                : R.string.channel_private_chat_description));
         if (vibro != null) channel.setVibrationPattern(vibro);
         if (sound != null && audioAttrs != null) channel.setSound(sound, audioAttrs);
         notifManager.createNotificationChannel(channel);
@@ -98,28 +92,29 @@ public class NotificationChannelUtils {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public static String createPresistentConnectionChannel(NotificationManager notifManager) {
-        String channelName = "Persistent connection";
-        String description = "Persistent connection necessary to receive messages";
         NotificationChannel channel =
-                new NotificationChannel(PERSISTENT_CONNECTION_CHANNEL_ID, channelName,
+                new NotificationChannel(PERSISTENT_CONNECTION_CHANNEL_ID,
+                        getString(R.string.channel_persistent_connection_title),
                         android.app.NotificationManager.IMPORTANCE_NONE);
         channel.setShowBadge(false);
-        channel.setDescription(description);
+        channel.setDescription(getString(R.string.channel_persistent_connection_description));
         notifManager.createNotificationChannel(channel);
         return channel.getId();
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public static String createEventsChannel(NotificationManager notifManager) {
-        String channelName = "Events";
-        String description = "Events like: attention, group chat invites, subscription requests, OTR requests";
         @SuppressLint("WrongConstant") NotificationChannel channel =
-                new NotificationChannel(EVENTS_CHANNEL_ID, channelName,
+                new NotificationChannel(EVENTS_CHANNEL_ID,
+                        getString(R.string.channel_events_title),
                         android.app.NotificationManager.IMPORTANCE_HIGH);
-        channel.setDescription(description);
+        channel.setDescription(getString(R.string.channel_events_description));
         channel.setShowBadge(false);
         notifManager.createNotificationChannel(channel);
         return channel.getId();
     }
 
+    private static String getString(@StringRes int resid) {
+        return Application.getInstance().getString(resid);
+    }
 }
