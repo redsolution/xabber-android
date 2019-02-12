@@ -92,8 +92,8 @@ public class MessageNotificationManager implements OnLoadListener {
             AbstractChat chat = MessageManager.getInstance().getChat(
                     chatNotif.getAccountJid(), chatNotif.getUserJid());
             if (chat != null) {
-                chat.setNotificationState(new NotificationState(NotificationState.NotificationMode.disabled,
-                        0), true);
+                chat.setNotificationState(new NotificationState(NotificationState.NotificationMode.disabled1h,
+                        (int) (System.currentTimeMillis() / 1000L)), true);
                 callUiUpdate();
             }
         }

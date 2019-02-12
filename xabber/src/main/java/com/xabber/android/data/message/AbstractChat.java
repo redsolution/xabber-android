@@ -64,6 +64,7 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import io.realm.Realm;
 import io.realm.RealmChangeListener;
@@ -232,9 +233,16 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
      * @return Whether user should be notified about incoming messages in chat.
      */
     public boolean notifyAboutMessage() {
+        int currentTime = (int) (System.currentTimeMillis() / 1000L);
         switch (notificationState.getMode()) {
             case enabled: return true;
             case disabled: return false;
+            case disabled1h:
+                return currentTime > notificationState.getTimestamp() + TimeUnit.HOURS.toSeconds(1);
+            case disabled8h:
+                return currentTime > notificationState.getTimestamp() + TimeUnit.HOURS.toSeconds(8);
+            case disabled2d:
+                return currentTime > notificationState.getTimestamp() + TimeUnit.DAYS.toSeconds(2);
             default: return SettingsManager.eventsOnChat();
         }
     }
@@ -397,6 +405,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         messageItem.setParentMessageId(parentMessageId);
 
         if (notify && notifyAboutMessage() && !visible) {
+            enableNotificationsIfNeed();
             NotificationManager.getInstance().onMessageNotification(messageItem);
         }
 
@@ -824,4 +833,13 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     }
 
     protected abstract String parseInnerMessage(boolean ui, Message message, String parentMessageId);
+
+    private void enableNotificationsIfNeed() {
+        NotificationState.NotificationMode mode = notificationState.getMode();
+        if (notifyAboutMessage() && (mode.equals(NotificationState.NotificationMode.disabled1h)
+        || mode.equals(NotificationState.NotificationMode.disabled8h)
+                || mode.equals(NotificationState.NotificationMode.disabled2d))) {
+            setNotificationState(new NotificationState(NotificationState.NotificationMode.enabled, 0), true);
+        }
+    }
 }
