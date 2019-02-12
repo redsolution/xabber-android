@@ -4,14 +4,17 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.os.Build;
 
+import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.database.RealmManager;
+import com.xabber.android.data.database.messagerealm.Attachment;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.database.realm.NotifChatRealm;
 import com.xabber.android.data.database.realm.NotifMessageRealm;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.filedownload.FileCategory;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.NotificationState;
@@ -136,7 +139,7 @@ public class MessageNotificationManager implements OnLoadListener {
                     getNextChatNotificationId(), chatTitle, isMUC);
             chats.add(chat);
         }
-        addMessage(chat, author, messageItem.getText(), true);
+        addMessage(chat, author, getNotificationText(messageItem), true);
         saveNotifChatToRealm(chat);
     }
 
@@ -371,6 +374,19 @@ public class MessageNotificationManager implements OnLoadListener {
 
     private int getNextChatNotificationId() {
         return 100 + chats.size() + 1;
+    }
+
+    private String getNotificationText(MessageItem message) {
+        String text = message.getText();
+        if (message.haveAttachments() && message.getAttachments().size() > 0) {
+            Attachment attachment = message.getAttachments().get(0);
+            FileCategory category = FileCategory.determineFileCategory(attachment.getMimeType());
+            text = FileCategory.getCategoryName(category, false) + attachment.getTitle();
+        }
+        if (message.haveForwardedMessages() && message.getForwardedIds().size() > 0) {
+            text = context.getString(R.string.forwarded_messages_count, message.getForwardedIds().size());
+        }
+        return text;
     }
 
     /** INTERNAL CLASSES */
