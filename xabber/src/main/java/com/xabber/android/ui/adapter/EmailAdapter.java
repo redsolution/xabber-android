@@ -59,6 +59,14 @@ public class EmailAdapter extends RecyclerView.Adapter<EmailAdapter.EmailViewHol
                 else listener.onEmailVerifyClick(emailDTO.getEmail());
             }
         });
+
+        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                listener.onEmailDeleteClick(emailDTO.getId());
+                return true;
+            }
+        });
     }
 
     @Override

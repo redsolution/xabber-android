@@ -100,8 +100,9 @@
 
     <string name="last_seen_now">last seen just now</string>
     <string name="last_seen_minutes">last seen %1$s minutes ago</string>
-    <string name="last_seen_hours">last seen a hour ago</string>
+    <string name="last_seen_hours">last seen an hour ago</string>
     <string name="last_seen_today">last seen at %1$s</string>
     <string name="last_seen_yesterday">last seen yesterday at %1$s</string>
+    <string name="last_seen_on_week">last seen on %1$s at %2$s</string>
     <string name="last_seen_date">last seen %1$s</string>
 </resources>

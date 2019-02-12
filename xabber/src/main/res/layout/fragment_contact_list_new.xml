@@ -35,7 +35,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:src="@drawable/xabber_logo_grey_80dp"
+            android:src="@drawable/xabber_logo_80dp"
             tools:ignore="ContentDescription" />
 
         <TextView
@@ -67,10 +67,11 @@
         >
 
         <ImageView
+            android:id="@+id/placeholderImage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:src="@drawable/xabber_logo_grey_80dp"
+            android:src="@drawable/xabber_logo_80dp"
             />
 
         <TextView

@@ -1,18 +1,19 @@
 package com.xabber.android.ui.adapter;
 
-
-import android.app.Fragment;
-import android.app.FragmentManager;
 import android.support.annotation.NonNull;
-import android.support.v13.app.FragmentStatePagerAdapter;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.view.ViewGroup;
 
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.muc.MUCManager;
+import com.xabber.android.data.message.CrowdfundingChat;
 import com.xabber.android.ui.fragment.ChatFragment;
 import com.xabber.android.ui.fragment.ContactVcardViewerFragment;
+import com.xabber.android.ui.fragment.CrowdfundingChatFragment;
 import com.xabber.android.ui.fragment.OccupantListFragment;
 import com.xabber.android.ui.fragment.RecentChatFragment;
 
@@ -70,7 +71,9 @@ public class ChatViewerAdapter extends FragmentStatePagerAdapter {
         if (position == PAGE_POSITION_RECENT_CHATS) {
             return RecentChatFragment.newInstance();
         } else if (position == PAGE_POSITION_CHAT) {
-            return ChatFragment.newInstance(accountJid, userJid);
+            if (CrowdfundingChat.USER.equals(userJid.getBareJid().toString()))
+                return CrowdfundingChatFragment.newInstance();
+            else return ChatFragment.newInstance(accountJid, userJid);
         } else if (position == 2) {
             if (MUCManager.getInstance().hasRoom(accountJid, userJid))
                 return OccupantListFragment.newInstance(accountJid, userJid.getBareUserJid());

@@ -16,11 +16,14 @@ package com.xabber.android.ui.activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.xabber.android.R;
@@ -30,6 +33,7 @@ import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.service.XabberService;
+import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.helper.SingleActivity;
 
 import java.util.Collection;
@@ -37,7 +41,7 @@ import java.util.Collection;
 public class LoadActivity extends SingleActivity implements OnAccountChangedListener {
 
     private Animation animation;
-    private View disconnectedView;
+    private ImageView disconnectedView;
 
     public static Intent createIntent(Context context) {
         return new Intent(context, LoadActivity.class);
@@ -49,6 +53,7 @@ public class LoadActivity extends SingleActivity implements OnAccountChangedList
         setContentView(R.layout.activity_load);
         animation = AnimationUtils.loadAnimation(this, R.anim.connection);
         disconnectedView = findViewById(R.id.disconnected);
+        ColorManager.setGrayScaleFilter(disconnectedView);
     }
 
     @Override

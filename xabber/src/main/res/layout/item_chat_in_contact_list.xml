@@ -96,7 +96,7 @@
             android:layout_toLeftOf="@+id/tvUnreadCount"
             android:layout_marginBottom="12dp"
             android:layout_marginRight="8dp"
-            android:singleLine="true"
+            android:maxLines="1"
             android:textSize="14sp"
             android:textColor="?attr/contact_list_contact_second_line_text_color"
             android:text="Hello. How are you?"

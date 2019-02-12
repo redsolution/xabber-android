@@ -50,6 +50,7 @@ import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.muc.MUCManager;
+import com.xabber.android.data.http.CrowdfundingManager;
 import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
@@ -401,53 +402,23 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
         }
 
         if (Application.getInstance().doNotify()) {
-            // не ограничивать расход батареи (системное)
-
-//            if (BatteryHelper.isOptimizingBattery()
-//                    && !SettingsManager.isBatteryOptimizationDisableSuggested()) {
-//                BatteryOptimizationDisableDialog.newInstance().show(getFragmentManager(),
-//                        BatteryOptimizationDisableDialog.class.getSimpleName());
-//            }
-
             if (!SettingsManager.isTranslationSuggested()) {
                 Locale currentLocale = getResources().getConfiguration().locale;
                 if (!currentLocale.getLanguage().equals("en") && !getResources().getBoolean(R.bool.is_translated)) {
                     new TranslationDialog().show(getFragmentManager(), "TRANSLATION_DIALOG");
                 }
             }
-
-            // сбор диагностич. информации
-
-//            if (SettingsManager.isCrashReportsSupported()
-//                    && !SettingsManager.isCrashReportsDialogShown()) {
-//                CrashReportDialog.newInstance().show(getFragmentManager(), CrashReportDialog.class.getSimpleName());
-//            }
-
-            // представление темной темы
-
-//            if (SettingsManager.interfaceTheme() != SettingsManager.InterfaceTheme.dark) {
-//                if (!SettingsManager.isDarkThemeSuggested() && SettingsManager.bootCount() > 1) {
-//                    new DarkThemeIntroduceDialog().show(getFragmentManager(), DarkThemeIntroduceDialog.class.getSimpleName());
-//                }
-//            } else {
-//                SettingsManager.setDarkThemeSuggested();
-//            }
-
-            // запускать Xabber при старте устройства
-
-//            if (SettingsManager.bootCount() > 2 && !SettingsManager.connectionStartAtBoot()
-//                    && !SettingsManager.startAtBootSuggested()) {
-//                StartAtBootDialogFragment.newInstance().show(getFragmentManager(), "START_AT_BOOT");
-//            }
         }
 
-        //XabberAccountManager.getInstance().createLocalAccountIfNotExist();
         showPassDialogs();
 
         //showcase
         if (!SettingsManager.contactShowcaseSuggested()) {
             showShowcase(true);
         }
+
+        // update crowdfunding info
+        CrowdfundingManager.getInstance().onLoad();
     }
 
     @Override
@@ -648,6 +619,10 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
                 finish();
                 break;
             }
+            case ChatActivity.ACTION_FORWARD: {
+                forwardMessages(abstractContact, getIntent());
+                break;
+            }
             default:
                 startActivityForResult(ChatActivity.createSpecificChatIntent(this, abstractContact.getAccount(),
                         abstractContact.getUser()), CODE_OPEN_CHAT);
@@ -678,6 +653,13 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
         intent.putExtra(Intent.EXTRA_SHORTCUT_ICON,
                     AvatarManager.getInstance().createShortcutBitmap(bitmap));
         setResult(RESULT_OK, intent);
+    }
+
+    private void forwardMessages(AbstractContact abstractContact, Intent intent) {
+        ArrayList<String> messages = intent.getStringArrayListExtra(ChatActivity.KEY_MESSAGES_ID);
+        if (messages != null)
+            startActivity(ChatActivity.createForwardIntent(this,
+                    abstractContact.getAccount(), abstractContact.getUser(), messages));
     }
 
     @Override

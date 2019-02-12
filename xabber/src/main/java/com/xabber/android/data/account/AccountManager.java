@@ -419,7 +419,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
 
         accountItem = addAccount(useCustomHost, host, port, serverName, userName,
                 storePassword, password, token, resource, getNextColorIndex(), getNextOrder(), false,
-                0, 0, StatusMode.available,
+                XabberAccountManager.getInstance().getCurrentTime(), 0, StatusMode.available,
                 SettingsManager.statusText(), enabled, true, tlsRequired ? TLSMode.required : TLSMode.enabled,
                 useCompression, useOrbot ? ProxyType.orbot : ProxyType.none, "localhost", 8080,
                 "", "", syncable, null, null, archiveMode, registerNewAccount);

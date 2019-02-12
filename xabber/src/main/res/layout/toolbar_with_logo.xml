@@ -16,7 +16,7 @@
     <ImageView
         android:layout_width="32dp"
         android:layout_height="32dp"
-        android:src="@mipmap/ic_launcher"
+        android:src="@drawable/xabber_logo_80dp"
         android:layout_gravity="right"
         android:layout_marginRight="16dp"
         />

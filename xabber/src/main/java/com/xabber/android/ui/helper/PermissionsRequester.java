@@ -21,7 +21,15 @@ public class PermissionsRequester {
         return checkAndRequestPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, fragment, requestCode);
     }
 
+    public static boolean requestFileReadPermissionIfNeeded(android.support.v4.app.Fragment fragment, int requestCode) {
+        return checkAndRequestPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, fragment, requestCode);
+    }
+
     public static boolean requestFileWritePermissionIfNeeded(Fragment fragment, int requestCode) {
+        return checkAndRequestPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, fragment, requestCode);
+    }
+
+    public static boolean requestFileWritePermissionIfNeeded(android.support.v4.app.Fragment fragment, int requestCode) {
         return checkAndRequestPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, fragment, requestCode);
     }
 
@@ -30,6 +38,10 @@ public class PermissionsRequester {
     }
 
     public static boolean requestCameraPermissionIfNeeded(Fragment fragment, int requestCode) {
+        return checkAndRequestPermission(Manifest.permission.CAMERA, fragment, requestCode);
+    }
+
+    public static boolean requestCameraPermissionIfNeeded(android.support.v4.app.Fragment  fragment, int requestCode) {
         return checkAndRequestPermission(Manifest.permission.CAMERA, fragment, requestCode);
     }
 
@@ -55,6 +67,19 @@ public class PermissionsRequester {
     }
 
     private static boolean checkAndRequestPermission(String permission, Fragment fragment, int requestCode) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            return true;
+        }
+
+        if (checkPermission(permission)) {
+            return true;
+        } else {
+            fragment.requestPermissions(new String[]{permission}, requestCode);
+        }
+        return false;
+    }
+
+    private static boolean checkAndRequestPermission(String permission, android.support.v4.app.Fragment fragment, int requestCode) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             return true;
         }

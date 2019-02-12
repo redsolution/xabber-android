@@ -96,6 +96,10 @@
         <item name="colorAccent">@color/white</item>
     </style>
 
+    <style name="CoralButton" parent="ThemeOverlay.AppCompat">
+        <item name="colorAccent">@color/patreon_coral</item>
+    </style>
+
     <style name="TextAppearence.App.TextInputLayout" parent="Widget.Design.TextInputLayout">
         <item name="android:textColorHint">@color/red_700</item>
         <item name="colorControlNormal">@color/white</item>

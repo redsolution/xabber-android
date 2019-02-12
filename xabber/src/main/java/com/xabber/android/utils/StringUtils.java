@@ -21,6 +21,7 @@ import com.xabber.android.R;
 import com.xabber.android.data.Application;
 
 import java.text.DateFormat;
+import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -130,6 +131,10 @@ public class StringUtils {
         }
     }
 
+    public static String getTimeText(Date timeStamp) {
+        return timeFormat.format(timeStamp);
+    }
+
     /**
      * @param timeStamp
      * @return String with time or with date and time depend on current time.
@@ -203,36 +208,65 @@ public class StringUtils {
             String sTime;
             Date date = new Date(lastActivityTime * 1000);
             Date today = new Date();
-            long justDate = lastActivityTime / (24 * 60 * 60 * 1000);
-            long justToday = today.getTime() / (24 * 60 * 60 * 1000);
-            long justYesterday = justToday - 1;
             Locale locale = Application.getInstance().getResources().getConfiguration().locale;
 
-            if (justDate == justToday) {
+            if (isToday(date)) {
                 SimpleDateFormat pattern = new SimpleDateFormat("HH:mm", locale);
                 sTime = pattern.format(date);
                 return Application.getInstance().getString(R.string.last_seen_today, sTime);
             }
 
-            if (justDate == justYesterday) {
+            if (isYesterday(date)) {
                 SimpleDateFormat pattern = new SimpleDateFormat("HH:mm", locale);
                 sTime = pattern.format(date);
                 return Application.getInstance().getString(R.string.last_seen_yesterday, sTime);
             }
 
+            if (timeAgo < TimeUnit.DAYS.toSeconds(7)) {
+                SimpleDateFormat pattern = new SimpleDateFormat("HH:mm", locale);
+                sTime = pattern.format(date);
+                return Application.getInstance().getString(R.string.last_seen_on_week,
+                        getDayOfWeek(date, locale), sTime);
+            }
+
             if (date.getYear() == today.getYear()) {
-                SimpleDateFormat pattern = new SimpleDateFormat("d MMM", locale);
+                SimpleDateFormat pattern = new SimpleDateFormat("d MMMM", locale);
                 sTime = pattern.format(date);
                 return Application.getInstance().getString(R.string.last_seen_date, sTime);
             }
 
             if (date.getYear() < today.getYear()) {
-                SimpleDateFormat pattern = new SimpleDateFormat("dd.MM.yyyy", locale);
+                SimpleDateFormat pattern = new SimpleDateFormat("d MMMM yyyy", locale);
                 sTime = pattern.format(date);
                 return Application.getInstance().getString(R.string.last_seen_date, sTime);
             }
             return "";
         }
         else return "";
+    }
+
+    public static boolean isToday(Date date) {
+        Calendar calendarOne = Calendar.getInstance();
+        Calendar calendarTwo = Calendar.getInstance();
+        calendarOne.setTime(date);
+        calendarTwo.setTime(new Date());
+        return calendarOne.get(Calendar.DAY_OF_YEAR) == calendarTwo.get(Calendar.DAY_OF_YEAR) &&
+                calendarOne.get(Calendar.YEAR) == calendarTwo.get(Calendar.YEAR);
+    }
+
+    public static boolean isYesterday(Date date) {
+        Calendar calendarOne = Calendar.getInstance();
+        Calendar calendarTwo = Calendar.getInstance();
+        calendarOne.setTime(date);
+        calendarTwo.setTime(new Date());
+        return calendarOne.get(Calendar.DAY_OF_YEAR) == calendarTwo.get(Calendar.DAY_OF_YEAR) - 1 &&
+                calendarOne.get(Calendar.YEAR) == calendarTwo.get(Calendar.YEAR);
+    }
+
+    public static String getDayOfWeek(Date date, Locale locale) {
+        DateFormatSymbols symbols = new DateFormatSymbols(locale);
+        Calendar c = Calendar.getInstance();
+        c.setTime(date);
+        return symbols.getWeekdays()[c.get(Calendar.DAY_OF_WEEK)];
     }
 }

@@ -393,11 +393,13 @@
     <color name="patreon_coral">#F96854</color>
     <color name="android_default_accent_color">#FF019284</color>
 
-    <color name="unread_messages_background">#66cfd8dc</color>
+    <color name="unread_messages_background">#66bdbdbd</color>
 
     <color name="bottom_navigation_background">#eeeeee</color>
     <color name="status_color_in_contact_list_online">#FF388E3C</color>
     <color name="status_color_in_contact_list">#96616161</color>
+
+    <color name="forwarded_background_color">#007aff</color>
 
     <item name="contact_list_contact_small_right_icon_alpha_light" format="float" type="dimen">0.2</item>
     <item name="contact_list_contact_small_right_icon_alpha_dark" format="float" type="dimen">0.2</item>

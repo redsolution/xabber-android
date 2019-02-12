@@ -11,15 +11,10 @@ class PresenceComparatorByPriority implements Comparator<Presence> {
     public int compare(Presence presence1, Presence presence2) {
         int priority1 = presence1.getPriority();
         int priority2 = presence2.getPriority();
-
-        if (priority1 == Integer.MIN_VALUE) {
+        if (priority1 > priority2) {
             return 1;
-        }
-
-        if (priority2 == Integer.MIN_VALUE) {
+        } else if (priority2 > priority1) {
             return -1;
-        }
-
-        return priority2 - priority1;
+        } else return 0;
     }
 }

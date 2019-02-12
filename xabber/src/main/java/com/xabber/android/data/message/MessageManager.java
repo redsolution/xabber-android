@@ -597,6 +597,29 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
         });
     }
 
+    /**
+     * Removes message from history.
+     *
+     */
+    public void removeMessage(final List<String> messageIDs) {
+        final String[] ids = messageIDs.toArray(new String[0]);
+        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
+            @Override
+            public void run() {
+                Realm realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
+                RealmResults<MessageItem> items = realm.where(MessageItem.class)
+                        .in(MessageItem.Fields.UNIQUE_ID, ids).findAll();
+
+                if (items != null && !items.isEmpty()) {
+                    realm.beginTransaction();
+                    items.deleteAllFromRealm();
+                    realm.commitTransaction();
+                }
+                realm.close();
+            }
+        });
+    }
+
 
     /**
      * Called on action settings change.

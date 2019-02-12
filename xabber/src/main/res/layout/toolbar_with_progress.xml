@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<android.support.v7.widget.Toolbar xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/toolbar_default"
+    android:layout_width="match_parent"
+    android:layout_height="?attr/actionBarSize"
+
+    app:titleTextAppearance="@style/ToolbarTitle"
+    android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+    app:popupTheme="?attr/toolbar_popup_theme"
+    android:elevation="8dp"
+    app:contentInsetStartWithNavigation="0dp"
+    >
+
+    <ProgressBar
+        android:id="@+id/toolbarProgress"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:src="@drawable/xabber_logo_80dp"
+        android:layout_gravity="right"
+        android:layout_marginRight="8dp"
+        android:indeterminateTint="@color/account_register_blue"
+        android:visibility="invisible"
+        />
+
+</android.support.v7.widget.Toolbar>

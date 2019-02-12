@@ -1,6 +1,5 @@
 package com.xabber.android.presentation.mvp.contactlist;
 
-import android.text.TextUtils;
 import android.view.ContextMenu;
 import android.view.View;
 
@@ -12,17 +11,21 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.CommonState;
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.database.messagerealm.MessageItem;
+import com.xabber.android.data.database.realm.CrowdfundingMessage;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.muc.RoomChat;
 import com.xabber.android.data.extension.muc.RoomContact;
+import com.xabber.android.data.http.CrowdfundingManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.ChatContact;
+import com.xabber.android.data.message.CrowdfundingChat;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.NewMessageEvent;
 import com.xabber.android.data.roster.AbstractContact;
+import com.xabber.android.data.roster.CrowdfundingContact;
 import com.xabber.android.data.roster.GroupManager;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.RosterContact;
@@ -36,6 +39,7 @@ import com.xabber.android.presentation.ui.contactlist.viewobjects.CategoryVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.ChatVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.ChatWithButtonVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.ContactVO;
+import com.xabber.android.presentation.ui.contactlist.viewobjects.CrowdfundingChatVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.ExtContactVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.GroupVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.ToolbarVO;
@@ -47,6 +51,7 @@ import com.xabber.android.ui.adapter.contactlist.GroupConfiguration;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.jxmpp.stringprep.XmppStringprepException;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -119,6 +124,13 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
         } else if (item instanceof ButtonVO) {
             ButtonVO button = (ButtonVO) item;
             if (view != null) view.onButtonItemClick(button);
+        } else if (item instanceof CrowdfundingChatVO) {
+            if (view != null) {
+                AccountJid accountJid = CrowdfundingChat.getDefaultAccount();
+                UserJid userJid = CrowdfundingChat.getDefaultUser();
+                if (accountJid != null && userJid != null)
+                    view.onContactClick(RosterManager.getInstance().getAbstractContact(accountJid, userJid));
+            }
         }
     }
 
@@ -364,6 +376,11 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
             // Remove empty groups, sort and apply structure.
             items.clear();
             items.add(new ToolbarVO(Application.getInstance().getApplicationContext(), this, currentChatsState));
+
+            // set hasVisibleContacts as true if have crowdfunding message
+            CrowdfundingMessage message = CrowdfundingManager.getInstance().getLastNotDelayedMessageFromRealm();
+            if (message != null) hasVisibleContacts = true;
+
             if (hasVisibleContacts) {
 
                 if (currentChatsState == ChatListState.recent) {
@@ -371,7 +388,9 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
                     // add recent chats
                     int i = 0;
                     for (AbstractContact contact : chatsGroup.getAbstractContacts()) {
-                        if (i == MAX_RECENT_ITEMS - 1) {
+                        if (contact instanceof CrowdfundingContact) {
+                            items.add(CrowdfundingChatVO.convert((CrowdfundingContact) contact));
+                        } else if (i == MAX_RECENT_ITEMS - 1) {
                             if (getAllChatsSize() > MAX_RECENT_ITEMS)
                                 items.add(ChatWithButtonVO.convert(contact, this));
                             else items.add(ChatVO.convert(contact, this, null));
@@ -380,14 +399,7 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
                     }
 
                     if (showAccounts) {
-                        //boolean isFirst = items.isEmpty();
                         for (AccountConfiguration rosterAccount : accounts.values()) {
-//                            if (isFirst) {
-//                                isFirst = false;
-//                            } else {
-//                                items.add(new TopAccountSeparatorVO());
-//                            }
-
                             if (rosterAccount.getTotal() != 0) {
                                 if (showGroups) {
                                     createContactListWithAccountsAndGroups(items, rosterAccount, showEmptyGroups, comparator);
@@ -409,8 +421,13 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
                             createContactList(items, contacts, comparator);
                         }
                     }
-                } else
-                    items.addAll(ChatVO.convert(chatsGroup.getAbstractContacts(), this, null));
+                } else {
+                    for (AbstractContact contact : chatsGroup.getAbstractContacts()) {
+                        if (contact instanceof CrowdfundingContact)
+                            items.add(CrowdfundingChatVO.convert((CrowdfundingContact) contact));
+                        else items.add(ChatVO.convert(contact, this, null));
+                    }
+                }
             }
         } else { // Search
             final ArrayList<AbstractContact> baseEntities = getSearchResults(rosterContacts, comparator, abstractChats);
@@ -452,7 +469,7 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
         for (AbstractChat abstractChat : chats) {
             MessageItem lastMessage = abstractChat.getLastMessage();
 
-            if (lastMessage != null && !TextUtils.isEmpty(lastMessage.getText())) {
+            if (lastMessage != null) {
                 AccountItem accountItem = AccountManager.getInstance().getAccount(abstractChat.getAccount());
                 if (accountItem != null && accountItem.isEnabled()) {
                     int unread = abstractChat.getUnreadMessageCount();
@@ -473,16 +490,36 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
                 }
             }
         }
+
+
+        // crowdfunding chat
+        int unreadCount = CrowdfundingManager.getInstance().getUnreadMessageCount();
+        CrowdfundingMessage message = CrowdfundingManager.getInstance().getLastNotDelayedMessageFromRealm();
+        if (message != null) {
+            switch (state) {
+                case unread:
+                    if (unreadCount > 0) newChats.add(CrowdfundingChat.createCrowdfundingChat(unreadCount, message));
+                    break;
+                case archived:
+                    break;
+                default:
+                    // recent
+                    newChats.add(CrowdfundingChat.createCrowdfundingChat(unreadCount, message));
+                    break;
+            }
+        }
+        unreadMessageCount += unreadCount;
+
         EventBus.getDefault().post(new UpdateUnreadCountEvent(unreadMessageCount));
-
         Collections.sort(newChats, ChatComparator.CHAT_COMPARATOR);
-
         chatsGroup.setNotEmpty();
 
         int itemsCount = 0;
         for (AbstractChat chat : newChats) {
             if (itemsCount < MAX_RECENT_ITEMS || state != ChatListState.recent) {
-                chatsGroup.addAbstractContact(RosterManager.getInstance()
+                if (chat instanceof CrowdfundingChat)
+                    chatsGroup.addAbstractContact(new CrowdfundingContact((CrowdfundingChat) chat));
+                else chatsGroup.addAbstractContact(RosterManager.getInstance()
                         .getBestContact(chat.getAccount(), chat.getUser()));
                 chatsGroup.increment(true);
                 itemsCount++;

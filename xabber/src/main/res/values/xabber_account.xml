@@ -11,10 +11,11 @@
     <string name="sync_fail">Synchronization failed</string>
     <string name="quit_success">Quit successful</string>
     <string name="confirm_success">Email verified</string>
-    <string name="delete_success">Email deleted</string>
+    <string name="delete_success">Email unlinked</string>
     <string name="resend_success">Verification email sent</string>
     <string name="social_auth_fail">Social authentication failed</string>
     <string name="settings_delete_success">Settings deleted</string>
+    <string name="need_login_to_continue">You must be logged in Xabber account to continue</string>
 
     <string name="social_bind_success">Social network linked successfully</string>
     <string name="social_bind_fail">This account is already linked with different Xabber Account</string>
@@ -40,7 +41,7 @@
     <string name="hint_username">Username</string>
 
     <string name="hint_old_pass">Old password</string>
-    <string name="hint_pass">New password</string>
+    <string name="hint_pass">Password</string>
     <string name="hint_confirm_pass">Confirm password</string>
 
     <string name="label_xmpp_id">Existing XMPP ID</string>

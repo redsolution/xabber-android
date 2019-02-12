@@ -19,9 +19,13 @@ import android.util.Log;
 
 import com.xabber.android.data.account.AccountErrorEvent;
 import com.xabber.android.data.account.AccountItem;
+import com.xabber.android.data.extension.forward.ForwardComment;
+import com.xabber.android.data.extension.forward.ForwardCommentProvider;
 import com.xabber.android.data.extension.httpfileupload.CustomDataProvider;
 import com.xabber.android.data.log.AndroidLoggingHandler;
 import com.xabber.android.data.log.LogManager;
+import com.xabber.android.data.xaccount.HttpConfirmIq;
+import com.xabber.android.data.xaccount.HttpConfirmIqProvider;
 
 import org.greenrobot.eventbus.EventBus;
 import org.jivesoftware.smack.AbstractXMPPConnection;
@@ -132,12 +136,18 @@ class ConnectionThread {
             }
 
             if (!connection.isAuthenticated()) {
+                ProviderManager.addIQProvider(HttpConfirmIq.ELEMENT,
+                        HttpConfirmIq.NAMESPACE, new HttpConfirmIqProvider());
+
                 connection.login();
 
                 // can be a cause of strange Smack behavior
                 // not authorization or not receiving a iq's
                 ProviderManager.addExtensionProvider(DataForm.ELEMENT,
                         DataForm.NAMESPACE, new CustomDataProvider());
+
+                ProviderManager.addExtensionProvider(ForwardComment.ELEMENT,
+                        ForwardComment.NAMESPACE, new ForwardCommentProvider());
             } else {
                 LogManager.i(this, "Already authenticated");
             }

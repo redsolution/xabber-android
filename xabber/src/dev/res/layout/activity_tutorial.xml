@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/intro_background">
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/pager"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_alignParentTop="true"
+        android:layout_marginBottom="48dp" />
+
+    <ImageView
+        android:id="@+id/ivSettings"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:src="@drawable/ic_settings_grey600_24dp"
+        android:tint="@color/account_register_blue"
+        android:layout_alignParentRight="true"
+        android:layout_margin="8dp"
+        />
+
+    <me.relex.circleindicator.CircleIndicator
+        android:id="@+id/indicator"
+        android:layout_width="match_parent"
+        android:layout_height="24dp"
+        android:layout_marginBottom="48dp"
+        android:layout_alignParentBottom="true"
+        app:ci_drawable="@drawable/blue_radius"/>
+
+    <LinearLayout
+        android:id="@+id/rlButtons"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true"
+        >
+
+        <Button
+            android:id="@+id/btnLogin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:theme="@style/BlueButton"
+            android:textColor="@color/account_register_blue"
+            android:text="@string/button_login"
+            android:layout_weight="1"
+            />
+
+        <Button
+            android:id="@+id/btnRegister"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:theme="@style/BlueButton"
+            android:textColor="@color/account_register_blue"
+            android:text="@string/button_registration"
+            android:layout_weight="1"
+            />
+
+    </LinearLayout>
+
+</RelativeLayout>

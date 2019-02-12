@@ -66,6 +66,7 @@ public class XabberAccountManager implements OnLoadListener {
     private int lastOrderChangeTimestamp;
 
     private CompositeSubscription compositeSubscription = new CompositeSubscription();
+    private CompositeSubscription updateSettingsSubscriptions = new CompositeSubscription();
 
     public static XabberAccountManager getInstance() {
         if (instance == null)
@@ -240,28 +241,33 @@ public class XabberAccountManager implements OnLoadListener {
     public void updateAccountSettings() {
         List<XMPPAccountSettings> list = createSettingsList();
         if (list != null && list.size() > 0) {
-            Subscription updateSettingsSubscription = AuthManager.patchClientSettings(list)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new Action1<List<XMPPAccountSettings>>() {
-                        @Override
-                        public void call(List<XMPPAccountSettings> s) {
-                            Log.d(LOG_TAG, "XMPP accounts loading from net: successfully");
-                        }
-                    }, new Action1<Throwable>() {
-                        @Override
-                        public void call(Throwable throwable) {
-                            Log.d(LOG_TAG, "XMPP accounts loading from net: error: " + throwable.toString());
-
-                            // invalid token
-                            String message = RetrofitErrorConverter.throwableToHttpError(throwable);
-                            if (message != null && message.equals("Invalid token")) {
-                                // logout from deleted account
-                                onInvalidToken();
+            // prevents simultaneous calls
+            if (!updateSettingsSubscriptions.hasSubscriptions()) {
+                Subscription updateSettingsSubscription = AuthManager.patchClientSettings(list)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new Action1<List<XMPPAccountSettings>>() {
+                            @Override
+                            public void call(List<XMPPAccountSettings> s) {
+                                Log.d(LOG_TAG, "XMPP accounts loading from net: successfully");
+                                updateSettingsSubscriptions.clear();
                             }
-                        }
-                    });
-            compositeSubscription.add(updateSettingsSubscription);
+                        }, new Action1<Throwable>() {
+                            @Override
+                            public void call(Throwable throwable) {
+                                Log.d(LOG_TAG, "XMPP accounts loading from net: error: " + throwable.toString());
+
+                                // invalid token
+                                String message = RetrofitErrorConverter.throwableToHttpError(throwable);
+                                if (message != null && message.equals("Invalid token")) {
+                                    // logout from deleted account
+                                    onInvalidToken();
+                                }
+                                updateSettingsSubscriptions.clear();
+                            }
+                        });
+                updateSettingsSubscriptions.add(updateSettingsSubscription);
+            }
         }
     }
 
@@ -516,7 +522,9 @@ public class XabberAccountManager implements OnLoadListener {
             } else if (accountJid != null && !account.isDeleted()) {
                 AccountManager.getInstance().setOrder(accountJid, account.getOrder());
                 AccountManager.getInstance().setTimestamp(accountJid, account.getTimestamp());
-                AccountManager.getInstance().setColor(accountJid, ColorManager.getInstance().convertColorNameToIndex(account.getColor()));
+                if (account.getColor() != null)
+                    AccountManager.getInstance().setColor(accountJid,
+                            ColorManager.getInstance().convertColorNameToIndex(account.getColor()));
                 AccountManager.getInstance().onAccountChanged(accountJid);
 
                 // delete existing account

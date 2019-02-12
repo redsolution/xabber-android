@@ -30,6 +30,10 @@
     <string name="order_last_timestamp_key">order_last_timestamp_key</string>
 
     <string name="patreon_last_load_timestamp_key">patreon_last_load_timestamp_key</string>
+    <string name="crowdfunding_last_load_timestamp_key">crowdfunding_last_load_timestamp_key</string>
+    <string name="crowdfunding_leader_last_load_timestamp_key">crowdfunding_leader_last_load_timestamp_key</string>
+    <string name="first_app_run_timestamp_key">first_app_run_timestamp_key</string>
+    <string name="crowdfunding_last_position_key">crowdfunding_last_position_key</string>
 
     <string name="last_sync_date_key">last_sync_date_key</string>
     <string name="last_sync_date_default">@string/last_sync_date_never</string>
@@ -371,8 +375,11 @@
 
     <string name="debug_crash_reports_dialog_key">debug_crash_reports_dialog</string>
     <string name="debug_download_all_messages_key">debug_download_all_messages_key</string>
+    <string name="debug_use_develop_api_key">debug_develop_xabber_api_key</string>
+    <bool name="debug_use_develop_api_default">false</bool>
+    <string name="debug_fetch_crowdfunding_feed_key">debug_fetch_crowdfunding_feed_key</string>
 
-<!-- preference_about -->
+    <!-- preference_about -->
     <string name="preference_about">@string/about_viewer</string>
     <string name="preference_about_key">preference_about</string>
 

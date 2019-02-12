@@ -6,8 +6,5 @@
         </shape>
     </item>
     <item
-        android:drawable="@drawable/ic_image"
-        android:height="24dp"
-        android:width="24dp"
-        />
+        android:drawable="@drawable/ic_image" />
 </layer-list>

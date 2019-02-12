@@ -37,6 +37,7 @@ import com.xabber.android.ui.fragment.XAccountSignUpFragment3;
 import com.xabber.android.ui.fragment.XAccountSignUpFragment4;
 import com.xabber.android.utils.RetrofitErrorConverter;
 
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -67,6 +68,7 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
 
     private static final String CAPTCHA_TOKEN = "RECAPTCHA";
     private static final String ERROR_NAME_NOT_AVAILABLE = "Username is not available.";
+    private static final String ERROR_TIMEOUT = "timeout";
 
     private FragmentTransaction fTrans;
     private Fragment fragmentLogin;
@@ -82,6 +84,7 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
     private Toolbar toolbar;
 
     private List<AuthManager.Host> hosts = new ArrayList<>();
+    private boolean signupIsRun = false;
 
     public static Intent createIntent(Context context, @Nullable String currentFragment) {
         Intent intent = new Intent(context, XabberLoginActivity.class);
@@ -396,6 +399,9 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
     /** SIGN UP */
 
     private void signUp(SignUpRepo signUpRepo) {
+        if (signupIsRun) return;
+        signupIsRun = true;
+
         String username = signUpRepo.getUsername();
         String host = signUpRepo.getHost();
         String pass = signUpRepo.getPass();
@@ -416,11 +422,13 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
                 .subscribe(new Action1<XabberAccount>() {
                     @Override
                     public void call(XabberAccount account) {
+                        signupIsRun = false;
                         handleSuccessSignUp();
                     }
                 }, new Action1<Throwable>() {
                     @Override
                     public void call(Throwable throwable) {
+                        signupIsRun = false;
                         handleErrorSignUp(throwable);
                     }
                 });
@@ -439,9 +447,18 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
         SignUpRepo.getInstance().setCaptchaToken(null);
         hideProgress();
         String message = RetrofitErrorConverter.throwableToHttpError(throwable);
-        if (ERROR_NAME_NOT_AVAILABLE.equals(message)) {
+
+        if (throwable instanceof SocketTimeoutException) {
+            SignUpRepo.getInstance().setLastErrorMessage(null);
+            showSignUpStep1Fragment();
+            Toast.makeText(this, "The server is not responding. Try later.", Toast.LENGTH_LONG).show();
+        } else if (ERROR_NAME_NOT_AVAILABLE.equals(message)) {
             SignUpRepo.getInstance().setLastErrorMessage(message);
             showSignUpStep1Fragment();
+        } else {
+            SignUpRepo.getInstance().setLastErrorMessage(null);
+            showSignUpStep1Fragment();
+            Toast.makeText(this, message, Toast.LENGTH_LONG).show();
         }
     }
 

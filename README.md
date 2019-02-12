@@ -18,7 +18,7 @@ Xabber uses Gradle build system. The only specific thing is git submodule for ge
  
 **2. Build**
 
-To build Xabber use **"dev"** productFlavour. Other flavours like "beta", "prod", "ru" and "vip" requare api keys that not represent in this repository.
+To build Xabber use **"open"** productFlavour. Other flavours like "beta", "prod", "dev" and "vip" requare api keys that not represent in this repository.
 
 ## Translations [![Crowdin](https://d322cqt584bo4o.cloudfront.net/xabber/localized.svg)](https://crowdin.com/project/xabber)
 

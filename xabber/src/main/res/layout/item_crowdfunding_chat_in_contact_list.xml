@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="64dp"
+    android:elevation="1dp">
+
+    <TextView
+        android:id="@+id/tvAction"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingRight="12dp"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:text="@string/archive_chat"
+        android:textAllCaps="true"
+        android:gravity="right|center"
+        android:drawableRight="@drawable/ic_arcived"
+        android:drawablePadding="12dp"
+        android:background="?attr/action_with_chat_background"
+        android:visibility="gone"
+        />
+
+    <TextView
+        android:id="@+id/tvActionLeft"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingLeft="12dp"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:text="@string/archive_chat"
+        android:textAllCaps="true"
+        android:gravity="left|center"
+        android:drawableLeft="@drawable/ic_arcived"
+        android:drawablePadding="12dp"
+        android:background="?attr/action_with_chat_background"
+        android:visibility="gone"
+        />
+
+    <LinearLayout
+        android:id="@+id/foregroundView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="?attr/contact_list_contact_background"
+        >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        >
+
+        <include layout="@layout/account_color_indicator"/>
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/avatarView"
+            android:layout_width="@dimen/avatar_size_toolbar"
+            android:layout_height="@dimen/avatar_size_toolbar"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="8dp"
+            android:layout_centerVertical="true"
+            android:scaleType="centerCrop"
+            android:src="@drawable/xabber_logo_80dp"
+            />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:layout_marginRight="8dp"
+            android:layout_toRightOf="@id/avatarView"
+            android:layout_toLeftOf="@id/tvTime"
+            >
+
+            <TextView
+                android:id="@+id/tvContactName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:singleLine="true"
+                android:drawablePadding="4dp"
+                android:textSize="14sp"
+                android:textColor="?attr/contact_list_contact_name_text_color"
+                android:fontFamily="sans-serif-medium"
+                android:text="@string/xabber_chat_title"
+                />
+
+        </LinearLayout>
+
+        <github.ankushsachdeva.emojicon.EmojiconTextView
+            android:id="@+id/tvMessageText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_toRightOf="@id/avatarView"
+            android:layout_toLeftOf="@+id/tvUnreadCount"
+            android:layout_marginBottom="12dp"
+            android:layout_marginRight="8dp"
+            android:maxLines="1"
+            android:textSize="14sp"
+            android:textColor="?attr/contact_list_contact_second_line_text_color"
+            android:text="@string/xabber_chat_description"
+            />
+
+        <TextView
+            android:id="@+id/tvTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginTop="12dp"
+            android:layout_marginRight="8dp"
+            android:textSize="10sp"
+            tools:text="12:30"
+            />
+
+        <TextView
+            android:id="@+id/tvUnreadCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="12dp"
+            android:layout_marginRight="8dp"
+            android:paddingTop="0dp"
+            android:paddingBottom="1dp"
+            android:paddingRight="5dp"
+            android:paddingLeft="5dp"
+            android:background="@drawable/rounded_background_green"
+            android:textColor="@color/white"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            tools:text="1"
+            />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:layout_alignParentBottom="true"
+            android:layout_toRightOf="@+id/avatarView"
+            android:background="?attr/contact_list_subgroup_separator"
+            />
+
+    </RelativeLayout>
+
+    </LinearLayout>
+
+</FrameLayout>

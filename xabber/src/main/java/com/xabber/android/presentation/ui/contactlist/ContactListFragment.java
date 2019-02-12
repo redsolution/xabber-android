@@ -20,6 +20,7 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.xabber.android.R;
@@ -52,6 +53,7 @@ import com.xabber.android.ui.activity.ContactEditActivity;
 import com.xabber.android.ui.activity.ContactListActivity;
 import com.xabber.android.ui.activity.StatusEditActivity;
 import com.xabber.android.ui.adapter.contactlist.ContactListState;
+import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.helper.ContextMenuHelper;
 
 import java.util.ArrayList;
@@ -83,6 +85,7 @@ public class ContactListFragment extends Fragment implements ContactListView,
     private LinearLayoutManager linearLayoutManager;
     private View placeholderView;
     private TextView tvPlaceholderMessage;
+    private ImageView placeholderImage;
     /**
      * View with information shown on empty contact list.
      */
@@ -96,7 +99,7 @@ public class ContactListFragment extends Fragment implements ContactListView,
     /**
      * Image view with disconnected icon.
      */
-    private View disconnectedView;
+    private ImageView disconnectedView;
 
     /**
      * View with help text.
@@ -163,10 +166,13 @@ public class ContactListFragment extends Fragment implements ContactListView,
         coordinatorLayout = (CoordinatorLayout) view.findViewById(R.id.coordinatorLayout);
         placeholderView = view.findViewById(R.id.placeholderView);
         tvPlaceholderMessage = (TextView) view.findViewById(R.id.tvPlaceholderMessage);
+        placeholderImage = view.findViewById(R.id.placeholderImage);
+        ColorManager.setGrayScaleFilter(placeholderImage);
 
         infoView = view.findViewById(R.id.info);
         connectedView = infoView.findViewById(R.id.connected);
         disconnectedView = infoView.findViewById(R.id.disconnected);
+        ColorManager.setGrayScaleFilter(disconnectedView);
         textView = (TextView) infoView.findViewById(R.id.text);
         buttonView = (Button) infoView.findViewById(R.id.button);
         animation = AnimationUtils.loadAnimation(getActivity(), R.anim.connection);

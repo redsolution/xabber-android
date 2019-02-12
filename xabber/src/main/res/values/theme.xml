@@ -83,6 +83,8 @@
         <item name="bottom_navigation_background">@color/bottom_navigation_background</item>
         <item name="half_transparent_background">@drawable/half_transparent_background</item>
         <item name="action_with_chat_background">@color/grey_400</item>
+
+        <item name="message_background">@color/message_color_state</item>
     </style>
 
     <style name="ThemeDark" parent="Base.ThemeDark"></style>
@@ -155,6 +157,8 @@
         <item name="bottom_navigation_background">@color/black</item>
         <item name="half_transparent_background">@drawable/half_transparent_background_dark</item>
         <item name="action_with_chat_background">@color/grey_800</item>
+
+        <item name="message_background">@color/message_color_state_dark</item>
     </style>
 
     <style name="ToolbarTitle" parent="@style/TextAppearance.Widget.AppCompat.Toolbar.Title">

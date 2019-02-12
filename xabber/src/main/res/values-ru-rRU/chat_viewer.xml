@@ -118,4 +118,6 @@
   <string name="toast_link_copied">Ссылка скопирована в буфер обмена</string>
   <string name="toast_could_not_open_file">Не удалось открыть файл</string>
   <string name="uploaded_files_count">Загрузка.. %s</string>
+  <string name="xabber_join_button">Поддержать Xabber</string>
+  <string name="forwarded_messages_count">%d пересланных сообщений</string>
 </resources>

@@ -4,8 +4,12 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
+import android.graphics.Color;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
 import android.support.v4.content.ContextCompat;
 import android.util.SparseArray;
+import android.widget.ImageView;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
@@ -134,7 +138,7 @@ public class ColorManager {
         return unreadMessagesBackground[getAccountColorLevel(account)];
     }
 
-    private static int getAccountColorLevel(AccountJid account) {
+    public static int getAccountColorLevel(AccountJid account) {
         return AccountManager.getInstance().getColorLevel(account);
     }
 
@@ -253,7 +257,7 @@ public class ColorManager {
 
         Integer colorId = colors.get(colorName);
         if (colorId != null) return colorId;
-        else return 1;
+        else return 0;
     }
 
     public String convertIndexToColorName(int colorIndex) {
@@ -281,4 +285,28 @@ public class ColorManager {
         else return "green";
     }
 
+    public static int changeColor(int color, float factor) {
+        int a = Color.alpha(color);
+        int r = Math.round(Color.red(color) * factor);
+        int g = Math.round(Color.green(color) * factor);
+        int b = Math.round(Color.blue(color) * factor);
+        return Color.argb(a,
+                Math.min(r,255),
+                Math.min(g,255),
+                Math.min(b,255));
+    }
+
+    public static int getColorWithAlpha(int color, float alpha) {
+        return Color.argb(
+                Math.round(Color.alpha(color) * alpha),
+                Color.red(color),
+                Color.green(color),
+                Color.blue(color));
+    }
+
+    public static void setGrayScaleFilter(ImageView v) {
+        ColorMatrix matrix = new ColorMatrix();
+        matrix.setSaturation(0);
+        v.setColorFilter(new ColorMatrixColorFilter(matrix));
+    }
 }

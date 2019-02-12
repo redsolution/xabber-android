@@ -560,6 +560,10 @@ public class SettingsManager implements OnInitializedListener,
         return getBoolean(R.string.debug_crash_reports_key, R.bool.debug_crash_reports_default);
     }
 
+    public static boolean useDevelopAPI() {
+        return getBoolean(R.string.debug_use_develop_api_key, R.bool.debug_use_develop_api_default);
+    }
+
     public static boolean isCrashReportsSupported() {
         return BuildConfig.FLAVOR.equals("beta")
                 || BuildConfig.FLAVOR.equals("vip")
@@ -780,6 +784,38 @@ public class SettingsManager implements OnInitializedListener,
 
     public static int getLastPatreonLoadTimestamp() {
         return getInteger(R.string.patreon_last_load_timestamp_key, 1);
+    }
+
+    public static void setLastCrowdfundingLoadTimestamp(int timestamp) {
+        setInt(R.string.crowdfunding_last_load_timestamp_key, timestamp);
+    }
+
+    public static int getLastCrowdfundingLoadTimestamp() {
+        return getInteger(R.string.crowdfunding_last_load_timestamp_key, 1);
+    }
+
+    public static void setLastLeaderCrowdfundingLoadTimestamp(int timestamp) {
+        setInt(R.string.crowdfunding_leader_last_load_timestamp_key, timestamp);
+    }
+
+    public static int getLastLeaderCrowdfundingLoadTimestamp() {
+        return getInteger(R.string.crowdfunding_leader_last_load_timestamp_key, 1);
+    }
+
+    public static void setFirstAppRunTimestamp(int timestamp) {
+        setInt(R.string.first_app_run_timestamp_key, timestamp);
+    }
+
+    public static int getFirstAppRunTimestamp() {
+        return getInteger(R.string.first_app_run_timestamp_key, 0);
+    }
+
+    public static void setLastCrowdfundingPosition(int position) {
+        setInt(R.string.crowdfunding_last_position_key, position);
+    }
+
+    public static int getLastCrowdfundingPosition() {
+        return getInteger(R.string.crowdfunding_last_position_key, 0);
     }
 
     @Override

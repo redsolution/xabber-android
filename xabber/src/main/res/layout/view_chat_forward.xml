@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/forwardView"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/chat_input_background"
+    >
+
+    <View
+        android:id="@+id/ivReplyIcon"
+        android:layout_width="2dp"
+        android:layout_height="42dp"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="8dp"
+        android:background="@color/grey_600"
+        />
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/ivReplyIcon"
+        android:layout_toLeftOf="@id/ivCloseForwardPanel"
+        android:layout_centerVertical="true"
+        >
+
+        <TextView
+            android:id="@+id/tvForwardedFrom"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:singleLine="true"
+            android:ellipsize="middle"
+            tools:text="John Doe"
+            />
+
+        <TextView
+            android:id="@+id/tvForwardedText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:ellipsize="middle"
+            tools:text="2 forwarded messages"
+            />
+
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/ivCloseForwardPanel"
+        android:layout_width="52dp"
+        android:layout_height="52dp"
+        android:padding="14dp"
+        android:src="@drawable/ic_close"
+        android:tint="@color/grey_600"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:clickable="true"
+        android:focusable="true"
+        android:layout_alignParentRight="true"
+        />
+
+</RelativeLayout>

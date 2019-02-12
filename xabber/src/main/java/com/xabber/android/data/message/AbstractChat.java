@@ -18,12 +18,14 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.connection.StanzaSender;
 import com.xabber.android.data.database.MessageDatabaseManager;
 import com.xabber.android.data.database.messagerealm.Attachment;
+import com.xabber.android.data.database.messagerealm.ForwardId;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.database.messagerealm.SyncInfo;
 import com.xabber.android.data.entity.AccountJid;
@@ -32,6 +34,7 @@ import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.carbons.CarbonManager;
 import com.xabber.android.data.extension.cs.ChatStateManager;
 import com.xabber.android.data.extension.file.FileManager;
+import com.xabber.android.data.extension.forward.ForwardComment;
 import com.xabber.android.data.extension.httpfileupload.ExtendedFormField;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.otr.OTRManager;
@@ -42,11 +45,14 @@ import com.xabber.android.data.notification.NotificationManager;
 import org.greenrobot.eventbus.EventBus;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.StanzaListener;
+import org.jivesoftware.smack.packet.ExtensionElement;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Message.Type;
 import org.jivesoftware.smack.packet.Stanza;
+import org.jivesoftware.smack.util.PacketParserUtils;
 import org.jivesoftware.smack.util.StringUtils;
 import org.jivesoftware.smackx.delay.packet.DelayInformation;
+import org.jivesoftware.smackx.forward.packet.Forwarded;
 import org.jivesoftware.smackx.xdata.packet.DataForm;
 import org.jxmpp.jid.Jid;
 import org.jxmpp.jid.parts.Resourcepart;
@@ -237,8 +243,10 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
      * @param resource can be <code>null</code>.
      * @param text     can be <code>null</code>.
      */
-    public void newAction(Resourcepart resource, String text, ChatAction action) {
-        createAndSaveNewMessage(resource, text, action, null, true, false, false, false, null);
+    public void newAction(Resourcepart resource, String text, ChatAction action, boolean fromMUC) {
+        createAndSaveNewMessage(true, UUID.randomUUID().toString(), resource, text, action,
+                null, true, false, false, false,
+                null, null, null, null, null, fromMUC, false);
     }
 
     /**
@@ -256,28 +264,41 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
      * @param offline        Whether message was received from server side offline storage.
      * @return
      */
-    protected void createAndSaveNewMessage(Resourcepart resource, String text,
-                                           final ChatAction action, final Date delayTimestamp, final boolean incoming,
-                                           boolean notify, final boolean encrypted, final boolean offline, final String stanzaId) {
-        final MessageItem messageItem = createMessageItem(resource, text, action, delayTimestamp,
-                incoming, notify, encrypted, offline, stanzaId, null);
-        saveMessageItem(messageItem);
+    protected void createAndSaveNewMessage(boolean ui, String uid, Resourcepart resource, String text, final ChatAction action,
+                   final Date delayTimestamp, final boolean incoming, boolean notify,
+                   final boolean encrypted, final boolean offline, final String stanzaId,
+                   final String originalStanza, final String parentMessageId, final String originalFrom,
+                   final RealmList<ForwardId> forwardIds, boolean fromMUC, boolean fromMAM) {
+
+        final MessageItem messageItem = createMessageItem(uid, resource, text, action, delayTimestamp,
+                incoming, notify, encrypted, offline, stanzaId, null,
+                originalStanza, parentMessageId, originalFrom, forwardIds, fromMUC, fromMAM);
+
+        saveMessageItem(ui, messageItem);
         EventBus.getDefault().post(new NewMessageEvent());
     }
 
-    protected void createAndSaveFileMessage(Resourcepart resource, String text, final ChatAction action, final Date delayTimestamp,
-                                            final boolean incoming, boolean notify, final boolean encrypted, final boolean offline,
-                                            final String stanzaId, RealmList<Attachment> attachments) {
-        final MessageItem messageItem = createMessageItem(resource, text, action, delayTimestamp,
-                incoming, notify, encrypted, offline, stanzaId, attachments);
-        saveMessageItem(messageItem);
+    protected void createAndSaveFileMessage(boolean ui, String uid, Resourcepart resource, String text, final ChatAction action,
+                    final Date delayTimestamp, final boolean incoming, boolean notify,
+                    final boolean encrypted, final boolean offline, final String stanzaId,
+                    RealmList<Attachment> attachments, final String originalStanza,
+                    final String parentMessageId, final String originalFrom, boolean fromMUC, boolean fromMAM) {
+
+        final MessageItem messageItem = createMessageItem(uid, resource, text, action, delayTimestamp,
+                incoming, notify, encrypted, offline, stanzaId, attachments,
+                originalStanza, parentMessageId, originalFrom, null, fromMUC, fromMAM);
+
+        saveMessageItem(ui, messageItem);
         EventBus.getDefault().post(new NewMessageEvent());
     }
 
-    public void saveMessageItem(final MessageItem messageItem) {
+    public void saveMessageItem(boolean ui, final MessageItem messageItem) {
         final long startTime = System.currentTimeMillis();
-        MessageDatabaseManager.getInstance().getRealmUiThread()
-                .executeTransactionAsync(new Realm.Transaction() {
+        Realm realm;
+        if (ui) realm = MessageDatabaseManager.getInstance().getRealmUiThread();
+        else realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
+
+        realm.executeTransactionAsync(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
                 realm.copyToRealm(messageItem);
@@ -288,9 +309,22 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     }
 
     protected MessageItem createMessageItem(Resourcepart resource, String text, ChatAction action,
-                                            Date delayTimestamp, boolean incoming, boolean notify,
-                                            boolean encrypted, boolean offline, String stanzaId,
-                                            RealmList<Attachment> attachments) {
+                        Date delayTimestamp, boolean incoming, boolean notify, boolean encrypted,
+                        boolean offline, String stanzaId, RealmList<Attachment> attachments,
+                        String originalStanza, String parentMessageId, String originalFrom,
+                        RealmList<ForwardId> forwardIds, boolean fromMUC) {
+
+        return createMessageItem(UUID.randomUUID().toString(), resource,  text,  action,
+                delayTimestamp,  incoming,  notify,  encrypted, offline,  stanzaId, attachments,
+                 originalStanza,  parentMessageId,  originalFrom, forwardIds, fromMUC, false);
+    }
+
+    protected MessageItem createMessageItem(String uid, Resourcepart resource, String text, ChatAction action,
+                        Date delayTimestamp, boolean incoming, boolean notify, boolean encrypted,
+                        boolean offline, String stanzaId, RealmList<Attachment> attachments,
+                        String originalStanza, String parentMessageId, String originalFrom,
+                        RealmList<ForwardId> forwardIds, boolean fromMUC, boolean fromMAM) {
+
         final boolean visible = MessageManager.getInstance().isVisibleChat(this);
         boolean read = incoming ? visible : true;
         boolean send = incoming;
@@ -324,7 +358,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
             }
         }
 
-        MessageItem messageItem = new MessageItem();
+        MessageItem messageItem = new MessageItem(uid);
 
         messageItem.setAccount(account);
         messageItem.setUser(user);
@@ -344,13 +378,20 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
             messageItem.setDelayTimestamp(delayTimestamp.getTime());
         }
         messageItem.setIncoming(incoming);
-        messageItem.setRead(read);
+        messageItem.setRead(fromMAM || read);
         messageItem.setSent(send);
         messageItem.setEncrypted(encrypted);
         messageItem.setOffline(offline);
+        messageItem.setFromMUC(fromMUC);
         messageItem.setStanzaId(stanzaId);
         if (attachments != null) messageItem.setAttachments(attachments);
         FileManager.processFileMessage(messageItem);
+
+        // forwarding
+        if (forwardIds != null) messageItem.setForwardedIds(forwardIds);
+        messageItem.setOriginalStanza(originalStanza);
+        messageItem.setOriginalFrom(originalFrom);
+        messageItem.setParentMessageId(parentMessageId);
 
         if (notify && notifyAboutMessage() && !visible) {
             NotificationManager.getInstance().onMessageNotification(messageItem);
@@ -358,7 +399,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
 
         // unread message count
         if (!visible && action == null) {
-            if (incoming) increaseUnreadMessageCount();
+            if (incoming && !fromMAM) increaseUnreadMessageCount();
             else resetUnreadMessageCount();
         }
 
@@ -577,6 +618,28 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
             message = createFileMessagePacket(messageItem.getStanzaId(),
                     messageItem.getAttachments(), text);
 
+        } else if (messageItem.haveForwardedMessages()) {
+
+            int count = messageItem.getForwardedIds().size();
+            String body = String.format(Application.getInstance().getResources()
+                    .getString(R.string.forwarded_support_text), count);
+            if (text != null && !text.isEmpty()) body += "\n" + text;
+
+            message = createMessagePacket(body, messageItem.getStanzaId());
+
+            Realm realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
+            for (ForwardId id : messageItem.getForwardedIds()) {
+                MessageItem forwardedMessage = realm.where(MessageItem.class)
+                        .equalTo(MessageItem.Fields.UNIQUE_ID, id.getForwardMessageId()).findFirst();
+                try {
+                    Message forwarded = (Message) PacketParserUtils.parseStanza(forwardedMessage.getOriginalStanza());
+                    message.addExtension(new Forwarded(new DelayInformation(new Date(forwardedMessage.getTimestamp())), forwarded));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            message.addExtension(new ForwardComment(text));
+
         } else if (text != null) {
             message = createMessagePacket(text, messageItem.getStanzaId());
         }
@@ -618,6 +681,9 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         if (message == null) {
             messageItem.setError(true);
             messageItem.setErrorDescription("Internal error: message is null");
+        } else {
+            message.setFrom(account.getFullJid());
+            messageItem.setOriginalStanza(message.toXML().toString());
         }
 
         if (delayTimestamp != null) {
@@ -736,4 +802,22 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     public void setLastPosition(int lastPosition) {
         this.lastPosition = lastPosition;
     }
+
+    public RealmList<ForwardId> parseForwardedMessage(boolean ui, Stanza packet, String parentMessageId) {
+        List<ExtensionElement> elements = packet.getExtensions(Forwarded.ELEMENT, Forwarded.NAMESPACE);
+        if (elements == null || elements.size() == 0) return null;
+
+        RealmList<ForwardId> forwarded = new RealmList<>();
+        for (ExtensionElement element : elements) {
+            if (element instanceof Forwarded) {
+                Stanza stanza = ((Forwarded) element).getForwardedStanza();
+                if (stanza instanceof Message) {
+                    forwarded.add(new ForwardId(parseInnerMessage(ui, (Message) stanza, parentMessageId)));
+                }
+            }
+        }
+        return forwarded;
+    }
+
+    protected abstract String parseInnerMessage(boolean ui, Message message, String parentMessageId);
 }

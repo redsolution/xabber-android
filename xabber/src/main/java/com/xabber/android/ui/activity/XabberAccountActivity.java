@@ -16,6 +16,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.xabber.android.R;
@@ -50,6 +51,7 @@ public class XabberAccountActivity extends BaseLoginActivity
 
     private Toolbar toolbar;
     private BarPainter barPainter;
+    private ProgressBar progressBar;
 
     private Dialog dialog;
     private boolean dialogShowed;
@@ -78,6 +80,7 @@ public class XabberAccountActivity extends BaseLoginActivity
         toolbar.inflateMenu(R.menu.toolbar_xabber_account_info);
         toolbar.setTitleTextColor(getResources().getColor(R.color.black_text));
         barPainter = new BarPainter(this, toolbar);
+        progressBar = findViewById(R.id.toolbarProgress);
     }
 
     @Override
@@ -136,6 +139,10 @@ public class XabberAccountActivity extends BaseLoginActivity
     protected void hideProgress() {
         if (fragmentInfo != null)
             ((XabberAccountInfoFragment)fragmentInfo).showProgressInAccount(false);
+    }
+
+    public void showProgressInAccount(boolean show) {
+        progressBar.setVisibility(show ? View.VISIBLE : View.INVISIBLE);
     }
 
     private boolean checkInternetOrShowError() {

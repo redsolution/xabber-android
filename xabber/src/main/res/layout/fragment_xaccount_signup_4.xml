@@ -17,6 +17,7 @@
             android:text="@string/title_signup_step_4"
             android:textSize="16sp"
             android:textStyle="bold"
+            android:theme="@style/Theme"
             android:layout_marginLeft="16dp"
             android:layout_gravity="center_vertical"
             />
@@ -43,6 +44,7 @@
             android:text="@string/account_secure_description"
             android:paddingLeft="4dp"
             android:layout_marginBottom="16dp"
+            android:theme="@style/Theme"
             />
 
         <FrameLayout

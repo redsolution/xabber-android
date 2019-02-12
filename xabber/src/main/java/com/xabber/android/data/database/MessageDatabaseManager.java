@@ -6,6 +6,7 @@ import android.os.Looper;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.database.messagerealm.Attachment;
+import com.xabber.android.data.database.messagerealm.ForwardId;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.database.messagerealm.SyncInfo;
 import com.xabber.android.data.database.sqlite.MessageTable;
@@ -30,7 +31,7 @@ import io.realm.annotations.RealmModule;
 
 public class MessageDatabaseManager {
     private static final String REALM_MESSAGE_DATABASE_NAME = "xabber.realm";
-    static final int REALM_MESSAGE_DATABASE_VERSION = 16;
+    static final int REALM_MESSAGE_DATABASE_VERSION = 17;
     private final RealmConfiguration realmConfiguration;
 
     private static MessageDatabaseManager instance;
@@ -102,8 +103,9 @@ public class MessageDatabaseManager {
         return realm.where(MessageItem.class)
                 .equalTo(MessageItem.Fields.ACCOUNT, accountJid.toString())
                 .equalTo(MessageItem.Fields.USER, userJid.toString())
-                .isNotNull(MessageItem.Fields.TEXT)
-                .isNotEmpty(MessageItem.Fields.TEXT);
+                .isNull(MessageItem.Fields.PARENT_MESSAGE_ID)
+                .isNotNull(MessageItem.Fields.TEXT);
+                //.isNotEmpty(MessageItem.Fields.TEXT);
     }
 
 
@@ -133,7 +135,7 @@ public class MessageDatabaseManager {
     }
 
 
-    @RealmModule(classes = {MessageItem.class, SyncInfo.class, Attachment.class})
+    @RealmModule(classes = {MessageItem.class, SyncInfo.class, Attachment.class, ForwardId.class})
     static class MessageRealmDatabaseModule {
     }
 
@@ -278,6 +280,23 @@ public class MessageDatabaseManager {
                             schema.get(MessageItem.class.getSimpleName())
                                     .addRealmListField(MessageItem.Fields.ATTACHMENTS,
                                             schema.get(Attachment.class.getSimpleName()));
+                            oldVersion++;
+                        }
+
+                        if (oldVersion == 16) {
+                            schema.create(ForwardId.class.getSimpleName())
+                                    .addField("id", String.class,
+                                            FieldAttribute.PRIMARY_KEY, FieldAttribute.REQUIRED)
+                                    .addField("forwardMessageId", String.class);
+
+                            schema.get(MessageItem.class.getSimpleName())
+                                    .addField(MessageItem.Fields.ORIGINAL_STANZA, String.class)
+                                    .addField(MessageItem.Fields.ORIGINAL_FROM, String.class)
+                                    .addField(MessageItem.Fields.PARENT_MESSAGE_ID, String.class)
+                                    .addField(MessageItem.Fields.FROM_MUC, boolean.class)
+                                    .addRealmListField(MessageItem.Fields.FORWARDED_IDS,
+                                            schema.get(ForwardId.class.getSimpleName()));
+
                             oldVersion++;
                         }
 
