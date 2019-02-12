@@ -44,7 +44,6 @@ import com.xabber.android.service.XabberService;
 import com.xabber.android.ui.activity.ClearNotificationsActivity;
 import com.xabber.android.ui.activity.ContactListActivity;
 import com.xabber.android.ui.color.ColorManager;
-import com.xabber.android.ui.preferences.NotificationChannelUtils;
 import com.xabber.android.utils.StringUtils;
 
 import java.util.ArrayList;

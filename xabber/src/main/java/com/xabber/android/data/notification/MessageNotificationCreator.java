@@ -31,7 +31,6 @@ import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.receiver.NotificationReceiver;
 import com.xabber.android.ui.activity.ChatActivity;
 import com.xabber.android.ui.activity.ContactListActivity;
-import com.xabber.android.ui.preferences.NotificationChannelUtils;
 import com.xabber.android.utils.StringUtils;
 
 import java.util.ArrayList;

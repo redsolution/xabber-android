@@ -17,6 +17,7 @@ import android.support.annotation.StringRes;
 
 import com.xabber.android.R;
 import com.xabber.android.data.notification.MessageNotificationCreator;
+import com.xabber.android.data.notification.NotificationChannelUtils;
 
 @RequiresApi(api = Build.VERSION_CODES.O)
 public class ChannelSettingsFragment extends PreferenceFragment {

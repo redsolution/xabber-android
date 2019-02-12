@@ -1,4 +1,4 @@
-package com.xabber.android.ui.preferences;
+package com.xabber.android.data.notification;
 
 import android.annotation.SuppressLint;
 import android.app.NotificationChannel;

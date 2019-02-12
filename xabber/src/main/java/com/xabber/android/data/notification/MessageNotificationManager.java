@@ -21,7 +21,6 @@ import com.xabber.android.data.message.NotificationState;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
-import com.xabber.android.ui.preferences.NotificationChannelUtils;
 
 import java.util.ArrayList;
 import java.util.Iterator;
