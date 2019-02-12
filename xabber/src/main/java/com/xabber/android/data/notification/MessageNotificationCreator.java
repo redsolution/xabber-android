@@ -107,7 +107,7 @@ public class MessageNotificationCreator {
                                 isGroup ? NotificationChannelUtils.ChannelType.groupChat
                                         : NotificationChannelUtils.ChannelType.privateChat))
                         .setColor(COLOR)
-                        .setWhen(lastChat.getLastMessageTimestamp())
+                        .setWhen(lastChat != null ? lastChat.getLastMessageTimestamp() : System.currentTimeMillis())
                         .setSmallIcon(R.drawable.ic_message)
                         .setContentIntent(createBundleContentIntent())
                         .setDeleteIntent(NotificationReceiver.createDeleteIntent(context, MESSAGE_BUNDLE_NOTIFICATION_ID))
@@ -302,10 +302,9 @@ public class MessageNotificationCreator {
 
     private boolean isAppInForeground(Context context) {
         ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
-        List<ActivityManager.RunningAppProcessInfo> appProcesses = activityManager.getRunningAppProcesses();
-        if (appProcesses == null) {
-            return false;
-        }
+        List<ActivityManager.RunningAppProcessInfo> appProcesses =
+                activityManager != null ? activityManager.getRunningAppProcesses() : null;
+        if (appProcesses == null) return false;
         final String packageName = context.getPackageName();
         for (ActivityManager.RunningAppProcessInfo appProcess : appProcesses) {
             if (appProcess.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND

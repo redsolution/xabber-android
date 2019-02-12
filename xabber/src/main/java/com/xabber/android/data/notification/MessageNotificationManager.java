@@ -37,8 +37,6 @@ import io.realm.RealmResults;
 public class MessageNotificationManager implements OnLoadListener {
 
     private final static int MESSAGE_BUNDLE_NOTIFICATION_ID = 2;
-    private static final String DISPLAY_NAME = "You";
-
     private final Application context;
     private final NotificationManager notificationManager;
     private final MessageNotificationCreator creator;
@@ -78,7 +76,7 @@ public class MessageNotificationManager implements OnLoadListener {
                     chat.getAccountJid(), chat.getUserJid(), replyText.toString());
 
             // update notification
-            addMessage(chat, DISPLAY_NAME, replyText, false);
+            addMessage(chat, context.getString(R.string.sender_is_you), replyText, false);
             saveNotifChatToRealm(chat);
         }
     }
