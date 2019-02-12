@@ -258,7 +258,7 @@
     <bool name="chats_state_notification_default">true</bool>
 
     <string name="chats_attention_key">chats_attention</string>
-    <bool name="chats_attention_default">false</bool>
+    <bool name="chats_attention_default">true</bool>
 
     <string name="chats_attention_sound_key">chats_attention_sound</string>
     <string name="chats_attention_sound_default">@string/default_sound</string>

@@ -13,6 +13,7 @@
 
         <CheckBoxPreference
             android:title="@string/events_show_text"
+            android:summary="@string/events_show_text_summary"
             android:key="@string/events_show_text_key"
             android:defaultValue="@bool/events_show_text_default"
             android:dependency="@string/events_on_chat_key"
@@ -20,6 +21,7 @@
 
         <CheckBoxPreference
             android:title="@string/events_lightning"
+            android:summary="@string/events_lightning_summary"
             android:key="@string/events_lightning_key"
             android:defaultValue="@bool/events_lightning_default"
             android:dependency="@string/events_on_chat_key"
@@ -58,6 +60,7 @@
 
         <CheckBoxPreference
             android:title="@string/events_show_text_muc"
+            android:summary="@string/events_show_text_muc_summary"
             android:key="@string/events_show_text_muc_key"
             android:defaultValue="@bool/events_show_text_default"
             android:dependency="@string/events_on_muc_key"
@@ -65,6 +68,7 @@
 
         <CheckBoxPreference
             android:title="@string/events_lightning_muc"
+            android:summary="@string/events_lightning_muc_summary"
             android:key="@string/events_lightning_muc_key"
             android:defaultValue="@bool/events_lightning_default"
             android:dependency="@string/events_on_muc_key"
@@ -92,52 +96,13 @@
 
     </PreferenceCategory>
     <PreferenceCategory
-        android:title="@string/category_inapp_notifications">
-
-        <CheckBoxPreference
-            android:title="@string/events_in_app_sounds_title"
-            android:key="@string/events_in_app_sounds_key"
-            android:defaultValue="@bool/events_in_app_sounds_default"
-            android:summary="@string/events_in_app_sounds_summary"
-            />
-        <CheckBoxPreference
-            android:title="@string/events_in_app_vibrate_title"
-            android:key="@string/events_in_app_vibrate_key"
-            android:defaultValue="@bool/events_in_app_vibrate_default"
-            android:summary="@string/events_in_app_vibrate_summary"
-            />
-        <CheckBoxPreference
-            android:title="@string/events_in_app_preview_title"
-            android:key="@string/events_in_app_preview_key"
-            android:defaultValue="@bool/events_in_app_preview_default"
-            android:summary="@string/events_in_app_preview_summary"
-            />
-        <CheckBoxPreference
-            android:title="@string/events_in_chat_sounds_title"
-            android:key="@string/events_in_chat_sounds_key"
-            android:defaultValue="@bool/events_in_chat_sounds_default"
-            android:summary="@string/events_in_chat_sounds_summary"
-            />
-        <CheckBoxPreference
-            android:title="@string/events_first_only"
-            android:key="@string/events_first_only_key"
-            android:defaultValue="@bool/events_first_only_default"
-            />
-        <!--<CheckBoxPreference-->
-            <!--android:title="@string/events_ignore_system_vibro"-->
-            <!--android:key="@string/events_ignore_system_vibro_key"-->
-            <!--android:defaultValue="@bool/events_ignore_system_vibro_default"-->
-            <!--android:dependency="@string/events_vibro_key"-->
-            <!--/>-->
-
-    </PreferenceCategory>
-    <PreferenceCategory
         android:title="@string/call_attention">
 
         <CheckBoxPreference
             android:defaultValue="@bool/chats_attention_default"
             android:key="@string/chats_attention_key"
             android:title="@string/chats_attention"
+            android:summary="@string/chats_attention_summary"
             />
         <RingtonePreference
             android:defaultValue="@string/chats_attention_sound_default"
@@ -147,6 +112,7 @@
             android:showDefault="true"
             android:showSilent="true"
             android:title="@string/chats_attention_sound"
+            android:summary="@string/chats_attention_sound_summary"
             />
 
     </PreferenceCategory>
@@ -155,6 +121,7 @@
 
         <Preference
             android:title="@string/events_phrases"
+            android:summary="@string/events_phrases_summary"
             android:key="@string/events_phrases">
             <intent
                 android:targetPackage="@string/application_package"

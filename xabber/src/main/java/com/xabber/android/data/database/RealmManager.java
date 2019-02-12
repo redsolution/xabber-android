@@ -9,6 +9,8 @@ import com.xabber.android.data.database.realm.ChatDataRealm;
 import com.xabber.android.data.database.realm.CrowdfundingMessage;
 import com.xabber.android.data.database.realm.DiscoveryInfoCache;
 import com.xabber.android.data.database.realm.EmailRealm;
+import com.xabber.android.data.database.realm.NotifChatRealm;
+import com.xabber.android.data.database.realm.NotifMessageRealm;
 import com.xabber.android.data.database.realm.NotificationStateRealm;
 import com.xabber.android.data.database.realm.PatreonGoalRealm;
 import com.xabber.android.data.database.realm.PatreonRealm;
@@ -30,7 +32,7 @@ import io.realm.annotations.RealmModule;
 
 public class RealmManager {
     private static final String REALM_DATABASE_NAME = "realm_database.realm";
-    private static final int REALM_DATABASE_VERSION = 18;
+    private static final int REALM_DATABASE_VERSION = 19;
     private static final String LOG_TAG = RealmManager.class.getSimpleName();
     private final RealmConfiguration realmConfiguration;
 
@@ -64,7 +66,7 @@ public class RealmManager {
     @RealmModule(classes = {DiscoveryInfoCache.class, AccountRealm.class, XabberAccountRealm.class,
             XMPPUserRealm.class, EmailRealm.class, SocialBindingRealm.class, SyncStateRealm.class,
             PatreonGoalRealm.class, PatreonRealm.class, ChatDataRealm.class, NotificationStateRealm.class,
-            CrowdfundingMessage.class})
+            CrowdfundingMessage.class, NotifChatRealm.class, NotifMessageRealm.class})
     static class RealmDatabaseModule {
     }
 
@@ -257,6 +259,25 @@ public class RealmManager {
                                     .addField("authorJid", String.class)
                                     .addField("authorNameRu", String.class)
                                     .addField("authorNameEn", String.class);
+
+                            oldVersion++;
+                        }
+
+                        if (oldVersion == 18) {
+                            schema.create(NotifMessageRealm.class.getSimpleName())
+                                    .addField(NotifMessageRealm.Fields.ID, String.class, FieldAttribute.PRIMARY_KEY, FieldAttribute.REQUIRED)
+                                    .addField(NotifMessageRealm.Fields.AUTHOR, String.class)
+                                    .addField(NotifMessageRealm.Fields.TEXT, String.class)
+                                    .addField(NotifMessageRealm.Fields.TIMESTAMP, long.class);
+
+                            schema.create(NotifChatRealm.class.getSimpleName())
+                                    .addField(NotifChatRealm.Fields.ID, String.class, FieldAttribute.PRIMARY_KEY, FieldAttribute.REQUIRED)
+                                    .addField(NotifChatRealm.Fields.ACCOUNT, String.class)
+                                    .addField(NotifChatRealm.Fields.USER, String.class)
+                                    .addField(NotifChatRealm.Fields.NOTIFICATION_ID, int.class)
+                                    .addField(NotifChatRealm.Fields.CHAT_TITLE, String.class)
+                                    .addField(NotifChatRealm.Fields.IS_GROUP_CHAT, boolean.class)
+                                    .addRealmListField(NotifChatRealm.Fields.MESSAGES, schema.get(NotifMessageRealm.class.getSimpleName()));
 
                             oldVersion++;
                         }
