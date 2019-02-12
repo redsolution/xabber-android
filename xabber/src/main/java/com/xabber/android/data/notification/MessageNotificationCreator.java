@@ -39,7 +39,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-public class NewMessageNotifCreator {
+public class MessageNotificationCreator {
 
     private final static String MESSAGE_GROUP_ID = "MESSAGE_GROUP";
     private final static int MESSAGE_BUNDLE_NOTIFICATION_ID = 2;
@@ -49,7 +49,7 @@ public class NewMessageNotifCreator {
     private final NotificationManager notificationManager;
     private CharSequence messageHidden;
 
-    public NewMessageNotifCreator(Application context, NotificationManager notificationManager) {
+    public MessageNotificationCreator(Application context, NotificationManager notificationManager) {
         this.context = context;
         this.notificationManager = notificationManager;
         this.messageHidden = context.getString(R.string.message_hidden);

@@ -17,7 +17,7 @@ import android.support.annotation.StringRes;
 
 import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
-import com.xabber.android.data.notification.NewMessageNotifCreator;
+import com.xabber.android.data.notification.MessageNotificationCreator;
 
 @RequiresApi(api = Build.VERSION_CODES.O)
 public class ChannelSettingsFragment extends PreferenceFragment {
@@ -50,7 +50,7 @@ public class ChannelSettingsFragment extends PreferenceFragment {
                 NotificationChannelUtils.updateMessageChannel(notificationManager, type, null,
                         com.xabber.android.data.notification.NotificationManager
                                 .getVibroValue(getVibroMode((String)newValue),
-                                        NewMessageNotifCreator.checkVibrateMode(getActivity())),
+                                        MessageNotificationCreator.checkVibrateMode(getActivity())),
                         null);
                 return true;
             }

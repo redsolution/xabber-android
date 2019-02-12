@@ -41,7 +41,7 @@ public class MessageNotificationManager implements OnLoadListener {
 
     private final Application context;
     private final NotificationManager notificationManager;
-    private final NewMessageNotifCreator creator;
+    private final MessageNotificationCreator creator;
     private static MessageNotificationManager instance;
     private List<Chat> chats = new ArrayList<>();
     private Message lastMessage = null;
@@ -49,7 +49,7 @@ public class MessageNotificationManager implements OnLoadListener {
     public MessageNotificationManager() {
         context = Application.getInstance();
         notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        creator = new NewMessageNotifCreator(context, notificationManager);
+        creator = new MessageNotificationCreator(context, notificationManager);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannelUtils.createMessageChannel(notificationManager,
