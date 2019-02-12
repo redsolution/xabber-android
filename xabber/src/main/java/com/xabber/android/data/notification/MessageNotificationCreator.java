@@ -151,9 +151,12 @@ public class MessageNotificationCreator {
     }
 
     private NotificationCompat.Style createMessageStyle(MessageNotificationManager.Chat chat, boolean showText) {
-        NotificationCompat.Style messageStyle = new NotificationCompat.MessagingStyle(context.getString(R.string.sender_is_you));
+        NotificationCompat.Style messageStyle = new NotificationCompat.MessagingStyle(
+                new Person.Builder().setName(context.getString(R.string.sender_is_you)).build());
         for (MessageNotificationManager.Message message : chat.getMessages()) {
-            Person person = new Person.Builder().setName(message.getAuthor()).build();
+            Person person = null;
+            if (message.getAuthor() != null && message.getAuthor().length() > 0)
+                person = new Person.Builder().setName(message.getAuthor()).build();
             ((NotificationCompat.MessagingStyle) messageStyle).addMessage(
                     new NotificationCompat.MessagingStyle.Message(
                             showText ? message.getMessageText() : messageHidden,

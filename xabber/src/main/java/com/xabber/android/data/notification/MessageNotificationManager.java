@@ -76,7 +76,7 @@ public class MessageNotificationManager implements OnLoadListener {
                     chat.getAccountJid(), chat.getUserJid(), replyText.toString());
 
             // update notification
-            addMessage(chat, context.getString(R.string.sender_is_you), replyText, false);
+            addMessage(chat, "", replyText, false);
             saveNotifChatToRealm(chat);
         }
     }
