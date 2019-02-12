@@ -16,7 +16,6 @@ import android.support.annotation.RequiresApi;
 import android.support.annotation.StringRes;
 
 import com.xabber.android.R;
-import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.notification.MessageNotificationCreator;
 
 @RequiresApi(api = Build.VERSION_CODES.O)
@@ -48,9 +47,7 @@ public class ChannelSettingsFragment extends PreferenceFragment {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
                 NotificationChannelUtils.updateMessageChannel(notificationManager, type, null,
-                        com.xabber.android.data.notification.NotificationManager
-                                .getVibroValue(getVibroMode((String)newValue),
-                                        MessageNotificationCreator.checkVibrateMode(getActivity())),
+                        MessageNotificationCreator.getVibroValue(((String)newValue), getActivity()),
                         null);
                 return true;
             }
@@ -77,21 +74,6 @@ public class ChannelSettingsFragment extends PreferenceFragment {
         Uri uri = channel.getSound();
         Ringtone ringtone = RingtoneManager.getRingtone(getActivity(), uri);
         return ringtone.getTitle(getActivity());
-    }
-
-    private SettingsManager.VibroMode getVibroMode(String mode) {
-        switch (mode) {
-            case "disable":
-                return SettingsManager.VibroMode.disabled;
-            case "short":
-                return SettingsManager.VibroMode.shortvibro;
-            case "long":
-                return SettingsManager.VibroMode.longvibro;
-            case "if silent":
-                return SettingsManager.VibroMode.onlyifsilent;
-            default:
-                return SettingsManager.VibroMode.defaultvibro;
-        }
     }
 }
 

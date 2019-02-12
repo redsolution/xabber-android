@@ -251,8 +251,46 @@ public class MessageNotificationCreator {
                     .setNotificationDefaults(notificationBuilder, led, sound, AudioManager.STREAM_NOTIFICATION);
 
             // vibration
-            if (makeVibration) com.xabber.android.data.notification.NotificationManager
-                    .setVibration(isMUC, checkVibrateMode(context), notificationBuilder);
+            if (makeVibration) setVibration(isMUC, context, notificationBuilder);
+        }
+    }
+
+    public static void setVibration(boolean isMUC, Context context, NotificationCompat.Builder notificationBuilder) {
+        SettingsManager.VibroMode vibroMode;
+        if (isMUC) vibroMode = SettingsManager.eventsVibroMuc();
+        else vibroMode = SettingsManager.eventsVibroChat();
+
+        notificationBuilder.setVibrate(getVibroValue(vibroMode, context));
+    }
+
+    public static long[] getVibroValue(SettingsManager.VibroMode vibroMode, Context context) {
+        switch (vibroMode) {
+            case disabled:
+                return new long[] {0, 0};
+            case shortvibro:
+                return new long[] {0, 250};
+            case longvibro:
+                return new long[] {0, 1000};
+            case onlyifsilent:
+                if (checkVibrateMode(context)) return new long[] {0, 500};
+                else return new long[] {0, 0};
+            default:
+                return new long[] {0, 500};
+        }
+    }
+
+    public static long[] getVibroValue(String vibroMode, Context context) {
+        switch (vibroMode) {
+            case "disable":
+                return getVibroValue(SettingsManager.VibroMode.disabled, context);
+            case "short":
+                return getVibroValue(SettingsManager.VibroMode.shortvibro, context);
+            case "long":
+                return getVibroValue(SettingsManager.VibroMode.longvibro, context);
+            case "if silent":
+                return getVibroValue(SettingsManager.VibroMode.onlyifsilent, context);
+            default:
+                return getVibroValue(SettingsManager.VibroMode.defaultvibro, context);
         }
     }
 

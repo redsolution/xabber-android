@@ -46,7 +46,7 @@ public class MessageNotificationManager implements OnLoadListener {
     private List<Chat> chats = new ArrayList<>();
     private Message lastMessage = null;
 
-    public MessageNotificationManager() {
+    private MessageNotificationManager() {
         context = Application.getInstance();
         notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         creator = new MessageNotificationCreator(context, notificationManager);
@@ -193,6 +193,17 @@ public class MessageNotificationManager implements OnLoadListener {
         removeAllNotifChatFromRealm();
     }
 
+    public void rebuildAllNotifications() {
+        notificationManager.cancelAll();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            for (Chat chat : chats) creator.createNotification(chat, true);
+            if (chats.size() > 1) creator.createBundleNotification(chats, true);
+        } else {
+            if (chats.size() > 1) creator.createBundleNotification(chats, true);
+            else if (chats.size() > 0) creator.createNotification(chats.get(0), true);
+        }
+    }
+
     /** PRIVATE METHODS */
 
     private void onLoaded(List<Chat> loadedChats) {
@@ -229,7 +240,7 @@ public class MessageNotificationManager implements OnLoadListener {
         return null;
     }
 
-    public void addNotification(Chat chat, boolean alert) {
+    private void addNotification(Chat chat, boolean alert) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             if (chats.size() > 1) creator.createBundleNotification(chats, true);
             creator.createNotification(chat, alert);
@@ -245,13 +256,13 @@ public class MessageNotificationManager implements OnLoadListener {
         }
     }
 
-    public void removeNotification(Chat chat) {
+    private void removeNotification(Chat chat) {
         List<Chat> chatsToRemove = new ArrayList<>();
         chatsToRemove.add(chat);
         removeNotifications(chatsToRemove);
     }
 
-    public void removeNotifications(List<Chat> chatsToRemove) {
+    private void removeNotifications(List<Chat> chatsToRemove) {
         if (chatsToRemove == null || chatsToRemove.isEmpty()) return;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             if (chats.size() > 1) creator.createBundleNotification(chats, true);
@@ -272,22 +283,28 @@ public class MessageNotificationManager implements OnLoadListener {
         }
     }
 
-    public void rebuildAllNotifications() {
-        notificationManager.cancelAll();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            for (Chat chat : chats) creator.createNotification(chat, true);
-            if (chats.size() > 1) creator.createBundleNotification(chats, true);
-        } else {
-            if (chats.size() > 1) creator.createBundleNotification(chats, true);
-            else if (chats.size() > 0) creator.createNotification(chats.get(0), true);
-        }
-    }
-
     private void callUiUpdate() {
         for (OnContactChangedListener onContactChangedListener : Application
                 .getInstance().getUIListeners(OnContactChangedListener.class)) {
             onContactChangedListener.onContactsChanged(new ArrayList<RosterContact>());
         }
+    }
+
+    private int getNextChatNotificationId() {
+        return 100 + chats.size() + 1;
+    }
+
+    private String getNotificationText(MessageItem message) {
+        String text = message.getText();
+        if (message.haveAttachments() && message.getAttachments().size() > 0) {
+            Attachment attachment = message.getAttachments().get(0);
+            FileCategory category = FileCategory.determineFileCategory(attachment.getMimeType());
+            text = FileCategory.getCategoryName(category, false) + attachment.getTitle();
+        }
+        if (message.haveForwardedMessages() && message.getForwardedIds().size() > 0) {
+            text = context.getString(R.string.forwarded_messages_count, message.getForwardedIds().size());
+        }
+        return text;
     }
 
     /** REALM */
@@ -384,23 +401,6 @@ public class MessageNotificationManager implements OnLoadListener {
         messageRealm.setText(message.getMessageText().toString());
         messageRealm.setTimestamp(message.getTimestamp());
         return messageRealm;
-    }
-
-    private int getNextChatNotificationId() {
-        return 100 + chats.size() + 1;
-    }
-
-    private String getNotificationText(MessageItem message) {
-        String text = message.getText();
-        if (message.haveAttachments() && message.getAttachments().size() > 0) {
-            Attachment attachment = message.getAttachments().get(0);
-            FileCategory category = FileCategory.determineFileCategory(attachment.getMimeType());
-            text = FileCategory.getCategoryName(category, false) + attachment.getTitle();
-        }
-        if (message.haveForwardedMessages() && message.getForwardedIds().size() > 0) {
-            text = context.getString(R.string.forwarded_messages_count, message.getForwardedIds().size());
-        }
-        return text;
     }
 
     /** INTERNAL CLASSES */
