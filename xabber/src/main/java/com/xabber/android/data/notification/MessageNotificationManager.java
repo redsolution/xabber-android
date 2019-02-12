@@ -18,6 +18,8 @@ import com.xabber.android.data.filedownload.FileCategory;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.NotificationState;
+import com.xabber.android.data.roster.OnContactChangedListener;
+import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.preferences.NotificationChannelUtils;
 
@@ -92,9 +94,11 @@ public class MessageNotificationManager implements OnLoadListener {
         if (chatNotif != null) {
             AbstractChat chat = MessageManager.getInstance().getChat(
                     chatNotif.getAccountJid(), chatNotif.getUserJid());
-            if (chat != null) chat.setNotificationState(
-                    new NotificationState(NotificationState.NotificationMode.disabled,
-                            0), true);
+            if (chat != null) {
+                chat.setNotificationState(new NotificationState(NotificationState.NotificationMode.disabled,
+                        0), true);
+                callUiUpdate();
+            }
         }
 
         // cancel notification
@@ -108,7 +112,10 @@ public class MessageNotificationManager implements OnLoadListener {
         if (chatNotif != null) {
             AbstractChat chat = MessageManager.getInstance().getChat(
                     chatNotif.getAccountJid(), chatNotif.getUserJid());
-            if (chat != null) chat.resetUnreadMessageCount();
+            if (chat != null) {
+                chat.resetUnreadMessageCount();
+                callUiUpdate();
+            }
         }
 
         // cancel notification
@@ -273,6 +280,13 @@ public class MessageNotificationManager implements OnLoadListener {
         } else {
             if (chats.size() > 1) creator.createBundleNotification(chats, true);
             else if (chats.size() > 0) creator.createNotification(chats.get(0), true);
+        }
+    }
+
+    private void callUiUpdate() {
+        for (OnContactChangedListener onContactChangedListener : Application
+                .getInstance().getUIListeners(OnContactChangedListener.class)) {
+            onContactChangedListener.onContactsChanged(new ArrayList<RosterContact>());
         }
     }
 
