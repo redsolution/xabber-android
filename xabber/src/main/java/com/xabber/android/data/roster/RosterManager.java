@@ -636,7 +636,9 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
         String author = null;
         if (jid != null) {
             if (messageItem.isFromMUC()) author = jid.getJid().getResourceOrEmpty().toString();
-            else author = RosterManager.getInstance().getNameOrBareJid(messageItem.getAccount(), jid);
+            else if (messageItem.isIncoming())
+                author = RosterManager.getInstance().getNameOrBareJid(messageItem.getAccount(), jid);
+            else author = AccountManager.getInstance().getNickName(messageItem.getAccount());
         }
 
         return author;

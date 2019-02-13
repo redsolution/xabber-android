@@ -99,9 +99,10 @@ public class ForwardedFragment extends FileInteractionFragment {
                 MessageDatabaseManager.getInstance().getRealmUiThread().where(MessageItem.class)
                         .in(MessageItem.Fields.UNIQUE_ID, messageItem.getForwardedIdsAsArray()).findAll();
 
-        MessagesAdapter.MessageExtraData extraData = new MessagesAdapter.MessageExtraData(this, this, getActivity(),
+        MessagesAdapter.MessageExtraData extraData = new MessagesAdapter.MessageExtraData(this,
+                this, null, getActivity(),
                 userName, colorStateList, accountMainColor, isMUC, false, false,
-                false, false);
+                false, false, false);
 
         if (forwardedMessages.size() > 0) {
             ForwardedAdapter adapter = new ForwardedAdapter(forwardedMessages, extraData);

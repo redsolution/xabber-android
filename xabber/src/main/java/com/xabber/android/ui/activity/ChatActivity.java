@@ -79,6 +79,7 @@ import com.xabber.android.ui.color.StatusBarPainter;
 import com.xabber.android.ui.dialog.AttachDialog;
 import com.xabber.android.ui.dialog.BlockContactDialog;
 import com.xabber.android.ui.dialog.ContactDeleteDialogFragment;
+import com.xabber.android.ui.dialog.SnoozeDialog;
 import com.xabber.android.ui.fragment.ChatFragment;
 import com.xabber.android.ui.fragment.ContactVcardViewerFragment;
 import com.xabber.android.ui.fragment.OccupantListFragment;
@@ -110,7 +111,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         ChatFragment.ChatViewerFragmentListener, OnBlockedListChangedListener,
         RecentChatFragment.Listener, ChatViewerAdapter.FinishUpdateListener,
         ContactVcardViewerFragment.Listener, Toolbar.OnMenuItemClickListener,
-        UpdateBackpressure.UpdatableObject, OccupantListFragment.Listener {
+        UpdateBackpressure.UpdatableObject, OccupantListFragment.Listener, SnoozeDialog.OnSnoozeListener {
 
     private static final String LOG_TAG = ChatActivity.class.getSimpleName();
 
@@ -119,6 +120,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     private static final String ACTION_SPECIFIC_CHAT = "com.xabber.android.data.ACTION_SPECIFIC_CHAT";
     public static final String ACTION_FORWARD = "com.xabber.android.data.ACTION_FORWARD";
 
+    public static final String EXTRA_NEED_SCROLL_TO_UNREAD = "com.xabber.android.data.EXTRA_NEED_SCROLL_TO_UNREAD";
     public static final String EXTRA_OTR_REQUEST = "com.xabber.android.data.EXTRA_OTR_REQUEST";
     public static final String EXTRA_OTR_PROGRESS = "com.xabber.android.data.EXTRA_OTR_PROGRESS";
 //    public static final String ACTION_OTR_REQUEST = "com.xabber.android.data.ACTION_OTR_REQUEST";
@@ -167,6 +169,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     private Button btnShowcaseGotIt;
 
     boolean showArchived = false;
+    private boolean needScrollToUnread = false;
 
     public boolean isShowArchived() {
         return showArchived;
@@ -379,6 +382,8 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
                 exitOnSend = true;
             }
         }
+
+        needScrollToUnread = intent.getBooleanExtra(EXTRA_NEED_SCROLL_TO_UNREAD, false);
 
         if (intent.getBooleanExtra(EXTRA_OTR_REQUEST, false) ||
                 intent.getBooleanExtra(EXTRA_OTR_PROGRESS, false)) {
@@ -958,21 +963,14 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
                 return true;
 
             case R.id.action_mute_chat:
-                if (abstractChat != null) abstractChat.setNotificationState(
-                        new NotificationState(NotificationState.NotificationMode.disabled,
-                                0), true);
-                setUpOptionsMenu(toolbar.getMenu());
-                updateToolbar();
-                updateRecentChats();
+                showSnoozeDialog(abstractChat);
                 return true;
 
             case R.id.action_unmute_chat:
                 if (abstractChat != null) abstractChat.setNotificationState(
                         new NotificationState(NotificationState.NotificationMode.enabled,
                                 0), true);
-                setUpOptionsMenu(toolbar.getMenu());
-                updateToolbar();
-                updateRecentChats();
+                onSnoozed();
                 return true;
 
             /* conference specific options menu */
@@ -1042,15 +1040,9 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
 
     private NotificationState.NotificationMode getNotifMode() {
         AbstractChat chat = MessageManager.getInstance().getOrCreateChat(account, user);
-        NotificationState.NotificationMode mode = NotificationState.NotificationMode.bydefault;
-        if (chat != null) {
-            boolean defaultValue = chat instanceof RegularChat ? SettingsManager.eventsOnChat() : SettingsManager.eventsOnMuc();
-            if (chat.getNotificationState().getMode() == NotificationState.NotificationMode.enabled && !defaultValue)
-                mode = NotificationState.NotificationMode.enabled;
-            if (chat.getNotificationState().getMode() == NotificationState.NotificationMode.disabled && defaultValue)
-                mode = NotificationState.NotificationMode.disabled;
-        }
-        return mode;
+        if (chat != null)
+            return chat.getNotificationState().determineModeByGlobalSettings(chat instanceof RoomChat);
+        else return NotificationState.NotificationMode.bydefault;
     }
 
     private void editAlias() {
@@ -1124,5 +1116,24 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
             AttachDialog dialog = AttachDialog.newInstance(chatFragment);
             dialog.show(getSupportFragmentManager(), "attach_fragment");
         }
+    }
+
+    public void showSnoozeDialog(AbstractChat chat) {
+        SnoozeDialog dialog = SnoozeDialog.newInstance(chat, this);
+        dialog.show(getSupportFragmentManager(), "snooze_fragment");
+    }
+
+    @Override
+    public void onSnoozed() {
+        setUpOptionsMenu(toolbar.getMenu());
+        updateToolbar();
+        updateRecentChats();
+    }
+
+    public boolean needScrollToUnread() {
+        if (needScrollToUnread) {
+            needScrollToUnread = false;
+            return true;
+        } else return false;
     }
 }

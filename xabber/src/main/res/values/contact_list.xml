@@ -27,6 +27,11 @@
     <string name="discard_subscription">Decline contact</string>
     <string name="archive_chat">Archive</string>
     <string name="unarchive_chat">Unarchive</string>
+    <string name="mute_forever">Mute forever</string>
+    <string name="mute_15_min">Mute for 15 minutes</string>
+    <string name="mute_1_hour">Mute for 1 hour</string>
+    <string name="mute_2_hours">Mute for 2 hours</string>
+    <string name="mute_1_day">Mute for 1 day</string>
     <string name="mute_chat">Mute</string>
     <string name="unmute_chat">Unmute</string>
     <string name="show_archived">Show archived</string>

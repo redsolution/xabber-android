@@ -55,6 +55,7 @@ import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
+import com.xabber.android.data.notification.MessageNotificationManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
@@ -99,6 +100,7 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
      */
     private static final int CODE_OPEN_CHAT = 301;
 
+    private static final String ACTION_CANCEL_NOTIFICATION = "com.xabber.android.ui.activity.ContactList.ACTION_CANCEL_NOTIFICATION";
     private static final String ACTION_ROOM_INVITE = "com.xabber.android.ui.activity.ContactList.ACTION_ROOM_INVITE";
     private static final String ACTION_MUC_PRIVATE_CHAT_INVITE = "com.xabber.android.ui.activity.ContactList.ACTION_MUC_PRIVATE_CHAT_INVITE";
     private static final String ACTION_CONTACT_SUBSCRIPTION = "com.xabber.android.ui.activity.ContactList.ACTION_CONTACT_SUBSCRIPTION";
@@ -137,6 +139,12 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
         intent.setAction("android.intent.action.MAIN");
         intent.addCategory("android.intent.category.LAUNCHER");
         intent.setFlags(Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED | Intent.FLAG_ACTIVITY_NEW_TASK);
+        return intent;
+    }
+
+    public static Intent createCancelNotificationIntent(Context context) {
+        Intent intent = createPersistentIntent(context);
+        intent.setAction(ACTION_CANCEL_NOTIFICATION);
         return intent;
     }
 
@@ -396,6 +404,11 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
                 case ContactListActivity.ACTION_INCOMING_MUC_INVITE:
                     action = null;
                     showMucInviteDialog();
+                    break;
+
+                case ContactListActivity.ACTION_CANCEL_NOTIFICATION:
+                    action = null;
+                    MessageNotificationManager.getInstance().onClearNotifications();
                     break;
 
             }

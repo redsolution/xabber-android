@@ -40,6 +40,7 @@ import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.ChatManager;
+import com.xabber.android.data.notification.MessageNotificationManager;
 import com.xabber.android.data.notification.NotificationManager;
 
 import org.greenrobot.eventbus.EventBus;
@@ -60,7 +61,10 @@ import org.jxmpp.jid.parts.Resourcepart;
 import java.io.File;
 import java.util.Date;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import io.realm.Realm;
 import io.realm.RealmChangeListener;
@@ -229,9 +233,18 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
      * @return Whether user should be notified about incoming messages in chat.
      */
     public boolean notifyAboutMessage() {
+        int currentTime = (int) (System.currentTimeMillis() / 1000L);
         switch (notificationState.getMode()) {
             case enabled: return true;
             case disabled: return false;
+            case snooze15m:
+                return currentTime > notificationState.getTimestamp() + TimeUnit.MINUTES.toSeconds(15);
+            case snooze1h:
+                return currentTime > notificationState.getTimestamp() + TimeUnit.HOURS.toSeconds(1);
+            case snooze2h:
+                return currentTime > notificationState.getTimestamp() + TimeUnit.HOURS.toSeconds(2);
+            case snooze1d:
+                return currentTime > notificationState.getTimestamp() + TimeUnit.DAYS.toSeconds(1);
             default: return SettingsManager.eventsOnChat();
         }
     }
@@ -394,6 +407,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         messageItem.setParentMessageId(parentMessageId);
 
         if (notify && notifyAboutMessage() && !visible) {
+            enableNotificationsIfNeed();
             NotificationManager.getInstance().onMessageNotification(messageItem);
         }
 
@@ -403,9 +417,10 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
             else resetUnreadMessageCount();
         }
 
-        // remove notifications if get outgoing message
-        if (!incoming)
-            NotificationManager.getInstance().removeMessageNotification(account, user);
+        // remove notifications if get outgoing message with 2 sec delay
+        if (!incoming) {
+            MessageNotificationManager.getInstance().removeChatWithTimer(account, user);
+        }
 
         // when getting new message, unarchive chat if chat not muted
         if (this.notifyAboutMessage())
@@ -820,4 +835,14 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     }
 
     protected abstract String parseInnerMessage(boolean ui, Message message, String parentMessageId);
+
+    private void enableNotificationsIfNeed() {
+        NotificationState.NotificationMode mode = notificationState.getMode();
+        if (notifyAboutMessage() && (mode.equals(NotificationState.NotificationMode.snooze15m)
+            || mode.equals(NotificationState.NotificationMode.snooze1h)
+            || mode.equals(NotificationState.NotificationMode.snooze2h)
+            || mode.equals(NotificationState.NotificationMode.snooze1d))) {
+            setNotificationState(new NotificationState(NotificationState.NotificationMode.enabled, 0), true);
+        }
+    }
 }

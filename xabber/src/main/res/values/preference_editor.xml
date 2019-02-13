@@ -33,8 +33,10 @@
     <string name="debug_crash_reports_dialog_message">Xabber gathers anonymous bug reports. You may disable it in debug settings, but it will hinder our ability to provide reliable messaging experience to Xabber users.</string>
     <string name="debug_crash_reports_dialog_settings_button">Settings</string>
 
-    <string name="events_lightning">Light indication\nBlink LED on notification</string>
-    <string name="events_lightning_muc">Light indication\nBlink LED on notification from conferences</string>
+    <string name="events_lightning">Light indication</string>
+    <string name="events_lightning_summary">Blink LED on notification</string>
+    <string name="events_lightning_muc">Light indication</string>
+    <string name="events_lightning_muc_summary">Blink LED on notification from conferences</string>
     <string name="events_persistent">Taskbar icon\nShow persistent notification. This option prevents Android from unloading the app from memory</string>
     <string name="events_sound">Sound\nChoose notification sound</string>
     <string name="events_vibro">Vibrate</string>
@@ -88,17 +90,22 @@
     <string name="contacts_reset_offline">Reset offline settings\nClear individual settings for groups and accounts</string>
     <string name="contacts_reset_offline_warning">Do you really want to clear individual settings for groups and accounts?</string>
 
-    <string name="events_first_only">Alert on first message\nNotify only on the first message in a chat</string>
-    <string name="events_show_text">Message preview\nShow message text from chats in notification area</string>
-    <string name="events_show_text_muc">Message preview\nShow message text from conferences in notification area</string>
+    <string name="events_first_only">Alert on first message</string>
+    <string name="events_first_only_summary">Notify only on the first message in a chat</string>
+    <string name="events_show_text">Message preview</string>
+    <string name="events_show_text_summary">Show message text from chats in notification area</string>
+    <string name="events_show_text_muc">Message preview</string>
+    <string name="events_show_text_muc_summary">Show message text from conferences in notification area</string>
     <string name="events_suppress_100">Suppress some status messages\nDon\'t get \'This room is not anonymous\' messages</string>
     <string name="negative_priotiry_summary">%s (you won\'t receive messages from any chat)</string>
     <string name="preference_accounts">XMPP accounts\nManage accounts</string>
     <string name="preference_security">Security\nSecurity settings</string>
     <string name="security_check_certificate">Check server certificate\nNotify for certificate problems on encrypted connections</string>
     <string name="security_otr_mode">OTR mode</string>
-    <string name="chats_attention">Attention\nReact for incoming attention requests</string>
-    <string name="chats_attention_sound">Attention sound\nChoose ringtone</string>
+    <string name="chats_attention">Attention</string>
+    <string name="chats_attention_summary">React for incoming attention requests</string>
+    <string name="chats_attention_sound">Attention sound</string>
+    <string name="chats_attention_sound_summary">Choose ringtone</string>
 
     <string name="connection_load_vcard">Load vCard\nLoad and update contact\'s personal info and avatar. Disable to reduce traffic usage.</string>
     <string name="connection_load_images">Load images\nLoad images from file URL automatically. Disable to reduce traffic usage.</string>
@@ -106,7 +113,8 @@
     <string name="connection_dns_resolver_type_dns_java_resolver">DNSJavaResolver</string>
     <string name="connection_dns_resolver_type_mini_dns_resolver">MiniDNSResolver (experimental)</string>
 
-    <string name="events_phrases">Key phrases\nCreate custom notifications for received messages that contain specific phrases</string>
+    <string name="events_phrases">Key phrases</string>
+    <string name="events_phrases_summary">Create custom notifications for received messages that contain specific phrases</string>
 
     <string name="account_error_settings">Settings</string>
 

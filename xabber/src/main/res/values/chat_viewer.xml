@@ -85,6 +85,7 @@
     <string name="otr_verification_progress_title">OTR verification in progress</string>
     <string name="otr_verification_notify_button">OPEN</string>
     <string name="otr_verification_notify_button_cancel">CANCEL</string>
+    <string name="message_hidden">Message hidden</string>
 
     <string name="chat_events_show_text_global">Use global settings</string>
     <string name="chat_events_show_text_always">Show message text</string>

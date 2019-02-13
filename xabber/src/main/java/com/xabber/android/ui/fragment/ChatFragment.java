@@ -71,6 +71,7 @@ import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.otr.SecurityLevel;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
+import com.xabber.android.data.message.ClipManager;
 import com.xabber.android.data.message.ForwardManager;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.MessageUpdateEvent;
@@ -93,6 +94,7 @@ import com.xabber.android.ui.dialog.ChatHistoryClearDialog;
 import com.xabber.android.ui.helper.PermissionsRequester;
 import com.xabber.android.ui.widget.CustomMessageMenu;
 import com.xabber.android.ui.widget.ForwardPanel;
+import com.xabber.android.utils.StringUtils;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -120,7 +122,7 @@ import io.realm.Sort;
 public class ChatFragment extends FileInteractionFragment implements PopupMenu.OnMenuItemClickListener,
         View.OnClickListener, Toolbar.OnMenuItemClickListener, MessageVH.MessageClickListener,
         MessagesAdapter.Listener, AdapterView.OnItemClickListener, PopupWindow.OnDismissListener,
-        OnAccountChangedListener, ForwardPanel.OnCloseListener {
+        OnAccountChangedListener, ForwardPanel.OnCloseListener, MessagesAdapter.AnchorHolder {
 
     public static final String ARGUMENT_ACCOUNT = "ARGUMENT_ACCOUNT";
     public static final String ARGUMENT_USER = "ARGUMENT_USER";
@@ -158,6 +160,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     private ImageView ivForward;
     private ImageView ivDelete;
     private ImageView ivCopy;
+    private TextView tvTopDate;
 
     boolean isInputEmpty = true;
     private boolean skipOnTextChanges = false;
@@ -294,6 +297,13 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
             }
         });
         ivCopy = view.findViewById(R.id.ivCopy);
+        ivCopy.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ClipManager.copyMessagesToClipboard(new ArrayList<>(chatMessageAdapter.getCheckedItemIds()));
+                closeInteractionPanel();
+            }
+        });
 
         view.findViewById(R.id.button_send_message).setOnClickListener(
                 new View.OnClickListener() {
@@ -330,6 +340,11 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
                 showScrollDownButtonIfNeed();
                 hideUnreadMessageCountIfNeed();
+
+                /** Necessary for
+                 *  @see MessageVH#bind ()
+                 *  and set DATE alpha */
+                updateTopDateIfNeed();
             }
         });
 
@@ -366,6 +381,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         placeholder = view.findViewById(R.id.placeholder);
         placeholder.setOnClickListener(this);
 
+        tvTopDate = view.findViewById(R.id.tvTopDate);
+
         return view;
     }
 
@@ -382,7 +399,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         }
 
         chatMessageAdapter = new MessagesAdapter(getActivity(), messageItems, abstractChat,
-                this, this, this, this);
+                this, this, this, this, this);
         realmRecyclerView.setAdapter(chatMessageAdapter);
 
         restoreInputState();
@@ -415,7 +432,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
         updateContact();
         restoreInputState();
-        restoreScrollState();
+        restoreScrollState(((ChatActivity)getActivity()).needScrollToUnread());
 
         showHideNotifyIfNeed();
 
@@ -1285,14 +1302,14 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         if (chat != null) chat.saveLastPosition(position);
     }
 
-    public void restoreScrollState() {
+    public void restoreScrollState(boolean fromNotification) {
         AbstractChat chat = getChat();
         int position;
         int unread;
         if (chat != null) {
             position = chat.getLastPosition();
             unread = chat.getUnreadMessageCount();
-            if (position == 0 && unread > 0)
+            if ((position == 0 || fromNotification) && unread > 0)
                 scrollToFirstUnread(unread);
             else if (position > 0) {
                 layoutManager.scrollToPosition(position);
@@ -1411,6 +1428,13 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         });
     }
 
+    private void updateTopDateIfNeed() {
+        int position = layoutManager.findFirstVisibleItemPosition();
+        MessageItem message = chatMessageAdapter.getMessageItem(position);
+        if (message != null)
+            tvTopDate.setText(StringUtils.getDateStringForMessage(message.getTimestamp()));
+    }
+
     private void showScrollDownButtonIfNeed() {
         int pastVisibleItems = layoutManager.findLastVisibleItemPosition();
         boolean isBottom = pastVisibleItems >= chatMessageAdapter.getItemCount() - 1;
@@ -1522,5 +1546,12 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
     private void openChooserForForward(ArrayList<String> forwardIds) {
         ((ChatActivity)getActivity()).forwardMessages(forwardIds);
+    }
+
+    /** Anchor Holder */
+
+    @Override
+    public View getAnchor() {
+        return tvTopDate;
     }
 }
