@@ -485,11 +485,11 @@ public class MessageNotificationManager implements OnLoadListener {
                     Application.getInstance().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            notificationManager.cancel(notificationId);
+                            removeChat(notificationId);
                         }
                     });
                 }
-            }, 5000);
+            }, 200);
         }
 
         public void stopRemoveTimer() {
