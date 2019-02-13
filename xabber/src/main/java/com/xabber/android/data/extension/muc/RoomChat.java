@@ -58,6 +58,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import io.realm.Realm;
 import io.realm.RealmList;
@@ -195,9 +196,18 @@ public class RoomChat extends AbstractChat {
 
     @Override
     public boolean notifyAboutMessage() {
+        int currentTime = (int) (System.currentTimeMillis() / 1000L);
         switch (notificationState.getMode()) {
             case enabled: return true;
             case disabled: return false;
+            case snooze15m:
+                return currentTime > notificationState.getTimestamp() + TimeUnit.MINUTES.toSeconds(15);
+            case snooze1h:
+                return currentTime > notificationState.getTimestamp() + TimeUnit.HOURS.toSeconds(1);
+            case snooze2h:
+                return currentTime > notificationState.getTimestamp() + TimeUnit.HOURS.toSeconds(2);
+            case snooze1d:
+                return currentTime > notificationState.getTimestamp() + TimeUnit.DAYS.toSeconds(1);
             default: return SettingsManager.eventsOnMuc();
         }
     }
