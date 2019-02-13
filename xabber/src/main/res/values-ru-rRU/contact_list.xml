@@ -30,6 +30,11 @@
   <string name="unarchive_chat">Разархивировать</string>
   <string name="mute_chat">Выключить уведомления</string>
   <string name="unmute_chat">Включить уведомления</string>
+  <string name="mute_forever">Отключить уведомления навсегда</string>
+  <string name="mute_15_min">Отключить уведомления на 15 минут</string>
+  <string name="mute_1_hour">Отключить уведомления на 1 час</string>
+  <string name="mute_2_hours">Отключить уведомления на 2 часа</string>
+  <string name="mute_1_day">Отключить уведомления на 1 день</string>
   <string name="show_archived">Показать архив</string>
   <string name="exit">Выход</string>
   <string name="group_active_chat">Активные чаты</string>

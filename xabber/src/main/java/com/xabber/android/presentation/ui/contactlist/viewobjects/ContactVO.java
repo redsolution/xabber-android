@@ -20,7 +20,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.xabber.android.R;
-import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
@@ -30,6 +29,7 @@ import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.muc.MUCManager;
+import com.xabber.android.data.extension.muc.RoomChat;
 import com.xabber.android.data.filedownload.FileCategory;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
@@ -213,12 +213,8 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
         if (!isOutgoing) unreadCount = chat.getUnreadMessageCount();
 
         // notification icon
-        NotificationState.NotificationMode mode = NotificationState.NotificationMode.bydefault;
-        boolean defaultValue = mucIndicatorLevel == 0 ? SettingsManager.eventsOnChat() : SettingsManager.eventsOnMuc();
-        if (chat.getNotificationState().getMode() == NotificationState.NotificationMode.enabled && !defaultValue)
-            mode = NotificationState.NotificationMode.enabled;
-        if (chat.getNotificationState().getMode() == NotificationState.NotificationMode.disabled && defaultValue)
-            mode = NotificationState.NotificationMode.disabled;
+        NotificationState.NotificationMode mode =
+                chat.getNotificationState().determineModeByGlobalSettings(chat instanceof RoomChat);
 
         return new ContactVO(accountColorIndicator, accountColorIndicatorBack,
                 showOfflineShadow, name, statusText, statusId,
