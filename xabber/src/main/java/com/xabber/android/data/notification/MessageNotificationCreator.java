@@ -42,7 +42,6 @@ public class MessageNotificationCreator {
 
     private final static String MESSAGE_GROUP_ID = "MESSAGE_GROUP";
     private final static int MESSAGE_BUNDLE_NOTIFICATION_ID = 2;
-    private static final int COLOR = 299031;
 
     private final Application context;
     private final NotificationManager notificationManager;
@@ -61,7 +60,7 @@ public class MessageNotificationCreator {
                 NotificationChannelUtils.getChannelID(
                         chat.isGroupChat() ? NotificationChannelUtils.ChannelType.groupChat
                                 : NotificationChannelUtils.ChannelType.privateChat))
-                .setColor(COLOR)
+                .setColor(context.getResources().getColor(R.color.persistent_notification_color))
                 .setWhen(chat.getLastMessageTimestamp())
                 .setSmallIcon(R.drawable.ic_stat_chat)
                 .setLargeIcon(getLargeIcon(chat))
@@ -105,7 +104,7 @@ public class MessageNotificationCreator {
                         NotificationChannelUtils.getChannelID(
                                 isGroup ? NotificationChannelUtils.ChannelType.groupChat
                                         : NotificationChannelUtils.ChannelType.privateChat))
-                        .setColor(COLOR)
+                        .setColor(context.getResources().getColor(R.color.persistent_notification_color))
                         .setWhen(lastChat != null ? lastChat.getLastMessageTimestamp() : System.currentTimeMillis())
                         .setSmallIcon(R.drawable.ic_message)
                         .setContentIntent(createBundleContentIntent())

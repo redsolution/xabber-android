@@ -369,7 +369,7 @@
 
     <color name="contact_list_active_chat_background_dark">#242424</color>
 
-    <color name="persistent_notification_color">@color/red_500</color>
+    <color name="persistent_notification_color">@color/red_700</color>
 
     <color name="color_primary_light">@color/grey_200</color>
 
