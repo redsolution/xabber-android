@@ -82,7 +82,7 @@ public class MessageNotificationManager implements OnLoadListener {
 
     public void onNotificationCanceled(int notificationId) {
         if (notificationId == MESSAGE_BUNDLE_NOTIFICATION_ID)
-            onClearNotifications();
+            removeAllMessageNotifications();
         else removeChat(notificationId);
     }
 
@@ -184,9 +184,15 @@ public class MessageNotificationManager implements OnLoadListener {
         removeNotifChatFromRealm(account);
     }
 
-    public void onClearNotifications() {
-        notificationManager.cancelAll();
-        chats.clear();
+    public void removeAllMessageNotifications() {
+        List<Chat> chatsToRemove = new ArrayList<>();
+        Iterator it = chats.iterator();
+        while (it.hasNext()) {
+            Chat chat = (Chat) it.next();
+            chatsToRemove.add(chat);
+            it.remove();
+        }
+        removeNotifications(chatsToRemove);
         removeAllNotifChatFromRealm();
     }
 

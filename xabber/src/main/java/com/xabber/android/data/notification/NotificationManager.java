@@ -413,7 +413,7 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
         for (NotificationProvider<? extends NotificationItem> provider : providers)
             if (provider.canClearNotifications())
                 provider.clearNotifications();
-        MessageNotificationManager.getInstance().onClearNotifications();
+        MessageNotificationManager.getInstance().removeAllMessageNotifications();
     }
 
     @Override

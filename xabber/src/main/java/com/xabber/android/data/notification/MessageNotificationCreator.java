@@ -354,7 +354,7 @@ public class MessageNotificationCreator {
 
     private PendingIntent createBundleContentIntent() {
         return PendingIntent.getActivity(context, MESSAGE_BUNDLE_NOTIFICATION_ID,
-                ContactListActivity.createCancelNotificationIntent(context),
+                ContactListActivity.createPersistentIntent(context),
                 PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
