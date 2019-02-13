@@ -10,9 +10,10 @@ public class NotificationState {
         bydefault,
         enabled,
         disabled,
-        disabled1h,
-        disabled8h,
-        disabled2d
+        snooze15m,
+        snooze1h,
+        snooze2h,
+        snooze1d
     }
 
     private NotificationMode mode;

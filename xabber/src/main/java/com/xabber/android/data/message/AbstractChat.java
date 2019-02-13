@@ -237,12 +237,14 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         switch (notificationState.getMode()) {
             case enabled: return true;
             case disabled: return false;
-            case disabled1h:
+            case snooze15m:
+                return currentTime > notificationState.getTimestamp() + TimeUnit.MINUTES.toSeconds(15);
+            case snooze1h:
                 return currentTime > notificationState.getTimestamp() + TimeUnit.HOURS.toSeconds(1);
-            case disabled8h:
-                return currentTime > notificationState.getTimestamp() + TimeUnit.HOURS.toSeconds(8);
-            case disabled2d:
-                return currentTime > notificationState.getTimestamp() + TimeUnit.DAYS.toSeconds(2);
+            case snooze2h:
+                return currentTime > notificationState.getTimestamp() + TimeUnit.HOURS.toSeconds(2);
+            case snooze1d:
+                return currentTime > notificationState.getTimestamp() + TimeUnit.DAYS.toSeconds(1);
             default: return SettingsManager.eventsOnChat();
         }
     }
@@ -836,9 +838,10 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
 
     private void enableNotificationsIfNeed() {
         NotificationState.NotificationMode mode = notificationState.getMode();
-        if (notifyAboutMessage() && (mode.equals(NotificationState.NotificationMode.disabled1h)
-        || mode.equals(NotificationState.NotificationMode.disabled8h)
-                || mode.equals(NotificationState.NotificationMode.disabled2d))) {
+        if (notifyAboutMessage() && (mode.equals(NotificationState.NotificationMode.snooze15m)
+            || mode.equals(NotificationState.NotificationMode.snooze1h)
+            || mode.equals(NotificationState.NotificationMode.snooze2h)
+            || mode.equals(NotificationState.NotificationMode.snooze1d))) {
             setNotificationState(new NotificationState(NotificationState.NotificationMode.enabled, 0), true);
         }
     }
