@@ -44,9 +44,9 @@ public class CrowdfundingManager {
     public void onLoad() {
         CrowdfundingMessage lastMessage = getLastMessageFromRealm();
         if (lastMessage == null) {
-            if (SettingsManager.getFirstCrowdfundingRunTimestamp() == 0)
-                SettingsManager.setFirstCrowdfundingRunTimestamp(getCurrentTime());
-            else if (isTimeToCrowdfunding()) requestLeader();
+            if (SettingsManager.getFirstAppRunTimestamp() == 0)
+                SettingsManager.setFirstAppRunTimestamp(getCurrentTime());
+            else if (isTimeToCrowdfunding() && isLeaderCacheExpired()) requestLeader();
         }
         else if (!CrowdfundingManager.getInstance().haveDelayedMessages() && isCacheExpired())
             requestFeed(lastMessage.getReceivedTimestamp());
@@ -60,6 +60,7 @@ public class CrowdfundingManager {
                 @Override
                 public void call(List<CrowdfundingMessage> crowdfundingMessages) {
                     Log.d("crowd", "ok");
+                    SettingsManager.setLastLeaderCrowdfundingLoadTimestamp(getCurrentTime());
                     EventBus.getDefault().post(new NewMessageEvent());
                 }
             }, new Action1<Throwable>() {
@@ -205,8 +206,9 @@ public class CrowdfundingManager {
     public void reloadMessages() {
         removeAllMessages();
         requestLeader();
-        SettingsManager.setFirstCrowdfundingRunTimestamp(0);
+        SettingsManager.setFirstAppRunTimestamp(0);
         SettingsManager.setLastCrowdfundingLoadTimestamp(1);
+        SettingsManager.setLastLeaderCrowdfundingLoadTimestamp(1);
     }
 
     /** Ignore business rules. Use only for debug */
@@ -241,8 +243,12 @@ public class CrowdfundingManager {
         return getCurrentTime() > SettingsManager.getLastCrowdfundingLoadTimestamp() + CACHE_LIFETIME;
     }
 
+    private boolean isLeaderCacheExpired() {
+        return getCurrentTime() > SettingsManager.getLastLeaderCrowdfundingLoadTimestamp() + CACHE_LIFETIME;
+    }
+
     private boolean isTimeToCrowdfunding() {
-        return getCurrentTime() > SettingsManager.getFirstCrowdfundingRunTimestamp() + CROWDFUNDING_DELAY;
+        return getCurrentTime() > SettingsManager.getFirstAppRunTimestamp() + CROWDFUNDING_DELAY;
     }
 
     public int getCurrentTime() {
