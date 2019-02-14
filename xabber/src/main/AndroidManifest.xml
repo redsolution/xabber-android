@@ -44,11 +44,11 @@
 
     <application
         android:name=".data.Application"
-        android:allowBackup="true"
+        android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/application_title_full"
         android:theme="@style/Theme"
-        tools:replace="label, icon">
+        tools:replace="label, icon, allowBackup">
         <activity
             android:name=".ui.activity.ContactListActivity"
             android:label="@string/application_title_full"
