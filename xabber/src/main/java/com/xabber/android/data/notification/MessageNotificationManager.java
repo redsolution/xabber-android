@@ -495,7 +495,7 @@ public class MessageNotificationManager implements OnLoadListener {
                         }
                     });
                 }
-            }, 200);
+            }, 500);
         }
 
         public void stopRemoveTimer() {
