@@ -128,7 +128,7 @@ dependencies {
     implementation 'com.android.support:multidex:1.0.3'
 
     // firebase
-    compile 'com.google.firebase:firebase-messaging:11.4.0'
+    implementation 'com.google.firebase:firebase-messaging:17.3.4'
 
     implementation 'com.github.Str4tocaster:otr4j:custom-SNAPSHOT'
     implementation 'com.google.zxing:android-integration:3.3.0'
@@ -144,10 +144,10 @@ dependencies {
     implementation 'io.reactivex:rxjava:1.1.0'
 
     // social
-    implementation 'com.google.android.gms:play-services-safetynet:11.4.0'
+    implementation 'com.google.android.gms:play-services-safetynet:16.0.0'
     implementation 'com.facebook.android:facebook-login:4.36.1'
     implementation 'com.twitter.sdk.android:twitter:3.0.0'
-    implementation 'com.google.android.gms:play-services-auth:11.4.0'
+    implementation 'com.google.android.gms:play-services-auth:16.0.1'
     implementation ('com.google.api-client:google-api-client-android:1.22.0') {
         exclude module: 'httpclient'
     }
@@ -178,7 +178,7 @@ dependencies {
 
     // block canary
     debugImplementation 'com.github.markzhai:blockcanary-android:1.5.0'
-    releaseCompile 'com.github.markzhai:blockcanary-no-op:1.5.0'
+    releaseImplementation 'com.github.markzhai:blockcanary-no-op:1.5.0'
 
 }
 apply plugin: 'com.google.gms.google-services'
