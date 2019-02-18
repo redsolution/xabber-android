@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <SwitchPreference
+        android:key="custom_notification_enable"
+        android:title="Use custom notification preferences"
+        />
+
+    <SwitchPreference
+        android:key="custom_notification_preview"
+        android:title="Show message preview"
+        android:dependency="custom_notification_enable"
+        />
+
+    <com.xabber.android.ui.widget.RingtonePreference
+        android:key="custom_notification_sound"
+        android:ringtoneType="notification"
+        android:showDefault="true"
+        android:showSilent="true"
+        android:title="Sound"
+        android:summary="Choose notification sound"
+        android:dependency="custom_notification_enable"
+        />
+
+    <ListPreference
+        android:key="custom_notification_vibro"
+        android:defaultValue="@string/events_vibro_bydefault"
+        android:entries="@array/events_vibro_entries"
+        android:entryValues="@array/events_vibro_entryvalues"
+        android:title="@string/events_vibro"
+        android:summary="%s"
+        android:dependency="custom_notification_enable"
+        />
+
+</PreferenceScreen>

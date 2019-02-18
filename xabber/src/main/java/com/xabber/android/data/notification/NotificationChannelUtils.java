@@ -117,4 +117,42 @@ public class NotificationChannelUtils {
     private static String getString(@StringRes int resid) {
         return Application.getInstance().getString(resid);
     }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public static String createCustomChannel(NotificationManager notifManager, CharSequence name,
+                     String description, Uri sound, long[] vibro, AudioAttributes audioAttrs) {
+        String id = UUID.randomUUID().toString();
+        @SuppressLint("WrongConstant")
+        NotificationChannel channel = new NotificationChannel(id, name,
+                        android.app.NotificationManager.IMPORTANCE_HIGH);
+        channel.setDescription(description);
+        if (vibro != null) channel.setVibrationPattern(vibro);
+        if (sound != null && audioAttrs != null) channel.setSound(sound, audioAttrs);
+        notifManager.createNotificationChannel(channel);
+        return id;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public static String updateCustomChannel(NotificationManager notifManager, String channelID,
+                                              Uri newSound, long[] newVibro, AudioAttributes newAudioAttrs) {
+
+        // settings
+        NotificationChannel channel = notifManager.getNotificationChannel(channelID);
+        Uri sound = (newSound != null) ? newSound : channel.getSound();
+        long[] vibro = (newVibro != null) ? newVibro : channel.getVibrationPattern();
+        AudioAttributes audioAttrs = (newAudioAttrs != null) ? newAudioAttrs : channel.getAudioAttributes();
+        CharSequence name = channel.getName();
+        String description = channel.getDescription();
+
+        // delete old channel
+        notifManager.deleteNotificationChannel(channelID);
+
+        // need to change channel settings
+        return createCustomChannel(notifManager, name, description, sound, vibro, audioAttrs);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public static void removeCustomChannel(NotificationManager notifManager, String channelID) {
+        notifManager.deleteNotificationChannel(channelID);
+    }
 }

@@ -56,6 +56,7 @@ import com.xabber.android.data.message.ReceiptManager;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.message.phrase.PhraseManager;
 import com.xabber.android.data.notification.NotificationManager;
+import com.xabber.android.data.notification.custom_notification.CustomNotifyPrefsManager;
 import com.xabber.android.data.roster.GroupManager;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterManager;
@@ -368,6 +369,7 @@ public class Application extends android.app.Application {
         addManager(GroupManager.getInstance());
         addManager(PhraseManager.getInstance());
         addManager(NotificationManager.getInstance());
+        addManager(CustomNotifyPrefsManager.getInstance());
         addManager(ActivityManager.getInstance());
         addManager(CapabilitiesManager.getInstance());
         addManager(ChatStateManager.getInstance());

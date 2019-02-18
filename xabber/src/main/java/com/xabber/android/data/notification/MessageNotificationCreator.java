@@ -27,6 +27,8 @@ import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.message.phrase.PhraseManager;
+import com.xabber.android.data.notification.custom_notification.CustomNotifyPrefsManager;
+import com.xabber.android.data.notification.custom_notification.NotifyPrefs;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.receiver.NotificationReceiver;
 import com.xabber.android.ui.activity.ChatActivity;
@@ -56,10 +58,7 @@ public class MessageNotificationCreator {
     public void createNotification(MessageNotificationManager.Chat chat, boolean alert) {
         boolean inForeground = isAppInForeground(context);
 
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context,
-                NotificationChannelUtils.getChannelID(
-                        chat.isGroupChat() ? NotificationChannelUtils.ChannelType.groupChat
-                                : NotificationChannelUtils.ChannelType.privateChat))
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, getChannelID(chat))
                 .setColor(context.getResources().getColor(R.color.persistent_notification_color))
                 .setWhen(chat.getLastMessageTimestamp())
                 .setSmallIcon(R.drawable.ic_stat_chat)
@@ -96,14 +95,10 @@ public class MessageNotificationCreator {
         Collections.sort(sortedChats, Collections.reverseOrder(new SortByLastMessage()));
 
         MessageNotificationManager.Chat lastChat = sortedChats.size() > 0 ? sortedChats.get(0) : null;
-        boolean isGroup = lastChat != null && lastChat.isGroupChat();
         int messageCount = getMessageCount(sortedChats);
 
         NotificationCompat.Builder builder =
-                new NotificationCompat.Builder(context,
-                        NotificationChannelUtils.getChannelID(
-                                isGroup ? NotificationChannelUtils.ChannelType.groupChat
-                                        : NotificationChannelUtils.ChannelType.privateChat))
+                new NotificationCompat.Builder(context, getChannelID(lastChat))
                         .setColor(context.getResources().getColor(R.color.persistent_notification_color))
                         .setWhen(lastChat != null ? lastChat.getLastMessageTimestamp() : System.currentTimeMillis())
                         .setSmallIcon(R.drawable.ic_message)
@@ -130,6 +125,20 @@ public class MessageNotificationCreator {
         }
 
         sendNotification(builder, MESSAGE_BUNDLE_NOTIFICATION_ID);
+    }
+
+    private String getChannelID(MessageNotificationManager.Chat chat) {
+        NotifyPrefs customPrefs = null;
+        boolean isGroup = false;
+        if (chat != null) {
+            isGroup = chat.isGroupChat();
+            customPrefs = CustomNotifyPrefsManager.getInstance().getNotifyPrefsIfExist(
+                    chat.getAccountJid(), chat.getUserJid(), "",
+                    chat.getLastMessage().getMessageText().toString());
+        }
+        return customPrefs != null ? customPrefs.getChannelID() : NotificationChannelUtils.getChannelID(
+                isGroup ? NotificationChannelUtils.ChannelType.groupChat
+                        : NotificationChannelUtils.ChannelType.privateChat);
     }
 
     private void sendNotification(NotificationCompat.Builder builder, int notificationId) {
