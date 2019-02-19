@@ -186,7 +186,9 @@ public class MessageNotificationCreator {
     }
 
     private boolean isNeedShowTextInNotification(MessageNotificationManager.Chat chat) {
-        return chat.isGroupChat() ?
+        NotifyPrefs prefs = CustomNotifyPrefsManager.getInstance().findChatNotifyPrefs(chat.getAccountJid(), chat.getUserJid());
+        if (prefs != null) return prefs.isShowPreview();
+        else return chat.isGroupChat() ?
                 ChatManager.getInstance().isShowTextOnMuc(chat.getAccountJid(), chat.getUserJid())
                 : ChatManager.getInstance().isShowText(chat.getAccountJid(), chat.getUserJid());
     }

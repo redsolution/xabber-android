@@ -27,7 +27,7 @@ public class CustomNotifSettingsFragment extends android.preference.PreferenceFr
     private UserJid user;
 
     private SwitchPreference prefEnableCustomNotif;
-    private Preference prefMessagePreview;
+    private SwitchPreference prefMessagePreview;
     private RingtonePreference prefSound;
     private ListPreference prefVibro;
 
@@ -47,7 +47,7 @@ public class CustomNotifSettingsFragment extends android.preference.PreferenceFr
         addPreferencesFromResource(R.xml.preference_custom_notify);
 
         prefEnableCustomNotif = (SwitchPreference) getPreferenceScreen().findPreference("custom_notification_enable");
-        prefMessagePreview = getPreferenceScreen().findPreference("custom_notification_preview");
+        prefMessagePreview = (SwitchPreference) getPreferenceScreen().findPreference("custom_notification_preview");
         prefSound = (RingtonePreference) getPreferenceScreen().findPreference("custom_notification_sound");
         prefVibro = (ListPreference) getPreferenceScreen().findPreference("custom_notification_vibro");
     }
@@ -70,33 +70,46 @@ public class CustomNotifSettingsFragment extends android.preference.PreferenceFr
             }
         });
 
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O && notifyPrefs != null) {
-            NotificationChannel channel = notificationManager.getNotificationChannel(notifyPrefs.getChannelID());
-
-            // sound
-            prefSound.setSummary(getSoundTitle(channel));
-            prefSound.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+        if (notifyPrefs != null) {
+            prefMessagePreview.setChecked(notifyPrefs.isShowPreview());
+            prefMessagePreview.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
                     CustomNotifyPrefsManager.getInstance().createChatNotifyPrefs(getActivity(),
                             notificationManager, account, user, notifyPrefs.getVibro(),
-                            notifyPrefs.isShowPreview(), newValue.toString());
+                            (Boolean) newValue, notifyPrefs.getSound());
                     return true;
                 }
             });
 
-            // vibro
-            prefVibro.setSummary(getVibroSummary(getActivity(), notifyPrefs));
-            prefVibro.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                @Override
-                public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    CustomNotifyPrefsManager.getInstance().createChatNotifyPrefs(getActivity(),
-                            notificationManager, account, user, newValue.toString(),
-                            notifyPrefs.isShowPreview(), notifyPrefs.getSound());
-                    prefVibro.setSummary(getVibroSummary(getActivity(), notifyPrefs));
-                    return true;
-                }
-            });
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                NotificationChannel channel = notificationManager.getNotificationChannel(notifyPrefs.getChannelID());
+
+                // sound
+                prefSound.setSummary(getSoundTitle(channel));
+                prefSound.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                    @Override
+                    public boolean onPreferenceChange(Preference preference, Object newValue) {
+                        CustomNotifyPrefsManager.getInstance().createChatNotifyPrefs(getActivity(),
+                                notificationManager, account, user, notifyPrefs.getVibro(),
+                                notifyPrefs.isShowPreview(), newValue.toString());
+                        return true;
+                    }
+                });
+
+                // vibro
+                prefVibro.setSummary(getVibroSummary(getActivity(), notifyPrefs));
+                prefVibro.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                    @Override
+                    public boolean onPreferenceChange(Preference preference, Object newValue) {
+                        CustomNotifyPrefsManager.getInstance().createChatNotifyPrefs(getActivity(),
+                                notificationManager, account, user, newValue.toString(),
+                                notifyPrefs.isShowPreview(), notifyPrefs.getSound());
+                        prefVibro.setSummary(getVibroSummary(getActivity(), notifyPrefs));
+                        return true;
+                    }
+                });
+            }
         }
     }
 
