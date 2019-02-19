@@ -13,7 +13,6 @@ import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.notification.MessageNotificationCreator;
 import com.xabber.android.data.notification.NotificationChannelUtils;
 
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -47,22 +46,17 @@ public class CustomNotifyPrefsManager implements OnLoadListener {
         this.preferences.addAll(prefs);
     }
 
-    public void createChatNotifyPrefs(Context context, NotificationManager notificationManager,
-                                      AccountJid account, UserJid user,
-                                      String vibro, boolean showPreview, String sound) {
-        NotifyPrefs prefs = findPrefsByChat(account, user);
+    public void createNotifyPrefs(Context context, NotificationManager notificationManager, Key key,
+                                  String vibro, boolean showPreview, String sound) {
+        NotifyPrefs prefs = findPrefs(key);
         if (prefs == null) {
-            prefs = new NotifyPrefs(UUID.randomUUID().toString(), NotifyPrefs.Type.chat, account, user,
-                    null, null, vibro, showPreview, sound);
+            prefs = new NotifyPrefs(UUID.randomUUID().toString(), key, vibro, showPreview, sound);
 
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-                String name = user.getBareJid().toString() + " (" + account.getFullJid().asBareJid().toString() + ')';
-                String description = "Custom notification channel";
                 prefs.setChannelID(NotificationChannelUtils.createCustomChannel(notificationManager,
-                        name, description, Uri.parse(sound), MessageNotificationCreator.getVibroValue(vibro, context),
-                        null));
+                        key.generateName(), key.generateDescription(), Uri.parse(sound),
+                        MessageNotificationCreator.getVibroValue(vibro, context), null));
             }
-
             preferences.add(prefs);
         } else {
             prefs.setShowPreview(showPreview);
@@ -76,80 +70,24 @@ public class CustomNotifyPrefsManager implements OnLoadListener {
         saveOrUpdateToRealm(prefs);
     }
 
-    public void createGroupNotifyPrefs(Context context, NotificationManager notificationManager,
-                                       AccountJid account, String group,
-                                       String vibro, boolean showPreview, String sound) {
-        NotifyPrefs prefs = findPrefsByGroup(account, group);
-        if (prefs == null) {
-            prefs = new NotifyPrefs(UUID.randomUUID().toString(), NotifyPrefs.Type.group, account, null,
-                    group, null, vibro, showPreview, sound);
-
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-                String name = group + " (" + account.getFullJid().asBareJid().toString() + ')';
-                String description = "Custom notification channel";
-                prefs.setChannelID(NotificationChannelUtils.createCustomChannel(notificationManager,
-                        name, description, Uri.parse(sound), MessageNotificationCreator.getVibroValue(vibro, context),
-                        null));
-            }
-
-            preferences.add(prefs);
-        } else {
-            prefs.setShowPreview(showPreview);
-            prefs.setSound(sound);
-            prefs.setVibro(vibro);
-
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O)
-                prefs.setChannelID(NotificationChannelUtils.updateCustomChannel(notificationManager, prefs.getChannelID(), Uri.parse(sound),
-                        MessageNotificationCreator.getVibroValue(vibro, context), null));
-        }
-        saveOrUpdateToRealm(prefs);
-    }
-
-    public NotifyPrefs findPrefsByChat(AccountJid account, UserJid user) {
+    public NotifyPrefs findPrefs(Key key) {
         for (NotifyPrefs item : preferences) {
-            if (item.getAccount().equals(account) && user.equals(item.getUser())
-                    && item.getType().equals(NotifyPrefs.Type.chat))
-                return item;
-        }
-        return null;
-    }
-
-    public NotifyPrefs findPrefsByGroup(AccountJid account, String group) {
-        for (NotifyPrefs item : preferences) {
-            if (item.getAccount().equals(account) && group.equals(item.getGroup())
-            && item.getType().equals(NotifyPrefs.Type.group))
-                return item;
-        }
-        return null;
-    }
-
-    public NotifyPrefs findPrefsByPhrase(AccountJid account, Long phraseID) {
-        for (NotifyPrefs item : preferences) {
-            if (item.getAccount().equals(account) && item.getPhraseID().equals(phraseID)
-                    && item.getType().equals(NotifyPrefs.Type.phrase))
-                return item;
-        }
-        return null;
-    }
-
-    public NotifyPrefs findPrefsByAccount(AccountJid account) {
-        for (NotifyPrefs item : preferences) {
-            if (item.getAccount().equals(account) && item.getType().equals(NotifyPrefs.Type.account))
-                return item;
+            if (item.getKey().equals(key)) return item;
         }
         return null;
     }
 
     public NotifyPrefs getNotifyPrefsIfExist(AccountJid account, UserJid user, String group, String text) {
         NotifyPrefs prefs = null;
+        // TODO: 19.02.19 implement
         //prefs = findPrefsByPhrase(account, );
-        if (prefs == null) prefs = findPrefsByChat(account, user);
-        if (prefs == null) prefs = findPrefsByGroup(account, group);
-        if (prefs == null) prefs = findPrefsByAccount(account);
+        if (prefs == null) prefs = findPrefs(Key.createKey(account, user));
+        if (prefs == null) prefs = findPrefs(Key.createKey(account, group));
+        if (prefs == null) prefs = findPrefs(Key.createKey(account));
         return prefs;
     }
 
-    public void deleteChatNotifyPrefs(NotificationManager notificationManager, String id) {
+    public void deleteNotifyPrefs(NotificationManager notificationManager, String id) {
         Iterator it = preferences.iterator();
         while (it.hasNext()) {
             NotifyPrefs item = (NotifyPrefs) it.next();
@@ -170,9 +108,7 @@ public class CustomNotifyPrefsManager implements OnLoadListener {
         Realm realm = RealmManager.getInstance().getNewRealm();
         RealmResults<NotifyPrefsRealm> items = realm.where(NotifyPrefsRealm.class).findAll();
         for (NotifyPrefsRealm item : items) {
-            NotifyPrefs prefs = new NotifyPrefs(item.getId(), NotifyPrefs.Type.get(item.getType()),
-                    item.getAccount(), item.getUser(),
-                    item.getGroup(), item.getPhraseID(), item.getVibro(),
+            NotifyPrefs prefs = new NotifyPrefs(item.getId(), Key.createKey(item), item.getVibro(),
                     item.isShowPreview(), item.getSound());
             prefs.setChannelID(item.getChannelID());
             results.add(prefs);
@@ -206,11 +142,11 @@ public class CustomNotifyPrefsManager implements OnLoadListener {
             @Override
             public void run() {
                 NotifyPrefsRealm prefsRealm = new NotifyPrefsRealm(prefs.getId());
-                prefsRealm.setType(prefs.getType().toString());
-                prefsRealm.setAccount(prefs.getAccount());
-                if (prefs.getUser() != null) prefsRealm.setUser(prefs.getUser());
-                prefsRealm.setGroup(prefs.getGroup());
-                prefsRealm.setPhraseID(prefs.getPhraseID());
+                prefsRealm.setType(prefs.getKey().getType().toString());
+                prefsRealm.setAccount(prefs.getKey().getAccount());
+                if (prefs.getKey().getUser() != null) prefsRealm.setUser(prefs.getKey().getUser());
+                prefsRealm.setGroup(prefs.getKey().getGroup());
+                prefsRealm.setPhraseID(prefs.getKey().getPhraseID());
                 prefsRealm.setChannelID(prefs.getChannelID());
                 prefsRealm.setShowPreview(prefs.isShowPreview());
                 prefsRealm.setSound(prefs.getSound());

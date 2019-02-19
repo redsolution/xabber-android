@@ -1,33 +1,19 @@
 package com.xabber.android.data.notification.custom_notification;
 
-import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.UserJid;
-
 public class NotifyPrefs {
 
     private String id;
     private String channelID;
-    private Type type;
-
-    // address
-    private AccountJid account;
-    private UserJid user;
-    private String group;
-    private Long phraseID;
+    private Key key;
 
     // notification preferences
     private String vibro;
     private boolean showPreview;
     private String sound;
 
-    public NotifyPrefs(String id, Type type, AccountJid account, UserJid user, String group,
-                       Long phraseID, String vibro, boolean showPreview, String sound) {
+    public NotifyPrefs(String id, Key key, String vibro, boolean showPreview, String sound) {
         this.id = id;
-        this.type = type;
-        this.account = account;
-        this.user = user;
-        this.group = group;
-        this.phraseID = phraseID;
+        this.key = key;
         this.vibro = vibro;
         this.showPreview = showPreview;
         this.sound = sound;
@@ -41,24 +27,8 @@ public class NotifyPrefs {
         return channelID;
     }
 
-    public Type getType() {
-        return type;
-    }
-
-    public AccountJid getAccount() {
-        return account;
-    }
-
-    public UserJid getUser() {
-        return user;
-    }
-
-    public String getGroup() {
-        return group;
-    }
-
-    public Long getPhraseID() {
-        return phraseID;
+    public Key getKey() {
+        return key;
     }
 
     public String getVibro() {
