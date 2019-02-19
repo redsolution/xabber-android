@@ -26,7 +26,6 @@ import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.chat.ChatManager;
-import com.xabber.android.data.message.phrase.PhraseManager;
 import com.xabber.android.data.notification.custom_notification.CustomNotifyPrefsManager;
 import com.xabber.android.data.notification.custom_notification.NotifyPrefs;
 import com.xabber.android.data.roster.RosterManager;
@@ -255,7 +254,7 @@ public class MessageNotificationCreator {
         AbstractChat chat = MessageManager.getInstance().getChat(account, user);
         if (chat != null && (chat.getFirstNotification() || !SettingsManager.eventsFirstOnly())) {
 
-            Uri sound = PhraseManager.getInstance().getSound(account, user, text, isMUC);
+            Uri sound = getSound(account, user, text, isMUC);
             boolean makeVibration = ChatManager.getInstance().isMakeVibro(account, user);
             boolean led = isMUC ? SettingsManager.eventsLightningForMuc() : SettingsManager.eventsLightning();
 
@@ -263,16 +262,26 @@ public class MessageNotificationCreator {
                     .setNotificationDefaults(notificationBuilder, led, sound, AudioManager.STREAM_NOTIFICATION);
 
             // vibration
-            if (makeVibration) setVibration(isMUC, context, notificationBuilder);
+            if (makeVibration) setVibration(account, user, isMUC, context, notificationBuilder);
         }
     }
 
-    public static void setVibration(boolean isMUC, Context context, NotificationCompat.Builder notificationBuilder) {
-        SettingsManager.VibroMode vibroMode;
-        if (isMUC) vibroMode = SettingsManager.eventsVibroMuc();
-        else vibroMode = SettingsManager.eventsVibroChat();
+    private Uri getSound(AccountJid account, UserJid user, String text, boolean isMUC) {
+        NotifyPrefs prefs = CustomNotifyPrefsManager.getInstance().findChatNotifyPrefs(account, user);
+        if (prefs != null) return Uri.parse(prefs.getSound());
+        else {
+            if (isMUC) return SettingsManager.eventsSoundMuc();
+            return SettingsManager.eventsSound();
+        }
+    }
 
-        notificationBuilder.setVibrate(getVibroValue(vibroMode, context));
+    public static void setVibration(AccountJid account, UserJid user, boolean isMUC, Context context,
+                                    NotificationCompat.Builder notificationBuilder) {
+        NotifyPrefs prefs = CustomNotifyPrefsManager.getInstance().findChatNotifyPrefs(account, user);
+        if (prefs != null)
+            notificationBuilder.setVibrate(getVibroValue(prefs.getVibro(), context));
+        else notificationBuilder.setVibrate(getVibroValue(isMUC ? SettingsManager.eventsVibroMuc()
+                : SettingsManager.eventsVibroChat(), context));
     }
 
     public static long[] getVibroValue(SettingsManager.VibroMode vibroMode, Context context) {
