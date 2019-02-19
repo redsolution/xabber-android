@@ -48,7 +48,7 @@ public class CustomNotifyPrefsManager implements OnLoadListener {
     }
 
     public void createChatNotifyPrefs(Context context, NotificationManager notificationManager,
-                                      AccountJid account, UserJid user, boolean enabled,
+                                      AccountJid account, UserJid user,
                                       String vibro, boolean showPreview, String sound) {
         NotifyPrefs prefs = findChatNotifyPrefs(account, user);
         if (prefs == null) {

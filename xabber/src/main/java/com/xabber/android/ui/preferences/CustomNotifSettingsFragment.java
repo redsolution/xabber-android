@@ -62,7 +62,7 @@ public class CustomNotifSettingsFragment extends android.preference.PreferenceFr
             public boolean onPreferenceChange(Preference preference, Object newValue) {
                 if ((Boolean) newValue)
                     CustomNotifyPrefsManager.getInstance().createChatNotifyPrefs(getActivity(),
-                            notificationManager, account, user, true, "", true, "");
+                            notificationManager, account, user,"", true, "");
                 else if (notifyPrefs != null)
                     CustomNotifyPrefsManager.getInstance().deleteChatNotifyPrefs(notificationManager,
                             notifyPrefs.getId());
@@ -79,7 +79,21 @@ public class CustomNotifSettingsFragment extends android.preference.PreferenceFr
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
                     CustomNotifyPrefsManager.getInstance().createChatNotifyPrefs(getActivity(),
-                            notificationManager, account, user, true, "", true, newValue.toString());
+                            notificationManager, account, user, notifyPrefs.getVibro(),
+                            notifyPrefs.isShowPreview(), newValue.toString());
+                    return true;
+                }
+            });
+
+            // vibro
+            prefVibro.setSummary(getVibroSummary(getActivity(), notifyPrefs));
+            prefVibro.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    CustomNotifyPrefsManager.getInstance().createChatNotifyPrefs(getActivity(),
+                            notificationManager, account, user, newValue.toString(),
+                            notifyPrefs.isShowPreview(), notifyPrefs.getSound());
+                    prefVibro.setSummary(getVibroSummary(getActivity(), notifyPrefs));
                     return true;
                 }
             });
@@ -95,5 +109,21 @@ public class CustomNotifSettingsFragment extends android.preference.PreferenceFr
         return ringtone.getTitle(getActivity());
     }
 
-
+    private String getVibroSummary(Context context, NotifyPrefs notifyPrefs) {
+        if (notifyPrefs == null) return null;
+        else {
+            switch (notifyPrefs.getVibro()) {
+                case "disable":
+                    return context.getString(R.string.disabled);
+                case "short":
+                    return context.getString(R.string.vibro_short);
+                case "long":
+                    return context.getString(R.string.vibro_long);
+                case "if silent":
+                    return context.getString(R.string.vibro_if_silent);
+                default:
+                    return context.getString(R.string.vibro_default);
+            }
+        }
+    }
 }
