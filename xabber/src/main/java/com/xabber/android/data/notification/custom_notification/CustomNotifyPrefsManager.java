@@ -50,7 +50,7 @@ public class CustomNotifyPrefsManager implements OnLoadListener {
     public void createChatNotifyPrefs(Context context, NotificationManager notificationManager,
                                       AccountJid account, UserJid user,
                                       String vibro, boolean showPreview, String sound) {
-        NotifyPrefs prefs = findChatNotifyPrefs(account, user);
+        NotifyPrefs prefs = findPrefsByChat(account, user);
         if (prefs == null) {
             prefs = new NotifyPrefs(UUID.randomUUID().toString(), NotifyPrefs.Type.chat, account, user,
                     null, null, vibro, showPreview, sound);
@@ -76,21 +76,48 @@ public class CustomNotifyPrefsManager implements OnLoadListener {
         saveOrUpdateToRealm(prefs);
     }
 
-    public NotifyPrefs findChatNotifyPrefs(AccountJid account, UserJid user) {
+    public NotifyPrefs findPrefsByChat(AccountJid account, UserJid user) {
         for (NotifyPrefs item : preferences) {
-            if (item.getAccount().equals(account) && item.getUser().equals(user))
+            if (item.getAccount().equals(account) && item.getUser().equals(user)
+                    && item.getType().equals(NotifyPrefs.Type.chat))
+                return item;
+        }
+        return null;
+    }
+
+    public NotifyPrefs findPrefsByGroup(AccountJid account, String group) {
+        for (NotifyPrefs item : preferences) {
+            if (item.getAccount().equals(account) && item.getGroup().equals(group)
+            && item.getType().equals(NotifyPrefs.Type.group))
+                return item;
+        }
+        return null;
+    }
+
+    public NotifyPrefs findPrefsByPhrase(AccountJid account, Long phraseID) {
+        for (NotifyPrefs item : preferences) {
+            if (item.getAccount().equals(account) && item.getPhraseID().equals(phraseID)
+                    && item.getType().equals(NotifyPrefs.Type.phrase))
+                return item;
+        }
+        return null;
+    }
+
+    public NotifyPrefs findPrefsByAccount(AccountJid account) {
+        for (NotifyPrefs item : preferences) {
+            if (item.getAccount().equals(account) && item.getType().equals(NotifyPrefs.Type.account))
                 return item;
         }
         return null;
     }
 
     public NotifyPrefs getNotifyPrefsIfExist(AccountJid account, UserJid user, String group, String text) {
-        // find key-phrase prefs
-        // find chat prefs
-        return findChatNotifyPrefs(account, user);
-        // find group prefs
-        // find account prefs
-        // use global settings
+        NotifyPrefs prefs = null;
+        //prefs = findPrefsByPhrase(account, );
+        if (prefs == null) prefs = findPrefsByChat(account, user);
+        if (prefs == null) prefs = findPrefsByGroup(account, group);
+        if (prefs == null) prefs = findPrefsByAccount(account);
+        return prefs;
     }
 
     public void deleteChatNotifyPrefs(NotificationManager notificationManager, String id) {

@@ -185,7 +185,7 @@ public class MessageNotificationCreator {
     }
 
     private boolean isNeedShowTextInNotification(MessageNotificationManager.Chat chat) {
-        NotifyPrefs prefs = CustomNotifyPrefsManager.getInstance().findChatNotifyPrefs(chat.getAccountJid(), chat.getUserJid());
+        NotifyPrefs prefs = CustomNotifyPrefsManager.getInstance().findPrefsByChat(chat.getAccountJid(), chat.getUserJid());
         if (prefs != null) return prefs.isShowPreview();
         else return chat.isGroupChat() ?
                 ChatManager.getInstance().isShowTextOnMuc(chat.getAccountJid(), chat.getUserJid())
@@ -267,7 +267,7 @@ public class MessageNotificationCreator {
     }
 
     private Uri getSound(AccountJid account, UserJid user, String text, boolean isMUC) {
-        NotifyPrefs prefs = CustomNotifyPrefsManager.getInstance().findChatNotifyPrefs(account, user);
+        NotifyPrefs prefs = CustomNotifyPrefsManager.getInstance().findPrefsByChat(account, user);
         if (prefs != null) return Uri.parse(prefs.getSound());
         else {
             if (isMUC) return SettingsManager.eventsSoundMuc();
@@ -277,7 +277,7 @@ public class MessageNotificationCreator {
 
     public static void setVibration(AccountJid account, UserJid user, boolean isMUC, Context context,
                                     NotificationCompat.Builder notificationBuilder) {
-        NotifyPrefs prefs = CustomNotifyPrefsManager.getInstance().findChatNotifyPrefs(account, user);
+        NotifyPrefs prefs = CustomNotifyPrefsManager.getInstance().findPrefsByChat(account, user);
         if (prefs != null)
             notificationBuilder.setVibrate(getVibroValue(prefs.getVibro(), context));
         else notificationBuilder.setVibrate(getVibroValue(isMUC ? SettingsManager.eventsVibroMuc()

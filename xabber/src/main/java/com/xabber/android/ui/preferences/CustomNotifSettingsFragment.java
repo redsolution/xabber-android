@@ -55,7 +55,7 @@ public class CustomNotifSettingsFragment extends android.preference.PreferenceFr
     @Override
     public void onResume() {
         super.onResume();
-        final NotifyPrefs notifyPrefs = CustomNotifyPrefsManager.getInstance().findChatNotifyPrefs(account, user);
+        final NotifyPrefs notifyPrefs = CustomNotifyPrefsManager.getInstance().findPrefsByChat(account, user);
         prefEnableCustomNotif.setChecked(notifyPrefs != null);
         prefEnableCustomNotif.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
