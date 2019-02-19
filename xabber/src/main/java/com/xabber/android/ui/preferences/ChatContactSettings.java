@@ -37,9 +37,16 @@ public class ChatContactSettings extends ManagedActivity
     private AccountJid account;
     private UserJid user;
     private AccountItem accountItem;
+    private String group;
 
     public static Intent createIntent(Context context, AccountJid account, UserJid user) {
         return new EntityIntentBuilder(context, ChatContactSettings.class).setAccount(account).setUser(user).build();
+    }
+
+    public static Intent createIntent(Context context, AccountJid account, String group) {
+        Intent intent = new EntityIntentBuilder(context, ChatContactSettings.class).setAccount(account).build();
+        intent.putExtra("group", group);
+        return intent;
     }
 
     private static AccountJid getAccount(Intent intent) {
@@ -57,8 +64,9 @@ public class ChatContactSettings extends ManagedActivity
         account = getAccount(getIntent());
         user = getUser(getIntent());
         accountItem = AccountManager.getInstance().getAccount(account);
+        group = getIntent().getStringExtra("group");
 
-        if (accountItem == null || user == null) {
+        if (accountItem == null || (user == null && group == null)) {
             Application.getInstance().onError(R.string.ENTRY_IS_NOT_FOUND);
             finish();
             return;
@@ -80,8 +88,10 @@ public class ChatContactSettings extends ManagedActivity
 
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()
-                    .add(R.id.fragment_container, CustomNotifSettingsFragment
-                            .createInstance(this, account, user)).commit();
+                    .add(R.id.fragment_container, user != null
+                            ? CustomNotifSettingsFragment.createInstance(this, account, user)
+                            : CustomNotifSettingsFragment.createInstance(this, account, group))
+                    .commit();
         }
     }
 

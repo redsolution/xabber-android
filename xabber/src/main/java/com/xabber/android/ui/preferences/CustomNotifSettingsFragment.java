@@ -25,6 +25,7 @@ public class CustomNotifSettingsFragment extends android.preference.PreferenceFr
 
     private AccountJid account;
     private UserJid user;
+    private String group;
 
     private SwitchPreference prefEnableCustomNotif;
     private SwitchPreference prefMessagePreview;
@@ -37,6 +38,14 @@ public class CustomNotifSettingsFragment extends android.preference.PreferenceFr
         CustomNotifSettingsFragment fragment = new CustomNotifSettingsFragment();
         fragment.account = account;
         fragment.user = user;
+        fragment.notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        return fragment;
+    }
+
+    public static CustomNotifSettingsFragment createInstance(Context context, AccountJid account, String group) {
+        CustomNotifSettingsFragment fragment = new CustomNotifSettingsFragment();
+        fragment.account = account;
+        fragment.group = group;
         fragment.notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         return fragment;
     }
@@ -55,14 +64,17 @@ public class CustomNotifSettingsFragment extends android.preference.PreferenceFr
     @Override
     public void onResume() {
         super.onResume();
-        final NotifyPrefs notifyPrefs = CustomNotifyPrefsManager.getInstance().findPrefsByChat(account, user);
+        final NotifyPrefs notifyPrefs = user != null ? CustomNotifyPrefsManager.getInstance().findPrefsByChat(account, user)
+                : CustomNotifyPrefsManager.getInstance().findPrefsByGroup(account, group);
         prefEnableCustomNotif.setChecked(notifyPrefs != null);
         prefEnableCustomNotif.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
                 if ((Boolean) newValue)
-                    CustomNotifyPrefsManager.getInstance().createChatNotifyPrefs(getActivity(),
+                    if (user != null) CustomNotifyPrefsManager.getInstance().createChatNotifyPrefs(getActivity(),
                             notificationManager, account, user,"", true, "");
+                    else CustomNotifyPrefsManager.getInstance().createGroupNotifyPrefs(getActivity(),
+                            notificationManager, account, group,"", true, "");
                 else if (notifyPrefs != null)
                     CustomNotifyPrefsManager.getInstance().deleteChatNotifyPrefs(notificationManager,
                             notifyPrefs.getId());
@@ -75,8 +87,11 @@ public class CustomNotifSettingsFragment extends android.preference.PreferenceFr
             prefMessagePreview.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    CustomNotifyPrefsManager.getInstance().createChatNotifyPrefs(getActivity(),
+                    if (user != null) CustomNotifyPrefsManager.getInstance().createChatNotifyPrefs(getActivity(),
                             notificationManager, account, user, notifyPrefs.getVibro(),
+                            (Boolean) newValue, notifyPrefs.getSound());
+                    else CustomNotifyPrefsManager.getInstance().createGroupNotifyPrefs(getActivity(),
+                            notificationManager, account, group, notifyPrefs.getVibro(),
                             (Boolean) newValue, notifyPrefs.getSound());
                     return true;
                 }
@@ -90,8 +105,11 @@ public class CustomNotifSettingsFragment extends android.preference.PreferenceFr
                 prefSound.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                     @Override
                     public boolean onPreferenceChange(Preference preference, Object newValue) {
-                        CustomNotifyPrefsManager.getInstance().createChatNotifyPrefs(getActivity(),
+                        if (user != null) CustomNotifyPrefsManager.getInstance().createChatNotifyPrefs(getActivity(),
                                 notificationManager, account, user, notifyPrefs.getVibro(),
+                                notifyPrefs.isShowPreview(), newValue.toString());
+                        else CustomNotifyPrefsManager.getInstance().createGroupNotifyPrefs(getActivity(),
+                                notificationManager, account, group, notifyPrefs.getVibro(),
                                 notifyPrefs.isShowPreview(), newValue.toString());
                         return true;
                     }
@@ -102,8 +120,11 @@ public class CustomNotifSettingsFragment extends android.preference.PreferenceFr
                 prefVibro.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                     @Override
                     public boolean onPreferenceChange(Preference preference, Object newValue) {
-                        CustomNotifyPrefsManager.getInstance().createChatNotifyPrefs(getActivity(),
+                        if (user != null) CustomNotifyPrefsManager.getInstance().createChatNotifyPrefs(getActivity(),
                                 notificationManager, account, user, newValue.toString(),
+                                notifyPrefs.isShowPreview(), notifyPrefs.getSound());
+                        else CustomNotifyPrefsManager.getInstance().createGroupNotifyPrefs(getActivity(),
+                                notificationManager, account, group, newValue.toString(),
                                 notifyPrefs.isShowPreview(), notifyPrefs.getSound());
                         prefVibro.setSummary(getVibroSummary(getActivity(), notifyPrefs));
                         return true;

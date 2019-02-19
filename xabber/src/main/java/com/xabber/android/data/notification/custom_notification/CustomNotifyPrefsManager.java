@@ -76,9 +76,38 @@ public class CustomNotifyPrefsManager implements OnLoadListener {
         saveOrUpdateToRealm(prefs);
     }
 
+    public void createGroupNotifyPrefs(Context context, NotificationManager notificationManager,
+                                       AccountJid account, String group,
+                                       String vibro, boolean showPreview, String sound) {
+        NotifyPrefs prefs = findPrefsByGroup(account, group);
+        if (prefs == null) {
+            prefs = new NotifyPrefs(UUID.randomUUID().toString(), NotifyPrefs.Type.group, account, null,
+                    group, null, vibro, showPreview, sound);
+
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                String name = group + " (" + account.getFullJid().asBareJid().toString() + ')';
+                String description = "Custom notification channel";
+                prefs.setChannelID(NotificationChannelUtils.createCustomChannel(notificationManager,
+                        name, description, Uri.parse(sound), MessageNotificationCreator.getVibroValue(vibro, context),
+                        null));
+            }
+
+            preferences.add(prefs);
+        } else {
+            prefs.setShowPreview(showPreview);
+            prefs.setSound(sound);
+            prefs.setVibro(vibro);
+
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O)
+                prefs.setChannelID(NotificationChannelUtils.updateCustomChannel(notificationManager, prefs.getChannelID(), Uri.parse(sound),
+                        MessageNotificationCreator.getVibroValue(vibro, context), null));
+        }
+        saveOrUpdateToRealm(prefs);
+    }
+
     public NotifyPrefs findPrefsByChat(AccountJid account, UserJid user) {
         for (NotifyPrefs item : preferences) {
-            if (item.getAccount().equals(account) && item.getUser().equals(user)
+            if (item.getAccount().equals(account) && user.equals(item.getUser())
                     && item.getType().equals(NotifyPrefs.Type.chat))
                 return item;
         }
@@ -87,7 +116,7 @@ public class CustomNotifyPrefsManager implements OnLoadListener {
 
     public NotifyPrefs findPrefsByGroup(AccountJid account, String group) {
         for (NotifyPrefs item : preferences) {
-            if (item.getAccount().equals(account) && item.getGroup().equals(group)
+            if (item.getAccount().equals(account) && group.equals(item.getGroup())
             && item.getType().equals(NotifyPrefs.Type.group))
                 return item;
         }
@@ -179,7 +208,7 @@ public class CustomNotifyPrefsManager implements OnLoadListener {
                 NotifyPrefsRealm prefsRealm = new NotifyPrefsRealm(prefs.getId());
                 prefsRealm.setType(prefs.getType().toString());
                 prefsRealm.setAccount(prefs.getAccount());
-                prefsRealm.setUser(prefs.getUser());
+                if (prefs.getUser() != null) prefsRealm.setUser(prefs.getUser());
                 prefsRealm.setGroup(prefs.getGroup());
                 prefsRealm.setPhraseID(prefs.getPhraseID());
                 prefsRealm.setChannelID(prefs.getChannelID());

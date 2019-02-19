@@ -56,6 +56,7 @@ import com.xabber.android.ui.dialog.GroupDeleteDialogFragment;
 import com.xabber.android.ui.dialog.GroupRenameDialogFragment;
 import com.xabber.android.ui.dialog.MUCDeleteDialogFragment;
 import com.xabber.android.ui.dialog.SnoozeDialog;
+import com.xabber.android.ui.preferences.ChatContactSettings;
 
 /**
  * Helper class for context menu creation.
@@ -303,6 +304,14 @@ public class ContextMenuHelper {
                     }
                 });
         }
+        menu.add(R.string.configure_notifications).setOnMenuItemClickListener(
+                new MenuItem.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        activity.startActivity(ChatContactSettings.createIntent(activity, account, group));
+                        return true;
+                    }
+                });
     }
 
     public static void createAccountContextMenu( final Activity activity, final ContactListPresenter presenter,

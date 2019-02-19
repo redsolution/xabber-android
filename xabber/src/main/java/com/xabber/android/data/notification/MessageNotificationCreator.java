@@ -35,6 +35,7 @@ import com.xabber.android.ui.activity.ContactListActivity;
 import com.xabber.android.utils.StringUtils;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -131,9 +132,7 @@ public class MessageNotificationCreator {
         boolean isGroup = false;
         if (chat != null) {
             isGroup = chat.isGroupChat();
-            customPrefs = CustomNotifyPrefsManager.getInstance().getNotifyPrefsIfExist(
-                    chat.getAccountJid(), chat.getUserJid(), "",
-                    chat.getLastMessage().getMessageText().toString());
+            customPrefs = getCustomPrefs(chat);
         }
         return customPrefs != null ? customPrefs.getChannelID() : NotificationChannelUtils.getChannelID(
                 isGroup ? NotificationChannelUtils.ChannelType.groupChat
@@ -185,7 +184,7 @@ public class MessageNotificationCreator {
     }
 
     private boolean isNeedShowTextInNotification(MessageNotificationManager.Chat chat) {
-        NotifyPrefs prefs = CustomNotifyPrefsManager.getInstance().findPrefsByChat(chat.getAccountJid(), chat.getUserJid());
+        NotifyPrefs prefs = getCustomPrefs(chat);
         if (prefs != null) return prefs.isShowPreview();
         else return chat.isGroupChat() ?
                 ChatManager.getInstance().isShowTextOnMuc(chat.getAccountJid(), chat.getUserJid())
@@ -254,7 +253,7 @@ public class MessageNotificationCreator {
         AbstractChat chat = MessageManager.getInstance().getChat(account, user);
         if (chat != null && (chat.getFirstNotification() || !SettingsManager.eventsFirstOnly())) {
 
-            Uri sound = getSound(account, user, text, isMUC);
+            Uri sound = getSound(notifChat, text, isMUC);
             boolean makeVibration = ChatManager.getInstance().isMakeVibro(account, user);
             boolean led = isMUC ? SettingsManager.eventsLightningForMuc() : SettingsManager.eventsLightning();
 
@@ -262,12 +261,12 @@ public class MessageNotificationCreator {
                     .setNotificationDefaults(notificationBuilder, led, sound, AudioManager.STREAM_NOTIFICATION);
 
             // vibration
-            if (makeVibration) setVibration(account, user, isMUC, context, notificationBuilder);
+            if (makeVibration) setVibration(notifChat, isMUC, context, notificationBuilder);
         }
     }
 
-    private Uri getSound(AccountJid account, UserJid user, String text, boolean isMUC) {
-        NotifyPrefs prefs = CustomNotifyPrefsManager.getInstance().findPrefsByChat(account, user);
+    private Uri getSound(MessageNotificationManager.Chat chat, String text, boolean isMUC) {
+        NotifyPrefs prefs = getCustomPrefs(chat);
         if (prefs != null) return Uri.parse(prefs.getSound());
         else {
             if (isMUC) return SettingsManager.eventsSoundMuc();
@@ -275,9 +274,9 @@ public class MessageNotificationCreator {
         }
     }
 
-    public static void setVibration(AccountJid account, UserJid user, boolean isMUC, Context context,
+    public static void setVibration(MessageNotificationManager.Chat chat, boolean isMUC, Context context,
                                     NotificationCompat.Builder notificationBuilder) {
-        NotifyPrefs prefs = CustomNotifyPrefsManager.getInstance().findPrefsByChat(account, user);
+        NotifyPrefs prefs = getCustomPrefs(chat);
         if (prefs != null)
             notificationBuilder.setVibrate(getVibroValue(prefs.getVibro(), context));
         else notificationBuilder.setVibrate(getVibroValue(isMUC ? SettingsManager.eventsVibroMuc()
@@ -375,6 +374,13 @@ public class MessageNotificationCreator {
         return PendingIntent.getActivity(context, MESSAGE_BUNDLE_NOTIFICATION_ID,
                 ContactListActivity.createPersistentIntent(context),
                 PendingIntent.FLAG_UPDATE_CURRENT);
+    }
+
+    private static NotifyPrefs getCustomPrefs(MessageNotificationManager.Chat chat) {
+        Collection<String> groups = RosterManager.getInstance().getGroups(chat.getAccountJid(), chat.getUserJid());
+        return CustomNotifyPrefsManager.getInstance().getNotifyPrefsIfExist(
+                chat.getAccountJid(), chat.getUserJid(), groups != null && groups.size() > 0 ? groups.iterator().next() : "",
+                chat.getLastMessage().getMessageText().toString());
     }
 
     public class SortByLastMessage implements Comparator<MessageNotificationManager.Chat> {

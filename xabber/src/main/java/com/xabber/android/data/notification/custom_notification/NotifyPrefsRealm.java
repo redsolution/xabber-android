@@ -72,6 +72,7 @@ public class NotifyPrefsRealm extends RealmObject {
     }
 
     public AccountJid getAccount() {
+        if (account == null) return null;
         try {
             return AccountJid.from(account);
         } catch (XmppStringprepException e) {
@@ -85,6 +86,7 @@ public class NotifyPrefsRealm extends RealmObject {
     }
 
     public UserJid getUser() {
+        if (user == null) return null;
         try {
             return UserJid.from(user);
         } catch (UserJid.UserJidCreateException e) {
