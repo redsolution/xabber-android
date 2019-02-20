@@ -914,7 +914,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
                     chatFragment.showContactInfo();
                 return true;
 
-            case R.id.action_chat_settings:
+            case R.id.action_configure_notifications:
                 startActivity(CustomNotifySettings.createIntent(this, account, user));
                 return true;
 

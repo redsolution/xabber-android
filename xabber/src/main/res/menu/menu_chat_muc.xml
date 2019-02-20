@@ -17,9 +17,9 @@
         <!--app:showAsAction="never"-->
         <!--/>-->
 
-    <item android:id="@+id/action_chat_settings"
+    <item android:id="@+id/action_configure_notifications"
         android:orderInCategory="120"
-        android:title="@string/chat_settings"
+        android:title="@string/configure_notifications"
         app:showAsAction="never"
         />
 
