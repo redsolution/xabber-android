@@ -114,11 +114,31 @@ public class Key {
     }
 
     public String generateName() {
-        // user.getBareJid().toString() + " (" + account.getFullJid().asBareJid().toString() + ')';
-        return "test";
+        switch (type) {
+            case account:
+                return account.getFullJid().asBareJid().toString();
+            case chat:
+                return user.getBareJid().toString() + " (" + account.getFullJid().asBareJid().toString() + ')';
+            case group:
+                return group + " (" + account.getFullJid().asBareJid().toString() + ')';
+            case phrase:
+                return "key phrase";
+        }
+        return "custom notification";
     }
 
     public String generateDescription() {
+        String description = "Custom notification channel for ";
+        switch (type) {
+            case account:
+                return description + "account " + generateName();
+            case chat:
+                return description + "chat " + generateName();
+            case group:
+                return description + "group " + generateName();
+            case phrase:
+                return description + "key phrase " + generateName();
+        }
         return "Custom notification channel";
     }
 }
