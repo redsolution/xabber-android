@@ -193,6 +193,15 @@ public class ContextMenuHelper {
                         return true;
                     }
                 });
+
+        menu.add(R.string.configure_notifications).setOnMenuItemClickListener(
+                new MenuItem.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        activity.startActivity(CustomNotifySettings.createIntent(activity, account, user));
+                        return true;
+                    }
+                });
     }
 
     private static void setContactContextMenuItemsVisibilty(AbstractContact abstractContact,
@@ -346,6 +355,14 @@ public class ContextMenuHelper {
 
         menu.findItem(R.id.action_edit_account_status).setIntent(StatusEditActivity.createIntent(activity, account));
         menu.findItem(R.id.action_edit_account).setIntent(AccountActivity.createIntent(activity, account));
+        menu.add(R.string.configure_notifications).setOnMenuItemClickListener(
+                new MenuItem.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        activity.startActivity(CustomNotifySettings.createIntent(activity, account));
+                        return true;
+                    }
+                });
 
         if (state.isConnected()) {
             menu.findItem(R.id.action_add_contact).setVisible(true).setIntent(ContactAddActivity.createIntent(activity, account));
