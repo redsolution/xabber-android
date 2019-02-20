@@ -20,7 +20,8 @@ import com.xabber.android.data.notification.custom_notification.CustomNotifyPref
 import com.xabber.android.data.notification.custom_notification.Key;
 import com.xabber.android.data.notification.custom_notification.NotifyPrefs;
 
-public class CustomNotifSettingsFragment extends android.preference.PreferenceFragment {
+public class CustomNotifSettingsFragment extends android.preference.PreferenceFragment
+        implements Preference.OnPreferenceChangeListener {
 
     private Key key;
 
@@ -43,78 +44,84 @@ public class CustomNotifSettingsFragment extends android.preference.PreferenceFr
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.preference_custom_notify);
 
-        prefEnableCustomNotif = (SwitchPreference) getPreferenceScreen().findPreference("custom_notification_enable");
-        prefMessagePreview = (SwitchPreference) getPreferenceScreen().findPreference("custom_notification_preview");
-        prefSound = (RingtonePreference) getPreferenceScreen().findPreference("custom_notification_sound");
-        prefVibro = (ListPreference) getPreferenceScreen().findPreference("custom_notification_vibro");
+        prefEnableCustomNotif = (SwitchPreference) getPreferenceScreen().findPreference(getString(R.string.custom_notification_enable_key));
+        prefMessagePreview = (SwitchPreference) getPreferenceScreen().findPreference(getString(R.string.custom_notification_preview_key));
+        prefSound = (RingtonePreference) getPreferenceScreen().findPreference(getString(R.string.custom_notification_sound_key));
+        prefVibro = (ListPreference) getPreferenceScreen().findPreference(getString(R.string.custom_notification_vibro_key));
+
+        prefEnableCustomNotif.setOnPreferenceChangeListener(this);
+        prefMessagePreview.setOnPreferenceChangeListener(this);
+        prefSound.setOnPreferenceChangeListener(this);
+        prefVibro.setOnPreferenceChangeListener(this);
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        updateSummaries();
+    }
+
+    @Override
+    public boolean onPreferenceChange(Preference preference, Object newValue) {
+        final NotifyPrefs notifyPrefs = CustomNotifyPrefsManager.getInstance().findPrefs(key);
+
+        if (preference.getKey().equals(getString(R.string.custom_notification_enable_key))) {
+            if ((Boolean) newValue)
+                CustomNotifyPrefsManager.getInstance().createNotifyPrefs(getActivity(),
+                        notificationManager, key, "", true, "");
+            else if (notifyPrefs != null)
+                CustomNotifyPrefsManager.getInstance().deleteNotifyPrefs(notificationManager, notifyPrefs.getId());
+            updateSummaries();
+
+        } else if (preference.getKey().equals(getString(R.string.custom_notification_preview_key))) {
+            if (notifyPrefs == null) return false;
+            CustomNotifyPrefsManager.getInstance().createNotifyPrefs(getActivity(),
+                    notificationManager, key, notifyPrefs.getVibro(),
+                    (Boolean) newValue, notifyPrefs.getSound());
+
+        } else if (preference.getKey().equals(getString(R.string.custom_notification_sound_key))) {
+            if (notifyPrefs == null) return false;
+            CustomNotifyPrefsManager.getInstance().createNotifyPrefs(getActivity(),
+                    notificationManager, key, notifyPrefs.getVibro(),
+                    notifyPrefs.isShowPreview(), newValue.toString());
+            updateSummaries();
+
+        } else if (preference.getKey().equals(getString(R.string.custom_notification_vibro_key))) {
+            if (notifyPrefs == null) return false;
+            CustomNotifyPrefsManager.getInstance().createNotifyPrefs(getActivity(),
+                    notificationManager, key, newValue.toString(),
+                    notifyPrefs.isShowPreview(), notifyPrefs.getSound());
+            updateSummaries();
+
+        }
+        return true;
+    }
+
+    private void updateSummaries() {
         final NotifyPrefs notifyPrefs = CustomNotifyPrefsManager.getInstance().findPrefs(key);
         prefEnableCustomNotif.setChecked(notifyPrefs != null);
-        prefEnableCustomNotif.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-            @Override
-            public boolean onPreferenceChange(Preference preference, Object newValue) {
-                if ((Boolean) newValue)
-                    CustomNotifyPrefsManager.getInstance().createNotifyPrefs(getActivity(),
-                            notificationManager, key,"", true, "");
-                else if (notifyPrefs != null)
-                    CustomNotifyPrefsManager.getInstance().deleteNotifyPrefs(notificationManager,
-                            notifyPrefs.getId());
-                return true;
-            }
-        });
 
         if (notifyPrefs != null) {
             prefMessagePreview.setChecked(notifyPrefs.isShowPreview());
-            prefMessagePreview.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                @Override
-                public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    CustomNotifyPrefsManager.getInstance().createNotifyPrefs(getActivity(),
-                            notificationManager, key, notifyPrefs.getVibro(),
-                            (Boolean) newValue, notifyPrefs.getSound());
-                    return true;
-                }
-            });
+            prefVibro.setSummary(getVibroSummary(getActivity(), notifyPrefs));
 
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
                 NotificationChannel channel = notificationManager.getNotificationChannel(notifyPrefs.getChannelID());
-
-                // sound
                 prefSound.setSummary(getSoundTitle(channel));
-                prefSound.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                    @Override
-                    public boolean onPreferenceChange(Preference preference, Object newValue) {
-                        CustomNotifyPrefsManager.getInstance().createNotifyPrefs(getActivity(),
-                                notificationManager, key, notifyPrefs.getVibro(),
-                                notifyPrefs.isShowPreview(), newValue.toString());
-                        return true;
-                    }
-                });
-
-                // vibro
-                prefVibro.setSummary(getVibroSummary(getActivity(), notifyPrefs));
-                prefVibro.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                    @Override
-                    public boolean onPreferenceChange(Preference preference, Object newValue) {
-                        CustomNotifyPrefsManager.getInstance().createNotifyPrefs(getActivity(),
-                                notificationManager, key, newValue.toString(),
-                                notifyPrefs.isShowPreview(), notifyPrefs.getSound());
-                        prefVibro.setSummary(getVibroSummary(getActivity(), notifyPrefs));
-                        return true;
-                    }
-                });
-            }
+            } else prefSound.setSummary(getSoundTitle(notifyPrefs));
         }
     }
-
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     private String getSoundTitle(NotificationChannel channel) {
         if (channel == null) return null;
         Uri uri = channel.getSound();
+        Ringtone ringtone = RingtoneManager.getRingtone(getActivity(), uri);
+        return ringtone.getTitle(getActivity());
+    }
+
+    private String getSoundTitle(NotifyPrefs notifyPrefs) {
+        Uri uri = Uri.parse(notifyPrefs.getSound());
         Ringtone ringtone = RingtoneManager.getRingtone(getActivity(), uri);
         return ringtone.getTitle(getActivity());
     }
