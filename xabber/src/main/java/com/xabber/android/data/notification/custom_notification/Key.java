@@ -1,5 +1,8 @@
 package com.xabber.android.data.notification.custom_notification;
 
+import android.content.Context;
+
+import com.xabber.android.R;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 
@@ -123,22 +126,27 @@ public class Key {
                 return group + " (" + account.getFullJid().asBareJid().toString() + ')';
             case phrase:
                 return "key phrase";
+            default:
+                return "Custom notification";
         }
-        return "custom notification";
     }
 
-    public String generateDescription() {
-        String description = "Custom notification channel for ";
+    public String generateDescription(Context context) {
+        String description;
         switch (type) {
             case account:
-                return description + "account " + generateName();
-            case chat:
-                return description + "chat " + generateName();
+                description = context.getString(R.string.channel_custom_account_description);
+                break;
             case group:
-                return description + "group " + generateName();
+                description = context.getString(R.string.channel_custom_group_description);
+                break;
             case phrase:
-                return description + "key phrase " + generateName();
+                description = context.getString(R.string.channel_custom_keyphrase_description);
+                break;
+            default:
+                description = context.getString(R.string.channel_custom_chat_description);
+                break;
         }
-        return "Custom notification channel";
+        return description + ' ' + generateName();
     }
 }

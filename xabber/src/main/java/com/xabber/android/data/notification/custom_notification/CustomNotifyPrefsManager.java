@@ -54,7 +54,7 @@ public class CustomNotifyPrefsManager implements OnLoadListener {
 
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
                 prefs.setChannelID(NotificationChannelUtils.createCustomChannel(notificationManager,
-                        key.generateName(), key.generateDescription(), Uri.parse(sound),
+                        key.generateName(), key.generateDescription(context), Uri.parse(sound),
                         MessageNotificationCreator.getVibroValue(vibro, context), null));
             }
             preferences.add(prefs);

@@ -45,6 +45,10 @@
     <string name="action_snooze">Snooze</string>
     <string name="action_mark_as_read">Mark as read</string>
 
+    <string name="channel_custom_chat_description">Custom notification channel for chat:</string>
+    <string name="channel_custom_group_description">Custom notification channel for group:</string>
+    <string name="channel_custom_account_description">Custom notification channel for account:</string>
+    <string name="channel_custom_keyphrase_description">Custom notification channel for key phrase:</string>
     <string name="channel_private_chat_title">Private chats</string>
     <string name="channel_private_chat_description">Notifications about messages in private chats</string>
     <string name="channel_group_chat_title">Group chats</string>
