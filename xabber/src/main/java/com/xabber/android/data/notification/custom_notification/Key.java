@@ -51,10 +51,23 @@ public class Key {
             return createKey(prefsRealm.getAccount(), prefsRealm.getUser());
         else if (prefsRealm.getAccount() != null && prefsRealm.getGroup() != null)
             return createKey(prefsRealm.getAccount(), prefsRealm.getGroup());
-        else if (prefsRealm.getAccount() != null && prefsRealm.getPhraseID() != null)
+        else if (prefsRealm.getAccount() != null && prefsRealm.getPhraseID() != null && prefsRealm.getPhraseID() != -1)
             return createKey(prefsRealm.getAccount(), prefsRealm.getPhraseID());
         else if (prefsRealm.getAccount() != null )
             return createKey(prefsRealm.getAccount());
+        else return null;
+    }
+
+    public static @Nullable
+    Key createKey(AccountJid account, UserJid user, String group, Long phraseID) {
+        if (account != null && user != null)
+            return createKey(account, user);
+        else if (account != null && group != null)
+            return createKey(account, group);
+        else if (account != null && phraseID != null && phraseID != -1)
+            return createKey(account, phraseID);
+        else if (account != null )
+            return createKey(account);
         else return null;
     }
 

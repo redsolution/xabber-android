@@ -33,6 +33,13 @@ public class CustomNotifSettingsFragment extends android.preference.PreferenceFr
 
     private NotificationManager notificationManager;
 
+    public static CustomNotifSettingsFragment createInstance(Context context, Key key) {
+        CustomNotifSettingsFragment fragment = new CustomNotifSettingsFragment();
+        fragment.key = key;
+        fragment.notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        return fragment;
+    }
+
     public static CustomNotifSettingsFragment createInstance(Context context, AccountJid account, UserJid user) {
         CustomNotifSettingsFragment fragment = new CustomNotifSettingsFragment();
         fragment.key = Key.createKey(account, user);

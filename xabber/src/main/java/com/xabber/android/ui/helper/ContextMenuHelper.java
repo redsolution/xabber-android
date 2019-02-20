@@ -57,6 +57,7 @@ import com.xabber.android.ui.dialog.GroupRenameDialogFragment;
 import com.xabber.android.ui.dialog.MUCDeleteDialogFragment;
 import com.xabber.android.ui.dialog.SnoozeDialog;
 import com.xabber.android.ui.preferences.ChatContactSettings;
+import com.xabber.android.ui.preferences.CustomNotifySettings;
 
 /**
  * Helper class for context menu creation.
@@ -308,7 +309,7 @@ public class ContextMenuHelper {
                 new MenuItem.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
-                        activity.startActivity(ChatContactSettings.createIntent(activity, account, group));
+                        activity.startActivity(CustomNotifySettings.createIntent(activity, account, group));
                         return true;
                     }
                 });

@@ -87,6 +87,7 @@ import com.xabber.android.ui.fragment.RecentChatFragment;
 import com.xabber.android.ui.helper.NewContactTitleInflater;
 import com.xabber.android.ui.helper.PermissionsRequester;
 import com.xabber.android.ui.preferences.ChatContactSettings;
+import com.xabber.android.ui.preferences.CustomNotifySettings;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -915,7 +916,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
                 return true;
 
             case R.id.action_chat_settings:
-                startActivity(ChatContactSettings.createIntent(this, account, user));
+                startActivity(CustomNotifySettings.createIntent(this, account, user));
                 return true;
 
             case R.id.action_authorization_settings:
