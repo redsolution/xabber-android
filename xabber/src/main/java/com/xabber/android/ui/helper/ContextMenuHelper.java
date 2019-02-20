@@ -56,7 +56,6 @@ import com.xabber.android.ui.dialog.GroupDeleteDialogFragment;
 import com.xabber.android.ui.dialog.GroupRenameDialogFragment;
 import com.xabber.android.ui.dialog.MUCDeleteDialogFragment;
 import com.xabber.android.ui.dialog.SnoozeDialog;
-import com.xabber.android.ui.preferences.ChatContactSettings;
 import com.xabber.android.ui.preferences.CustomNotifySettings;
 
 /**

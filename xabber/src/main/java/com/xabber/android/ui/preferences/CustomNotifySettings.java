@@ -26,21 +26,21 @@ public class CustomNotifySettings extends ManagedActivity {
     private Long phraseID;
 
     public static Intent createIntent(Context context, AccountJid account) {
-        return new EntityIntentBuilder(context, ChatContactSettings.class).setAccount(account).build();
+        return new EntityIntentBuilder(context, CustomNotifySettings.class).setAccount(account).build();
     }
 
     public static Intent createIntent(Context context, AccountJid account, UserJid user) {
-        return new EntityIntentBuilder(context, ChatContactSettings.class).setAccount(account).setUser(user).build();
+        return new EntityIntentBuilder(context, CustomNotifySettings.class).setAccount(account).setUser(user).build();
     }
 
     public static Intent createIntent(Context context, AccountJid account, String group) {
-        Intent intent = new EntityIntentBuilder(context, ChatContactSettings.class).setAccount(account).build();
+        Intent intent = new EntityIntentBuilder(context, CustomNotifySettings.class).setAccount(account).build();
         intent.putExtra(GROUP_KEY, group);
         return intent;
     }
 
     public static Intent createIntent(Context context, AccountJid account, Long phraseID) {
-        Intent intent = new EntityIntentBuilder(context, ChatContactSettings.class).setAccount(account).build();
+        Intent intent = new EntityIntentBuilder(context, CustomNotifySettings.class).setAccount(account).build();
         intent.putExtra(PHRASE_ID_KEY, phraseID);
         return intent;
     }

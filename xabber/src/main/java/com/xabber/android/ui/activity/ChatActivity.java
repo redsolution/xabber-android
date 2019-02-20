@@ -86,7 +86,6 @@ import com.xabber.android.ui.fragment.OccupantListFragment;
 import com.xabber.android.ui.fragment.RecentChatFragment;
 import com.xabber.android.ui.helper.NewContactTitleInflater;
 import com.xabber.android.ui.helper.PermissionsRequester;
-import com.xabber.android.ui.preferences.ChatContactSettings;
 import com.xabber.android.ui.preferences.CustomNotifySettings;
 
 import org.greenrobot.eventbus.Subscribe;
