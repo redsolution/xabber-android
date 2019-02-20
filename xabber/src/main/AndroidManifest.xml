@@ -568,7 +568,7 @@
                 android:value="com.xabber.android.ui.activity.ChatActivity" />
         </activity>
         <activity android:name=".ui.preferences.CustomNotifySettings"
-            android:label="@string/chat_settings"
+            android:label="@string/custom_notifications"
             android:parentActivityName=".ui.activity.ChatActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
