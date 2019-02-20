@@ -16,8 +16,6 @@ import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 
 import com.xabber.android.R;
-import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.notification.custom_notification.CustomNotifyPrefsManager;
 import com.xabber.android.data.notification.custom_notification.Key;
 import com.xabber.android.data.notification.custom_notification.NotifyPrefs;
@@ -36,34 +34,6 @@ public class CustomNotifSettingsFragment extends android.preference.PreferenceFr
     public static CustomNotifSettingsFragment createInstance(Context context, Key key) {
         CustomNotifSettingsFragment fragment = new CustomNotifSettingsFragment();
         fragment.key = key;
-        fragment.notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        return fragment;
-    }
-
-    public static CustomNotifSettingsFragment createInstance(Context context, AccountJid account, UserJid user) {
-        CustomNotifSettingsFragment fragment = new CustomNotifSettingsFragment();
-        fragment.key = Key.createKey(account, user);
-        fragment.notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        return fragment;
-    }
-
-    public static CustomNotifSettingsFragment createInstance(Context context, AccountJid account, String group) {
-        CustomNotifSettingsFragment fragment = new CustomNotifSettingsFragment();
-        fragment.key = Key.createKey(account, group);
-        fragment.notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        return fragment;
-    }
-
-    public static CustomNotifSettingsFragment createInstance(Context context, AccountJid account, Long phraseID) {
-        CustomNotifSettingsFragment fragment = new CustomNotifSettingsFragment();
-        fragment.key = Key.createKey(account, phraseID);
-        fragment.notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        return fragment;
-    }
-
-    public static CustomNotifSettingsFragment createInstance(Context context, AccountJid account) {
-        CustomNotifSettingsFragment fragment = new CustomNotifSettingsFragment();
-        fragment.key = Key.createKey(account);
         fragment.notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         return fragment;
     }
