@@ -19,6 +19,7 @@ import com.xabber.android.data.database.realm.SyncStateRealm;
 import com.xabber.android.data.database.realm.XMPPUserRealm;
 import com.xabber.android.data.database.realm.XabberAccountRealm;
 import com.xabber.android.data.database.sqlite.AccountTable;
+import com.xabber.android.data.extension.httpfileupload.UploadServer;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.notification.custom_notification.NotifyPrefsRealm;
 
@@ -33,7 +34,7 @@ import io.realm.annotations.RealmModule;
 
 public class RealmManager {
     private static final String REALM_DATABASE_NAME = "realm_database.realm";
-    private static final int REALM_DATABASE_VERSION = 19;
+    private static final int REALM_DATABASE_VERSION = 20;
     private static final String LOG_TAG = RealmManager.class.getSimpleName();
     private final RealmConfiguration realmConfiguration;
 
@@ -67,7 +68,8 @@ public class RealmManager {
     @RealmModule(classes = {DiscoveryInfoCache.class, AccountRealm.class, XabberAccountRealm.class,
             XMPPUserRealm.class, EmailRealm.class, SocialBindingRealm.class, SyncStateRealm.class,
             PatreonGoalRealm.class, PatreonRealm.class, ChatDataRealm.class, NotificationStateRealm.class,
-            CrowdfundingMessage.class, NotifChatRealm.class, NotifMessageRealm.class, NotifyPrefsRealm.class})
+            CrowdfundingMessage.class, NotifChatRealm.class, NotifMessageRealm.class, NotifyPrefsRealm.class,
+            UploadServer.class})
     static class RealmDatabaseModule {
     }
 
@@ -295,6 +297,15 @@ public class RealmManager {
                                     .addField(NotifyPrefsRealm.Fields.TYPE, String.class)
                                     .addField(NotifyPrefsRealm.Fields.VIBRO, String.class)
                                     .addField(NotifyPrefsRealm.Fields.SHOW_PREVIEW, boolean.class);
+
+                            oldVersion++;
+                        }
+
+                        if (oldVersion == 20) {
+                            schema.create(UploadServer.class.getSimpleName())
+                                    .addField(UploadServer.Fields.ID, String.class, FieldAttribute.PRIMARY_KEY, FieldAttribute.REQUIRED)
+                                    .addField(UploadServer.Fields.ACCOUNT, String.class)
+                                    .addField(UploadServer.Fields.SERVER, String.class);
 
                             oldVersion++;
                         }

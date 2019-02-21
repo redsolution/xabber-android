@@ -12,7 +12,11 @@ import android.support.annotation.Nullable;
 import android.webkit.MimeTypeMap;
 
 import com.xabber.android.data.Application;
+import com.xabber.android.data.OnLoadListener;
+import com.xabber.android.data.account.AccountItem;
+import com.xabber.android.data.account.listeners.OnAccountRemovedListener;
 import com.xabber.android.data.connection.ConnectionItem;
+import com.xabber.android.data.database.RealmManager;
 import com.xabber.android.data.database.messagerealm.Attachment;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
@@ -29,6 +33,7 @@ import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
 import org.jivesoftware.smackx.xdata.FormField;
 import org.jivesoftware.smackx.xdata.packet.DataForm;
+import org.jxmpp.jid.BareJid;
 import org.jxmpp.jid.DomainBareJid;
 import org.jxmpp.jid.Jid;
 
@@ -39,15 +44,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import io.realm.Realm;
 import io.realm.RealmList;
+import io.realm.RealmResults;
 import rx.subjects.PublishSubject;
 
-public class HttpFileUploadManager {
+public class HttpFileUploadManager implements OnLoadListener, OnAccountRemovedListener {
 
     private static final String LOG_TAG = HttpFileUploadManager.class.getSimpleName();
 
     private static HttpFileUploadManager instance;
-    private Map<AccountJid, Jid> uploadServers = new ConcurrentHashMap<>();
+    private Map<BareJid, Jid> uploadServers = new ConcurrentHashMap<>();
     private PublishSubject<ProgressData> progressSubscribe = PublishSubject.create();
     private boolean isUploading;
 
@@ -62,8 +69,18 @@ public class HttpFileUploadManager {
         return progressSubscribe;
     }
 
+    @Override
+    public void onLoad() {
+        loadAllFromRealm(uploadServers);
+    }
+
+    @Override
+    public void onAccountRemoved(AccountItem accountItem) {
+        removeFromRealm(accountItem.getAccount().getFullJid().asBareJid());
+    }
+
     public boolean isFileUploadSupported(AccountJid account) {
-        return uploadServers.containsKey(account);
+        return uploadServers.containsKey(account.getFullJid().asBareJid());
     }
 
     public void retrySendFileMessage(final MessageItem messageItem, Context context) {
@@ -114,7 +131,7 @@ public class HttpFileUploadManager {
 
         isUploading = true;
 
-        final Jid uploadServerUrl = uploadServers.get(account);
+        final Jid uploadServerUrl = uploadServers.get(account.getFullJid().asBareJid());
         if (uploadServerUrl == null) {
             progressSubscribe.onNext(new ProgressData(0, 0,
                     "Upload server not found", false, null));
@@ -142,8 +159,6 @@ public class HttpFileUploadManager {
     private void discoverSupport(AccountJid account, XMPPConnection xmppConnection) throws SmackException.NotConnectedException,
             XMPPException.XMPPErrorException, SmackException.NoResponseException, InterruptedException {
 
-        uploadServers.remove(account);
-
         ServiceDiscoveryManager discoManager = ServiceDiscoveryManager.getInstanceFor(xmppConnection);
 
         List<DomainBareJid> services;
@@ -157,7 +172,8 @@ public class HttpFileUploadManager {
         if (!services.isEmpty()) {
             final DomainBareJid uploadServerUrl = services.get(0);
             LogManager.i(this, "Http file upload server: " + uploadServerUrl);
-            uploadServers.put(account, uploadServerUrl);
+            uploadServers.put(account.getFullJid().asBareJid(), uploadServerUrl);
+            saveOrUpdateToRealm(account.getFullJid().asBareJid(), uploadServerUrl);
         }
     }
 
@@ -314,5 +330,48 @@ public class HttpFileUploadManager {
         public int getFileCount() {
             return fileCount;
         }
+    }
+
+    // Realm
+
+    private void saveOrUpdateToRealm(final BareJid account, final Jid server) {
+        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
+            @Override
+            public void run() {
+                Realm realm = RealmManager.getInstance().getNewRealm();
+                UploadServer item = realm.where(UploadServer.class)
+                        .equalTo(UploadServer.Fields.ACCOUNT, account.toString()).findFirst();
+                if (item == null) item = new UploadServer(account, server);
+                else item.setServer(server);
+
+                realm.beginTransaction();
+                realm.copyToRealmOrUpdate(item);
+                realm.commitTransaction();
+            }
+        });
+    }
+
+    private void removeFromRealm(final BareJid account) {
+        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
+            @Override
+            public void run() {
+                Realm realm = RealmManager.getInstance().getNewRealm();
+                UploadServer item = realm.where(UploadServer.class)
+                        .equalTo(UploadServer.Fields.ACCOUNT, account.toString()).findFirst();
+                realm.beginTransaction();
+                if (item != null) item.deleteFromRealm();
+                realm.commitTransaction();
+            }
+        });
+    }
+
+    private void loadAllFromRealm(Map<BareJid, Jid> uploadServers) {
+        uploadServers.clear();
+        Realm realm = RealmManager.getInstance().getNewRealm();
+        RealmResults<UploadServer> items = realm.where(UploadServer.class).findAll();
+        for (UploadServer item : items) {
+            uploadServers.put(item.getAccount(), item.getServer());
+        }
+        realm.close();
     }
 }
