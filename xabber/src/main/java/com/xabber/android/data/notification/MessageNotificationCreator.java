@@ -26,6 +26,7 @@ import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.chat.ChatManager;
+import com.xabber.android.data.message.phrase.PhraseManager;
 import com.xabber.android.data.notification.custom_notification.CustomNotifyPrefsManager;
 import com.xabber.android.data.notification.custom_notification.NotifyPrefs;
 import com.xabber.android.data.roster.RosterManager;
@@ -378,9 +379,10 @@ public class MessageNotificationCreator {
 
     private static NotifyPrefs getCustomPrefs(MessageNotificationManager.Chat chat) {
         Collection<String> groups = RosterManager.getInstance().getGroups(chat.getAccountJid(), chat.getUserJid());
-        return CustomNotifyPrefsManager.getInstance().getNotifyPrefsIfExist(
-                chat.getAccountJid(), chat.getUserJid(), groups != null && groups.size() > 0 ? groups.iterator().next() : "",
+        Long phraseID = PhraseManager.getInstance().getPhraseID(chat.getAccountJid(), chat.getUserJid(),
                 chat.getLastMessage().getMessageText().toString());
+        return CustomNotifyPrefsManager.getInstance().getNotifyPrefsIfExist(chat.getAccountJid(),
+                chat.getUserJid(), groups != null && groups.size() > 0 ? groups.iterator().next() : "", phraseID);
     }
 
     public class SortByLastMessage implements Comparator<MessageNotificationManager.Chat> {

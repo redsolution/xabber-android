@@ -77,10 +77,8 @@ public class CustomNotifyPrefsManager implements OnLoadListener {
         return null;
     }
 
-    public NotifyPrefs getNotifyPrefsIfExist(AccountJid account, UserJid user, String group, String text) {
-        NotifyPrefs prefs = null;
-        // TODO: 19.02.19 implement
-        //prefs = findPrefsByPhrase(account, );
+    public NotifyPrefs getNotifyPrefsIfExist(AccountJid account, UserJid user, String group, Long phraseID) {
+        NotifyPrefs prefs = findPrefs(Key.createKey(phraseID));
         if (prefs == null) prefs = findPrefs(Key.createKey(account, user));
         if (prefs == null) prefs = findPrefs(Key.createKey(account, group));
         if (prefs == null) prefs = findPrefs(Key.createKey(account));
@@ -143,7 +141,7 @@ public class CustomNotifyPrefsManager implements OnLoadListener {
             public void run() {
                 NotifyPrefsRealm prefsRealm = new NotifyPrefsRealm(prefs.getId());
                 prefsRealm.setType(prefs.getKey().getType().toString());
-                prefsRealm.setAccount(prefs.getKey().getAccount());
+                if (prefs.getKey().getAccount() != null) prefsRealm.setAccount(prefs.getKey().getAccount());
                 if (prefs.getKey().getUser() != null) prefsRealm.setUser(prefs.getKey().getUser());
                 prefsRealm.setGroup(prefs.getKey().getGroup());
                 prefsRealm.setPhraseID(prefs.getKey().getPhraseID());

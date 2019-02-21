@@ -39,8 +39,8 @@ public class CustomNotifySettings extends ManagedActivity {
         return intent;
     }
 
-    public static Intent createIntent(Context context, AccountJid account, Long phraseID) {
-        Intent intent = new EntityIntentBuilder(context, CustomNotifySettings.class).setAccount(account).build();
+    public static Intent createIntent(Context context, Long phraseID) {
+        Intent intent = new Intent(context, CustomNotifySettings.class);
         intent.putExtra(PHRASE_ID_KEY, phraseID);
         return intent;
     }

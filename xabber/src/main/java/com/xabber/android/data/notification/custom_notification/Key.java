@@ -33,9 +33,8 @@ public class Key {
         return key;
     }
 
-    public static Key createKey(AccountJid account, Long phraseID) {
+    public static Key createKey(Long phraseID) {
         Key key = new Key();
-        key.account = account;
         key.phraseID = phraseID;
         key.type = NotifyPrefs.Type.phrase;
         return key;
@@ -54,8 +53,8 @@ public class Key {
             return createKey(prefsRealm.getAccount(), prefsRealm.getUser());
         else if (prefsRealm.getAccount() != null && prefsRealm.getGroup() != null)
             return createKey(prefsRealm.getAccount(), prefsRealm.getGroup());
-        else if (prefsRealm.getAccount() != null && prefsRealm.getPhraseID() != null && prefsRealm.getPhraseID() != -1)
-            return createKey(prefsRealm.getAccount(), prefsRealm.getPhraseID());
+        else if (prefsRealm.getPhraseID() != null && prefsRealm.getPhraseID() != -1)
+            return createKey(prefsRealm.getPhraseID());
         else if (prefsRealm.getAccount() != null )
             return createKey(prefsRealm.getAccount());
         else return null;
@@ -67,8 +66,8 @@ public class Key {
             return createKey(account, user);
         else if (account != null && group != null)
             return createKey(account, group);
-        else if (account != null && phraseID != null && phraseID != -1)
-            return createKey(account, phraseID);
+        else if (phraseID != null && phraseID != -1)
+            return createKey(phraseID);
         else if (account != null )
             return createKey(account);
         else return null;
@@ -107,8 +106,8 @@ public class Key {
                 if (this.account == null || this.group == null) return false;
                 else if (this.account.equals(key.account) && this.group.equals(key.group)) return true;
             case phrase:
-                if (this.account == null || this.phraseID == null) return false;
-                else if (this.account.equals(key.account) && this.phraseID.equals(key.phraseID)) return true;
+                if (this.phraseID == null) return false;
+                else if (this.phraseID.equals(key.phraseID)) return true;
             case account:
                 if (this.account == null) return false;
                 else if (this.account.equals(key.account)) return true;
