@@ -30,19 +30,12 @@ public class NewContactTitleInflater {
 
         // notification mute
         Resources resources = context.getResources();
-        switch (mode) {
-            case enabled:
-                nameView.setCompoundDrawablesWithIntrinsicBounds(null, null,
-                        resources.getDrawable(R.drawable.ic_unmute_large), null);
-                break;
-            case disabled:
-                nameView.setCompoundDrawablesWithIntrinsicBounds(null, null,
-                        resources.getDrawable(R.drawable.ic_mute_large), null);
-                break;
-            default:
-                nameView.setCompoundDrawablesWithIntrinsicBounds(
-                        null, null, null, null);
-        }
+        int resID = 0;
+        if (mode == NotificationState.NotificationMode.enabled) resID = R.drawable.ic_unmute_large;
+        else if (mode == NotificationState.NotificationMode.disabled) resID = R.drawable.ic_mute_large;
+        else if (mode != NotificationState.NotificationMode.bydefault) resID = R.drawable.ic_snooze_toolbar;
+        nameView.setCompoundDrawablesWithIntrinsicBounds(null, null,
+                resID != 0 ? resources.getDrawable(resID) : null, null);
 
         // if it is account, not simple user contact
         if (abstractContact.getUser().getJid().asBareJid().equals(abstractContact.getAccount().getFullJid().asBareJid())) {

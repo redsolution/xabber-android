@@ -21,7 +21,7 @@
             android:layout_height="24dp"
             android:layout_gravity="center_vertical"
             android:layout_marginLeft="16dp"
-            android:src="@drawable/ic_snooze"
+            android:src="@drawable/ic_snooze_15min"
             android:tint="@color/grey_600"
             />
 
@@ -50,7 +50,7 @@
             android:layout_height="24dp"
             android:layout_gravity="center_vertical"
             android:layout_marginLeft="16dp"
-            android:src="@drawable/ic_snooze"
+            android:src="@drawable/ic_snooze_1hour"
             android:tint="@color/grey_600"
             />
 
@@ -79,7 +79,7 @@
             android:layout_height="24dp"
             android:layout_gravity="center_vertical"
             android:layout_marginLeft="16dp"
-            android:src="@drawable/ic_snooze"
+            android:src="@drawable/ic_snooze_2hours"
             android:tint="@color/grey_600"
             />
 
@@ -108,7 +108,7 @@
             android:layout_height="24dp"
             android:layout_gravity="center_vertical"
             android:layout_marginLeft="16dp"
-            android:src="@drawable/ic_snooze"
+            android:src="@drawable/ic_snooze_1day"
             android:tint="@color/grey_600"
             />
 

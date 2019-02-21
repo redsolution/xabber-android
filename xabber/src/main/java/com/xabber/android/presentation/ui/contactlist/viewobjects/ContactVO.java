@@ -313,19 +313,13 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
 
         /** set up NOTIFICATION MUTE */
         Resources resources = context.getResources();
-        switch (getNotificationMode()) {
-            case enabled:
-                viewHolder.tvContactName.setCompoundDrawablesWithIntrinsicBounds(mucIndicator, null,
-                        resources.getDrawable(R.drawable.ic_unmute), null);
-                break;
-            case disabled:
-                viewHolder.tvContactName.setCompoundDrawablesWithIntrinsicBounds(mucIndicator, null,
-                        resources.getDrawable(R.drawable.ic_mute), null);
-                break;
-            default:
-                viewHolder.tvContactName.setCompoundDrawablesWithIntrinsicBounds(
-                        mucIndicator, null, null, null);
-        }
+        int resID = 0;
+        NotificationState.NotificationMode mode = getNotificationMode();
+        if (mode == NotificationState.NotificationMode.enabled) resID = R.drawable.ic_unmute;
+        else if (mode == NotificationState.NotificationMode.disabled) resID = R.drawable.ic_mute;
+        else if (mode != NotificationState.NotificationMode.bydefault) resID = R.drawable.ic_snooze_mini;
+        viewHolder.tvContactName.setCompoundDrawablesWithIntrinsicBounds(mucIndicator, null,
+                resID != 0 ? resources.getDrawable(resID) : null, null);
 
         /** set up UNREAD COUNT */
         if (getUnreadCount() > 0) {
