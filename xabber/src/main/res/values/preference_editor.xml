@@ -118,6 +118,7 @@
     <string name="connection_dns_resolver_type_mini_dns_resolver">MiniDNSResolver (experimental)</string>
 
     <string name="events_phrases">Key phrases</string>
+    <string name="events_phrase">Key phrase</string>
     <string name="events_phrases_summary">Create custom notifications for received messages that contain specific phrases</string>
 
     <string name="account_error_settings">Settings</string>

@@ -5,6 +5,8 @@ import android.content.Context;
 import com.xabber.android.R;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.message.phrase.Phrase;
+import com.xabber.android.data.message.phrase.PhraseManager;
 
 import javax.annotation.Nullable;
 
@@ -115,7 +117,7 @@ public class Key {
         return false;
     }
 
-    public String generateName() {
+    public String generateName(Context context) {
         switch (type) {
             case account:
                 return account.getFullJid().asBareJid().toString();
@@ -124,10 +126,21 @@ public class Key {
             case group:
                 return group + " (" + account.getFullJid().asBareJid().toString() + ')';
             case phrase:
-                return "key phrase";
+                return generatePhraseName(context, phraseID);
             default:
-                return "Custom notification";
+                return context.getString(R.string.channel_custom_name_default);
         }
+    }
+
+    public String generatePhraseName(Context context, Long id) {
+        Phrase phrase = PhraseManager.getInstance().getPhrase(id);
+        String result = context.getString(R.string.events_phrase);
+        if (phrase != null) {
+            if (phrase.getText() != null && !phrase.getText().isEmpty()) result += ": " + phrase.getText();
+            else if (phrase.getUser() != null && !phrase.getUser().isEmpty()) result += ": " + phrase.getUser();
+            else if (phrase.getGroup() != null && !phrase.getGroup().isEmpty()) result += ": " + phrase.getGroup();
+        }
+        return result;
     }
 
     public String generateDescription(Context context) {
@@ -146,6 +159,6 @@ public class Key {
                 description = context.getString(R.string.channel_custom_chat_description);
                 break;
         }
-        return description + ' ' + generateName();
+        return description + ' ' + generateName(context);
     }
 }

@@ -29,6 +29,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 /**
  * Manage custom notification based on message.
  *
@@ -110,6 +112,14 @@ public class PhraseManager implements OnLoadListener {
                 account, user);
         for (Phrase phrase : phrases) {
             if (phrase.matches(text, user.toString(), groups)) return phrase.getId();
+        }
+        return null;
+    }
+
+    @Nullable
+    public Phrase getPhrase(Long id) {
+        for (Phrase phrase : phrases) {
+            if (phrase.getId().equals(id)) return phrase;
         }
         return null;
     }
