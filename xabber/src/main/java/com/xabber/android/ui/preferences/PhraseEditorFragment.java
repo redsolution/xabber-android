@@ -80,7 +80,8 @@ public class PhraseEditorFragment extends BaseSettingsFragment {
         Phrase phrase = mListener.getPhrase();
 
         if (phrase == null && "".equals(text) && "".equals(user) && "".equals(group)) {
-            return true;
+            Toast.makeText(getActivity(), R.string.events_phrases_error, Toast.LENGTH_LONG).show();
+            return false;
         }
         Log.i("PhraseEditorFragment", "updateOrCreatePhrase");
         PhraseManager.getInstance().updateOrCreatePhrase(phrase, text, user, group, regexp, null);

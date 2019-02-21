@@ -120,6 +120,7 @@
     <string name="events_phrases">Key phrases</string>
     <string name="events_phrase">Key phrase</string>
     <string name="events_phrases_summary">Create custom notifications for received messages that contain specific phrases</string>
+    <string name="events_phrases_error">You must fill at least one field</string>
 
     <string name="account_error_settings">Settings</string>
 
