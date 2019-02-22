@@ -36,6 +36,7 @@ import com.xabber.android.data.message.ChatAction;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.RegularChat;
 import com.xabber.android.data.notification.EntityNotificationProvider;
+import com.xabber.android.data.notification.NotificationChannelUtils;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.RosterManager;
 
@@ -77,7 +78,7 @@ public class AttentionManager implements OnPacketListener, OnLoadListener {
     }
 
     private final EntityNotificationProvider<AttentionRequest> attentionRequestProvider = new EntityNotificationProvider<AttentionRequest>(
-            R.drawable.ic_stat_error) {
+            R.drawable.ic_stat_error, NotificationChannelUtils.DEFAULT_ATTENTION_CHANNEL_ID) {
 
         @Override
         public Uri getSound() {

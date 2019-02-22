@@ -212,8 +212,11 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
             ticker = top.getTitle();
         }
 
-        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(application,
-                NotificationChannelUtils.EVENTS_CHANNEL_ID);
+        String channelID = provider.getChannelID();
+        if (channelID.equals(NotificationChannelUtils.DEFAULT_ATTENTION_CHANNEL_ID))
+            channelID = NotificationChannelUtils.getChannelID(NotificationChannelUtils.ChannelType.attention);
+
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(application, channelID);
 
         notificationBuilder.setSmallIcon(provider.getIcon());
         notificationBuilder.setTicker(ticker);

@@ -24,7 +24,7 @@ public class NotificationChannelUtils {
 
     private static final String DEFAULT_PRIVATE_MESSAGE_CHANNEL_ID = "DEFAULT_PRIVATE_MESSAGE_CHANNEL_ID";
     private static final String DEFAULT_GROUP_MESSAGE_CHANNEL_ID = "DEFAULT_GROUP_MESSAGE_CHANNEL_ID";
-    private static final String DEFAULT_ATTENTION_CHANNEL_ID = "DEFAULT_ATTENTION_CHANNEL_ID";
+    public static final String DEFAULT_ATTENTION_CHANNEL_ID = "DEFAULT_ATTENTION_CHANNEL_ID";
     public static final String PERSISTENT_CONNECTION_CHANNEL_ID = "PERSISTENT_CONNECTION_CHANNEL_ID";
     public static final String EVENTS_CHANNEL_ID = "EVENTS_CHANNEL_ID";
 
