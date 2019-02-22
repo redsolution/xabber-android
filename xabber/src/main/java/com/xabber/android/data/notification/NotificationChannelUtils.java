@@ -20,15 +20,18 @@ public class NotificationChannelUtils {
 
     private static final String PRIVATE_MESSAGE_CHANNEL_ID_KEY = "PRIVATE_MESSAGE_CHANNEL_ID_KEY";
     private static final String GROUP_MESSAGE_CHANNEL_ID_KEY = "GROUP_MESSAGE_CHANNEL_ID_KEY";
+    private static final String ATTENTION_CHANNEL_ID_KEY = "ATTENTION_CHANNEL_ID_KEY";
 
     private static final String DEFAULT_PRIVATE_MESSAGE_CHANNEL_ID = "DEFAULT_PRIVATE_MESSAGE_CHANNEL_ID";
     private static final String DEFAULT_GROUP_MESSAGE_CHANNEL_ID = "DEFAULT_GROUP_MESSAGE_CHANNEL_ID";
+    private static final String DEFAULT_ATTENTION_CHANNEL_ID = "DEFAULT_ATTENTION_CHANNEL_ID";
     public static final String PERSISTENT_CONNECTION_CHANNEL_ID = "PERSISTENT_CONNECTION_CHANNEL_ID";
     public static final String EVENTS_CHANNEL_ID = "EVENTS_CHANNEL_ID";
 
     public enum ChannelType {
         privateChat,
-        groupChat
+        groupChat,
+        attention
     }
 
     public static String getChannelID(ChannelType type) {
@@ -36,6 +39,8 @@ public class NotificationChannelUtils {
 
         if (type == ChannelType.groupChat)
             return sPref.getString(GROUP_MESSAGE_CHANNEL_ID_KEY, DEFAULT_GROUP_MESSAGE_CHANNEL_ID);
+        else if (type == ChannelType.attention)
+            return sPref.getString(ATTENTION_CHANNEL_ID_KEY, DEFAULT_ATTENTION_CHANNEL_ID);
         else return sPref.getString(PRIVATE_MESSAGE_CHANNEL_ID_KEY, DEFAULT_PRIVATE_MESSAGE_CHANNEL_ID);
     }
 
@@ -45,6 +50,8 @@ public class NotificationChannelUtils {
 
         if (type == ChannelType.groupChat)
             sPref.edit().putString(GROUP_MESSAGE_CHANNEL_ID_KEY, newID).apply();
+        else if (type == ChannelType.attention)
+            sPref.edit().putString(ATTENTION_CHANNEL_ID_KEY, newID).apply();
         else sPref.edit().putString(PRIVATE_MESSAGE_CHANNEL_ID_KEY, newID).apply();
 
         return newID;
@@ -79,11 +86,9 @@ public class NotificationChannelUtils {
                                               Uri sound, long[] vibro, AudioAttributes audioAttrs) {
         @SuppressLint("WrongConstant") NotificationChannel channel =
                 new NotificationChannel(getChannelID(type),
-                        getString(type == ChannelType.groupChat ? R.string.channel_group_chat_title
-                                : R.string.channel_private_chat_title),
+                        getNameByType(type),
                         android.app.NotificationManager.IMPORTANCE_HIGH);
-        channel.setDescription(getString(type == ChannelType.groupChat ? R.string.channel_group_chat_description
-                : R.string.channel_private_chat_description));
+        channel.setDescription(getDescriptionByType(type));
         if (vibro != null) channel.setVibrationPattern(vibro);
         if (sound != null && audioAttrs != null) channel.setSound(sound, audioAttrs);
         notifManager.createNotificationChannel(channel);
@@ -116,6 +121,22 @@ public class NotificationChannelUtils {
 
     private static String getString(@StringRes int resid) {
         return Application.getInstance().getString(resid);
+    }
+
+    private static String getNameByType(ChannelType channelType) {
+        if (channelType == ChannelType.privateChat)
+            return getString(R.string.channel_private_chat_title);
+        else if ((channelType == ChannelType.groupChat))
+            return getString(R.string.channel_group_chat_title);
+        else return getString(R.string.channel_attention_title);
+    }
+
+    private static String getDescriptionByType(ChannelType channelType) {
+        if (channelType == ChannelType.privateChat)
+            return getString(R.string.channel_private_chat_description);
+        else if ((channelType == ChannelType.groupChat))
+            return getString(R.string.channel_group_chat_description);
+        else return getString(R.string.channel_attention_description);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
