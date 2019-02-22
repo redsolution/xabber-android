@@ -42,6 +42,7 @@
   <string name="group_remove">Удалить группу</string>
   <string name="group_remove_confirm">Вы действительно хотите удалить группу %s? Пользователи этой группы остануться в списке контактов.</string>
   <string name="group_rename">Переименовать группу</string>
+  <string name="configure_notifications">Настроить уведомления</string>
   <string name="NO_SUCH_ACCOUNT">Учетная запись не найдена</string>
   <string name="NOT_CONNECTED">Подключение не установлено</string>
   <string name="request_subscription">Запросить подписку</string>

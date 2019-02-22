@@ -120,4 +120,6 @@
   <string name="uploaded_files_count">Загрузка.. %s</string>
   <string name="xabber_join_button">Поддержать Xabber</string>
   <string name="forwarded_messages_count">%d пересланных сообщений</string>
+  <string name="message_hidden">Сообщение скрыто</string>
+  <string name="unread_messages">Новые сообщения</string>
 </resources>

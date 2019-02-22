@@ -32,7 +32,8 @@
   <string name="events_lightning_muc">Подсветка</string>
   <string name="events_lightning_muc_summary">Мигать подсветкой для оповещения в конференциях</string>
   <string name="events_persistent">Иконка в панели задач\nОтображать постоянное уведомление. Включение предотвращает выгрузку приложения при нехватке памяти</string>
-  <string name="events_sound">Звук оповещения\nВыберите звуковое оповещение</string>
+  <string name="events_sound">Звук оповещения</string>
+  <string name="events_sound_summary">Выберите звуковое оповещение</string>
   <string name="events_vibro">Вибрация</string>
   <string name="interface_theme">Тема</string>
   <string name="interface_theme_dark">Темная</string>
@@ -135,4 +136,10 @@
   <string name="events_reset_summary">Все настройки уведомлений будут установлены в значения по умолчанию</string>
   <string name="events_reset_alert">Сбросить настройки уведомлений?</string>
   <string name="events_reset_toast">Настройки были сброшены</string>
+  <string name="events_use_custom">Использовать специальные настройки уведомлений</string>
+  <string name="events_use_custom_summary">Специальные настройки уведомлений приоритетнее всех остальных настроек уведомлений</string>
+  <string name="events_use_custom_not_allowed_summary">Сначала необходимо сохранить ключевую фразу</string>
+    <string name="events_phrase">Ключевая фраза</string>
+    <string name="events_phrases_error">Заполните хотябы одно поле</string>
+    <string name="custom_notifications">Специальные уведомления</string>
 </resources>
