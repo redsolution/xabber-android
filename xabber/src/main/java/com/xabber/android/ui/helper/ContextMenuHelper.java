@@ -120,8 +120,13 @@ public class ContextMenuHelper {
 
                 });
 
-        menu.findItem(R.id.action_edit_contact_groups).setIntent(
-                GroupEditActivity.createIntent(activity, account, user));
+        menu.findItem(R.id.action_edit_contact_groups).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                activity.startActivity(GroupEditActivity.createIntent(activity, account, user));
+                return true;
+            }
+        });
 
         menu.findItem(R.id.action_delete_contact).setOnMenuItemClickListener(
                 new MenuItem.OnMenuItemClickListener() {
