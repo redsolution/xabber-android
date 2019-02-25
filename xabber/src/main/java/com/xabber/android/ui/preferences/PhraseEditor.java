@@ -18,6 +18,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
@@ -28,6 +30,8 @@ import com.xabber.android.ui.color.BarPainter;
 import com.xabber.android.ui.helper.ToolbarHelper;
 
 public class PhraseEditor extends BasePhrasePreferences {
+
+    private Integer index;
 
     public static Intent createIntent(Context context, Integer phraseIndex) {
         SegmentIntentBuilder<?> builder = new SegmentIntentBuilder<>(
@@ -41,7 +45,7 @@ public class PhraseEditor extends BasePhrasePreferences {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Integer index = getPhraseIndex(getIntent());
+        index = getPhraseIndex(getIntent());
         if (index == null) {
             finish();
             return;
@@ -60,9 +64,36 @@ public class PhraseEditor extends BasePhrasePreferences {
                     R.string.phrase_empty);
 
         Toolbar toolbar = ToolbarHelper.setUpDefaultToolbar(this, title);
+        toolbar.inflateMenu(R.menu.toolbar_delete);
+        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                return onOptionsItemSelected(item);
+            }
+        });
 
         BarPainter barPainter = new BarPainter(this, toolbar);
         barPainter.setDefaultColor();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        getMenuInflater().inflate(R.menu.toolbar_delete, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_delete:
+                PhraseManager.getInstance().removePhrase(index);
+                finish();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+
     }
 
     @Override
