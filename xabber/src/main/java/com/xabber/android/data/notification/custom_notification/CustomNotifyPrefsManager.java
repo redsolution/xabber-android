@@ -90,6 +90,17 @@ public class CustomNotifyPrefsManager implements OnLoadListener {
         return prefs;
     }
 
+    public void deleteAllNotifyPrefs(NotificationManager notificationManager) {
+        Iterator it = preferences.iterator();
+        while (it.hasNext()) {
+            NotifyPrefs item = (NotifyPrefs) it.next();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+                NotificationChannelUtils.removeCustomChannel(notificationManager, item.getChannelID());
+            it.remove();
+        }
+        removeAllFromRealm();
+    }
+
     public void deleteNotifyPrefs(NotificationManager notificationManager, String id) {
         Iterator it = preferences.iterator();
         while (it.hasNext()) {
@@ -127,6 +138,17 @@ public class CustomNotifyPrefsManager implements OnLoadListener {
                 Realm realm = RealmManager.getInstance().getNewRealm();
                 RealmResults<NotifyPrefsRealm> items = realm.where(NotifyPrefsRealm.class)
                         .equalTo(NotifyPrefsRealm.Fields.ID, id).findAll();
+                removeFromRealm(realm, items);
+            }
+        });
+    }
+
+    private void removeAllFromRealm() {
+        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
+            @Override
+            public void run() {
+                Realm realm = RealmManager.getInstance().getNewRealm();
+                RealmResults<NotifyPrefsRealm> items = realm.where(NotifyPrefsRealm.class).findAll();
                 removeFromRealm(realm, items);
             }
         });

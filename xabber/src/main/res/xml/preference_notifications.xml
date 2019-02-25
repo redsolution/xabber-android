@@ -139,6 +139,11 @@
             android:title="@string/events_reset_title"
             android:summary="@string/events_reset_summary"/>
 
+        <Preference
+            android:key="@string/events_remove_all_custom_key"
+            android:title="@string/events_remove_all_custom_title"
+            android:summary="@string/events_remove_all_custom_summary"/>
+
     </PreferenceCategory>
 
 </PreferenceScreen>

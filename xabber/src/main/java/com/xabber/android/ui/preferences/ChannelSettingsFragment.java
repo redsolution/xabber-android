@@ -22,6 +22,7 @@ import android.widget.Toast;
 import com.xabber.android.R;
 import com.xabber.android.data.notification.MessageNotificationCreator;
 import com.xabber.android.data.notification.NotificationChannelUtils;
+import com.xabber.android.data.notification.custom_notification.CustomNotifyPrefsManager;
 
 @RequiresApi(api = Build.VERSION_CODES.O)
 public class ChannelSettingsFragment extends PreferenceFragment {
@@ -34,7 +35,7 @@ public class ChannelSettingsFragment extends PreferenceFragment {
         addPreferencesFromResource(R.xml.preference_notifications);
         notificationManager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
 
-        Preference resetPreference = (Preference) getPreferenceScreen().findPreference(getString(R.string.events_reset_key));
+        Preference resetPreference = getPreferenceScreen().findPreference(getString(R.string.events_reset_key));
         if (resetPreference != null) {
             resetPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
@@ -51,6 +52,34 @@ public class ChannelSettingsFragment extends PreferenceFragment {
                                             .clear()
                                             .apply();
                                     PreferenceManager.setDefaultValues(getActivity(), R.xml.preference_notifications, true);
+                                    ((NotificationsSettings) getActivity()).restartFragment();
+                                }
+                            })
+                            .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                }
+                            });
+                    builder.create().show();
+                    return true;
+                }
+            });
+        }
+
+        Preference removeCustomNotifPreference = getPreferenceScreen()
+                .findPreference(getString(R.string.events_remove_all_custom_key));
+        if (removeCustomNotifPreference != null) {
+            removeCustomNotifPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    builder.setMessage(R.string.events_remove_all_custom_summary)
+                            .setPositiveButton("remove", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    Toast.makeText(getActivity(), R.string.events_reset_toast, Toast.LENGTH_SHORT).show();
+                                    CustomNotifyPrefsManager.getInstance().deleteAllNotifyPrefs(notificationManager);
                                     ((NotificationsSettings) getActivity()).restartFragment();
                                 }
                             })

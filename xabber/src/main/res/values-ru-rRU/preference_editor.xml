@@ -142,4 +142,6 @@
     <string name="events_phrase">Ключевая фраза</string>
     <string name="events_phrases_error">Заполните хотябы одно поле</string>
     <string name="custom_notifications">Специальные уведомления</string>
+  <string name="events_remove_all_custom_title">Удалить все спецтальные настройки уведомлений</string>
+  <string name="events_remove_all_custom_summary">Все специальные настройки уведомлений (для контактов, групп и аккаунтов) будут удалены</string>
 </resources>

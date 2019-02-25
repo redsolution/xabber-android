@@ -165,4 +165,6 @@
     <string name="events_reset_summary">All notification settings would be set to default values</string>
     <string name="events_reset_alert">Reset notification settings?</string>
     <string name="events_reset_toast">Settings were reset</string>
+    <string name="events_remove_all_custom_title">Remove all custom notifications</string>
+    <string name="events_remove_all_custom_summary">All custom notification settings (for contacts, roster groups and accounts) would be removed</string>
 </resources>

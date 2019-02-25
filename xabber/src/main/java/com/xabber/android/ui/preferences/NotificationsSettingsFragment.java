@@ -2,6 +2,8 @@ package com.xabber.android.ui.preferences;
 
 
 import android.app.AlertDialog;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.preference.Preference;
@@ -9,6 +11,7 @@ import android.preference.PreferenceManager;
 import android.widget.Toast;
 
 import com.xabber.android.R;
+import com.xabber.android.data.notification.custom_notification.CustomNotifyPrefsManager;
 import com.xabber.android.ui.activity.PreferenceSummaryHelperActivity;
 
 public class NotificationsSettingsFragment extends android.preference.PreferenceFragment {
@@ -49,5 +52,35 @@ public class NotificationsSettingsFragment extends android.preference.Preference
                 return true;
             }
         });
+
+        Preference removeCustomNotifPreference = getPreferenceScreen()
+                .findPreference(getString(R.string.events_remove_all_custom_key));
+        if (removeCustomNotifPreference != null) {
+            removeCustomNotifPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    builder.setMessage(R.string.events_remove_all_custom_summary)
+                            .setPositiveButton("remove", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    NotificationManager notificationManager = (NotificationManager)
+                                            getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
+                                    Toast.makeText(getActivity(), R.string.events_reset_toast, Toast.LENGTH_SHORT).show();
+                                    CustomNotifyPrefsManager.getInstance().deleteAllNotifyPrefs(notificationManager);
+                                    ((NotificationsSettings) getActivity()).restartFragment();
+                                }
+                            })
+                            .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                }
+                            });
+                    builder.create().show();
+                    return true;
+                }
+            });
+        }
     }
 }
