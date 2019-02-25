@@ -66,7 +66,7 @@ public class CustomNotifSettingsFragment extends android.preference.PreferenceFr
         final NotifyPrefs notifyPrefs = CustomNotifyPrefsManager.getInstance().findPrefs(key);
 
         if (preference.getKey().equals(getString(R.string.custom_notification_enable_key))) {
-            if ((Boolean) newValue)
+            if ((Boolean) newValue && key != null)
                 CustomNotifyPrefsManager.getInstance().createNotifyPrefs(getActivity(),
                         notificationManager, key, "", true, "");
             else if (notifyPrefs != null)

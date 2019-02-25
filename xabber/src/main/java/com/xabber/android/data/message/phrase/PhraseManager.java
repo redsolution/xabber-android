@@ -182,4 +182,7 @@ public class PhraseManager implements OnLoadListener {
         return phrases.get(index);
     }
 
+    public Integer getLastIndex() {
+        return phrases.size() - 1;
+    }
 }
