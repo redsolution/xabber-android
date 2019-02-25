@@ -22,12 +22,13 @@ public class ChatWithButtonVO extends ExtContactVO {
                             int mucIndicatorLevel, UserJid userJid, AccountJid accountJid, int unreadCount,
                             boolean mute, NotificationState.NotificationMode notificationMode, String messageText,
                             boolean isOutgoing, Date time, int messageStatus, String messageOwner,
-                            boolean archived, String lastActivity, ContactClickListener listener, int forwardedCount) {
+                            boolean archived, String lastActivity, ContactClickListener listener, int forwardedCount,
+                            boolean isCustomNotification) {
 
         super(accountColorIndicator, accountColorIndicatorBack, showOfflineShadow, name, status,
                 statusId, statusLevel, avatar, mucIndicatorLevel, userJid, accountJid,
                 unreadCount, mute, notificationMode, messageText, isOutgoing, time, messageStatus,
-                messageOwner, archived, lastActivity, listener, forwardedCount);
+                messageOwner, archived, lastActivity, listener, forwardedCount, isCustomNotification);
     }
 
     public static ChatWithButtonVO convert(AbstractContact contact, ContactClickListener listener) {
@@ -41,7 +42,7 @@ public class ChatWithButtonVO extends ExtContactVO {
                 contactVO.isMute(), contactVO.getNotificationMode(), contactVO.getMessageText(),
                 contactVO.isOutgoing(), contactVO.getTime(), contactVO.getMessageStatus(),
                 contactVO.getMessageOwner(), contactVO.isArchived(), contactVO.getLastActivity(),
-                contactVO.listener, contactVO.forwardedCount);
+                contactVO.listener, contactVO.forwardedCount, contactVO.isCustomNotification());
     }
 
     public static ChatWithButtonVO convert(ChatVO chat) {
@@ -54,7 +55,7 @@ public class ChatWithButtonVO extends ExtContactVO {
                 chat.isMute(), chat.getNotificationMode(), chat.getMessageText(),
                 chat.isOutgoing(), chat.getTime(), chat.getMessageStatus(),
                 chat.getMessageOwner(), chat.isArchived(), chat.getLastActivity(), chat.listener,
-                chat.forwardedCount);
+                chat.forwardedCount, chat.isCustomNotification());
     }
 
     @Override

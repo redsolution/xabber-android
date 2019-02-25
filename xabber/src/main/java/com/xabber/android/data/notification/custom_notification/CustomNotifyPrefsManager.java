@@ -70,6 +70,11 @@ public class CustomNotifyPrefsManager implements OnLoadListener {
         saveOrUpdateToRealm(prefs);
     }
 
+    public boolean isPrefsExist(Key key) {
+        NotifyPrefs prefs = findPrefs(key);
+        return prefs != null;
+    }
+
     public NotifyPrefs findPrefs(Key key) {
         for (NotifyPrefs item : preferences) {
             if (item.getKey().equals(key)) return item;
