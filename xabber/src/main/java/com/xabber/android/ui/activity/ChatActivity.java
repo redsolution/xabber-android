@@ -967,7 +967,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
                 return true;
 
             case R.id.action_unmute_chat:
-                if (abstractChat != null) abstractChat.setNotificationState(
+                if (abstractChat != null) abstractChat.setNotificationStateOrDefault(
                         new NotificationState(NotificationState.NotificationMode.enabled,
                                 0), true);
                 onSnoozed();

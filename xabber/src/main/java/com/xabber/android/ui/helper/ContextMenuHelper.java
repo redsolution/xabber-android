@@ -191,7 +191,7 @@ public class ContextMenuHelper {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
                         AbstractChat chat = MessageManager.getInstance().getChat(account, user);
-                        if (chat != null) chat.setNotificationState(
+                        if (chat != null) chat.setNotificationStateOrDefault(
                                 new NotificationState(NotificationState.NotificationMode.enabled,
                                         0), true);
                         presenter.updateContactList();

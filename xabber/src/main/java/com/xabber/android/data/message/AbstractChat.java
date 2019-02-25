@@ -37,6 +37,7 @@ import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.extension.forward.ForwardComment;
 import com.xabber.android.data.extension.httpfileupload.ExtendedFormField;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
+import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.ChatManager;
@@ -61,8 +62,6 @@ import org.jxmpp.jid.parts.Resourcepart;
 import java.io.File;
 import java.util.Date;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -805,6 +804,24 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         if (needSaveToRealm) ChatManager.getInstance().saveOrUpdateChatDataToRealm(this);
     }
 
+    public void setNotificationStateOrDefault(NotificationState notificationState, boolean needSaveToRealm) {
+        if (notificationState.getMode() != NotificationState.NotificationMode.enabled
+                && notificationState.getMode() != NotificationState.NotificationMode.disabled)
+            throw new IllegalStateException("In this method mode must be enabled or disabled.");
+
+        if (!eventsOnChatGlobal() && notificationState.getMode() == NotificationState.NotificationMode.disabled
+                || eventsOnChatGlobal() && notificationState.getMode() == NotificationState.NotificationMode.enabled)
+            notificationState.setMode(NotificationState.NotificationMode.bydefault);
+
+        setNotificationState(notificationState, needSaveToRealm);
+    }
+
+    private boolean eventsOnChatGlobal() {
+        if (MUCManager.getInstance().hasRoom(account, user.getJid().asEntityBareJidIfPossible()))
+            return SettingsManager.eventsOnMuc();
+        else return SettingsManager.eventsOnChat();
+    }
+
     public int getLastPosition() {
         return lastPosition;
     }
@@ -842,7 +859,9 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
             || mode.equals(NotificationState.NotificationMode.snooze1h)
             || mode.equals(NotificationState.NotificationMode.snooze2h)
             || mode.equals(NotificationState.NotificationMode.snooze1d))) {
-            setNotificationState(new NotificationState(NotificationState.NotificationMode.enabled, 0), true);
+
+            setNotificationStateOrDefault(new NotificationState(
+                    NotificationState.NotificationMode.enabled, 0), true);
         }
     }
 }
