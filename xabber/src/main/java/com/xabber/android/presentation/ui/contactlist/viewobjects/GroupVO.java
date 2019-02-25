@@ -1,5 +1,7 @@
 package com.xabber.android.presentation.ui.contactlist.viewobjects;
 
+import android.content.Context;
+import android.content.res.Resources;
 import android.support.v7.widget.RecyclerView;
 import android.view.ContextMenu;
 import android.view.View;
@@ -11,6 +13,8 @@ import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.notification.custom_notification.CustomNotifyPrefsManager;
+import com.xabber.android.data.notification.custom_notification.Key;
 import com.xabber.android.data.roster.GroupManager;
 import com.xabber.android.ui.adapter.contactlist.GroupConfiguration;
 import com.xabber.android.ui.color.ColorManager;
@@ -46,6 +50,7 @@ public class GroupVO extends AbstractFlexibleItem<GroupVO.ViewHolder>
     private String groupName;
     private AccountJid accountJid;
     private boolean firstInAccount = false;
+    private boolean isCustomNotification;
 
     private boolean mExpanded = true;
     private List<ContactVO> mSubItems;
@@ -60,7 +65,8 @@ public class GroupVO extends AbstractFlexibleItem<GroupVO.ViewHolder>
     public GroupVO(int accountColorIndicator, int accountColorIndicatorBack,
                    boolean showOfflineShadow, String title,
                    boolean expanded, int offlineIndicatorLevel, String groupName,
-                   AccountJid accountJid, boolean firstInAccount, GroupClickListener listener) {
+                   AccountJid accountJid, boolean firstInAccount, boolean isCustomNotification,
+                   GroupClickListener listener) {
 
         this.id = UUID.randomUUID().toString();
         this.accountColorIndicator = accountColorIndicator;
@@ -72,6 +78,7 @@ public class GroupVO extends AbstractFlexibleItem<GroupVO.ViewHolder>
         this.groupName = groupName;
         this.accountJid = accountJid;
         this.firstInAccount = firstInAccount;
+        this.isCustomNotification = isCustomNotification;
         this.listener = listener;
     }
 
@@ -124,6 +131,13 @@ public class GroupVO extends AbstractFlexibleItem<GroupVO.ViewHolder>
 
         /** set up divider LINE */
         viewHolder.line.setVisibility(firstInAccount ? View.INVISIBLE : View.VISIBLE);
+
+        /** set up CUSTOM NOTIFICATION */
+        Context context = viewHolder.itemView.getContext();
+        Resources resources = context.getResources();
+        viewHolder.name.setCompoundDrawablesWithIntrinsicBounds(null, null,
+                isCustomNotification() ? resources.getDrawable(R.drawable.ic_notif_custom)
+                        : null, null);
     }
 
     @Override
@@ -186,6 +200,10 @@ public class GroupVO extends AbstractFlexibleItem<GroupVO.ViewHolder>
         expanded = configuration.isExpanded();
         offlineIndicatorLevel = configuration.getShowOfflineMode().ordinal();
 
+        // custom notification
+        boolean isCustomNotification = CustomNotifyPrefsManager.getInstance().
+                isPrefsExist(Key.createKey(account, name));
+
         if (!name.equals(RECENT_CHATS_TITLE))
             name = String.format("%s (%d/%d)", name, configuration.getOnline(), configuration.getTotal());
 
@@ -198,11 +216,16 @@ public class GroupVO extends AbstractFlexibleItem<GroupVO.ViewHolder>
         }
 
         return new GroupVO(accountColorIndicator, accountColorIndicatorBack, showOfflineShadow, name, expanded,
-                offlineIndicatorLevel, configuration.getGroup(), configuration.getAccount(), firstInAccount, listener);
+                offlineIndicatorLevel, configuration.getGroup(), configuration.getAccount(),
+                firstInAccount, isCustomNotification, listener);
     }
 
     public String getTitle() {
         return title;
+    }
+
+    public boolean isCustomNotification() {
+        return isCustomNotification;
     }
 
     public int getOfflineIndicatorLevel() {
