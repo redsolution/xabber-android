@@ -27,9 +27,10 @@ import com.xabber.android.data.intent.SegmentIntentBuilder;
 import com.xabber.android.data.message.phrase.Phrase;
 import com.xabber.android.data.message.phrase.PhraseManager;
 import com.xabber.android.ui.color.BarPainter;
+import com.xabber.android.ui.dialog.ConfirmDialog;
 import com.xabber.android.ui.helper.ToolbarHelper;
 
-public class PhraseEditor extends BasePhrasePreferences {
+public class PhraseEditor extends BasePhrasePreferences implements ConfirmDialog.Listener {
 
     private Integer index;
 
@@ -87,8 +88,8 @@ public class PhraseEditor extends BasePhrasePreferences {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_delete:
-                PhraseManager.getInstance().removePhrase(index);
-                finish();
+                ConfirmDialog.newInstance(getRemoveConfirmationText(index))
+                        .show(getFragmentManager(), ConfirmDialog.class.getName());
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -104,11 +105,25 @@ public class PhraseEditor extends BasePhrasePreferences {
                 .findFragmentById(R.id.fragment_container)).saveChanges();
     }
 
+    @Override
+    public void onConfirm() {
+        PhraseManager.getInstance().removePhrase(index);
+        finish();
+    }
+
     private Integer getPhraseIndex(Intent intent) {
         String value = SegmentIntentBuilder.getSegment(intent, 0);
         if (value == null)
             return null;
         else
             return Integer.valueOf(value);
+    }
+
+    private String getRemoveConfirmationText(Integer actionWith) {
+        String text = PhraseManager.getInstance().getPhrase(actionWith)
+                .getText();
+        if ("".equals(text))
+            text = Application.getInstance().getString(R.string.phrase_empty);
+        return getString(R.string.phrase_delete_confirm, text);
     }
 }
