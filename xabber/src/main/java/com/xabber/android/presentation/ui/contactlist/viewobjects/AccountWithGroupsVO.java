@@ -26,10 +26,12 @@ public class AccountWithGroupsVO extends AccountVO implements IExpandable<Accoun
                                boolean showOfflineShadow, String name,
                                String jid, String status, int statusLevel, int statusId, Drawable avatar,
                                int offlineModeLevel, String contactCount, AccountJid accountJid,
-                               boolean isExpand, String groupName, AccountClickListener listener) {
+                               boolean isExpand, String groupName, boolean isCustomNotification,
+                               AccountClickListener listener) {
 
         super(accountColorIndicator, accountColorIndicatorBack, showOfflineShadow, name, jid, status, statusLevel, statusId,
-                avatar, offlineModeLevel, contactCount, accountJid, isExpand, groupName, listener);
+                avatar, offlineModeLevel, contactCount, accountJid, isExpand, groupName,
+                isCustomNotification, listener);
 
         mExpanded = isExpand;
     }
@@ -77,6 +79,7 @@ public class AccountWithGroupsVO extends AccountVO implements IExpandable<Accoun
                 contactVO.getName(), contactVO.getJid(), contactVO.getStatus(),
                 contactVO.getStatusLevel(), contactVO.getStatusId(), contactVO.getAvatar(),
                 contactVO.getOfflineModeLevel(), contactVO.getContactCount(),
-                contactVO.getAccountJid(), contactVO.isExpand(), contactVO.getGroupName(), contactVO.listener);
+                contactVO.getAccountJid(), contactVO.isExpand(), contactVO.getGroupName(),
+                contactVO.isCustomNotification(), contactVO.listener);
     }
 }
