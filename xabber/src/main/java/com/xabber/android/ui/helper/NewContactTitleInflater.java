@@ -10,6 +10,8 @@ import com.xabber.android.R;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.cs.ChatStateManager;
 import com.xabber.android.data.message.NotificationState;
+import com.xabber.android.data.notification.custom_notification.CustomNotifyPrefsManager;
+import com.xabber.android.data.notification.custom_notification.Key;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.RosterContact;
 
@@ -36,6 +38,14 @@ public class NewContactTitleInflater {
         else if (mode != NotificationState.NotificationMode.bydefault) resID = R.drawable.ic_snooze_toolbar;
         nameView.setCompoundDrawablesWithIntrinsicBounds(null, null,
                 resID != 0 ? resources.getDrawable(resID) : null, null);
+
+        // custom notification
+        boolean isCustomNotification = CustomNotifyPrefsManager.getInstance().
+                isPrefsExist(Key.createKey(abstractContact.getAccount(), abstractContact.getUser()));
+        if (isCustomNotification && (mode == NotificationState.NotificationMode.enabled
+                || mode == NotificationState.NotificationMode.bydefault))
+            nameView.setCompoundDrawablesWithIntrinsicBounds(null, null,
+                    resources.getDrawable(R.drawable.ic_notif_custom_large), null);
 
         // if it is account, not simple user contact
         if (abstractContact.getUser().getJid().asBareJid().equals(abstractContact.getAccount().getFullJid().asBareJid())) {
