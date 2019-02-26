@@ -50,6 +50,7 @@ public class ChannelSettingsFragment extends PreferenceFragment {
                                 public void onClick(DialogInterface dialog, int which) {
                                     Toast.makeText(getActivity(), R.string.events_reset_toast, Toast.LENGTH_SHORT).show();
                                     SettingsManager.resetPreferences(getActivity(), NOTIFICATION_PREFERENCES);
+                                    NotificationChannelUtils.resetMessageChannels(notificationManager);
                                     ((NotificationsSettings) getActivity()).restartFragment();
                                 }
                             })

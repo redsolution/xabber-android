@@ -64,6 +64,20 @@ public class NotificationChannelUtils {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
+    public static void resetMessageChannels(NotificationManager notifManager) {
+        resetMessageChannel(notifManager, ChannelType.attention);
+        resetMessageChannel(notifManager, ChannelType.privateChat);
+        resetMessageChannel(notifManager, ChannelType.groupChat);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public static String resetMessageChannel(NotificationManager notifManager, ChannelType type) {
+        notifManager.deleteNotificationChannel(getChannelID(type));
+        updateChannelID(type);
+        return createMessageChannel(notifManager, type, null, null, null);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public static String updateMessageChannel(NotificationManager notifManager, ChannelType type,
                                               Uri newSound, long[] newVibro, AudioAttributes newAudioAttrs) {
 
