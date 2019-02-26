@@ -61,7 +61,7 @@ public class NotificationsSettingsFragment extends android.preference.Preference
                 public boolean onPreferenceClick(Preference preference) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                     builder.setMessage(R.string.events_remove_all_custom_summary)
-                            .setPositiveButton("remove", new DialogInterface.OnClickListener() {
+                            .setPositiveButton(R.string.remove, new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     NotificationManager notificationManager = (NotificationManager)
