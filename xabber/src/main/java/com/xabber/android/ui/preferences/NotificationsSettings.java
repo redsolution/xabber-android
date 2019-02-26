@@ -37,7 +37,10 @@ public class NotificationsSettings extends ManagedActivity {
     }
 
     public void restartFragment() {
-        getFragmentManager().beginTransaction()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+            getFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container, new ChannelSettingsFragment()).commit();
+        else getFragmentManager().beginTransaction()
                 .replace(R.id.fragment_container, new NotificationsSettingsFragment()).commit();
     }
 }

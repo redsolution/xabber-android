@@ -7,17 +7,20 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.preference.Preference;
-import android.preference.PreferenceManager;
 import android.widget.Toast;
 
 import com.xabber.android.R;
+import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.notification.custom_notification.CustomNotifyPrefsManager;
 import com.xabber.android.ui.activity.PreferenceSummaryHelperActivity;
+
+import static com.xabber.android.data.SettingsManager.NOTIFICATION_PREFERENCES;
 
 public class NotificationsSettingsFragment extends android.preference.PreferenceFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getPreferenceManager().setSharedPreferencesName(NOTIFICATION_PREFERENCES);
 
         addPreferencesFromResource(R.xml.preference_notifications);
 
@@ -33,12 +36,7 @@ public class NotificationsSettingsFragment extends android.preference.Preference
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 Toast.makeText(getActivity(), R.string.events_reset_toast, Toast.LENGTH_SHORT).show();
-                                PreferenceManager
-                                        .getDefaultSharedPreferences(getActivity())
-                                        .edit()
-                                        .clear()
-                                        .apply();
-                                PreferenceManager.setDefaultValues(getActivity(), R.xml.preference_notifications, true);
+                                SettingsManager.resetPreferences(getActivity(), NOTIFICATION_PREFERENCES);
                                 ((NotificationsSettings) getActivity()).restartFragment();
                             }
                         })
