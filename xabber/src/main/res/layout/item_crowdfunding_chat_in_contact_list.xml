@@ -96,6 +96,7 @@
             android:layout_marginBottom="12dp"
             android:layout_marginRight="8dp"
             android:maxLines="1"
+            android:ellipsize="end"
             android:textSize="14sp"
             android:textColor="?attr/contact_list_contact_second_line_text_color"
             android:text="@string/xabber_chat_description"
