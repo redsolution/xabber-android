@@ -651,17 +651,28 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
             message = createMessagePacket(body, messageItem.getStanzaId());
 
             Realm realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
-            for (ForwardId id : messageItem.getForwardedIds()) {
-                MessageItem forwardedMessage = realm.where(MessageItem.class)
-                        .equalTo(MessageItem.Fields.UNIQUE_ID, id.getForwardMessageId()).findFirst();
-                try {
-                    Message forwarded = (Message) PacketParserUtils.parseStanza(forwardedMessage.getOriginalStanza());
-                    message.addExtension(new Forwarded(new DelayInformation(new Date(forwardedMessage.getTimestamp())), forwarded));
-                } catch (Exception e) {
-                    e.printStackTrace();
+
+            // forwarded
+            if (messageItem.getForwardedIds() != null && messageItem.getForwardedIds().size() > 0) {
+                final String[] ids = new String[messageItem.getForwardedIds().size()];
+                int i = 0;
+                for (ForwardId id : messageItem.getForwardedIds()) {
+                    ids[i] = id.getForwardMessageId();
+                    i++;
                 }
+
+                RealmResults<MessageItem> items = realm.where(MessageItem.class)
+                        .in(MessageItem.Fields.UNIQUE_ID, ids).findAll();
+                for (MessageItem item : items) {
+                    try {
+                        Message forwarded = (Message) PacketParserUtils.parseStanza(item.getOriginalStanza());
+                        message.addExtension(new Forwarded(new DelayInformation(new Date(item.getTimestamp())), forwarded));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                message.addExtension(new ForwardComment(text));
             }
-            message.addExtension(new ForwardComment(text));
 
         } else if (text != null) {
             message = createMessagePacket(text, messageItem.getStanzaId());
