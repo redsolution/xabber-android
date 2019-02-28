@@ -341,7 +341,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
         if (getUnreadCount() > 0) {
             viewHolder.tvUnreadCount.setText(String.valueOf(getUnreadCount()));
             viewHolder.tvUnreadCount.setVisibility(View.VISIBLE);
-        } else viewHolder.tvUnreadCount.setVisibility(View.INVISIBLE);
+        } else viewHolder.tvUnreadCount.setVisibility(View.GONE);
 
         if (isMute())
             viewHolder.tvUnreadCount.getBackground().mutate().setColorFilter(
