@@ -122,4 +122,5 @@
   <string name="forwarded_messages_count">%d пересланных сообщений</string>
   <string name="message_hidden">Сообщение скрыто</string>
   <string name="unread_messages">Новые сообщения</string>
+  <string name="action_new_contact">Новый контакт</string>
 </resources>

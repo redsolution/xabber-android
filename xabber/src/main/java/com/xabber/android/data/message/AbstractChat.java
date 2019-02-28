@@ -500,7 +500,8 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         if (messages.isValid() && messages.isLoaded() && !messages.isEmpty()) {
             List<MessageItem> textMessages = MessageDatabaseManager.getInstance()
                     .getRealmUiThread()
-                    .copyFromRealm(messages.where().isNull(MessageItem.Fields.ACTION).findAll());
+                    .copyFromRealm(messages.where().isNull(MessageItem.Fields.ACTION)
+                            .or().equalTo(MessageItem.Fields.ACTION, ChatAction.available.toString()).findAll());
 
             if (!textMessages.isEmpty())
                 lastMessage = textMessages.get(textMessages.size() - 1);
