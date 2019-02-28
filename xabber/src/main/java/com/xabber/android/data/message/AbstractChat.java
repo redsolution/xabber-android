@@ -232,19 +232,28 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
      * @return Whether user should be notified about incoming messages in chat.
      */
     public boolean notifyAboutMessage() {
+        if (notificationState.getMode().equals(NotificationState.NotificationMode.bydefault))
+            return SettingsManager.eventsOnChat();
+        if (notificationState.getMode().equals(NotificationState.NotificationMode.enabled))
+            return true;
+        else return false;
+    }
+
+    private void enableNotificationsIfNeed() {
         int currentTime = (int) (System.currentTimeMillis() / 1000L);
-        switch (notificationState.getMode()) {
-            case enabled: return true;
-            case disabled: return false;
-            case snooze15m:
-                return currentTime > notificationState.getTimestamp() + TimeUnit.MINUTES.toSeconds(15);
-            case snooze1h:
-                return currentTime > notificationState.getTimestamp() + TimeUnit.HOURS.toSeconds(1);
-            case snooze2h:
-                return currentTime > notificationState.getTimestamp() + TimeUnit.HOURS.toSeconds(2);
-            case snooze1d:
-                return currentTime > notificationState.getTimestamp() + TimeUnit.DAYS.toSeconds(1);
-            default: return SettingsManager.eventsOnChat();
+        NotificationState.NotificationMode mode = notificationState.getMode();
+
+        if ((mode.equals(NotificationState.NotificationMode.snooze15m)
+                && currentTime > notificationState.getTimestamp() + TimeUnit.MINUTES.toSeconds(15))
+            || (mode.equals(NotificationState.NotificationMode.snooze1h)
+                && currentTime > notificationState.getTimestamp() + TimeUnit.HOURS.toSeconds(1))
+            || (mode.equals(NotificationState.NotificationMode.snooze2h)
+                && currentTime > notificationState.getTimestamp() + TimeUnit.HOURS.toSeconds(2))
+            || (mode.equals(NotificationState.NotificationMode.snooze1d)
+                && currentTime > notificationState.getTimestamp() + TimeUnit.DAYS.toSeconds(1))) {
+
+            setNotificationStateOrDefault(new NotificationState(
+                    NotificationState.NotificationMode.enabled, 0), true);
         }
     }
 
@@ -405,10 +414,10 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         messageItem.setOriginalFrom(originalFrom);
         messageItem.setParentMessageId(parentMessageId);
 
-        if (notify && notifyAboutMessage() && !visible) {
-            enableNotificationsIfNeed();
+        // notification
+        enableNotificationsIfNeed();
+        if (notify && notifyAboutMessage() && !visible)
             NotificationManager.getInstance().onMessageNotification(messageItem);
-        }
 
         // unread message count
         if (!visible && action == null) {
@@ -852,16 +861,4 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     }
 
     protected abstract String parseInnerMessage(boolean ui, Message message, String parentMessageId);
-
-    private void enableNotificationsIfNeed() {
-        NotificationState.NotificationMode mode = notificationState.getMode();
-        if (notifyAboutMessage() && (mode.equals(NotificationState.NotificationMode.snooze15m)
-            || mode.equals(NotificationState.NotificationMode.snooze1h)
-            || mode.equals(NotificationState.NotificationMode.snooze2h)
-            || mode.equals(NotificationState.NotificationMode.snooze1d))) {
-
-            setNotificationStateOrDefault(new NotificationState(
-                    NotificationState.NotificationMode.enabled, 0), true);
-        }
-    }
 }
