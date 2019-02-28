@@ -199,7 +199,8 @@ public class ContextMenuHelper {
                     }
                 });
 
-        menu.add(R.string.configure_notifications).setOnMenuItemClickListener(
+
+        menu.findItem(R.id.action_configure_notifications).setOnMenuItemClickListener(
                 new MenuItem.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
