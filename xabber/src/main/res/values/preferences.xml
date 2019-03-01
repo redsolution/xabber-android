@@ -187,6 +187,12 @@
     <bool name="events_in_chat_sounds_default">true</bool>
 
     <string name="events_reset_key">events_reset</string>
+    <string name="events_remove_all_custom_key">events_remove_all_custom_key</string>
+
+    <string name="custom_notification_enable_key">custom_notification_enable</string>
+    <string name="custom_notification_preview_key">custom_notification_preview</string>
+    <string name="custom_notification_sound_key">custom_notification_sound</string>
+    <string name="custom_notification_vibro_key">custom_notification_vibro</string>
 <!-- preference_chats -->
 	<string name="preference_chats">@string/chat_viewer</string>
 

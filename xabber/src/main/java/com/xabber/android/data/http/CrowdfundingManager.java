@@ -244,7 +244,8 @@ public class CrowdfundingManager {
     }
 
     private boolean isLeaderCacheExpired() {
-        return getCurrentTime() > SettingsManager.getLastLeaderCrowdfundingLoadTimestamp() + CACHE_LIFETIME;
+        if (SettingsManager.getLastLeaderCrowdfundingLoadTimestamp() == 1) return true;
+        else return getCurrentTime() > SettingsManager.getLastLeaderCrowdfundingLoadTimestamp() + CACHE_LIFETIME;
     }
 
     private boolean isTimeToCrowdfunding() {

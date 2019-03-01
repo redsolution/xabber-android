@@ -33,6 +33,7 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.NestedMap;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.iqlast.LastActivityInteractor;
+import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.muc.RoomChat;
 import com.xabber.android.data.extension.muc.RoomContact;
 import com.xabber.android.data.log.LogManager;
@@ -48,6 +49,7 @@ import org.jivesoftware.smack.roster.Roster;
 import org.jivesoftware.smack.roster.RosterEntry;
 import org.jivesoftware.smack.roster.packet.RosterPacket;
 import org.jxmpp.jid.BareJid;
+import org.jxmpp.jid.EntityBareJid;
 import org.jxmpp.jid.Jid;
 
 import java.lang.ref.WeakReference;
@@ -635,10 +637,19 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
 
         String author = null;
         if (jid != null) {
-            if (messageItem.isFromMUC()) author = jid.getJid().getResourceOrEmpty().toString();
-            else if (messageItem.isIncoming())
-                author = RosterManager.getInstance().getNameOrBareJid(messageItem.getAccount(), jid);
-            else author = AccountManager.getInstance().getNickName(messageItem.getAccount());
+            EntityBareJid room = messageItem.getUser().getBareJid().asEntityBareJidIfPossible();
+            RoomChat roomChat = null;
+            if (room != null) roomChat = MUCManager.getInstance().getRoomChat(messageItem.getAccount(), room);
+
+            if (roomChat != null) {
+                if (!messageItem.isIncoming())
+                    author = MUCManager.getInstance().getNickname(messageItem.getAccount(), room).toString();
+                else author = jid.getJid().getResourceOrEmpty().toString();
+            } else {
+                if (!messageItem.getAccount().getFullJid().asBareJid().equals(jid.getBareJid()))
+                    author = RosterManager.getInstance().getNameOrBareJid(messageItem.getAccount(), jid);
+                else author = AccountManager.getInstance().getNickName(messageItem.getAccount());
+            }
         }
 
         return author;

@@ -73,7 +73,7 @@
     <string name="otr_unreadable_message">The encrypted message you sent is unreadable</string>
     <string name="otr_not_decrypted_message">Message cannot be decrypted</string>
     <string name="forwarded_messages_count">%d forwarded message</string>
-    <string name="forwarded_support_text">%d forwarded messages. Use advanced client like Xabber to view them.</string>
+    <string name="forwarded_support_text" translatable="false">%d forwarded messages. Use advanced client like Xabber to view them.</string>
     <string name="otr_verification">OTR verification</string>
     <string name="otr_verify_fingerprint">Verify with fingerprint</string>
     <string name="otr_verify_question">Verify with question</string>
@@ -133,4 +133,5 @@
     <string name="xabber_chat_title">Xabber official</string>
     <string name="xabber_chat_description">News feed</string>
     <string name="xabber_join_button">Support Xabber</string>
+    <string name="action_new_contact">New contact</string>
 </resources>

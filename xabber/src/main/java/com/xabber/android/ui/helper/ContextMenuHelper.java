@@ -56,6 +56,7 @@ import com.xabber.android.ui.dialog.GroupDeleteDialogFragment;
 import com.xabber.android.ui.dialog.GroupRenameDialogFragment;
 import com.xabber.android.ui.dialog.MUCDeleteDialogFragment;
 import com.xabber.android.ui.dialog.SnoozeDialog;
+import com.xabber.android.ui.preferences.CustomNotifySettings;
 
 /**
  * Helper class for context menu creation.
@@ -119,8 +120,13 @@ public class ContextMenuHelper {
 
                 });
 
-        menu.findItem(R.id.action_edit_contact_groups).setIntent(
-                GroupEditActivity.createIntent(activity, account, user));
+        menu.findItem(R.id.action_edit_contact_groups).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                activity.startActivity(GroupEditActivity.createIntent(activity, account, user));
+                return true;
+            }
+        });
 
         menu.findItem(R.id.action_delete_contact).setOnMenuItemClickListener(
                 new MenuItem.OnMenuItemClickListener() {
@@ -185,10 +191,20 @@ public class ContextMenuHelper {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
                         AbstractChat chat = MessageManager.getInstance().getChat(account, user);
-                        if (chat != null) chat.setNotificationState(
+                        if (chat != null) chat.setNotificationStateOrDefault(
                                 new NotificationState(NotificationState.NotificationMode.enabled,
                                         0), true);
                         presenter.updateContactList();
+                        return true;
+                    }
+                });
+
+
+        menu.findItem(R.id.action_configure_notifications).setOnMenuItemClickListener(
+                new MenuItem.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        activity.startActivity(CustomNotifySettings.createIntent(activity, account, user));
                         return true;
                     }
                 });
@@ -303,6 +319,17 @@ public class ContextMenuHelper {
                     }
                 });
         }
+
+        if (!group.equals(GroupManager.NO_GROUP)) {
+            menu.add(R.string.configure_notifications).setOnMenuItemClickListener(
+                new MenuItem.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        activity.startActivity(CustomNotifySettings.createIntent(activity, account, group));
+                        return true;
+                    }
+                });
+        }
     }
 
     public static void createAccountContextMenu( final Activity activity, final ContactListPresenter presenter,
@@ -337,6 +364,14 @@ public class ContextMenuHelper {
 
         menu.findItem(R.id.action_edit_account_status).setIntent(StatusEditActivity.createIntent(activity, account));
         menu.findItem(R.id.action_edit_account).setIntent(AccountActivity.createIntent(activity, account));
+        menu.add(R.string.configure_notifications).setOnMenuItemClickListener(
+                new MenuItem.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        activity.startActivity(CustomNotifySettings.createIntent(activity, account));
+                        return true;
+                    }
+                });
 
         if (state.isConnected()) {
             menu.findItem(R.id.action_add_contact).setVisible(true).setIntent(ContactAddActivity.createIntent(activity, account));

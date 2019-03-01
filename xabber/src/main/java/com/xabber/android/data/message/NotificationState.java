@@ -48,12 +48,8 @@ public class NotificationState {
         boolean globalMode = isMUC ? SettingsManager.eventsOnMuc() : SettingsManager.eventsOnChat();
         if (mode == NotificationState.NotificationMode.enabled && !globalMode)
             resultMode = NotificationState.NotificationMode.enabled;
-        if ((mode == NotificationState.NotificationMode.disabled
-                || mode == NotificationState.NotificationMode.snooze15m
-                || mode == NotificationState.NotificationMode.snooze1h
-                || mode == NotificationState.NotificationMode.snooze2h
-                || mode == NotificationState.NotificationMode.snooze1d) && globalMode)
-            resultMode = NotificationState.NotificationMode.disabled;
+        if ((mode != NotificationMode.enabled && mode != NotificationMode.bydefault) && globalMode)
+            resultMode = mode;
         return resultMode;
     }
 

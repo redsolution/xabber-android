@@ -56,6 +56,10 @@ public class MessageNotificationManager implements OnLoadListener {
             NotificationChannelUtils.createMessageChannel(notificationManager,
                     NotificationChannelUtils.ChannelType.groupChat,
                     null, null, null);
+
+            NotificationChannelUtils.createMessageChannel(notificationManager,
+                    NotificationChannelUtils.ChannelType.attention,
+                    null, null, null);
         }
 
     }
@@ -495,7 +499,7 @@ public class MessageNotificationManager implements OnLoadListener {
                         }
                     });
                 }
-            }, 200);
+            }, 500);
         }
 
         public void stopRemoveTimer() {

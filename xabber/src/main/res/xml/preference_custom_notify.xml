@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <SwitchPreference
+        android:key="@string/custom_notification_enable_key"
+        android:title="@string/events_use_custom"
+        android:summary="@string/events_use_custom_summary"
+        />
+
+    <SwitchPreference
+        android:key="@string/custom_notification_preview_key"
+        android:title="@string/events_show_text"
+        android:summary="@string/events_show_text_summary"
+        android:dependency="@string/custom_notification_enable_key"
+        />
+
+    <com.xabber.android.ui.widget.RingtonePreference
+        android:key="@string/custom_notification_sound_key"
+        android:ringtoneType="notification"
+        android:showDefault="true"
+        android:showSilent="true"
+        android:title="@string/events_sound"
+        android:summary="@string/events_sound_summary"
+        android:dependency="@string/custom_notification_enable_key"
+        />
+
+    <ListPreference
+        android:key="@string/custom_notification_vibro_key"
+        android:defaultValue="@string/events_vibro_bydefault"
+        android:entries="@array/events_vibro_entries"
+        android:entryValues="@array/events_vibro_entryvalues"
+        android:title="@string/events_vibro"
+        android:summary="%s"
+        android:dependency="@string/custom_notification_enable_key"
+        />
+
+</PreferenceScreen>

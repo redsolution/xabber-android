@@ -41,6 +41,7 @@
     <string name="group_remove">Delete group</string>
     <string name="group_remove_confirm">Do you really want to delete group %s? Users from this group will stay in contact list.</string>
     <string name="group_rename">Rename group</string>
+    <string name="configure_notifications">Configure notifications</string>
     <string name="NO_SUCH_ACCOUNT">Account not found</string>
     <string name="NOT_CONNECTED">Connection not established</string>
     <string name="request_subscription">Request subscription</string>

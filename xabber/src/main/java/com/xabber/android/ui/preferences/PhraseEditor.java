@@ -18,6 +18,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
@@ -25,9 +27,12 @@ import com.xabber.android.data.intent.SegmentIntentBuilder;
 import com.xabber.android.data.message.phrase.Phrase;
 import com.xabber.android.data.message.phrase.PhraseManager;
 import com.xabber.android.ui.color.BarPainter;
+import com.xabber.android.ui.dialog.ConfirmDialog;
 import com.xabber.android.ui.helper.ToolbarHelper;
 
-public class PhraseEditor extends BasePhrasePreferences {
+public class PhraseEditor extends BasePhrasePreferences implements ConfirmDialog.Listener {
+
+    private Integer index;
 
     public static Intent createIntent(Context context, Integer phraseIndex) {
         SegmentIntentBuilder<?> builder = new SegmentIntentBuilder<>(
@@ -41,7 +46,7 @@ public class PhraseEditor extends BasePhrasePreferences {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Integer index = getPhraseIndex(getIntent());
+        index = getPhraseIndex(getIntent());
         if (index == null) {
             finish();
             return;
@@ -60,9 +65,36 @@ public class PhraseEditor extends BasePhrasePreferences {
                     R.string.phrase_empty);
 
         Toolbar toolbar = ToolbarHelper.setUpDefaultToolbar(this, title);
+        toolbar.inflateMenu(R.menu.toolbar_delete);
+        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                return onOptionsItemSelected(item);
+            }
+        });
 
         BarPainter barPainter = new BarPainter(this, toolbar);
         barPainter.setDefaultColor();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        getMenuInflater().inflate(R.menu.toolbar_delete, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_delete:
+                ConfirmDialog.newInstance(getRemoveConfirmationText(index))
+                        .show(getFragmentManager(), ConfirmDialog.class.getName());
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+
     }
 
     @Override
@@ -73,11 +105,25 @@ public class PhraseEditor extends BasePhrasePreferences {
                 .findFragmentById(R.id.fragment_container)).saveChanges();
     }
 
+    @Override
+    public void onConfirm() {
+        PhraseManager.getInstance().removePhrase(index);
+        finish();
+    }
+
     private Integer getPhraseIndex(Intent intent) {
         String value = SegmentIntentBuilder.getSegment(intent, 0);
         if (value == null)
             return null;
         else
             return Integer.valueOf(value);
+    }
+
+    private String getRemoveConfirmationText(Integer actionWith) {
+        String text = PhraseManager.getInstance().getPhrase(actionWith)
+                .getText();
+        if ("".equals(text))
+            text = Application.getInstance().getString(R.string.phrase_empty);
+        return getString(R.string.phrase_delete_confirm, text);
     }
 }

@@ -44,11 +44,11 @@
 
     <application
         android:name=".data.Application"
-        android:allowBackup="true"
+        android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/application_title_full"
         android:theme="@style/Theme"
-        tools:replace="label, icon">
+        tools:replace="label, icon, allowBackup">
         <activity
             android:name=".ui.activity.ContactListActivity"
             android:label="@string/application_title_full"
@@ -206,16 +206,6 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.xabber.android.ui.activity.ContactListActivity" />
-        </activity>
-        <activity
-            android:name=".ui.preferences.ChatContactSettings"
-            android:label="@string/chat_settings"
-            android:parentActivityName=".ui.activity.ChatActivity">
-
-            <!-- Parent activity meta-data to support 4.0 and lower -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.xabber.android.ui.activity.ChatActivity" />
         </activity>
         <activity
             android:name=".ui.activity.ContactActivity"
@@ -573,6 +563,13 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.activity.ForwardedActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.xabber.android.ui.activity.ChatActivity" />
+        </activity>
+        <activity android:name=".ui.preferences.CustomNotifySettings"
+            android:label="@string/custom_notifications"
+            android:parentActivityName=".ui.activity.ChatActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.xabber.android.ui.activity.ChatActivity" />

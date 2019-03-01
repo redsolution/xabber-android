@@ -38,8 +38,12 @@
     <string name="events_lightning_muc">Light indication</string>
     <string name="events_lightning_muc_summary">Blink LED on notification from conferences</string>
     <string name="events_persistent">Taskbar icon\nShow persistent notification. This option prevents Android from unloading the app from memory</string>
-    <string name="events_sound">Sound\nChoose notification sound</string>
+    <string name="events_sound">Sound</string>
+    <string name="events_sound_summary">Choose notification sound</string>
     <string name="events_vibro">Vibrate</string>
+    <string name="events_use_custom">Use custom notification preferences</string>
+    <string name="events_use_custom_summary">Custom notification preferences ignore all other notification settings</string>
+    <string name="events_use_custom_not_allowed_summary">You must first save the phrase</string>
 
     <string name="interface_theme">Theme</string>
     <string name="interface_theme_dark">Dark</string>
@@ -114,7 +118,9 @@
     <string name="connection_dns_resolver_type_mini_dns_resolver">MiniDNSResolver (experimental)</string>
 
     <string name="events_phrases">Key phrases</string>
+    <string name="events_phrase">Key phrase</string>
     <string name="events_phrases_summary">Create custom notifications for received messages that contain specific phrases</string>
+    <string name="events_phrases_error">You must fill at least one field</string>
 
     <string name="account_error_settings">Settings</string>
 
@@ -134,6 +140,7 @@
     <string name="category_group_notifications">Group notification</string>
     <string name="category_inapp_notifications">In-app notification</string>
     <string name="category_key_phrase">Key phrases</string>
+    <string name="custom_notifications">Custom notifications</string>
 
     <string name="events_on_chat_title">Alert</string>
     <string name="events_on_chat_summary">Alert about new messages in chats</string>
@@ -158,4 +165,6 @@
     <string name="events_reset_summary">All notification settings would be set to default values</string>
     <string name="events_reset_alert">Reset notification settings?</string>
     <string name="events_reset_toast">Settings were reset</string>
+    <string name="events_remove_all_custom_title">Remove all custom notifications</string>
+    <string name="events_remove_all_custom_summary">All custom notification settings (for contacts, roster groups and accounts) would be removed</string>
 </resources>

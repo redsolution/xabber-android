@@ -86,7 +86,7 @@ import com.xabber.android.ui.fragment.OccupantListFragment;
 import com.xabber.android.ui.fragment.RecentChatFragment;
 import com.xabber.android.ui.helper.NewContactTitleInflater;
 import com.xabber.android.ui.helper.PermissionsRequester;
-import com.xabber.android.ui.preferences.ChatContactSettings;
+import com.xabber.android.ui.preferences.CustomNotifySettings;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -914,8 +914,8 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
                     chatFragment.showContactInfo();
                 return true;
 
-            case R.id.action_chat_settings:
-                startActivity(ChatContactSettings.createIntent(this, account, user));
+            case R.id.action_configure_notifications:
+                startActivity(CustomNotifySettings.createIntent(this, account, user));
                 return true;
 
             case R.id.action_authorization_settings:
@@ -967,7 +967,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
                 return true;
 
             case R.id.action_unmute_chat:
-                if (abstractChat != null) abstractChat.setNotificationState(
+                if (abstractChat != null) abstractChat.setNotificationStateOrDefault(
                         new NotificationState(NotificationState.NotificationMode.enabled,
                                 0), true);
                 onSnoozed();

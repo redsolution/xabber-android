@@ -57,6 +57,8 @@ import java.util.regex.Pattern;
 public class SettingsManager implements OnInitializedListener,
         OnMigrationListener, OnSharedPreferenceChangeListener {
 
+    public static final String NOTIFICATION_PREFERENCES = "notification_preferences";
+
     private static SettingsManager instance;
 
     private SettingsManager() {
@@ -73,6 +75,11 @@ public class SettingsManager implements OnInitializedListener,
     private static SharedPreferences getSharedPreferences() {
         return PreferenceManager.getDefaultSharedPreferences(Application
                 .getInstance());
+    }
+
+    private static SharedPreferences getNotificationSharedPreferences() {
+        return Application.getInstance().getSharedPreferences(
+                NOTIFICATION_PREFERENCES, Context.MODE_PRIVATE);
     }
 
     private static int getInt(int key, int def) {
@@ -110,6 +117,16 @@ public class SettingsManager implements OnInitializedListener,
         editor.commit();
     }
 
+    private static boolean getNotifBoolean(int key, boolean def) {
+        return getNotificationSharedPreferences().getBoolean(
+                Application.getInstance().getString(key), def);
+    }
+
+    private static boolean getNotifBoolean(int key, int def) {
+        return getNotifBoolean(key, Application.getInstance().getResources()
+                .getBoolean(def));
+    }
+
     private static String getString(int key, String def) {
         return getSharedPreferences().getString(
                 Application.getInstance().getString(key), def);
@@ -125,6 +142,21 @@ public class SettingsManager implements OnInitializedListener,
         editor.commit();
     }
 
+    private static String getNotifString(int key, String def) {
+        return getNotificationSharedPreferences().getString(
+                Application.getInstance().getString(key), def);
+    }
+
+    private static String getNotifString(int key, int def) {
+        return getNotifString(key, Application.getInstance().getString(def));
+    }
+
+    private static void setNotifString(int key, String value) {
+        Editor editor = getNotificationSharedPreferences().edit();
+        editor.putString(Application.getInstance().getString(key), value);
+        editor.apply();
+    }
+
     /**
      * @param key
      * @param defaultUri
@@ -133,11 +165,11 @@ public class SettingsManager implements OnInitializedListener,
     private static Uri getSound(int key, Uri defaultUri, int defaultResource) {
         String defaultValue = Application.getInstance().getString(
                 defaultResource);
-        String value = getString(key, defaultValue);
+        String value = getNotifString(key, defaultValue);
         if (TextUtils.isEmpty(value))
             return null;
         if (defaultValue.equals(value)) {
-            setString(key, defaultUri.toString());
+            setNotifString(key, defaultUri.toString());
             return defaultUri;
         }
         return Uri.parse(value);
@@ -241,7 +273,7 @@ public class SettingsManager implements OnInitializedListener,
     }
 
     public static VibroMode eventsVibroChat() {
-        String value = getString(R.string.events_vibro_chat_key, R.string.events_vibro_bydefault);
+        String value = getNotifString(R.string.events_vibro_chat_key, R.string.events_vibro_bydefault);
         if (Application.getInstance().getString(R.string.events_vibro_disable).equals(value)) {
             return VibroMode.disabled;
         } else if (Application.getInstance().getString(R.string.events_vibro_bydefault).equals(value)) {
@@ -258,7 +290,7 @@ public class SettingsManager implements OnInitializedListener,
     }
 
     public static VibroMode eventsVibroMuc() {
-        String value = getString(R.string.events_vibro_muc_key, R.string.events_vibro_bydefault);
+        String value = getNotifString(R.string.events_vibro_muc_key, R.string.events_vibro_bydefault);
         if (Application.getInstance().getString(R.string.events_vibro_disable).equals(value)) {
             return VibroMode.disabled;
         } else if (Application.getInstance().getString(R.string.events_vibro_bydefault).equals(value)) {
@@ -274,6 +306,7 @@ public class SettingsManager implements OnInitializedListener,
         }
     }
 
+    @Deprecated
     public static boolean eventsSuppress100() {
         return getBoolean(R.string.chat_events_suppress_100_key,
                 R.bool.chat_events_suppress_100_default);
@@ -285,12 +318,12 @@ public class SettingsManager implements OnInitializedListener,
 //    }
 
     public static boolean eventsLightning() {
-        return getBoolean(R.string.events_lightning_key,
+        return getNotifBoolean(R.string.events_lightning_key,
                 R.bool.events_lightning_default);
     }
 
     public static boolean eventsLightningForMuc() {
-        return getBoolean(R.string.events_lightning_muc_key,
+        return getNotifBoolean(R.string.events_lightning_muc_key,
                 R.bool.events_lightning_default);
     }
 
@@ -300,50 +333,53 @@ public class SettingsManager implements OnInitializedListener,
     }
 
     public static boolean eventsShowText() {
-        return getBoolean(R.string.events_show_text_key,
+        return getNotifBoolean(R.string.events_show_text_key,
                 R.bool.events_show_text_default);
     }
 
     public static boolean eventsShowTextOnMuc() {
-        return getBoolean(R.string.events_show_text_muc_key,
+        return getNotifBoolean(R.string.events_show_text_muc_key,
                 R.bool.events_show_text_default);
     }
 
     public static boolean eventsOnChat() {
-        return getBoolean(R.string.events_on_chat_key,
+        return getNotifBoolean(R.string.events_on_chat_key,
                 R.bool.events_on_chat_default);
     }
 
     public static boolean eventsOnMuc() {
-        return getBoolean(R.string.events_on_muc_key,
+        return getNotifBoolean(R.string.events_on_muc_key,
                 R.bool.events_on_muc_default);
     }
 
-    public static boolean eventsInAppSounds() {
-        return getBoolean(R.string.events_in_app_sounds_key,
-                R.bool.events_in_app_sounds_default);
-    }
+//    public static boolean eventsInAppSounds() {
+//        return getBoolean(R.string.events_in_app_sounds_key,
+//                R.bool.events_in_app_sounds_default);
+//    }
+//
+//    public static boolean eventsInAppVibrate() {
+//        return getBoolean(R.string.events_in_app_vibrate_key,
+//                R.bool.events_in_app_vibrate_default);
+//    }
+//
+//    public static boolean eventsInAppPreview() {
+//        return getBoolean(R.string.events_in_app_preview_key,
+//                R.bool.events_in_app_preview_default);
+//    }
 
-    public static boolean eventsInAppVibrate() {
-        return getBoolean(R.string.events_in_app_vibrate_key,
-                R.bool.events_in_app_vibrate_default);
-    }
-
-    public static boolean eventsInAppPreview() {
-        return getBoolean(R.string.events_in_app_preview_key,
-                R.bool.events_in_app_preview_default);
-    }
-
+    @Deprecated
     public static boolean eventsInChatSounds() {
         return getBoolean(R.string.events_in_chat_sounds_key,
                 R.bool.events_in_chat_sounds_default);
     }
 
+    @Deprecated
     public static boolean eventsVisibleChat() {
         return getBoolean(R.string.events_visible_chat_key,
                 R.bool.events_visible_chat_default);
     }
 
+    @Deprecated
     public static boolean eventsFirstOnly() {
         return getBoolean(R.string.events_first_only_key,
                 R.bool.events_first_only_default);
@@ -432,7 +468,7 @@ public class SettingsManager implements OnInitializedListener,
     }
 
     public static boolean chatsAttention() {
-        return getBoolean(R.string.chats_attention_key,
+        return getNotifBoolean(R.string.chats_attention_key,
                 R.bool.chats_attention_default);
     }
 
@@ -816,6 +852,10 @@ public class SettingsManager implements OnInitializedListener,
 
     public static int getLastCrowdfundingPosition() {
         return getInteger(R.string.crowdfunding_last_position_key, 0);
+    }
+
+    public static void resetPreferences(Context context, String preferencesName) {
+        context.getSharedPreferences(preferencesName, Context.MODE_PRIVATE).edit().clear().apply();
     }
 
     @Override

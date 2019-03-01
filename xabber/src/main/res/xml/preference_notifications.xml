@@ -39,6 +39,7 @@
 
         <RingtonePreference
             android:title="@string/events_sound"
+            android:summary="@string/events_sound_summary"
             android:key="@string/events_sound_key"
             android:defaultValue="@string/events_sound_default"
             android:ringtoneType="notification"
@@ -86,6 +87,7 @@
 
         <RingtonePreference
             android:title="@string/events_sound"
+            android:summary="@string/events_sound_summary"
             android:key="@string/events_sound_muc_key"
             android:defaultValue="@string/events_sound_default"
             android:ringtoneType="notification"
@@ -136,6 +138,11 @@
             android:key="@string/events_reset_key"
             android:title="@string/events_reset_title"
             android:summary="@string/events_reset_summary"/>
+
+        <Preference
+            android:key="@string/events_remove_all_custom_key"
+            android:title="@string/events_remove_all_custom_title"
+            android:summary="@string/events_remove_all_custom_summary"/>
 
     </PreferenceCategory>
 

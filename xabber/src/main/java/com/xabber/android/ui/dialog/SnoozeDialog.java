@@ -47,7 +47,7 @@ public class SnoozeDialog extends BottomSheetDialogFragment implements View.OnCl
         if (chat != null) {
             switch (v.getId()) {
                 case R.id.itemDisable:
-                    chat.setNotificationState(
+                    chat.setNotificationStateOrDefault(
                             new NotificationState(NotificationState.NotificationMode.disabled,
                                     0), true);
                     break;

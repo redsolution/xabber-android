@@ -3,6 +3,7 @@ package com.xabber.android.ui.preferences;
 import android.app.Activity;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.Preference;
 import android.provider.Settings;
 import android.util.Log;
 import android.widget.Toast;
@@ -25,6 +26,20 @@ public class PhraseEditorFragment extends BaseSettingsFragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        Phrase phrase = mListener.getPhrase();
+        Preference notificationPref = findPreference("notification_settings");
+        if (phrase != null) {
+            notificationPref.setIntent(CustomNotifySettings.createIntent(getActivity(), phrase.getId()));
+            notificationPref.setEnabled(true);
+        } else {
+            notificationPref.setEnabled(false);
+            notificationPref.setSummary(R.string.events_use_custom_not_allowed_summary);
+        }
+    }
+
+    @Override
     protected Map<String, Object> getValues() {
         Phrase phrase = mListener.getPhrase();
         Map<String, Object> source = new HashMap<>();
@@ -36,9 +51,6 @@ public class PhraseEditorFragment extends BaseSettingsFragment {
         putValue(source, R.string.phrase_group_key, phrase == null ? ""
                 : phrase.getGroup());
         putValue(source, R.string.phrase_regexp_key, phrase != null && phrase.isRegexp());
-        putValue(source, R.string.phrase_sound_key,
-                phrase == null ? Settings.System.DEFAULT_NOTIFICATION_URI
-                        : phrase.getSound());
         return source;
     }
 
@@ -51,7 +63,6 @@ public class PhraseEditorFragment extends BaseSettingsFragment {
         String user = getString(result, R.string.phrase_user_key);
         String group = getString(result, R.string.phrase_group_key);
         boolean regexp = getBoolean(result, R.string.phrase_regexp_key);
-        Uri sound = getUri(result, R.string.phrase_sound_key);
 
         Log.i("PhraseEditorFragment", "setValues. text: " + text);
 
@@ -69,10 +80,11 @@ public class PhraseEditorFragment extends BaseSettingsFragment {
         Phrase phrase = mListener.getPhrase();
 
         if (phrase == null && "".equals(text) && "".equals(user) && "".equals(group)) {
-            return true;
+            Toast.makeText(getActivity(), R.string.events_phrases_error, Toast.LENGTH_LONG).show();
+            return false;
         }
         Log.i("PhraseEditorFragment", "updateOrCreatePhrase");
-        PhraseManager.getInstance().updateOrCreatePhrase(phrase, text, user, group, regexp, sound);
+        PhraseManager.getInstance().updateOrCreatePhrase(phrase, text, user, group, regexp, null);
 
         mListener.setPhrase(phrase);
 

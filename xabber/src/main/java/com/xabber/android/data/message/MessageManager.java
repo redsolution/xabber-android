@@ -35,6 +35,7 @@ import com.xabber.android.data.connection.listeners.OnDisconnectListener;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.database.MessageDatabaseManager;
 import com.xabber.android.data.database.messagerealm.Attachment;
+import com.xabber.android.data.database.messagerealm.ForwardId;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
@@ -78,6 +79,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import io.realm.Realm;
 import io.realm.RealmList;
@@ -785,24 +787,34 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
 
             final AbstractChat finalChat = chat;
 
-            final long startTime = System.currentTimeMillis();
             MessageDatabaseManager.getInstance().getRealmUiThread()
                     .executeTransactionAsync(new Realm.Transaction() {
                 @Override
                 public void execute(Realm realm) {
-                    MessageItem newMessageItem = finalChat.createNewMessageItem(body);
+                    String text = body;
+                    String uid = UUID.randomUUID().toString();
+                    RealmList<ForwardId> forwardIds = finalChat.parseForwardedMessage(false, message, uid);
+                    String originalStanza = message.toXML().toString();
+                    String originalFrom = message.getFrom().toString();
+                    String forwardComment = ForwardManager.parseForwardComment(message);
+                    if (forwardComment != null) text = forwardComment;
+
+                    MessageItem newMessageItem = finalChat.createNewMessageItem(text);
                     newMessageItem.setStanzaId(message.getStanzaId());
                     newMessageItem.setSent(true);
                     newMessageItem.setForwarded(true);
 
+                    // forwarding
+                    if (forwardIds != null) newMessageItem.setForwardedIds(forwardIds);
+                    newMessageItem.setOriginalStanza(originalStanza);
+                    newMessageItem.setOriginalFrom(originalFrom);
+
+                    // attachments
                     RealmList<Attachment> attachments = HttpFileUploadManager.parseFileMessage(message);
                     if (attachments.size() > 0)
                         newMessageItem.setAttachments(attachments);
 
                     realm.copyToRealm(newMessageItem);
-                    LogManager.d("REALM", Thread.currentThread().getName()
-                            + " save carbons message: " + (System.currentTimeMillis() - startTime));
-
                     EventBus.getDefault().post(new NewMessageEvent());
                 }
             });

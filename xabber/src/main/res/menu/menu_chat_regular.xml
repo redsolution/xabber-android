@@ -9,12 +9,6 @@
         app:showAsAction="never"
         />
 
-    <item android:id="@+id/action_chat_settings"
-        android:orderInCategory="120"
-        android:title="@string/chat_settings"
-        app:showAsAction="never"
-        />
-
     <item android:id="@+id/action_clear_history"
         android:icon="@drawable/ic_clear_all_white_24dp"
         android:orderInCategory="121"
@@ -55,6 +49,12 @@
     <item android:id="@+id/action_unarchive_chat"
         android:orderInCategory="220"
         android:title="@string/unarchive_chat" />
+
+    <item android:id="@+id/action_configure_notifications"
+        android:orderInCategory="221"
+        android:title="@string/configure_notifications"
+        app:showAsAction="never"
+        />
 
     <item android:id="@+id/action_mute_chat"
         android:orderInCategory="225"
