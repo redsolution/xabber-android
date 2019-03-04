@@ -787,37 +787,31 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
 
             final AbstractChat finalChat = chat;
 
-            MessageDatabaseManager.getInstance().getRealmUiThread()
-                    .executeTransactionAsync(new Realm.Transaction() {
-                @Override
-                public void execute(Realm realm) {
-                    String text = body;
-                    String uid = UUID.randomUUID().toString();
-                    RealmList<ForwardId> forwardIds = finalChat.parseForwardedMessage(false, message, uid);
-                    String originalStanza = message.toXML().toString();
-                    String originalFrom = message.getFrom().toString();
-                    String forwardComment = ForwardManager.parseForwardComment(message);
-                    if (forwardComment != null) text = forwardComment;
+            String text = body;
+            String uid = UUID.randomUUID().toString();
+            RealmList<ForwardId> forwardIds = finalChat.parseForwardedMessage(false, message, uid);
+            String originalStanza = message.toXML().toString();
+            String originalFrom = message.getFrom().toString();
+            String forwardComment = ForwardManager.parseForwardComment(message);
+            if (forwardComment != null) text = forwardComment;
 
-                    MessageItem newMessageItem = finalChat.createNewMessageItem(text);
-                    newMessageItem.setStanzaId(message.getStanzaId());
-                    newMessageItem.setSent(true);
-                    newMessageItem.setForwarded(true);
+            MessageItem newMessageItem = finalChat.createNewMessageItem(text);
+            newMessageItem.setStanzaId(message.getStanzaId());
+            newMessageItem.setSent(true);
+            newMessageItem.setForwarded(true);
 
-                    // forwarding
-                    if (forwardIds != null) newMessageItem.setForwardedIds(forwardIds);
-                    newMessageItem.setOriginalStanza(originalStanza);
-                    newMessageItem.setOriginalFrom(originalFrom);
+            // forwarding
+            if (forwardIds != null) newMessageItem.setForwardedIds(forwardIds);
+            newMessageItem.setOriginalStanza(originalStanza);
+            newMessageItem.setOriginalFrom(originalFrom);
 
-                    // attachments
-                    RealmList<Attachment> attachments = HttpFileUploadManager.parseFileMessage(message);
-                    if (attachments.size() > 0)
-                        newMessageItem.setAttachments(attachments);
+            // attachments
+            RealmList<Attachment> attachments = HttpFileUploadManager.parseFileMessage(message);
+            if (attachments.size() > 0)
+                newMessageItem.setAttachments(attachments);
 
-                    realm.copyToRealm(newMessageItem);
-                    EventBus.getDefault().post(new NewMessageEvent());
-                }
-            });
+            BackpressureMessageSaver.getInstance().saveMessageItem(newMessageItem);
+            EventBus.getDefault().post(new NewMessageEvent());
             return;
         }
 
