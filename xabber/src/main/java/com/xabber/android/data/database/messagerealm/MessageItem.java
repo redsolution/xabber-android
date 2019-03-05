@@ -54,6 +54,7 @@ public class MessageItem extends RealmObject {
         public static final String ERROR = "error";
         public static final String ERROR_DESCR = "errorDescription";
         public static final String DELIVERED = "delivered";
+        public static final String DISPLAYED = "displayed";
         public static final String SENT = "sent";
         public static final String READ = "read";
         public static final String STANZA_ID = "stanzaId";
@@ -131,6 +132,10 @@ public class MessageItem extends RealmObject {
      * Receipt was received for sent message.
      */
     private boolean delivered;
+    /**
+     * Chat marker was received for sent message.
+     */
+    private boolean displayed;
     /**
      * Message was sent.
      */
@@ -334,6 +339,14 @@ public class MessageItem extends RealmObject {
 
     public void setDelivered(boolean delivered) {
         this.delivered = delivered;
+    }
+
+    public boolean isDisplayed() {
+        return displayed;
+    }
+
+    public void setDisplayed(boolean displayed) {
+        this.displayed = displayed;
     }
 
     public boolean isSent() {
