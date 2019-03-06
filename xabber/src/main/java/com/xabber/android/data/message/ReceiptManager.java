@@ -69,7 +69,7 @@ public class ReceiptManager implements OnPacketListener, ReceiptReceivedListener
             @Override
             public void connectionCreated(final XMPPConnection connection) {
                 DeliveryReceiptManager.getInstanceFor(connection).addReceiptReceivedListener(ReceiptManager.this);
-                DeliveryReceiptManager.getInstanceFor(connection).autoAddDeliveryReceiptRequests();
+                //DeliveryReceiptManager.getInstanceFor(connection).autoAddDeliveryReceiptRequests();
             }
         });
 
