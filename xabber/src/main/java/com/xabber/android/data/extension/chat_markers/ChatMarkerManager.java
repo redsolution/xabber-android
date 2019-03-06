@@ -40,7 +40,7 @@ public class ChatMarkerManager implements OnPacketListener {
                 sendReceived(message, connection.getAccount());
             } else if (ChatMarkersElements.ReceivedExtension.from(message) != null) {
                 // received
-                markAsDelivered(message.getFrom(), ChatMarkersElements.ReceivedExtension.from(message).getId());
+                markAsDelivered(ChatMarkersElements.ReceivedExtension.from(message).getId());
             } else if (ChatMarkersElements.DisplayedExtension.from(message) != null) {
                 // displayed
                 markAsDisplayed(ChatMarkersElements.DisplayedExtension.from(message).getId());
@@ -117,16 +117,17 @@ public class ChatMarkerManager implements OnPacketListener {
         }
     }
 
-    private void markAsDelivered(final Jid toJid, final String stanzaID) {
-        Realm realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
-        realm.beginTransaction();
+    private void markAsDelivered(final String stanzaID) {
+        Realm realm = MessageDatabaseManager.getInstance().getRealmUiThread();
+
         MessageItem first = realm.where(MessageItem.class)
                 .equalTo(MessageItem.Fields.STANZA_ID, stanzaID).findFirst();
+
         if (first != null) {
+            realm.beginTransaction();
             first.setDelivered(true);
+            realm.commitTransaction();
         }
-        realm.commitTransaction();
-        realm.close();
         EventBus.getDefault().post(new MessageUpdateEvent());
     }
 }
