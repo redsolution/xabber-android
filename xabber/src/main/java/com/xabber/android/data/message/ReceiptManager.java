@@ -108,6 +108,7 @@ public class ReceiptManager implements OnPacketListener, ReceiptReceivedListener
                     receipt.addExtension(new DeliveryReceipt(id));
                     // the key problem is Thread - smack does not keep it in auto reply
                     receipt.setThread(message.getThread());
+                    receipt.setType(Message.Type.chat);
                     try {
                         StanzaSender.sendStanza(account, receipt);
                     } catch (NetworkException e) {
