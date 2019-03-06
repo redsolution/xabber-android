@@ -25,6 +25,7 @@ import com.xabber.android.data.database.messagerealm.ForwardId;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.extension.chat_markers.ChatMarkerManager;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.otr.OTRManager;
@@ -307,4 +308,9 @@ public class RegularChat extends AbstractChat {
         sendMessages();
     }
 
+    @Override
+    public void resetUnreadMessageCount(boolean needSentDisplayed) {
+        super.resetUnreadMessageCount(needSentDisplayed);
+        if (needSentDisplayed) ChatMarkerManager.getInstance().sendDisplayedIfNeed(account, user);
+    }
 }

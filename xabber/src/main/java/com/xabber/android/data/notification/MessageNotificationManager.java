@@ -114,7 +114,7 @@ public class MessageNotificationManager implements OnLoadListener {
             AbstractChat chat = MessageManager.getInstance().getChat(
                     chatNotif.getAccountJid(), chatNotif.getUserJid());
             if (chat != null) {
-                chat.resetUnreadMessageCount();
+                chat.resetUnreadMessageCount(true);
                 callUiUpdate();
             }
         }

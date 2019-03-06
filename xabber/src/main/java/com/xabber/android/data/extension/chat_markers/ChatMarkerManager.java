@@ -61,6 +61,7 @@ public class ChatMarkerManager implements OnPacketListener {
         if (!lastIncomingMessage.isRead()) {
             sendDisplayed(lastIncomingMessage);
             realm.beginTransaction();
+            // TODO: 06.03.19 отмечать все предыдущие как read?
             lastIncomingMessage.setRead(true);
             realm.commitTransaction();
         }

@@ -422,7 +422,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         // unread message count
         if (!visible && action == null) {
             if (incoming && !fromMAM) increaseUnreadMessageCount();
-            else resetUnreadMessageCount();
+            else resetUnreadMessageCount(false);
         }
 
         // remove notifications if get outgoing message with 2 sec delay
@@ -796,7 +796,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         ChatManager.getInstance().saveOrUpdateChatDataToRealm(this);
     }
 
-    public void resetUnreadMessageCount() {
+    public void resetUnreadMessageCount(boolean needSentDisplayed) {
         this.unreadMessageCount = 0;
         ChatManager.getInstance().saveOrUpdateChatDataToRealm(this);
     }

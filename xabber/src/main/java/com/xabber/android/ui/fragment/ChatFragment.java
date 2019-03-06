@@ -1467,7 +1467,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     private void resetUnreadMessageCount() {
         AbstractChat chat = getChat();
         if (chat != null) {
-            chat.resetUnreadMessageCount();
+            chat.resetUnreadMessageCount(true);
             updateNewReceivedMessageCounter(0);
             ((ChatActivity)getActivity()).updateRecentChats();
         }

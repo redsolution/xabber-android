@@ -511,30 +511,8 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
      */
     public void setVisibleChat(BaseEntity visibleChat) {
         AbstractChat chat = getChat(visibleChat.getAccount(), visibleChat.getUser());
-        if (chat == null) {
+        if (chat == null)
             chat = createChat(visibleChat.getAccount(), visibleChat.getUser());
-        } else {
-            final AccountJid account = chat.getAccount();
-            final UserJid user = chat.getUser();
-
-            MessageDatabaseManager.getInstance()
-                    .getRealmUiThread().executeTransactionAsync(new Realm.Transaction() {
-                @Override
-                public void execute(Realm realm) {
-                    RealmResults<MessageItem> unreadMessages = realm.where(MessageItem.class)
-                            .equalTo(MessageItem.Fields.ACCOUNT, account.toString())
-                            .equalTo(MessageItem.Fields.USER, user.toString())
-                            .equalTo(MessageItem.Fields.READ, false)
-                            .findAll();
-
-                    List<MessageItem> unreadMessagesList = new ArrayList<>(unreadMessages);
-
-                    for (MessageItem messageItem : unreadMessagesList) {
-                        messageItem.setRead(true);
-                    }
-                }
-            });
-        }
         this.visibleChat = chat;
     }
 
