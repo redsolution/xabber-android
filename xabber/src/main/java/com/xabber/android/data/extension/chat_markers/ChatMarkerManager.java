@@ -8,14 +8,23 @@ import com.xabber.android.data.database.MessageDatabaseManager;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.extension.chat_markers.filter.ChatMarkersFilter;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.MessageUpdateEvent;
 
 import org.greenrobot.eventbus.EventBus;
+import org.jivesoftware.smack.ConnectionCreationListener;
+import org.jivesoftware.smack.StanzaListener;
+import org.jivesoftware.smack.XMPPConnection;
+import org.jivesoftware.smack.XMPPConnectionRegistry;
+import org.jivesoftware.smack.filter.AndFilter;
+import org.jivesoftware.smack.filter.MessageTypeFilter;
+import org.jivesoftware.smack.filter.MessageWithBodiesFilter;
+import org.jivesoftware.smack.filter.NotFilter;
+import org.jivesoftware.smack.filter.StanzaFilter;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smackx.chat_markers.element.ChatMarkersElements;
-import org.jxmpp.jid.Jid;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
@@ -23,11 +32,33 @@ import io.realm.Sort;
 
 public class ChatMarkerManager implements OnPacketListener {
 
+    private static final StanzaFilter OUTGOING_MESSAGE_FILTER = new AndFilter(
+            MessageTypeFilter.NORMAL_OR_CHAT,
+            MessageWithBodiesFilter.INSTANCE,
+            new NotFilter(ChatMarkersFilter.INSTANCE),
+            EligibleForChatMarkerFilter.INSTANCE
+    );
+
     private static ChatMarkerManager instance;
 
     public static ChatMarkerManager getInstance() {
         if (instance == null) instance = new ChatMarkerManager();
         return instance;
+    }
+
+    public ChatMarkerManager() {
+        XMPPConnectionRegistry.addConnectionCreationListener(new ConnectionCreationListener() {
+            @Override
+            public void connectionCreated(final XMPPConnection connection) {
+                connection.addPacketInterceptor(new StanzaListener() {
+                    @Override
+                    public void processStanza(Stanza packet) {
+                        Message message = (Message) packet;
+                        message.addExtension(new ChatMarkersElements.MarkableExtension());
+                    }
+                }, OUTGOING_MESSAGE_FILTER);
+            }
+        });
     }
 
     @Override
