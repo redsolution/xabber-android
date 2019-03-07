@@ -32,6 +32,7 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.carbons.CarbonManager;
+import com.xabber.android.data.extension.chat_markers.ChatMarkerManager;
 import com.xabber.android.data.extension.cs.ChatStateManager;
 import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.extension.forward.ForwardComment;
@@ -296,6 +297,9 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
                 originalStanza, parentMessageId, originalFrom, forwardIds, fromMUC, fromMAM);
 
         saveMessageItem(ui, messageItem);
+        // TODO: 07.03.19 need replace?
+        boolean visible = MessageManager.getInstance().isVisibleChat(this);
+        if (!fromMUC && !fromMAM && incoming && visible) ChatMarkerManager.getInstance().sendDisplayedIfNeed(account, user);
         EventBus.getDefault().post(new NewMessageEvent());
     }
 
@@ -310,6 +314,9 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
                 originalStanza, parentMessageId, originalFrom, null, fromMUC, fromMAM);
 
         saveMessageItem(ui, messageItem);
+        // TODO: 07.03.19 need replace?
+        boolean visible = MessageManager.getInstance().isVisibleChat(this);
+        if (!fromMUC && !fromMAM && incoming && visible) ChatMarkerManager.getInstance().sendDisplayedIfNeed(account, user);
         EventBus.getDefault().post(new NewMessageEvent());
     }
 
@@ -347,7 +354,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
                         RealmList<ForwardId> forwardIds, boolean fromMUC, boolean fromMAM) {
 
         final boolean visible = MessageManager.getInstance().isVisibleChat(this);
-        boolean read = incoming ? visible : true;
+        boolean read = !incoming;
         boolean send = incoming;
         if (action == null && text == null) {
             throw new IllegalArgumentException();
