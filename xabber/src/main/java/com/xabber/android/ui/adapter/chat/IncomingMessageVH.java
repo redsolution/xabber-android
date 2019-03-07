@@ -41,7 +41,8 @@ public class IncomingMessageVH  extends FileMessageVH {
         boolean needTail = extraData.isNeedTail();
 
         // setup ARCHIVED icon
-        statusIcon.setVisibility(messageItem.isReceivedFromMessageArchive() ? View.VISIBLE : View.GONE);
+        //statusIcon.setVisibility(messageItem.isReceivedFromMessageArchive() ? View.VISIBLE : View.GONE);
+        statusIcon.setVisibility(View.GONE);
 
         // setup FORWARDED
         boolean haveForwarded = messageItem.haveForwardedMessages();

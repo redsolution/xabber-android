@@ -1165,11 +1165,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
             CustomMessageMenu.addMenuItem(menuItems, "action_message_show_original_otr", getString(R.string.message_otr_show_original));
         }
 
-        if (clickedMessageItem.isForwarded()) {
-            CustomMessageMenu.addMenuItem(menuItems, "action_message_status", CustomMessageMenuAdapter.STATUS_FORWARDED);
-        } else if (clickedMessageItem.isReceivedFromMessageArchive()) {
-            CustomMessageMenu.addMenuItem(menuItems, "action_message_status", CustomMessageMenuAdapter.STATUS_SYNCED);
-        } else if (clickedMessageItem.isError()) {
+        if (clickedMessageItem.isError()) {
             CustomMessageMenu.addMenuItem(menuItems, "action_message_status", CustomMessageMenuAdapter.STATUS_ERROR);
         } else if (!clickedMessageItem.isSent()) {
             CustomMessageMenu.addMenuItem(menuItems, "action_message_status", CustomMessageMenuAdapter.STATUS_NOT_SEND);
