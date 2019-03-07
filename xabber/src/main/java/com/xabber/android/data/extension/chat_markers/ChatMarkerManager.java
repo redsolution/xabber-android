@@ -103,10 +103,7 @@ public class ChatMarkerManager implements OnPacketListener {
                     .findAllSorted(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
             MessageItem lastIncomingMessage = results.last();
             if (!lastIncomingMessage.isRead()) {
-                sendDisplayed(lastIncomingMessage);
-                realm.beginTransaction();
-                lastIncomingMessage.setRead(true);
-                realm.commitTransaction();
+                BackpressureDisplayedSender.getInstance().sendDisplayedIfNeed(lastIncomingMessage);
             }
         }
     }
@@ -133,19 +130,6 @@ public class ChatMarkerManager implements OnPacketListener {
             if (isChatMarkersSupport) break;
         }
         return isChatMarkersSupport;
-    }
-
-    private void sendDisplayed(MessageItem messageItem) {
-        Message displayed = new Message(messageItem.getUser().getJid());
-        displayed.addExtension(new ChatMarkersElements.DisplayedExtension(messageItem.getStanzaId()));
-        //displayed.setThread(messageItem.getThread());
-        displayed.setType(Message.Type.chat);
-
-        try {
-            StanzaSender.sendStanza(messageItem.getAccount(), displayed);
-        } catch (NetworkException e) {
-            LogManager.exception(this, e);
-        }
     }
 
     private void sendReceived(Message message, AccountJid account) {
