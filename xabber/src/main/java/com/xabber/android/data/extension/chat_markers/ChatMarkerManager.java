@@ -122,7 +122,7 @@ public class ChatMarkerManager implements OnPacketListener {
             try {
                 discoverInfo = ServiceDiscoveryManager.getInstanceFor(connection).discoverInfo(fromJid);
             } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException |
-                    SmackException.NotConnectedException | InterruptedException e) {
+                    SmackException.NotConnectedException | InterruptedException | ClassCastException e) {
                 e.printStackTrace();
             }
 
