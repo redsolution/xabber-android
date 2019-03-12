@@ -21,6 +21,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ProgressBar;
 
 import com.xabber.android.R;
 import com.xabber.android.data.entity.AccountJid;
@@ -33,7 +35,9 @@ import com.xabber.android.ui.helper.ToolbarHelper;
 
 public class ContactAddActivity extends ManagedActivity implements ContactAddFragment.Listener {
 
-    BarPainter barPainter;
+    private BarPainter barPainter;
+    private ProgressBar progressBar;
+    private Toolbar toolbar;
 
     public static Intent createIntent(Context context) {
         return createIntent(context, null);
@@ -59,9 +63,9 @@ public class ContactAddActivity extends ManagedActivity implements ContactAddFra
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_with_toolbar_and_container);
+        setContentView(R.layout.activity_with_toolbar_progress_and_container);
 
-        Toolbar toolbar = ToolbarHelper.setUpDefaultToolbar(this, null, R.drawable.ic_clear_white_24dp);
+        toolbar = ToolbarHelper.setUpDefaultToolbar(this, null, R.drawable.ic_clear_white_24dp);
         toolbar.inflateMenu(R.menu.toolbar_add_contact);
         toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
@@ -70,6 +74,7 @@ public class ContactAddActivity extends ManagedActivity implements ContactAddFra
             }
         });
 
+        progressBar = findViewById(R.id.toolbarProgress);
         barPainter = new BarPainter(this, toolbar);
         barPainter.setDefaultColor();
 
@@ -111,5 +116,13 @@ public class ContactAddActivity extends ManagedActivity implements ContactAddFra
     @Override
     public void onAccountSelected(AccountJid account) {
         barPainter.updateWithAccountName(account);
+    }
+
+    @Override
+    public void showProgress(boolean show) {
+        if (progressBar != null) {
+            progressBar.setVisibility(show ? View.VISIBLE : View.GONE);
+            toolbar.getMenu().findItem(R.id.action_add_contact).setVisible(!show);
+        }
     }
 }
