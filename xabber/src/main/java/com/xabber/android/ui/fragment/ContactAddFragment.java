@@ -1,7 +1,6 @@
 package com.xabber.android.ui.fragment;
 
 import android.app.Activity;
-import android.content.Context;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -14,11 +13,11 @@ import android.widget.Toast;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
-import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterManager;
@@ -27,6 +26,9 @@ import com.xabber.android.ui.helper.ContactAdder;
 
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
+import org.jxmpp.jid.EntityBareJid;
+import org.jxmpp.jid.impl.JidCreate;
+import org.jxmpp.stringprep.XmppStringprepException;
 
 import java.util.Collection;
 
@@ -172,6 +174,7 @@ public class ContactAddFragment extends GroupEditorFragment
         }
 
         String contactString = userView.getText().toString();
+        contactString = contactString.replace(" ", "");
 
         if (TextUtils.isEmpty(contactString)) {
             Toast.makeText(getActivity(), getString(R.string.EMPTY_USER_NAME),
@@ -181,9 +184,11 @@ public class ContactAddFragment extends GroupEditorFragment
 
         UserJid user;
         try {
-            user = UserJid.from(contactString);
-        } catch (UserJid.UserJidCreateException e) {
-            LogManager.exception(this, e);
+            EntityBareJid entityFullJid = JidCreate.entityBareFrom(contactString);
+            user = UserJid.from(entityFullJid);
+        } catch (XmppStringprepException | UserJid.UserJidCreateException  e) {
+            e.printStackTrace();
+            Toast.makeText(getActivity(), getString(R.string.INCORRECT_USER_NAME), Toast.LENGTH_LONG).show();
             return;
         }
 
