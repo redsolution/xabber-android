@@ -14,7 +14,7 @@
         android:textStyle="bold"
         android:textColor="@color/white"
         android:text="@string/unread_messages"
-        android:background="@drawable/rounded_background_grey_transparent"
+        android:background="?attr/transparent_rounded_background"
         android:visibility="gone"
         />
 </merge>

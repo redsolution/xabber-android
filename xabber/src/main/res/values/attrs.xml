@@ -58,7 +58,7 @@
         <attr name="half_transparent_background" format="reference" />
         <attr name="action_with_chat_background" format="reference|color" />
         <attr name="contact_list_contact_archived_background" format="reference|color" />
-        <attr name="message_date_background_color" format="reference|color" />
+        <attr name="transparent_rounded_background" format="reference|color" />
         <attr name="message_background" format="color|reference" />
     </declare-styleable>
     <declare-styleable name="ImFlexboxLayout">
