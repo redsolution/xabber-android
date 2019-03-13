@@ -56,6 +56,11 @@ public class BackpressureDisplayedSender {
                         messageItem.setRead(true);
                         realm.commitTransaction();
                     }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        LogManager.exception(this, throwable);
+                    }
                 });
         queries.put(contact, subject);
         return subject;

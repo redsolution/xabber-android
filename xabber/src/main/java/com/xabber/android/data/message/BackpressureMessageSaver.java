@@ -2,6 +2,7 @@ package com.xabber.android.data.message;
 
 import com.xabber.android.data.database.MessageDatabaseManager;
 import com.xabber.android.data.database.messagerealm.MessageItem;
+import com.xabber.android.data.log.LogManager;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -43,6 +44,11 @@ public class BackpressureMessageSaver {
                             realm.copyToRealm(messageItems);
                         }
                     });
+                }
+            }, new Action1<Throwable>() {
+                @Override
+                public void call(Throwable throwable) {
+                    LogManager.exception(this, throwable);
                 }
             });
     }
