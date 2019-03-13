@@ -789,7 +789,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
                 newMessageItem.setAttachments(attachments);
 
             BackpressureMessageSaver.getInstance().saveMessageItem(newMessageItem);
-            EventBus.getDefault().post(new NewMessageEvent());
+            //EventBus.getDefault().post(new NewMessageEvent());
             return;
         }
 

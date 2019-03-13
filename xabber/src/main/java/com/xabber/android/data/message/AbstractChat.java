@@ -300,7 +300,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         // TODO: 07.03.19 need replace?
         boolean visible = MessageManager.getInstance().isVisibleChat(this);
         if (!fromMUC && !fromMAM && incoming && visible) ChatMarkerManager.getInstance().sendDisplayedIfNeed(account, user);
-        EventBus.getDefault().post(new NewMessageEvent());
+        //EventBus.getDefault().post(new NewMessageEvent());
     }
 
     protected void createAndSaveFileMessage(boolean ui, String uid, Resourcepart resource, String text, final ChatAction action,
@@ -317,7 +317,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         // TODO: 07.03.19 need replace?
         boolean visible = MessageManager.getInstance().isVisibleChat(this);
         if (!fromMUC && !fromMAM && incoming && visible) ChatMarkerManager.getInstance().sendDisplayedIfNeed(account, user);
-        EventBus.getDefault().post(new NewMessageEvent());
+        //EventBus.getDefault().post(new NewMessageEvent());
     }
 
     public void saveMessageItem(boolean ui, final MessageItem messageItem) {
@@ -331,6 +331,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
                     realm.copyToRealm(messageItem);
                     LogManager.d("REALM", Thread.currentThread().getName()
                             + " save message item: " + (System.currentTimeMillis() - startTime));
+                    EventBus.getDefault().post(new NewMessageEvent());
                 }
             });
         }

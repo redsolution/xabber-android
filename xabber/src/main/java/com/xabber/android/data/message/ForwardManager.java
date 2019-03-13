@@ -35,10 +35,10 @@ public class ForwardManager {
                     @Override
                     public void execute(Realm realm) {
                         realm.copyToRealm(messageItem);
+                        EventBus.getDefault().post(new NewMessageEvent());
                         chat.sendMessages();
                     }
                 });
-        EventBus.getDefault().post(new NewMessageEvent());
     }
 
     public static String parseForwardComment(Stanza packet) {

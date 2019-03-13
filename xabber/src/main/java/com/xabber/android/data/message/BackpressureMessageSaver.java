@@ -4,6 +4,8 @@ import com.xabber.android.data.database.MessageDatabaseManager;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.log.LogManager;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -42,6 +44,7 @@ public class BackpressureMessageSaver {
                         @Override
                         public void execute(Realm realm) {
                             realm.copyToRealm(messageItems);
+                            EventBus.getDefault().post(new NewMessageEvent());
                         }
                     });
                 }
