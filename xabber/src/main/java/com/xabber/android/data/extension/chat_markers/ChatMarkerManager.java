@@ -12,7 +12,10 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.chat_markers.filter.ChatMarkersFilter;
 import com.xabber.android.data.log.LogManager;
+import com.xabber.android.data.message.AbstractChat;
+import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.MessageUpdateEvent;
+import com.xabber.android.data.notification.MessageNotificationManager;
 import com.xabber.android.data.roster.RosterManager;
 
 import org.greenrobot.eventbus.EventBus;
@@ -30,6 +33,7 @@ import org.jivesoftware.smack.filter.StanzaFilter;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.Stanza;
+import org.jivesoftware.smackx.carbons.packet.CarbonExtension;
 import org.jivesoftware.smackx.chat_markers.element.ChatMarkersElements;
 import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
 import org.jivesoftware.smackx.disco.packet.DiscoverInfo;
@@ -104,6 +108,24 @@ public class ChatMarkerManager implements OnPacketListener {
             MessageItem lastIncomingMessage = results.last();
             if (!lastIncomingMessage.isRead()) {
                 BackpressureDisplayedSender.getInstance().sendDisplayedIfNeed(lastIncomingMessage);
+            }
+        }
+    }
+
+    public void processCarbonsMessage(AccountJid account, final Message message, CarbonExtension.Direction direction) {
+        if (direction == CarbonExtension.Direction.sent) {
+            if (ChatMarkersElements.DisplayedExtension.from(message) != null) {
+                UserJid companion;
+                try {
+                    companion = UserJid.from(message.getTo()).getBareUserJid();
+                } catch (UserJid.UserJidCreateException e) {
+                    return;
+                }
+                AbstractChat chat = MessageManager.getInstance().getOrCreateChat(account, companion);
+                if (chat != null) {
+                    chat.resetUnreadMessageCount(false);
+                    MessageNotificationManager.getInstance().removeChatWithTimer(account, companion);
+                }
             }
         }
     }
