@@ -93,7 +93,7 @@
     <string name="showcase_contact_list_text_1">Streichen Sie im Chat nach links oder rechts um ihn zu archivieren</string>
     <string name="last_seen_now">zuletzt gesehen: Gerade eben</string>
     <string name="last_seen_minutes">zul. gesehen vor %1$s Minuten</string>
-    <string name="last_seen_today">zuletzt gesehen um: %1$</string>
+    <string name="last_seen_today">zuletzt gesehen um: %1$s</string>
     <string name="last_seen_yesterday">gestern zuletzt gesehen um %1$s</string>
     <string name="last_seen_date">zuletzt gesehen: %1$s</string>
 </resources>
