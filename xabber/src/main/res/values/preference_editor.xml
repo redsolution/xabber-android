@@ -109,7 +109,7 @@
     <string name="chats_attention">Attention</string>
     <string name="chats_attention_summary">React for incoming attention requests</string>
     <string name="chats_attention_sound">Attention sound</string>
-    <string name="chats_attention_sound_summary">Choose ringtone</string>
+    <string name="chats_attention_sound_summary">Choose ringtoneHolder</string>
 
     <string name="connection_load_vcard">Load vCard\nLoad and update contact\'s personal info and avatar. Disable to reduce traffic usage.</string>
     <string name="connection_load_images">Load images\nLoad images from file URL automatically. Disable to reduce traffic usage.</string>
@@ -167,4 +167,8 @@
     <string name="events_reset_toast">Settings were reset</string>
     <string name="events_remove_all_custom_title">Remove all custom notifications</string>
     <string name="events_remove_all_custom_summary">All custom notification settings (for contacts, roster groups and accounts) would be removed</string>
+
+    <string name="events_ringtone_not_available">Ringtone not available</string>
+    <string name="events_ringtone_not_available_summary">Please select another ringtoneHolder</string>
+    <string name="events_ringtone_not_available_summary_permission">Xabber need permission for read storage to access this ringtoneHolder\nPlease grant a permission or select another ringtoneHolder</string>
 </resources>
