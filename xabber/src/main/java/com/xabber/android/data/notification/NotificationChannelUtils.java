@@ -190,4 +190,11 @@ public class NotificationChannelUtils {
     public static void removeCustomChannel(NotificationManager notifManager, String channelID) {
         notifManager.deleteNotificationChannel(channelID);
     }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public static void resetNotificationChannel(NotificationManager notifManager, String channelID) {
+        if (getChannelID(ChannelType.privateChat).equals(channelID)) resetMessageChannel(notifManager, ChannelType.privateChat);
+        else if (getChannelID(ChannelType.groupChat).equals(channelID)) resetMessageChannel(notifManager, ChannelType.groupChat);
+        else if (getChannelID(ChannelType.attention).equals(channelID)) resetMessageChannel(notifManager, ChannelType.attention);
+    }
 }

@@ -15,6 +15,7 @@ import android.support.v4.app.RemoteInput;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
+import android.util.Log;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
@@ -141,7 +142,15 @@ public class MessageNotificationCreator {
     }
 
     private void sendNotification(NotificationCompat.Builder builder, int notificationId) {
-        notificationManager.notify(notificationId, builder.build());
+        try {
+            notificationManager.notify(notificationId, builder.build());
+        } catch (SecurityException e) {
+            // If no access to ringtone - reset channel to default
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                NotificationChannelUtils.resetNotificationChannel(notificationManager, builder.getNotification().getChannelId());
+            }
+            Log.d(MessageNotificationCreator.class.toString(), e.toString());
+        }
     }
 
     /** UTILS */
