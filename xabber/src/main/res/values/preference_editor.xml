@@ -169,6 +169,6 @@
     <string name="events_remove_all_custom_summary">All custom notification settings (for contacts, roster groups and accounts) would be removed</string>
 
     <string name="events_ringtone_not_available">Ringtone not available</string>
-    <string name="events_ringtone_not_available_summary">Please select another ringtoneHolder</string>
-    <string name="events_ringtone_not_available_summary_permission">Xabber need permission for read storage to access this ringtoneHolder\nPlease grant a permission or select another ringtoneHolder</string>
+    <string name="events_ringtone_not_available_summary">Please select another ringtone</string>
+    <string name="events_ringtone_not_available_summary_permission">Xabber need permission for read storage to access this ringtone\nPlease grant a permission or select another ringtone</string>
 </resources>

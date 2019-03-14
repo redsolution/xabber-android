@@ -144,4 +144,8 @@
     <string name="events_reset_toast">Настройки были сброшены</string>
     <string name="events_remove_all_custom_title">Удалить все спецтальные настройки уведомлений</string>
     <string name="events_remove_all_custom_summary">Все специальные настройки уведомлений (для контактов, групп и аккаунтов) будут удалены</string>
+
+    <string name="events_ringtone_not_available">Мелодия не доступна</string>
+    <string name="events_ringtone_not_available_summary">Пожалуйста выберите другую мелодию</string>
+    <string name="events_ringtone_not_available_summary_permission">Xabber требуется разрешение на чтение памяти для доступа к мелодии\nПожалуйста выдайте разрешение или выберите другую мелодию</string>
 </resources>
