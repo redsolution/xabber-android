@@ -12,7 +12,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
-import android.preference.PreferenceFragment;
 import android.preference.RingtonePreference;
 import android.support.annotation.RequiresApi;
 import android.support.annotation.StringRes;
@@ -27,7 +26,7 @@ import com.xabber.android.data.notification.custom_notification.CustomNotifyPref
 import static com.xabber.android.data.SettingsManager.NOTIFICATION_PREFERENCES;
 
 @RequiresApi(api = Build.VERSION_CODES.O)
-public class ChannelSettingsFragment extends PreferenceFragment {
+public class ChannelSettingsFragment extends BaseSoundPrefFragment<ChannelRingtoneHolder> {
 
     private NotificationManager notificationManager;
 
@@ -128,9 +127,7 @@ public class ChannelSettingsFragment extends PreferenceFragment {
         preference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
-                NotificationChannelUtils.updateMessageChannel(notificationManager, type,
-                        Uri.parse(newValue.toString()), null, null);
-                return true;
+                return trySetNewRingtone(new ChannelRingtoneHolder(newValue.toString(), type));
             }
         });
     }
@@ -140,6 +137,12 @@ public class ChannelSettingsFragment extends PreferenceFragment {
         Uri uri = channel.getSound();
         Ringtone ringtone = RingtoneManager.getRingtone(getActivity(), uri);
         return ringtone.getTitle(getActivity());
+    }
+
+    @Override
+    protected void setNewRingtone(ChannelRingtoneHolder ringtoneHolder) {
+        NotificationChannelUtils.updateMessageChannel(notificationManager, ringtoneHolder.type,
+                Uri.parse(ringtoneHolder.uri), null, null);
     }
 }
 

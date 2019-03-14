@@ -11,7 +11,7 @@ import com.xabber.android.ui.helper.PermissionsRequester;
 
 import java.io.IOException;
 
-public abstract class BaseSoundPrefFragment<T extends BaseSoundPrefFragment.RingtoneHolder> extends PreferencesFragment {
+public abstract class BaseSoundPrefFragment<T extends BaseSoundPrefFragment.RingtoneHolder> extends android.preference.PreferenceFragment {
 
     private final static int PERMISSIONS_REQUEST_SELECT_RINGTONE = 10;
 
