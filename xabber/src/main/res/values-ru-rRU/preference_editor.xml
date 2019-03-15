@@ -142,6 +142,6 @@
     <string name="events_reset_summary">Все настройки уведомлений будут установлены в значения по умолчанию</string>
     <string name="events_reset_alert">Сбросить настройки уведомлений?</string>
     <string name="events_reset_toast">Настройки были сброшены</string>
-    <string name="events_remove_all_custom_title">Удалить все спецтальные настройки уведомлений</string>
+    <string name="events_remove_all_custom_title">Удалить все специальные настройки уведомлений</string>
     <string name="events_remove_all_custom_summary">Все специальные настройки уведомлений (для контактов, групп и аккаунтов) будут удалены</string>
 </resources>
