@@ -83,8 +83,10 @@ public class MessageNotificationCreator {
                     .setContentText(createMessageLine(chat.getLastMessage(), chat.isGroupChat(), showText))
                     .setStyle(createInboxStyle(chat, showText))
                     .setAutoCancel(true);
-            if (alert) addEffects(builder, chat.getLastMessage().getMessageText().toString(), chat, context);
         }
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O && alert)
+            addEffects(builder, chat.getLastMessage().getMessageText().toString(), chat, context);
 
         builder.addAction(createMarkAsReadAction(chat.getNotificationId()))
                 .addAction(createMuteAction(chat.getNotificationId()));
@@ -121,8 +123,11 @@ public class MessageNotificationCreator {
                     .setOnlyAlertOnce(!alert)
                     .setStyle(createInboxStyleForBundle(sortedChats))
                     .setContentText(createSummarizedContentForBundle(sortedChats));
+        }
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O && alert) {
             MessageNotificationManager.Message lastMessage = lastChat != null ? lastChat.getLastMessage() : null;
-            if (lastMessage != null && alert)
+            if (lastMessage != null)
                 addEffects(builder, lastMessage.getMessageText().toString(), lastChat, context);
         }
 
