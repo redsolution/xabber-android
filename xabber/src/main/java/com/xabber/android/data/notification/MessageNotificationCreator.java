@@ -15,7 +15,6 @@ import android.support.v4.app.RemoteInput;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
-import android.util.Log;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
@@ -24,6 +23,7 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.muc.MUCManager;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.chat.ChatManager;
@@ -150,11 +150,10 @@ public class MessageNotificationCreator {
         try {
             notificationManager.notify(notificationId, builder.build());
         } catch (SecurityException e) {
+            LogManager.exception(this, e);
             // If no access to ringtone - reset channel to default
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
                 NotificationChannelUtils.resetNotificationChannel(notificationManager, builder.getNotification().getChannelId());
-            }
-            Log.d(MessageNotificationCreator.class.toString(), e.toString());
         }
     }
 

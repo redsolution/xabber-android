@@ -387,6 +387,9 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
             notificationManager.notify(id, notification);
         } catch (SecurityException e) {
             LogManager.exception(this, e);
+            // If no access to ringtone - reset channel to default
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+                NotificationChannelUtils.resetNotificationChannel(notificationManager, notification.getChannelId());
         }
     }
 
