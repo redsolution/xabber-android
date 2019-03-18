@@ -24,40 +24,49 @@ import rx.subjects.PublishSubject;
 public class BackpressureMessageSaver {
 
     private static BackpressureMessageSaver instance;
-    private PublishSubject<MessageItem> subject = PublishSubject.create();
+    private PublishSubject<MessageItem> subject;
 
     public static BackpressureMessageSaver getInstance() {
-        if (instance == null) {
-            instance = new BackpressureMessageSaver();
-        }
+        if (instance == null) instance = new BackpressureMessageSaver();
         return instance;
     }
 
-    public BackpressureMessageSaver() {
+    public void saveMessageItem(MessageItem messageItem) {
+        subject.onNext(messageItem);
+    }
+
+    private BackpressureMessageSaver() {
+        createSubject();
+    }
+
+    private void createSubject() {
+        subject = PublishSubject.create();
         subject.buffer(500, TimeUnit.MILLISECONDS)
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(new Action1<List<MessageItem>>() {
                 @Override
                 public void call(final List<MessageItem> messageItems) {
-                    Realm realm = MessageDatabaseManager.getInstance().getRealmUiThread();
-                    realm.executeTransactionAsync(new Realm.Transaction() {
-                        @Override
-                        public void execute(Realm realm) {
-                            realm.copyToRealm(messageItems);
-                            EventBus.getDefault().post(new NewMessageEvent());
-                        }
-                    });
+                    try {
+                        Realm realm = MessageDatabaseManager.getInstance().getRealmUiThread();
+                        realm.executeTransactionAsync(new Realm.Transaction() {
+                            @Override
+                            public void execute(Realm realm) {
+                                realm.copyToRealm(messageItems);
+                                EventBus.getDefault().post(new NewMessageEvent());
+                            }
+                        });
+                    } catch (Exception e) {
+                        LogManager.exception(this, e);
+                    }
                 }
             }, new Action1<Throwable>() {
                 @Override
                 public void call(Throwable throwable) {
                     LogManager.exception(this, throwable);
+                    LogManager.d(this, "Exception is thrown. Created new publish subject.");
+                    createSubject();
                 }
             });
-    }
-
-    public void saveMessageItem(MessageItem messageItem) {
-        subject.onNext(messageItem);
     }
 
 }

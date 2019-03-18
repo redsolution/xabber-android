@@ -43,7 +43,7 @@ public class BackpressureDisplayedSender {
         subject.onNext(messageItem);
     }
 
-    private PublishSubject<MessageItem> createSubject(AbstractContact contact) {
+    private PublishSubject<MessageItem> createSubject(final AbstractContact contact) {
         PublishSubject<MessageItem> subject = PublishSubject.create();
         subject.debounce(2000, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
@@ -60,6 +60,8 @@ public class BackpressureDisplayedSender {
                     @Override
                     public void call(Throwable throwable) {
                         LogManager.exception(this, throwable);
+                        LogManager.d(this, "Exception is thrown. Subject was deleted.");
+                        queries.remove(contact);
                     }
                 });
         queries.put(contact, subject);
