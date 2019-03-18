@@ -32,6 +32,7 @@ import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.muc.RoomChat;
 import com.xabber.android.data.filedownload.FileCategory;
 import com.xabber.android.data.message.AbstractChat;
+import com.xabber.android.data.message.ChatAction;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.NotificationState;
 import com.xabber.android.data.notification.custom_notification.CustomNotifyPrefsManager;
@@ -184,6 +185,8 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
                 messageText = FileCategory.getCategoryName(category, true) + attachment.getTitle();
             } else if (lastMessage.getFilePath() != null) {
                 messageText = new File(lastMessage.getFilePath()).getName();
+            } else if (ChatAction.available.toString().equals(lastMessage.getAction())) {
+                messageText = "<font color='#388E3C'>" + lastMessage.getText().trim() + "</font>";
             } else {
                 messageText = lastMessage.getText().trim();
             }
