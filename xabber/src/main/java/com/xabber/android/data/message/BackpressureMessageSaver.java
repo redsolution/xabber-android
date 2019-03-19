@@ -46,6 +46,7 @@ public class BackpressureMessageSaver {
             .subscribe(new Action1<List<MessageItem>>() {
                 @Override
                 public void call(final List<MessageItem> messageItems) {
+                    if (messageItems == null || messageItems.isEmpty()) return;
                     try {
                         Realm realm = MessageDatabaseManager.getInstance().getRealmUiThread();
                         realm.executeTransactionAsync(new Realm.Transaction() {
