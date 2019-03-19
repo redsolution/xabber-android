@@ -54,6 +54,7 @@
 
     <string name="preference_connection">Connection settings\nConnection settings</string>
     <string name="preference_contacts">Contact list\nCustomize contact list appearance</string>
+    <string name="preference_chat_summary">Customize chat appearance</string>
     <string name="preference_debug">Debug settings\nSettings to help developers improve Xabber</string>
     <string name="preference_editor">Settings</string>
     <string name="preference_events">Notifications\nNotification settings</string>

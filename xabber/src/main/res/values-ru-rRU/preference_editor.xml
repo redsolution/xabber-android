@@ -46,6 +46,7 @@
     <string name="interface_smiles_none">Отключить графические смайлы</string>
     <string name="preference_connection">Настройки подключения\nНастройки вариантов подключения</string>
     <string name="preference_contacts">Список контактов\nНастройки отображения списка контактов</string>
+    <string name="preference_chat_summary">Настройки отображения чата</string>
     <string name="preference_debug">Настройки отладки\nВыберите этот пункт, если хотите помочь разработчикам сделать Xabber ещё лучше</string>
     <string name="preference_editor">Настройки</string>
     <string name="preference_events">Оповещения\nНастройки вариантов оповещения</string>
