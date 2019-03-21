@@ -9,7 +9,7 @@ public class NoFlexIncomingMsgVH extends IncomingMessageVH {
     public NoFlexIncomingMsgVH(View itemView, MessageClickListener messageListener,
                                MessageLongClickListener longClickListener,
                                FileListener fileListener, int appearance) {
-        super(itemView, messageListener, longClickListener, fileListener, appearance);
+        super(itemView, messageListener, longClickListener, fileListener, null, appearance);
     }
 
     @Override

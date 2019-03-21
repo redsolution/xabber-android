@@ -86,6 +86,7 @@ import com.xabber.android.ui.activity.ContactEditActivity;
 import com.xabber.android.ui.activity.QuestionActivity;
 import com.xabber.android.ui.adapter.CustomMessageMenuAdapter;
 import com.xabber.android.ui.adapter.ResourceAdapter;
+import com.xabber.android.ui.adapter.chat.IncomingMessageVH;
 import com.xabber.android.ui.adapter.chat.MessageVH;
 import com.xabber.android.ui.adapter.chat.MessagesAdapter;
 import com.xabber.android.ui.color.ColorManager;
@@ -122,7 +123,8 @@ import io.realm.Sort;
 public class ChatFragment extends FileInteractionFragment implements PopupMenu.OnMenuItemClickListener,
         View.OnClickListener, Toolbar.OnMenuItemClickListener, MessageVH.MessageClickListener,
         MessagesAdapter.Listener, AdapterView.OnItemClickListener, PopupWindow.OnDismissListener,
-        OnAccountChangedListener, ForwardPanel.OnCloseListener, MessagesAdapter.AnchorHolder {
+        OnAccountChangedListener, ForwardPanel.OnCloseListener, MessagesAdapter.AnchorHolder,
+        IncomingMessageVH.BindListener {
 
     public static final String ARGUMENT_ACCOUNT = "ARGUMENT_ACCOUNT";
     public static final String ARGUMENT_USER = "ARGUMENT_USER";
@@ -399,7 +401,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         }
 
         chatMessageAdapter = new MessagesAdapter(getActivity(), messageItems, abstractChat,
-                this, this, this, this, this);
+                this, this, this, this, this,
+                this);
         realmRecyclerView.setAdapter(chatMessageAdapter);
 
         restoreInputState();
@@ -1431,6 +1434,11 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         MessageItem message = chatMessageAdapter.getMessageItem(position);
         if (message != null)
             tvTopDate.setText(StringUtils.getDateStringForMessage(message.getTimestamp()));
+    }
+
+    @Override
+    public void onBind(MessageItem message) {
+
     }
 
     private void showScrollDownButtonIfNeed() {

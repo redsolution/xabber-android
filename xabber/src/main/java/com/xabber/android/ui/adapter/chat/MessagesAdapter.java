@@ -47,6 +47,7 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
     private final ForwardedAdapter.ForwardListener fwdListener;
     private final Listener listener;
     private final AnchorHolder anchorHolder;
+    private final IncomingMessageVH.BindListener bindListener;
 
     // message font style
     private final int appearanceStyle = SettingsManager.chatsAppearanceStyle();
@@ -78,7 +79,7 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
             Context context, RealmResults<MessageItem> messageItems,
             AbstractChat chat, MessageVH.MessageClickListener messageListener,
             FileMessageVH.FileListener fileListener, ForwardedAdapter.ForwardListener fwdListener,
-            Listener listener, AnchorHolder anchorHolder) {
+            Listener listener, IncomingMessageVH.BindListener bindListener, AnchorHolder anchorHolder) {
         super(context, messageItems, true);
 
         this.context = context;
@@ -87,6 +88,7 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
         this.fwdListener = fwdListener;
         this.listener = listener;
         this.anchorHolder = anchorHolder;
+        this.bindListener = bindListener;
 
         account = chat.getAccount();
         user = chat.getUser();
@@ -135,7 +137,7 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
             case VIEW_TYPE_INCOMING_MESSAGE:
                 return new IncomingMessageVH(LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.item_message_incoming, parent, false),
-                        this, this, this, appearanceStyle);
+                        this, this, this, bindListener, appearanceStyle);
 
             case VIEW_TYPE_INCOMING_MESSAGE_NOFLEX:
                 return new NoFlexIncomingMsgVH(LayoutInflater.from(parent.getContext())
