@@ -1501,7 +1501,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     private void increaseUnreadMessageCountIfNeed() {
         AbstractChat chat = getChat();
         if (btnScrollDown.getVisibility() == View.VISIBLE && chat != null) {
-            chat.increaseUnreadMessageCount();
+            //chat.increaseUnreadMessageCount();
             updateNewReceivedMessageCounter(chat.getUnreadMessageCount());
         }
     }
