@@ -97,7 +97,7 @@ public class ChatMarkerManager implements OnPacketListener {
     }
 
     public void sendDisplayedIfNeed(MessageItem messageItem) {
-        if (isClientSupportChatMarkers(messageItem.getAccount(), messageItem.getUser())) {
+        //if (isClientSupportChatMarkers(messageItem.getAccount(), messageItem.getUser())) {
             Message displayed = new Message(messageItem.getUser().getJid());
             displayed.addExtension(new ChatMarkersElements.DisplayedExtension(messageItem.getStanzaId()));
             //displayed.setThread(messageItem.getThread());
@@ -108,7 +108,7 @@ public class ChatMarkerManager implements OnPacketListener {
             } catch (NetworkException e) {
                 LogManager.exception(this, e);
             }
-        }
+        //}
     }
 
     public void processCarbonsMessage(AccountJid account, final Message message, CarbonExtension.Direction direction) {

@@ -1457,7 +1457,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         if (message != null && message.isValid() && !message.isRead()) {
             if (!waitToMarkAsRead.contains(message.getUniqueId())) {
                 waitToMarkAsRead.add(message.getUniqueId());
-                ChatMarkerManager.getInstance().sendDisplayedIfNeed(message);
+                AbstractChat chat = getChat();
+                if (chat != null) chat.markAsRead(message, true);
                 updateUnread();
             }
         }

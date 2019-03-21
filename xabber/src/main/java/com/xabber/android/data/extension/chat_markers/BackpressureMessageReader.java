@@ -25,14 +25,14 @@ import rx.subjects.PublishSubject;
 /** Groups messages to send displayed. To avoid
  * too often sending displayed chat markers.
  * */
-public class BackpressureDisplayedSender {
+public class BackpressureMessageReader {
 
-    private static BackpressureDisplayedSender instance;
+    private static BackpressureMessageReader instance;
     private Map<AbstractContact, PublishSubject<MessageHolder>> queries = new HashMap<>();
 
-    public static BackpressureDisplayedSender getInstance() {
+    public static BackpressureMessageReader getInstance() {
         if (instance == null) {
-            instance = new BackpressureDisplayedSender();
+            instance = new BackpressureMessageReader();
         }
         return instance;
     }

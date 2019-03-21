@@ -32,7 +32,7 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.carbons.CarbonManager;
-import com.xabber.android.data.extension.chat_markers.BackpressureDisplayedSender;
+import com.xabber.android.data.extension.chat_markers.BackpressureMessageReader;
 import com.xabber.android.data.extension.cs.ChatStateManager;
 import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.extension.forward.ForwardComment;
@@ -801,7 +801,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     }
 
     public void markAsRead(MessageItem messageItem, boolean trySendDisplay) {
-        BackpressureDisplayedSender.getInstance().markAsRead(messageItem, trySendDisplay);
+        BackpressureMessageReader.getInstance().markAsRead(messageItem, trySendDisplay);
     }
 
     public void markAsReadAll(boolean trySendDisplay) {
