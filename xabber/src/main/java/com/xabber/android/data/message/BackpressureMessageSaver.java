@@ -53,6 +53,10 @@ public class BackpressureMessageSaver {
                             @Override
                             public void execute(Realm realm) {
                                 realm.copyToRealm(messageItems);
+                            }
+                        }, new Realm.Transaction.OnSuccess() {
+                            @Override
+                            public void onSuccess() {
                                 EventBus.getDefault().post(new NewMessageEvent());
                             }
                         });
