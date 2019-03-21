@@ -1,7 +1,5 @@
 package com.xabber.android.data.extension.chat_markers;
 
-import com.xabber.android.data.NetworkException;
-import com.xabber.android.data.connection.StanzaSender;
 import com.xabber.android.data.database.MessageDatabaseManager;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.log.LogManager;
@@ -10,8 +8,6 @@ import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.RosterManager;
 
 import org.greenrobot.eventbus.EventBus;
-import org.jivesoftware.smack.packet.Message;
-import org.jivesoftware.smackx.chat_markers.element.ChatMarkersElements;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,7 +28,7 @@ import rx.subjects.PublishSubject;
 public class BackpressureDisplayedSender {
 
     private static BackpressureDisplayedSender instance;
-    private Map<AbstractContact, PublishSubject<MessageItem>> queries = new HashMap<>();
+    private Map<AbstractContact, PublishSubject<MessageHolder>> queries = new HashMap<>();
 
     public static BackpressureDisplayedSender getInstance() {
         if (instance == null) {
@@ -41,32 +37,34 @@ public class BackpressureDisplayedSender {
         return instance;
     }
 
-    public void sendDisplayedIfNeed(MessageItem messageItem) {
+    public void markAsRead(MessageItem messageItem, boolean trySendDisplayed) {
         AbstractContact contact = RosterManager.getInstance().getAbstractContact(messageItem.getAccount(), messageItem.getUser());
-        PublishSubject<MessageItem> subject = queries.get(contact);
+        PublishSubject<MessageHolder> subject = queries.get(contact);
         if (subject == null) subject = createSubject(contact);
-        subject.onNext(messageItem);
+        subject.onNext(new MessageHolder(messageItem, trySendDisplayed));
     }
 
-    private PublishSubject<MessageItem> createSubject(final AbstractContact contact) {
-        PublishSubject<MessageItem> subject = PublishSubject.create();
+    private PublishSubject<MessageHolder> createSubject(final AbstractContact contact) {
+        PublishSubject<MessageHolder> subject = PublishSubject.create();
         subject.debounce(2000, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<MessageItem>() {
+                .subscribe(new Action1<MessageHolder>() {
                     @Override
-                    public void call(MessageItem messageItem) {
+                    public void call(MessageHolder holder) {
+                        MessageItem message = holder.messageItem;
+                        if (holder.trySendDisplayed)
+                            ChatMarkerManager.getInstance().sendDisplayedIfNeed(message);
+
                         Realm realm = MessageDatabaseManager.getInstance().getRealmUiThread();
-                        RealmResults<MessageItem> messages = getPreviousUnreadMessages(realm, messageItem);
-                        sendDisplayed(messageItem);
+                        RealmResults<MessageItem> messages = getPreviousUnreadMessages(realm, message);
                         realm.beginTransaction();
                         List<String> ids = new ArrayList<>();
-                        for (MessageItem message : messages) {
-                            message.setRead(true);
-                            ids.add(message.getUniqueId());
+                        for (MessageItem mes : messages) {
+                            mes.setRead(true);
+                            ids.add(mes.getUniqueId());
                         }
                         realm.commitTransaction();
-                        EventBus.getDefault().post(new MessageReadEvent(messageItem.getAccount(), messageItem.getUser(), ids));
-
+                        EventBus.getDefault().post(new MessageReadEvent(message.getAccount(), message.getUser(), ids));
                     }
                 }, new Action1<Throwable>() {
                     @Override
@@ -80,19 +78,6 @@ public class BackpressureDisplayedSender {
         return subject;
     }
 
-    private void sendDisplayed(MessageItem messageItem) {
-        Message displayed = new Message(messageItem.getUser().getJid());
-        displayed.addExtension(new ChatMarkersElements.DisplayedExtension(messageItem.getStanzaId()));
-        //displayed.setThread(messageItem.getThread());
-        displayed.setType(Message.Type.chat);
-
-        try {
-            StanzaSender.sendStanza(messageItem.getAccount(), displayed);
-        } catch (NetworkException e) {
-            LogManager.exception(this, e);
-        }
-    }
-
     private RealmResults<MessageItem> getPreviousUnreadMessages(Realm realm, MessageItem messageItem) {
         return realm.where(MessageItem.class)
                 .equalTo(MessageItem.Fields.ACCOUNT, messageItem.getAccount().toString())
@@ -100,6 +85,16 @@ public class BackpressureDisplayedSender {
                 .equalTo(MessageItem.Fields.READ, false)
                 .lessThanOrEqualTo(MessageItem.Fields.TIMESTAMP, messageItem.getTimestamp())
                 .findAll();
+    }
+
+    private class MessageHolder {
+        final MessageItem messageItem;
+        final boolean trySendDisplayed;
+
+        public MessageHolder(MessageItem messageItem, boolean trySendDisplayed) {
+            this.messageItem = messageItem;
+            this.trySendDisplayed = trySendDisplayed;
+        }
     }
 
 }

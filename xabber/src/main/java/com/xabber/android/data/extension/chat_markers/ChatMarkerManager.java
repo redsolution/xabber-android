@@ -43,7 +43,6 @@ import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
-import io.realm.Sort;
 
 public class ChatMarkerManager implements OnPacketListener {
 
@@ -97,29 +96,26 @@ public class ChatMarkerManager implements OnPacketListener {
         }
     }
 
-    public void sendDisplayedAllIfNeed(AccountJid account, UserJid user) {
-        if (isClientSupportChatMarkers(account, user)) {
-            Realm realm = MessageDatabaseManager.getInstance().getRealmUiThread();
-            RealmResults<MessageItem> results = realm.where(MessageItem.class)
-                    .equalTo(MessageItem.Fields.USER, user.toString())
-                    .equalTo(MessageItem.Fields.ACCOUNT, account.toString())
-                    .equalTo(MessageItem.Fields.INCOMING, true)
-                    .findAllSorted(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
-            MessageItem lastIncomingMessage = results.last();
-            if (!lastIncomingMessage.isRead()) {
-                BackpressureDisplayedSender.getInstance().sendDisplayedIfNeed(lastIncomingMessage);
+    public void sendDisplayedIfNeed(MessageItem messageItem) {
+        if (isClientSupportChatMarkers(messageItem.getAccount(), messageItem.getUser())) {
+            Message displayed = new Message(messageItem.getUser().getJid());
+            displayed.addExtension(new ChatMarkersElements.DisplayedExtension(messageItem.getStanzaId()));
+            //displayed.setThread(messageItem.getThread());
+            displayed.setType(Message.Type.chat);
+
+            try {
+                StanzaSender.sendStanza(messageItem.getAccount(), displayed);
+            } catch (NetworkException e) {
+                LogManager.exception(this, e);
             }
         }
     }
 
-    public void sendDisplayedIfNeed(MessageItem messageItem) {
-        if (isClientSupportChatMarkers(messageItem.getAccount(), messageItem.getUser()))
-            BackpressureDisplayedSender.getInstance().sendDisplayedIfNeed(messageItem);
-    }
-
     public void processCarbonsMessage(AccountJid account, final Message message, CarbonExtension.Direction direction) {
         if (direction == CarbonExtension.Direction.sent) {
-            if (ChatMarkersElements.DisplayedExtension.from(message) != null) {
+            ChatMarkersElements.DisplayedExtension extension =
+                    ChatMarkersElements.DisplayedExtension.from(message);
+            if (extension != null) {
                 UserJid companion;
                 try {
                     companion = UserJid.from(message.getTo()).getBareUserJid();
@@ -128,7 +124,7 @@ public class ChatMarkerManager implements OnPacketListener {
                 }
                 AbstractChat chat = MessageManager.getInstance().getOrCreateChat(account, companion);
                 if (chat != null) {
-                    chat.resetUnreadMessageCount(false);
+                    chat.markAsRead(extension.getId(), false);
                     MessageNotificationManager.getInstance().removeChatWithTimer(account, companion);
                 }
             }

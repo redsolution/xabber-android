@@ -32,7 +32,7 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.carbons.CarbonManager;
-import com.xabber.android.data.extension.chat_markers.ChatMarkerManager;
+import com.xabber.android.data.extension.chat_markers.BackpressureDisplayedSender;
 import com.xabber.android.data.extension.cs.ChatStateManager;
 import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.extension.forward.ForwardComment;
@@ -421,12 +421,6 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         if (notify && notifyAboutMessage() && !visible)
             NotificationManager.getInstance().onMessageNotification(messageItem);
 
-        // unread message count
-        if (!visible && action == null) {
-            if (incoming && !fromMAM) increaseUnreadMessageCount();
-            else resetUnreadMessageCount(false);
-        }
-
         // remove notifications if get outgoing message with 2 sec delay
         if (!incoming) {
             MessageNotificationManager.getInstance().removeChatWithTimer(account, user);
@@ -800,18 +794,30 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
                 .count();
     }
 
-    public void increaseUnreadMessageCount() {
-        this.unreadMessageCount++;
-        ChatManager.getInstance().saveOrUpdateChatDataToRealm(this);
+    public void markAsRead(String messageId, boolean trySendDisplay) {
+        MessageItem message = MessageDatabaseManager.getInstance().getRealmUiThread()
+                .where(MessageItem.class).equalTo(MessageItem.Fields.UNIQUE_ID, messageId).findFirst();
+        if (message != null) markAsRead(message, trySendDisplay);
     }
 
-    public void resetUnreadMessageCount(boolean needSentDisplayed) {
-        this.unreadMessageCount = 0;
-        ChatManager.getInstance().saveOrUpdateChatDataToRealm(this);
+    public void markAsRead(MessageItem messageItem, boolean trySendDisplay) {
+        BackpressureDisplayedSender.getInstance().markAsRead(messageItem, trySendDisplay);
     }
 
-    public void setUnreadMessageCount(int unreadMessageCount) {
-        this.unreadMessageCount = unreadMessageCount;
+    public void markAsReadAll(boolean trySendDisplay) {
+        Realm realm = MessageDatabaseManager.getInstance().getRealmUiThread();
+        RealmResults<MessageItem> results = realm.where(MessageItem.class)
+                .equalTo(MessageItem.Fields.ACCOUNT, account.toString())
+                .equalTo(MessageItem.Fields.USER, user.toString())
+                .isNull(MessageItem.Fields.PARENT_MESSAGE_ID)
+                .isNotNull(MessageItem.Fields.TEXT)
+                .equalTo(MessageItem.Fields.INCOMING, true)
+                .equalTo(MessageItem.Fields.READ, false)
+                .findAllSorted(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
+        if (results != null && !results.isEmpty()) {
+            MessageItem lastMessage = results.last();
+            if (lastMessage != null) markAsRead(lastMessage, trySendDisplay);
+        }
     }
 
     public boolean isArchived() {
