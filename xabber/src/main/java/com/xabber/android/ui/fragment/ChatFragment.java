@@ -55,7 +55,7 @@ import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.attention.AttentionManager;
 import com.xabber.android.data.extension.capability.CapabilitiesManager;
 import com.xabber.android.data.extension.capability.ClientInfo;
-import com.xabber.android.data.extension.chat_markers.BackpressureDisplayedSender;
+import com.xabber.android.data.extension.chat_markers.ChatMarkerManager;
 import com.xabber.android.data.extension.cs.ChatStateManager;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.mam.LastHistoryLoadFinishedEvent;
@@ -1457,7 +1457,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         if (message != null && message.isValid() && !message.isRead()) {
             if (!waitToMarkAsRead.contains(message.getUniqueId())) {
                 waitToMarkAsRead.add(message.getUniqueId());
-                BackpressureDisplayedSender.getInstance().sendDisplayedIfNeed(message);
+                ChatMarkerManager.getInstance().sendDisplayedIfNeed(message);
                 updateUnread();
             }
         }

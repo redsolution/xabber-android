@@ -97,7 +97,7 @@ public class ChatMarkerManager implements OnPacketListener {
         }
     }
 
-    public void sendDisplayedIfNeed(AccountJid account, UserJid user) {
+    public void sendDisplayedAllIfNeed(AccountJid account, UserJid user) {
         if (isClientSupportChatMarkers(account, user)) {
             Realm realm = MessageDatabaseManager.getInstance().getRealmUiThread();
             RealmResults<MessageItem> results = realm.where(MessageItem.class)
@@ -110,6 +110,11 @@ public class ChatMarkerManager implements OnPacketListener {
                 BackpressureDisplayedSender.getInstance().sendDisplayedIfNeed(lastIncomingMessage);
             }
         }
+    }
+
+    public void sendDisplayedIfNeed(MessageItem messageItem) {
+        if (isClientSupportChatMarkers(messageItem.getAccount(), messageItem.getUser()))
+            BackpressureDisplayedSender.getInstance().sendDisplayedIfNeed(messageItem);
     }
 
     public void processCarbonsMessage(AccountJid account, final Message message, CarbonExtension.Direction direction) {

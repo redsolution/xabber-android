@@ -311,6 +311,6 @@ public class RegularChat extends AbstractChat {
     @Override
     public void resetUnreadMessageCount(boolean needSentDisplayed) {
         super.resetUnreadMessageCount(needSentDisplayed);
-        if (needSentDisplayed) ChatMarkerManager.getInstance().sendDisplayedIfNeed(account, user);
+        if (needSentDisplayed) ChatMarkerManager.getInstance().sendDisplayedAllIfNeed(account, user);
     }
 }
