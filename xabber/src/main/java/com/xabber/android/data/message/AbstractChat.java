@@ -796,7 +796,14 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     }
 
     public int getUnreadMessageCount() {
-        return unreadMessageCount;
+        return (int) MessageDatabaseManager.getInstance().getRealmUiThread().where(MessageItem.class)
+                .equalTo(MessageItem.Fields.ACCOUNT, account.toString())
+                .equalTo(MessageItem.Fields.USER, user.toString())
+                .isNull(MessageItem.Fields.PARENT_MESSAGE_ID)
+                .isNotNull(MessageItem.Fields.TEXT)
+                .equalTo(MessageItem.Fields.INCOMING, true)
+                .equalTo(MessageItem.Fields.READ, false)
+                .count();
     }
 
     public void increaseUnreadMessageCount() {

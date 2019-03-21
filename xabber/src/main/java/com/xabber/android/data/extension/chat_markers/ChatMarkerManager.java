@@ -177,7 +177,9 @@ public class ChatMarkerManager implements OnPacketListener {
                     .equalTo(MessageItem.Fields.ACCOUNT, first.getAccount().toString())
                     .equalTo(MessageItem.Fields.USER, first.getUser().toString())
                     .equalTo(MessageItem.Fields.INCOMING, false)
-                    .equalTo(MessageItem.Fields.DISPLAYED, false).findAll();
+                    .equalTo(MessageItem.Fields.DISPLAYED, false)
+                    .lessThanOrEqualTo(MessageItem.Fields.TIMESTAMP, first.getTimestamp())
+                    .findAll();
 
             if (results != null) {
                 realm.beginTransaction();

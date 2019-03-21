@@ -55,6 +55,7 @@ import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.attention.AttentionManager;
 import com.xabber.android.data.extension.capability.CapabilitiesManager;
 import com.xabber.android.data.extension.capability.ClientInfo;
+import com.xabber.android.data.extension.chat_markers.BackpressureDisplayedSender;
 import com.xabber.android.data.extension.cs.ChatStateManager;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.mam.LastHistoryLoadFinishedEvent;
@@ -74,6 +75,7 @@ import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.ClipManager;
 import com.xabber.android.data.message.ForwardManager;
 import com.xabber.android.data.message.MessageManager;
+import com.xabber.android.data.message.MessageReadEvent;
 import com.xabber.android.data.message.MessageUpdateEvent;
 import com.xabber.android.data.message.NewIncomingMessageEvent;
 import com.xabber.android.data.message.RegularChat;
@@ -109,6 +111,7 @@ import org.jxmpp.stringprep.XmppStringprepException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Timer;
@@ -188,6 +191,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
     private ForwardPanel forwardPanel;
     private List<String> forwardIds = new ArrayList<>();
+
+    private List<String> waitToMarkAsRead = new ArrayList<>();
 
     public static ChatFragment newInstance(AccountJid account, UserJid user) {
         ChatFragment fragment = new ChatFragment();
@@ -751,6 +756,13 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     public void onEvent(AuthAskEvent event) {
         if (event.getAccount() == getAccount() && event.getUser() == getUser()) {
             showHideNotifyIfNeed();
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(MessageReadEvent event) {
+        if (event.getAccount() == getAccount() && event.getUser() == getUser()) {
+            removeFromWaited(event.getIds());
         }
     }
 
@@ -1438,7 +1450,33 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
     @Override
     public void onBind(MessageItem message) {
+        markAsRead(message);
+    }
 
+    private void markAsRead(MessageItem message) {
+        if (message != null && message.isValid() && !message.isRead()) {
+            if (!waitToMarkAsRead.contains(message.getUniqueId())) {
+                waitToMarkAsRead.add(message.getUniqueId());
+                BackpressureDisplayedSender.getInstance().sendDisplayedIfNeed(message);
+                updateUnread();
+            }
+        }
+    }
+
+    private void removeFromWaited(List<String> ids) {
+        for (String id : ids) {
+            Iterator<String> iterator = waitToMarkAsRead.iterator();
+            while (iterator.hasNext()) {
+                if (iterator.next().equals(id)) iterator.remove();
+            }
+        }
+        updateUnread();
+    }
+
+    private void updateUnread() {
+        AbstractChat chat = getChat();
+        if (chat != null) updateNewReceivedMessageCounter(
+                chat.getUnreadMessageCount() - waitToMarkAsRead.size());
     }
 
     private void showScrollDownButtonIfNeed() {
@@ -1471,9 +1509,9 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     private void resetUnreadMessageCount() {
         AbstractChat chat = getChat();
         if (chat != null) {
-            chat.resetUnreadMessageCount(true);
-            updateNewReceivedMessageCounter(0);
-            ((ChatActivity)getActivity()).updateRecentChats();
+//            chat.resetUnreadMessageCount(true);
+//            updateNewReceivedMessageCounter(0);
+//            ((ChatActivity)getActivity()).updateRecentChats();
         }
     }
 

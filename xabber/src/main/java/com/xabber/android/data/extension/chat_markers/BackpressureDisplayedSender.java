@@ -5,17 +5,22 @@ import com.xabber.android.data.connection.StanzaSender;
 import com.xabber.android.data.database.MessageDatabaseManager;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.log.LogManager;
+import com.xabber.android.data.message.MessageReadEvent;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.RosterManager;
 
+import org.greenrobot.eventbus.EventBus;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smackx.chat_markers.element.ChatMarkersElements;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import io.realm.Realm;
+import io.realm.RealmResults;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.subjects.PublishSubject;
@@ -51,10 +56,17 @@ public class BackpressureDisplayedSender {
                     @Override
                     public void call(MessageItem messageItem) {
                         Realm realm = MessageDatabaseManager.getInstance().getRealmUiThread();
+                        RealmResults<MessageItem> messages = getPreviousUnreadMessages(realm, messageItem);
                         sendDisplayed(messageItem);
                         realm.beginTransaction();
-                        messageItem.setRead(true);
+                        List<String> ids = new ArrayList<>();
+                        for (MessageItem message : messages) {
+                            message.setRead(true);
+                            ids.add(message.getUniqueId());
+                        }
                         realm.commitTransaction();
+                        EventBus.getDefault().post(new MessageReadEvent(messageItem.getAccount(), messageItem.getUser(), ids));
+
                     }
                 }, new Action1<Throwable>() {
                     @Override
@@ -79,6 +91,15 @@ public class BackpressureDisplayedSender {
         } catch (NetworkException e) {
             LogManager.exception(this, e);
         }
+    }
+
+    private RealmResults<MessageItem> getPreviousUnreadMessages(Realm realm, MessageItem messageItem) {
+        return realm.where(MessageItem.class)
+                .equalTo(MessageItem.Fields.ACCOUNT, messageItem.getAccount().toString())
+                .equalTo(MessageItem.Fields.USER, messageItem.getUser().toString())
+                .equalTo(MessageItem.Fields.READ, false)
+                .lessThanOrEqualTo(MessageItem.Fields.TIMESTAMP, messageItem.getTimestamp())
+                .findAll();
     }
 
 }
