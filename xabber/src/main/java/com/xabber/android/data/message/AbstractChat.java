@@ -297,9 +297,6 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
                 originalStanza, parentMessageId, originalFrom, forwardIds, fromMUC, fromMAM);
 
         saveMessageItem(ui, messageItem);
-        // TODO: 07.03.19 need replace?
-        boolean visible = MessageManager.getInstance().isVisibleChat(this);
-        if (!fromMUC && !fromMAM && incoming && visible) ChatMarkerManager.getInstance().sendDisplayedIfNeed(account, user);
         //EventBus.getDefault().post(new NewMessageEvent());
     }
 
@@ -314,9 +311,6 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
                 originalStanza, parentMessageId, originalFrom, null, fromMUC, fromMAM);
 
         saveMessageItem(ui, messageItem);
-        // TODO: 07.03.19 need replace?
-        boolean visible = MessageManager.getInstance().isVisibleChat(this);
-        if (!fromMUC && !fromMAM && incoming && visible) ChatMarkerManager.getInstance().sendDisplayedIfNeed(account, user);
         //EventBus.getDefault().post(new NewMessageEvent());
     }
 
