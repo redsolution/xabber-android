@@ -62,7 +62,9 @@ import org.jxmpp.jid.parts.Resourcepart;
 
 import java.io.File;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -105,6 +107,8 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     private int lastPosition;
     private boolean archived;
     protected NotificationState notificationState;
+
+    private Set<String> waitToMarkAsRead = new HashSet<>();
 
     private boolean isPrivateMucChat;
     private boolean isPrivateMucChatAccepted;
@@ -783,24 +787,33 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     }
 
     public int getUnreadMessageCount() {
-        return (int) MessageDatabaseManager.getInstance().getRealmUiThread().where(MessageItem.class)
+        int unread = ((int) MessageDatabaseManager.getInstance().getRealmUiThread().where(MessageItem.class)
                 .equalTo(MessageItem.Fields.ACCOUNT, account.toString())
                 .equalTo(MessageItem.Fields.USER, user.toString())
                 .isNull(MessageItem.Fields.PARENT_MESSAGE_ID)
                 .isNotNull(MessageItem.Fields.TEXT)
                 .equalTo(MessageItem.Fields.INCOMING, true)
                 .equalTo(MessageItem.Fields.READ, false)
-                .count();
+                .count()) - waitToMarkAsRead.size();
+        if (unread < 0) unread = 0;
+        return unread;
+    }
+
+    public void approveRead(List<String> ids) {
+        for (String id : ids) {
+            waitToMarkAsRead.remove(id);
+        }
     }
 
     public void markAsRead(String messageId, boolean trySendDisplay) {
         MessageItem message = MessageDatabaseManager.getInstance().getRealmUiThread()
                 .where(MessageItem.class).equalTo(MessageItem.Fields.UNIQUE_ID, messageId).findFirst();
-        if (message != null) markAsRead(message, trySendDisplay);
+        if (message != null) executeRead(message, trySendDisplay);
     }
 
     public void markAsRead(MessageItem messageItem, boolean trySendDisplay) {
-        BackpressureMessageReader.getInstance().markAsRead(messageItem, trySendDisplay);
+        waitToMarkAsRead.add(messageItem.getUniqueId());
+        executeRead(messageItem, trySendDisplay);
     }
 
     public void markAsReadAll(boolean trySendDisplay) {
@@ -814,9 +827,17 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
                 .equalTo(MessageItem.Fields.READ, false)
                 .findAllSorted(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
         if (results != null && !results.isEmpty()) {
+            for (MessageItem message : results) {
+                waitToMarkAsRead.add(message.getUniqueId());
+            }
             MessageItem lastMessage = results.last();
-            if (lastMessage != null) markAsRead(lastMessage, trySendDisplay);
+            if (lastMessage != null) executeRead(lastMessage, trySendDisplay);
         }
+    }
+
+    private void executeRead(MessageItem messageItem, boolean trySendDisplay) {
+        EventBus.getDefault().post(new MessageUpdateEvent());
+        BackpressureMessageReader.getInstance().markAsRead(messageItem, trySendDisplay);
     }
 
     public boolean isArchived() {

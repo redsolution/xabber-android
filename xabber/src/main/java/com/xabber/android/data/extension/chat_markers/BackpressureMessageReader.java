@@ -3,11 +3,10 @@ package com.xabber.android.data.extension.chat_markers;
 import com.xabber.android.data.database.MessageDatabaseManager;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.message.MessageReadEvent;
+import com.xabber.android.data.message.AbstractChat;
+import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.RosterManager;
-
-import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -64,7 +63,9 @@ public class BackpressureMessageReader {
                             ids.add(mes.getUniqueId());
                         }
                         realm.commitTransaction();
-                        EventBus.getDefault().post(new MessageReadEvent(message.getAccount(), message.getUser(), ids));
+
+                        AbstractChat chat = MessageManager.getInstance().getOrCreateChat(message.getAccount(), message.getUser());
+                        if (chat != null) chat.approveRead(ids);
                     }
                 }, new Action1<Throwable>() {
                     @Override
