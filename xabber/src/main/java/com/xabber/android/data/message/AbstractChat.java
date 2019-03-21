@@ -103,7 +103,6 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     private String threadId;
 
     private int lastPosition;
-    private int unreadMessageCount;
     private boolean archived;
     protected NotificationState notificationState;
 

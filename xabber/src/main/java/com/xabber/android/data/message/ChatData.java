@@ -9,17 +9,15 @@ public class ChatData {
     private String subject;
     private String accountJid;
     private String userJid;
-    private int unreadCount;
     private boolean archived;
     private NotificationState notificationState;
     private int lastPosition;
 
-    public ChatData(String subject, String accountJid, String userJid, int unreadCount,
+    public ChatData(String subject, String accountJid, String userJid,
                     boolean archived, NotificationState notificationState, int lastPosition) {
         this.subject = subject;
         this.accountJid = accountJid;
         this.userJid = userJid;
-        this.unreadCount = unreadCount;
         this.archived = archived;
         this.notificationState = notificationState;
         this.lastPosition = lastPosition;
@@ -47,14 +45,6 @@ public class ChatData {
 
     public void setUserJid(String userJid) {
         this.userJid = userJid;
-    }
-
-    public int getUnreadCount() {
-        return unreadCount;
-    }
-
-    public void setUnreadCount(int unreadCount) {
-        this.unreadCount = unreadCount;
     }
 
     public boolean isArchived() {
