@@ -135,7 +135,8 @@ public class MamManager implements OnRosterReceivedListener {
             }
 
         } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException
-                | InterruptedException | SmackException.NotConnectedException | SmackException.NotLoggedInException e) {
+                | InterruptedException | SmackException.NotConnectedException | SmackException.NotLoggedInException
+                | ClassCastException e) {
             LogManager.exception(this, e);
             return false;
         }
