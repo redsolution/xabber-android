@@ -62,6 +62,7 @@ import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.CrowdfundingChat;
 import com.xabber.android.data.message.MessageManager;
+import com.xabber.android.data.message.MessageUpdateEvent;
 import com.xabber.android.data.message.NewMessageEvent;
 import com.xabber.android.data.message.NotificationState;
 import com.xabber.android.data.message.RegularChat;
@@ -576,6 +577,11 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onNewMessageEvent(NewMessageEvent event) {
+        updateBackpressure.refreshRequest();
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(MessageUpdateEvent event) {
         updateBackpressure.refreshRequest();
     }
 

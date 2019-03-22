@@ -23,6 +23,7 @@ import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.ChatContact;
 import com.xabber.android.data.message.CrowdfundingChat;
 import com.xabber.android.data.message.MessageManager;
+import com.xabber.android.data.message.MessageUpdateEvent;
 import com.xabber.android.data.message.NewMessageEvent;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.CrowdfundingContact;
@@ -206,6 +207,11 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onNewMessageEvent(NewMessageEvent event) {
+        updateBackpressure.refreshRequest();
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(MessageUpdateEvent event) {
         updateBackpressure.refreshRequest();
     }
 
