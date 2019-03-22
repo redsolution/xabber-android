@@ -803,11 +803,12 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         for (String id : ids) {
             waitToMarkAsRead.remove(id);
         }
+        EventBus.getDefault().post(new MessageUpdateEvent(account, user));
     }
 
     public void markAsRead(String messageId, boolean trySendDisplay) {
         MessageItem message = MessageDatabaseManager.getInstance().getRealmUiThread()
-                .where(MessageItem.class).equalTo(MessageItem.Fields.UNIQUE_ID, messageId).findFirst();
+                .where(MessageItem.class).equalTo(MessageItem.Fields.STANZA_ID, messageId).findFirst();
         if (message != null) executeRead(message, trySendDisplay);
     }
 
