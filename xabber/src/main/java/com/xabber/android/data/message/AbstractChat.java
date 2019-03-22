@@ -71,6 +71,7 @@ import java.util.concurrent.TimeUnit;
 import io.realm.Realm;
 import io.realm.RealmChangeListener;
 import io.realm.RealmList;
+import io.realm.RealmQuery;
 import io.realm.RealmResults;
 import io.realm.Sort;
 
@@ -786,17 +787,11 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         updateLastMessage();
     }
 
+    /** UNREAD MESSAGES */
+
     public String getFirstUnreadMessageId() {
         String id = null;
-        RealmResults<MessageItem> results = MessageDatabaseManager.getInstance().getRealmUiThread()
-                .where(MessageItem.class)
-                .equalTo(MessageItem.Fields.ACCOUNT, account.toString())
-                .equalTo(MessageItem.Fields.USER, user.toString())
-                .isNull(MessageItem.Fields.PARENT_MESSAGE_ID)
-                .isNotNull(MessageItem.Fields.TEXT)
-                .equalTo(MessageItem.Fields.INCOMING, true)
-                .equalTo(MessageItem.Fields.READ, false)
-                .findAllSorted(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
+        RealmResults<MessageItem> results = getAllUnreadAscending();
         if (results != null && !results.isEmpty()) {
             MessageItem firstUnreadMessage = results.first();
             if (firstUnreadMessage != null)
@@ -806,14 +801,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     }
 
     public int getUnreadMessageCount() {
-        int unread = ((int) MessageDatabaseManager.getInstance().getRealmUiThread().where(MessageItem.class)
-                .equalTo(MessageItem.Fields.ACCOUNT, account.toString())
-                .equalTo(MessageItem.Fields.USER, user.toString())
-                .isNull(MessageItem.Fields.PARENT_MESSAGE_ID)
-                .isNotNull(MessageItem.Fields.TEXT)
-                .equalTo(MessageItem.Fields.INCOMING, true)
-                .equalTo(MessageItem.Fields.READ, false)
-                .count()) - waitToMarkAsRead.size();
+        int unread = ((int) getAllUnreadQuery().count()) - waitToMarkAsRead.size();
         if (unread < 0) unread = 0;
         return unread;
     }
@@ -837,15 +825,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     }
 
     public void markAsReadAll(boolean trySendDisplay) {
-        Realm realm = MessageDatabaseManager.getInstance().getRealmUiThread();
-        RealmResults<MessageItem> results = realm.where(MessageItem.class)
-                .equalTo(MessageItem.Fields.ACCOUNT, account.toString())
-                .equalTo(MessageItem.Fields.USER, user.toString())
-                .isNull(MessageItem.Fields.PARENT_MESSAGE_ID)
-                .isNotNull(MessageItem.Fields.TEXT)
-                .equalTo(MessageItem.Fields.INCOMING, true)
-                .equalTo(MessageItem.Fields.READ, false)
-                .findAllSorted(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
+        RealmResults<MessageItem> results = getAllUnreadAscending();
         if (results != null && !results.isEmpty()) {
             for (MessageItem message : results) {
                 waitToMarkAsRead.add(message.getUniqueId());
@@ -859,6 +839,22 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         EventBus.getDefault().post(new MessageUpdateEvent(account, user));
         BackpressureMessageReader.getInstance().markAsRead(messageItem, trySendDisplay);
     }
+
+    private RealmQuery<MessageItem> getAllUnreadQuery() {
+        return MessageDatabaseManager.getInstance().getRealmUiThread().where(MessageItem.class)
+                .equalTo(MessageItem.Fields.ACCOUNT, account.toString())
+                .equalTo(MessageItem.Fields.USER, user.toString())
+                .isNull(MessageItem.Fields.PARENT_MESSAGE_ID)
+                .isNotNull(MessageItem.Fields.TEXT)
+                .equalTo(MessageItem.Fields.INCOMING, true)
+                .equalTo(MessageItem.Fields.READ, false);
+    }
+
+    private RealmResults<MessageItem> getAllUnreadAscending() {
+        return getAllUnreadQuery().findAllSorted(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
+    }
+
+    /** ^ UNREAD MESSAGES ^ */
 
     public boolean isArchived() {
         return archived;
