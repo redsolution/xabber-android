@@ -836,7 +836,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     }
 
     private void executeRead(MessageItem messageItem, boolean trySendDisplay) {
-        EventBus.getDefault().post(new MessageUpdateEvent());
+        EventBus.getDefault().post(new MessageUpdateEvent(account, user));
         BackpressureMessageReader.getInstance().markAsRead(messageItem, trySendDisplay);
     }
 
