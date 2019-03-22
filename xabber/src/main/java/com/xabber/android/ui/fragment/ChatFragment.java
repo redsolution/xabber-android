@@ -735,8 +735,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(MessageUpdateEvent event) {
         if (account.equals(event.getAccount()) && user.equals(event.getUser())) {
-            chatMessageAdapter.onChange();
             updateUnread();
+            chatMessageAdapter.onChange();
         }
     }
 
