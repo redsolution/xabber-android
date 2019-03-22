@@ -786,6 +786,25 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         updateLastMessage();
     }
 
+    public String getFirstUnreadMessageId() {
+        String id = null;
+        RealmResults<MessageItem> results = MessageDatabaseManager.getInstance().getRealmUiThread()
+                .where(MessageItem.class)
+                .equalTo(MessageItem.Fields.ACCOUNT, account.toString())
+                .equalTo(MessageItem.Fields.USER, user.toString())
+                .isNull(MessageItem.Fields.PARENT_MESSAGE_ID)
+                .isNotNull(MessageItem.Fields.TEXT)
+                .equalTo(MessageItem.Fields.INCOMING, true)
+                .equalTo(MessageItem.Fields.READ, false)
+                .findAllSorted(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
+        if (results != null && !results.isEmpty()) {
+            MessageItem firstUnreadMessage = results.first();
+            if (firstUnreadMessage != null)
+                id = firstUnreadMessage.getUniqueId();
+        }
+        return id;
+    }
+
     public int getUnreadMessageCount() {
         int unread = ((int) MessageDatabaseManager.getInstance().getRealmUiThread().where(MessageItem.class)
                 .equalTo(MessageItem.Fields.ACCOUNT, account.toString())

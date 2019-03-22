@@ -867,7 +867,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
     private void sendMessage(String text) {
         MessageManager.getInstance().sendMessage(account, user, text);
-        showUnreadMessage(0);
+        setFirstUnreadMessageId(null);
         scrollDown();
     }
 
@@ -1317,7 +1317,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                 scrollToFirstUnread(unread);
             else if (position > 0)
                 layoutManager.scrollToPosition(position);
-            showUnreadMessage(unread);
+            setFirstUnreadMessageId(chat.getFirstUnreadMessageId());
             updateNewReceivedMessageCounter(unread);
         }
     }
@@ -1467,8 +1467,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         else tvNewReceivedCount.setVisibility(View.GONE);
     }
 
-    private void showUnreadMessage(int count) {
-        chatMessageAdapter.setUnreadCount(count);
+    private void setFirstUnreadMessageId(String id) {
+        chatMessageAdapter.setFirstUnreadMessageId(id);
         chatMessageAdapter.notifyDataSetChanged();
     }
 
@@ -1518,7 +1518,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     private void sendForwardMessage(List<String> messages, String text) {
         ForwardManager.forwardMessage(messages, account, user, text);
         hideForwardPanel();
-        showUnreadMessage(0);
+        setFirstUnreadMessageId(null);
         scrollDown();
     }
 

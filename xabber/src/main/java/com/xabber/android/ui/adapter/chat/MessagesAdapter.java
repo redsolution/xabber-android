@@ -59,7 +59,7 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
     private AccountJid account;
     private UserJid user;
     private int prevItemCount;
-    private int unreadCount = 0;
+    private String firstUnreadMessageID;
     private boolean isCheckMode;
 
     private List<String> itemsNeedOriginalText = new ArrayList<>();
@@ -175,7 +175,7 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
             ((MessageVH)holder).messageId = messageItem.getUniqueId();
 
         // setup message as unread
-        boolean unread = position == getItemCount() - unreadCount;
+        boolean unread = messageItem.getUniqueId().equals(firstUnreadMessageID);
 
         // setup message as checked
         boolean checked = checkedItemIds.contains(messageItem.getUniqueId());
@@ -267,15 +267,8 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
         return RecyclerView.NO_POSITION;
     }
 
-    public boolean setUnreadCount(int unreadCount) {
-        if (this.unreadCount != unreadCount) {
-            this.unreadCount = unreadCount;
-            return true;
-        } else return false;
-    }
-
-    public int getUnreadCount() {
-        return unreadCount;
+    public void setFirstUnreadMessageId(String id) {
+        firstUnreadMessageID = id;
     }
 
     public void addOrRemoveItemNeedOriginalText(String messageId) {
