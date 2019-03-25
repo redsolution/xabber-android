@@ -422,8 +422,19 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
 
         // notification
         enableNotificationsIfNeed();
-        if (notify && notifyAboutMessage() && !visible)
-            NotificationManager.getInstance().onMessageNotification(messageItem);
+        if (notify && notifyAboutMessage() && !visible) {
+            final String uniqueId = messageItem.getUniqueId();
+            Application.getInstance().runOnUiThreadDelay(new Runnable() {
+                @Override
+                public void run() {
+                    MessageItem message = MessageDatabaseManager.getInstance().getRealmUiThread()
+                            .where(MessageItem.class)
+                            .equalTo(MessageItem.Fields.UNIQUE_ID, uniqueId).findFirst();
+                    if (!message.isRead())
+                        NotificationManager.getInstance().onMessageNotification(message);
+                }
+            }, 10000);
+        }
 
         // remove notifications if get outgoing message with 2 sec delay
         if (!incoming) {
