@@ -458,6 +458,7 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
             } else view.hidePlaceholder();
             view.updateItems(items);
         }
+        updateUnreadCount();
     }
 
     /**
@@ -516,7 +517,7 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
         }
         unreadMessageCount += unreadCount;
 
-        EventBus.getDefault().post(new UpdateUnreadCountEvent(unreadMessageCount));
+        //EventBus.getDefault().post(new UpdateUnreadCountEvent(unreadMessageCount));
         Collections.sort(newChats, ChatComparator.CHAT_COMPARATOR);
         chatsGroup.setNotEmpty();
 
@@ -656,6 +657,18 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
             else items.add(ChatVO.convert(contacts.get(MAX_RECENT_ITEMS - 1), this));
         }
         return items;
+    }
+
+    public void updateUnreadCount() {
+        int unreadMessageCount = 0;
+
+        for (AbstractChat abstractChat : MessageManager.getInstance().getChatsOfEnabledAccount()) {
+            if (abstractChat.notifyAboutMessage() && !abstractChat.isArchived())
+                unreadMessageCount += abstractChat.getUnreadMessageCount();
+        }
+
+        unreadMessageCount += CrowdfundingManager.getInstance().getUnreadMessageCount();
+        EventBus.getDefault().post(new UpdateUnreadCountEvent(unreadMessageCount));
     }
 
     public enum ChatListState {
