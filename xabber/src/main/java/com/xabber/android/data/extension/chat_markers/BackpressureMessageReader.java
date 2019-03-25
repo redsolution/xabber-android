@@ -52,7 +52,7 @@ public class BackpressureMessageReader {
                     public void call(MessageHolder holder) {
                         MessageItem message = holder.messageItem;
                         if (holder.trySendDisplayed)
-                            ChatMarkerManager.getInstance().sendDisplayedIfNeed(message);
+                            ChatMarkerManager.getInstance().sendDisplayed(message);
 
                         Realm realm = MessageDatabaseManager.getInstance().getRealmUiThread();
                         RealmResults<MessageItem> messages = getPreviousUnreadMessages(realm, message);
