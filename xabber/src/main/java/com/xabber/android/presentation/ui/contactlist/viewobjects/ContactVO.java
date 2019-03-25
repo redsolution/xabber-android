@@ -200,17 +200,17 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
                 messageOwner = lastMessage.getResource().toString();
 
             // message status
-            if (lastMessage.isDisplayed() || lastMessage.isReceivedFromMessageArchive()) {
+            if (lastMessage.isError()) {
+                messageStatus = 4;
+            } else if (!MessageItem.isUploadFileMessage(lastMessage) && !lastMessage.isSent()
+                    && System.currentTimeMillis() - lastMessage.getTimestamp() > 1000) {
+                messageStatus = 5;
+            } else if (lastMessage.isDisplayed() || lastMessage.isReceivedFromMessageArchive()) {
                 messageStatus = 1;
             } else if (lastMessage.isDelivered() || lastMessage.isForwarded()) {
                 messageStatus = 2;
             } else if (lastMessage.isAcknowledged()) {
                 messageStatus = 3;
-            } else if (lastMessage.isError()) {
-                messageStatus = 4;
-            } else if (!MessageItem.isUploadFileMessage(lastMessage) && !lastMessage.isSent()
-                    && System.currentTimeMillis() - lastMessage.getTimestamp() > 1000) {
-                messageStatus = 5;
             }
 
             // forwarded
