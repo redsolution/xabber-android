@@ -19,6 +19,8 @@ import android.text.style.ForegroundColorSpan;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
+import com.xabber.android.data.account.AccountItem;
+import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
@@ -129,6 +131,9 @@ public class MessageNotificationCreator {
     }
 
     private String getChannelID(MessageNotificationManager.Chat chat) {
+        if (inGracePeriod(chat))
+            return NotificationChannelUtils.SILENT_CHANNEL_ID;
+
         NotifyPrefs customPrefs = null;
         boolean isGroup = false;
         if (chat != null) {
@@ -145,6 +150,13 @@ public class MessageNotificationCreator {
     }
 
     /** UTILS */
+    private static boolean inGracePeriod(MessageNotificationManager.Chat chat) {
+        if (chat == null) return false;
+        AccountItem accountItem = AccountManager.getInstance().getAccount(chat.getAccountJid());
+        if (accountItem != null) return accountItem.inGracePeriod();
+        else return false;
+    }
+
     private CharSequence createNewMessagesTitle(int messageCount) {
         return context.getString(R.string.new_chat_messages, messageCount,
                 StringUtils.getQuantityString(context.getResources(), R.array.chat_message_quantity, messageCount));

@@ -113,6 +113,8 @@ public class AccountItem extends ConnectionItem implements Comparable<AccountIte
      */
     private volatile boolean successfulConnectionHappened;
 
+    private long gracePeriodEndTime = 0L;
+
     public AccountItem(boolean custom, String host,
                        int port, DomainBareJid serverName, Localpart userName, Resourcepart resource,
                        boolean storePassword, String password, String token, int colorIndex, int order,
@@ -453,5 +455,17 @@ public class AccountItem extends ConnectionItem implements Comparable<AccountIte
     @Override
     public int compareTo(@NonNull AccountItem accountItem) {
         return order - accountItem.order;
+    }
+
+    public void startGracePeriod(long time) {
+        gracePeriodEndTime = (System.currentTimeMillis() / 1000L) + time;
+    }
+
+    public void stopGracePeriod() {
+        gracePeriodEndTime = 0L;
+    }
+
+    public boolean inGracePeriod() {
+        return gracePeriodEndTime > (System.currentTimeMillis() / 1000L);
     }
 }
