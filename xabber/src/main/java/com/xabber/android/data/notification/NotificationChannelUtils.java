@@ -27,6 +27,7 @@ public class NotificationChannelUtils {
     public static final String DEFAULT_ATTENTION_CHANNEL_ID = "DEFAULT_ATTENTION_CHANNEL_ID";
     public static final String PERSISTENT_CONNECTION_CHANNEL_ID = "PERSISTENT_CONNECTION_CHANNEL_ID";
     public static final String EVENTS_CHANNEL_ID = "EVENTS_CHANNEL_ID";
+    public static final String SILENT_CHANNEL_ID = "SILENT_CHANNEL_ID";
 
     public enum ChannelType {
         privateChat,
@@ -129,6 +130,18 @@ public class NotificationChannelUtils {
                         android.app.NotificationManager.IMPORTANCE_HIGH);
         channel.setDescription(getString(R.string.channel_events_description));
         channel.setShowBadge(false);
+        notifManager.createNotificationChannel(channel);
+        return channel.getId();
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public static String createSilentChannel(NotificationManager notifManager) {
+        @SuppressLint("WrongConstant") NotificationChannel channel =
+                new NotificationChannel(SILENT_CHANNEL_ID,
+                        getString(R.string.channel_silent_title),
+                        NotificationManager.IMPORTANCE_LOW);
+        channel.setDescription(getString(R.string.channel_silent_description));
+        channel.setShowBadge(true);
         notifManager.createNotificationChannel(channel);
         return channel.getId();
     }
