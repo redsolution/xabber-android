@@ -426,15 +426,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
             NotificationManager.getInstance().onMessageNotification(messageItem);
 
         // remove notifications if get outgoing message with 2 sec delay
-        if (!incoming) {
-            MessageNotificationManager.getInstance().removeChatWithTimer(account, user);
-            Application.getInstance().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    markAsReadAll(true);
-                }
-            });
-        }
+        if (!incoming) MessageNotificationManager.getInstance().removeChatWithTimer(account, user);
 
         // when getting new message, unarchive chat if chat not muted
         if (this.notifyAboutMessage())

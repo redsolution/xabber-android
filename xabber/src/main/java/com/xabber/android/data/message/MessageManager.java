@@ -259,20 +259,19 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
     }
 
     private void sendMessage(final String text, final AbstractChat chat) {
-        final long startTime = System.currentTimeMillis();
-
         MessageDatabaseManager.getInstance().getRealmUiThread()
                 .executeTransactionAsync(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
                 MessageItem newMessageItem = chat.createNewMessageItem(text);
                 realm.copyToRealm(newMessageItem);
-                LogManager.d("REALM", Thread.currentThread().getName()
-                        + " save message before sending: " + (System.currentTimeMillis() - startTime));
                 if (chat.canSendMessage())
                     chat.sendMessages();
             }
         });
+
+        // mark incoming messages as read
+        chat.markAsReadAll(true);
     }
 
     public String createFileMessage(AccountJid account, UserJid user, List<File> files) {
@@ -789,6 +788,9 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
                 newMessageItem.setAttachments(attachments);
 
             BackpressureMessageSaver.getInstance().saveMessageItem(newMessageItem);
+
+            // mark incoming messages as read
+            finalChat.markAsReadAll(false);
 
             // start grace period
             AccountManager.getInstance().startGracePeriod(account);
