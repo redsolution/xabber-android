@@ -4,6 +4,7 @@ package com.xabber.android.data.extension.carbons;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.chat_markers.ChatMarkerManager;
+import com.xabber.android.data.extension.cs.ChatStateManager;
 import com.xabber.android.data.message.MessageManager;
 
 import org.jivesoftware.smack.packet.Message;
@@ -29,6 +30,7 @@ class CarbonCopyListener implements CarbonCopyReceivedListener {
             public void run() {
                 MessageManager.getInstance().processCarbonsMessage(account, carbonCopy, direction);
                 ChatMarkerManager.getInstance().processCarbonsMessage(account, carbonCopy, direction);
+                ChatStateManager.getInstance().processCarbonsMessage(account, carbonCopy, direction);
             }
         });
     }
