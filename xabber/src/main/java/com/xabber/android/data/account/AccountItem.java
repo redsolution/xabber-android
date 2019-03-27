@@ -44,6 +44,7 @@ import java.util.UUID;
 public class AccountItem extends ConnectionItem implements Comparable<AccountItem> {
 
     public static final String UNDEFINED_PASSWORD = "";
+    private static final long GRACE_PERIOD = 150000;
 
     /**
      * Id in database.
@@ -457,8 +458,8 @@ public class AccountItem extends ConnectionItem implements Comparable<AccountIte
         return order - accountItem.order;
     }
 
-    public void startGracePeriod(long time) {
-        gracePeriodEndTime = (System.currentTimeMillis() / 1000L) + time;
+    public void startGracePeriod() {
+        gracePeriodEndTime = System.currentTimeMillis() + GRACE_PERIOD;
     }
 
     public void stopGracePeriod() {
@@ -466,6 +467,6 @@ public class AccountItem extends ConnectionItem implements Comparable<AccountIte
     }
 
     public boolean inGracePeriod() {
-        return gracePeriodEndTime > (System.currentTimeMillis() / 1000L);
+        return gracePeriodEndTime > System.currentTimeMillis();
     }
 }

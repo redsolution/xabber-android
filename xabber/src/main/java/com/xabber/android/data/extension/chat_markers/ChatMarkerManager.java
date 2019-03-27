@@ -122,6 +122,9 @@ public class ChatMarkerManager implements OnPacketListener {
                 if (chat != null) {
                     chat.markAsRead(extension.getId(), false);
                     MessageNotificationManager.getInstance().removeChatWithTimer(account, companion);
+
+                    // start grace period
+                    AccountManager.getInstance().startGracePeriod(account);
                 }
             }
         }

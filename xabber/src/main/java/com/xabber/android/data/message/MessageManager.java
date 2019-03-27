@@ -59,7 +59,6 @@ import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.utils.StringUtils;
 
-import org.greenrobot.eventbus.EventBus;
 import org.jivesoftware.smack.packet.ExtensionElement;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Stanza;
@@ -254,6 +253,9 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
     public void sendMessage(AccountJid account, UserJid user, String text) {
         AbstractChat chat = getOrCreateChat(account, user);
         sendMessage(text, chat);
+
+        // stop grace period
+        AccountManager.getInstance().stopGracePeriod(account);
     }
 
     private void sendMessage(final String text, final AbstractChat chat) {
@@ -787,7 +789,9 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
                 newMessageItem.setAttachments(attachments);
 
             BackpressureMessageSaver.getInstance().saveMessageItem(newMessageItem);
-            //EventBus.getDefault().post(new NewMessageEvent());
+
+            // start grace period
+            AccountManager.getInstance().startGracePeriod(account);
             return;
         }
 
