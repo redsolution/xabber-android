@@ -21,6 +21,7 @@ import android.os.Bundle;
 import android.widget.Toast;
 
 import com.xabber.android.R;
+import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.CertificateManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.ui.activity.AboutActivity;
@@ -219,6 +220,7 @@ public class ActivityManager implements OnUnloadListener {
         application.addUIListener(OnErrorListener.class, onErrorListener);
 
         CertificateManager.getInstance().registerActivity(activity);
+        AccountManager.getInstance().stopGracePeriod();
     }
 
     /**
