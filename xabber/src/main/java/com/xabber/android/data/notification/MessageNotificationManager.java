@@ -7,6 +7,7 @@ import android.os.Build;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.OnLoadListener;
+import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.database.RealmManager;
 import com.xabber.android.data.database.messagerealm.Attachment;
 import com.xabber.android.data.database.messagerealm.MessageItem;
@@ -114,6 +115,7 @@ public class MessageNotificationManager implements OnLoadListener {
             AbstractChat chat = MessageManager.getInstance().getChat(
                     chatNotif.getAccountJid(), chatNotif.getUserJid());
             if (chat != null) {
+                AccountManager.getInstance().stopGracePeriod(chat.getAccount());
                 chat.markAsReadAll(true);
                 callUiUpdate();
             }
