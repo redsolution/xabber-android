@@ -72,7 +72,7 @@ public class MessageNotificationCreator {
                 .setContentIntent(createContentIntent(chat))
                 .setDeleteIntent(NotificationReceiver.createDeleteIntent(context, chat.getNotificationId()))
                 .setCategory(NotificationCompat.CATEGORY_MESSAGE)
-                .setPriority(inForeground ? NotificationCompat.PRIORITY_DEFAULT
+                .setPriority((inForeground || inGracePeriod(chat)) ? NotificationCompat.PRIORITY_DEFAULT
                         : NotificationCompat.PRIORITY_HIGH);
 
         boolean showText = isNeedShowTextInNotification(chat);
@@ -84,7 +84,7 @@ public class MessageNotificationCreator {
                     .setContentText(createMessageLine(chat.getLastMessage(), chat.isGroupChat(), showText))
                     .setStyle(createInboxStyle(chat, showText))
                     .setAutoCancel(true);
-            if (alert) addEffects(builder, chat.getLastMessage().getMessageText().toString(), chat, context);
+            if (alert && !inGracePeriod(chat)) addEffects(builder, chat.getLastMessage().getMessageText().toString(), chat, context);
         }
 
         builder.addAction(createMarkAsReadAction(chat.getNotificationId()))
@@ -108,7 +108,7 @@ public class MessageNotificationCreator {
                         .setContentIntent(createBundleContentIntent())
                         .setDeleteIntent(NotificationReceiver.createDeleteIntent(context, MESSAGE_BUNDLE_NOTIFICATION_ID))
                         .setCategory(NotificationCompat.CATEGORY_MESSAGE)
-                        .setPriority(inForeground ? NotificationCompat.PRIORITY_DEFAULT
+                        .setPriority((inForeground || inGracePeriod(lastChat)) ? NotificationCompat.PRIORITY_DEFAULT
                                 : NotificationCompat.PRIORITY_HIGH);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -123,7 +123,7 @@ public class MessageNotificationCreator {
                     .setStyle(createInboxStyleForBundle(sortedChats))
                     .setContentText(createSummarizedContentForBundle(sortedChats));
             MessageNotificationManager.Message lastMessage = lastChat != null ? lastChat.getLastMessage() : null;
-            if (lastMessage != null && alert)
+            if (lastMessage != null && alert && !inGracePeriod(lastChat))
                 addEffects(builder, lastMessage.getMessageText().toString(), lastChat, context);
         }
 
