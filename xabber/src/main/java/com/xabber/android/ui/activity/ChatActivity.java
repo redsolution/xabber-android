@@ -405,19 +405,10 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     }
 
     public void handleShareFileUri(Uri fileUri) {
-        final String path = FileUtils.getPath(this, fileUri);
-
-        LogManager.i(this, String.format("File uri: %s, path: %s", fileUri, path));
-
-        if (path == null) {
-            Toast.makeText(this, R.string.could_not_get_path_to_file, Toast.LENGTH_SHORT).show();
-            return;
-        }
-
         if (PermissionsRequester.requestFileReadPermissionIfNeeded(this, PERMISSIONS_REQUEST_ATTACH_FILE)) {
-            List<String> paths = new ArrayList<>();
-            paths.add(path);
-            HttpFileUploadManager.getInstance().uploadFile(account, user, paths, this);
+            List<Uri> uris = new ArrayList<>();
+            uris.add(fileUri);
+            HttpFileUploadManager.getInstance().uploadFileViaUri(account, user, uris, this);
         }
     }
 
