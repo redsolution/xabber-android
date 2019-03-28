@@ -393,8 +393,10 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
 
         } else if (Intent.ACTION_SEND_MULTIPLE.equals(intent.getAction())) {
             ArrayList<Uri> uris = intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM);
-            intent.removeExtra(Intent.EXTRA_STREAM);
-            handleShareFileUris(uris);
+            if (uris != null) {
+                intent.removeExtra(Intent.EXTRA_STREAM);
+                handleShareFileUris(uris);
+            }
         }
 
         needScrollToUnread = intent.getBooleanExtra(EXTRA_NEED_SCROLL_TO_UNREAD, false);
