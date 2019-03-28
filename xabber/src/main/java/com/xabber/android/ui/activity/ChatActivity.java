@@ -52,7 +52,6 @@ import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.attention.AttentionManager;
 import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.blocking.OnBlockedListChangedListener;
-import com.xabber.android.data.extension.file.FileUtils;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.muc.RoomChat;
@@ -281,6 +280,14 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         return intent;
     }
 
+    public static Intent createSendUrisIntent(Context context, AccountJid account,
+                                             UserJid user, ArrayList<Uri> uris) {
+        Intent intent = ChatActivity.createSpecificChatIntent(context, account, user);
+        intent.setAction(Intent.ACTION_SEND_MULTIPLE);
+        intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
+        return intent;
+    }
+
     public static Intent createAttentionRequestIntent(Context context, AccountJid account, UserJid user) {
         Intent intent = ChatActivity.createClearTopIntent(context, account, user);
         intent.setAction(ACTION_ATTENTION);
@@ -373,15 +380,21 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
                 && intent.getParcelableExtra(Intent.EXTRA_STREAM) != null) {
 
             Uri receivedUri = getIntent().getParcelableExtra(Intent.EXTRA_STREAM);
+            intent.removeExtra(Intent.EXTRA_STREAM);
             handleShareFileUri(receivedUri);
 
         } else if (Intent.ACTION_SEND.equals(intent.getAction())) {
-            extraText = intent.getStringExtra(Intent.EXTRA_TEXT);
 
+            extraText = intent.getStringExtra(Intent.EXTRA_TEXT);
             if (extraText != null) {
                 intent.removeExtra(Intent.EXTRA_TEXT);
                 exitOnSend = true;
             }
+
+        } else if (Intent.ACTION_SEND_MULTIPLE.equals(intent.getAction())) {
+            ArrayList<Uri> uris = intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM);
+            intent.removeExtra(Intent.EXTRA_STREAM);
+            handleShareFileUris(uris);
         }
 
         needScrollToUnread = intent.getBooleanExtra(EXTRA_NEED_SCROLL_TO_UNREAD, false);
@@ -408,6 +421,22 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         if (PermissionsRequester.requestFileReadPermissionIfNeeded(this, PERMISSIONS_REQUEST_ATTACH_FILE)) {
             List<Uri> uris = new ArrayList<>();
             uris.add(fileUri);
+            HttpFileUploadManager.getInstance().uploadFileViaUri(account, user, uris, this);
+        }
+    }
+
+    public void handleShareFileUris(ArrayList<Uri> uris) {
+        if (uris.size() == 0) {
+            Toast.makeText(this, R.string.could_not_get_path_to_file, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (uris.size() > 10) {
+            Toast.makeText(this, R.string.too_many_files_at_once, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (PermissionsRequester.requestFileReadPermissionIfNeeded(this, PERMISSIONS_REQUEST_ATTACH_FILE)) {
             HttpFileUploadManager.getInstance().uploadFileViaUri(account, user, uris, this);
         }
     }
