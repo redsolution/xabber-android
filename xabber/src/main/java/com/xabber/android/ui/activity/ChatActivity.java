@@ -520,6 +520,9 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
             case Intent.ACTION_SEND:
                 selectedPagePosition = ChatViewerAdapter.PAGE_POSITION_CHAT;
                 break;
+            case Intent.ACTION_SEND_MULTIPLE:
+                selectedPagePosition = ChatViewerAdapter.PAGE_POSITION_CHAT;
+                break;
             case ACTION_FORWARD:
                 selectedPagePosition = ChatViewerAdapter.PAGE_POSITION_CHAT;
                 break;
