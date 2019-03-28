@@ -46,6 +46,23 @@
 
     </android.support.v4.widget.SwipeRefreshLayout>
 
+    <TextView
+        android:id="@+id/tvTopDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="8dp"
+        android:paddingTop="2dp"
+        android:paddingBottom="2dp"
+        android:paddingRight="8dp"
+        android:paddingLeft="8dp"
+        android:textStyle="bold"
+        android:text="21 January"
+        android:textColor="@color/white"
+        android:background="?attr/transparent_rounded_background"
+        android:visibility="visible"
+        />
+
     <ViewStub
         android:id="@+id/stubNotify"
         android:inflatedId="@+id/notifyLayout"

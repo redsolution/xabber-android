@@ -56,4 +56,9 @@ public interface NotificationProvider<T extends NotificationItem> {
      */
     int getIcon();
 
+    /**
+     * @return channel id for notifications in android 8+.
+     */
+    String getChannelID();
+
 }

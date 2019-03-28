@@ -27,6 +27,10 @@ public class BaseAccountNotificationProvider<T extends AccountNotificationItem>
         super(icon);
     }
 
+    public BaseAccountNotificationProvider(int icon, String channelID) {
+        super(icon, channelID);
+    }
+
     public T get(AccountJid account) {
         for (T item : items)
             if (item != null && item.getAccount().equals(account))

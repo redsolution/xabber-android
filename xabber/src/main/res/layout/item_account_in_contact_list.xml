@@ -23,19 +23,29 @@
 
         <include layout="@layout/avatar_view_small"/>
 
-        <TextView
-            android:id="@+id/tvAccountName"
-            android:layout_width="match_parent"
+        <LinearLayout
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_toLeftOf="@id/ivMenu"
+            android:layout_toStartOf="@id/ivMenu"
             android:layout_toRightOf="@id/avatarView"
-            android:layout_toLeftOf="@+id/ivMenu"
-            android:textSize="16sp"
-            android:textColor="?attr/contact_list_contact_name_text_color"
-            android:singleLine="true"
-            android:fontFamily="sans-serif-medium"
-            android:text="Erik Walton"
-            />
+            android:layout_toEndOf="@id/avatarView"
+            android:layout_marginTop="8dp"
+            >
+
+            <TextView
+                android:id="@+id/tvAccountName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:textColor="?attr/contact_list_contact_name_text_color"
+                android:singleLine="true"
+                android:fontFamily="sans-serif-medium"
+                android:text="Erik Walton"
+                android:drawablePadding="4dp"
+                />
+
+        </LinearLayout>
 
         <TextView
             android:id="@+id/tvContactCount"

@@ -30,11 +30,11 @@
         android:title="@string/phrase_regexp"
         android:key="@string/phrase_regexp_key"
         />
-    <com.xabber.android.ui.widget.RingtonePreference
-        android:title="@string/phrase_sound"
-        android:key="@string/phrase_sound_key"
-        android:ringtoneType="notification"
-        android:showSilent="true" 
-        android:showDefault="true"
+
+    <PreferenceScreen
+        android:title="@string/configure_notifications"
+        android:summary="@string/events_use_custom_summary"
+        android:key="notification_settings"
         />
+
 </PreferenceScreen>

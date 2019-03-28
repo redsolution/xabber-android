@@ -37,9 +37,11 @@ import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.extension.forward.ForwardComment;
 import com.xabber.android.data.extension.httpfileupload.ExtendedFormField;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
+import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.ChatManager;
+import com.xabber.android.data.notification.MessageNotificationManager;
 import com.xabber.android.data.notification.NotificationManager;
 
 import org.greenrobot.eventbus.EventBus;
@@ -61,6 +63,7 @@ import java.io.File;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import io.realm.Realm;
 import io.realm.RealmChangeListener;
@@ -229,10 +232,28 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
      * @return Whether user should be notified about incoming messages in chat.
      */
     public boolean notifyAboutMessage() {
-        switch (notificationState.getMode()) {
-            case enabled: return true;
-            case disabled: return false;
-            default: return SettingsManager.eventsOnChat();
+        if (notificationState.getMode().equals(NotificationState.NotificationMode.bydefault))
+            return SettingsManager.eventsOnChat();
+        if (notificationState.getMode().equals(NotificationState.NotificationMode.enabled))
+            return true;
+        else return false;
+    }
+
+    private void enableNotificationsIfNeed() {
+        int currentTime = (int) (System.currentTimeMillis() / 1000L);
+        NotificationState.NotificationMode mode = notificationState.getMode();
+
+        if ((mode.equals(NotificationState.NotificationMode.snooze15m)
+                && currentTime > notificationState.getTimestamp() + TimeUnit.MINUTES.toSeconds(15))
+            || (mode.equals(NotificationState.NotificationMode.snooze1h)
+                && currentTime > notificationState.getTimestamp() + TimeUnit.HOURS.toSeconds(1))
+            || (mode.equals(NotificationState.NotificationMode.snooze2h)
+                && currentTime > notificationState.getTimestamp() + TimeUnit.HOURS.toSeconds(2))
+            || (mode.equals(NotificationState.NotificationMode.snooze1d)
+                && currentTime > notificationState.getTimestamp() + TimeUnit.DAYS.toSeconds(1))) {
+
+            setNotificationStateOrDefault(new NotificationState(
+                    NotificationState.NotificationMode.enabled, 0), true);
         }
     }
 
@@ -393,9 +414,10 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         messageItem.setOriginalFrom(originalFrom);
         messageItem.setParentMessageId(parentMessageId);
 
-        if (notify && notifyAboutMessage() && !visible) {
+        // notification
+        enableNotificationsIfNeed();
+        if (notify && notifyAboutMessage() && !visible)
             NotificationManager.getInstance().onMessageNotification(messageItem);
-        }
 
         // unread message count
         if (!visible && action == null) {
@@ -403,9 +425,10 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
             else resetUnreadMessageCount();
         }
 
-        // remove notifications if get outgoing message
-        if (!incoming)
-            NotificationManager.getInstance().removeMessageNotification(account, user);
+        // remove notifications if get outgoing message with 2 sec delay
+        if (!incoming) {
+            MessageNotificationManager.getInstance().removeChatWithTimer(account, user);
+        }
 
         // when getting new message, unarchive chat if chat not muted
         if (this.notifyAboutMessage())
@@ -477,7 +500,8 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         if (messages.isValid() && messages.isLoaded() && !messages.isEmpty()) {
             List<MessageItem> textMessages = MessageDatabaseManager.getInstance()
                     .getRealmUiThread()
-                    .copyFromRealm(messages.where().isNull(MessageItem.Fields.ACTION).findAll());
+                    .copyFromRealm(messages.where().isNull(MessageItem.Fields.ACTION)
+                            .or().equalTo(MessageItem.Fields.ACTION, ChatAction.available.toString()).findAll());
 
             if (!textMessages.isEmpty())
                 lastMessage = textMessages.get(textMessages.size() - 1);
@@ -628,17 +652,28 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
             message = createMessagePacket(body, messageItem.getStanzaId());
 
             Realm realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
-            for (ForwardId id : messageItem.getForwardedIds()) {
-                MessageItem forwardedMessage = realm.where(MessageItem.class)
-                        .equalTo(MessageItem.Fields.UNIQUE_ID, id.getForwardMessageId()).findFirst();
-                try {
-                    Message forwarded = (Message) PacketParserUtils.parseStanza(forwardedMessage.getOriginalStanza());
-                    message.addExtension(new Forwarded(new DelayInformation(new Date(forwardedMessage.getTimestamp())), forwarded));
-                } catch (Exception e) {
-                    e.printStackTrace();
+
+            // forwarded
+            if (messageItem.getForwardedIds() != null && messageItem.getForwardedIds().size() > 0) {
+                final String[] ids = new String[messageItem.getForwardedIds().size()];
+                int i = 0;
+                for (ForwardId id : messageItem.getForwardedIds()) {
+                    ids[i] = id.getForwardMessageId();
+                    i++;
                 }
+
+                RealmResults<MessageItem> items = realm.where(MessageItem.class)
+                        .in(MessageItem.Fields.UNIQUE_ID, ids).findAll();
+                for (MessageItem item : items) {
+                    try {
+                        Message forwarded = (Message) PacketParserUtils.parseStanza(item.getOriginalStanza());
+                        message.addExtension(new Forwarded(new DelayInformation(new Date(item.getTimestamp())), forwarded));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                message.addExtension(new ForwardComment(text));
             }
-            message.addExtension(new ForwardComment(text));
 
         } else if (text != null) {
             message = createMessagePacket(text, messageItem.getStanzaId());
@@ -788,6 +823,24 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         if (notificationState.getMode() == NotificationState.NotificationMode.disabled && needSaveToRealm)
             NotificationManager.getInstance().removeMessageNotification(account, user);
         if (needSaveToRealm) ChatManager.getInstance().saveOrUpdateChatDataToRealm(this);
+    }
+
+    public void setNotificationStateOrDefault(NotificationState notificationState, boolean needSaveToRealm) {
+        if (notificationState.getMode() != NotificationState.NotificationMode.enabled
+                && notificationState.getMode() != NotificationState.NotificationMode.disabled)
+            throw new IllegalStateException("In this method mode must be enabled or disabled.");
+
+        if (!eventsOnChatGlobal() && notificationState.getMode() == NotificationState.NotificationMode.disabled
+                || eventsOnChatGlobal() && notificationState.getMode() == NotificationState.NotificationMode.enabled)
+            notificationState.setMode(NotificationState.NotificationMode.bydefault);
+
+        setNotificationState(notificationState, needSaveToRealm);
+    }
+
+    private boolean eventsOnChatGlobal() {
+        if (MUCManager.getInstance().hasRoom(account, user.getJid().asEntityBareJidIfPossible()))
+            return SettingsManager.eventsOnMuc();
+        else return SettingsManager.eventsOnChat();
     }
 
     public int getLastPosition() {

@@ -93,10 +93,11 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_toRightOf="@id/tvOutgoingMessage"
-            android:layout_toLeftOf="@+id/tvUnreadCount"
+            android:layout_toLeftOf="@+id/rlUnread"
             android:layout_marginBottom="12dp"
             android:layout_marginRight="8dp"
             android:maxLines="1"
+            android:ellipsize="end"
             android:textSize="14sp"
             android:textColor="?attr/contact_list_contact_second_line_text_color"
             android:text="Hello. How are you?"
@@ -113,35 +114,39 @@
             android:text="12:30"
             />
 
-        <ImageView
-            android:id="@+id/ivMessageStatus"
+        <RelativeLayout
+            android:id="@+id/rlUnread"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_alignParentBottom="true"
             android:layout_marginBottom="12dp"
             android:layout_marginRight="8dp"
-            android:src="@drawable/ic_message_delivered_14dp"
-            />
+            >
 
-        <TextView
-            android:id="@+id/tvUnreadCount"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentBottom="true"
-            android:layout_marginBottom="12dp"
-            android:layout_marginRight="8dp"
-            android:paddingTop="0dp"
-            android:paddingBottom="1dp"
-            android:paddingRight="5dp"
-            android:paddingLeft="5dp"
-            android:background="@drawable/rounded_background_green"
-            android:textColor="@color/white"
-            android:textSize="12sp"
-            android:textStyle="bold"
-            android:text="1"
-            />
+            <ImageView
+                android:id="@+id/ivMessageStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_message_delivered_14dp"
+                />
+
+            <TextView
+                android:id="@+id/tvUnreadCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="0dp"
+                android:paddingBottom="1dp"
+                android:paddingRight="5dp"
+                android:paddingLeft="5dp"
+                android:background="@drawable/rounded_background_green"
+                android:textColor="@color/white"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:text="1"
+                />
+
+        </RelativeLayout>
 
         <View
             android:layout_width="match_parent"

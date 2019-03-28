@@ -27,6 +27,11 @@
     <string name="discard_subscription">Decline contact</string>
     <string name="archive_chat">Archive</string>
     <string name="unarchive_chat">Unarchive</string>
+    <string name="mute_forever">Mute forever</string>
+    <string name="mute_15_min">Mute for 15 minutes</string>
+    <string name="mute_1_hour">Mute for 1 hour</string>
+    <string name="mute_2_hours">Mute for 2 hours</string>
+    <string name="mute_1_day">Mute for 1 day</string>
     <string name="mute_chat">Mute</string>
     <string name="unmute_chat">Unmute</string>
     <string name="show_archived">Show archived</string>
@@ -36,6 +41,7 @@
     <string name="group_remove">Delete group</string>
     <string name="group_remove_confirm">Do you really want to delete group %s? Users from this group will stay in contact list.</string>
     <string name="group_rename">Rename group</string>
+    <string name="configure_notifications">Configure notifications</string>
     <string name="NO_SUCH_ACCOUNT">Account not found</string>
     <string name="NOT_CONNECTED">Connection not established</string>
     <string name="request_subscription">Request subscription</string>

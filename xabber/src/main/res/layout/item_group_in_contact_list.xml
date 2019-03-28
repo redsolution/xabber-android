@@ -54,22 +54,31 @@
 
         />
 
-    <TextView
-        android:id="@+id/name"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/expander_height"
-        android:gravity="center_vertical"
-        android:singleLine="true"
-        android:ellipsize="marquee"
-        android:textColor="#FF9E9E9E"
-        android:fontFamily="sans-serif-medium"
-        android:text="name (0/0)"
-        android:layout_toRightOf="@id/indicator"
-        android:layout_toEndOf="@id/indicator"
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_toLeftOf="@id/group_offline_indicator"
         android:layout_toStartOf="@id/group_offline_indicator"
+        android:layout_toRightOf="@id/indicator"
+        android:layout_toEndOf="@id/indicator"
         android:layout_marginLeft="10dp"
-        />
+        android:layout_marginRight="10dp"
+        >
+
+        <TextView
+            android:id="@+id/name"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/expander_height"
+            android:gravity="center_vertical"
+            android:singleLine="true"
+            android:ellipsize="marquee"
+            android:textColor="#FF9E9E9E"
+            android:fontFamily="sans-serif-medium"
+            android:text="name (0/0)"
+            android:drawablePadding="4dp"
+            />
+
+    </LinearLayout>
 
     <View
         android:id="@+id/line"

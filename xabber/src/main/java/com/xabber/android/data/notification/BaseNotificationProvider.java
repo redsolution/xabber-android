@@ -35,11 +35,21 @@ public class BaseNotificationProvider<T extends NotificationItem> implements
     protected final Collection<T> items;
     private final int icon;
     private boolean canClearNotifications;
+    private String channelID;
 
     public BaseNotificationProvider(int icon) {
         super();
         this.items = new ArrayList<T>();
         this.icon = icon;
+        this.channelID = NotificationChannelUtils.EVENTS_CHANNEL_ID;
+        canClearNotifications = true;
+    }
+
+    public BaseNotificationProvider(int icon, String channelID) {
+        super();
+        this.items = new ArrayList<T>();
+        this.icon = icon;
+        this.channelID = channelID;
         canClearNotifications = true;
     }
 
@@ -106,4 +116,8 @@ public class BaseNotificationProvider<T extends NotificationItem> implements
         return icon;
     }
 
+    @Override
+    public String getChannelID() {
+        return channelID;
+    }
 }

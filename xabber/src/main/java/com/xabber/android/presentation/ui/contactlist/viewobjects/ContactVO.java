@@ -20,7 +20,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.xabber.android.R;
-import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
@@ -30,10 +29,13 @@ import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.muc.MUCManager;
+import com.xabber.android.data.extension.muc.RoomChat;
 import com.xabber.android.data.filedownload.FileCategory;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.NotificationState;
+import com.xabber.android.data.notification.custom_notification.CustomNotifyPrefsManager;
+import com.xabber.android.data.notification.custom_notification.Key;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.ui.color.ColorManager;
@@ -75,6 +77,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
     private final int messageStatus;
     private final String messageOwner;
     private final String lastActivity;
+    private final boolean isCustomNotification;
     protected boolean archived;
     protected int forwardedCount;
 
@@ -92,7 +95,8 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
                         int mucIndicatorLevel, UserJid userJid, AccountJid accountJid, int unreadCount,
                         boolean mute, NotificationState.NotificationMode notificationMode, String messageText,
                         boolean isOutgoing, Date time, int messageStatus, String messageOwner,
-                        boolean archived, String lastActivity, ContactClickListener listener, int forwardedCount) {
+                        boolean archived, String lastActivity, ContactClickListener listener,
+                        int forwardedCount, boolean isCustomNotification) {
         this.id = UUID.randomUUID().toString();
         this.accountColorIndicator = accountColorIndicator;
         this.accountColorIndicatorBack = accountColorIndicatorBack;
@@ -117,6 +121,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
         this.lastActivity = lastActivity;
         this.listener = listener;
         this.forwardedCount = forwardedCount;
+        this.isCustomNotification = isCustomNotification;
     }
 
     public static ContactVO convert(AbstractContact contact, ContactClickListener listener) {
@@ -213,18 +218,19 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
         if (!isOutgoing) unreadCount = chat.getUnreadMessageCount();
 
         // notification icon
-        NotificationState.NotificationMode mode = NotificationState.NotificationMode.bydefault;
-        boolean defaultValue = mucIndicatorLevel == 0 ? SettingsManager.eventsOnChat() : SettingsManager.eventsOnMuc();
-        if (chat.getNotificationState().getMode() == NotificationState.NotificationMode.enabled && !defaultValue)
-            mode = NotificationState.NotificationMode.enabled;
-        if (chat.getNotificationState().getMode() == NotificationState.NotificationMode.disabled && defaultValue)
-            mode = NotificationState.NotificationMode.disabled;
+        NotificationState.NotificationMode mode =
+                chat.getNotificationState().determineModeByGlobalSettings(chat instanceof RoomChat);
+
+        // custom notification
+        boolean isCustomNotification = CustomNotifyPrefsManager.getInstance().
+                isPrefsExist(Key.createKey(contact.getAccount(), contact.getUser()));
 
         return new ContactVO(accountColorIndicator, accountColorIndicatorBack,
                 showOfflineShadow, name, statusText, statusId,
                 statusLevel, avatar, mucIndicatorLevel, contact.getUser(), contact.getAccount(),
                 unreadCount, !chat.notifyAboutMessage(), mode, messageText, isOutgoing, time,
-                messageStatus, messageOwner, chat.isArchived(), lastActivity, listener, forwardedCount);
+                messageStatus, messageOwner, chat.isArchived(), lastActivity, listener, forwardedCount,
+                isCustomNotification);
     }
 
     public static ArrayList<IFlexible> convert(Collection<AbstractContact> contacts, ContactClickListener listener) {
@@ -317,25 +323,25 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
 
         /** set up NOTIFICATION MUTE */
         Resources resources = context.getResources();
-        switch (getNotificationMode()) {
-            case enabled:
-                viewHolder.tvContactName.setCompoundDrawablesWithIntrinsicBounds(mucIndicator, null,
-                        resources.getDrawable(R.drawable.ic_unmute), null);
-                break;
-            case disabled:
-                viewHolder.tvContactName.setCompoundDrawablesWithIntrinsicBounds(mucIndicator, null,
-                        resources.getDrawable(R.drawable.ic_mute), null);
-                break;
-            default:
-                viewHolder.tvContactName.setCompoundDrawablesWithIntrinsicBounds(
-                        mucIndicator, null, null, null);
-        }
+        int resID = 0;
+        NotificationState.NotificationMode mode = getNotificationMode();
+        if (mode == NotificationState.NotificationMode.enabled) resID = R.drawable.ic_unmute;
+        else if (mode == NotificationState.NotificationMode.disabled) resID = R.drawable.ic_mute;
+        else if (mode != NotificationState.NotificationMode.bydefault) resID = R.drawable.ic_snooze_mini;
+        viewHolder.tvContactName.setCompoundDrawablesWithIntrinsicBounds(mucIndicator, null,
+                resID != 0 ? resources.getDrawable(resID) : null, null);
+
+        /** set up CUSTOM NOTIFICATION */
+        if (isCustomNotification() && (mode == NotificationState.NotificationMode.enabled
+                || mode == NotificationState.NotificationMode.bydefault))
+            viewHolder.tvContactName.setCompoundDrawablesWithIntrinsicBounds(mucIndicator, null,
+                    resources.getDrawable(R.drawable.ic_notif_custom), null);
 
         /** set up UNREAD COUNT */
         if (getUnreadCount() > 0) {
             viewHolder.tvUnreadCount.setText(String.valueOf(getUnreadCount()));
             viewHolder.tvUnreadCount.setVisibility(View.VISIBLE);
-        } else viewHolder.tvUnreadCount.setVisibility(View.INVISIBLE);
+        } else viewHolder.tvUnreadCount.setVisibility(View.GONE);
 
         if (isMute())
             viewHolder.tvUnreadCount.getBackground().mutate().setColorFilter(
@@ -430,6 +436,10 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
 
     public String getLastActivity() {
         return lastActivity;
+    }
+
+    public boolean isCustomNotification() {
+        return isCustomNotification;
     }
 
     private int getThemeResource(Context context, int themeResourceId) {

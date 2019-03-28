@@ -19,6 +19,8 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
+import com.xabber.android.data.notification.custom_notification.CustomNotifyPrefsManager;
+import com.xabber.android.data.notification.custom_notification.Key;
 import com.xabber.android.data.roster.GroupManager;
 import com.xabber.android.data.roster.ShowOfflineMode;
 import com.xabber.android.ui.adapter.contactlist.AccountConfiguration;
@@ -50,6 +52,7 @@ public class AccountVO extends AbstractHeaderItem<AccountVO.ViewHolder> {
     private AccountJid accountJid;
     private boolean isExpand;
     private String groupName;
+    private boolean isCustomNotification;
 
     protected final AccountClickListener listener;
 
@@ -61,7 +64,8 @@ public class AccountVO extends AbstractHeaderItem<AccountVO.ViewHolder> {
     public AccountVO(int accountColorIndicator, int accountColorIndicatorBack, boolean showOfflineShadow,
                      String name, String jid, String status, int statusLevel, int statusId,
                      Drawable avatar, int offlineModeLevel, String contactCount, AccountJid accountJid,
-                     boolean isExpand, String groupName, AccountClickListener listener) {
+                     boolean isExpand, String groupName, boolean isCustomNotification,
+                     AccountClickListener listener) {
         this.id = UUID.randomUUID().toString();
         this.accountColorIndicator = accountColorIndicator;
         this.accountColorIndicatorBack = accountColorIndicatorBack;
@@ -77,6 +81,7 @@ public class AccountVO extends AbstractHeaderItem<AccountVO.ViewHolder> {
         this.accountJid = accountJid;
         this.isExpand = isExpand;
         this.groupName = groupName;
+        this.isCustomNotification = isCustomNotification;
         this.listener = listener;
     }
 
@@ -149,6 +154,11 @@ public class AccountVO extends AbstractHeaderItem<AccountVO.ViewHolder> {
         /** bind STATUS image */
         viewHolder.ivStatus.setImageLevel(getStatusLevel());
         viewHolder.ivOnlyStatus.setImageLevel(getStatusLevel());
+
+        /** set up CUSTOM NOTIFICATION */
+        viewHolder.tvAccountName.setCompoundDrawablesWithIntrinsicBounds(null, null,
+                isCustomNotification() ? context.getResources().getDrawable(R.drawable.ic_notif_custom)
+                        : null, null);
     }
 
     private int getThemeResource(Context context, int themeResourceId) {
@@ -213,10 +223,14 @@ public class AccountVO extends AbstractHeaderItem<AccountVO.ViewHolder> {
             showOfflineShadow = false;
         }
 
+        // custom notification
+        boolean isCustomNotification = CustomNotifyPrefsManager.getInstance().
+                isPrefsExist(Key.createKey(account));
+
         return new AccountVO(accountColorIndicator, accountColorIndicatorBack, showOfflineShadow,
                 name, jid, status, statusLevel,
                 statusId, avatar, offlineModeLevel, contactCount, configuration.getAccount(),
-                configuration.isExpanded(), configuration.getGroup(), listener);
+                configuration.isExpanded(), configuration.getGroup(), isCustomNotification, listener);
     }
 
     public String getName() {
@@ -261,6 +275,10 @@ public class AccountVO extends AbstractHeaderItem<AccountVO.ViewHolder> {
 
     public String getGroupName() {
         return groupName;
+    }
+
+    public boolean isCustomNotification() {
+        return isCustomNotification;
     }
 
     public int getAccountColorIndicator() {

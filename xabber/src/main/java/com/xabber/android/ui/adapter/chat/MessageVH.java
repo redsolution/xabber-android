@@ -8,6 +8,7 @@ import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -18,6 +19,7 @@ import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.ui.color.ColorManager;
+import com.xabber.android.ui.fragment.ChatFragment;
 import com.xabber.android.utils.StringUtils;
 
 import java.util.Date;
@@ -31,6 +33,7 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
     private MessageLongClickListener longClickListener;
 
     TextView tvFirstUnread;
+    TextView tvDate;
     TextView messageTime;
     TextView messageHeader;
     TextView messageNotDecrypted;
@@ -57,6 +60,7 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
         this.longClickListener = longClickListener;
 
         tvFirstUnread = itemView.findViewById(R.id.tvFirstUnread);
+        tvDate = itemView.findViewById(R.id.tvDate);
         messageTime = itemView.findViewById(R.id.message_time);
         messageHeader = itemView.findViewById(R.id.message_header);
         messageNotDecrypted = itemView.findViewById(R.id.message_not_decrypted);
@@ -112,6 +116,28 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
         // setup UNREAD
         if (tvFirstUnread != null)
             tvFirstUnread.setVisibility(extraData.isUnread() ? View.VISIBLE : View.GONE);
+
+        // setup DATE
+        if (tvDate != null) {
+            if (extraData.isNeedDate()) {
+                tvDate.setText(StringUtils.getDateStringForMessage(messageItem.getTimestamp()));
+                tvDate.setVisibility(View.VISIBLE);
+            } else tvDate.setVisibility(View.GONE);
+        }
+
+        // set DATE alpha
+        if (tvDate != null && extraData.isNeedDate() && extraData.getAnchorHolder() != null) {
+            final MessagesAdapter.MessageExtraData lExtraData = extraData;
+            tvDate.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    /** Work only with
+                     *  @see ChatFragment#updateTopDateIfNeed()
+                     *  called in recyclerView.onScrolled */
+                    setDateAlpha(tvDate, lExtraData.getAnchorHolder().getAnchor());
+                }
+            });
+        }
 
         // setup CHECKED
         if (extraData.isChecked()) itemView.setBackgroundColor(extraData.getContext().getResources()
@@ -177,5 +203,25 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
             view.setPadding(pL, pT, pR, pB);
         }
 
+    }
+
+    private void setDateAlpha(View viewDate, View viewAnchor) {
+        if (viewDate != null && viewAnchor != null) {
+            int specialCoordinates[] = new int[2];
+            int titleCoordinates[] = new int[2];
+            viewAnchor.getLocationOnScreen(titleCoordinates);
+            viewDate.getLocationOnScreen(specialCoordinates);
+            int deltaY = titleCoordinates[1] - specialCoordinates[1];
+            if (deltaY < 0) deltaY *= -1;
+
+            int total = viewAnchor.getMeasuredHeight();
+            int step = total / 100;
+            if (step == 0) step = 1;
+
+            if (deltaY < total * 2) {
+                if (deltaY < total) viewDate.setAlpha(0);
+                else viewDate.setAlpha((float) (deltaY - total / step)/100);
+            } else viewDate.setAlpha(1);
+        }
     }
 }

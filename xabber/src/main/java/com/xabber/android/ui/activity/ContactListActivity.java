@@ -55,6 +55,7 @@ import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
+import com.xabber.android.data.notification.MessageNotificationManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
@@ -99,6 +100,7 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
      */
     private static final int CODE_OPEN_CHAT = 301;
 
+    private static final String ACTION_CLEAR_STACK = "com.xabber.android.ui.activity.ContactList.ACTION_CLEAR_STACK";
     private static final String ACTION_ROOM_INVITE = "com.xabber.android.ui.activity.ContactList.ACTION_ROOM_INVITE";
     private static final String ACTION_MUC_PRIVATE_CHAT_INVITE = "com.xabber.android.ui.activity.ContactList.ACTION_MUC_PRIVATE_CHAT_INVITE";
     private static final String ACTION_CONTACT_SUBSCRIPTION = "com.xabber.android.ui.activity.ContactList.ACTION_CONTACT_SUBSCRIPTION";
@@ -142,6 +144,12 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
 
     public static Intent createIntent(Context context) {
         return new Intent(context, ContactListActivity.class);
+    }
+
+    public static Intent createClearStackIntent(Context context) {
+        Intent intent = new Intent(context, ContactListActivity.class);
+        intent.setAction(ACTION_CLEAR_STACK);
+        return intent;
     }
 
     public static Intent createRoomInviteIntent(Context context, AccountJid account, UserJid room) {
@@ -188,6 +196,11 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
                 || Intent.ACTION_CREATE_SHORTCUT.equals(getIntent().getAction())) {
             ActivityManager.getInstance().startNewTask(this);
         }
+
+        if (ACTION_CLEAR_STACK.equals(getIntent().getAction())) {
+            ActivityManager.getInstance().clearStack(false);
+        }
+
         super.onCreate(savedInstanceState);
 
         if (isFinishing()) {
@@ -397,7 +410,6 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
                     action = null;
                     showMucInviteDialog();
                     break;
-
             }
         }
 
@@ -419,6 +431,9 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
 
         // update crowdfunding info
         CrowdfundingManager.getInstance().onLoad();
+
+        // remove all message notifications
+        MessageNotificationManager.getInstance().removeAllMessageNotifications();
     }
 
     @Override

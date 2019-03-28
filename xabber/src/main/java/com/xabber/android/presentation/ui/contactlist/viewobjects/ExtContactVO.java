@@ -31,12 +31,14 @@ public class ExtContactVO extends ContactVO {
                         int mucIndicatorLevel, UserJid userJid, AccountJid accountJid, int unreadCount,
                         boolean mute, NotificationState.NotificationMode notificationMode, String messageText,
                         boolean isOutgoing, Date time, int messageStatus, String messageOwner,
-                        boolean archived, String lastActivity, ContactClickListener listener, int forwardedCount) {
+                        boolean archived, String lastActivity, ContactClickListener listener, int forwardedCount,
+                        boolean isCustomNotification) {
 
         super(accountColorIndicator, accountColorIndicatorBack, showOfflineShadow, name, status,
                 statusId, statusLevel, avatar,
                 mucIndicatorLevel, userJid, accountJid, unreadCount, mute, notificationMode, messageText,
-                isOutgoing, time, messageStatus, messageOwner, archived, lastActivity, listener, forwardedCount);
+                isOutgoing, time, messageStatus, messageOwner, archived, lastActivity, listener, forwardedCount,
+                isCustomNotification);
     }
 
     public static ExtContactVO convert(AbstractContact contact, ContactClickListener listener) {
@@ -50,7 +52,7 @@ public class ExtContactVO extends ContactVO {
                 contactVO.isMute(), contactVO.getNotificationMode(), contactVO.getMessageText(),
                 contactVO.isOutgoing(), contactVO.getTime(), contactVO.getMessageStatus(),
                 contactVO.getMessageOwner(), contactVO.isArchived(), contactVO.getLastActivity(),
-                contactVO.listener, contactVO.forwardedCount);
+                contactVO.listener, contactVO.forwardedCount, contactVO.isCustomNotification());
     }
 
     @Override
@@ -118,7 +120,7 @@ public class ExtContactVO extends ContactVO {
                 viewHolder.ivMessageStatus.setImageResource(R.drawable.ic_message_acknowledged_14dp);
                 break;
             default:
-                viewHolder.ivMessageStatus.setVisibility(View.INVISIBLE);
+                viewHolder.ivMessageStatus.setVisibility(View.GONE);
                 break;
         }
     }

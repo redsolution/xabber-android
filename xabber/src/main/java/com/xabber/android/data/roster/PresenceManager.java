@@ -38,6 +38,8 @@ import com.xabber.android.data.extension.iqlast.LastActivityInteractor;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.muc.Occupant;
 import com.xabber.android.data.log.LogManager;
+import com.xabber.android.data.message.AbstractChat;
+import com.xabber.android.data.message.ChatAction;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.notification.EntityNotificationProvider;
 import com.xabber.android.data.notification.NotificationManager;
@@ -123,6 +125,7 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
             requestedSubscriptions.put(account, set);
         }
         set.add(user);
+        createChatForNewContact(account, user);
     }
 
     private void removeRequestedSubscription(AccountJid account, UserJid user) {
@@ -141,6 +144,13 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
         StanzaSender.sendStanza(account, packet);
         subscriptionRequestProvider.remove(account, user);
         removeRequestedSubscription(account, user);
+    }
+
+    /** Added available action to chat, to show chat in recent chats */
+    private void createChatForNewContact(AccountJid account, UserJid user) {
+        AbstractChat chat = MessageManager.getInstance().getOrCreateChat(account, user);
+        chat.newAction(null, Application.getInstance().getResources().getString(R.string.action_new_contact),
+                ChatAction.available, false);
     }
 
     /**

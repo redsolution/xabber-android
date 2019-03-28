@@ -18,6 +18,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.support.v7.app.AppCompatActivity;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -48,13 +49,14 @@ import com.xabber.android.ui.activity.AccountActivity;
 import com.xabber.android.ui.activity.ConferenceAddActivity;
 import com.xabber.android.ui.activity.ContactAddActivity;
 import com.xabber.android.ui.activity.GroupEditActivity;
-import com.xabber.android.ui.activity.ManagedActivity;
 import com.xabber.android.ui.activity.StatusEditActivity;
 import com.xabber.android.ui.dialog.BlockContactDialog;
 import com.xabber.android.ui.dialog.ContactDeleteDialogFragment;
 import com.xabber.android.ui.dialog.GroupDeleteDialogFragment;
 import com.xabber.android.ui.dialog.GroupRenameDialogFragment;
 import com.xabber.android.ui.dialog.MUCDeleteDialogFragment;
+import com.xabber.android.ui.dialog.SnoozeDialog;
+import com.xabber.android.ui.preferences.CustomNotifySettings;
 
 /**
  * Helper class for context menu creation.
@@ -81,17 +83,6 @@ public class ContextMenuHelper {
     private static void setContactContextMenuActions(final Activity activity,
                                                      final ContactListPresenter presenter, ContextMenu menu,
                                                      final AccountJid account, final UserJid user) {
-//        menu.findItem(R.id.action_chat).setOnMenuItemClickListener(
-//                new MenuItem.OnMenuItemClickListener() {
-//
-//                    @Override
-//                    public boolean onMenuItemClick(MenuItem item) {
-//                        MessageManager.getInstance().openChat(account, user);
-//                        activity.startActivity(ChatActivity.createSpecificChatIntent(
-//                                activity, account, user));
-//                        return true;
-//                    }
-//                });
 
         menu.findItem(R.id.action_edit_conference).setIntent(
                 ConferenceAddActivity.createIntent(activity, account, user.getBareUserJid()));
@@ -129,10 +120,13 @@ public class ContextMenuHelper {
 
                 });
 
-//        menu.findItem(R.id.action_contact_info).setIntent(
-//                ContactEditActivity.createIntent(activity, account, user));
-        menu.findItem(R.id.action_edit_contact_groups).setIntent(
-                GroupEditActivity.createIntent(activity, account, user));
+        menu.findItem(R.id.action_edit_contact_groups).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                activity.startActivity(GroupEditActivity.createIntent(activity, account, user));
+                return true;
+            }
+        });
 
         menu.findItem(R.id.action_delete_contact).setOnMenuItemClickListener(
                 new MenuItem.OnMenuItemClickListener() {
@@ -154,41 +148,6 @@ public class ContextMenuHelper {
                         return true;
             }
         });
-
-//        menu.findItem(R.id.action_close_chat).setOnMenuItemClickListener(
-//                new MenuItem.OnMenuItemClickListener() {
-//
-//                    @Override
-//                    public boolean onMenuItemClick(MenuItem item) {
-//                        MessageManager.getInstance().closeChat(account,
-//                                user);
-//                        NotificationManager.getInstance()
-//                                .removeMessageNotification(account,
-//                                        user);
-//                        adapter.onChange();
-//                        return true;
-//                    }
-//
-//                });
-
-//        menu.findItem(R.id.action_request_subscription)
-//                .setOnMenuItemClickListener(
-//                        new MenuItem.OnMenuItemClickListener() {
-//
-//                            @Override
-//                            public boolean onMenuItemClick(MenuItem item) {
-//                                try {
-//                                    PresenceManager.getInstance()
-//                                            .requestSubscription(
-//                                                    account, user);
-//                                } catch (NetworkException e) {
-//                                    Application.getInstance()
-//                                            .onError(e);
-//                                }
-//                                return true;
-//                            }
-//
-//                        });
 
         menu.findItem(R.id.action_accept_subscription).setOnMenuItemClickListener(
                 new MenuItem.OnMenuItemClickListener() {
@@ -217,37 +176,12 @@ public class ContextMenuHelper {
                     }
                 });
 
-//        menu.findItem(R.id.action_archive_chat).setOnMenuItemClickListener(
-//                new MenuItem.OnMenuItemClickListener() {
-//                    @Override
-//                    public boolean onMenuItemClick(MenuItem item) {
-//                        AbstractChat chat = MessageManager.getInstance().getChat(account, user);
-//                        if (chat != null) chat.setArchived(true, true);
-//                        adapter.onChange();
-//                        return true;
-//                    }
-//                });
-//
-//        menu.findItem(R.id.action_unarchive_chat).setOnMenuItemClickListener(
-//                new MenuItem.OnMenuItemClickListener() {
-//                    @Override
-//                    public boolean onMenuItemClick(MenuItem item) {
-//                        AbstractChat chat = MessageManager.getInstance().getChat(account, user);
-//                        if (chat != null) chat.setArchived(false, true);
-//                        adapter.onChange();
-//                        return true;
-//                    }
-//                });
-
         menu.findItem(R.id.action_mute_chat).setOnMenuItemClickListener(
                 new MenuItem.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
                         AbstractChat chat = MessageManager.getInstance().getChat(account, user);
-                        if (chat != null) chat.setNotificationState(
-                                new NotificationState(NotificationState.NotificationMode.disabled,
-                                        0), true);
-                        presenter.updateContactList();
+                        showSnoozeDialog((AppCompatActivity) activity, chat, presenter);
                         return true;
                     }
                 });
@@ -257,10 +191,20 @@ public class ContextMenuHelper {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
                         AbstractChat chat = MessageManager.getInstance().getChat(account, user);
-                        if (chat != null) chat.setNotificationState(
+                        if (chat != null) chat.setNotificationStateOrDefault(
                                 new NotificationState(NotificationState.NotificationMode.enabled,
                                         0), true);
                         presenter.updateContactList();
+                        return true;
+                    }
+                });
+
+
+        menu.findItem(R.id.action_configure_notifications).setOnMenuItemClickListener(
+                new MenuItem.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        activity.startActivity(CustomNotifySettings.createIntent(activity, account, user));
                         return true;
                     }
                 });
@@ -375,6 +319,17 @@ public class ContextMenuHelper {
                     }
                 });
         }
+
+        if (!group.equals(GroupManager.NO_GROUP)) {
+            menu.add(R.string.configure_notifications).setOnMenuItemClickListener(
+                new MenuItem.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        activity.startActivity(CustomNotifySettings.createIntent(activity, account, group));
+                        return true;
+                    }
+                });
+        }
     }
 
     public static void createAccountContextMenu( final Activity activity, final ContactListPresenter presenter,
@@ -409,6 +364,14 @@ public class ContextMenuHelper {
 
         menu.findItem(R.id.action_edit_account_status).setIntent(StatusEditActivity.createIntent(activity, account));
         menu.findItem(R.id.action_edit_account).setIntent(AccountActivity.createIntent(activity, account));
+        menu.add(R.string.configure_notifications).setOnMenuItemClickListener(
+                new MenuItem.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        activity.startActivity(CustomNotifySettings.createIntent(activity, account));
+                        return true;
+                    }
+                });
 
         if (state.isConnected()) {
             menu.findItem(R.id.action_add_contact).setVisible(true).setIntent(ContactAddActivity.createIntent(activity, account));
@@ -444,5 +407,15 @@ public class ContextMenuHelper {
                                 dialog.dismiss();
                             }
                         }).create();
+    }
+
+    private static void showSnoozeDialog(AppCompatActivity activity, AbstractChat chat, final ContactListPresenter presenter) {
+        SnoozeDialog dialog = SnoozeDialog.newInstance(chat, new SnoozeDialog.OnSnoozeListener() {
+            @Override
+            public void onSnoozed() {
+                presenter.updateContactList();
+            }
+        });
+        dialog.show(activity.getSupportFragmentManager(), "snooze_fragment");
     }
 }

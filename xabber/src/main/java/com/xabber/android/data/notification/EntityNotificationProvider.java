@@ -24,6 +24,10 @@ public class EntityNotificationProvider<T extends EntityNotificationItem>
         super(icon);
     }
 
+    public EntityNotificationProvider(int icon, String channelID) {
+        super(icon, channelID);
+    }
+
     @Override
     public T get(AccountJid account) {
         throw new UnsupportedOperationException();

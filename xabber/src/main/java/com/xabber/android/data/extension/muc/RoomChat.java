@@ -58,6 +58,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import io.realm.Realm;
 import io.realm.RealmList;
@@ -190,14 +191,23 @@ public class RoomChat extends AbstractChat {
     protected MessageItem createNewMessageItem(String text) {
         return createMessageItem(nickname, text, null, null, false,
                 false, false, false, UUID.randomUUID().toString(), null,
-        null, null, account.getFullJid().toString(), null, false);
+        null, null, account.getFullJid().toString(), null, true);
     }
 
     @Override
     public boolean notifyAboutMessage() {
+        int currentTime = (int) (System.currentTimeMillis() / 1000L);
         switch (notificationState.getMode()) {
             case enabled: return true;
             case disabled: return false;
+            case snooze15m:
+                return currentTime > notificationState.getTimestamp() + TimeUnit.MINUTES.toSeconds(15);
+            case snooze1h:
+                return currentTime > notificationState.getTimestamp() + TimeUnit.HOURS.toSeconds(1);
+            case snooze2h:
+                return currentTime > notificationState.getTimestamp() + TimeUnit.HOURS.toSeconds(2);
+            case snooze1d:
+                return currentTime > notificationState.getTimestamp() + TimeUnit.DAYS.toSeconds(1);
             default: return SettingsManager.eventsOnMuc();
         }
     }
@@ -266,13 +276,14 @@ public class RoomChat extends AbstractChat {
 
                 // forward comment
                 String forwardComment = ForwardManager.parseForwardComment(stanza);
-                if (forwardComment != null && !forwardComment.isEmpty())
-                    text = forwardComment;
+                if (forwardComment != null) text = forwardComment;
+
+                String originalFrom = stanza.getFrom().toString();
 
                 String messageUId = getMessageIdIfInHistory(stanzaId, text);
                 if (messageUId != null) {
                     if (isSelf(resource)) {
-                        markMessageAsDelivered(messageUId);
+                        markMessageAsDelivered(messageUId, originalFrom);
                     }
                     return true;
                 }
@@ -288,7 +299,6 @@ public class RoomChat extends AbstractChat {
                 String uid = UUID.randomUUID().toString();
                 RealmList<ForwardId> forwardIds = parseForwardedMessage(true, stanza, uid);
                 String originalStanza = stanza.toXML().toString();
-                String originalFrom = stanza.getFrom().toString();
 
                 // create message with file-attachments
                 if (attachments.size() > 0)
@@ -401,7 +411,7 @@ public class RoomChat extends AbstractChat {
         return uid;
     }
 
-        private void markMessageAsDelivered(final String messageUId) {
+        private void markMessageAsDelivered(final String messageUId, final String originalFrom) {
         Application.getInstance().runInBackground(new Runnable() {
             @Override
             public void run() {
@@ -412,6 +422,7 @@ public class RoomChat extends AbstractChat {
                         MessageItem message = realm.where(MessageItem.class)
                                 .equalTo(MessageItem.Fields.UNIQUE_ID, messageUId).findFirst();
                         message.setDelivered(true);
+                        message.setOriginalFrom(originalFrom);
                     }
                 });
             }

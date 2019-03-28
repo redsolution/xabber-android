@@ -45,6 +45,9 @@
     <!--<item android:id="@+id/action_unarchive_chat"-->
         <!--android:title="@string/unarchive_chat" />-->
 
+    <item android:id="@+id/action_configure_notifications"
+        android:title="@string/configure_notifications" />
+
     <item android:id="@+id/action_mute_chat"
         android:title="@string/mute_chat" />
 

@@ -76,7 +76,7 @@ public class CrowdfundingChatVO extends AbstractFlexibleItem<CrowdfundingChatVO.
         if (unreadCount > 0) {
             holder.tvUnreadCount.setText(String.valueOf(unreadCount));
             holder.tvUnreadCount.setVisibility(View.VISIBLE);
-        } else holder.tvUnreadCount.setVisibility(View.INVISIBLE);
+        } else holder.tvUnreadCount.setVisibility(View.GONE);
 
         /** set up MESSAGE TEXT */
         if (messageText != null && !messageText.isEmpty()) {

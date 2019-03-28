@@ -9,6 +9,8 @@ import com.xabber.android.data.database.realm.ChatDataRealm;
 import com.xabber.android.data.database.realm.CrowdfundingMessage;
 import com.xabber.android.data.database.realm.DiscoveryInfoCache;
 import com.xabber.android.data.database.realm.EmailRealm;
+import com.xabber.android.data.database.realm.NotifChatRealm;
+import com.xabber.android.data.database.realm.NotifMessageRealm;
 import com.xabber.android.data.database.realm.NotificationStateRealm;
 import com.xabber.android.data.database.realm.PatreonGoalRealm;
 import com.xabber.android.data.database.realm.PatreonRealm;
@@ -17,7 +19,9 @@ import com.xabber.android.data.database.realm.SyncStateRealm;
 import com.xabber.android.data.database.realm.XMPPUserRealm;
 import com.xabber.android.data.database.realm.XabberAccountRealm;
 import com.xabber.android.data.database.sqlite.AccountTable;
+import com.xabber.android.data.extension.httpfileupload.UploadServer;
 import com.xabber.android.data.log.LogManager;
+import com.xabber.android.data.notification.custom_notification.NotifyPrefsRealm;
 
 import io.realm.DynamicRealm;
 import io.realm.FieldAttribute;
@@ -30,7 +34,7 @@ import io.realm.annotations.RealmModule;
 
 public class RealmManager {
     private static final String REALM_DATABASE_NAME = "realm_database.realm";
-    private static final int REALM_DATABASE_VERSION = 18;
+    private static final int REALM_DATABASE_VERSION = 20;
     private static final String LOG_TAG = RealmManager.class.getSimpleName();
     private final RealmConfiguration realmConfiguration;
 
@@ -64,7 +68,8 @@ public class RealmManager {
     @RealmModule(classes = {DiscoveryInfoCache.class, AccountRealm.class, XabberAccountRealm.class,
             XMPPUserRealm.class, EmailRealm.class, SocialBindingRealm.class, SyncStateRealm.class,
             PatreonGoalRealm.class, PatreonRealm.class, ChatDataRealm.class, NotificationStateRealm.class,
-            CrowdfundingMessage.class})
+            CrowdfundingMessage.class, NotifChatRealm.class, NotifMessageRealm.class, NotifyPrefsRealm.class,
+            UploadServer.class})
     static class RealmDatabaseModule {
     }
 
@@ -257,6 +262,50 @@ public class RealmManager {
                                     .addField("authorJid", String.class)
                                     .addField("authorNameRu", String.class)
                                     .addField("authorNameEn", String.class);
+
+                            oldVersion++;
+                        }
+
+                        if (oldVersion == 18) {
+                            schema.create(NotifMessageRealm.class.getSimpleName())
+                                    .addField(NotifMessageRealm.Fields.ID, String.class, FieldAttribute.PRIMARY_KEY, FieldAttribute.REQUIRED)
+                                    .addField(NotifMessageRealm.Fields.AUTHOR, String.class)
+                                    .addField(NotifMessageRealm.Fields.TEXT, String.class)
+                                    .addField(NotifMessageRealm.Fields.TIMESTAMP, long.class);
+
+                            schema.create(NotifChatRealm.class.getSimpleName())
+                                    .addField(NotifChatRealm.Fields.ID, String.class, FieldAttribute.PRIMARY_KEY, FieldAttribute.REQUIRED)
+                                    .addField(NotifChatRealm.Fields.ACCOUNT, String.class)
+                                    .addField(NotifChatRealm.Fields.USER, String.class)
+                                    .addField(NotifChatRealm.Fields.NOTIFICATION_ID, int.class)
+                                    .addField(NotifChatRealm.Fields.CHAT_TITLE, String.class)
+                                    .addField(NotifChatRealm.Fields.IS_GROUP_CHAT, boolean.class)
+                                    .addRealmListField(NotifChatRealm.Fields.MESSAGES, schema.get(NotifMessageRealm.class.getSimpleName()));
+
+                            oldVersion++;
+                        }
+
+                        if (oldVersion == 19) {
+                            schema.create(NotifyPrefsRealm.class.getSimpleName())
+                                    .addField(NotifyPrefsRealm.Fields.ID, String.class, FieldAttribute.PRIMARY_KEY, FieldAttribute.REQUIRED)
+                                    .addField(NotifyPrefsRealm.Fields.ACCOUNT, String.class)
+                                    .addField(NotifyPrefsRealm.Fields.USER, String.class)
+                                    .addField(NotifyPrefsRealm.Fields.CHANNEL_ID, String.class)
+                                    .addField(NotifyPrefsRealm.Fields.GROUP, String.class)
+                                    .addField(NotifyPrefsRealm.Fields.PHRASE_ID, Long.class)
+                                    .addField(NotifyPrefsRealm.Fields.SOUND, String.class)
+                                    .addField(NotifyPrefsRealm.Fields.TYPE, String.class)
+                                    .addField(NotifyPrefsRealm.Fields.VIBRO, String.class)
+                                    .addField(NotifyPrefsRealm.Fields.SHOW_PREVIEW, boolean.class);
+
+                            oldVersion++;
+                        }
+
+                        if (oldVersion == 20) {
+                            schema.create(UploadServer.class.getSimpleName())
+                                    .addField(UploadServer.Fields.ID, String.class, FieldAttribute.PRIMARY_KEY, FieldAttribute.REQUIRED)
+                                    .addField(UploadServer.Fields.ACCOUNT, String.class)
+                                    .addField(UploadServer.Fields.SERVER, String.class);
 
                             oldVersion++;
                         }
