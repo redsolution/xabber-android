@@ -437,33 +437,16 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         return messageItem;
     }
 
-    public String newFileMessage(final List<File> files) {
+    public String newFileMessage(final List<File> files, final List<Uri> uris) {
         Realm realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
-
         final String messageId = UUID.randomUUID().toString();
 
         realm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-
-                RealmList<Attachment> attachments = new RealmList<>();
-                for (File file : files) {
-                    Attachment attachment = new Attachment();
-                    attachment.setFilePath(file.getPath());
-                    attachment.setFileSize(file.length());
-                    attachment.setTitle(file.getName());
-                    attachment.setIsImage(FileManager.fileIsImage(file));
-                    attachment.setMimeType(HttpFileUploadManager.getMimeType(file.getPath()));
-                    attachment.setDuration((long) 0);
-
-                    if (attachment.isImage()) {
-                        HttpFileUploadManager.ImageSize imageSize =
-                                HttpFileUploadManager.getImageSizes(file.getPath());
-                        attachment.setImageHeight(imageSize.getHeight());
-                        attachment.setImageWidth(imageSize.getWidth());
-                    }
-                    attachments.add(attachment);
-                }
+                RealmList<Attachment> attachments;
+                if (files != null) attachments = attachmentsFromFiles(files);
+                else attachments = attachmentsFromUris(uris);
 
                 MessageItem messageItem = new MessageItem(messageId);
                 messageItem.setAccount(account);
@@ -484,42 +467,39 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         return messageId;
     }
 
-    public String newFileMessageFromUris(final List<Uri> uris) {
-        Realm realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
+    public RealmList<Attachment> attachmentsFromFiles(List<File> files) {
+        RealmList<Attachment> attachments = new RealmList<>();
+        for (File file : files) {
+            Attachment attachment = new Attachment();
+            attachment.setFilePath(file.getPath());
+            attachment.setFileSize(file.length());
+            attachment.setTitle(file.getName());
+            attachment.setIsImage(FileManager.fileIsImage(file));
+            attachment.setMimeType(HttpFileUploadManager.getMimeType(file.getPath()));
+            attachment.setDuration((long) 0);
 
-        final String messageId = UUID.randomUUID().toString();
-
-        realm.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-
-                RealmList<Attachment> attachments = new RealmList<>();
-                for (Uri uri : uris) {
-                    Attachment attachment = new Attachment();
-                    attachment.setTitle(UriUtils.getFullFileName(uri));
-                    attachment.setIsImage(UriUtils.uriIsImage(uri));
-                    attachment.setMimeType(UriUtils.getMimeType(uri));
-                    attachment.setDuration((long) 0);
-                    attachments.add(attachment);
-                }
-
-                MessageItem messageItem = new MessageItem(messageId);
-                messageItem.setAccount(account);
-                messageItem.setUser(user);
-                messageItem.setText("Sending files..");
-                messageItem.setAttachments(attachments);
-                messageItem.setTimestamp(System.currentTimeMillis());
-                messageItem.setRead(true);
-                messageItem.setSent(true);
-                messageItem.setError(false);
-                messageItem.setIncoming(false);
-                messageItem.setInProgress(true);
-                messageItem.setStanzaId(UUID.randomUUID().toString());
-                realm.copyToRealm(messageItem);
+            if (attachment.isImage()) {
+                HttpFileUploadManager.ImageSize imageSize =
+                        HttpFileUploadManager.getImageSizes(file.getPath());
+                attachment.setImageHeight(imageSize.getHeight());
+                attachment.setImageWidth(imageSize.getWidth());
             }
-        });
+            attachments.add(attachment);
+        }
+        return attachments;
+    }
 
-        return messageId;
+    public RealmList<Attachment> attachmentsFromUris(List<Uri> uris) {
+        RealmList<Attachment> attachments = new RealmList<>();
+        for (Uri uri : uris) {
+            Attachment attachment = new Attachment();
+            attachment.setTitle(UriUtils.getFullFileName(uri));
+            attachment.setIsImage(UriUtils.uriIsImage(uri));
+            attachment.setMimeType(UriUtils.getMimeType(uri));
+            attachment.setDuration((long) 0);
+            attachments.add(attachment);
+        }
+        return attachments;
     }
 
     /**

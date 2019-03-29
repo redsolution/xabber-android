@@ -277,15 +277,14 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
 
     public String createFileMessage(AccountJid account, UserJid user, List<File> files) {
         AbstractChat chat = getOrCreateChat(account, user);
-
         chat.openChat();
-        return chat.newFileMessage(files);
+        return chat.newFileMessage(files, null);
     }
 
     public String createFileMessageFromUris(AccountJid account, UserJid user, List<Uri> uris) {
         AbstractChat chat = getOrCreateChat(account, user);
         chat.openChat();
-        return chat.newFileMessageFromUris(uris);
+        return chat.newFileMessage(null, uris);
     }
 
     public void updateFileMessage(AccountJid account, UserJid user, final String messageId,
