@@ -97,6 +97,8 @@ public class ChatMarkerManager implements OnPacketListener {
     }
 
     public void sendDisplayed(MessageItem messageItem) {
+        if (messageItem.getStanzaId() == null || messageItem.getStanzaId().isEmpty()) return;
+
         Message displayed = new Message(messageItem.getUser().getJid());
         displayed.addExtension(new ChatMarkersElements.DisplayedExtension(messageItem.getStanzaId()));
         displayed.setType(Message.Type.chat);
@@ -155,6 +157,8 @@ public class ChatMarkerManager implements OnPacketListener {
     }
 
     private void sendReceived(Message message, AccountJid account) {
+        if (message.getStanzaId() == null || message.getStanzaId().isEmpty()) return;
+
         Message received = new Message(message.getFrom());
         received.addExtension(new ChatMarkersElements.ReceivedExtension(message.getStanzaId()));
         received.setThread(message.getThread());
