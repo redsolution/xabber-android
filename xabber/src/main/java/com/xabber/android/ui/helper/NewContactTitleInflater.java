@@ -7,6 +7,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.xabber.android.R;
+import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.cs.ChatStateManager;
 import com.xabber.android.data.message.NotificationState;
@@ -84,12 +85,12 @@ public class NewContactTitleInflater {
         } else if (chatState == ChatState.paused) {
             statusText = context.getString(R.string.chat_state_paused);
         } else {
-            statusText = abstractContact.getStatusText().trim();
-            if (statusText.toString().isEmpty()) {
+            if (StatusMode.unavailable == abstractContact.getStatusMode())
                 statusText = getLastActivity(abstractContact);
-                if (statusText.length() <= 0)
-                    statusText = context.getString(abstractContact.getStatusMode().getStringID());
-            }
+            else statusText = abstractContact.getStatusText().trim();
+
+            if (statusText.toString().isEmpty())
+                statusText = context.getString(abstractContact.getStatusMode().getStringID());
         }
         statusTextView.setText(statusText);
     }
