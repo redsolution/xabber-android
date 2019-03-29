@@ -343,6 +343,8 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
             switch (action) {
                 case ContactListActivity.ACTION_ROOM_INVITE:
                 case Intent.ACTION_SEND:
+                case Intent.ACTION_SEND_MULTIPLE:
+                case ChatActivity.ACTION_FORWARD:
                 case Intent.ACTION_CREATE_SHORTCUT:
                     if (Intent.ACTION_SEND.equals(action)) {
                         sendText = getIntent().getStringExtra(Intent.EXTRA_TEXT);
