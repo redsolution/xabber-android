@@ -29,7 +29,7 @@ Please don't create pull requests with translation fixes as any changes will be 
 
 ## Donate
 
-If you want to support Xabber development you can buy [Xabber VIP](https://play.google.com/store/apps/details?id=com.xabber.androidvip) (it is the same as regular stable version of Xabber except for gold coin on logo) or send payment via Paypal or Bitcoin `1Dvexs9YQ2bab1ZNk2eSuvHxyZ2QUedzug`
+If you want to support Xabber development you can buy [Xabber VIP](https://play.google.com/store/apps/details?id=com.xabber.androidvip) (it is the same as regular stable version of Xabber except for gold coin on logo) or send payment via Paypal or Bitcoin `1ACa9FW2ajhphivEaWqn2z7Z7nJWPBtxAa`
 
 [![Donate with PayPal](https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=G9AYTUSXCWRVL)
 
