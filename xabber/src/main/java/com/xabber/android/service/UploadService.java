@@ -17,6 +17,7 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.extension.file.FileUtils;
+import com.xabber.android.data.extension.file.UriUtils;
 import com.xabber.android.data.extension.httpfileupload.ImageCompressor;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.MessageManager;
@@ -115,7 +116,10 @@ public class UploadService extends IntentService {
         }
 
         // create message with progress
-        String messageId = MessageManager.getInstance().createFileMessage(account, user, files);
+        String messageId;
+        if (remoteFiles.isEmpty())
+            messageId = MessageManager.getInstance().createFileMessage(account, user, files);
+        else messageId = MessageManager.getInstance().createFileMessageFromUris(account, user, remoteFiles);
 
         // create dir
         File directory = new File(getDownloadDirPath());
@@ -127,29 +131,30 @@ public class UploadService extends IntentService {
 
         // get files from uri's
         List<File> copiedFiles = new ArrayList<>();
-        for (Uri uri : remoteFiles) {
-            if (needStop) {
-                stopWork(messageId);
-                return;
-            }
+        if (!remoteFiles.isEmpty()) {
+            for (Uri uri : remoteFiles) {
+                if (needStop) {
+                    stopWork(messageId);
+                    return;
+                }
 
-            // copy file to local storage if need
-            try {
-                copiedFiles.add(new File(copyFileToLocalStorage(uri)));
-            } catch (IOException e) {
-                publishError(messageId, "Cannot get file: " + e.toString());
+                // copy file to local storage if need
+                try {
+                    copiedFiles.add(new File(copyFileToLocalStorage(uri)));
+                } catch (IOException e) {
+                    publishError(messageId, "Cannot get file: " + e.toString());
+                }
+                publishProgress(messageId, copiedFiles.size(), remoteFiles.size());
             }
-            publishProgress(messageId, copiedFiles.size(), remoteFiles.size());
         }
 
         // add attachments to message
-        MessageManager.getInstance().updateMessageWithNewAttachments(messageId, copiedFiles);
+        files.addAll(copiedFiles);
+        MessageManager.getInstance().updateMessageWithNewAttachments(messageId, files);
 
         // startWork for upload files
         List<String> filePaths = new ArrayList<>();
         for (File file : files)
-            filePaths.add(file.getPath());
-        for (File file : copiedFiles)
             filePaths.add(file.getPath());
         startWork(account, user, filePaths, uploadServerUrl, messageId);
     }
@@ -341,11 +346,7 @@ public class UploadService extends IntentService {
     }
 
     private String copyFileToLocalStorage(Uri uri) throws IOException {
-        String extension = getExtensionFromUri(uri);
-        String name = getFileName(uri);
-        if (name == null) name = UUID.randomUUID().toString();
-        else name = name.replace(".", "");
-        String fileName = name + "." + extension;
+        String fileName = UriUtils.getFullFileName(uri);
         File file = new File(getDownloadDirPath(),  fileName);
 
         OutputStream os = null;
@@ -370,32 +371,5 @@ public class UploadService extends IntentService {
             is.close();
         }
         return file.getPath();
-    }
-
-    private String getExtensionFromUri(Uri uri) {
-        String mimeType = getContentResolver().getType(uri);
-        return MimeTypeMap.getSingleton().getExtensionFromMimeType(mimeType);
-    }
-
-    private String getFileName(Uri uri) {
-        String result = null;
-        if (uri.getScheme().equals("content")) {
-            Cursor cursor = getContentResolver().query(uri, null, null, null, null);
-            try {
-                if (cursor != null && cursor.moveToFirst()) {
-                    result = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
-                }
-            } finally {
-                cursor.close();
-            }
-        }
-        if (result == null) {
-            result = uri.getPath();
-            int cut = result.lastIndexOf('/');
-            if (cut != -1) {
-                result = result.substring(cut + 1);
-            }
-        }
-        return FilenameUtils.getBaseName(result);
     }
 }

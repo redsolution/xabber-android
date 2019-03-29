@@ -14,6 +14,7 @@
  */
 package com.xabber.android.data.message;
 
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -35,6 +36,7 @@ import com.xabber.android.data.extension.carbons.CarbonManager;
 import com.xabber.android.data.extension.chat_markers.BackpressureMessageReader;
 import com.xabber.android.data.extension.cs.ChatStateManager;
 import com.xabber.android.data.extension.file.FileManager;
+import com.xabber.android.data.extension.file.UriUtils;
 import com.xabber.android.data.extension.forward.ForwardComment;
 import com.xabber.android.data.extension.httpfileupload.ExtendedFormField;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
@@ -460,6 +462,44 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
                         attachment.setImageHeight(imageSize.getHeight());
                         attachment.setImageWidth(imageSize.getWidth());
                     }
+                    attachments.add(attachment);
+                }
+
+                MessageItem messageItem = new MessageItem(messageId);
+                messageItem.setAccount(account);
+                messageItem.setUser(user);
+                messageItem.setText("Sending files..");
+                messageItem.setAttachments(attachments);
+                messageItem.setTimestamp(System.currentTimeMillis());
+                messageItem.setRead(true);
+                messageItem.setSent(true);
+                messageItem.setError(false);
+                messageItem.setIncoming(false);
+                messageItem.setInProgress(true);
+                messageItem.setStanzaId(UUID.randomUUID().toString());
+                realm.copyToRealm(messageItem);
+            }
+        });
+
+        return messageId;
+    }
+
+    public String newFileMessageFromUris(final List<Uri> uris) {
+        Realm realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
+
+        final String messageId = UUID.randomUUID().toString();
+
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+
+                RealmList<Attachment> attachments = new RealmList<>();
+                for (Uri uri : uris) {
+                    Attachment attachment = new Attachment();
+                    attachment.setTitle(UriUtils.getFullFileName(uri));
+                    attachment.setIsImage(UriUtils.uriIsImage(uri));
+                    attachment.setMimeType(UriUtils.getMimeType(uri));
+                    attachment.setDuration((long) 0);
                     attachments.add(attachment);
                 }
 

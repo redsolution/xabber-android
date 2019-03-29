@@ -14,6 +14,7 @@
  */
 package com.xabber.android.data.message;
 
+import android.net.Uri;
 import android.os.Environment;
 import android.os.Looper;
 import android.support.annotation.Nullable;
@@ -281,6 +282,12 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
         return chat.newFileMessage(files);
     }
 
+    public String createFileMessageFromUris(AccountJid account, UserJid user, List<Uri> uris) {
+        AbstractChat chat = getOrCreateChat(account, user);
+        chat.openChat();
+        return chat.newFileMessageFromUris(uris);
+    }
+
     public void updateFileMessage(AccountJid account, UserJid user, final String messageId,
                                   final HashMap<String, String> urls, final List<String> notUploadedFilesUrls) {
         final AbstractChat chat = getChat(account, user);
@@ -344,6 +351,10 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
 
                 if (messageItem != null) {
                     RealmList<Attachment> attachments = messageItem.getAttachments();
+
+                    // remove temporary attachments created from uri
+                    // to replace it with attachments created from files
+                    attachments.deleteAllFromRealm();
 
                     for (File file : files) {
                         Attachment attachment = new Attachment();
