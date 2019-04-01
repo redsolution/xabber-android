@@ -877,8 +877,21 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         updateSendButtonSecurityLevel();
     }
 
+    private void onScrollDownClick() {
+        AbstractChat chat = getChat();
+        if (chat != null) {
+            int unread = chat.getUnreadMessageCount();
+            int lastVisiblePosition = layoutManager.findLastVisibleItemPosition();
+            if (unread == 0 || lastVisiblePosition + 2 >= chatMessageAdapter.getItemCount() - unread) {
+                // scroll down
+                scrollDown();
+
+                // scroll to unread
+            } else scrollToFirstUnread(unread);
+        }
+    }
+
     private void scrollDown() {
-        LogManager.i(this, "scrollDown");
         realmRecyclerView.scrollToPosition(chatMessageAdapter.getItemCount() - 1);
     }
 
@@ -1080,10 +1093,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
             showJoinButtonIfNeed();
         }
         if (v.getId() == R.id.btnScrollDown) {
-            AbstractChat chat = getChat();
-            if (chat != null && chat.getUnreadMessageCount() > 0)
-                scrollToFirstUnread(chat.getUnreadMessageCount());
-            else scrollDown();
+            onScrollDownClick();
         }
     }
 
