@@ -85,11 +85,9 @@ public class MessageNotificationCreator {
                     .setContentText(createMessageLine(chat.getLastMessage(), chat.isGroupChat(), showText))
                     .setStyle(createInboxStyle(chat, showText))
                     .setAutoCancel(true);
-            if (alert && !inGracePeriod(chat)) addEffects(builder, chat.getLastMessage().getMessageText().toString(), chat, context);
-
         }
 
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O && alert)
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O && alert && !inGracePeriod(chat))
             addEffects(builder, chat.getLastMessage().getMessageText().toString(), chat, context);
 
         builder.addAction(createMarkAsReadAction(chat.getNotificationId()))
