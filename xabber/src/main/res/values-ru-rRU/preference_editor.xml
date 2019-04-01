@@ -46,6 +46,7 @@
     <string name="interface_smiles_none">Отключить графические смайлы</string>
     <string name="preference_connection">Настройки подключения\nНастройки вариантов подключения</string>
     <string name="preference_contacts">Список контактов\nНастройки отображения списка контактов</string>
+    <string name="preference_chat_summary">Настройки отображения чата</string>
     <string name="preference_debug">Настройки отладки\nВыберите этот пункт, если хотите помочь разработчикам сделать Xabber ещё лучше</string>
     <string name="preference_editor">Настройки</string>
     <string name="preference_events">Оповещения\nНастройки вариантов оповещения</string>
@@ -142,7 +143,7 @@
     <string name="events_reset_summary">Все настройки уведомлений будут установлены в значения по умолчанию</string>
     <string name="events_reset_alert">Сбросить настройки уведомлений?</string>
     <string name="events_reset_toast">Настройки были сброшены</string>
-    <string name="events_remove_all_custom_title">Удалить все спецтальные настройки уведомлений</string>
+    <string name="events_remove_all_custom_title">Удалить все специальные настройки уведомлений</string>
     <string name="events_remove_all_custom_summary">Все специальные настройки уведомлений (для контактов, групп и аккаунтов) будут удалены</string>
 
     <string name="events_ringtone_not_available">Мелодия не доступна</string>

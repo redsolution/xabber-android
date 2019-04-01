@@ -1192,4 +1192,20 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
         }
     }
 
+    public void startGracePeriod(AccountJid accountJid) {
+        AccountItem accountItem = getAccount(accountJid);
+        if (accountItem != null) accountItem.startGracePeriod();
+    }
+
+    public void stopGracePeriod(AccountJid accountJid) {
+        AccountItem accountItem = getAccount(accountJid);
+        if (accountItem != null) accountItem.stopGracePeriod();
+    }
+
+    public void stopGracePeriod() {
+        for (AccountJid accountJid : AccountManager.getInstance().getEnabledAccounts()) {
+            stopGracePeriod(accountJid);
+        }
+    }
+
 }

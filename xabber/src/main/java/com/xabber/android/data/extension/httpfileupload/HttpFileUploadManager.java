@@ -341,10 +341,9 @@ public class HttpFileUploadManager implements OnLoadListener, OnAccountRemovedLi
                 Realm realm = RealmManager.getInstance().getNewRealm();
                 UploadServer item = realm.where(UploadServer.class)
                         .equalTo(UploadServer.Fields.ACCOUNT, account.toString()).findFirst();
+                realm.beginTransaction();
                 if (item == null) item = new UploadServer(account, server);
                 else item.setServer(server);
-
-                realm.beginTransaction();
                 realm.copyToRealmOrUpdate(item);
                 realm.commitTransaction();
             }

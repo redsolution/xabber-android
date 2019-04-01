@@ -3,10 +3,12 @@ package com.xabber.android.data.notification;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.os.Build;
+import android.os.Handler;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.OnLoadListener;
+import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.database.RealmManager;
 import com.xabber.android.data.database.messagerealm.Attachment;
 import com.xabber.android.data.database.messagerealm.MessageItem;
@@ -25,8 +27,6 @@ import com.xabber.android.data.roster.RosterManager;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.UUID;
 
 import io.realm.Realm;
@@ -114,7 +114,8 @@ public class MessageNotificationManager implements OnLoadListener {
             AbstractChat chat = MessageManager.getInstance().getChat(
                     chatNotif.getAccountJid(), chatNotif.getUserJid());
             if (chat != null) {
-                chat.resetUnreadMessageCount();
+                AccountManager.getInstance().stopGracePeriod(chat.getAccount());
+                chat.markAsReadAll(true);
                 callUiUpdate();
             }
         }
@@ -420,7 +421,7 @@ public class MessageNotificationManager implements OnLoadListener {
         private CharSequence chatTitle;
         private boolean isGroupChat;
         private List<Message> messages = new ArrayList<>();
-        private Timer removeTimer;
+        private Handler removeTimer;
 
         public Chat(AccountJid accountJid, UserJid userJid, int notificationId,
                     CharSequence chatTitle, boolean isGroupChat) {
@@ -487,23 +488,28 @@ public class MessageNotificationManager implements OnLoadListener {
         }
 
         public void startRemoveTimer() {
-            stopRemoveTimer();
-            removeTimer = new Timer();
-            removeTimer.schedule(new TimerTask() {
+            Application.getInstance().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    Application.getInstance().runOnUiThread(new Runnable() {
+                    stopRemoveTimer();
+                    removeTimer = new Handler();
+                    removeTimer.postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            removeChat(notificationId);
+                            Application.getInstance().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    removeChat(notificationId);
+                                }
+                            });
                         }
-                    });
+                    }, 500);
                 }
-            }, 500);
+            });
         }
 
         public void stopRemoveTimer() {
-            if (removeTimer != null) removeTimer.cancel();
+            if (removeTimer != null) removeTimer.removeCallbacksAndMessages(null);
         }
 
     }

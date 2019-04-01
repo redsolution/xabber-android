@@ -14,6 +14,7 @@
  */
 package com.xabber.android.data.message;
 
+import android.net.Uri;
 import android.os.Environment;
 import android.os.Looper;
 import android.support.annotation.Nullable;
@@ -59,7 +60,6 @@ import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.utils.StringUtils;
 
-import org.greenrobot.eventbus.EventBus;
 import org.jivesoftware.smack.packet.ExtensionElement;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Stanza;
@@ -202,7 +202,6 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
         ChatData chatData = ChatManager.getInstance().loadChatDataFromRealm(chat);
         if (chatData != null) {
             chat.setLastPosition(chatData.getLastPosition());
-            chat.setUnreadMessageCount(chatData.getUnreadCount());
             chat.setArchived(chatData.isArchived(), false);
             chat.setNotificationState(chatData.getNotificationState(), false);
         }
@@ -215,7 +214,6 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
         ChatData chatData = ChatManager.getInstance().loadChatDataFromRealm(chat);
         if (chatData != null) {
             chat.setLastPosition(chatData.getLastPosition());
-            chat.setUnreadMessageCount(chatData.getUnreadCount());
             chat.setArchived(chatData.isArchived(), false);
             chat.setNotificationState(chatData.getNotificationState(), false);
         }
@@ -256,30 +254,37 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
     public void sendMessage(AccountJid account, UserJid user, String text) {
         AbstractChat chat = getOrCreateChat(account, user);
         sendMessage(text, chat);
+
+        // stop grace period
+        AccountManager.getInstance().stopGracePeriod(account);
     }
 
     private void sendMessage(final String text, final AbstractChat chat) {
-        final long startTime = System.currentTimeMillis();
-
         MessageDatabaseManager.getInstance().getRealmUiThread()
                 .executeTransactionAsync(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
                 MessageItem newMessageItem = chat.createNewMessageItem(text);
                 realm.copyToRealm(newMessageItem);
-                LogManager.d("REALM", Thread.currentThread().getName()
-                        + " save message before sending: " + (System.currentTimeMillis() - startTime));
                 if (chat.canSendMessage())
                     chat.sendMessages();
             }
         });
+
+        // mark incoming messages as read
+        chat.markAsReadAll(true);
     }
 
     public String createFileMessage(AccountJid account, UserJid user, List<File> files) {
         AbstractChat chat = getOrCreateChat(account, user);
-
         chat.openChat();
-        return chat.newFileMessage(files);
+        return chat.newFileMessage(files, null);
+    }
+
+    public String createFileMessageFromUris(AccountJid account, UserJid user, List<Uri> uris) {
+        AbstractChat chat = getOrCreateChat(account, user);
+        chat.openChat();
+        return chat.newFileMessage(null, uris);
     }
 
     public void updateFileMessage(AccountJid account, UserJid user, final String messageId,
@@ -345,6 +350,10 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
 
                 if (messageItem != null) {
                     RealmList<Attachment> attachments = messageItem.getAttachments();
+
+                    // remove temporary attachments created from uri
+                    // to replace it with attachments created from files
+                    attachments.deleteAllFromRealm();
 
                     for (File file : files) {
                         Attachment attachment = new Attachment();
@@ -511,30 +520,8 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
      */
     public void setVisibleChat(BaseEntity visibleChat) {
         AbstractChat chat = getChat(visibleChat.getAccount(), visibleChat.getUser());
-        if (chat == null) {
+        if (chat == null)
             chat = createChat(visibleChat.getAccount(), visibleChat.getUser());
-        } else {
-            final AccountJid account = chat.getAccount();
-            final UserJid user = chat.getUser();
-
-            MessageDatabaseManager.getInstance()
-                    .getRealmUiThread().executeTransactionAsync(new Realm.Transaction() {
-                @Override
-                public void execute(Realm realm) {
-                    RealmResults<MessageItem> unreadMessages = realm.where(MessageItem.class)
-                            .equalTo(MessageItem.Fields.ACCOUNT, account.toString())
-                            .equalTo(MessageItem.Fields.USER, user.toString())
-                            .equalTo(MessageItem.Fields.READ, false)
-                            .findAll();
-
-                    List<MessageItem> unreadMessagesList = new ArrayList<>(unreadMessages);
-
-                    for (MessageItem messageItem : unreadMessagesList) {
-                        messageItem.setRead(true);
-                    }
-                }
-            });
-        }
         this.visibleChat = chat;
     }
 
@@ -787,37 +774,36 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
 
             final AbstractChat finalChat = chat;
 
-            MessageDatabaseManager.getInstance().getRealmUiThread()
-                    .executeTransactionAsync(new Realm.Transaction() {
-                @Override
-                public void execute(Realm realm) {
-                    String text = body;
-                    String uid = UUID.randomUUID().toString();
-                    RealmList<ForwardId> forwardIds = finalChat.parseForwardedMessage(false, message, uid);
-                    String originalStanza = message.toXML().toString();
-                    String originalFrom = message.getFrom().toString();
-                    String forwardComment = ForwardManager.parseForwardComment(message);
-                    if (forwardComment != null) text = forwardComment;
+            String text = body;
+            String uid = UUID.randomUUID().toString();
+            RealmList<ForwardId> forwardIds = finalChat.parseForwardedMessage(true, message, uid);
+            String originalStanza = message.toXML().toString();
+            String originalFrom = message.getFrom().toString();
+            String forwardComment = ForwardManager.parseForwardComment(message);
+            if (forwardComment != null) text = forwardComment;
 
-                    MessageItem newMessageItem = finalChat.createNewMessageItem(text);
-                    newMessageItem.setStanzaId(message.getStanzaId());
-                    newMessageItem.setSent(true);
-                    newMessageItem.setForwarded(true);
+            MessageItem newMessageItem = finalChat.createNewMessageItem(text);
+            newMessageItem.setStanzaId(message.getStanzaId());
+            newMessageItem.setSent(true);
+            newMessageItem.setForwarded(true);
 
-                    // forwarding
-                    if (forwardIds != null) newMessageItem.setForwardedIds(forwardIds);
-                    newMessageItem.setOriginalStanza(originalStanza);
-                    newMessageItem.setOriginalFrom(originalFrom);
+            // forwarding
+            if (forwardIds != null) newMessageItem.setForwardedIds(forwardIds);
+            newMessageItem.setOriginalStanza(originalStanza);
+            newMessageItem.setOriginalFrom(originalFrom);
 
-                    // attachments
-                    RealmList<Attachment> attachments = HttpFileUploadManager.parseFileMessage(message);
-                    if (attachments.size() > 0)
-                        newMessageItem.setAttachments(attachments);
+            // attachments
+            RealmList<Attachment> attachments = HttpFileUploadManager.parseFileMessage(message);
+            if (attachments.size() > 0)
+                newMessageItem.setAttachments(attachments);
 
-                    realm.copyToRealm(newMessageItem);
-                    EventBus.getDefault().post(new NewMessageEvent());
-                }
-            });
+            BackpressureMessageSaver.getInstance().saveMessageItem(newMessageItem);
+
+            // mark incoming messages as read
+            finalChat.markAsReadAll(false);
+
+            // start grace period
+            AccountManager.getInstance().startGracePeriod(account);
             return;
         }
 

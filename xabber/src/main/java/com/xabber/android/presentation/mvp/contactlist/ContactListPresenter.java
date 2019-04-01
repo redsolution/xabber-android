@@ -23,6 +23,7 @@ import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.ChatContact;
 import com.xabber.android.data.message.CrowdfundingChat;
 import com.xabber.android.data.message.MessageManager;
+import com.xabber.android.data.message.MessageUpdateEvent;
 import com.xabber.android.data.message.NewMessageEvent;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.CrowdfundingContact;
@@ -51,7 +52,6 @@ import com.xabber.android.ui.adapter.contactlist.GroupConfiguration;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-import org.jxmpp.stringprep.XmppStringprepException;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -206,6 +206,11 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onNewMessageEvent(NewMessageEvent event) {
+        updateBackpressure.refreshRequest();
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(MessageUpdateEvent event) {
         updateBackpressure.refreshRequest();
     }
 
@@ -452,6 +457,7 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
             } else view.hidePlaceholder();
             view.updateItems(items);
         }
+        updateUnreadCount();
     }
 
     /**
@@ -465,19 +471,17 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
 
         List<AbstractChat> newChats = new ArrayList<>();
 
-        int unreadMessageCount = 0;
         for (AbstractChat abstractChat : chats) {
             MessageItem lastMessage = abstractChat.getLastMessage();
 
             if (lastMessage != null) {
                 AccountItem accountItem = AccountManager.getInstance().getAccount(abstractChat.getAccount());
                 if (accountItem != null && accountItem.isEnabled()) {
-                    int unread = abstractChat.getUnreadMessageCount();
-                    if (abstractChat.notifyAboutMessage()) unreadMessageCount = unreadMessageCount + unread;
 
                     switch (state) {
                         case unread:
-                            if (!abstractChat.isArchived() && unread > 0) newChats.add(abstractChat);
+                            if (!abstractChat.isArchived() && abstractChat.getUnreadMessageCount() > 0)
+                                newChats.add(abstractChat);
                             break;
                         case archived:
                             if (abstractChat.isArchived()) newChats.add(abstractChat);
@@ -508,9 +512,7 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
                     break;
             }
         }
-        unreadMessageCount += unreadCount;
 
-        EventBus.getDefault().post(new UpdateUnreadCountEvent(unreadMessageCount));
         Collections.sort(newChats, ChatComparator.CHAT_COMPARATOR);
         chatsGroup.setNotEmpty();
 
@@ -650,6 +652,18 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
             else items.add(ChatVO.convert(contacts.get(MAX_RECENT_ITEMS - 1), this));
         }
         return items;
+    }
+
+    public void updateUnreadCount() {
+        int unreadMessageCount = 0;
+
+        for (AbstractChat abstractChat : MessageManager.getInstance().getChatsOfEnabledAccount()) {
+            if (abstractChat.notifyAboutMessage() && !abstractChat.isArchived())
+                unreadMessageCount += abstractChat.getUnreadMessageCount();
+        }
+
+        unreadMessageCount += CrowdfundingManager.getInstance().getUnreadMessageCount();
+        EventBus.getDefault().post(new UpdateUnreadCountEvent(unreadMessageCount));
     }
 
     public enum ChatListState {

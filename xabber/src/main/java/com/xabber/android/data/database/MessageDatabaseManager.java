@@ -19,10 +19,12 @@ import org.jxmpp.stringprep.XmppStringprepException;
 import java.util.Date;
 
 import io.realm.DynamicRealm;
+import io.realm.DynamicRealmObject;
 import io.realm.FieldAttribute;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import io.realm.RealmMigration;
+import io.realm.RealmObjectSchema;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
 import io.realm.RealmSchema;
@@ -31,7 +33,7 @@ import io.realm.annotations.RealmModule;
 
 public class MessageDatabaseManager {
     private static final String REALM_MESSAGE_DATABASE_NAME = "xabber.realm";
-    static final int REALM_MESSAGE_DATABASE_VERSION = 17;
+    static final int REALM_MESSAGE_DATABASE_VERSION = 19;
     private final RealmConfiguration realmConfiguration;
 
     private static MessageDatabaseManager instance;
@@ -297,6 +299,24 @@ public class MessageDatabaseManager {
                                     .addRealmListField(MessageItem.Fields.FORWARDED_IDS,
                                             schema.get(ForwardId.class.getSimpleName()));
 
+                            oldVersion++;
+                        }
+
+                        if (oldVersion == 17) {
+                            schema.get(MessageItem.class.getSimpleName())
+                                    .addField(MessageItem.Fields.DISPLAYED, boolean.class);
+
+                            oldVersion++;
+                        }
+
+                        if (oldVersion == 18) {
+                            schema.get(MessageItem.class.getSimpleName())
+                                .transform(new RealmObjectSchema.Function() {
+                                    @Override
+                                    public void apply(DynamicRealmObject obj) {
+                                        obj.setBoolean(MessageItem.Fields.READ, true);
+                                    }
+                                });
                             oldVersion++;
                         }
 

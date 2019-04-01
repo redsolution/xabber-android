@@ -14,6 +14,7 @@
  */
 package com.xabber.android.data.message;
 
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -32,8 +33,10 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.carbons.CarbonManager;
+import com.xabber.android.data.extension.chat_markers.BackpressureMessageReader;
 import com.xabber.android.data.extension.cs.ChatStateManager;
 import com.xabber.android.data.extension.file.FileManager;
+import com.xabber.android.data.extension.file.UriUtils;
 import com.xabber.android.data.extension.forward.ForwardComment;
 import com.xabber.android.data.extension.httpfileupload.ExtendedFormField;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
@@ -61,13 +64,16 @@ import org.jxmpp.jid.parts.Resourcepart;
 
 import java.io.File;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import io.realm.Realm;
 import io.realm.RealmChangeListener;
 import io.realm.RealmList;
+import io.realm.RealmQuery;
 import io.realm.RealmResults;
 import io.realm.Sort;
 
@@ -102,9 +108,10 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     private String threadId;
 
     private int lastPosition;
-    private int unreadMessageCount;
     private boolean archived;
     protected NotificationState notificationState;
+
+    private Set<String> waitToMarkAsRead = new HashSet<>();
 
     private boolean isPrivateMucChat;
     private boolean isPrivateMucChatAccepted;
@@ -296,7 +303,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
                 originalStanza, parentMessageId, originalFrom, forwardIds, fromMUC, fromMAM);
 
         saveMessageItem(ui, messageItem);
-        EventBus.getDefault().post(new NewMessageEvent());
+        //EventBus.getDefault().post(new NewMessageEvent());
     }
 
     protected void createAndSaveFileMessage(boolean ui, String uid, Resourcepart resource, String text, final ChatAction action,
@@ -310,23 +317,24 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
                 originalStanza, parentMessageId, originalFrom, null, fromMUC, fromMAM);
 
         saveMessageItem(ui, messageItem);
-        EventBus.getDefault().post(new NewMessageEvent());
+        //EventBus.getDefault().post(new NewMessageEvent());
     }
 
     public void saveMessageItem(boolean ui, final MessageItem messageItem) {
-        final long startTime = System.currentTimeMillis();
-        Realm realm;
-        if (ui) realm = MessageDatabaseManager.getInstance().getRealmUiThread();
-        else realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
-
-        realm.executeTransactionAsync(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                realm.copyToRealm(messageItem);
-                LogManager.d("REALM", Thread.currentThread().getName()
-                        + " save message item: " + (System.currentTimeMillis() - startTime));
-            }
-        });
+        if (ui) BackpressureMessageSaver.getInstance().saveMessageItem(messageItem);
+        else {
+            final long startTime = System.currentTimeMillis();
+            Realm realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
+            realm.executeTransactionAsync(new Realm.Transaction() {
+                @Override
+                public void execute(Realm realm) {
+                    realm.copyToRealm(messageItem);
+                    LogManager.d("REALM", Thread.currentThread().getName()
+                            + " save message item: " + (System.currentTimeMillis() - startTime));
+                    EventBus.getDefault().post(new NewMessageEvent());
+                }
+            });
+        }
     }
 
     protected MessageItem createMessageItem(Resourcepart resource, String text, ChatAction action,
@@ -347,7 +355,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
                         RealmList<ForwardId> forwardIds, boolean fromMUC, boolean fromMAM) {
 
         final boolean visible = MessageManager.getInstance().isVisibleChat(this);
-        boolean read = incoming ? visible : true;
+        boolean read = !incoming;
         boolean send = incoming;
         if (action == null && text == null) {
             throw new IllegalArgumentException();
@@ -419,16 +427,8 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         if (notify && notifyAboutMessage() && !visible)
             NotificationManager.getInstance().onMessageNotification(messageItem);
 
-        // unread message count
-        if (!visible && action == null) {
-            if (incoming && !fromMAM) increaseUnreadMessageCount();
-            else resetUnreadMessageCount();
-        }
-
         // remove notifications if get outgoing message with 2 sec delay
-        if (!incoming) {
-            MessageNotificationManager.getInstance().removeChatWithTimer(account, user);
-        }
+        if (!incoming) MessageNotificationManager.getInstance().removeChatWithTimer(account, user);
 
         // when getting new message, unarchive chat if chat not muted
         if (this.notifyAboutMessage())
@@ -437,33 +437,16 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         return messageItem;
     }
 
-    public String newFileMessage(final List<File> files) {
+    public String newFileMessage(final List<File> files, final List<Uri> uris) {
         Realm realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
-
         final String messageId = UUID.randomUUID().toString();
 
         realm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-
-                RealmList<Attachment> attachments = new RealmList<>();
-                for (File file : files) {
-                    Attachment attachment = new Attachment();
-                    attachment.setFilePath(file.getPath());
-                    attachment.setFileSize(file.length());
-                    attachment.setTitle(file.getName());
-                    attachment.setIsImage(FileManager.fileIsImage(file));
-                    attachment.setMimeType(HttpFileUploadManager.getMimeType(file.getPath()));
-                    attachment.setDuration((long) 0);
-
-                    if (attachment.isImage()) {
-                        HttpFileUploadManager.ImageSize imageSize =
-                                HttpFileUploadManager.getImageSizes(file.getPath());
-                        attachment.setImageHeight(imageSize.getHeight());
-                        attachment.setImageWidth(imageSize.getWidth());
-                    }
-                    attachments.add(attachment);
-                }
+                RealmList<Attachment> attachments;
+                if (files != null) attachments = attachmentsFromFiles(files);
+                else attachments = attachmentsFromUris(uris);
 
                 MessageItem messageItem = new MessageItem(messageId);
                 messageItem.setAccount(account);
@@ -482,6 +465,41 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         });
 
         return messageId;
+    }
+
+    public RealmList<Attachment> attachmentsFromFiles(List<File> files) {
+        RealmList<Attachment> attachments = new RealmList<>();
+        for (File file : files) {
+            Attachment attachment = new Attachment();
+            attachment.setFilePath(file.getPath());
+            attachment.setFileSize(file.length());
+            attachment.setTitle(file.getName());
+            attachment.setIsImage(FileManager.fileIsImage(file));
+            attachment.setMimeType(HttpFileUploadManager.getMimeType(file.getPath()));
+            attachment.setDuration((long) 0);
+
+            if (attachment.isImage()) {
+                HttpFileUploadManager.ImageSize imageSize =
+                        HttpFileUploadManager.getImageSizes(file.getPath());
+                attachment.setImageHeight(imageSize.getHeight());
+                attachment.setImageWidth(imageSize.getWidth());
+            }
+            attachments.add(attachment);
+        }
+        return attachments;
+    }
+
+    public RealmList<Attachment> attachmentsFromUris(List<Uri> uris) {
+        RealmList<Attachment> attachments = new RealmList<>();
+        for (Uri uri : uris) {
+            Attachment attachment = new Attachment();
+            attachment.setTitle(UriUtils.getFullFileName(uri));
+            attachment.setIsImage(UriUtils.uriIsImage(uri));
+            attachment.setMimeType(UriUtils.getMimeType(uri));
+            attachment.setDuration((long) 0);
+            attachments.add(attachment);
+        }
+        return attachments;
     }
 
     /**
@@ -787,23 +805,74 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         updateLastMessage();
     }
 
+    /** UNREAD MESSAGES */
+
+    public String getFirstUnreadMessageId() {
+        String id = null;
+        RealmResults<MessageItem> results = getAllUnreadAscending();
+        if (results != null && !results.isEmpty()) {
+            MessageItem firstUnreadMessage = results.first();
+            if (firstUnreadMessage != null)
+                id = firstUnreadMessage.getUniqueId();
+        }
+        return id;
+    }
+
     public int getUnreadMessageCount() {
-        return unreadMessageCount;
+        int unread = ((int) getAllUnreadQuery().count()) - waitToMarkAsRead.size();
+        if (unread < 0) unread = 0;
+        return unread;
     }
 
-    public void increaseUnreadMessageCount() {
-        this.unreadMessageCount++;
-        ChatManager.getInstance().saveOrUpdateChatDataToRealm(this);
+    public void approveRead(List<String> ids) {
+        for (String id : ids) {
+            waitToMarkAsRead.remove(id);
+        }
+        EventBus.getDefault().post(new MessageUpdateEvent(account, user));
     }
 
-    public void resetUnreadMessageCount() {
-        this.unreadMessageCount = 0;
-        ChatManager.getInstance().saveOrUpdateChatDataToRealm(this);
+    public void markAsRead(String messageId, boolean trySendDisplay) {
+        MessageItem message = MessageDatabaseManager.getInstance().getRealmUiThread()
+                .where(MessageItem.class).equalTo(MessageItem.Fields.STANZA_ID, messageId).findFirst();
+        if (message != null) executeRead(message, trySendDisplay);
     }
 
-    public void setUnreadMessageCount(int unreadMessageCount) {
-        this.unreadMessageCount = unreadMessageCount;
+    public void markAsRead(MessageItem messageItem, boolean trySendDisplay) {
+        waitToMarkAsRead.add(messageItem.getUniqueId());
+        executeRead(messageItem, trySendDisplay);
     }
+
+    public void markAsReadAll(boolean trySendDisplay) {
+        RealmResults<MessageItem> results = getAllUnreadAscending();
+        if (results != null && !results.isEmpty()) {
+            for (MessageItem message : results) {
+                waitToMarkAsRead.add(message.getUniqueId());
+            }
+            MessageItem lastMessage = results.last();
+            if (lastMessage != null) executeRead(lastMessage, trySendDisplay);
+        }
+    }
+
+    private void executeRead(MessageItem messageItem, boolean trySendDisplay) {
+        EventBus.getDefault().post(new MessageUpdateEvent(account, user));
+        BackpressureMessageReader.getInstance().markAsRead(messageItem, trySendDisplay);
+    }
+
+    private RealmQuery<MessageItem> getAllUnreadQuery() {
+        return MessageDatabaseManager.getInstance().getRealmUiThread().where(MessageItem.class)
+                .equalTo(MessageItem.Fields.ACCOUNT, account.toString())
+                .equalTo(MessageItem.Fields.USER, user.toString())
+                .isNull(MessageItem.Fields.PARENT_MESSAGE_ID)
+                .isNotNull(MessageItem.Fields.TEXT)
+                .equalTo(MessageItem.Fields.INCOMING, true)
+                .equalTo(MessageItem.Fields.READ, false);
+    }
+
+    private RealmResults<MessageItem> getAllUnreadAscending() {
+        return getAllUnreadQuery().findAllSorted(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
+    }
+
+    /** ^ UNREAD MESSAGES ^ */
 
     public boolean isArchived() {
         return archived;

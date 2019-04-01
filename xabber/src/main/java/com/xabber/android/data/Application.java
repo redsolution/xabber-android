@@ -41,6 +41,7 @@ import com.xabber.android.data.extension.avatar.AvatarStorage;
 import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.capability.CapabilitiesManager;
 import com.xabber.android.data.extension.carbons.CarbonManager;
+import com.xabber.android.data.extension.chat_markers.ChatMarkerManager;
 import com.xabber.android.data.extension.cs.ChatStateManager;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.mam.MamManager;
@@ -376,6 +377,7 @@ public class Application extends android.app.Application {
         addManager(NetworkManager.getInstance());
         addManager(ReconnectionManager.getInstance());
         addManager(ReceiptManager.getInstance());
+        addManager(ChatMarkerManager.getInstance());
         addManager(SSNManager.getInstance());
         addManager(AttentionManager.getInstance());
         addManager(CarbonManager.getInstance());

@@ -108,6 +108,7 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && notificationManager != null) {
             NotificationChannelUtils.createPresistentConnectionChannel(notificationManager);
             NotificationChannelUtils.createEventsChannel(notificationManager);
+            NotificationChannelUtils.createSilentChannel(notificationManager);
         }
 
         handler = new Handler();

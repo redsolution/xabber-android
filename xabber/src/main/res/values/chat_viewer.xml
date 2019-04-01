@@ -100,6 +100,7 @@
     <string name="error_description_title">Error description:</string>
     <string name="message_status_sent">Sent</string>
     <string name="message_status_delivered">Delivered</string>
+    <string name="message_status_displayed">Displayed</string>
     <string name="message_status_synced">Received from history</string>
     <string name="message_status_error">Error</string>
     <string name="message_status_forwarded">Sent from another device </string>

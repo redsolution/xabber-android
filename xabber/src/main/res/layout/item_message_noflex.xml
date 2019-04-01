@@ -135,8 +135,7 @@
                     android:id="@+id/message_status_icon"
                     android:layout_width="14dp"
                     android:layout_height="14dp"
-                    android:src="@drawable/ic_message_synced_14dp"
-                    android:alpha="0.5"/>
+                    android:src="@drawable/ic_message_synced_14dp" />
 
                 <ImageView
                     android:id="@+id/message_encrypted_icon"

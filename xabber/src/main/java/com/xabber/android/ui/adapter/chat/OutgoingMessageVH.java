@@ -105,21 +105,22 @@ public class OutgoingMessageVH extends FileMessageVH {
         if (isFileUploadInProgress)
             progressBar.setVisibility(View.VISIBLE);
 
-        int messageIcon = R.drawable.ic_message_delivered_14dp;
-        if (messageItem.isForwarded()) {
-            messageIcon = R.drawable.ic_message_forwarded_14dp;
-        } else if (messageItem.isReceivedFromMessageArchive()) {
-            messageIcon = R.drawable.ic_message_synced_14dp;
-        } else if (messageItem.isError()) {
+        int messageIcon = 0;
+
+        if (messageItem.isError()) {
             messageIcon = R.drawable.ic_message_has_error_14dp;
         } else if (!isFileUploadInProgress && !messageItem.isSent()
                 && System.currentTimeMillis() - messageItem.getTimestamp() > 1000) {
             messageIcon = R.drawable.ic_message_not_sent_14dp;
-        } else if (!messageItem.isDelivered()) {
-            if (messageItem.isAcknowledged())
-                messageIcon = R.drawable.ic_message_acknowledged_14dp;
-            else statusIcon.setVisibility(View.GONE);
+        } else if (messageItem.isDisplayed() || messageItem.isReceivedFromMessageArchive()) {
+            messageIcon = R.drawable.ic_message_displayed;
+        } else if (messageItem.isDelivered() || messageItem.isForwarded()) {
+            messageIcon = R.drawable.ic_message_delivered_14dp;
+        } else if (messageItem.isAcknowledged()) {
+            messageIcon = R.drawable.ic_message_acknowledged_14dp;
         }
-        statusIcon.setImageResource(messageIcon);
+
+        if (messageIcon != 0) statusIcon.setImageResource(messageIcon);
+        else statusIcon.setVisibility(View.INVISIBLE);
     }
 }
