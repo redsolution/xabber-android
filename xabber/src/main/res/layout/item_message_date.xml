@@ -13,7 +13,7 @@
         android:paddingLeft="8dp"
         android:textStyle="bold"
         android:text="21 January"
-        android:background="@drawable/rounded_background_grey_transparent"
+        android:background="?attr/transparent_rounded_background"
         android:layout_below="@id/tvFirstUnread"
         android:textColor="@color/white"
         android:visibility="gone"

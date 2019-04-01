@@ -51,9 +51,7 @@ public class ChannelSettingsFragment extends NotificationsSettingsFragment {
         preference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
-                NotificationChannelUtils.updateMessageChannel(notificationManager, type,
-                        Uri.parse(newValue.toString()), null, null);
-                return true;
+                return trySetNewRingtone(new ChannelRingtoneHolder(newValue.toString(), type));
             }
         });
     }
@@ -63,6 +61,12 @@ public class ChannelSettingsFragment extends NotificationsSettingsFragment {
         Uri uri = channel.getSound();
         Ringtone ringtone = RingtoneManager.getRingtone(getActivity(), uri);
         return ringtone.getTitle(getActivity());
+    }
+
+    @Override
+    protected void setNewRingtone(ChannelRingtoneHolder ringtoneHolder) {
+        NotificationChannelUtils.updateMessageChannel(notificationManager, ringtoneHolder.type,
+                Uri.parse(ringtoneHolder.uri), null, null);
     }
 }
 

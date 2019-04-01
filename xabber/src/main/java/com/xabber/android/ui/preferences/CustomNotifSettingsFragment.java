@@ -20,7 +20,7 @@ import com.xabber.android.data.notification.custom_notification.CustomNotifyPref
 import com.xabber.android.data.notification.custom_notification.Key;
 import com.xabber.android.data.notification.custom_notification.NotifyPrefs;
 
-public class CustomNotifSettingsFragment extends android.preference.PreferenceFragment
+public class CustomNotifSettingsFragment extends BaseSoundPrefFragment<CustomSettingsRingtoneHolder>
         implements Preference.OnPreferenceChangeListener {
 
     private Key key;
@@ -81,10 +81,8 @@ public class CustomNotifSettingsFragment extends android.preference.PreferenceFr
 
         } else if (preference.getKey().equals(getString(R.string.custom_notification_sound_key))) {
             if (notifyPrefs == null) return false;
-            CustomNotifyPrefsManager.getInstance().createNotifyPrefs(getActivity(),
-                    notificationManager, key, notifyPrefs.getVibro(),
-                    notifyPrefs.isShowPreview(), newValue.toString());
-            updateSummaries();
+            return trySetNewRingtone(new CustomSettingsRingtoneHolder(newValue.toString(),
+                    notifyPrefs.getVibro(), notifyPrefs.isShowPreview()));
 
         } else if (preference.getKey().equals(getString(R.string.custom_notification_vibro_key))) {
             if (notifyPrefs == null) return false;
@@ -95,6 +93,14 @@ public class CustomNotifSettingsFragment extends android.preference.PreferenceFr
 
         }
         return true;
+    }
+
+    @Override
+    protected void setNewRingtone(CustomSettingsRingtoneHolder ringtoneHolder) {
+        CustomNotifyPrefsManager.getInstance().createNotifyPrefs(getActivity(),
+                notificationManager, key, ringtoneHolder.vibro,
+                ringtoneHolder.showPreview, ringtoneHolder.uri);
+        updateSummaries();
     }
 
     private void updateSummaries() {
