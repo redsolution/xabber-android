@@ -35,9 +35,16 @@ public class PushManager implements OnConnectedListener {
             @Override
             public void run() {
                 AccountJid accountJid = connection.getAccount();
+
+                // TODO: 02.04.19 check push support
+
                 registerEndpoint(accountJid);
             }
         });
+    }
+
+    public void onEndpointRegistered(String jid, String node) {
+
     }
 
     public void registerEndpoint(AccountJid accountJid) {
