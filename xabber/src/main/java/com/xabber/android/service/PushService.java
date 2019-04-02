@@ -84,7 +84,7 @@ public class PushService extends FirebaseMessagingService {
                     PushManager.getInstance().onEndpointRegistered(data.getJid(), data.getNode());
                     break;
                 case ACTION_MESSAGE:
-                    /* on new message push */
+                    PushManager.getInstance().onNewMessagePush(data.getNode());
                     break;
                 default:
                     Log.d(PushService.class.getSimpleName(),

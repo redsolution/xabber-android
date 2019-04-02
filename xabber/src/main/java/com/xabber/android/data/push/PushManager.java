@@ -47,6 +47,10 @@ public class PushManager implements OnConnectedListener {
 
     }
 
+    public void onNewMessagePush(String node) {
+
+    }
+
     public void registerEndpoint(AccountJid accountJid) {
         compositeSubscription.add(
             PushApiClient.registerEndpoint(
