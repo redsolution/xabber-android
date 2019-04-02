@@ -35,6 +35,7 @@ public class AccountRealm extends RealmObject {
         public static final String MAM_DEFAULT_BEHAVIOR = "mamDefaultBehavior";
         public static final String LOAD_HISTORY_SETTINGS = "loadHistorySettings";
         public static final String SUCCESSFUL_CONNECTION_HAPPENED = "successfulConnectionHappened";
+        public static final String PUSH_NODE = "pushNode";
     }
 
     @PrimaryKey
@@ -92,6 +93,8 @@ public class AccountRealm extends RealmObject {
      * happen at least ones with current connection settings
      */
     private boolean successfulConnectionHappened;
+
+    private String pushNode;
 
     public AccountRealm(String id) {
         this.id = id;
@@ -414,5 +417,13 @@ public class AccountRealm extends RealmObject {
 
     public void setSuccessfulConnectionHappened(boolean successfulConnectionHappened) {
         this.successfulConnectionHappened = successfulConnectionHappened;
+    }
+
+    public String getPushNode() {
+        return pushNode;
+    }
+
+    public void setPushNode(String pushNode) {
+        this.pushNode = pushNode;
     }
 }

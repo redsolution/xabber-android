@@ -4,10 +4,14 @@ import android.util.Log;
 
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.account.AccountItem;
+import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.listeners.OnConnectedListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.http.PushApiClient;
+
+import org.jxmpp.stringprep.XmppStringprepException;
 
 import okhttp3.ResponseBody;
 import rx.android.schedulers.AndroidSchedulers;
@@ -44,7 +48,21 @@ public class PushManager implements OnConnectedListener {
     }
 
     public void onEndpointRegistered(String jid, String node) {
+        AccountJid accountJid;
+        try {
+            accountJid = AccountJid.from(jid);
+        } catch (XmppStringprepException e) {
+            Log.d(LOG_TAG, "Cannot parse jid: " + jid + " on endpoint registered");
+            return;
+        }
 
+        // save node to account
+        if (accountJid != null) {
+            AccountItem account = AccountManager.getInstance().getAccount(accountJid);
+            if (account != null) AccountManager.getInstance().setPushNode(account, node);
+        }
+
+        // enable push on XMPP-server
     }
 
     public void onNewMessagePush(String node) {

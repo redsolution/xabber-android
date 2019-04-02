@@ -23,6 +23,7 @@ public class PushService extends FirebaseMessagingService {
     private static final String ACTION_MESSAGE = "message";
     private static final String TARGET_TYPE_XACCOUNT = "xaccount";
     private static final String TARGET_TYPE_NODE = "node";
+    private static final String REGJID_SUCCESS_RESULT = "success";
 
     Gson gson = new Gson();
 
@@ -81,7 +82,8 @@ public class PushService extends FirebaseMessagingService {
         if (data != null) {
             switch (data.getAction()) {
                 case ACTION_REGJID:
-                    PushManager.getInstance().onEndpointRegistered(data.getJid(), data.getNode());
+                    if (REGJID_SUCCESS_RESULT.equals(data.getResult()))
+                        PushManager.getInstance().onEndpointRegistered(data.getJid(), data.getNode());
                     break;
                 case ACTION_MESSAGE:
                     PushManager.getInstance().onNewMessagePush(data.getNode());

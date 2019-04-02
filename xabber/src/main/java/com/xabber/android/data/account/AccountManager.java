@@ -228,6 +228,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
                 accountItem.setLoadHistorySettings(accountRealm.getLoadHistorySettings());
             }
             accountItem.setSuccessfulConnectionHappened(accountRealm.isSuccessfulConnectionHappened());
+            accountItem.setPushNode(accountRealm.getPushNode());
 
             accountItems.add(accountItem);
 
@@ -1206,6 +1207,11 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
         for (AccountJid accountJid : AccountManager.getInstance().getEnabledAccounts()) {
             stopGracePeriod(accountJid);
         }
+    }
+
+    public void setPushNode(AccountItem account, String pushNode) {
+        account.setPushNode(pushNode);
+        requestToWriteAccount(account);
     }
 
 }

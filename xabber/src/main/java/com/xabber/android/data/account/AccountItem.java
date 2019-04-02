@@ -116,6 +116,8 @@ public class AccountItem extends ConnectionItem implements Comparable<AccountIte
 
     private long gracePeriodEndTime = 0L;
 
+    private String pushNode;
+
     public AccountItem(boolean custom, String host,
                        int port, DomainBareJid serverName, Localpart userName, Resourcepart resource,
                        boolean storePassword, String password, String token, int colorIndex, int order,
@@ -468,5 +470,13 @@ public class AccountItem extends ConnectionItem implements Comparable<AccountIte
 
     public boolean inGracePeriod() {
         return gracePeriodEndTime > System.currentTimeMillis();
+    }
+
+    public String getPushNode() {
+        return pushNode;
+    }
+
+    public void setPushNode(String pushNode) {
+        this.pushNode = pushNode;
     }
 }
