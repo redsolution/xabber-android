@@ -11,7 +11,11 @@ import com.xabber.android.data.connection.listeners.OnConnectedListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.http.PushApiClient;
 
-import org.jxmpp.stringprep.XmppStringprepException;
+import org.jivesoftware.smack.SmackException;
+import org.jivesoftware.smack.XMPPException;
+import org.jivesoftware.smackx.push_notifications.PushNotificationsManager;
+
+import java.util.Collection;
 
 import okhttp3.ResponseBody;
 import rx.android.schedulers.AndroidSchedulers;
@@ -48,21 +52,26 @@ public class PushManager implements OnConnectedListener {
     }
 
     public void onEndpointRegistered(String jid, String node) {
-        AccountJid accountJid;
-        try {
-            accountJid = AccountJid.from(jid);
-        } catch (XmppStringprepException e) {
-            Log.d(LOG_TAG, "Cannot parse jid: " + jid + " on endpoint registered");
-            return;
+        AccountJid accountJid = null;
+        Collection<AccountJid> accounts = AccountManager.getInstance().getEnabledAccounts();
+        for (AccountJid account : accounts) {
+            if (account.getFullJid().asBareJid().equals(jid)) {
+                accountJid = account;
+                break;
+            }
         }
 
-        // save node to account
         if (accountJid != null) {
             AccountItem account = AccountManager.getInstance().getAccount(accountJid);
-            if (account != null) AccountManager.getInstance().setPushNode(account, node);
-        }
+            if (account != null) {
 
-        // enable push on XMPP-server
+                // save node to account
+                AccountManager.getInstance().setPushNode(account, node);
+
+                // enable push on XMPP-server
+                sendEnablePushIQ(account, accountJid, node);
+            }
+        }
     }
 
     public void onNewMessagePush(String node) {
@@ -105,6 +114,22 @@ public class PushManager implements OnConnectedListener {
                         Log.d(LOG_TAG, "Endpoint unregister failed: " + throwable.toString());
                     }
                 }));
+    }
+
+    private void sendEnablePushIQ(final AccountItem accountItem, final AccountJid jid, final String node) {
+        Application.getInstance().runInBackground(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(1000);
+                    PushNotificationsManager.getInstanceFor(accountItem.getConnection())
+                            .enable(jid.getFullJid().asBareJid(), node);
+                } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException
+                        | SmackException.NotConnectedException | InterruptedException e) {
+                    Log.d(LOG_TAG, "Push notification enabling failed: " + e.toString());
+                }
+            }
+        });
     }
 
 }
