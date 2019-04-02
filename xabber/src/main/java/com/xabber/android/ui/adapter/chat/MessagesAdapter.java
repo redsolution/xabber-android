@@ -142,7 +142,7 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
             case VIEW_TYPE_INCOMING_MESSAGE_NOFLEX:
                 return new NoFlexIncomingMsgVH(LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.item_message_incoming_noflex, parent, false),
-                        this, this, this, appearanceStyle);
+                        this, this, this, bindListener, appearanceStyle);
 
             case VIEW_TYPE_OUTGOING_MESSAGE:
                 return new OutgoingMessageVH(LayoutInflater.from(parent.getContext())
