@@ -83,7 +83,7 @@ public class PushService extends FirebaseMessagingService {
             switch (data.getAction()) {
                 case ACTION_REGJID:
                     if (REGJID_SUCCESS_RESULT.equals(data.getResult()))
-                        PushManager.getInstance().onEndpointRegistered(data.getJid(), data.getNode());
+                        PushManager.getInstance().onEndpointRegistered(data.getJid(), data.getService(), data.getNode());
                     break;
                 case ACTION_MESSAGE:
                     PushManager.getInstance().onNewMessagePush(data.getNode());

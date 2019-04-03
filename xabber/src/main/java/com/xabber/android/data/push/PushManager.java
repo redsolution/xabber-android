@@ -9,6 +9,7 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.listeners.OnConnectedListener;
 import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.http.PushApiClient;
 
 import org.jivesoftware.smack.SmackException;
@@ -51,7 +52,7 @@ public class PushManager implements OnConnectedListener {
         });
     }
 
-    public void onEndpointRegistered(String jid, String node) {
+    public void onEndpointRegistered(String jid, String pushServiceJid, String node) {
         AccountJid accountJid = null;
         Collection<AccountJid> accounts = AccountManager.getInstance().getEnabledAccounts();
         for (AccountJid account : accounts) {
@@ -69,13 +70,13 @@ public class PushManager implements OnConnectedListener {
                 AccountManager.getInstance().setPushNode(account, node);
 
                 // enable push on XMPP-server
-                sendEnablePushIQ(account, accountJid, node);
+                sendEnablePushIQ(account, pushServiceJid, node);
             }
         }
     }
 
     public void onNewMessagePush(String node) {
-
+        Log.d(LOG_TAG, "New message push from node: " + node);
     }
 
     public void registerEndpoint(AccountJid accountJid) {
@@ -116,16 +117,16 @@ public class PushManager implements OnConnectedListener {
                 }));
     }
 
-    private void sendEnablePushIQ(final AccountItem accountItem, final AccountJid jid, final String node) {
+    private void sendEnablePushIQ(final AccountItem accountItem, final String pushServiceJid, final String node) {
         Application.getInstance().runInBackground(new Runnable() {
             @Override
             public void run() {
                 try {
                     Thread.sleep(1000);
                     PushNotificationsManager.getInstanceFor(accountItem.getConnection())
-                            .enable(jid.getFullJid().asBareJid(), node);
+                            .enable(UserJid.from(pushServiceJid).getJid(), node);
                 } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException
-                        | SmackException.NotConnectedException | InterruptedException e) {
+                        | SmackException.NotConnectedException | InterruptedException | UserJid.UserJidCreateException e) {
                     Log.d(LOG_TAG, "Push notification enabling failed: " + e.toString());
                 }
             }
