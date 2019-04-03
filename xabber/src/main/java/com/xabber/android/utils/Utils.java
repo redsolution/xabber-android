@@ -1,7 +1,10 @@
 package com.xabber.android.utils;
 
 import android.content.Context;
+import android.os.Build;
 import android.util.TypedValue;
+
+import com.xabber.android.service.XabberService;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -20,6 +23,12 @@ public class Utils {
         cal2.setTime(new Date(date2));
         return cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR) &&
                 cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR);
+    }
+
+    public static void startXabberServiceCompat(Context context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+            context.startForegroundService(XabberService.createIntent(context));
+        else context.startService(XabberService.createIntent(context));
     }
 
 }

@@ -1,5 +1,6 @@
 package com.xabber.android.data.push;
 
+import android.content.Context;
 import android.util.Log;
 
 import com.google.firebase.iid.FirebaseInstanceId;
@@ -11,6 +12,7 @@ import com.xabber.android.data.connection.listeners.OnConnectedListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.http.PushApiClient;
+import com.xabber.android.utils.Utils;
 
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
@@ -75,8 +77,9 @@ public class PushManager implements OnConnectedListener {
         }
     }
 
-    public void onNewMessagePush(String node) {
+    public void onNewMessagePush(Context context, String node) {
         Log.d(LOG_TAG, "New message push from node: " + node);
+        Utils.startXabberServiceCompat(context);
     }
 
     public void registerEndpoint(AccountJid accountJid) {
