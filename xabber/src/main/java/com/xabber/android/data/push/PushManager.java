@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
@@ -71,6 +72,9 @@ public class PushManager implements OnConnectedListener {
                 // save node to account
                 AccountManager.getInstance().setPushNode(account, node);
 
+                // update push nodes
+                updateEnabledPushNodes();
+
                 // enable push on XMPP-server
                 sendEnablePushIQ(account, pushServiceJid, node);
             }
@@ -78,8 +82,8 @@ public class PushManager implements OnConnectedListener {
     }
 
     public void onNewMessagePush(Context context, String node) {
-        Log.d(LOG_TAG, "New message push from node: " + node);
-        Utils.startXabberServiceCompat(context);
+        if (SettingsManager.getEnabledPushNodes().contains(node))
+            Utils.startXabberServiceCompat(context);
     }
 
     public void registerEndpoint(AccountJid accountJid) {
@@ -134,6 +138,18 @@ public class PushManager implements OnConnectedListener {
                 }
             }
         });
+    }
+
+    public void updateEnabledPushNodes() {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (AccountItem accountItem : AccountManager.getInstance().getAllAccountItems()) {
+            String node = accountItem.getPushNode();
+            if (accountItem.isEnabled() && node != null && !node.isEmpty()) {
+                stringBuilder.append(node);
+                stringBuilder.append(" ");
+            }
+        }
+        SettingsManager.setEnabledPushNodes(stringBuilder.toString());
     }
 
 }

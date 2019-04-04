@@ -854,6 +854,14 @@ public class SettingsManager implements OnInitializedListener,
         return getInteger(R.string.crowdfunding_last_position_key, 0);
     }
 
+    public static void setEnabledPushNodes(String enabledPushNodes) {
+        setString(R.string.enabled_push_nodes, enabledPushNodes);
+    }
+
+    public static String getEnabledPushNodes() {
+        return getString(R.string.enabled_push_nodes, "");
+    }
+
     public static void resetPreferences(Context context, String preferencesName) {
         context.getSharedPreferences(preferencesName, Context.MODE_PRIVATE).edit().clear().apply();
     }

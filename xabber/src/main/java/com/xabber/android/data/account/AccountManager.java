@@ -51,6 +51,7 @@ import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.notification.BaseAccountNotificationProvider;
 import com.xabber.android.data.notification.NotificationManager;
+import com.xabber.android.data.push.PushManager;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.data.xaccount.XabberAccountManager;
@@ -685,6 +686,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
 
         accountItem.setEnabled(enabled);
         requestToWriteAccount(accountItem);
+        PushManager.getInstance().updateEnabledPushNodes();
     }
 
     /**
