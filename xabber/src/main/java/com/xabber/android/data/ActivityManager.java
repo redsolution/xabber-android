@@ -24,6 +24,7 @@ import com.xabber.android.R;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.CertificateManager;
 import com.xabber.android.data.log.LogManager;
+import com.xabber.android.data.push.SyncManager;
 import com.xabber.android.ui.activity.AboutActivity;
 import com.xabber.android.ui.activity.ContactListActivity;
 import com.xabber.android.ui.activity.LoadActivity;
@@ -221,6 +222,7 @@ public class ActivityManager implements OnUnloadListener {
 
         CertificateManager.getInstance().registerActivity(activity);
         AccountManager.getInstance().stopGracePeriod();
+        SyncManager.getInstance().onActivityResume();
     }
 
     /**

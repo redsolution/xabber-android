@@ -1,9 +1,11 @@
 package com.xabber.android.utils;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 import android.util.TypedValue;
 
+import com.xabber.android.data.push.SyncManager;
 import com.xabber.android.service.XabberService;
 
 import java.util.Calendar;
@@ -26,9 +28,18 @@ public class Utils {
     }
 
     public static void startXabberServiceCompat(Context context) {
+        startXabberServiceCompat(context, XabberService.createIntent(context));
+    }
+
+    public static void startXabberServiceCompatWithSyncMode(Context context, String pushNode) {
+        startXabberServiceCompat(context,
+                SyncManager.createXabberServiceIntentWithSyncMode(context, pushNode));
+    }
+
+    private static void startXabberServiceCompat(Context context, Intent intent) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-            context.startForegroundService(XabberService.createIntent(context));
-        else context.startService(XabberService.createIntent(context));
+            context.startForegroundService(intent);
+        else context.startService(intent);
     }
 
 }

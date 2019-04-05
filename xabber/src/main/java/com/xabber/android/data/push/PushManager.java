@@ -83,7 +83,7 @@ public class PushManager implements OnConnectedListener {
 
     public void onNewMessagePush(Context context, String node) {
         if (SettingsManager.getEnabledPushNodes().contains(node))
-            Utils.startXabberServiceCompat(context);
+            Utils.startXabberServiceCompatWithSyncMode(context, node);
     }
 
     public void registerEndpoint(AccountJid accountJid) {

@@ -269,7 +269,7 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
     }
 
     private void updatePersistentNotification() {
-        if (!SettingsManager.eventsPersistent()) {
+        if (!XabberService.getInstance().needForeground()) {
             return;
         }
 
@@ -456,6 +456,7 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
 
     @Override
     public void onClose() {
-        notificationManager.cancelAll();
+        //notificationManager.cancelAll();
+        notificationManager.cancel(PERSISTENT_NOTIFICATION_ID);
     }
 }

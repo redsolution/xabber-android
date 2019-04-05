@@ -59,6 +59,7 @@ import com.xabber.android.data.message.phrase.PhraseManager;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.notification.custom_notification.CustomNotifyPrefsManager;
 import com.xabber.android.data.push.PushManager;
+import com.xabber.android.data.push.SyncManager;
 import com.xabber.android.data.roster.GroupManager;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterManager;
@@ -350,6 +351,7 @@ public class Application extends android.app.Application {
     }
 
     private void addManagers() {
+        addManager(SyncManager.getInstance());
         addManager(SettingsManager.getInstance());
         addManager(LogManager.getInstance());
         addManager(DatabaseManager.getInstance());
