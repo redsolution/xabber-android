@@ -4,11 +4,11 @@
     <PreferenceCategory
         android:title="@string/category_connection_settings">
 
-        <CheckBoxPreference
-            android:title="@string/events_persistent"
-            android:key="@string/events_persistent_key"
-            android:defaultValue="@bool/events_persistent_default"
-            />
+        <!--<CheckBoxPreference-->
+            <!--android:title="@string/events_persistent"-->
+            <!--android:key="@string/events_persistent_key"-->
+            <!--android:defaultValue="@bool/events_persistent_default"-->
+            <!--/>-->
 
         <Preference
             android:title="@string/battery_optimization"

@@ -327,10 +327,10 @@ public class SettingsManager implements OnInitializedListener,
                 R.bool.events_lightning_default);
     }
 
-    public static boolean eventsPersistent() {
-        return getBoolean(R.string.events_persistent_key,
-                R.bool.events_persistent_default);
-    }
+//    public static boolean eventsPersistent() {
+//        return getBoolean(R.string.events_persistent_key,
+//                R.bool.events_persistent_default);
+//    }
 
     public static boolean eventsShowText() {
         return getNotifBoolean(R.string.events_show_text_key,
