@@ -9,7 +9,7 @@ import com.xabber.android.service.XabberService;
 
 public class SyncManager implements OnTimerListener {
 
-    private static final long SYNC_TIME = 15000;
+    private static final long SYNC_TIME = 60000;
     public static final String SYNC_MODE = "SYNC_MODE";
     public static final String PUSH_NODE = "PUSH_NODE";
 
@@ -39,7 +39,7 @@ public class SyncManager implements OnTimerListener {
     }
 
     public void onServiceStarted(Intent intent) {
-        if (intent.getBooleanExtra(SYNC_MODE, false))
+        if (intent != null && intent.getBooleanExtra(SYNC_MODE, false))
             startSyncMode(intent.getStringExtra(PUSH_NODE));
     }
 
