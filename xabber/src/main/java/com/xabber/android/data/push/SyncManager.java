@@ -16,6 +16,7 @@ public class SyncManager implements OnTimerListener {
     private static SyncManager instance;
     private boolean syncMode;
     private boolean syncPeriod;
+    private boolean messageSaved;
 
     private long timestamp;
     private String pushNode;
@@ -28,14 +29,14 @@ public class SyncManager implements OnTimerListener {
 
     @Override
     public void onTimer() {
-        if (syncPeriod && syncMode && isTimeToShutdown()) {
+        if (syncPeriod && syncMode && isTimeToStopSyncPeriod()) {
             stopSyncPeriod();
             XabberService.getInstance().changeForeground();
         }
     }
 
     public void onMessageSaved() {
-        this.timestamp = System.currentTimeMillis();
+        this.messageSaved = true;
     }
 
     public void onServiceStarted(Intent intent) {
@@ -68,6 +69,7 @@ public class SyncManager implements OnTimerListener {
         this.timestamp = System.currentTimeMillis();
         this.pushNode = pushNode;
         this.syncPeriod = true;
+        this.messageSaved = false;
     }
 
     private void stopSyncMode() {
@@ -80,7 +82,7 @@ public class SyncManager implements OnTimerListener {
         this.syncPeriod = false;
     }
 
-    private boolean isTimeToShutdown() {
-        return System.currentTimeMillis() > timestamp + SYNC_TIME;
+    private boolean isTimeToStopSyncPeriod() {
+        return messageSaved || System.currentTimeMillis() > timestamp + SYNC_TIME;
     }
 }
