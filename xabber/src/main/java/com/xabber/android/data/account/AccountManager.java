@@ -689,6 +689,12 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
         PushManager.getInstance().updateEnabledPushNodes();
     }
 
+    public void setPushEnabled(AccountItem accountItem, boolean enabled) {
+        accountItem.setPushEnabled(enabled);
+        // TODO: 08.04.19 запись в бд
+        PushManager.getInstance().updateEnabledPushNodes();
+    }
+
     /**
      * @return List of enabled accounts.
      */

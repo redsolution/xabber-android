@@ -117,6 +117,7 @@ public class AccountItem extends ConnectionItem implements Comparable<AccountIte
 
     private long gracePeriodEndTime = 0L;
 
+    private boolean pushEnabled;
     private String pushNode;
     private PushState pushState = PushState.disabled;
 
@@ -495,5 +496,13 @@ public class AccountItem extends ConnectionItem implements Comparable<AccountIte
         PushState prevState = this.pushState;
         this.pushState = newState;
         return prevState != pushState;
+    }
+
+    public void setPushEnabled(boolean enabled) {
+        this.pushEnabled = enabled;
+    }
+
+    public boolean isPushEnabled() {
+        return pushEnabled;
     }
 }

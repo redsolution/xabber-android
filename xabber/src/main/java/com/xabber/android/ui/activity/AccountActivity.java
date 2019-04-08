@@ -248,6 +248,9 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
             case CONNECTION_SETTINGS:
                 startAccountSettingsActivity();
                 break;
+            case PUSH_NOTIFICATIONS:
+                startActivity(AccountPushActivity.createIntent(this, account));
+                break;
             case COLOR:
                 AccountColorDialog.newInstance(account).show(getFragmentManager(),
                         AccountColorDialog.class.getSimpleName());
