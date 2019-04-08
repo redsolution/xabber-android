@@ -118,7 +118,7 @@ public class AccountItem extends ConnectionItem implements Comparable<AccountIte
     private long gracePeriodEndTime = 0L;
 
     private String pushNode;
-    private PushState pushState = PushState.enabling;
+    private PushState pushState = PushState.disabled;
 
     public AccountItem(boolean custom, String host,
                        int port, DomainBareJid serverName, Localpart userName, Resourcepart resource,

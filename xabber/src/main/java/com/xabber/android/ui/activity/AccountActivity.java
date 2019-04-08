@@ -167,6 +167,8 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
 
         AccountOption.CONNECTION_SETTINGS.setDescription(account.getFullJid().asBareJid().toString());
 
+        AccountOption.PUSH_NOTIFICATIONS.setDescription(getString(accountItem.getPushState().getStringId()));
+
         AccountOption.COLOR.setDescription(ColorManager.getInstance().getAccountPainter().getAccountColorName(account));
 
         updateBlockListOption();

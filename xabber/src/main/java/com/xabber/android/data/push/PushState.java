@@ -4,19 +4,22 @@ import com.xabber.android.R;
 
 public enum PushState {
 
+    disabled,
+
     notSupport,
 
-    enabling,
+    connecting,
 
     enabled;
 
     public int getStringId() {
         switch (this) {
-
+            case disabled:
+                return R.string.account_push_state_disabled;
             case notSupport:
                 return R.string.account_push_state_not_support;
-            case enabling:
-                return R.string.account_push_state_enabling;
+            case connecting:
+                return R.string.account_push_state_connecting;
             case enabled:
                 return R.string.account_push_state_enabled;
             default:

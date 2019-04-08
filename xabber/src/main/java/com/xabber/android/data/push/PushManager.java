@@ -56,7 +56,7 @@ public class PushManager implements OnConnectedListener {
 
                 if (accountItem != null) {
                     if (isSupport(connection.getConnection())) {
-                        accountItem.updatePushState(PushState.enabling);
+                        accountItem.updatePushState(PushState.connecting);
                         registerEndpoint(accountJid);
                     } else accountItem.updatePushState(PushState.notSupport);
                 }
