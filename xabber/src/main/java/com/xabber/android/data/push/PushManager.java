@@ -17,9 +17,14 @@ import com.xabber.android.utils.Utils;
 
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
+import org.jivesoftware.smack.tcp.XMPPTCPConnection;
+import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
 import org.jivesoftware.smackx.push_notifications.PushNotificationsManager;
+import org.jivesoftware.smackx.push_notifications.element.PushNotificationsElements;
+import org.jxmpp.jid.EntityBareJid;
 
 import java.util.Collection;
+import java.util.Collections;
 
 import okhttp3.ResponseBody;
 import rx.android.schedulers.AndroidSchedulers;
@@ -47,10 +52,14 @@ public class PushManager implements OnConnectedListener {
             @Override
             public void run() {
                 AccountJid accountJid = connection.getAccount();
+                AccountItem accountItem = AccountManager.getInstance().getAccount(accountJid);
 
-                // TODO: 02.04.19 check push support
-
-                registerEndpoint(accountJid);
+                if (accountItem != null) {
+                    if (isSupport(connection.getConnection())) {
+                        accountItem.updatePushState(PushState.enabling);
+                        registerEndpoint(accountJid);
+                    } else accountItem.updatePushState(PushState.notSupport);
+                }
             }
         });
     }
@@ -130,8 +139,9 @@ public class PushManager implements OnConnectedListener {
             public void run() {
                 try {
                     Thread.sleep(1000);
-                    PushNotificationsManager.getInstanceFor(accountItem.getConnection())
+                    boolean success = PushNotificationsManager.getInstanceFor(accountItem.getConnection())
                             .enable(UserJid.from(pushServiceJid).getJid(), node);
+                    if (success) accountItem.updatePushState(PushState.enabled);
                 } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException
                         | SmackException.NotConnectedException | InterruptedException | UserJid.UserJidCreateException e) {
                     Log.d(LOG_TAG, "Push notification enabling failed: " + e.toString());
@@ -150,6 +160,18 @@ public class PushManager implements OnConnectedListener {
             }
         }
         SettingsManager.setEnabledPushNodes(stringBuilder.toString());
+    }
+
+    public boolean isSupport(XMPPTCPConnection connection) {
+        try {
+            EntityBareJid jid = connection.getUser().asEntityBareJid();
+            return ServiceDiscoveryManager.getInstanceFor(connection)
+                    .supportsFeatures(jid, Collections.singletonList(PushNotificationsElements.NAMESPACE));
+
+        } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException
+                | SmackException.NotConnectedException | InterruptedException e) {
+            return false;
+        }
     }
 
 }
