@@ -53,15 +53,27 @@ public class PushManager implements OnConnectedListener {
             public void run() {
                 AccountJid accountJid = connection.getAccount();
                 AccountItem accountItem = AccountManager.getInstance().getAccount(accountJid);
-
-                if (accountItem != null) {
-                    if (isSupport(connection.getConnection())) {
-                        accountItem.updatePushState(PushState.connecting);
-                        registerEndpoint(accountJid);
-                    } else accountItem.updatePushState(PushState.notSupport);
-                }
+                enablePushNotificationsIfNeed(accountItem);
             }
         });
+    }
+
+    public void enablePushNotificationsIfNeed(AccountItem accountItem) {
+        if (accountItem != null && accountItem.isPushEnabled()) {
+            if (isSupport(accountItem.getConnection())) {
+                accountItem.updatePushState(PushState.connecting);
+                registerEndpoint(accountItem.getAccount());
+            } else accountItem.updatePushState(PushState.notSupport);
+        }
+    }
+
+    public void disablePushNotification(AccountItem accountItem) {
+        if (accountItem != null && !accountItem.isPushEnabled()) {
+            if (isSupport(accountItem.getConnection())) {
+                accountItem.updatePushState(PushState.connecting);
+                deleteEndpoint(accountItem.getAccount());
+            } else accountItem.updatePushState(PushState.notSupport);
+        }
     }
 
     public void onEndpointRegistered(String jid, String pushServiceJid, String node) {
