@@ -607,4 +607,7 @@ public class Application extends android.app.Application {
         handler.postDelayed(runnable, delayMillis);
     }
 
+    public boolean isServiceStarted() {
+        return serviceStarted;
+    }
 }

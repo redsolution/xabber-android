@@ -91,7 +91,8 @@ public class PushManager implements OnConnectedListener {
     }
 
     public void onNewMessagePush(Context context, String node) {
-        if (SettingsManager.getEnabledPushNodes().contains(node))
+        if (!Application.getInstance().isServiceStarted()
+                && SettingsManager.getEnabledPushNodes().contains(node))
             Utils.startXabberServiceCompatWithSyncMode(context, node);
     }
 
