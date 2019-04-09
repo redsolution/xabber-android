@@ -205,7 +205,7 @@ public class PushManager implements OnConnectedListener {
                     AccountManager.getInstance().setPushWasEnabled(accountItem, !success);
                 } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException
                         | SmackException.NotConnectedException | InterruptedException | UserJid.UserJidCreateException e) {
-                    Log.d(LOG_TAG, "Push notification enabling failed: " + e.toString());
+                    Log.d(LOG_TAG, "Push notification disabling failed: " + e.toString());
                 }
             }
         });
