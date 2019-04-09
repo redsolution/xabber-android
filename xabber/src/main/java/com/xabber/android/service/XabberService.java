@@ -20,7 +20,9 @@ import android.content.Intent;
 import android.os.IBinder;
 
 import com.xabber.android.data.Application;
+import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
+import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.push.SyncManager;
@@ -85,7 +87,15 @@ public class XabberService extends Service {
     }
 
     public boolean needForeground() {
-        // TODO: 05.04.19 добавить обработку ситуации, когда есть аккаунты неподдерживающие push
-        return SyncManager.getInstance().isSyncPeriod();
+        if (SyncManager.getInstance().isSyncPeriod()) return true;
+        for (AccountJid accountJid : AccountManager.getInstance().getEnabledAccounts()) {
+            AccountItem accountItem = AccountManager.getInstance().getAccount(accountJid);
+            if (accountItem != null) {
+                if (!accountItem.isPushWasEnabled()
+                        && SyncManager.getInstance().isAccountNeedConnection(accountItem))
+                    return true;
+            }
+        }
+        return false;
     }
 }

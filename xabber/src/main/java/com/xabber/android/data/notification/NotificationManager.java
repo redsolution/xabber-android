@@ -269,14 +269,12 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
     }
 
     private void updatePersistentNotification() {
-        if (!XabberService.getInstance().needForeground()) {
-            return;
-        }
-
         if (XabberService.getInstance() == null) return;
 
         // we do not want to show persistent notification if there are no enabled accounts
         XabberService.getInstance().changeForeground();
+        if (!XabberService.getInstance().needForeground()) return;
+
         Collection<AccountJid> accountList = AccountManager.getInstance().getEnabledAccounts();
         if (accountList.isEmpty()) {
             return;
