@@ -230,6 +230,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
             }
             accountItem.setSuccessfulConnectionHappened(accountRealm.isSuccessfulConnectionHappened());
             accountItem.setPushNode(accountRealm.getPushNode());
+            accountItem.setPushServiceJid(accountRealm.getPushServiceJid());
             accountItem.setPushEnabled(accountRealm.isPushEnabled());
             accountItem.setPushWasEnabled(accountRealm.isPushWasEnabled());
 
@@ -1213,8 +1214,9 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
         }
     }
 
-    public void setPushNode(AccountItem account, String pushNode) {
+    public void setPushNode(AccountItem account, String pushNode, String pushServiceJid) {
         account.setPushNode(pushNode);
+        account.setPushServiceJid(pushServiceJid);
         requestToWriteAccount(account);
     }
 

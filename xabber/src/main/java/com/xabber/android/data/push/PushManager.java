@@ -46,6 +46,8 @@ public class PushManager implements OnConnectedListener {
 
     private CompositeSubscription compositeSubscription = new CompositeSubscription();
 
+    /** Listeners */
+
     @Override
     public void onConnected(final ConnectionItem connection) {
         Application.getInstance().runInBackground(new Runnable() {
@@ -56,22 +58,6 @@ public class PushManager implements OnConnectedListener {
                 enablePushNotificationsIfNeed(accountItem);
             }
         });
-    }
-
-    public void enablePushNotificationsIfNeed(AccountItem accountItem) {
-        if (accountItem != null && accountItem.isPushEnabled()) {
-            if (isSupport(accountItem.getConnection())) {
-                registerEndpoint(accountItem.getAccount());
-            } else AccountManager.getInstance().setPushWasEnabled(accountItem, false);
-        }
-    }
-
-    public void disablePushNotification(AccountItem accountItem) {
-        if (accountItem != null && !accountItem.isPushEnabled()) {
-            if (isSupport(accountItem.getConnection())) {
-                deleteEndpoint(accountItem.getAccount());
-            } AccountManager.getInstance().setPushWasEnabled(accountItem, false);
-        }
     }
 
     public void onEndpointRegistered(String jid, String pushServiceJid, String node) {
@@ -89,7 +75,7 @@ public class PushManager implements OnConnectedListener {
             if (account != null) {
 
                 // save node to account
-                AccountManager.getInstance().setPushNode(account, node);
+                AccountManager.getInstance().setPushNode(account, node, pushServiceJid);
 
                 // update push nodes
                 updateEnabledPushNodes();
@@ -106,60 +92,22 @@ public class PushManager implements OnConnectedListener {
             Utils.startXabberServiceCompatWithSyncMode(context, node);
     }
 
-    private void registerEndpoint(AccountJid accountJid) {
-        compositeSubscription.add(
-            PushApiClient.registerEndpoint(
-                    FirebaseInstanceId.getInstance().getToken(), accountJid.toString())
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<ResponseBody>() {
-                    @Override
-                    public void call(ResponseBody responseBody) {
-                        Log.d(LOG_TAG, "Endpoint successfully registered");
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        Log.d(LOG_TAG, "Endpoint register failed: " + throwable.toString());
-                    }
-                }));
+    /** Api */
+
+    public void enablePushNotificationsIfNeed(AccountItem accountItem) {
+        if (accountItem != null && accountItem.isPushEnabled()) {
+            if (isSupport(accountItem.getConnection())) {
+                registerEndpoint(accountItem.getAccount());
+            } else AccountManager.getInstance().setPushWasEnabled(accountItem, false);
+        }
     }
 
-    private void deleteEndpoint(AccountJid accountJid) {
-        compositeSubscription.add(
-            PushApiClient.deleteEndpoint(
-                    FirebaseInstanceId.getInstance().getToken(), accountJid.toString())
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<ResponseBody>() {
-                    @Override
-                    public void call(ResponseBody responseBody) {
-                        Log.d(LOG_TAG, "Endpoint successfully unregistered");
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        Log.d(LOG_TAG, "Endpoint unregister failed: " + throwable.toString());
-                    }
-                }));
-    }
-
-    private void sendEnablePushIQ(final AccountItem accountItem, final String pushServiceJid, final String node) {
-        Application.getInstance().runInBackground(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Thread.sleep(1000);
-                    boolean success = PushNotificationsManager.getInstanceFor(accountItem.getConnection())
-                            .enable(UserJid.from(pushServiceJid).getJid(), node);
-                    AccountManager.getInstance().setPushWasEnabled(accountItem, success);
-                } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException
-                        | SmackException.NotConnectedException | InterruptedException | UserJid.UserJidCreateException e) {
-                    Log.d(LOG_TAG, "Push notification enabling failed: " + e.toString());
-                    AccountManager.getInstance().setPushWasEnabled(accountItem, false);
-                }
-            }
-        });
+    public void disablePushNotification(AccountItem accountItem) {
+        if (accountItem != null && !accountItem.isPushEnabled()) {
+            if (isSupport(accountItem.getConnection())) {
+                deleteEndpoint(accountItem);
+            } AccountManager.getInstance().setPushWasEnabled(accountItem, false);
+        }
     }
 
     public void updateEnabledPushNodes() {
@@ -185,6 +133,82 @@ public class PushManager implements OnConnectedListener {
                 | SmackException.NotConnectedException | InterruptedException e) {
             return false;
         }
+    }
+
+    /** Private */
+
+    private void registerEndpoint(AccountJid accountJid) {
+        compositeSubscription.add(
+                PushApiClient.registerEndpoint(
+                        FirebaseInstanceId.getInstance().getToken(), accountJid.toString())
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new Action1<ResponseBody>() {
+                            @Override
+                            public void call(ResponseBody responseBody) {
+                                Log.d(LOG_TAG, "Endpoint successfully registered");
+                            }
+                        }, new Action1<Throwable>() {
+                            @Override
+                            public void call(Throwable throwable) {
+                                Log.d(LOG_TAG, "Endpoint register failed: " + throwable.toString());
+                            }
+                        }));
+    }
+
+    private void deleteEndpoint(final AccountItem accountItem) {
+        compositeSubscription.add(
+                PushApiClient.deleteEndpoint(
+                        FirebaseInstanceId.getInstance().getToken(), accountItem.getAccount().toString())
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new Action1<ResponseBody>() {
+                            @Override
+                            public void call(ResponseBody responseBody) {
+                                Log.d(LOG_TAG, "Endpoint successfully unregistered");
+                                sendDisablePushIQ(accountItem, accountItem.getPushServiceJid(), accountItem.getPushNode());
+                            }
+                        }, new Action1<Throwable>() {
+                            @Override
+                            public void call(Throwable throwable) {
+                                Log.d(LOG_TAG, "Endpoint unregister failed: " + throwable.toString());
+                            }
+                        }));
+    }
+
+    private void sendEnablePushIQ(final AccountItem accountItem, final String pushServiceJid, final String node) {
+        Application.getInstance().runInBackground(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(1000);
+                    boolean success = PushNotificationsManager.getInstanceFor(accountItem.getConnection())
+                            .enable(UserJid.from(pushServiceJid).getJid(), node);
+                    AccountManager.getInstance().setPushWasEnabled(accountItem, success);
+                } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException
+                        | SmackException.NotConnectedException | InterruptedException | UserJid.UserJidCreateException e) {
+                    Log.d(LOG_TAG, "Push notification enabling failed: " + e.toString());
+                    AccountManager.getInstance().setPushWasEnabled(accountItem, false);
+                }
+            }
+        });
+    }
+
+    private void sendDisablePushIQ(final AccountItem accountItem, final String pushServiceJid, final String node) {
+        Application.getInstance().runInBackground(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(1000);
+                    boolean success = PushNotificationsManager.getInstanceFor(accountItem.getConnection())
+                            .disable(UserJid.from(pushServiceJid).getJid(), node);
+                    AccountManager.getInstance().setPushWasEnabled(accountItem, !success);
+                } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException
+                        | SmackException.NotConnectedException | InterruptedException | UserJid.UserJidCreateException e) {
+                    Log.d(LOG_TAG, "Push notification enabling failed: " + e.toString());
+                }
+            }
+        });
     }
 
 }

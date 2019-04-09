@@ -36,6 +36,7 @@ public class AccountRealm extends RealmObject {
         public static final String LOAD_HISTORY_SETTINGS = "loadHistorySettings";
         public static final String SUCCESSFUL_CONNECTION_HAPPENED = "successfulConnectionHappened";
         public static final String PUSH_NODE = "pushNode";
+        public static final String PUSH_SERVICE_JID = "pushServiceJid";
         public static final String PUSH_ENABLED = "pushEnabled";
         public static final String PUSH_WAS_ENABLED = "pushWasEnabled";
     }
@@ -97,6 +98,7 @@ public class AccountRealm extends RealmObject {
     private boolean successfulConnectionHappened;
 
     private String pushNode;
+    private String pushServiceJid;
     private boolean pushEnabled;
     private boolean pushWasEnabled;
 
@@ -429,6 +431,14 @@ public class AccountRealm extends RealmObject {
 
     public void setPushNode(String pushNode) {
         this.pushNode = pushNode;
+    }
+
+    public String getPushServiceJid() {
+        return pushServiceJid;
+    }
+
+    public void setPushServiceJid(String pushServiceJid) {
+        this.pushServiceJid = pushServiceJid;
     }
 
     public boolean isPushEnabled() {

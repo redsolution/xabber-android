@@ -119,6 +119,7 @@ public class AccountItem extends ConnectionItem implements Comparable<AccountIte
     private boolean pushEnabled = true;
     private boolean pushWasEnabled;
     private String pushNode;
+    private String pushServiceJid;
 
     public AccountItem(boolean custom, String host,
                        int port, DomainBareJid serverName, Localpart userName, Resourcepart resource,
@@ -480,6 +481,14 @@ public class AccountItem extends ConnectionItem implements Comparable<AccountIte
 
     public void setPushNode(String pushNode) {
         this.pushNode = pushNode;
+    }
+
+    public String getPushServiceJid() {
+        return pushServiceJid;
+    }
+
+    public void setPushServiceJid(String pushServiceJid) {
+        this.pushServiceJid = pushServiceJid;
     }
 
     public boolean isPushWasEnabled() {
