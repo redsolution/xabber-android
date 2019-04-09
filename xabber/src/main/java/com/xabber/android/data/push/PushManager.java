@@ -62,7 +62,7 @@ public class PushManager implements OnConnectedListener {
         if (accountItem != null && accountItem.isPushEnabled()) {
             if (isSupport(accountItem.getConnection())) {
                 registerEndpoint(accountItem.getAccount());
-            } else accountItem.setPushWasEnabled(false);
+            } else AccountManager.getInstance().setPushWasEnabled(accountItem, false);
         }
     }
 
@@ -70,7 +70,7 @@ public class PushManager implements OnConnectedListener {
         if (accountItem != null && !accountItem.isPushEnabled()) {
             if (isSupport(accountItem.getConnection())) {
                 deleteEndpoint(accountItem.getAccount());
-            } accountItem.setPushWasEnabled(false);
+            } AccountManager.getInstance().setPushWasEnabled(accountItem, false);
         }
     }
 
@@ -106,7 +106,7 @@ public class PushManager implements OnConnectedListener {
             Utils.startXabberServiceCompatWithSyncMode(context, node);
     }
 
-    public void registerEndpoint(AccountJid accountJid) {
+    private void registerEndpoint(AccountJid accountJid) {
         compositeSubscription.add(
             PushApiClient.registerEndpoint(
                     FirebaseInstanceId.getInstance().getToken(), accountJid.toString())
@@ -125,7 +125,7 @@ public class PushManager implements OnConnectedListener {
                 }));
     }
 
-    public void deleteEndpoint(AccountJid accountJid) {
+    private void deleteEndpoint(AccountJid accountJid) {
         compositeSubscription.add(
             PushApiClient.deleteEndpoint(
                     FirebaseInstanceId.getInstance().getToken(), accountJid.toString())
@@ -152,11 +152,11 @@ public class PushManager implements OnConnectedListener {
                     Thread.sleep(1000);
                     boolean success = PushNotificationsManager.getInstanceFor(accountItem.getConnection())
                             .enable(UserJid.from(pushServiceJid).getJid(), node);
-                    accountItem.setPushWasEnabled(success);
+                    AccountManager.getInstance().setPushWasEnabled(accountItem, success);
                 } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException
                         | SmackException.NotConnectedException | InterruptedException | UserJid.UserJidCreateException e) {
                     Log.d(LOG_TAG, "Push notification enabling failed: " + e.toString());
-                    accountItem.setPushWasEnabled(false);
+                    AccountManager.getInstance().setPushWasEnabled(accountItem, false);
                 }
             }
         });
@@ -166,7 +166,8 @@ public class PushManager implements OnConnectedListener {
         StringBuilder stringBuilder = new StringBuilder();
         for (AccountItem accountItem : AccountManager.getInstance().getAllAccountItems()) {
             String node = accountItem.getPushNode();
-            if (accountItem.isEnabled() && node != null && !node.isEmpty()) {
+            if (accountItem.isEnabled() && accountItem.isPushEnabled()
+                    && accountItem.isPushWasEnabled() && node != null && !node.isEmpty()) {
                 stringBuilder.append(node);
                 stringBuilder.append(" ");
             }

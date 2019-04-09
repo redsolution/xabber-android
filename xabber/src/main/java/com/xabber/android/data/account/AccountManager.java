@@ -230,6 +230,8 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
             }
             accountItem.setSuccessfulConnectionHappened(accountRealm.isSuccessfulConnectionHappened());
             accountItem.setPushNode(accountRealm.getPushNode());
+            accountItem.setPushEnabled(accountRealm.isPushEnabled());
+            accountItem.setPushWasEnabled(accountRealm.isPushWasEnabled());
 
             accountItems.add(accountItem);
 
@@ -686,13 +688,6 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
 
         accountItem.setEnabled(enabled);
         requestToWriteAccount(accountItem);
-        PushManager.getInstance().updateEnabledPushNodes();
-    }
-
-    public void setPushEnabled(AccountItem accountItem, boolean enabled) {
-        accountItem.setPushEnabled(enabled);
-        // TODO: 08.04.19 запись в бд
-        if (enabled) PushManager.getInstance().enablePushNotificationsIfNeed(accountItem);
         PushManager.getInstance().updateEnabledPushNodes();
     }
 
@@ -1221,6 +1216,19 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
     public void setPushNode(AccountItem account, String pushNode) {
         account.setPushNode(pushNode);
         requestToWriteAccount(account);
+    }
+
+    public void setPushEnabled(AccountItem accountItem, boolean enabled) {
+        accountItem.setPushEnabled(enabled);
+        requestToWriteAccount(accountItem);
+        if (enabled) PushManager.getInstance().enablePushNotificationsIfNeed(accountItem);
+        PushManager.getInstance().updateEnabledPushNodes();
+    }
+
+    public void setPushWasEnabled(AccountItem accountItem, boolean enabled) {
+        accountItem.setPushWasEnabled(enabled);
+        requestToWriteAccount(accountItem);
+        PushManager.getInstance().updateEnabledPushNodes();
     }
 
 }

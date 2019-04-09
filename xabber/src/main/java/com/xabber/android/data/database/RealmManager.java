@@ -34,7 +34,7 @@ import io.realm.annotations.RealmModule;
 
 public class RealmManager {
     private static final String REALM_DATABASE_NAME = "realm_database.realm";
-    private static final int REALM_DATABASE_VERSION = 22;
+    private static final int REALM_DATABASE_VERSION = 23;
     private static final String LOG_TAG = RealmManager.class.getSimpleName();
     private final RealmConfiguration realmConfiguration;
 
@@ -315,6 +315,14 @@ public class RealmManager {
                         if (oldVersion == 21) {
                             schema.get(AccountRealm.class.getSimpleName())
                                     .addField(AccountRealm.Fields.PUSH_NODE, String.class);
+
+                            oldVersion++;
+                        }
+
+                        if (oldVersion == 22) {
+                            schema.get(AccountRealm.class.getSimpleName())
+                                    .addField(AccountRealm.Fields.PUSH_ENABLED, boolean.class)
+                                    .addField(AccountRealm.Fields.PUSH_WAS_ENABLED, boolean.class);
 
                             oldVersion++;
                         }

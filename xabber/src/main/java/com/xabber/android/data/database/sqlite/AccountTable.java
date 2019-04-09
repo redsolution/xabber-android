@@ -484,6 +484,8 @@ public class AccountTable extends AbstractTable {
         accountRealm.setLoadHistorySettings(accountItem.getLoadHistorySettings());
         accountRealm.setSuccessfulConnectionHappened(accountItem.isSuccessfulConnectionHappened());
         accountRealm.setPushNode(accountItem.getPushNode());
+        accountRealm.setPushEnabled(accountItem.isPushEnabled());
+        accountRealm.setPushWasEnabled(accountItem.isPushWasEnabled());
 
         Realm realm = RealmManager.getInstance().getNewBackgroundRealm();
         realm.beginTransaction();

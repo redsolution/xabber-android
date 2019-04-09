@@ -36,6 +36,8 @@ public class AccountRealm extends RealmObject {
         public static final String LOAD_HISTORY_SETTINGS = "loadHistorySettings";
         public static final String SUCCESSFUL_CONNECTION_HAPPENED = "successfulConnectionHappened";
         public static final String PUSH_NODE = "pushNode";
+        public static final String PUSH_ENABLED = "pushEnabled";
+        public static final String PUSH_WAS_ENABLED = "pushWasEnabled";
     }
 
     @PrimaryKey
@@ -95,6 +97,8 @@ public class AccountRealm extends RealmObject {
     private boolean successfulConnectionHappened;
 
     private String pushNode;
+    private boolean pushEnabled;
+    private boolean pushWasEnabled;
 
     public AccountRealm(String id) {
         this.id = id;
@@ -425,5 +429,21 @@ public class AccountRealm extends RealmObject {
 
     public void setPushNode(String pushNode) {
         this.pushNode = pushNode;
+    }
+
+    public boolean isPushEnabled() {
+        return pushEnabled;
+    }
+
+    public void setPushEnabled(boolean pushEnabled) {
+        this.pushEnabled = pushEnabled;
+    }
+
+    public boolean isPushWasEnabled() {
+        return pushWasEnabled;
+    }
+
+    public void setPushWasEnabled(boolean pushWasEnabled) {
+        this.pushWasEnabled = pushWasEnabled;
     }
 }
