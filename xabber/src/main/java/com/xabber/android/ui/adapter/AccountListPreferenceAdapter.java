@@ -27,7 +27,6 @@ import com.xabber.android.data.connection.ConnectionState;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.push.PushState;
 import com.xabber.android.data.xaccount.XabberAccount;
 import com.xabber.android.data.xaccount.XabberAccountManager;
 import com.xabber.android.ui.color.ColorManager;
@@ -118,9 +117,9 @@ public class AccountListPreferenceAdapter extends RecyclerView.Adapter {
 
         // push state
         boolean pushEnabled = accountItem.getState().equals(ConnectionState.connected)
-                && accountItem.getPushState().equals(PushState.enabled);
+                && accountItem.isPushWasEnabled();
         accountHolder.tvAccountPushStatus.setVisibility(pushEnabled ? View.VISIBLE : View.GONE);
-        if (pushEnabled) accountHolder.tvAccountPushStatus.setText(accountItem.getPushState().getStringId());
+        if (pushEnabled) accountHolder.tvAccountPushStatus.setText(R.string.account_push_state_enabled);
 
         accountHolder.enabledSwitch.setChecked(accountItem.isEnabled());
 

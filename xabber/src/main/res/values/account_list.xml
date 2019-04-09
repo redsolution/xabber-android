@@ -15,6 +15,5 @@
 
     <string name="account_push_state_disabled">Push-notifications disabled</string>
     <string name="account_push_state_not_support">Push-notifications not supported</string>
-    <string name="account_push_state_connecting">Connecting..</string>
     <string name="account_push_state_enabled">Push-notifications enabled</string>
 </resources>

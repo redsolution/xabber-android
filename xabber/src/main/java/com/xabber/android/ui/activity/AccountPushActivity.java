@@ -18,7 +18,6 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.intent.AccountIntentBuilder;
-import com.xabber.android.data.push.PushState;
 import com.xabber.android.ui.color.BarPainter;
 
 import java.util.Collection;
@@ -127,29 +126,6 @@ public class AccountPushActivity extends ManagedActivity implements OnAccountCha
     }
 
     private void updatePushStatus() {
-        PushState pushState = accountItem.getPushState();
-        tvStatus.setText(pushState.getStringId());
 
-        switch(pushState) {
-            case disabled:
-                ivStatus.setImageResource(R.drawable.ic_sync_disable);
-                ivStatus.setVisibility(View.VISIBLE);
-                progressBar.setVisibility(View.GONE);
-                break;
-            case notSupport:
-                ivStatus.setImageResource(R.drawable.ic_sync_disable);
-                ivStatus.setVisibility(View.VISIBLE);
-                progressBar.setVisibility(View.GONE);
-                break;
-            case connecting:
-                ivStatus.setVisibility(View.GONE);
-                progressBar.setVisibility(View.VISIBLE);
-                break;
-            case enabled:
-                ivStatus.setImageResource(R.drawable.ic_sync_done);
-                ivStatus.setVisibility(View.VISIBLE);
-                progressBar.setVisibility(View.GONE);
-                break;
-        }
     }
 }

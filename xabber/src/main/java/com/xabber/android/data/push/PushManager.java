@@ -61,18 +61,16 @@ public class PushManager implements OnConnectedListener {
     public void enablePushNotificationsIfNeed(AccountItem accountItem) {
         if (accountItem != null && accountItem.isPushEnabled()) {
             if (isSupport(accountItem.getConnection())) {
-                accountItem.updatePushState(PushState.connecting);
                 registerEndpoint(accountItem.getAccount());
-            } else accountItem.updatePushState(PushState.notSupport);
+            } else accountItem.setPushWasEnabled(false);
         }
     }
 
     public void disablePushNotification(AccountItem accountItem) {
         if (accountItem != null && !accountItem.isPushEnabled()) {
             if (isSupport(accountItem.getConnection())) {
-                accountItem.updatePushState(PushState.connecting);
                 deleteEndpoint(accountItem.getAccount());
-            } else accountItem.updatePushState(PushState.notSupport);
+            } accountItem.setPushWasEnabled(false);
         }
     }
 
@@ -154,10 +152,11 @@ public class PushManager implements OnConnectedListener {
                     Thread.sleep(1000);
                     boolean success = PushNotificationsManager.getInstanceFor(accountItem.getConnection())
                             .enable(UserJid.from(pushServiceJid).getJid(), node);
-                    if (success) accountItem.updatePushState(PushState.enabled);
+                    accountItem.setPushWasEnabled(success);
                 } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException
                         | SmackException.NotConnectedException | InterruptedException | UserJid.UserJidCreateException e) {
                     Log.d(LOG_TAG, "Push notification enabling failed: " + e.toString());
+                    accountItem.setPushWasEnabled(false);
                 }
             }
         });

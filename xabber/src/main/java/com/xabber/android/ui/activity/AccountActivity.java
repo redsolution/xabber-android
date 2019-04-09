@@ -167,7 +167,8 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
 
         AccountOption.CONNECTION_SETTINGS.setDescription(account.getFullJid().asBareJid().toString());
 
-        AccountOption.PUSH_NOTIFICATIONS.setDescription(getString(accountItem.getPushState().getStringId()));
+        AccountOption.PUSH_NOTIFICATIONS.setDescription(getString(accountItem.isPushWasEnabled()
+                ? R.string.account_push_state_enabled : R.string.account_push_state_disabled));
 
         AccountOption.COLOR.setDescription(ColorManager.getInstance().getAccountPainter().getAccountColorName(account));
 

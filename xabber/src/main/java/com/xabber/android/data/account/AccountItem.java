@@ -24,7 +24,6 @@ import com.xabber.android.data.connection.ConnectionState;
 import com.xabber.android.data.connection.ProxyType;
 import com.xabber.android.data.connection.TLSMode;
 import com.xabber.android.data.extension.mam.LoadHistorySettings;
-import com.xabber.android.data.push.PushState;
 
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.Presence.Type;
@@ -117,9 +116,9 @@ public class AccountItem extends ConnectionItem implements Comparable<AccountIte
 
     private long gracePeriodEndTime = 0L;
 
-    private boolean pushEnabled;
+    private boolean pushEnabled = true;
+    private boolean pushWasEnabled;
     private String pushNode;
-    private PushState pushState = PushState.disabled;
 
     public AccountItem(boolean custom, String host,
                        int port, DomainBareJid serverName, Localpart userName, Resourcepart resource,
@@ -483,19 +482,15 @@ public class AccountItem extends ConnectionItem implements Comparable<AccountIte
         this.pushNode = pushNode;
     }
 
-    public PushState getPushState() {
-        return pushState;
+    public boolean isPushWasEnabled() {
+        return pushWasEnabled;
     }
 
-    public void updatePushState(PushState newState) {
-        boolean changed = setPushState(newState);
+    public void setPushWasEnabled(boolean pushWasEnabled) {
+        boolean changed = false;
+        if (this.pushWasEnabled != pushWasEnabled) changed = true;
+        this.pushWasEnabled = pushWasEnabled;
         if (changed) AccountManager.getInstance().onAccountChanged(getAccount());
-    }
-
-    private boolean setPushState(PushState newState) {
-        PushState prevState = this.pushState;
-        this.pushState = newState;
-        return prevState != pushState;
     }
 
     public void setPushEnabled(boolean enabled) {
