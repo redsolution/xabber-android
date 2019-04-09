@@ -1224,6 +1224,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
         accountItem.setPushEnabled(enabled);
         requestToWriteAccount(accountItem);
         if (enabled) PushManager.getInstance().enablePushNotificationsIfNeed(accountItem);
+        else PushManager.getInstance().disablePushNotification(accountItem);
         PushManager.getInstance().updateEnabledPushNodes();
     }
 

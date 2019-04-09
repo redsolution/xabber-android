@@ -5,8 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
-import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -28,11 +26,7 @@ public class AccountPushActivity extends ManagedActivity implements OnAccountCha
     private BarPainter barPainter;
     private RelativeLayout rlPushSwitch;
     private Switch switchPush;
-
-    private TextView tvJid;
-    private TextView tvStatus;
-    private ImageView ivStatus;
-    private ProgressBar progressBar;
+    private TextView tvPushState;
 
     private AccountItem accountItem;
 
@@ -79,10 +73,7 @@ public class AccountPushActivity extends ManagedActivity implements OnAccountCha
 
         switchPush = findViewById(R.id.switchPush);
         rlPushSwitch = findViewById(R.id.rlPushSwitch);
-        tvJid = findViewById(R.id.tvJid);
-        tvStatus = findViewById(R.id.tvStatus);
-        ivStatus = findViewById(R.id.ivStatus);
-        progressBar = findViewById(R.id.progressBar);
+        tvPushState = findViewById(R.id.tvPushState);
 
         rlPushSwitch.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -99,17 +90,17 @@ public class AccountPushActivity extends ManagedActivity implements OnAccountCha
         checkAccount();
         updateSwitchButton();
         updateTitle();
-        updatePushStatus();
     }
 
     @Override
     public void onAccountsChanged(Collection<AccountJid> accounts) {
-        updatePushStatus();
         updateSwitchButton();
     }
 
     private void updateSwitchButton() {
         switchPush.setChecked(accountItem.isPushEnabled());
+        tvPushState.setText(accountItem.isPushWasEnabled()
+                ? R.string.account_push_state_enabled : R.string.account_push_state_disabled);
     }
 
     private void checkAccount() {
@@ -122,10 +113,5 @@ public class AccountPushActivity extends ManagedActivity implements OnAccountCha
 
     private void updateTitle() {
         barPainter.updateWithAccountName(accountItem.getAccount());
-        tvJid.setText(accountItem.getAccount().getFullJid().asBareJid().toString());
-    }
-
-    private void updatePushStatus() {
-
     }
 }
