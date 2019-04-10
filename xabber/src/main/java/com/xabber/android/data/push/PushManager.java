@@ -53,6 +53,11 @@ public class PushManager implements OnConnectedListener {
         Application.getInstance().runInBackground(new Runnable() {
             @Override
             public void run() {
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 AccountJid accountJid = connection.getAccount();
                 AccountItem accountItem = AccountManager.getInstance().getAccount(accountJid);
                 enablePushNotificationsIfNeed(accountItem);
@@ -181,7 +186,6 @@ public class PushManager implements OnConnectedListener {
             @Override
             public void run() {
                 try {
-                    Thread.sleep(1000);
                     boolean success = PushNotificationsManager.getInstanceFor(accountItem.getConnection())
                             .enable(UserJid.from(pushServiceJid).getJid(), node);
                     AccountManager.getInstance().setPushWasEnabled(accountItem, success);
@@ -199,7 +203,6 @@ public class PushManager implements OnConnectedListener {
             @Override
             public void run() {
                 try {
-                    Thread.sleep(1000);
                     boolean success = PushNotificationsManager.getInstanceFor(accountItem.getConnection())
                             .disable(UserJid.from(pushServiceJid).getJid(), node);
                     AccountManager.getInstance().setPushWasEnabled(accountItem, !success);
