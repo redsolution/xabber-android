@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.util.TypedValue;
 
+import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.push.SyncManager;
 import com.xabber.android.service.XabberService;
 
@@ -34,6 +35,11 @@ public class Utils {
     public static void startXabberServiceCompatWithSyncMode(Context context, String pushNode) {
         startXabberServiceCompat(context,
                 SyncManager.createXabberServiceIntentWithSyncMode(context, pushNode));
+    }
+
+    public static void startXabberServiceCompatWithSyncMode(Context context, AccountJid accountJid) {
+        startXabberServiceCompat(context,
+                SyncManager.createXabberServiceIntentWithSyncMode(context, accountJid));
     }
 
     private static void startXabberServiceCompat(Context context, Intent intent) {

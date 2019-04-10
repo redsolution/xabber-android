@@ -56,6 +56,7 @@ import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.ReceiptManager;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.message.phrase.PhraseManager;
+import com.xabber.android.data.notification.DelayedNotificationActionManager;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.notification.custom_notification.CustomNotifyPrefsManager;
 import com.xabber.android.data.push.PushManager;
@@ -390,6 +391,7 @@ public class Application extends android.app.Application {
         addManager(CertificateManager.getInstance());
         addManager(XMPPAuthManager.getInstance());
         addManager(PushManager.getInstance());
+        addManager(DelayedNotificationActionManager.getInstance());
     }
 
     /**
