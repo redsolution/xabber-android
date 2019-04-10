@@ -34,7 +34,7 @@ public class NotificationReceiver extends BroadcastReceiver {
                 Utils.startXabberServiceCompatWithSyncMode(context, accountJid);
                 DelayedNotificationActionManager.getInstance().addAction(intent);
             }
-        } onNotificationAction(intent);
+        } else onNotificationAction(intent);
     }
 
     public static void onNotificationAction(Intent intent) {
