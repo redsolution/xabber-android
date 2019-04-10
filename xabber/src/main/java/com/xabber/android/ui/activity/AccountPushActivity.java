@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.Switch;
@@ -87,9 +88,16 @@ public class AccountPushActivity extends ManagedActivity implements OnAccountCha
     @Override
     protected void onResume() {
         super.onResume();
+        Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
         checkAccount();
         updateSwitchButton();
         updateTitle();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Application.getInstance().removeUIListener(OnAccountChangedListener.class, this);
     }
 
     @Override
