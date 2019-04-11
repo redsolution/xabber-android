@@ -10,7 +10,7 @@ import android.support.v4.app.RemoteInput;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.notification.DelayedNotificationActionManager;
+import com.xabber.android.data.notification.Action;
 import com.xabber.android.data.notification.MessageNotificationManager;
 import com.xabber.android.utils.Utils;
 
@@ -28,36 +28,36 @@ public class NotificationReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         AccountJid accountJid = intent.getParcelableExtra(KEY_ACCOUNT_JID);
-
         if (!Application.getInstance().isServiceStarted()) {
-            if (accountJid != null) {
+            MessageNotificationManager.getInstance().onDelayedNotificationAction(createAction(intent));
+            if (accountJid != null)
                 Utils.startXabberServiceCompatWithSyncMode(context, accountJid);
-                DelayedNotificationActionManager.getInstance().addAction(intent);
-            }
-        } else onNotificationAction(intent);
+
+        } else MessageNotificationManager.getInstance().onNotificationAction(createAction(intent));
     }
 
-    public static void onNotificationAction(Intent intent) {
-        String action = intent.getAction();
+    private Action createAction(Intent intent) {
         int notificationId = intent.getIntExtra(KEY_NOTIFICATION_ID, 1);
+        String action = intent.getAction();
 
-        if (action == null) return;
+        if (action == null)
+            return new Action(notificationId, Action.ActionType.cancel);
+
         switch (action) {
             case ACTION_MUTE:
-                MessageNotificationManager.getInstance().onNotificationMuted(notificationId);
-                break;
-            case ACTION_CANCEL:
-                MessageNotificationManager.getInstance().onNotificationCanceled(notificationId);
-                break;
+                return new Action(notificationId, Action.ActionType.snooze);
+
             case ACTION_REPLY:
+                CharSequence reply = null;
                 Bundle remoteInput = RemoteInput.getResultsFromIntent(intent);
-                if (remoteInput != null)
-                    MessageNotificationManager.getInstance().onNotificationReplied(notificationId,
-                            remoteInput.getCharSequence(KEY_REPLY_TEXT));
-                break;
+                if (remoteInput != null) reply = remoteInput.getCharSequence(KEY_REPLY_TEXT);
+                return new Action(notificationId, reply, Action.ActionType.reply);
+
             case ACTION_MARK_AS_READ:
-                MessageNotificationManager.getInstance().onNotificationMarkedAsRead(notificationId);
-                break;
+                return new Action(notificationId, Action.ActionType.read);
+
+            default: // ACTION_CANCEL
+                return new Action(notificationId, Action.ActionType.cancel);
         }
     }
 
