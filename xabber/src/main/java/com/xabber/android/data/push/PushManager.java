@@ -10,6 +10,7 @@ import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.listeners.OnConnectedListener;
+import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.http.PushApiClient;
@@ -18,14 +19,18 @@ import com.xabber.android.utils.Utils;
 
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
+import org.jivesoftware.smack.packet.IQ;
+import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
-import org.jivesoftware.smackx.push_notifications.PushNotificationsManager;
+import org.jivesoftware.smackx.push_notifications.element.DisablePushNotificationsIQ;
+import org.jivesoftware.smackx.push_notifications.element.EnablePushNotificationsIQ;
 import org.jivesoftware.smackx.push_notifications.element.PushNotificationsElements;
 import org.jxmpp.jid.EntityBareJid;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 
 import okhttp3.ResponseBody;
 import rx.android.schedulers.AndroidSchedulers;
@@ -33,7 +38,7 @@ import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
-public class PushManager implements OnConnectedListener {
+public class PushManager implements OnConnectedListener, OnPacketListener {
 
     private static final String LOG_TAG = PushManager.class.getSimpleName();
 
@@ -46,6 +51,7 @@ public class PushManager implements OnConnectedListener {
     }
 
     private CompositeSubscription compositeSubscription = new CompositeSubscription();
+    private HashMap<String, Boolean> waitingIQs = new HashMap<>();
 
     /** Listeners */
 
@@ -67,6 +73,7 @@ public class PushManager implements OnConnectedListener {
     }
 
     public void onEndpointRegistered(String jid, String pushServiceJid, String node) {
+        LogManager.d(LOG_TAG, "Received endpoint-registered push. Send push enable iq.");
         AccountJid accountJid = null;
         Collection<AccountJid> accounts = AccountManager.getInstance().getEnabledAccounts();
         for (AccountJid account : accounts) {
@@ -96,12 +103,28 @@ public class PushManager implements OnConnectedListener {
         if (!Application.getInstance().isServiceStarted()
                 && SettingsManager.getEnabledPushNodes().contains(node)) {
             Utils.startXabberServiceCompatWithSyncMode(context, node);
-            LogManager.d(PushManager.class.getName(), "Received message push. Starting service.");
+            LogManager.d(LOG_TAG, "Received message push. Starting service.");
         } else if (SyncManager.getInstance().isSyncMode()) {
-            LogManager.d(PushManager.class.getName(), "Received message push. Service also started. Add account to allowed accounts.");
+            LogManager.d(LOG_TAG, "Received message push. Service also started. Add account to allowed accounts.");
             SyncManager.getInstance().addAllowedAccount(node);
         }
-        LogManager.d(PushManager.class.getName(), "Received message push. Service also started. Not a sync mode - account maybe connected.");
+        LogManager.d(LOG_TAG, "Received message push. Service also started. Not a sync mode - account maybe connected.");
+    }
+
+    @Override
+    public void onStanza(ConnectionItem connection, Stanza packet) {
+        if (packet instanceof IQ && ((IQ) packet).getType() != IQ.Type.error) {
+            if (waitingIQs.containsKey(packet.getStanzaId())) {
+
+                AccountJid account = connection.getAccount();
+                AccountItem accountItem = AccountManager.getInstance().getAccount(account);
+                Boolean enable = waitingIQs.get(packet.getStanzaId());
+                if (accountItem != null && enable != null) {
+                    AccountManager.getInstance().setPushWasEnabled(accountItem, enable);
+                }
+                waitingIQs.remove(packet.getStanzaId());
+            }
+        }
     }
 
     /** Api */
@@ -189,36 +212,32 @@ public class PushManager implements OnConnectedListener {
     }
 
     private void sendEnablePushIQ(final AccountItem accountItem, final String pushServiceJid, final String node) {
-        Application.getInstance().runInBackground(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    boolean success = PushNotificationsManager.getInstanceFor(accountItem.getConnection())
-                            .enable(UserJid.from(pushServiceJid).getJid(), node);
-                    AccountManager.getInstance().setPushWasEnabled(accountItem, success);
-                } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException
-                        | SmackException.NotConnectedException | InterruptedException | UserJid.UserJidCreateException e) {
-                    Log.d(LOG_TAG, "Push notification enabling failed: " + e.toString());
-                    AccountManager.getInstance().setPushWasEnabled(accountItem, false);
-                }
-            }
-        });
+        String stanzaID = null;
+        try {
+            EnablePushNotificationsIQ enableIQ = new EnablePushNotificationsIQ(
+                    UserJid.from(pushServiceJid).getJid(), node, null);
+            stanzaID = enableIQ.getStanzaId();
+            waitingIQs.put(stanzaID, true);
+            accountItem.getConnection().sendStanza(enableIQ);
+        } catch (SmackException.NotConnectedException | InterruptedException | UserJid.UserJidCreateException e) {
+            Log.d(LOG_TAG, "Push notification enabling failed: " + e.toString());
+            waitingIQs.remove(stanzaID);
+            AccountManager.getInstance().setPushWasEnabled(accountItem, false);
+        }
     }
 
     private void sendDisablePushIQ(final AccountItem accountItem, final String pushServiceJid, final String node) {
-        Application.getInstance().runInBackground(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    boolean success = PushNotificationsManager.getInstanceFor(accountItem.getConnection())
-                            .disable(UserJid.from(pushServiceJid).getJid(), node);
-                    AccountManager.getInstance().setPushWasEnabled(accountItem, !success);
-                } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException
-                        | SmackException.NotConnectedException | InterruptedException | UserJid.UserJidCreateException e) {
-                    Log.d(LOG_TAG, "Push notification disabling failed: " + e.toString());
-                }
-            }
-        });
+        String stanzaID = null;
+        try {
+            DisablePushNotificationsIQ disableIQ = new DisablePushNotificationsIQ(
+                    UserJid.from(pushServiceJid).getJid(), node);
+            stanzaID = disableIQ.getStanzaId();
+            waitingIQs.put(stanzaID, false);
+            accountItem.getConnection().sendStanza(disableIQ);
+        } catch (SmackException.NotConnectedException | InterruptedException | UserJid.UserJidCreateException e) {
+            Log.d(LOG_TAG, "Push notification enabling failed: " + e.toString());
+            waitingIQs.remove(stanzaID);
+        }
     }
 
 }
