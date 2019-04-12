@@ -13,6 +13,7 @@ import com.xabber.android.data.connection.listeners.OnConnectedListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.http.PushApiClient;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.utils.Utils;
 
 import org.jivesoftware.smack.SmackException;
@@ -93,8 +94,10 @@ public class PushManager implements OnConnectedListener {
 
     public void onNewMessagePush(Context context, String node) {
         if (!Application.getInstance().isServiceStarted()
-                && SettingsManager.getEnabledPushNodes().contains(node))
+                && SettingsManager.getEnabledPushNodes().contains(node)) {
             Utils.startXabberServiceCompatWithSyncMode(context, node);
+            LogManager.d(PushManager.class.getName(), "Received message push. Starting service.");
+        } else LogManager.d(PushManager.class.getName(), "Received message push. Service not started.");
     }
 
     /** Api */
