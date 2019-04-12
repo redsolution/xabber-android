@@ -12,6 +12,7 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.notification.Action;
 import com.xabber.android.data.notification.MessageNotificationManager;
+import com.xabber.android.data.push.SyncManager;
 import com.xabber.android.utils.Utils;
 
 public class NotificationReceiver extends BroadcastReceiver {
@@ -33,7 +34,12 @@ public class NotificationReceiver extends BroadcastReceiver {
             if (accountJid != null)
                 Utils.startXabberServiceCompatWithSyncMode(context, accountJid);
 
-        } else MessageNotificationManager.getInstance().onNotificationAction(createAction(intent));
+        } else {
+            if (!SyncManager.getInstance().isAccountAllowed(accountJid))
+                SyncManager.getInstance().addAllowedAccount(accountJid);
+
+            MessageNotificationManager.getInstance().onNotificationAction(createAction(intent));
+        }
     }
 
     private Action createAction(Intent intent) {

@@ -9,6 +9,9 @@ import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.service.XabberService;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class SyncManager implements OnTimerListener {
 
     private static final long SYNC_TIME = 60000;
@@ -22,8 +25,8 @@ public class SyncManager implements OnTimerListener {
     private boolean messageSaved;
 
     private long timestamp;
-    private String pushNode;
-    private AccountJid accountJid;
+    private List<String> pushNodes = new ArrayList<>();
+    private List<AccountJid> accountJids = new ArrayList<>();
 
     public static SyncManager getInstance() {
         if (instance == null)
@@ -55,13 +58,16 @@ public class SyncManager implements OnTimerListener {
     }
 
     public boolean isAccountNeedConnection(AccountItem accountItem) {
-        if (!syncMode || (pushNode == null && accountJid == null)) return true;
-        if (pushNode != null) return pushNode.equals(accountItem.getPushNode());
-        else return accountJid.equals(accountItem.getAccount());
+        if (!syncMode || (pushNodes.isEmpty() && accountJids.isEmpty())) return true;
+        return pushNodes.contains(accountItem.getPushNode()) || accountJids.contains(accountItem.getAccount());
     }
 
     public boolean isSyncPeriod() {
         return syncPeriod;
+    }
+
+    public boolean isSyncMode() {
+        return syncMode;
     }
 
     public static Intent createXabberServiceIntentWithSyncMode(Context context, String pushNode) {
@@ -78,10 +84,26 @@ public class SyncManager implements OnTimerListener {
         return intent;
     }
 
+    public boolean isAccountAllowed(AccountJid account) {
+        if (!syncMode) return true;
+        return accountJids.contains(account);
+    }
+
+    public void addAllowedAccount(String node) {
+        startSyncMode(node);
+        XabberService.getInstance().changeForeground();
+    }
+
+    public void addAllowedAccount(AccountJid account) {
+        startSyncMode(account);
+        XabberService.getInstance().changeForeground();
+    }
+
     private void startSyncMode(String pushNode) {
         this.syncMode = true;
         this.timestamp = System.currentTimeMillis();
-        this.pushNode = pushNode;
+        if (this.pushNodes != null && !this.pushNodes.contains(pushNode))
+            this.pushNodes.add(pushNode);
         this.syncPeriod = true;
         this.messageSaved = false;
     }
@@ -89,15 +111,16 @@ public class SyncManager implements OnTimerListener {
     private void startSyncMode(AccountJid accountJid) {
         this.syncMode = true;
         this.timestamp = System.currentTimeMillis();
-        this.accountJid = accountJid;
+        if (this.accountJids != null && !this.accountJids.contains(accountJid))
+            this.accountJids.add(accountJid);
         this.syncPeriod = true;
         this.messageSaved = false;
     }
 
     private void stopSyncMode() {
         this.syncMode = false;
-        this.pushNode = null;
-        this.accountJid = null;
+        this.pushNodes.clear();
+        this.accountJids.clear();
         this.syncPeriod = false;
     }
 

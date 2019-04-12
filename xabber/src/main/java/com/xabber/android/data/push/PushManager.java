@@ -97,7 +97,11 @@ public class PushManager implements OnConnectedListener {
                 && SettingsManager.getEnabledPushNodes().contains(node)) {
             Utils.startXabberServiceCompatWithSyncMode(context, node);
             LogManager.d(PushManager.class.getName(), "Received message push. Starting service.");
-        } else LogManager.d(PushManager.class.getName(), "Received message push. Service not started.");
+        } else if (SyncManager.getInstance().isSyncMode()) {
+            LogManager.d(PushManager.class.getName(), "Received message push. Service also started. Add account to allowed accounts.");
+            SyncManager.getInstance().addAllowedAccount(node);
+        }
+        LogManager.d(PushManager.class.getName(), "Received message push. Service also started. Not a sync mode - account maybe connected.");
     }
 
     /** Api */
