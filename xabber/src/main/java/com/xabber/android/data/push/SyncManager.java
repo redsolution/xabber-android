@@ -22,7 +22,7 @@ public class SyncManager implements OnTimerListener {
     private static SyncManager instance;
     private boolean syncMode;
     private boolean syncPeriod;
-    private boolean messageSaved;
+    private boolean syncActionDone;
 
     private long timestamp;
     private List<String> pushNodes = new ArrayList<>();
@@ -43,7 +43,11 @@ public class SyncManager implements OnTimerListener {
     }
 
     public void onMessageSaved() {
-        this.messageSaved = true;
+        this.syncActionDone = true;
+    }
+
+    public void onDelayedNotificationActionDone() {
+        this.syncActionDone = true;
     }
 
     public void onServiceStarted(Intent intent) {
@@ -105,7 +109,7 @@ public class SyncManager implements OnTimerListener {
         if (this.pushNodes != null && !this.pushNodes.contains(pushNode))
             this.pushNodes.add(pushNode);
         this.syncPeriod = true;
-        this.messageSaved = false;
+        this.syncActionDone = false;
     }
 
     private void startSyncMode(AccountJid accountJid) {
@@ -114,7 +118,7 @@ public class SyncManager implements OnTimerListener {
         if (this.accountJids != null && !this.accountJids.contains(accountJid))
             this.accountJids.add(accountJid);
         this.syncPeriod = true;
-        this.messageSaved = false;
+        this.syncActionDone = false;
     }
 
     private void stopSyncMode() {
@@ -129,6 +133,6 @@ public class SyncManager implements OnTimerListener {
     }
 
     private boolean isTimeToStopSyncPeriod() {
-        return messageSaved || System.currentTimeMillis() > timestamp + SYNC_TIME;
+        return syncActionDone || System.currentTimeMillis() > timestamp + SYNC_TIME;
     }
 }
