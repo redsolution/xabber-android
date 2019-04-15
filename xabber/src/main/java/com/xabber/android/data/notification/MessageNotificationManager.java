@@ -240,7 +240,7 @@ public class MessageNotificationManager implements OnLoadListener {
             List<Message> messages = chats.get(chats.size() - 1).getMessages();
             if (messages != null && messages.size() > 0) {
                 lastMessage = messages.get(messages.size() - 1);
-                rebuildAllNotifications();
+                //rebuildAllNotifications();
             }
         }
     }
