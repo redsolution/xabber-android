@@ -17,7 +17,6 @@ import java.util.Date;
 public class ChatWithButtonVO extends ExtContactVO {
 
     public ChatWithButtonVO(int accountColorIndicator, int accountColorIndicatorBack,
-                            boolean showOfflineShadow,
                             String name, String status, int statusId, int statusLevel, Drawable avatar,
                             int mucIndicatorLevel, UserJid userJid, AccountJid accountJid, int unreadCount,
                             boolean mute, NotificationState.NotificationMode notificationMode, String messageText,
@@ -25,7 +24,7 @@ public class ChatWithButtonVO extends ExtContactVO {
                             boolean archived, String lastActivity, ContactClickListener listener, int forwardedCount,
                             boolean isCustomNotification) {
 
-        super(accountColorIndicator, accountColorIndicatorBack, showOfflineShadow, name, status,
+        super(accountColorIndicator, accountColorIndicatorBack, name, status,
                 statusId, statusLevel, avatar, mucIndicatorLevel, userJid, accountJid,
                 unreadCount, mute, notificationMode, messageText, isOutgoing, time, messageStatus,
                 messageOwner, archived, lastActivity, listener, forwardedCount, isCustomNotification);
@@ -35,7 +34,6 @@ public class ChatWithButtonVO extends ExtContactVO {
         ExtContactVO contactVO = ExtContactVO.convert(contact, listener);
         return new ChatWithButtonVO(
                 contactVO.getAccountColorIndicator(), contactVO.getAccountColorIndicatorBack(),
-                contactVO.isShowOfflineShadow(),
                 contactVO.getName(), contactVO.getStatus(), contactVO.getStatusId(),
                 contactVO.getStatusLevel(), contactVO.getAvatar(), contactVO.getMucIndicatorLevel(),
                 contactVO.getUserJid(), contactVO.getAccountJid(), contactVO.getUnreadCount(),
@@ -48,7 +46,6 @@ public class ChatWithButtonVO extends ExtContactVO {
     public static ChatWithButtonVO convert(ChatVO chat) {
         return new ChatWithButtonVO(
                 chat.getAccountColorIndicator(), chat.getAccountColorIndicatorBack(),
-                chat.isShowOfflineShadow(),
                 chat.getName(), chat.getStatus(), chat.getStatusId(),
                 chat.getStatusLevel(), chat.getAvatar(), chat.getMucIndicatorLevel(),
                 chat.getUserJid(), chat.getAccountJid(), chat.getUnreadCount(),

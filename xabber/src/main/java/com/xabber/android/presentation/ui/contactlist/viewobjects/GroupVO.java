@@ -43,7 +43,6 @@ public class GroupVO extends AbstractFlexibleItem<GroupVO.ViewHolder>
 
     private int accountColorIndicator;
     private int accountColorIndicatorBack;
-    private boolean showOfflineShadow;
 
     private String title;
     private int offlineIndicatorLevel;
@@ -63,7 +62,7 @@ public class GroupVO extends AbstractFlexibleItem<GroupVO.ViewHolder>
     }
 
     public GroupVO(int accountColorIndicator, int accountColorIndicatorBack,
-                   boolean showOfflineShadow, String title,
+                   String title,
                    boolean expanded, int offlineIndicatorLevel, String groupName,
                    AccountJid accountJid, boolean firstInAccount, boolean isCustomNotification,
                    GroupClickListener listener) {
@@ -71,7 +70,6 @@ public class GroupVO extends AbstractFlexibleItem<GroupVO.ViewHolder>
         this.id = UUID.randomUUID().toString();
         this.accountColorIndicator = accountColorIndicator;
         this.accountColorIndicatorBack = accountColorIndicatorBack;
-        this.showOfflineShadow = showOfflineShadow;
         this.title = title;
         this.mExpanded = expanded;
         this.offlineIndicatorLevel = offlineIndicatorLevel;
@@ -103,11 +101,6 @@ public class GroupVO extends AbstractFlexibleItem<GroupVO.ViewHolder>
 
     @Override
     public void bindViewHolder(FlexibleAdapter adapter, ViewHolder viewHolder, int position, List<Object> payloads) {
-
-        /** set up OFFLINE SHADOW */
-        if (isShowOfflineShadow())
-            viewHolder.offlineShadow.setVisibility(View.VISIBLE);
-        else viewHolder.offlineShadow.setVisibility(View.GONE);
 
         /** set up ACCOUNT COLOR indicator */
         viewHolder.accountColorIndicator.setBackgroundColor(getAccountColorIndicator());
@@ -182,7 +175,6 @@ public class GroupVO extends AbstractFlexibleItem<GroupVO.ViewHolder>
 
         String name = GroupManager.getInstance().getGroupName(configuration.getAccount(),
                 configuration.getGroup());
-        boolean showOfflineShadow = false;
         int accountColorIndicator;
         int accountColorIndicatorBack;
         boolean expanded;
@@ -207,15 +199,7 @@ public class GroupVO extends AbstractFlexibleItem<GroupVO.ViewHolder>
         if (!name.equals(RECENT_CHATS_TITLE))
             name = String.format("%s (%d/%d)", name, configuration.getOnline(), configuration.getTotal());
 
-        AccountItem accountItem = AccountManager.getInstance().getAccount(configuration.getAccount());
-
-        if (accountItem != null) {
-            StatusMode statusMode = accountItem.getDisplayStatusMode();
-            if (statusMode == StatusMode.unavailable || statusMode == StatusMode.connection)
-                showOfflineShadow = true;
-        }
-
-        return new GroupVO(accountColorIndicator, accountColorIndicatorBack, showOfflineShadow, name, expanded,
+        return new GroupVO(accountColorIndicator, accountColorIndicatorBack, name, expanded,
                 offlineIndicatorLevel, configuration.getGroup(), configuration.getAccount(),
                 firstInAccount, isCustomNotification, listener);
     }
@@ -248,16 +232,11 @@ public class GroupVO extends AbstractFlexibleItem<GroupVO.ViewHolder>
         return accountColorIndicatorBack;
     }
 
-    public boolean isShowOfflineShadow() {
-        return showOfflineShadow;
-    }
-
     public class ViewHolder extends ExpandableViewHolder implements View.OnCreateContextMenuListener {
 
         final ImageView indicator;
         final TextView name;
         final ImageView groupOfflineIndicator;
-        final ImageView offlineShadow;
         final View accountColorIndicator;
         final View accountColorIndicatorBack;
         final View line;
@@ -273,7 +252,6 @@ public class GroupVO extends AbstractFlexibleItem<GroupVO.ViewHolder>
             indicator = (ImageView) view.findViewById(R.id.indicator);
             name = (TextView) view.findViewById(R.id.name);
             groupOfflineIndicator = (ImageView) view.findViewById(R.id.group_offline_indicator);
-            offlineShadow = (ImageView) view.findViewById(R.id.offline_shadow);
             line = view.findViewById(R.id.line);
         }
 
