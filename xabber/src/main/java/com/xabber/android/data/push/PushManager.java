@@ -130,7 +130,7 @@ public class PushManager implements OnConnectedListener, OnPacketListener {
     /** Api */
 
     public void enablePushNotificationsIfNeed(AccountItem accountItem) {
-        if (accountItem != null && accountItem.isPushEnabled()) {
+        if (accountItem != null && accountItem.isPushEnabled() && accountItem.getConnection().isConnected()) {
             if (isSupport(accountItem.getConnection())) {
                 registerEndpoint(accountItem.getAccount());
             } else AccountManager.getInstance().setPushWasEnabled(accountItem, false);
@@ -138,7 +138,7 @@ public class PushManager implements OnConnectedListener, OnPacketListener {
     }
 
     public void disablePushNotification(AccountItem accountItem) {
-        if (accountItem != null && !accountItem.isPushEnabled()) {
+        if (accountItem != null && !accountItem.isPushEnabled() && accountItem.getConnection().isConnected()) {
             if (isSupport(accountItem.getConnection())) {
                 deleteEndpoint(accountItem);
             } AccountManager.getInstance().setPushWasEnabled(accountItem, false);
