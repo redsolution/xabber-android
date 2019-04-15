@@ -106,6 +106,10 @@ public class AccountPushActivity extends ManagedActivity implements OnAccountCha
     }
 
     private void updateSwitchButton() {
+        boolean enabled = accountItem.getConnection().isConnected();
+        rlPushSwitch.setEnabled(enabled);
+        switchPush.setEnabled(enabled);
+
         switchPush.setChecked(accountItem.isPushEnabled());
         tvPushState.setText(accountItem.isPushWasEnabled()
                 ? R.string.account_push_state_enabled : R.string.account_push_state_disabled);
