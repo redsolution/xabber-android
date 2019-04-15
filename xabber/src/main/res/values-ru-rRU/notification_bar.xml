@@ -36,6 +36,7 @@
     <!-- Used for plural form in russian. -->
     <string name="connection_state_waiting_5">%1$d из %2$d %3$s ожидают переподключения </string>
     <string name="connection_state_offline">%1$d %2$s не в сети</string>
+    <string name="connection_state_sync">Выполняется синхронизация</string>
     <string name="muc_invite_message">Вы хотите подключиться к конференции?</string>
     <string name="otr_verification_in_progress">Нажмите, чтобы прервать.</string>
     <string name="PASSWORD_REQUIRED">Требуется ввести пароль</string>
