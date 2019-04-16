@@ -138,9 +138,12 @@ public class PushManager implements OnConnectedListener, OnPacketListener {
     }
 
     public void disablePushNotification(AccountItem accountItem, boolean needConfirm) {
-        if (accountItem != null && accountItem.getConnection().isConnected()) {
+        if (accountItem != null) {
             deleteEndpoint(accountItem);
-            sendDisablePushIQ(accountItem, needConfirm);
+
+            if (accountItem.getConnection().isConnected())
+                sendDisablePushIQ(accountItem, needConfirm);
+            AccountManager.getInstance().setPushWasEnabled(accountItem, false);
         }
     }
 

@@ -464,6 +464,9 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
             return;
         }
 
+        // disable push
+        PushManager.getInstance().disablePushNotification(getAccount(account), false);
+
         boolean wasEnabled = accountItem.isEnabled();
         accountItem.setEnabled(false);
         accountItem.disconnect();
