@@ -687,6 +687,9 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
             return;
         }
 
+        // disable push
+        if (!enabled) PushManager.getInstance().disablePushNotification(getAccount(account), false);
+
         accountItem.setEnabled(enabled);
         requestToWriteAccount(accountItem);
         PushManager.getInstance().updateEnabledPushNodes();
@@ -1227,7 +1230,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
             @Override
             public void run() {
                 if (enabled) PushManager.getInstance().enablePushNotificationsIfNeed(accountItem);
-                else PushManager.getInstance().disablePushNotification(accountItem);
+                else PushManager.getInstance().disablePushNotification(accountItem, true);
             }
         });
         PushManager.getInstance().updateEnabledPushNodes();

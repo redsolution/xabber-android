@@ -137,11 +137,10 @@ public class PushManager implements OnConnectedListener, OnPacketListener {
         }
     }
 
-    public void disablePushNotification(AccountItem accountItem) {
-        if (accountItem != null && !accountItem.isPushEnabled() && accountItem.getConnection().isConnected()) {
-            if (isSupport(accountItem.getConnection())) {
-                deleteEndpoint(accountItem);
-            } AccountManager.getInstance().setPushWasEnabled(accountItem, false);
+    public void disablePushNotification(AccountItem accountItem, boolean needConfirm) {
+        if (accountItem != null && accountItem.getConnection().isConnected()) {
+            deleteEndpoint(accountItem);
+            sendDisablePushIQ(accountItem, needConfirm);
         }
     }
 
@@ -201,7 +200,6 @@ public class PushManager implements OnConnectedListener, OnPacketListener {
                             @Override
                             public void call(ResponseBody responseBody) {
                                 Log.d(LOG_TAG, "Endpoint successfully unregistered");
-                                sendDisablePushIQ(accountItem, accountItem.getPushServiceJid(), accountItem.getPushNode());
                             }
                         }, new Action1<Throwable>() {
                             @Override
@@ -226,13 +224,13 @@ public class PushManager implements OnConnectedListener, OnPacketListener {
         }
     }
 
-    private void sendDisablePushIQ(final AccountItem accountItem, final String pushServiceJid, final String node) {
+    private void sendDisablePushIQ(final AccountItem accountItem, boolean needConfirm) {
         String stanzaID = null;
         try {
             DisablePushNotificationsIQ disableIQ = new DisablePushNotificationsIQ(
-                    UserJid.from(pushServiceJid).getJid(), node);
+                    UserJid.from(accountItem.getPushServiceJid()).getJid(), accountItem.getPushNode());
             stanzaID = disableIQ.getStanzaId();
-            waitingIQs.put(stanzaID, false);
+            if (needConfirm) waitingIQs.put(stanzaID, false);
             accountItem.getConnection().sendStanza(disableIQ);
         } catch (SmackException.NotConnectedException | InterruptedException | UserJid.UserJidCreateException e) {
             Log.d(LOG_TAG, "Push notification enabling failed: " + e.toString());
