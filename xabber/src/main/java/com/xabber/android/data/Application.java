@@ -45,6 +45,7 @@ import com.xabber.android.data.extension.chat_markers.ChatMarkerManager;
 import com.xabber.android.data.extension.cs.ChatStateManager;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.mam.MamManager;
+import com.xabber.android.data.extension.mam.NextMamManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.ssn.SSNManager;
@@ -333,10 +334,10 @@ public class Application extends android.app.Application {
             AndroidDevMetrics.initWith(this);
 
             /** Strict Mode */
-            StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
-                    .detectAll()
-                    .penaltyLog()
-                    .build());
+//            StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
+//                    .detectAll()
+//                    .penaltyLog()
+//                    .build());
         }
 
         /** Crashlytics */
@@ -387,7 +388,8 @@ public class Application extends android.app.Application {
         addManager(CarbonManager.getInstance());
         addManager(HttpFileUploadManager.getInstance());
         addManager(BlockingManager.getInstance());
-        addManager(MamManager.getInstance());
+        //addManager(MamManager.getInstance());
+        addManager(NextMamManager.getInstance());
         addManager(CertificateManager.getInstance());
         addManager(XMPPAuthManager.getInstance());
         addManager(PushManager.getInstance());

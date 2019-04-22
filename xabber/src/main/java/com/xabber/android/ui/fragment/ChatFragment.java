@@ -61,6 +61,7 @@ import com.xabber.android.data.extension.mam.LastHistoryLoadFinishedEvent;
 import com.xabber.android.data.extension.mam.LastHistoryLoadStartedEvent;
 import com.xabber.android.data.extension.mam.LoadHistorySettings;
 import com.xabber.android.data.extension.mam.MamManager;
+import com.xabber.android.data.extension.mam.NextMamManager;
 import com.xabber.android.data.extension.mam.PreviousHistoryLoadFinishedEvent;
 import com.xabber.android.data.extension.mam.PreviousHistoryLoadStartedEvent;
 import com.xabber.android.data.extension.muc.MUCManager;
@@ -421,7 +422,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
             if (loadHistorySettings == LoadHistorySettings.all || loadHistorySettings == LoadHistorySettings.current) {
                 if (!isRemoteHistoryRequested) {
-                    MamManager.getInstance().requestLastHistoryByUser(getChat());
+                    //MamManager.getInstance().requestLastHistoryByUser(getChat());
+                    NextMamManager.getInstance().onChatOpen(getChat());
                 }
             }
         }
@@ -684,7 +686,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         if (!isRemoteHistoryRequested) {
             AbstractChat chat = getChat();
             if (chat != null) {
-                MamManager.getInstance().requestPreviousHistory(chat);
+                //MamManager.getInstance().requestPreviousHistory(chat);
             }
 
         }

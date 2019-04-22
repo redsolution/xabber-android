@@ -122,6 +122,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     private RealmResults<SyncInfo> syncInfo;
     private MessageItem lastMessage;
     private RealmResults<MessageItem> messages;
+    private String lastMessageId = null;
 
     protected AbstractChat(@NonNull final AccountJid account, @NonNull final UserJid user, boolean isPrivateMucChat) {
         super(account, isPrivateMucChat ? user : user.getBareUserJid());
@@ -246,7 +247,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         else return false;
     }
 
-    private void enableNotificationsIfNeed() {
+    public void enableNotificationsIfNeed() {
         int currentTime = (int) (System.currentTimeMillis() / 1000L);
         NotificationState.NotificationMode mode = notificationState.getMode();
 
@@ -942,4 +943,12 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     }
 
     protected abstract String parseInnerMessage(boolean ui, Message message, String parentMessageId);
+
+    public String getLastMessageId() {
+        return lastMessageId;
+    }
+
+    public void setLastMessageId(String lastMessageId) {
+        this.lastMessageId = lastMessageId;
+    }
 }

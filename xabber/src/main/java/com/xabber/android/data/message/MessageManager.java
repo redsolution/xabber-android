@@ -536,7 +536,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
      * @param chat
      * @return Whether specified chat is currently visible.
      */
-    boolean isVisibleChat(AbstractChat chat) {
+    public boolean isVisibleChat(AbstractChat chat) {
         return visibleChat == chat;
     }
 
