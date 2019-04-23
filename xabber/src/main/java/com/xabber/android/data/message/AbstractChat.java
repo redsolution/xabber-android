@@ -123,6 +123,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     private MessageItem lastMessage;
     private RealmResults<MessageItem> messages;
     private String lastMessageId = null;
+    private boolean historyIsFull = false;
 
     protected AbstractChat(@NonNull final AccountJid account, @NonNull final UserJid user, boolean isPrivateMucChat) {
         super(account, isPrivateMucChat ? user : user.getBareUserJid());
@@ -951,5 +952,13 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
 
     public void setLastMessageId(String lastMessageId) {
         this.lastMessageId = lastMessageId;
+    }
+
+    public boolean historyIsFull() {
+        return historyIsFull;
+    }
+
+    public void setHistoryIsFull() {
+        this.historyIsFull = true;
     }
 }

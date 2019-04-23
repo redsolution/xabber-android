@@ -132,6 +132,7 @@ public class NextMamManager implements OnRosterReceivedListener {
     }
 
     public void onScrollInChat(final AbstractChat chat) {
+        if (chat.historyIsFull()) return;
         Application.getInstance().runInBackgroundUserRequest(new Runnable() {
             @Override
             public void run() {
@@ -231,6 +232,11 @@ public class NextMamManager implements OnRosterReceivedListener {
     private void loadNextHistory(Realm realm, AccountItem accountItem, AbstractChat chat) {
         MessageItem firstMessage = getFirstMessage(chat, realm);
         if (firstMessage != null) {
+            if (firstMessage.getArchivedId().equals(firstMessage.getPreviousId())) {
+                chat.setHistoryIsFull();
+                return;
+            }
+
             MamManager.MamQueryResult queryResult = requestMessagesBeforeId(accountItem, chat, firstMessage.getArchivedId());
             if (queryResult != null) {
                 List<Forwarded> messages = new ArrayList<>(queryResult.forwardedMessages);
@@ -532,7 +538,8 @@ public class NextMamManager implements OnRosterReceivedListener {
 
             // notify about new message
             chat.enableNotificationsIfNeed();
-            boolean notify = !message.getText().trim().isEmpty() && message.isIncoming() && chat.notifyAboutMessage();
+            boolean notify = (message.getText() != null && !message.getText().trim().isEmpty())
+                    && message.isIncoming() && chat.notifyAboutMessage();
             boolean visible = MessageManager.getInstance().isVisibleChat(chat);
             if (notify && !visible)
                 NotificationManager.getInstance().onMessageNotification(message);
