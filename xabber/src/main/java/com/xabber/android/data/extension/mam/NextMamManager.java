@@ -27,10 +27,10 @@ import com.xabber.android.data.roster.RosterManager;
 import net.java.otr4j.io.SerializationUtils;
 import net.java.otr4j.io.messages.PlainTextMessage;
 
+import org.greenrobot.eventbus.EventBus;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Message;
-import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.util.PacketParserUtils;
 import org.jivesoftware.smackx.delay.packet.DelayInformation;
@@ -65,6 +65,8 @@ public class NextMamManager implements OnRosterReceivedListener {
      *  позднее - непрочитанными.
      *  */
     private long startHistoryTimestamp;
+    private boolean isRequested = false;
+    private final Object lock = new Object();
 
     public static NextMamManager getInstance() {
         if (instance == null)
@@ -105,15 +107,6 @@ public class NextMamManager implements OnRosterReceivedListener {
         realm.close();
      }
 
-//    public void onAccountDisconnected(AccountItem accountItem) {
-//        /**
-//         * Проставляем для всех чатов lastMessageArchiveID = null
-//         */
-//
-//        // для всех чатов
-//        // chat.setLastMessageArchiveID(null)
-//    }
-
     /**
      * Проверяем наличие дыр в истории:
      *  - Берем все сообщения с previousID = null
@@ -138,9 +131,26 @@ public class NextMamManager implements OnRosterReceivedListener {
         });
     }
 
-//    public void onScrollInChat(AbstractChat chat) {
-//        loadNextHistory(chat);
-//    }
+    public void onScrollInChat(final AbstractChat chat) {
+        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
+            @Override
+            public void run() {
+                synchronized (lock) {
+                    if (isRequested) return;
+                    else isRequested = true;
+                }
+                EventBus.getDefault().post(new PreviousHistoryLoadStartedEvent(chat));
+                Realm realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
+                AccountItem accountItem = AccountManager.getInstance().getAccount(chat.getAccount());
+                loadNextHistory(realm, accountItem, chat);
+                realm.close();
+                EventBus.getDefault().post(new PreviousHistoryLoadFinishedEvent(chat));
+                synchronized (lock) {
+                    isRequested = false;
+                }
+            }
+        });
+    }
 
     /** MAIN */
 
@@ -165,8 +175,8 @@ public class NextMamManager implements OnRosterReceivedListener {
         if (queryResult != null) {
             List<Forwarded> messages = new ArrayList<>(queryResult.forwardedMessages);
             saveOrUpdateMessages(realm, chat, parseMessage(chat.getAccount(), chat.getUser(), messages, null));
-            updateLastMessageId(chat, realm);
         }
+        updateLastMessageId(chat, realm);
     }
 
     private void loadAllNewMessages(Realm realm, AccountItem accountItem) {
@@ -205,21 +215,43 @@ public class NextMamManager implements OnRosterReceivedListener {
             if (!messages.isEmpty()) {
                 saveOrUpdateMessages(realm, chat,
                         parseMessage(chat.getAccount(), chat.getUser(), messages, chat.getLastMessageId()));
-                updateLastMessageId(chat, realm);
             }
+            updateLastMessageId(chat, realm);
         }
     }
 
-//    private void loadNextHistory(AbstractChat chat) {
-//        /**
-//         * Запросить страницу истории до самого первого сообщения в чате.
-//         * previousID сообщения на котором начиналась история = archivedID последнего полученного сообщения.
-//         * previousID первого полученного сообщения = null
-//         *
-//         * Если при запросе истории вернулась пустая страница, то
-//         * previousID сообщения на котором начиналась история = archivedID этого сообщения
-//         */
-//    }
+    /**
+     * Запросить страницу истории до самого первого сообщения в чате.
+     * previousID сообщения на котором начиналась история = archivedID последнего полученного сообщения.
+     * previousID первого полученного сообщения = null
+     *
+     * Если при запросе истории вернулась пустая страница, то
+     * previousID сообщения на котором начиналась история = archivedID этого сообщения
+     */
+    private void loadNextHistory(Realm realm, AccountItem accountItem, AbstractChat chat) {
+        MessageItem firstMessage = getFirstMessage(chat, realm);
+        if (firstMessage != null) {
+            MamManager.MamQueryResult queryResult = requestMessagesBeforeId(accountItem, chat, firstMessage.getArchivedId());
+            if (queryResult != null) {
+                List<Forwarded> messages = new ArrayList<>(queryResult.forwardedMessages);
+                if (!messages.isEmpty()) {
+                    List<MessageItem> savedMessages = saveOrUpdateMessages(realm, chat,
+                            parseMessage(chat.getAccount(), chat.getUser(), messages, null));
+
+                    if (savedMessages != null && !savedMessages.isEmpty()) {
+                        realm.beginTransaction();
+                        firstMessage.setPreviousId(savedMessages.get(savedMessages.size() - 1).getArchivedId());
+                        realm.commitTransaction();
+                    }
+                } else if (queryResult.mamFin.isComplete()) {
+                    realm.beginTransaction();
+                    firstMessage.setPreviousId(firstMessage.getArchivedId());
+                    realm.commitTransaction();
+                }
+            }
+        }
+
+    }
 
     /**
      * Находим M2 - первое сообщение перед M1 с archivedID != null и previousID != null
@@ -256,8 +288,6 @@ public class NextMamManager implements OnRosterReceivedListener {
                     m1.setPreviousId(savedMessages.get(savedMessages.size() - 1).getArchivedId());
                     realm.commitTransaction();
                 }
-
-                updateLastMessageId(chat, realm);
             }
         }
     }
@@ -313,6 +343,27 @@ public class NextMamManager implements OnRosterReceivedListener {
             MamManager mamManager = MamManager.getInstanceFor(connection);
             try {
                 queryResult = mamManager.pageAfter(chat.getUser().getJid(), archivedId, 50);
+            } catch (SmackException.NotLoggedInException | InterruptedException
+                    | SmackException.NotConnectedException | SmackException.NoResponseException
+                    | XMPPException.XMPPErrorException e) {
+                LogManager.exception(this, e);
+            }
+        }
+
+        return queryResult;
+    }
+
+    /** Request messages before with archivedID from chat history */
+    private @Nullable MamManager.MamQueryResult requestMessagesBeforeId(
+            @Nonnull AccountItem accountItem, @Nonnull AbstractChat chat, String archivedId) {
+
+        MamManager.MamQueryResult queryResult = null;
+        XMPPTCPConnection connection = accountItem.getConnection();
+
+        if (connection.isAuthenticated()) {
+            MamManager mamManager = MamManager.getInstanceFor(connection);
+            try {
+                queryResult = mamManager.pageBefore(chat.getUser().getJid(), archivedId, 50);
             } catch (SmackException.NotLoggedInException | InterruptedException
                     | SmackException.NotConnectedException | SmackException.NoResponseException
                     | XMPPException.XMPPErrorException e) {
@@ -576,6 +627,19 @@ public class NextMamManager implements OnRosterReceivedListener {
         if (results != null && !results.isEmpty()) {
             MessageItem lastMessage = results.last();
             return lastMessage.getArchivedId();
+        } else return null;
+    }
+
+    private MessageItem getFirstMessage(AbstractChat chat, Realm realm) {
+        RealmResults<MessageItem> results = realm.where(MessageItem.class)
+                .equalTo(MessageItem.Fields.ACCOUNT, chat.getAccount().toString())
+                .equalTo(MessageItem.Fields.USER, chat.getUser().toString())
+                .isNull(MessageItem.Fields.PARENT_MESSAGE_ID)
+                .isNotNull(MessageItem.Fields.ARCHIVED_ID)
+                .findAllSorted(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
+
+        if (results != null && !results.isEmpty()) {
+            return results.first();
         } else return null;
     }
 

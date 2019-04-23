@@ -59,6 +59,7 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
     private AccountJid account;
     private UserJid user;
     private int prevItemCount;
+    private String prevFirstItemId;
     private String firstUnreadMessageID;
     private boolean isCheckMode;
 
@@ -69,6 +70,8 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
         void onMessageNumberChanged(int prevItemCount);
         void onMessagesUpdated();
         void onChangeCheckedItems(int checkedItems);
+        int getLastVisiblePosition();
+        void scrollTo(int position);
     }
 
     public interface AnchorHolder {
@@ -94,6 +97,7 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
         user = chat.getUser();
         userName = RosterManager.getInstance().getName(account, user);
         prevItemCount = getItemCount();
+        prevFirstItemId = getFirstMessageId();
         accountMainColor = ColorManager.getInstance().getAccountPainter().getAccountMainColor(account);
         colorStateList = ColorManager.getInstance().getChatIncomingBalloonColorsStateList(account);
 
@@ -106,6 +110,12 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
         if (realmResults.isValid() && realmResults.isLoaded())
             return realmResults.size();
         else return 0;
+    }
+
+    private String getFirstMessageId() {
+        if (realmResults.isValid() && realmResults.isLoaded() && realmResults.size() > 0)
+            return realmResults.first().getUniqueId();
+        else return null;
     }
 
     @Override
@@ -230,13 +240,18 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
 
     @Override
     public void onChange() {
+        int lastPosition = listener.getLastVisiblePosition();
+        String firstMessageId = getFirstMessageId();
         notifyDataSetChanged();
         listener.onMessagesUpdated();
 
         int itemCount = getItemCount();
         if (prevItemCount != itemCount) {
+            if (firstMessageId != null && !firstMessageId.equals(prevFirstItemId))
+                listener.scrollTo(lastPosition + (itemCount - prevItemCount));
             listener.onMessageNumberChanged(prevItemCount);
             prevItemCount = itemCount;
+            prevFirstItemId = firstMessageId;
         }
     }
 

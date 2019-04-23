@@ -60,7 +60,6 @@ import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.mam.LastHistoryLoadFinishedEvent;
 import com.xabber.android.data.extension.mam.LastHistoryLoadStartedEvent;
 import com.xabber.android.data.extension.mam.LoadHistorySettings;
-import com.xabber.android.data.extension.mam.MamManager;
 import com.xabber.android.data.extension.mam.NextMamManager;
 import com.xabber.android.data.extension.mam.PreviousHistoryLoadFinishedEvent;
 import com.xabber.android.data.extension.mam.PreviousHistoryLoadStartedEvent;
@@ -686,7 +685,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         if (!isRemoteHistoryRequested) {
             AbstractChat chat = getChat();
             if (chat != null) {
-                //MamManager.getInstance().requestPreviousHistory(chat);
+                NextMamManager.getInstance().onScrollInChat(getChat());
             }
 
         }
@@ -1309,6 +1308,16 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
             toBeScrolled = true;
             scrollDown();
         }
+    }
+
+    @Override
+    public int getLastVisiblePosition() {
+        return layoutManager.findLastVisibleItemPosition();
+    }
+
+    @Override
+    public void scrollTo(int position) {
+        layoutManager.scrollToPosition(position);
     }
 
     public void saveScrollState() {

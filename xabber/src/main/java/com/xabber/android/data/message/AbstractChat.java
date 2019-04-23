@@ -787,6 +787,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
      * Disconnection occured.
      */
     protected void onDisconnect() {
+        setLastMessageId(null);
     }
 
     public void setIsPrivateMucChatAccepted(boolean isPrivateMucChatAccepted) {
