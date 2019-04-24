@@ -46,6 +46,7 @@ import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.notification.MessageNotificationManager;
 import com.xabber.android.data.notification.NotificationManager;
+import com.xabber.xmpp.sid.UniqStanzaHelper;
 
 import org.greenrobot.eventbus.EventBus;
 import org.jivesoftware.smack.SmackException;
@@ -435,6 +436,12 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         // when getting new message, unarchive chat if chat not muted
         if (this.notifyAboutMessage())
             this.archived = false;
+
+        // update last id in chat
+        messageItem.setPreviousId(getLastMessageId());
+        String id = messageItem.getArchivedId();
+        if (id == null) id = messageItem.getStanzaId();
+        setLastMessageId(id);
 
         return messageItem;
     }
@@ -960,5 +967,18 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
 
     public void setHistoryIsFull() {
         this.historyIsFull = true;
+    }
+
+    public static String getStanzaId(Message message) {
+        String stanzaId = null;
+
+        stanzaId = UniqStanzaHelper.getOriginId(message);
+        if (stanzaId != null && !stanzaId.isEmpty()) return stanzaId;
+
+        stanzaId = UniqStanzaHelper.getStanzaId(message);
+        if (stanzaId != null && !stanzaId.isEmpty()) return stanzaId;
+
+        stanzaId = message.getStanzaId();
+        return stanzaId;
     }
 }

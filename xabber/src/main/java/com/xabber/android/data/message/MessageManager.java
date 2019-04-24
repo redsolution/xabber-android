@@ -783,7 +783,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
             if (forwardComment != null) text = forwardComment;
 
             MessageItem newMessageItem = finalChat.createNewMessageItem(text);
-            newMessageItem.setStanzaId(message.getStanzaId());
+            newMessageItem.setStanzaId(AbstractChat.getStanzaId(message));
             newMessageItem.setSent(true);
             newMessageItem.setForwarded(true);
 

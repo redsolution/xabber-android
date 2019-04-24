@@ -487,7 +487,7 @@ public class NextMamManager implements OnRosterReceivedListener {
             messageItem.setDelayTimestamp(messageDelay.getStamp().getTime());
         }
         messageItem.setIncoming(incoming);
-        messageItem.setStanzaId(message.getStanzaId());
+        messageItem.setStanzaId(AbstractChat.getStanzaId(message));
         messageItem.setReceivedFromMessageArchive(true);
         messageItem.setRead(timestamp <= startHistoryTimestamp);
         messageItem.setSent(true);
