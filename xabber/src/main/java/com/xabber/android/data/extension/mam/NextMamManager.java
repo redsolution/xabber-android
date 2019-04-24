@@ -140,12 +140,12 @@ public class NextMamManager implements OnRosterReceivedListener {
                     if (isRequested) return;
                     else isRequested = true;
                 }
-                EventBus.getDefault().post(new PreviousHistoryLoadStartedEvent(chat));
+                EventBus.getDefault().post(new LastHistoryLoadStartedEvent(chat));
                 Realm realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
                 AccountItem accountItem = AccountManager.getInstance().getAccount(chat.getAccount());
                 loadNextHistory(realm, accountItem, chat);
                 realm.close();
-                EventBus.getDefault().post(new PreviousHistoryLoadFinishedEvent(chat));
+                EventBus.getDefault().post(new LastHistoryLoadFinishedEvent(chat));
                 synchronized (lock) {
                     isRequested = false;
                 }
