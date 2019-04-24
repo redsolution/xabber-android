@@ -489,7 +489,7 @@ public class NextMamManager implements OnRosterReceivedListener {
         messageItem.setIncoming(incoming);
         messageItem.setStanzaId(message.getStanzaId());
         messageItem.setReceivedFromMessageArchive(true);
-        messageItem.setRead(timestamp < startHistoryTimestamp);
+        messageItem.setRead(timestamp <= startHistoryTimestamp);
         messageItem.setSent(true);
         messageItem.setEncrypted(encrypted);
 
@@ -554,7 +554,7 @@ public class NextMamManager implements OnRosterReceivedListener {
 
             // notify about new message
             chat.enableNotificationsIfNeed();
-            boolean notify = (message.getText() != null && !message.getText().trim().isEmpty())
+            boolean notify = !message.isRead() && (message.getText() != null && !message.getText().trim().isEmpty())
                     && message.isIncoming() && chat.notifyAboutMessage();
             boolean visible = MessageManager.getInstance().isVisibleChat(chat);
             if (notify && !visible)
