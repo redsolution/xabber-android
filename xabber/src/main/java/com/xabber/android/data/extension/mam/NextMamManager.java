@@ -120,6 +120,22 @@ public class NextMamManager implements OnRosterReceivedListener {
             public void run() {
                 Realm realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
                 AccountItem accountItem = AccountManager.getInstance().getAccount(chat.getAccount());
+
+                // load prev page if history is not enough
+                if (historyIsNotEnough(realm, chat) && !chat.historyIsFull()) {
+                    synchronized (lock) {
+                        if (isRequested) return;
+                        else isRequested = true;
+                    }
+                    EventBus.getDefault().post(new LastHistoryLoadStartedEvent(chat));
+                    loadNextHistory(realm, accountItem, chat);
+                    EventBus.getDefault().post(new LastHistoryLoadFinishedEvent(chat));
+                    synchronized (lock) {
+                        isRequested = false;
+                    }
+                }
+
+                // load missed messages if need
                 List<MessageItem> messages = findMissedMessages(realm, chat);
                 if (messages != null && !messages.isEmpty() && accountItem != null) {
                     for (MessageItem message : messages) {
@@ -621,6 +637,15 @@ public class NextMamManager implements OnRosterReceivedListener {
                 .findFirst();
         realm.close();
         return messageItem == null;
+    }
+
+    private boolean historyIsNotEnough(Realm realm, AbstractChat chat) {
+        RealmResults<MessageItem> results = realm.where(MessageItem.class)
+                .equalTo(MessageItem.Fields.ACCOUNT, chat.getAccount().toString())
+                .equalTo(MessageItem.Fields.USER, chat.getUser().toString())
+                .isNull(MessageItem.Fields.PARENT_MESSAGE_ID)
+                .findAll();
+        return results.size() < 30;
     }
 
     private String getLastMessageArchivedId(AbstractChat chat, Realm realm) {
