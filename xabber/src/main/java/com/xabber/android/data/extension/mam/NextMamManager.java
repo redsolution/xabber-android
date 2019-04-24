@@ -60,11 +60,6 @@ public class NextMamManager implements OnRosterReceivedListener {
 
     private static NextMamManager instance;
 
-    /** Timestamp начала работы приложения,
-     *  сообщения с timestamp раньше этого считаются прочитанными,
-     *  позднее - непрочитанными.
-     *  */
-    private long startHistoryTimestamp;
     private boolean isRequested = false;
     private final Object lock = new Object();
 
@@ -94,9 +89,8 @@ public class NextMamManager implements OnRosterReceivedListener {
      */
     public void onAccountConnected(AccountItem accountItem) {
         Realm realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
-        startHistoryTimestamp = getLastMessageTimestamp(accountItem, realm);
-
-        if (startHistoryTimestamp == 0) {
+        accountItem.setStartHistoryTimestamp(getLastMessageTimestamp(accountItem, realm));
+        if (accountItem.getStartHistoryTimestamp() == 0) {
             initializeStartTimestamp(accountItem);
             loadLastMessages(realm, accountItem);
         } else {
@@ -115,11 +109,17 @@ public class NextMamManager implements OnRosterReceivedListener {
      *  - - requestMissedMessages(message)
      */
     public void onChatOpen(final AbstractChat chat) {
+        final AccountItem accountItem = AccountManager.getInstance().getAccount(chat.getAccount());
+        if (accountItem == null || accountItem.getLoadHistorySettings() == LoadHistorySettings.none) return;
+
         Application.getInstance().runInBackground(new Runnable() {
             @Override
             public void run() {
                 Realm realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
-                AccountItem accountItem = AccountManager.getInstance().getAccount(chat.getAccount());
+
+                // if history is empty - load last message
+                MessageItem firstMessage = getFirstMessage(chat, realm);
+                if (firstMessage == null) loadLastMessage(realm, accountItem, chat);
 
                 // load prev page if history is not enough
                 if (historyIsNotEnough(realm, chat) && !chat.historyIsFull()) {
@@ -148,6 +148,9 @@ public class NextMamManager implements OnRosterReceivedListener {
     }
 
     public void onScrollInChat(final AbstractChat chat) {
+        final AccountItem accountItem = AccountManager.getInstance().getAccount(chat.getAccount());
+        if (accountItem == null || accountItem.getLoadHistorySettings() == LoadHistorySettings.none) return;
+
         if (chat.historyIsFull()) return;
         Application.getInstance().runInBackgroundUserRequest(new Runnable() {
             @Override
@@ -158,7 +161,6 @@ public class NextMamManager implements OnRosterReceivedListener {
                 }
                 EventBus.getDefault().post(new LastHistoryLoadStartedEvent(chat));
                 Realm realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
-                AccountItem accountItem = AccountManager.getInstance().getAccount(chat.getAccount());
                 loadNextHistory(realm, accountItem, chat);
                 realm.close();
                 EventBus.getDefault().post(new LastHistoryLoadFinishedEvent(chat));
@@ -172,6 +174,8 @@ public class NextMamManager implements OnRosterReceivedListener {
     /** MAIN */
 
     private void loadLastMessages(Realm realm, AccountItem accountItem) {
+        if (accountItem.getLoadHistorySettings() != LoadHistorySettings.all) return;
+
         Collection<RosterContact> contacts = RosterManager.getInstance()
                 .getAccountRosterContacts(accountItem.getAccount());
 
@@ -191,12 +195,14 @@ public class NextMamManager implements OnRosterReceivedListener {
         MamManager.MamQueryResult queryResult = requestLastMessage(accountItem, chat);
         if (queryResult != null) {
             List<Forwarded> messages = new ArrayList<>(queryResult.forwardedMessages);
-            saveOrUpdateMessages(realm, chat, parseMessage(chat.getAccount(), chat.getUser(), messages, null));
+            saveOrUpdateMessages(realm, chat, parseMessage(accountItem, chat.getAccount(), chat.getUser(), messages, null));
         }
         updateLastMessageId(chat, realm);
     }
 
     private void loadAllNewMessages(Realm realm, AccountItem accountItem) {
+        if (accountItem.getLoadHistorySettings() != LoadHistorySettings.all) return;
+
         Collection<RosterContact> contacts = RosterManager.getInstance()
                 .getAccountRosterContacts(accountItem.getAccount());
 
@@ -231,7 +237,7 @@ public class NextMamManager implements OnRosterReceivedListener {
 
             if (!messages.isEmpty()) {
                 saveOrUpdateMessages(realm, chat,
-                        parseMessage(chat.getAccount(), chat.getUser(), messages, chat.getLastMessageId()));
+                        parseMessage(accountItem, chat.getAccount(), chat.getUser(), messages, chat.getLastMessageId()));
             }
             updateLastMessageId(chat, realm);
         }
@@ -258,7 +264,7 @@ public class NextMamManager implements OnRosterReceivedListener {
                 List<Forwarded> messages = new ArrayList<>(queryResult.forwardedMessages);
                 if (!messages.isEmpty()) {
                     List<MessageItem> savedMessages = saveOrUpdateMessages(realm, chat,
-                            parseMessage(chat.getAccount(), chat.getUser(), messages, null));
+                            parseMessage(accountItem, chat.getAccount(), chat.getUser(), messages, null));
 
                     if (savedMessages != null && !savedMessages.isEmpty()) {
                         realm.beginTransaction();
@@ -303,7 +309,7 @@ public class NextMamManager implements OnRosterReceivedListener {
 
             if (!messages.isEmpty()) {
                 List<MessageItem> savedMessages = saveOrUpdateMessages(realm, chat,
-                        parseMessage(chat.getAccount(), chat.getUser(), messages, m2.getArchivedId()));
+                        parseMessage(accountItem, chat.getAccount(), chat.getUser(), messages, m2.getArchivedId()));
 
                 if (savedMessages != null && !savedMessages.isEmpty()) {
                     realm.beginTransaction();
@@ -317,13 +323,14 @@ public class NextMamManager implements OnRosterReceivedListener {
     /** Request most recent message from all history and save it timestamp to startHistoryTimestamp
      *  If message is null save current time to startHistoryTimestamp */
     private void initializeStartTimestamp(@Nonnull AccountItem accountItem) {
-        startHistoryTimestamp = System.currentTimeMillis();
+        long startHistoryTimestamp = System.currentTimeMillis();
 
         MamManager.MamQueryResult queryResult = requestLastMessage(accountItem);
         if (queryResult != null && !queryResult.forwardedMessages.isEmpty()) {
             Forwarded forwarded = queryResult.forwardedMessages.get(0);
             startHistoryTimestamp = forwarded.getDelayInformation().getStamp().getTime();
         }
+        accountItem.setStartHistoryTimestamp(startHistoryTimestamp);
     }
 
     /** REQUESTS */
@@ -419,11 +426,11 @@ public class NextMamManager implements OnRosterReceivedListener {
 
     /** PARSING */
 
-    private List<MessageItem> parseMessage(AccountJid account, UserJid user,
+    private List<MessageItem> parseMessage(AccountItem accountItem, AccountJid account, UserJid user,
                                            List<Forwarded> forwardedMessages, String prevID) {
         List<MessageItem> messageItems = new ArrayList<>();
         for (Forwarded forwarded : forwardedMessages) {
-            MessageItem message = parseMessage(account, user, forwarded, prevID);
+            MessageItem message = parseMessage(accountItem, account, user, forwarded, prevID);
             if (message != null) {
                 messageItems.add(message);
                 prevID = message.getArchivedId();
@@ -432,7 +439,7 @@ public class NextMamManager implements OnRosterReceivedListener {
         return messageItems;
     }
 
-    private @Nullable MessageItem parseMessage(AccountJid account, UserJid user, Forwarded forwarded, String prevID) {
+    private @Nullable MessageItem parseMessage(AccountItem accountItem, AccountJid account, UserJid user, Forwarded forwarded, String prevID) {
         if (!(forwarded.getForwardedStanza() instanceof Message)) {
             return null;
         }
@@ -489,7 +496,7 @@ public class NextMamManager implements OnRosterReceivedListener {
         messageItem.setIncoming(incoming);
         messageItem.setStanzaId(AbstractChat.getStanzaId(message));
         messageItem.setReceivedFromMessageArchive(true);
-        messageItem.setRead(timestamp <= startHistoryTimestamp);
+        messageItem.setRead(timestamp <= accountItem.getStartHistoryTimestamp());
         messageItem.setSent(true);
         messageItem.setEncrypted(encrypted);
 

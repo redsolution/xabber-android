@@ -121,6 +121,12 @@ public class AccountItem extends ConnectionItem implements Comparable<AccountIte
     private String pushNode;
     private String pushServiceJid;
 
+    /** Timestamp начала работы приложения,
+     *  сообщения с timestamp раньше этого считаются прочитанными,
+     *  позднее - непрочитанными.
+     *  */
+    private long startHistoryTimestamp;
+
     public AccountItem(boolean custom, String host,
                        int port, DomainBareJid serverName, Localpart userName, Resourcepart resource,
                        boolean storePassword, String password, String token, int colorIndex, int order,
@@ -508,5 +514,13 @@ public class AccountItem extends ConnectionItem implements Comparable<AccountIte
 
     public boolean isPushEnabled() {
         return pushEnabled;
+    }
+
+    public long getStartHistoryTimestamp() {
+        return startHistoryTimestamp;
+    }
+
+    public void setStartHistoryTimestamp(long startHistoryTimestamp) {
+        this.startHistoryTimestamp = startHistoryTimestamp;
     }
 }
