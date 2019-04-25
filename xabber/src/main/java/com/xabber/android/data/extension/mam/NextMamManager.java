@@ -181,6 +181,29 @@ public class NextMamManager implements OnRosterReceivedListener {
         });
     }
 
+    /**
+     * Only for debugging
+     * This method ignores MAM settings.
+     * Call only from background thread
+     */
+    public void loadFullChatHistory(AbstractChat chat) {
+        final AccountItem accountItem = AccountManager.getInstance().getAccount(chat.getAccount());
+        if (accountItem == null || !isSupported(accountItem.getAccount()) || chat.historyIsFull()) return;
+
+        Realm realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
+
+        // if history is empty - load last message
+        MessageItem firstMessage = getFirstMessage(chat, realm);
+        if (firstMessage == null) loadLastMessage(realm, accountItem, chat);
+
+        boolean complete = false;
+        while (!complete) {
+            complete = loadNextHistory(realm, accountItem, chat);
+        }
+
+        realm.close();
+    }
+
     public void onRequestUpdatePreferences(AccountJid accountJid) {
         final AccountItem accountItem = AccountManager.getInstance().getAccount(accountJid);
         if (accountItem == null || !isSupported(accountJid)) return;
@@ -281,12 +304,12 @@ public class NextMamManager implements OnRosterReceivedListener {
      * Если при запросе истории вернулась пустая страница, то
      * previousID сообщения на котором начиналась история = archivedID этого сообщения
      */
-    private void loadNextHistory(Realm realm, AccountItem accountItem, AbstractChat chat) {
+    private boolean loadNextHistory(Realm realm, AccountItem accountItem, AbstractChat chat) {
         MessageItem firstMessage = getFirstMessage(chat, realm);
         if (firstMessage != null) {
             if (firstMessage.getArchivedId().equals(firstMessage.getPreviousId())) {
                 chat.setHistoryIsFull();
-                return;
+                return true;
             }
 
             MamManager.MamQueryResult queryResult = requestMessagesBeforeId(accountItem, chat, firstMessage.getArchivedId());
@@ -300,6 +323,7 @@ public class NextMamManager implements OnRosterReceivedListener {
                         realm.beginTransaction();
                         firstMessage.setPreviousId(savedMessages.get(savedMessages.size() - 1).getArchivedId());
                         realm.commitTransaction();
+                        return false;
                     }
                 } else if (queryResult.mamFin.isComplete()) {
                     realm.beginTransaction();
@@ -308,7 +332,7 @@ public class NextMamManager implements OnRosterReceivedListener {
                 }
             }
         }
-
+        return true;
     }
 
     /**
@@ -770,65 +794,4 @@ public class NextMamManager implements OnRosterReceivedListener {
             chat.setLastMessageId(id);
         }
     }
-
-    /**
-     * Only for debugging
-     * Call only from background thread
-     * @param chat
-     */
-//    public void requestFullChatHistory(final AbstractChat chat) {
-//        if (chat == null || chat.isRemotePreviousHistoryCompletelyLoaded()) {
-//            return;
-//        }
-//
-//        final AccountItem accountItem = AccountManager.getInstance().getAccount(chat.getAccount());
-//        if (accountItem == null || !accountItem.getFactualStatusMode().isOnline()) {
-//            return;
-//        }
-//
-//        if (!checkSupport(accountItem)) {
-//            return;
-//        }
-//
-//        String firstMamMessageMamId;
-//        boolean remoteHistoryCompletelyLoaded;
-//        {
-//            Realm realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
-//            SyncInfo syncInfo = getSyncInfo(realm, chat.getAccount(), chat.getUser());
-//            firstMamMessageMamId = syncInfo.getFirstMamMessageMamId();
-//            remoteHistoryCompletelyLoaded = syncInfo.isRemoteHistoryCompletelyLoaded();
-//            realm.close();
-//        }
-//
-//        if (remoteHistoryCompletelyLoaded) {
-//            chat.setRemotePreviousHistoryCompletelyLoaded(true);
-//        }
-//
-//        if (firstMamMessageMamId == null || remoteHistoryCompletelyLoaded) {
-//            return;
-//        }
-//
-//        org.jivesoftware.smackx.mam.MamManager mamManager =
-//                org.jivesoftware.smackx.mam.MamManager.getInstanceFor(accountItem.getConnection());
-//
-//        final org.jivesoftware.smackx.mam.MamManager.MamQueryResult mamQueryResult;
-//        try {
-//            LogManager.i("MAM", "Loading previous history");
-//            mamQueryResult = mamManager.queryArchive(chat.getUser().getJid());
-//        } catch (SmackException.NotLoggedInException | SmackException.NoResponseException
-//                | XMPPException.XMPPErrorException | InterruptedException
-//                | SmackException.NotConnectedException e) {
-//            LogManager.exception(this, e);
-//            return;
-//        }
-//        LogManager.i("MAM", "queryArchive finished. fin count expected: "
-//                + mamQueryResult.mamFin.getRSMSet().getCount() + " real: "
-//                + mamQueryResult.forwardedMessages.size());
-//
-//        Realm realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
-//        List<MessageItem> messageItems = getMessageItems(mamQueryResult, chat);
-//        syncMessages(realm, chat, messageItems);
-//        updatePreviousHistorySyncInfo(realm, chat, mamQueryResult);
-//        realm.close();
-//    }
 }
