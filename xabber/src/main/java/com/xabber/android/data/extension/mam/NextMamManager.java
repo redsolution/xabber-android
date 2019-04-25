@@ -5,6 +5,7 @@ import android.util.Log;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
+import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.database.MessageDatabaseManager;
 import com.xabber.android.data.database.messagerealm.Attachment;
 import com.xabber.android.data.database.messagerealm.ForwardId;
@@ -44,7 +45,9 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -60,6 +63,7 @@ public class NextMamManager implements OnRosterReceivedListener {
 
     private static NextMamManager instance;
 
+    private Map<AccountJid, Boolean> supportedByAccount = new ConcurrentHashMap<>();
     private boolean isRequested = false;
     private final Object lock = new Object();
 
@@ -67,6 +71,10 @@ public class NextMamManager implements OnRosterReceivedListener {
         if (instance == null)
             instance = new NextMamManager();
         return instance;
+    }
+
+    public void onAuthorized(ConnectionItem connectionItem) {
+        updateIsSupported((AccountItem) connectionItem);
     }
 
     @Override
@@ -110,7 +118,8 @@ public class NextMamManager implements OnRosterReceivedListener {
      */
     public void onChatOpen(final AbstractChat chat) {
         final AccountItem accountItem = AccountManager.getInstance().getAccount(chat.getAccount());
-        if (accountItem == null || accountItem.getLoadHistorySettings() == LoadHistorySettings.none) return;
+        if (accountItem == null || accountItem.getLoadHistorySettings() == LoadHistorySettings.none
+                || !isSupported(accountItem.getAccount())) return;
 
         Application.getInstance().runInBackground(new Runnable() {
             @Override
@@ -149,7 +158,8 @@ public class NextMamManager implements OnRosterReceivedListener {
 
     public void onScrollInChat(final AbstractChat chat) {
         final AccountItem accountItem = AccountManager.getInstance().getAccount(chat.getAccount());
-        if (accountItem == null || accountItem.getLoadHistorySettings() == LoadHistorySettings.none) return;
+        if (accountItem == null || accountItem.getLoadHistorySettings() == LoadHistorySettings.none
+                || !isSupported(accountItem.getAccount())) return;
 
         if (chat.historyIsFull()) return;
         Application.getInstance().runInBackgroundUserRequest(new Runnable() {
@@ -171,10 +181,17 @@ public class NextMamManager implements OnRosterReceivedListener {
         });
     }
 
+    public boolean isSupported(AccountJid accountJid) {
+        Boolean isSupported = supportedByAccount.get(accountJid);
+        if (isSupported != null) return isSupported;
+        else return false;
+    }
+
     /** MAIN */
 
     private void loadLastMessages(Realm realm, AccountItem accountItem) {
-        if (accountItem.getLoadHistorySettings() != LoadHistorySettings.all) return;
+        if (accountItem.getLoadHistorySettings() != LoadHistorySettings.all
+                || !isSupported(accountItem.getAccount())) return;
 
         Collection<RosterContact> contacts = RosterManager.getInstance()
                 .getAccountRosterContacts(accountItem.getAccount());
@@ -201,7 +218,8 @@ public class NextMamManager implements OnRosterReceivedListener {
     }
 
     private void loadAllNewMessages(Realm realm, AccountItem accountItem) {
-        if (accountItem.getLoadHistorySettings() != LoadHistorySettings.all) return;
+        if (accountItem.getLoadHistorySettings() != LoadHistorySettings.all
+                || !isSupported(accountItem.getAccount())) return;
 
         Collection<RosterContact> contacts = RosterManager.getInstance()
                 .getAccountRosterContacts(accountItem.getAccount());
@@ -331,6 +349,20 @@ public class NextMamManager implements OnRosterReceivedListener {
             startHistoryTimestamp = forwarded.getDelayInformation().getStamp().getTime();
         }
         accountItem.setStartHistoryTimestamp(startHistoryTimestamp);
+    }
+
+    private void updateIsSupported(AccountItem accountItem) {
+        MamManager mamManager = MamManager.getInstanceFor(accountItem.getConnection());
+        boolean isSupported;
+        try {
+            isSupported = mamManager.isSupportedByServer();
+        } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException
+                | InterruptedException | SmackException.NotConnectedException | ClassCastException e) {
+            LogManager.exception(this, e);
+            isSupported = false;
+        }
+        supportedByAccount.put(accountItem.getAccount(), isSupported);
+        AccountManager.getInstance().onAccountChanged(accountItem.getAccount());
     }
 
     /** REQUESTS */
