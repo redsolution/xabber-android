@@ -1,7 +1,5 @@
 package com.xabber.android.data.extension.mam;
 
-import android.util.Log;
-
 import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
@@ -36,7 +34,6 @@ import org.jivesoftware.smack.util.PacketParserUtils;
 import org.jivesoftware.smackx.delay.packet.DelayInformation;
 import org.jivesoftware.smackx.forward.packet.Forwarded;
 import org.jivesoftware.smackx.mam.MamManager;
-import org.jxmpp.jid.Jid;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -340,8 +337,6 @@ public class NextMamManager implements OnRosterReceivedListener {
 
         MessageItem m2 = getMessageForCloseMissedMessages(realm, m1);
         if (m2 != null && !m2.getUniqueId().equals(m1.getUniqueId())) {
-            Log.d("VALERA_TEST", "m1 archived id: " + m1.getArchivedId() + " text: " + m1.getText());
-            Log.d("VALERA_TEST", "m2 archived id: " + m2.getArchivedId() + " text: " + m2.getText());
             Date startDate = new Date(m2.getTimestamp());
             Date endDate = new Date(m1.getTimestamp());
 
@@ -375,7 +370,7 @@ public class NextMamManager implements OnRosterReceivedListener {
     private void initializeStartTimestamp(@Nonnull AccountItem accountItem) {
         long startHistoryTimestamp = System.currentTimeMillis();
 
-        MamManager.MamQueryResult queryResult = requestLastMessage(accountItem);
+        MamManager.MamQueryResult queryResult = requestLastMessage(accountItem, null);
         if (queryResult != null && !queryResult.forwardedMessages.isEmpty()) {
             Forwarded forwarded = queryResult.forwardedMessages.get(0);
             startHistoryTimestamp = forwarded.getDelayInformation().getStamp().getTime();
@@ -399,111 +394,85 @@ public class NextMamManager implements OnRosterReceivedListener {
 
     /** REQUESTS */
 
-    /** Request most recent message from all history */
-    private @Nullable MamManager.MamQueryResult requestLastMessage(@Nonnull AccountItem accountItem) {
-        return requestLastMessage(accountItem, null);
+    abstract class MamRequest {
+        abstract MamManager.MamQueryResult execute(MamManager manager) throws Exception;
     }
 
-    /** Request recent message from chat history */
-    private @Nullable MamManager.MamQueryResult requestLastMessage(@Nonnull AccountItem accountItem, AbstractChat chat) {
+    private MamManager.MamQueryResult requestToMessageArchive(AccountItem accountItem, MamRequest request) {
         MamManager.MamQueryResult queryResult = null;
         XMPPTCPConnection connection = accountItem.getConnection();
-        Jid chatJid = null;
-        if (chat != null) chatJid = chat.getUser().getJid();
 
         if (connection.isAuthenticated()) {
             MamManager mamManager = MamManager.getInstanceFor(connection);
             try {
-                queryResult = mamManager.mostRecentPage(chatJid, 1);
-            } catch (SmackException.NotLoggedInException | InterruptedException
-                    | SmackException.NotConnectedException | SmackException.NoResponseException
-                    | XMPPException.XMPPErrorException e) {
+                queryResult = request.execute(mamManager);
+            } catch (Exception e) {
                 LogManager.exception(this, e);
             }
         }
-
         return queryResult;
     }
 
-    /** Request messages started with archivedID from chat history */
+    /** Request recent message from chat history if chat not null
+     *  Else request most recent message from all history*/
+    private @Nullable MamManager.MamQueryResult requestLastMessage(
+            @Nonnull AccountItem accountItem, @Nullable final AbstractChat chat) {
+
+        return requestToMessageArchive(accountItem, new MamRequest() {
+            @Override
+            MamManager.MamQueryResult execute(MamManager manager) throws Exception {
+                if (chat != null) return manager.mostRecentPage(chat.getUser().getJid(), 1);
+                else return manager.mostRecentPage(null, 1);
+            }
+        });
+    }
+
+    /** Request messages after archivedID from chat history */
     private @Nullable MamManager.MamQueryResult requestMessagesFromId(
-            @Nonnull AccountItem accountItem, @Nonnull AbstractChat chat, String archivedId) {
+            @Nonnull AccountItem accountItem, @Nonnull final AbstractChat chat, final String archivedId) {
 
-        MamManager.MamQueryResult queryResult = null;
-        XMPPTCPConnection connection = accountItem.getConnection();
-
-        if (connection.isAuthenticated()) {
-            MamManager mamManager = MamManager.getInstanceFor(connection);
-            try {
-                queryResult = mamManager.pageAfter(chat.getUser().getJid(), archivedId, 50);
-            } catch (SmackException.NotLoggedInException | InterruptedException
-                    | SmackException.NotConnectedException | SmackException.NoResponseException
-                    | XMPPException.XMPPErrorException e) {
-                LogManager.exception(this, e);
+        return requestToMessageArchive(accountItem, new MamRequest() {
+            @Override
+            MamManager.MamQueryResult execute(MamManager manager) throws Exception {
+                return manager.pageAfter(chat.getUser().getJid(), archivedId, 50);
             }
-        }
-
-        return queryResult;
+        });
     }
 
-    /** Request messages before with archivedID from chat history */
+    /** Request messages before archivedID from chat history */
     private @Nullable MamManager.MamQueryResult requestMessagesBeforeId(
-            @Nonnull AccountItem accountItem, @Nonnull AbstractChat chat, String archivedId) {
+            @Nonnull AccountItem accountItem, @Nonnull final AbstractChat chat, final String archivedId) {
 
-        MamManager.MamQueryResult queryResult = null;
-        XMPPTCPConnection connection = accountItem.getConnection();
-
-        if (connection.isAuthenticated()) {
-            MamManager mamManager = MamManager.getInstanceFor(connection);
-            try {
-                queryResult = mamManager.pageBefore(chat.getUser().getJid(), archivedId, 50);
-            } catch (SmackException.NotLoggedInException | InterruptedException
-                    | SmackException.NotConnectedException | SmackException.NoResponseException
-                    | XMPPException.XMPPErrorException e) {
-                LogManager.exception(this, e);
+        return requestToMessageArchive(accountItem, new MamRequest() {
+            @Override
+            MamManager.MamQueryResult execute(MamManager manager) throws Exception {
+                return manager.pageBefore(chat.getUser().getJid(), archivedId, 50);
             }
-        }
-
-        return queryResult;
+        });
     }
 
     /** Request messages started with startID and ending with endID from chat history */
     private @Nullable MamManager.MamQueryResult requestMissedMessages(
-            @Nonnull AccountItem accountItem, @Nonnull AbstractChat chat, Date startDate, Date endDate) {
+            @Nonnull AccountItem accountItem, @Nonnull final AbstractChat chat,
+            final Date startDate, final Date endDate) {
 
-        MamManager.MamQueryResult queryResult = null;
-        XMPPTCPConnection connection = accountItem.getConnection();
-
-        if (connection.isAuthenticated()) {
-            MamManager mamManager = MamManager.getInstanceFor(connection);
-            try {
-                queryResult = mamManager.queryArchive(50, startDate, endDate, chat.getUser().getJid(), null);
-            } catch (SmackException.NotLoggedInException | InterruptedException
-                    | SmackException.NotConnectedException | SmackException.NoResponseException
-                    | XMPPException.XMPPErrorException e) {
-                LogManager.exception(this, e);
+        return requestToMessageArchive(accountItem, new MamRequest() {
+            @Override
+            MamManager.MamQueryResult execute(MamManager manager) throws Exception {
+                return manager.queryArchive(50, startDate, endDate, chat.getUser().getJid(), null);
             }
-        }
-
-        return queryResult;
+        });
     }
 
-    private @Nullable MamManager.MamPrefsResult requestUpdatePreferences(@Nonnull AccountItem accountItem) {
-        MamManager.MamPrefsResult prefsResult = null;
-        XMPPTCPConnection connection = accountItem.getConnection();
-
-        if (connection.isAuthenticated()) {
-            MamManager mamManager = MamManager.getInstanceFor(connection);
-            try {
-                prefsResult = mamManager.updateArchivingPreferences(null, null, accountItem.getMamDefaultBehaviour());
-            } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException
-                    | InterruptedException | SmackException.NotConnectedException
-                    | SmackException.NotLoggedInException e) {
-                LogManager.exception(NextMamManager.class, e);
+    /** Request update archiving preferences on server */
+    private void requestUpdatePreferences(@Nonnull final AccountItem accountItem) {
+        requestToMessageArchive(accountItem, new MamRequest() {
+            @Override
+            MamManager.MamQueryResult execute(MamManager manager) throws Exception {
+                manager.updateArchivingPreferences(null, null, accountItem.getMamDefaultBehaviour());
+                return null;
             }
-        }
-
-        return prefsResult;
+        });
     }
 
     /** PARSING */
@@ -717,15 +686,6 @@ public class NextMamManager implements OnRosterReceivedListener {
             MessageItem lastMessage = results.last();
             return System.currentTimeMillis() < lastMessage.getTimestamp() + ALL_MESSAGE_LOAD_INTERVAL;
         } else return false;
-    }
-
-    private boolean historyIsEmpty(AccountItem account) {
-        Realm realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
-        MessageItem messageItem = realm.where(MessageItem.class)
-                .equalTo(MessageItem.Fields.ACCOUNT, account.getAccount().toString())
-                .findFirst();
-        realm.close();
-        return messageItem == null;
     }
 
     private boolean historyIsNotEnough(Realm realm, AbstractChat chat) {
