@@ -67,7 +67,6 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
     private List<String> checkedItemIds = new ArrayList<>();
 
     public interface Listener {
-        void onMessageNumberChanged(int prevItemCount);
         void onMessagesUpdated();
         void onChangeCheckedItems(int checkedItems);
         int getLastVisiblePosition();
@@ -249,7 +248,6 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
         if (prevItemCount != itemCount) {
             if (firstMessageId != null && !firstMessageId.equals(prevFirstItemId))
                 listener.scrollTo(lastPosition + (itemCount - prevItemCount));
-            listener.onMessageNumberChanged(prevItemCount);
             prevItemCount = itemCount;
             prevFirstItemId = firstMessageId;
         }

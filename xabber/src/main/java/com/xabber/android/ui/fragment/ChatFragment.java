@@ -170,7 +170,6 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
     private boolean historyIsLoading = false;
     private RealmResults<MessageItem> messageItems;
-    private boolean toBeScrolled;
 
     private List<HashMap<String, String>> menuItems = null;
 
@@ -324,14 +323,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
 
-                if (dy < 0) {
-                    loadHistoryIfNeed();
-                }
-
-                if (dy >= 0) {
-                    toBeScrolled = false;
-                }
-
+                if (dy < 0) loadHistoryIfNeed();
                 showScrollDownButtonIfNeed();
 
                 /** Necessary for
@@ -1218,16 +1210,6 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                     mp.release();
                 }
             });
-        }
-    }
-
-    @Override
-    public void onMessageNumberChanged(int prevItemCount) {
-        int lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition();
-
-        if (toBeScrolled || lastVisibleItemPosition == -1 || lastVisibleItemPosition == (prevItemCount - 1)) {
-            toBeScrolled = true;
-            scrollDown();
         }
     }
 
