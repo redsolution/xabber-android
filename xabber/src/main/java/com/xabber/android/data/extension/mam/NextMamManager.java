@@ -5,7 +5,6 @@ import android.util.Log;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
-import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.database.MessageDatabaseManager;
 import com.xabber.android.data.database.messagerealm.Attachment;
 import com.xabber.android.data.database.messagerealm.ForwardId;
@@ -73,10 +72,6 @@ public class NextMamManager implements OnRosterReceivedListener {
         return instance;
     }
 
-    public void onAuthorized(ConnectionItem connectionItem) {
-        updateIsSupported((AccountItem) connectionItem);
-    }
-
     @Override
     public void onRosterReceived(AccountItem accountItem) {
         onAccountConnected(accountItem);
@@ -96,6 +91,7 @@ public class NextMamManager implements OnRosterReceivedListener {
      *   - - Запрашиваем все новые сообщения в каждом чате.
      */
     public void onAccountConnected(AccountItem accountItem) {
+        updateIsSupported(accountItem);
         Realm realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
         accountItem.setStartHistoryTimestamp(getLastMessageTimestamp(accountItem, realm));
         if (accountItem.getStartHistoryTimestamp() == 0) {
