@@ -28,7 +28,6 @@ import com.xabber.android.data.database.MessageDatabaseManager;
 import com.xabber.android.data.database.messagerealm.Attachment;
 import com.xabber.android.data.database.messagerealm.ForwardId;
 import com.xabber.android.data.database.messagerealm.MessageItem;
-import com.xabber.android.data.database.messagerealm.SyncInfo;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.UserJid;
@@ -120,7 +119,6 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     private boolean isRemotePreviousHistoryCompletelyLoaded = false;
 
     private Date lastSyncedTime;
-    private RealmResults<SyncInfo> syncInfo;
     private MessageItem lastMessage;
     private RealmResults<MessageItem> messages;
     private String lastMessageId = null;
@@ -199,18 +197,6 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         }
 
         return messages;
-    }
-
-    public RealmResults<SyncInfo> getSyncInfo() {
-        if (syncInfo == null) {
-            syncInfo = MessageDatabaseManager.getInstance()
-                    .getRealmUiThread().where(SyncInfo.class)
-                    .equalTo(SyncInfo.FIELD_ACCOUNT, getAccountString())
-                    .equalTo(SyncInfo.FIELD_USER, getUserString())
-                    .findAllAsync();
-        }
-
-        return syncInfo;
     }
 
     boolean isStatusTrackingEnabled() {

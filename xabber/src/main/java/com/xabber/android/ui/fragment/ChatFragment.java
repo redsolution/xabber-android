@@ -43,11 +43,8 @@ import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
-import com.xabber.android.data.account.AccountItem;
-import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.database.messagerealm.MessageItem;
-import com.xabber.android.data.database.messagerealm.SyncInfo;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.UserJid;
@@ -58,7 +55,6 @@ import com.xabber.android.data.extension.cs.ChatStateManager;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.mam.LastHistoryLoadFinishedEvent;
 import com.xabber.android.data.extension.mam.LastHistoryLoadStartedEvent;
-import com.xabber.android.data.extension.mam.LoadHistorySettings;
 import com.xabber.android.data.extension.mam.NextMamManager;
 import com.xabber.android.data.extension.mam.PreviousHistoryLoadFinishedEvent;
 import com.xabber.android.data.extension.mam.PreviousHistoryLoadStartedEvent;
@@ -118,7 +114,6 @@ import github.ankushsachdeva.emojicon.EmojiconGridView;
 import github.ankushsachdeva.emojicon.EmojiconsPopup;
 import github.ankushsachdeva.emojicon.emoji.Emojicon;
 import io.realm.RealmResults;
-import io.realm.Sort;
 
 public class ChatFragment extends FileInteractionFragment implements PopupMenu.OnMenuItemClickListener,
         View.OnClickListener, Toolbar.OnMenuItemClickListener, MessageVH.MessageClickListener,
@@ -173,9 +168,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
     private Timer stopTypingTimer = new Timer();
 
-    private boolean isRemoteHistoryRequested = false;
-    private int firstRemoteSyncedItemPosition = RecyclerView.NO_POSITION;
-    private RealmResults<SyncInfo> syncInfoResults;
+    private boolean historyIsLoading = false;
     private RealmResults<MessageItem> messageItems;
     private boolean toBeScrolled;
 
@@ -332,7 +325,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                 super.onScrolled(recyclerView, dx, dy);
 
                 if (dy < 0) {
-                    loadHistoryIfNeeded();
+                    loadHistoryIfNeed();
                 }
 
                 if (dy >= 0) {
@@ -380,7 +373,6 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
         if (abstractChat != null) {
             messageItems = abstractChat.getMessages();
-            syncInfoResults = abstractChat.getSyncInfo();
         }
 
         chatMessageAdapter = new MessagesAdapter(getActivity(), messageItems, abstractChat,
@@ -397,17 +389,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     public void onStart() {
         super.onStart();
         EventBus.getDefault().register(this);
-
-        AccountItem accountItem = AccountManager.getInstance().getAccount(this.account);
-        if (accountItem != null) {
-            LoadHistorySettings loadHistorySettings = accountItem.getLoadHistorySettings();
-
-            if (loadHistorySettings == LoadHistorySettings.all || loadHistorySettings == LoadHistorySettings.current) {
-                if (!isRemoteHistoryRequested) {
-                    NextMamManager.getInstance().onChatOpen(getChat());
-                }
-            }
-        }
+        NextMamManager.getInstance().onChatOpen(getChat());
     }
 
     @Override
@@ -622,54 +604,13 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         });
     }
 
-    private void loadHistoryIfNeeded() {
-        AccountItem accountItem = AccountManager.getInstance().getAccount(this.account);
-        if (accountItem == null) {
-            return;
-        }
-
-        LoadHistorySettings loadHistorySettings = accountItem.getLoadHistorySettings();
-
-        if (loadHistorySettings != LoadHistorySettings.current
-                && loadHistorySettings != LoadHistorySettings.all) {
-            return;
-        }
-
-        if (isRemoteHistoryRequested) {
-            return;
-        }
-
-        int visibleItemCount = layoutManager.getChildCount();
-
-        if (visibleItemCount == 0) {
-            return;
-        }
-
-        int firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition();
-
-        if (firstVisibleItemPosition / visibleItemCount <= 2) {
-            requestRemoteHistoryLoad();
-            return;
-        }
-
-        if (firstVisibleItemPosition < firstRemoteSyncedItemPosition) {
-            requestRemoteHistoryLoad();
-            return;
-        }
-
-        if (firstVisibleItemPosition - firstRemoteSyncedItemPosition < visibleItemCount * 2) {
-            requestRemoteHistoryLoad();
-            return;
-        }
-    }
-
-    private void requestRemoteHistoryLoad() {
-        if (!isRemoteHistoryRequested) {
-            AbstractChat chat = getChat();
-            if (chat != null) {
-                NextMamManager.getInstance().onScrollInChat(getChat());
+    private void loadHistoryIfNeed() {
+        if (!historyIsLoading) {
+            int invisibleMessagesCount = layoutManager.findFirstVisibleItemPosition();
+            if (invisibleMessagesCount <= 15) {
+                AbstractChat chat = getChat();
+                if (chat != null) NextMamManager.getInstance().onScrollInChat(chat);
             }
-
         }
     }
 
@@ -683,7 +624,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     public void onEvent(LastHistoryLoadStartedEvent event) {
         if (event.getAccount().equals(account) && event.getUser().equals(user)) {
             lastHistoryProgressBar.setVisibility(View.VISIBLE);
-            isRemoteHistoryRequested = true;
+            historyIsLoading = true;
         }
     }
 
@@ -691,7 +632,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     public void onEvent(LastHistoryLoadFinishedEvent event) {
         if (event.getAccount().equals(account) && event.getUser().equals(user)) {
             lastHistoryProgressBar.setVisibility(View.GONE);
-            isRemoteHistoryRequested = false;
+            historyIsLoading = false;
         }
     }
 
@@ -700,7 +641,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         if (event.getAccount().equals(account) && event.getUser().equals(user)) {
             LogManager.i(this, "PreviousHistoryLoadStartedEvent");
             previousHistoryProgressBar.setVisibility(View.VISIBLE);
-            isRemoteHistoryRequested = true;
+            historyIsLoading = true;
         }
     }
 
@@ -708,7 +649,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     public void onEvent(PreviousHistoryLoadFinishedEvent event) {
         if (event.getAccount().equals(account) && event.getUser().equals(user)) {
             LogManager.i(this, "PreviousHistoryLoadFinishedEvent");
-            isRemoteHistoryRequested = false;
+            historyIsLoading = false;
             previousHistoryProgressBar.setVisibility(View.GONE);
         }
     }
@@ -1325,32 +1266,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
     @Override
     public void onMessagesUpdated() {
-        updateFirstRemoteSyncedItemPosition();
-        loadHistoryIfNeeded();
-    }
-
-    private void updateFirstRemoteSyncedItemPosition() {
-        if (!syncInfoResults.isLoaded() || !messageItems.isLoaded() || syncInfoResults.isEmpty()) {
-            return;
-        }
-
-        SyncInfo syncInfo = syncInfoResults.first();
-
-        String firstMamMessageStanzaId = syncInfo.getFirstMamMessageStanzaId();
-        if (firstMamMessageStanzaId == null) {
-            return;
-        }
-
-        RealmResults<MessageItem> allSorted = messageItems.where()
-                .equalTo(MessageItem.Fields.STANZA_ID, firstMamMessageStanzaId)
-                .findAllSorted(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
-        if (allSorted.isEmpty()) {
-            return;
-        }
-
-        String firstRemotelySyncedMessageUniqueId = allSorted.last().getUniqueId();
-
-        firstRemoteSyncedItemPosition = chatMessageAdapter.findMessagePosition(firstRemotelySyncedMessageUniqueId);
+        loadHistoryIfNeed();
     }
 
     public interface ChatViewerFragmentListener {
