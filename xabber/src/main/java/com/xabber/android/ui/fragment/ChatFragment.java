@@ -404,7 +404,6 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
             if (loadHistorySettings == LoadHistorySettings.all || loadHistorySettings == LoadHistorySettings.current) {
                 if (!isRemoteHistoryRequested) {
-                    //MamManager.getInstance().requestLastHistoryByUser(getChat());
                     NextMamManager.getInstance().onChatOpen(getChat());
                 }
             }

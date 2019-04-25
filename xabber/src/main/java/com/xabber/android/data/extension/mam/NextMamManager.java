@@ -770,4 +770,65 @@ public class NextMamManager implements OnRosterReceivedListener {
             chat.setLastMessageId(id);
         }
     }
+
+    /**
+     * Only for debugging
+     * Call only from background thread
+     * @param chat
+     */
+//    public void requestFullChatHistory(final AbstractChat chat) {
+//        if (chat == null || chat.isRemotePreviousHistoryCompletelyLoaded()) {
+//            return;
+//        }
+//
+//        final AccountItem accountItem = AccountManager.getInstance().getAccount(chat.getAccount());
+//        if (accountItem == null || !accountItem.getFactualStatusMode().isOnline()) {
+//            return;
+//        }
+//
+//        if (!checkSupport(accountItem)) {
+//            return;
+//        }
+//
+//        String firstMamMessageMamId;
+//        boolean remoteHistoryCompletelyLoaded;
+//        {
+//            Realm realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
+//            SyncInfo syncInfo = getSyncInfo(realm, chat.getAccount(), chat.getUser());
+//            firstMamMessageMamId = syncInfo.getFirstMamMessageMamId();
+//            remoteHistoryCompletelyLoaded = syncInfo.isRemoteHistoryCompletelyLoaded();
+//            realm.close();
+//        }
+//
+//        if (remoteHistoryCompletelyLoaded) {
+//            chat.setRemotePreviousHistoryCompletelyLoaded(true);
+//        }
+//
+//        if (firstMamMessageMamId == null || remoteHistoryCompletelyLoaded) {
+//            return;
+//        }
+//
+//        org.jivesoftware.smackx.mam.MamManager mamManager =
+//                org.jivesoftware.smackx.mam.MamManager.getInstanceFor(accountItem.getConnection());
+//
+//        final org.jivesoftware.smackx.mam.MamManager.MamQueryResult mamQueryResult;
+//        try {
+//            LogManager.i("MAM", "Loading previous history");
+//            mamQueryResult = mamManager.queryArchive(chat.getUser().getJid());
+//        } catch (SmackException.NotLoggedInException | SmackException.NoResponseException
+//                | XMPPException.XMPPErrorException | InterruptedException
+//                | SmackException.NotConnectedException e) {
+//            LogManager.exception(this, e);
+//            return;
+//        }
+//        LogManager.i("MAM", "queryArchive finished. fin count expected: "
+//                + mamQueryResult.mamFin.getRSMSet().getCount() + " real: "
+//                + mamQueryResult.forwardedMessages.size());
+//
+//        Realm realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
+//        List<MessageItem> messageItems = getMessageItems(mamQueryResult, chat);
+//        syncMessages(realm, chat, messageItems);
+//        updatePreviousHistorySyncInfo(realm, chat, mamQueryResult);
+//        realm.close();
+//    }
 }
