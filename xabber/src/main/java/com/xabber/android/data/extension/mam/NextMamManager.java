@@ -181,6 +181,18 @@ public class NextMamManager implements OnRosterReceivedListener {
         });
     }
 
+    public void onRequestUpdatePreferences(AccountJid accountJid) {
+        final AccountItem accountItem = AccountManager.getInstance().getAccount(accountJid);
+        if (accountItem == null || !isSupported(accountJid)) return;
+
+        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
+            @Override
+            public void run() {
+                requestUpdatePreferences(accountItem);
+            }
+        });
+    }
+
     public boolean isSupported(AccountJid accountJid) {
         Boolean isSupported = supportedByAccount.get(accountJid);
         if (isSupported != null) return isSupported;
@@ -454,6 +466,24 @@ public class NextMamManager implements OnRosterReceivedListener {
         }
 
         return queryResult;
+    }
+
+    private @Nullable MamManager.MamPrefsResult requestUpdatePreferences(@Nonnull AccountItem accountItem) {
+        MamManager.MamPrefsResult prefsResult = null;
+        XMPPTCPConnection connection = accountItem.getConnection();
+
+        if (connection.isAuthenticated()) {
+            MamManager mamManager = MamManager.getInstanceFor(connection);
+            try {
+                prefsResult = mamManager.updateArchivingPreferences(null, null, accountItem.getMamDefaultBehaviour());
+            } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException
+                    | InterruptedException | SmackException.NotConnectedException
+                    | SmackException.NotLoggedInException e) {
+                LogManager.exception(NextMamManager.class, e);
+            }
+        }
+
+        return prefsResult;
     }
 
     /** PARSING */

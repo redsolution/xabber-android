@@ -13,7 +13,7 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.mam.LoadHistorySettings;
-import com.xabber.android.data.extension.mam.MamManager;
+import com.xabber.android.data.extension.mam.NextMamManager;
 
 import org.jivesoftware.smackx.mam.element.MamPrefsIQ;
 
@@ -53,7 +53,7 @@ public class AccountHistorySettingsFragment extends BaseSettingsFragment impleme
     }
 
     private void setUpMamPreference(Preference mamPreference, @Nullable String newSummary) {
-        Boolean supported = MamManager.getInstance().isSupported(account);
+        Boolean supported = NextMamManager.getInstance().isSupported(account);
         if (supported == null) {
             mamPreference.setEnabled(false);
             mamPreference.setSummary(getString(R.string.account_chat_history_unknown));

@@ -46,7 +46,7 @@ import com.xabber.android.data.database.sqlite.AccountTable;
 import com.xabber.android.data.database.sqlite.StatusTable;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.mam.LoadHistorySettings;
-import com.xabber.android.data.extension.mam.MamManager;
+import com.xabber.android.data.extension.mam.NextMamManager;
 import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.notification.BaseAccountNotificationProvider;
@@ -977,7 +977,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
         if (!accountItem.getMamDefaultBehaviour().equals(mamDefaultBehavior)) {
             accountItem.setMamDefaultBehaviour(mamDefaultBehavior);
             requestToWriteAccount(accountItem);
-            MamManager.getInstance().requestUpdatePreferences(accountJid);
+            NextMamManager.getInstance().onRequestUpdatePreferences(accountJid);
         }
     }
 
