@@ -74,19 +74,6 @@ public class NextMamManager implements OnRosterReceivedListener {
         onAccountConnected(accountItem);
     }
 
-    /**
-     * Thread: Smack-Cached Executor
-     *
-     * Если локальной истории еще нет:
-     *  - Запрашиваем одно самое последнее сообщение из истории.
-     *    Это сообщение считается прочитанным, а все сообщения полученные после него считать непрочитанными.
-     *  - Запрашиваем 1 последнее сообщение в каждом чате.
-     *  Иначе:
-     *   - Если с момента получения последнего сообщения прошло больше 30 минут:
-     *   - - Запрашиваем 1 последнее сообщение в каждом чате.
-     *   - Иначе:
-     *   - - Запрашиваем все новые сообщения в каждом чате.
-     */
     public void onAccountConnected(AccountItem accountItem) {
         updateIsSupported(accountItem);
         Realm realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
@@ -102,13 +89,6 @@ public class NextMamManager implements OnRosterReceivedListener {
         realm.close();
      }
 
-    /**
-     * Проверяем наличие дыр в истории:
-     *  - Берем все сообщения с previousID = null
-     *  - Если сообщение M1 - не является самым первым в истории, то
-     *  - - Выполняем заполнение истории для всех найденных дыр:
-     *  - - requestMissedMessages(message)
-     */
     public void onChatOpen(final AbstractChat chat) {
         final AccountItem accountItem = AccountManager.getInstance().getAccount(chat.getAccount());
         if (accountItem == null || accountItem.getLoadHistorySettings() == LoadHistorySettings.none
@@ -174,11 +154,6 @@ public class NextMamManager implements OnRosterReceivedListener {
         });
     }
 
-    /**
-     * Only for debugging
-     * This method ignores MAM settings.
-     * Call only from background thread
-     */
     public void loadFullChatHistory(AbstractChat chat) {
         final AccountItem accountItem = AccountManager.getInstance().getAccount(chat.getAccount());
         if (accountItem == null || !isSupported(accountItem.getAccount()) || chat.historyIsFull()) return;
@@ -231,11 +206,6 @@ public class NextMamManager implements OnRosterReceivedListener {
         }
     }
 
-    /**
-     * Запросить последнее сообщение в этом чате
-     * previousID = null
-     * setChatLastId(archivedID последнего сообщения в этом чате)
-     */
     private void loadLastMessage(Realm realm, AccountItem accountItem, AbstractChat chat) {
         MamManager.MamQueryResult queryResult = requestLastMessage(accountItem, chat);
         if (queryResult != null) {
@@ -259,11 +229,6 @@ public class NextMamManager implements OnRosterReceivedListener {
         }
     }
 
-    /**
-     * Запросить все сообщения начиная со времени получения последнего сообщения.
-     * previousID первого нового сообщения = archivedID последнего сообщения.
-     * setChatLastId(archivedID последнего сообщения в этом чате)
-     */
     private void loadNewMessages(Realm realm, AccountItem accountItem, AbstractChat chat) {
         String lastArchivedId = getLastMessageArchivedId(chat, realm);
         if (lastArchivedId != null) {
@@ -289,14 +254,6 @@ public class NextMamManager implements OnRosterReceivedListener {
         }
     }
 
-    /**
-     * Запросить страницу истории до самого первого сообщения в чате.
-     * previousID сообщения на котором начиналась история = archivedID последнего полученного сообщения.
-     * previousID первого полученного сообщения = null
-     *
-     * Если при запросе истории вернулась пустая страница, то
-     * previousID сообщения на котором начиналась история = archivedID этого сообщения
-     */
     private boolean loadNextHistory(Realm realm, AccountItem accountItem, AbstractChat chat) {
         MessageItem firstMessage = getFirstMessage(chat, realm);
         if (firstMessage != null) {
@@ -328,11 +285,6 @@ public class NextMamManager implements OnRosterReceivedListener {
         return true;
     }
 
-    /**
-     * Находим M2 - первое сообщение перед M1 с archivedID != null и previousID != null
-     * Выполняем запрос истории начиная от archivedID M2 и заканчивая archivedID M1
-     * Используя полученные сообщения проставляем previousID для сообщений.
-     */
     private void loadMissedMessages(Realm realm, AccountItem accountItem, AbstractChat chat, MessageItem m1) {
 
         MessageItem m2 = getMessageForCloseMissedMessages(realm, m1);

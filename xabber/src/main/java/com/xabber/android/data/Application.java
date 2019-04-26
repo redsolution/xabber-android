@@ -333,10 +333,10 @@ public class Application extends android.app.Application {
             AndroidDevMetrics.initWith(this);
 
             /** Strict Mode */
-//            StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
-//                    .detectAll()
-//                    .penaltyLog()
-//                    .build());
+            StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
+                    .detectAll()
+                    .penaltyLog()
+                    .build());
         }
 
         /** Crashlytics */
