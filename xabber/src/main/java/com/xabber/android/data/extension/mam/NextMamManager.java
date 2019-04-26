@@ -34,6 +34,7 @@ import org.jivesoftware.smack.util.PacketParserUtils;
 import org.jivesoftware.smackx.delay.packet.DelayInformation;
 import org.jivesoftware.smackx.forward.packet.Forwarded;
 import org.jivesoftware.smackx.mam.MamManager;
+import org.jivesoftware.smackx.mam.element.MamPrefsIQ;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -76,6 +77,7 @@ public class NextMamManager implements OnRosterReceivedListener {
 
     public void onAccountConnected(AccountItem accountItem) {
         updateIsSupported(accountItem);
+        updatePreferencesFromServer(accountItem);
         Realm realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
         accountItem.setStartHistoryTimestamp(getLastMessageTimestamp(accountItem, realm));
         if (accountItem.getStartHistoryTimestamp() == 0) {
@@ -344,25 +346,35 @@ public class NextMamManager implements OnRosterReceivedListener {
         AccountManager.getInstance().onAccountChanged(accountItem.getAccount());
     }
 
-    /** REQUESTS */
-
-    abstract class MamRequest {
-        abstract MamManager.MamQueryResult execute(MamManager manager) throws Exception;
+    private void updatePreferencesFromServer(@Nonnull AccountItem accountItem) {
+        MamManager.MamPrefsResult prefsResult = requestPreferencesFromServer(accountItem);
+        if (prefsResult != null) {
+            MamPrefsIQ.DefaultBehavior behavior = prefsResult.mamPrefs.getDefault();
+            AccountManager.getInstance().setMamDefaultBehaviour(accountItem.getAccount(), behavior);
+        }
     }
 
-    private MamManager.MamQueryResult requestToMessageArchive(AccountItem accountItem, MamRequest request) {
-        MamManager.MamQueryResult queryResult = null;
+    /** REQUESTS */
+
+    /** T extends MamManager.MamQueryResult or T extends MamManager.MamPrefsResult */
+    abstract class MamRequest<T>  {
+        abstract T execute(MamManager manager) throws Exception;
+    }
+
+    /** T extends MamManager.MamQueryResult or T extends MamManager.MamPrefsResult */
+    private <T> T requestToMessageArchive(AccountItem accountItem, MamRequest<T> request) {
+        T result = null;
         XMPPTCPConnection connection = accountItem.getConnection();
 
         if (connection.isAuthenticated()) {
             MamManager mamManager = MamManager.getInstanceFor(connection);
             try {
-                queryResult = request.execute(mamManager);
+                result = request.execute(mamManager);
             } catch (Exception e) {
                 LogManager.exception(this, e);
             }
         }
-        return queryResult;
+        return result;
     }
 
     /** Request recent message from chat history if chat not null
@@ -370,7 +382,7 @@ public class NextMamManager implements OnRosterReceivedListener {
     private @Nullable MamManager.MamQueryResult requestLastMessage(
             @Nonnull AccountItem accountItem, @Nullable final AbstractChat chat) {
 
-        return requestToMessageArchive(accountItem, new MamRequest() {
+        return requestToMessageArchive(accountItem, new MamRequest<MamManager.MamQueryResult>() {
             @Override
             MamManager.MamQueryResult execute(MamManager manager) throws Exception {
                 if (chat != null) return manager.mostRecentPage(chat.getUser().getJid(), 1);
@@ -383,7 +395,7 @@ public class NextMamManager implements OnRosterReceivedListener {
     private @Nullable MamManager.MamQueryResult requestMessagesFromId(
             @Nonnull AccountItem accountItem, @Nonnull final AbstractChat chat, final String archivedId) {
 
-        return requestToMessageArchive(accountItem, new MamRequest() {
+        return requestToMessageArchive(accountItem, new MamRequest<MamManager.MamQueryResult>() {
             @Override
             MamManager.MamQueryResult execute(MamManager manager) throws Exception {
                 return manager.pageAfter(chat.getUser().getJid(), archivedId, 50);
@@ -395,7 +407,7 @@ public class NextMamManager implements OnRosterReceivedListener {
     private @Nullable MamManager.MamQueryResult requestMessagesBeforeId(
             @Nonnull AccountItem accountItem, @Nonnull final AbstractChat chat, final String archivedId) {
 
-        return requestToMessageArchive(accountItem, new MamRequest() {
+        return requestToMessageArchive(accountItem, new MamRequest<MamManager.MamQueryResult>() {
             @Override
             MamManager.MamQueryResult execute(MamManager manager) throws Exception {
                 return manager.pageBefore(chat.getUser().getJid(), archivedId, 50);
@@ -408,7 +420,7 @@ public class NextMamManager implements OnRosterReceivedListener {
             @Nonnull AccountItem accountItem, @Nonnull final AbstractChat chat,
             final Date startDate, final Date endDate) {
 
-        return requestToMessageArchive(accountItem, new MamRequest() {
+        return requestToMessageArchive(accountItem, new MamRequest<MamManager.MamQueryResult>() {
             @Override
             MamManager.MamQueryResult execute(MamManager manager) throws Exception {
                 return manager.queryArchive(50, startDate, endDate, chat.getUser().getJid(), null);
@@ -418,11 +430,20 @@ public class NextMamManager implements OnRosterReceivedListener {
 
     /** Request update archiving preferences on server */
     private void requestUpdatePreferences(@Nonnull final AccountItem accountItem) {
-        requestToMessageArchive(accountItem, new MamRequest() {
+        requestToMessageArchive(accountItem, new MamRequest<MamManager.MamPrefsResult>() {
             @Override
-            MamManager.MamQueryResult execute(MamManager manager) throws Exception {
-                manager.updateArchivingPreferences(null, null, accountItem.getMamDefaultBehaviour());
-                return null;
+            MamManager.MamPrefsResult execute(MamManager manager) throws Exception {
+                return manager.updateArchivingPreferences(null, null, accountItem.getMamDefaultBehaviour());
+            }
+        });
+    }
+
+    /** Request archiving preferences from server */
+    private @Nullable MamManager.MamPrefsResult requestPreferencesFromServer(@Nonnull final AccountItem accountItem) {
+        return requestToMessageArchive(accountItem, new MamRequest<MamManager.MamPrefsResult>() {
+            @Override
+            MamManager.MamPrefsResult execute(MamManager manager) throws Exception {
+                return manager.retrieveArchivingPreferences();
             }
         });
     }
