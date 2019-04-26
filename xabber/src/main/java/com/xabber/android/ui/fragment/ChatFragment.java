@@ -782,7 +782,6 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     private void sendMessage(String text) {
         MessageManager.getInstance().sendMessage(account, user, text);
         setFirstUnreadMessageId(null);
-        scrollDown();
     }
 
 
@@ -1418,7 +1417,6 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         ForwardManager.forwardMessage(messages, account, user, text);
         hideForwardPanel();
         setFirstUnreadMessageId(null);
-        scrollDown();
     }
 
     private void openChooserForForward(ArrayList<String> forwardIds) {

@@ -248,6 +248,9 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
         if (prevItemCount != itemCount) {
             if (firstMessageId != null && !firstMessageId.equals(prevFirstItemId))
                 listener.scrollTo(lastPosition + (itemCount - prevItemCount));
+            else if (lastPosition == prevItemCount - 1)
+                listener.scrollTo(itemCount - 1);
+
             prevItemCount = itemCount;
             prevFirstItemId = firstMessageId;
         }
