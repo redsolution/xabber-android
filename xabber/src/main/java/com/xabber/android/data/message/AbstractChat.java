@@ -45,6 +45,7 @@ import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.notification.MessageNotificationManager;
 import com.xabber.android.data.notification.NotificationManager;
+import com.xabber.xmpp.sid.OriginIdElement;
 import com.xabber.xmpp.sid.UniqStanzaHelper;
 
 import org.greenrobot.eventbus.EventBus;
@@ -695,6 +696,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         if (message != null) {
             ChatStateManager.getInstance().updateOutgoingMessage(AbstractChat.this, message);
             CarbonManager.getInstance().updateOutgoingMessage(AbstractChat.this, message);
+            message.addExtension(new OriginIdElement(messageItem.getStanzaId()));
             if (delayTimestamp != null) {
                 message.addExtension(new DelayInformation(delayTimestamp));
             }

@@ -9,10 +9,10 @@ import org.jivesoftware.smack.packet.StandardExtensionElement;
 
 public class UniqStanzaHelper {
 
-    private final static String ELEMENT_NAME_ORIGIN = "origin-id";
-    private final static String ELEMENT_NAME = "stanza-id";
-    private final static String NAMESPACE = "urn:xmpp:sid:0";
-    private final static String ATTRIBUTE_ID = "id";
+    final static String ELEMENT_NAME_ORIGIN = "origin-id";
+    final static String ELEMENT_NAME = "stanza-id";
+    final static String NAMESPACE = "urn:xmpp:sid:0";
+    final static String ATTRIBUTE_ID = "id";
 
     public static String getStanzaId(Message message) {
         StandardExtensionElement sidElement = message.getExtension(ELEMENT_NAME, NAMESPACE);
