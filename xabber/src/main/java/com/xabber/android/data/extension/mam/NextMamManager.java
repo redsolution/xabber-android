@@ -519,6 +519,7 @@ public class NextMamManager implements OnRosterReceivedListener {
         }
         messageItem.setIncoming(incoming);
         messageItem.setStanzaId(AbstractChat.getStanzaId(message));
+        messageItem.setPacketId(message.getStanzaId());
         messageItem.setReceivedFromMessageArchive(true);
         messageItem.setRead(timestamp <= accountItem.getStartHistoryTimestamp());
         messageItem.setSent(true);
@@ -570,9 +571,11 @@ public class NextMamManager implements OnRosterReceivedListener {
         MessageItem localMessage = realm.where(MessageItem.class)
                 .equalTo(MessageItem.Fields.ACCOUNT, chat.getAccount().toString())
                 .equalTo(MessageItem.Fields.USER, chat.getUser().toString())
-                .equalTo(MessageItem.Fields.STANZA_ID, message.getStanzaId())
                 .equalTo(MessageItem.Fields.TEXT, message.getText())
                 .isNull(MessageItem.Fields.PARENT_MESSAGE_ID)
+                .equalTo(MessageItem.Fields.STANZA_ID, message.getStanzaId())
+                .or().equalTo(MessageItem.Fields.STANZA_ID, message.getPacketId())
+                .or().equalTo(MessageItem.Fields.STANZA_ID, message.getArchivedId())
                 .findFirst();
 
         if (localMessage == null) {

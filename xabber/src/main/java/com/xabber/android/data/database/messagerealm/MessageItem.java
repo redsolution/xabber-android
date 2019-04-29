@@ -32,6 +32,7 @@ import java.util.UUID;
 
 import io.realm.RealmList;
 import io.realm.RealmObject;
+import io.realm.annotations.Ignore;
 import io.realm.annotations.Index;
 import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.Required;
@@ -213,6 +214,8 @@ public class MessageItem extends RealmObject {
     private String parentMessageId;
     private String previousId;
     private String archivedId;
+    @Ignore
+    private String packetId;
 
     private RealmList<ForwardId> forwardedIds;
 
@@ -573,6 +576,14 @@ public class MessageItem extends RealmObject {
 
     public void setArchivedId(String archivedId) {
         this.archivedId = archivedId;
+    }
+
+    public String getPacketId() {
+        return packetId;
+    }
+
+    public void setPacketId(String packetId) {
+        this.packetId = packetId;
     }
 
     public boolean isFromMUC() {
