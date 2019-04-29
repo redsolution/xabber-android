@@ -47,6 +47,7 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
     private final ForwardedAdapter.ForwardListener fwdListener;
     private final Listener listener;
     private final AnchorHolder anchorHolder;
+    private final IncomingMessageVH.BindListener bindListener;
 
     // message font style
     private final int appearanceStyle = SettingsManager.chatsAppearanceStyle();
@@ -58,7 +59,7 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
     private AccountJid account;
     private UserJid user;
     private int prevItemCount;
-    private int unreadCount = 0;
+    private String firstUnreadMessageID;
     private boolean isCheckMode;
 
     private List<String> itemsNeedOriginalText = new ArrayList<>();
@@ -78,7 +79,7 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
             Context context, RealmResults<MessageItem> messageItems,
             AbstractChat chat, MessageVH.MessageClickListener messageListener,
             FileMessageVH.FileListener fileListener, ForwardedAdapter.ForwardListener fwdListener,
-            Listener listener, AnchorHolder anchorHolder) {
+            Listener listener, IncomingMessageVH.BindListener bindListener, AnchorHolder anchorHolder) {
         super(context, messageItems, true);
 
         this.context = context;
@@ -87,6 +88,7 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
         this.fwdListener = fwdListener;
         this.listener = listener;
         this.anchorHolder = anchorHolder;
+        this.bindListener = bindListener;
 
         account = chat.getAccount();
         user = chat.getUser();
@@ -135,12 +137,12 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
             case VIEW_TYPE_INCOMING_MESSAGE:
                 return new IncomingMessageVH(LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.item_message_incoming, parent, false),
-                        this, this, this, appearanceStyle);
+                        this, this, this, bindListener, appearanceStyle);
 
             case VIEW_TYPE_INCOMING_MESSAGE_NOFLEX:
                 return new NoFlexIncomingMsgVH(LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.item_message_incoming_noflex, parent, false),
-                        this, this, this, appearanceStyle);
+                        this, this, this, bindListener, appearanceStyle);
 
             case VIEW_TYPE_OUTGOING_MESSAGE:
                 return new OutgoingMessageVH(LayoutInflater.from(parent.getContext())
@@ -173,7 +175,7 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
             ((MessageVH)holder).messageId = messageItem.getUniqueId();
 
         // setup message as unread
-        boolean unread = position == getItemCount() - unreadCount;
+        boolean unread = messageItem.getUniqueId().equals(firstUnreadMessageID);
 
         // setup message as checked
         boolean checked = checkedItemIds.contains(messageItem.getUniqueId());
@@ -265,15 +267,8 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
         return RecyclerView.NO_POSITION;
     }
 
-    public boolean setUnreadCount(int unreadCount) {
-        if (this.unreadCount != unreadCount) {
-            this.unreadCount = unreadCount;
-            return true;
-        } else return false;
-    }
-
-    public int getUnreadCount() {
-        return unreadCount;
+    public void setFirstUnreadMessageId(String id) {
+        firstUnreadMessageID = id;
     }
 
     public void addOrRemoveItemNeedOriginalText(String messageId) {

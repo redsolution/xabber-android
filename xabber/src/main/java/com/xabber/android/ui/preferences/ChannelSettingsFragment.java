@@ -136,7 +136,8 @@ public class ChannelSettingsFragment extends BaseSoundPrefFragment<ChannelRingto
         if (channel == null) return null;
         Uri uri = channel.getSound();
         Ringtone ringtone = RingtoneManager.getRingtone(getActivity(), uri);
-        return ringtone.getTitle(getActivity());
+        if (ringtone != null) return ringtone.getTitle(getActivity());
+        else return "Unknown ringtone";
     }
 
     @Override
@@ -145,6 +146,3 @@ public class ChannelSettingsFragment extends BaseSoundPrefFragment<ChannelRingto
                 Uri.parse(ringtoneHolder.uri), null, null);
     }
 }
-
-
-

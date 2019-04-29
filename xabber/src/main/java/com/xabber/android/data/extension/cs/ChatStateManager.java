@@ -19,12 +19,14 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
+import android.util.Log;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.OnCloseListener;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
+import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.ConnectionManager;
 import com.xabber.android.data.connection.StanzaSender;
@@ -48,12 +50,15 @@ import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.Presence.Type;
 import org.jivesoftware.smack.packet.Stanza;
+import org.jivesoftware.smackx.carbons.packet.CarbonExtension;
 import org.jivesoftware.smackx.chatstates.ChatState;
 import org.jivesoftware.smackx.chatstates.packet.ChatStateExtension;
+import org.jivesoftware.smackx.chatstates.provider.ChatStateExtensionProvider;
 import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
 import org.jxmpp.jid.BareJid;
 import org.jxmpp.jid.Jid;
 import org.jxmpp.jid.parts.Resourcepart;
+import org.jxmpp.stringprep.XmppStringprepException;
 
 import java.util.Calendar;
 import java.util.Map;
@@ -363,6 +368,19 @@ public class ChatStateManager implements OnDisconnectListener,
             alarmManager.cancel(pendingIntent);
         }
         pauseIntents.clear();
+    }
+
+    public void processCarbonsMessage(AccountJid account, final Message message, CarbonExtension.Direction direction) {
+        if (direction == CarbonExtension.Direction.sent) {
+            for (ExtensionElement extension : message.getExtensions())
+                if (extension instanceof ChatStateExtension) {
+                    ChatState chatState = ((ChatStateExtension) extension).getChatState();
+                    if (chatState == ChatState.active || chatState == ChatState.composing) {
+                        AccountManager.getInstance().startGracePeriod(account);
+                    }
+                    break;
+                }
+        }
     }
 
 }

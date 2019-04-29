@@ -116,6 +116,15 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
      * @throws NetworkException
      */
     public void requestSubscription(AccountJid account, UserJid user) throws NetworkException {
+        requestSubscription(account, user, true);
+    }
+
+    /**
+     * Requests subscription to the contact.
+     * Create chat with new contact if need.
+     * @throws NetworkException
+     */
+    public void requestSubscription(AccountJid account, UserJid user, boolean createChat) throws NetworkException {
         Presence packet = new Presence(Presence.Type.subscribe);
         packet.setTo(user.getJid());
         StanzaSender.sendStanza(account, packet);
@@ -125,7 +134,7 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
             requestedSubscriptions.put(account, set);
         }
         set.add(user);
-        createChatForNewContact(account, user);
+        if (createChat) createChatForNewContact(account, user);
     }
 
     private void removeRequestedSubscription(AccountJid account, UserJid user) {

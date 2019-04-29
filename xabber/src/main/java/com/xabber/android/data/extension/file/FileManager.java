@@ -66,7 +66,7 @@ public class FileManager {
         return extensionIsImage(extractRelevantExtension(file.getPath()));
     }
 
-    private static boolean extensionIsImage(String extension) {
+    public static boolean extensionIsImage(String extension) {
         return Arrays.asList(VALID_IMAGE_EXTENSIONS).contains(extension);
     }
 

@@ -268,6 +268,9 @@ public class ContactListFragment extends Fragment implements ContactListView,
 
             // showing snackbar with Undo option
             showSnackbar(deletedItem, position);
+
+            // update unread count
+            presenter.updateUnreadCount();
         }
     }
 
@@ -381,6 +384,9 @@ public class ContactListFragment extends Fragment implements ContactListView,
 
                 // undo is selected, restore the deleted item
                 adapter.addItem(deletedIndex, deletedItem);
+
+                // update unread count
+                presenter.updateUnreadCount();
             }
         });
         snackbar.setActionTextColor(Color.YELLOW);

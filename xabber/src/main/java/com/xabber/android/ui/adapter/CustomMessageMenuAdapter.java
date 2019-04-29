@@ -22,6 +22,7 @@ public class CustomMessageMenuAdapter extends BaseAdapter {
 
     public final static String STATUS_ACK = "status_acknowledged";
     public final static String STATUS_DELIVERED = "status_delivered";
+    public final static String STATUS_DISPLAYED = "status_displayed";
     public final static String STATUS_ERROR = "status_error";
     public final static String STATUS_FORWARDED = "status_forwarded";
     public final static String STATUS_SYNCED = "status_synced";
@@ -74,6 +75,10 @@ public class CustomMessageMenuAdapter extends BaseAdapter {
                 case STATUS_DELIVERED:
                     textView.setText(R.string.message_status_delivered);
                     ivStatus.setImageResource(R.drawable.ic_message_delivered_14dp);
+                    break;
+                case STATUS_DISPLAYED:
+                    textView.setText(R.string.message_status_displayed);
+                    ivStatus.setImageResource(R.drawable.ic_message_displayed);
                     break;
                 case STATUS_SYNCED:
                     textView.setText(R.string.message_status_synced);

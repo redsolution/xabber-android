@@ -110,14 +110,18 @@ public class ExtContactVO extends ContactVO {
         viewHolder.ivMessageStatus.setVisibility(text.isEmpty() ? View.INVISIBLE : View.VISIBLE);
 
         switch (getMessageStatus()) {
-            case 0:
+
+            case 1:
+                viewHolder.ivMessageStatus.setImageResource(R.drawable.ic_message_displayed);
+                break;
+            case 2:
                 viewHolder.ivMessageStatus.setImageResource(R.drawable.ic_message_delivered_14dp);
                 break;
             case 3:
-                viewHolder.ivMessageStatus.setImageResource(R.drawable.ic_message_has_error_14dp);
+                viewHolder.ivMessageStatus.setImageResource(R.drawable.ic_message_acknowledged_14dp);
                 break;
             case 4:
-                viewHolder.ivMessageStatus.setImageResource(R.drawable.ic_message_acknowledged_14dp);
+                viewHolder.ivMessageStatus.setImageResource(R.drawable.ic_message_has_error_14dp);
                 break;
             default:
                 viewHolder.ivMessageStatus.setVisibility(View.GONE);

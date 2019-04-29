@@ -59,5 +59,7 @@
     <string name="channel_persistent_connection_title">Persistent connection</string>
     <string name="channel_persistent_connection_description">Persistent notification for establish connection to receive messages</string>
     <string name="channel_events_title">Events</string>
+    <string name="channel_silent_title">Silent message notifications</string>
     <string name="channel_events_description">Notifications for events like: group chat invites, subscription requests, OTR requests</string>
+    <string name="channel_silent_description">Silent notifications about messages</string>
 </resources>

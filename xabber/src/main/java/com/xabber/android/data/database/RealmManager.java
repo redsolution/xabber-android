@@ -34,7 +34,7 @@ import io.realm.annotations.RealmModule;
 
 public class RealmManager {
     private static final String REALM_DATABASE_NAME = "realm_database.realm";
-    private static final int REALM_DATABASE_VERSION = 20;
+    private static final int REALM_DATABASE_VERSION = 21;
     private static final String LOG_TAG = RealmManager.class.getSimpleName();
     private final RealmConfiguration realmConfiguration;
 
@@ -302,10 +302,12 @@ public class RealmManager {
                         }
 
                         if (oldVersion == 20) {
-                            schema.create(UploadServer.class.getSimpleName())
-                                    .addField(UploadServer.Fields.ID, String.class, FieldAttribute.PRIMARY_KEY, FieldAttribute.REQUIRED)
-                                    .addField(UploadServer.Fields.ACCOUNT, String.class)
-                                    .addField(UploadServer.Fields.SERVER, String.class);
+                            if (!schema.contains(UploadServer.class.getSimpleName())) {
+                                schema.create(UploadServer.class.getSimpleName())
+                                        .addField(UploadServer.Fields.ID, String.class, FieldAttribute.PRIMARY_KEY, FieldAttribute.REQUIRED)
+                                        .addField(UploadServer.Fields.ACCOUNT, String.class)
+                                        .addField(UploadServer.Fields.SERVER, String.class);
+                            }
 
                             oldVersion++;
                         }

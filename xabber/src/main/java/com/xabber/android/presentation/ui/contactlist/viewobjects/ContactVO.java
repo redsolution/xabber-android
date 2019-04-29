@@ -32,6 +32,7 @@ import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.muc.RoomChat;
 import com.xabber.android.data.filedownload.FileCategory;
 import com.xabber.android.data.message.AbstractChat;
+import com.xabber.android.data.message.ChatAction;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.NotificationState;
 import com.xabber.android.data.notification.custom_notification.CustomNotifyPrefsManager;
@@ -184,6 +185,8 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
                 messageText = FileCategory.getCategoryName(category, true) + attachment.getTitle();
             } else if (lastMessage.getFilePath() != null) {
                 messageText = new File(lastMessage.getFilePath()).getName();
+            } else if (ChatAction.available.toString().equals(lastMessage.getAction())) {
+                messageText = "<font color='#388E3C'>" + lastMessage.getText().trim() + "</font>";
             } else {
                 messageText = lastMessage.getText().trim();
             }
@@ -197,18 +200,17 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
                 messageOwner = lastMessage.getResource().toString();
 
             // message status
-            if (lastMessage.isForwarded()) {
+            if (lastMessage.isError()) {
+                messageStatus = 4;
+            } else if (!MessageItem.isUploadFileMessage(lastMessage) && !lastMessage.isSent()
+                    && System.currentTimeMillis() - lastMessage.getTimestamp() > 1000) {
+                messageStatus = 5;
+            } else if (lastMessage.isDisplayed() || lastMessage.isReceivedFromMessageArchive()) {
                 messageStatus = 1;
-            } else if (lastMessage.isReceivedFromMessageArchive()) {
+            } else if (lastMessage.isDelivered() || lastMessage.isForwarded()) {
                 messageStatus = 2;
-            } else if (lastMessage.isError()) {
+            } else if (lastMessage.isAcknowledged()) {
                 messageStatus = 3;
-            } else if (!lastMessage.isDelivered()) {
-                if (lastMessage.isAcknowledged()) {
-                    messageStatus = 4;
-                } else {
-                    messageStatus = 5;
-                }
             }
 
             // forwarded

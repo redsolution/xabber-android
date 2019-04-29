@@ -1,7 +1,6 @@
 package com.xabber.android.ui.fragment;
 
 import android.app.Activity;
-import android.content.Context;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -14,12 +13,11 @@ import android.widget.Toast;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
-import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
-import com.xabber.android.data.message.MessageManager;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.adapter.AccountChooseAdapter;
@@ -27,7 +25,11 @@ import com.xabber.android.ui.helper.ContactAdder;
 
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
+import org.jxmpp.jid.EntityBareJid;
+import org.jxmpp.jid.impl.JidCreate;
+import org.jxmpp.stringprep.XmppStringprepException;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 public class ContactAddFragment extends GroupEditorFragment
@@ -172,6 +174,7 @@ public class ContactAddFragment extends GroupEditorFragment
         }
 
         String contactString = userView.getText().toString();
+        contactString = contactString.replace(" ", "");
 
         if (TextUtils.isEmpty(contactString)) {
             Toast.makeText(getActivity(), getString(R.string.EMPTY_USER_NAME),
@@ -179,43 +182,69 @@ public class ContactAddFragment extends GroupEditorFragment
             return ;
         }
 
-        UserJid user;
+        final UserJid user;
         try {
-            user = UserJid.from(contactString);
-        } catch (UserJid.UserJidCreateException e) {
-            LogManager.exception(this, e);
+            EntityBareJid entityFullJid = JidCreate.entityBareFrom(contactString);
+            user = UserJid.from(entityFullJid);
+        } catch (XmppStringprepException | UserJid.UserJidCreateException  e) {
+            e.printStackTrace();
+            Toast.makeText(getActivity(), getString(R.string.INCORRECT_USER_NAME), Toast.LENGTH_LONG).show();
             return;
         }
 
         LogManager.i(this, "user: " + user);
 
-        AccountJid account = (AccountJid) accountView.getSelectedItem();
+        final AccountJid account = (AccountJid) accountView.getSelectedItem();
         if (account == null) {
             Toast.makeText(getActivity(), getString(R.string.EMPTY_ACCOUNT),
                     Toast.LENGTH_LONG).show();
             return;
         }
-        try {
-            RosterManager.getInstance().createContact(account, user,
-                    nameView.getText().toString(), getSelected());
-            PresenceManager.getInstance().requestSubscription(account, user);
-            MessageManager.getInstance().openChat(account, user);
-        } catch (SmackException.NotLoggedInException | SmackException.NotConnectedException e) {
-            Application.getInstance().onError(R.string.NOT_CONNECTED);
-        } catch (XMPPException.XMPPErrorException e) {
-            Application.getInstance().onError(R.string.XMPP_EXCEPTION);
-        } catch (SmackException.NoResponseException e) {
-            Application.getInstance().onError(R.string.CONNECTION_FAILED);
-        } catch (NetworkException e) {
-            Application.getInstance().onError(e);
-        } catch (InterruptedException e) {
-            LogManager.exception(this, e);
-        }
 
-        getActivity().finish();
+        listenerActivity.showProgress(true);
+        final String name = nameView.getText().toString();
+        final ArrayList<String> groups = getSelected();
+
+        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    RosterManager.getInstance().createContact(account, user, name, groups);
+                    PresenceManager.getInstance().requestSubscription(account, user);
+                } catch (SmackException.NotLoggedInException | SmackException.NotConnectedException e) {
+                    Application.getInstance().onError(R.string.NOT_CONNECTED);
+                    stopAddContactProcess(false);
+                } catch (XMPPException.XMPPErrorException e) {
+                    Application.getInstance().onError(R.string.XMPP_EXCEPTION);
+                    stopAddContactProcess(false);
+                } catch (SmackException.NoResponseException e) {
+                    Application.getInstance().onError(R.string.CONNECTION_FAILED);
+                    stopAddContactProcess(false);
+                } catch (NetworkException e) {
+                    Application.getInstance().onError(e);
+                    stopAddContactProcess(false);
+                } catch (InterruptedException e) {
+                    LogManager.exception(this, e);
+                    stopAddContactProcess(false);
+                }
+
+                stopAddContactProcess(true);
+            }
+        });
+    }
+
+    private void stopAddContactProcess(final boolean success) {
+        Application.getInstance().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                listenerActivity.showProgress(false);
+                if (success) getActivity().finish();
+            }
+        });
     }
 
     public interface Listener {
         void onAccountSelected(AccountJid account);
+        void showProgress(boolean show);
     }
 }

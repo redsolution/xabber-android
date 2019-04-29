@@ -192,6 +192,7 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
     public void onCreate(Bundle savedInstanceState) {
         if (Intent.ACTION_VIEW.equals(getIntent().getAction())
                 || Intent.ACTION_SEND.equals(getIntent().getAction())
+                || Intent.ACTION_SEND_MULTIPLE.equals(getIntent().getAction())
                 || Intent.ACTION_SENDTO.equals(getIntent().getAction())
                 || Intent.ACTION_CREATE_SHORTCUT.equals(getIntent().getAction())) {
             ActivityManager.getInstance().startNewTask(this);
@@ -342,6 +343,8 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
             switch (action) {
                 case ContactListActivity.ACTION_ROOM_INVITE:
                 case Intent.ACTION_SEND:
+                case Intent.ACTION_SEND_MULTIPLE:
+                case ChatActivity.ACTION_FORWARD:
                 case Intent.ACTION_CREATE_SHORTCUT:
                     if (Intent.ACTION_SEND.equals(action)) {
                         sendText = getIntent().getStringExtra(Intent.EXTRA_TEXT);
@@ -626,6 +629,15 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
                     action = null;
                     startActivity(ChatActivity.createSendIntent(this,
                             abstractContact.getAccount(), abstractContact.getUser(), sendText));
+                    finish();
+                }
+                break;
+            case Intent.ACTION_SEND_MULTIPLE:
+                if (getIntent().getExtras() != null) {
+                    action = null;
+                    startActivity(ChatActivity.createSendUrisIntent(this,
+                            abstractContact.getAccount(), abstractContact.getUser(),
+                            getIntent().<Uri>getParcelableArrayListExtra(Intent.EXTRA_STREAM)));
                     finish();
                 }
                 break;

@@ -21,11 +21,11 @@ import android.content.Intent;
 import android.content.IntentFilter;
 
 import com.xabber.android.data.Application;
-import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.OnCloseListener;
 import com.xabber.android.data.OnInitializedListener;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.extension.csi.ClientStateManager;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.receiver.GoAwayReceiver;
 import com.xabber.android.receiver.GoXaReceiver;
 import com.xabber.android.receiver.ScreenReceiver;
@@ -106,6 +106,7 @@ public class ScreenManager implements OnInitializedListener, OnCloseListener {
             alarmManager.cancel(goAwayPendingIntent);
             alarmManager.cancel(goXaPendingIntent);
             AccountManager.getInstance().wakeUp();
+            AccountManager.getInstance().stopGracePeriod();
 
             // notify server(s) that client is now active
             ClientStateManager.setActive();

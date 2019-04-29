@@ -69,7 +69,7 @@ public class ReceiptManager implements OnPacketListener, ReceiptReceivedListener
             @Override
             public void connectionCreated(final XMPPConnection connection) {
                 DeliveryReceiptManager.getInstanceFor(connection).addReceiptReceivedListener(ReceiptManager.this);
-                DeliveryReceiptManager.getInstanceFor(connection).autoAddDeliveryReceiptRequests();
+                //DeliveryReceiptManager.getInstanceFor(connection).autoAddDeliveryReceiptRequests();
             }
         });
 
@@ -108,6 +108,7 @@ public class ReceiptManager implements OnPacketListener, ReceiptReceivedListener
                     receipt.addExtension(new DeliveryReceipt(id));
                     // the key problem is Thread - smack does not keep it in auto reply
                     receipt.setThread(message.getThread());
+                    receipt.setType(Message.Type.chat);
                     try {
                         StanzaSender.sendStanza(account, receipt);
                     } catch (NetworkException e) {

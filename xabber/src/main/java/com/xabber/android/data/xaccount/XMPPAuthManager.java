@@ -179,7 +179,7 @@ public class XMPPAuthManager implements OnPacketListener, OnConnectedListener {
 
             RosterManager.getInstance().createContact(account, user,
                     "xabber", Collections.EMPTY_LIST);
-            PresenceManager.getInstance().requestSubscription(account, user);
+            PresenceManager.getInstance().requestSubscription(account, user, false);
 
         } catch (UserJid.UserJidCreateException | XmppStringprepException | InterruptedException |
                 SmackException | NetworkException | XMPPException.XMPPErrorException e) {

@@ -25,23 +25,30 @@ public class IncomingMessageVH  extends FileMessageVH {
 
     public ImageView avatar;
     public ImageView avatarBackground;
+    private BindListener listener;
+
+    public interface BindListener {
+        void onBind(MessageItem message);
+    }
 
     IncomingMessageVH(View itemView, MessageClickListener messageListener,
                       MessageLongClickListener longClickListener,
-                      FileListener fileListener, @StyleRes int appearance) {
+                      FileListener fileListener, BindListener listener, @StyleRes int appearance) {
         super(itemView, messageListener, longClickListener, fileListener, appearance);
         avatar = itemView.findViewById(R.id.avatar);
         avatarBackground = itemView.findViewById(R.id.avatarBackground);
+        this.listener = listener;
     }
 
-    public void bind(MessageItem messageItem, MessagesAdapter.MessageExtraData extraData) {
+    public void bind(final MessageItem messageItem, MessagesAdapter.MessageExtraData extraData) {
         super.bind(messageItem, extraData);
 
         Context context = extraData.getContext();
         boolean needTail = extraData.isNeedTail();
 
         // setup ARCHIVED icon
-        statusIcon.setVisibility(messageItem.isReceivedFromMessageArchive() ? View.VISIBLE : View.GONE);
+        //statusIcon.setVisibility(messageItem.isReceivedFromMessageArchive() ? View.VISIBLE : View.GONE);
+        statusIcon.setVisibility(View.GONE);
 
         // setup FORWARDED
         boolean haveForwarded = messageItem.haveForwardedMessages();
@@ -105,6 +112,18 @@ public class IncomingMessageVH  extends FileMessageVH {
             messageBalloon.setVisibility(View.VISIBLE);
             messageTime.setVisibility(View.VISIBLE);
         }
+
+        itemView.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
+            @Override
+            public void onViewAttachedToWindow(View view) {
+                if (listener != null) listener.onBind(messageItem);
+            }
+
+            @Override
+            public void onViewDetachedFromWindow(View v) {
+                unsubscribeAll();
+            }
+        });
     }
 
     private void setUpAvatar(MessageItem messageItem, boolean isMUC, String userName, boolean needTail) {

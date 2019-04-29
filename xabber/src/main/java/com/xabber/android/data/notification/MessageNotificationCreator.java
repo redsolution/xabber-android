@@ -19,6 +19,8 @@ import android.text.style.ForegroundColorSpan;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
+import com.xabber.android.data.account.AccountItem;
+import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
@@ -71,7 +73,7 @@ public class MessageNotificationCreator {
                 .setContentIntent(createContentIntent(chat))
                 .setDeleteIntent(NotificationReceiver.createDeleteIntent(context, chat.getNotificationId()))
                 .setCategory(NotificationCompat.CATEGORY_MESSAGE)
-                .setPriority(inForeground ? NotificationCompat.PRIORITY_DEFAULT
+                .setPriority((inForeground || inGracePeriod(chat)) ? NotificationCompat.PRIORITY_DEFAULT
                         : NotificationCompat.PRIORITY_HIGH);
 
         boolean showText = isNeedShowTextInNotification(chat);
@@ -85,7 +87,7 @@ public class MessageNotificationCreator {
                     .setAutoCancel(true);
         }
 
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O && alert)
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O && alert && !inGracePeriod(chat))
             addEffects(builder, chat.getLastMessage().getMessageText().toString(), chat, context);
 
         builder.addAction(createMarkAsReadAction(chat.getNotificationId()))
@@ -109,7 +111,7 @@ public class MessageNotificationCreator {
                         .setContentIntent(createBundleContentIntent())
                         .setDeleteIntent(NotificationReceiver.createDeleteIntent(context, MESSAGE_BUNDLE_NOTIFICATION_ID))
                         .setCategory(NotificationCompat.CATEGORY_MESSAGE)
-                        .setPriority(inForeground ? NotificationCompat.PRIORITY_DEFAULT
+                        .setPriority((inForeground || inGracePeriod(lastChat)) ? NotificationCompat.PRIORITY_DEFAULT
                                 : NotificationCompat.PRIORITY_HIGH);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -127,7 +129,7 @@ public class MessageNotificationCreator {
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O && alert) {
             MessageNotificationManager.Message lastMessage = lastChat != null ? lastChat.getLastMessage() : null;
-            if (lastMessage != null)
+            if (lastMessage != null && alert && !inGracePeriod(lastChat))
                 addEffects(builder, lastMessage.getMessageText().toString(), lastChat, context);
         }
 
@@ -135,6 +137,9 @@ public class MessageNotificationCreator {
     }
 
     private String getChannelID(MessageNotificationManager.Chat chat) {
+        if (inGracePeriod(chat))
+            return NotificationChannelUtils.SILENT_CHANNEL_ID;
+
         NotifyPrefs customPrefs = null;
         boolean isGroup = false;
         if (chat != null) {
@@ -158,6 +163,13 @@ public class MessageNotificationCreator {
     }
 
     /** UTILS */
+    private static boolean inGracePeriod(MessageNotificationManager.Chat chat) {
+        if (chat == null) return false;
+        AccountItem accountItem = AccountManager.getInstance().getAccount(chat.getAccountJid());
+        if (accountItem != null) return accountItem.inGracePeriod();
+        else return false;
+    }
+
     private CharSequence createNewMessagesTitle(int messageCount) {
         return context.getString(R.string.new_chat_messages, messageCount,
                 StringUtils.getQuantityString(context.getResources(), R.array.chat_message_quantity, messageCount));
