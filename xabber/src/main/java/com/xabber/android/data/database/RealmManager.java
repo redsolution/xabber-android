@@ -24,6 +24,7 @@ import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.notification.custom_notification.NotifyPrefsRealm;
 
 import io.realm.DynamicRealm;
+import io.realm.DynamicRealmObject;
 import io.realm.FieldAttribute;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
@@ -322,6 +323,12 @@ public class RealmManager {
                         if (oldVersion == 22) {
                             schema.get(AccountRealm.class.getSimpleName())
                                     .addField(AccountRealm.Fields.PUSH_ENABLED, boolean.class)
+                                    .transform(new RealmObjectSchema.Function() {
+                                        @Override
+                                        public void apply(DynamicRealmObject obj) {
+                                            obj.setBoolean(AccountRealm.Fields.PUSH_ENABLED, true);
+                                        }
+                                    })
                                     .addField(AccountRealm.Fields.PUSH_WAS_ENABLED, boolean.class);
 
                             oldVersion++;
