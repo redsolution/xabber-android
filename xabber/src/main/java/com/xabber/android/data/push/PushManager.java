@@ -23,7 +23,6 @@ import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
-import org.jivesoftware.smackx.push_notifications.element.DisablePushNotificationsIQ;
 import org.jivesoftware.smackx.push_notifications.element.EnablePushNotificationsIQ;
 import org.jivesoftware.smackx.push_notifications.element.PushNotificationsElements;
 import org.jxmpp.jid.EntityBareJid;
@@ -140,9 +139,6 @@ public class PushManager implements OnConnectedListener, OnPacketListener {
     public void disablePushNotification(AccountItem accountItem, boolean needConfirm) {
         if (accountItem != null) {
             deleteEndpoint(accountItem);
-
-            if (accountItem.getConnection().isConnected())
-                sendDisablePushIQ(accountItem, needConfirm);
             AccountManager.getInstance().setPushWasEnabled(accountItem, false);
         }
     }
@@ -224,20 +220,6 @@ public class PushManager implements OnConnectedListener, OnPacketListener {
             Log.d(LOG_TAG, "Push notification enabling failed: " + e.toString());
             waitingIQs.remove(stanzaID);
             AccountManager.getInstance().setPushWasEnabled(accountItem, false);
-        }
-    }
-
-    private void sendDisablePushIQ(final AccountItem accountItem, boolean needConfirm) {
-        String stanzaID = null;
-        try {
-            DisablePushNotificationsIQ disableIQ = new DisablePushNotificationsIQ(
-                    UserJid.from(accountItem.getPushServiceJid()).getJid(), accountItem.getPushNode());
-            stanzaID = disableIQ.getStanzaId();
-            if (needConfirm) waitingIQs.put(stanzaID, false);
-            accountItem.getConnection().sendStanza(disableIQ);
-        } catch (SmackException.NotConnectedException | InterruptedException | UserJid.UserJidCreateException e) {
-            Log.d(LOG_TAG, "Push notification enabling failed: " + e.toString());
-            waitingIQs.remove(stanzaID);
         }
     }
 
