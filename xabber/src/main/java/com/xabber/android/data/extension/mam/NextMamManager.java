@@ -7,6 +7,7 @@ import com.xabber.android.data.database.MessageDatabaseManager;
 import com.xabber.android.data.database.messagerealm.Attachment;
 import com.xabber.android.data.database.messagerealm.ForwardId;
 import com.xabber.android.data.database.messagerealm.MessageItem;
+import com.xabber.android.data.database.messagerealm.SyncInfo;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.file.FileManager;
@@ -56,6 +57,7 @@ import io.realm.Sort;
 
 public class NextMamManager implements OnRosterReceivedListener {
 
+    private static final String LOG_TAG = NextMamManager.class.getSimpleName();
     private static final long ALL_MESSAGE_LOAD_INTERVAL = 1800000;
 
     private static NextMamManager instance;
@@ -84,6 +86,9 @@ public class NextMamManager implements OnRosterReceivedListener {
             initializeStartTimestamp(accountItem);
             loadLastMessages(realm, accountItem);
         } else {
+            if (isNeedMigration(accountItem, realm)) {
+                runMigrationToNewArchive(accountItem, realm);
+            }
             if (isTimeToLoadAllNewMessages(accountItem, realm)) {
                 loadAllNewMessages(realm, accountItem);
             } else loadLastMessages(realm, accountItem);
@@ -209,6 +214,7 @@ public class NextMamManager implements OnRosterReceivedListener {
     }
 
     private void loadLastMessage(Realm realm, AccountItem accountItem, AbstractChat chat) {
+        LogManager.d(LOG_TAG, "load last messages in chat: " + chat.getUser());
         MamManager.MamQueryResult queryResult = requestLastMessage(accountItem, chat);
         if (queryResult != null) {
             List<Forwarded> messages = new ArrayList<>(queryResult.forwardedMessages);
@@ -232,6 +238,7 @@ public class NextMamManager implements OnRosterReceivedListener {
     }
 
     private void loadNewMessages(Realm realm, AccountItem accountItem, AbstractChat chat) {
+        LogManager.d(LOG_TAG, "load new messages in chat: " + chat.getUser());
         String lastArchivedId = getLastMessageArchivedId(chat, realm);
         if (lastArchivedId != null) {
 
@@ -257,6 +264,7 @@ public class NextMamManager implements OnRosterReceivedListener {
     }
 
     private boolean loadNextHistory(Realm realm, AccountItem accountItem, AbstractChat chat) {
+        LogManager.d(LOG_TAG, "load next history in chat: " + chat.getUser());
         MessageItem firstMessage = getFirstMessage(chat, realm);
         if (firstMessage != null) {
             if (firstMessage.getArchivedId().equals(firstMessage.getPreviousId())) {
@@ -288,7 +296,7 @@ public class NextMamManager implements OnRosterReceivedListener {
     }
 
     private void loadMissedMessages(Realm realm, AccountItem accountItem, AbstractChat chat, MessageItem m1) {
-
+        LogManager.d(LOG_TAG, "load missed messages in chat: " + chat.getUser());
         MessageItem m2 = getMessageForCloseMissedMessages(realm, m1);
         if (m2 != null && !m2.getUniqueId().equals(m1.getUniqueId())) {
             Date startDate = new Date(m2.getTimestamp());
@@ -664,6 +672,14 @@ public class NextMamManager implements OnRosterReceivedListener {
         } else return false;
     }
 
+    private boolean isNeedMigration(AccountItem account, Realm realm) {
+        MessageItem result = realm.where(MessageItem.class)
+                .equalTo(MessageItem.Fields.ACCOUNT, account.getAccount().toString())
+                .notEqualTo(MessageItem.Fields.PREVIOUS_ID, "legacy")
+                .findFirst();
+        return result == null;
+    }
+
     private boolean historyIsNotEnough(Realm realm, AbstractChat chat) {
         RealmResults<MessageItem> results = realm.where(MessageItem.class)
                 .equalTo(MessageItem.Fields.ACCOUNT, chat.getAccount().toString())
@@ -700,6 +716,18 @@ public class NextMamManager implements OnRosterReceivedListener {
         } else return null;
     }
 
+    private MessageItem getFirstMessageForMigration(AbstractChat chat, Realm realm) {
+        RealmResults<MessageItem> results = realm.where(MessageItem.class)
+                .equalTo(MessageItem.Fields.ACCOUNT, chat.getAccount().toString())
+                .equalTo(MessageItem.Fields.USER, chat.getUser().toString())
+                .isNull(MessageItem.Fields.PARENT_MESSAGE_ID)
+                .findAllSorted(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
+
+        if (results != null && !results.isEmpty()) {
+            return results.first();
+        } else return null;
+    }
+
     private long getLastMessageTimestamp(AccountItem account, Realm realm) {
         RealmResults<MessageItem> results = realm.where(MessageItem.class)
                 .equalTo(MessageItem.Fields.ACCOUNT, account.getAccount().toString())
@@ -724,6 +752,29 @@ public class NextMamManager implements OnRosterReceivedListener {
             String id = lastMessage.getArchivedId();
             if (id == null) id = lastMessage.getStanzaId();
             chat.setLastMessageId(id);
+        }
+    }
+
+    private void runMigrationToNewArchive(AccountItem accountItem, Realm realm) {
+        LogManager.d(LOG_TAG, "run migration for account: " + accountItem.getAccount().toString());
+        Collection<RosterContact> contacts = RosterManager.getInstance()
+                .getAccountRosterContacts(accountItem.getAccount());
+
+        for (RosterContact contact : contacts) {
+            AbstractChat chat = MessageManager.getInstance()
+                    .getOrCreateChat(contact.getAccount(), contact.getUser());
+
+            MessageItem firstMessage = getFirstMessageForMigration(chat, realm);
+            SyncInfo syncInfo = realm.where(SyncInfo.class)
+                    .equalTo(SyncInfo.FIELD_ACCOUNT, accountItem.getAccount().toString())
+                    .equalTo(SyncInfo.FIELD_USER, chat.getUser().toString()).findFirst();
+
+            if (firstMessage != null && syncInfo != null) {
+                realm.beginTransaction();
+                firstMessage.setArchivedId(syncInfo.getFirstMamMessageMamId());
+                firstMessage.setPreviousId(null);
+                realm.commitTransaction();
+            }
         }
     }
 }

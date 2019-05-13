@@ -323,7 +323,13 @@ public class MessageDatabaseManager {
                         if (oldVersion == 19) {
                             schema.get(MessageItem.class.getSimpleName())
                                     .addField(MessageItem.Fields.PREVIOUS_ID, String.class)
-                                    .addField(MessageItem.Fields.ARCHIVED_ID, String.class);
+                                    .addField(MessageItem.Fields.ARCHIVED_ID, String.class)
+                                    .transform(new RealmObjectSchema.Function() {
+                                        @Override
+                                        public void apply(DynamicRealmObject obj) {
+                                            obj.setString(MessageItem.Fields.PREVIOUS_ID, "legacy");
+                                        }
+                                    });
                             oldVersion++;
                         }
 
