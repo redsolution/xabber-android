@@ -1,6 +1,8 @@
 package com.xabber.android.data.push;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.provider.Settings;
 import android.util.Log;
 
 import com.google.firebase.iid.FirebaseInstanceId;
@@ -76,7 +78,7 @@ public class PushManager implements OnConnectedListener, OnPacketListener {
         AccountJid accountJid = null;
         Collection<AccountJid> accounts = AccountManager.getInstance().getEnabledAccounts();
         for (AccountJid account : accounts) {
-            if (account.getFullJid().asBareJid().equals(jid)) {
+            if ((account.getFullJid().asBareJid() + getAndroidId()).equals(jid)) {
                 accountJid = account;
                 break;
             }
@@ -173,7 +175,8 @@ public class PushManager implements OnConnectedListener, OnPacketListener {
     private void registerEndpoint(AccountJid accountJid) {
         compositeSubscription.add(
                 PushApiClient.registerEndpoint(
-                        FirebaseInstanceId.getInstance().getToken(), accountJid.toString())
+                        FirebaseInstanceId.getInstance().getToken(),
+                        accountJid.getFullJid().asBareJid().toString() + getAndroidId())
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(new Action1<ResponseBody>() {
@@ -221,6 +224,12 @@ public class PushManager implements OnConnectedListener, OnPacketListener {
             waitingIQs.remove(stanzaID);
             AccountManager.getInstance().setPushWasEnabled(accountItem, false);
         }
+    }
+
+    @SuppressLint("HardwareIds")
+    private static String getAndroidId() {
+        return "/" + Settings.Secure.getString(Application.getInstance().getContentResolver(),
+                Settings.Secure.ANDROID_ID);
     }
 
 }
