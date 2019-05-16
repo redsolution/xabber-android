@@ -63,7 +63,6 @@ import io.realm.Sort;
 public class NextMamManager implements OnRosterReceivedListener {
 
     private static final String LOG_TAG = NextMamManager.class.getSimpleName();
-    private static final long ALL_MESSAGE_LOAD_INTERVAL = 24 * 60 * 60 * 1000;
 
     private static NextMamManager instance;
 
@@ -94,8 +93,10 @@ public class NextMamManager implements OnRosterReceivedListener {
             if (isNeedMigration(accountItem, realm)) {
                 runMigrationToNewArchive(accountItem, realm);
             }
-            if (isTimeToLoadAllNewMessages(accountItem, realm)) {
-                loadAllNewMessages(realm, accountItem);
+            String lastArchivedId = getLastMessageArchivedId(accountItem, realm);
+            if (lastArchivedId != null) {
+                boolean historyCompleted = loadAllNewMessages(realm, accountItem, lastArchivedId);
+                if (!historyCompleted) loadLastMessages(realm, accountItem);
             } else loadLastMessages(realm, accountItem);
         }
         realm.close();
@@ -228,89 +229,87 @@ public class NextMamManager implements OnRosterReceivedListener {
         updateLastMessageId(chat, realm);
     }
 
-    private void loadAllNewMessages(Realm realm, AccountItem accountItem) {
+    private boolean loadAllNewMessages(Realm realm, AccountItem accountItem, String lastArchivedId) {
         if (accountItem.getLoadHistorySettings() != LoadHistorySettings.all
-                || !isSupported(accountItem.getAccount())) return;
+                || !isSupported(accountItem.getAccount())) return true;
 
         LogManager.d(LOG_TAG, "load new messages");
-        String lastArchivedId = getLastMessageArchivedId(accountItem, realm);
+        List<Forwarded> messages = new ArrayList<>();
+        boolean complete = false;
+        String id = lastArchivedId;
+        int pageLoaded = 0;
+        // Request all new messages after last archived id
+        while (!complete && id != null && pageLoaded < 2) {
+            MamManager.MamQueryResult queryResult = requestMessagesFromId(accountItem, null, id);
+            if (queryResult != null) {
+                messages.addAll(queryResult.forwardedMessages);
+                complete = queryResult.mamFin.isComplete();
+                id = getNextId(queryResult);
+                pageLoaded++;
+            } else complete = true;
+        }
 
-        if (lastArchivedId != null) {
-            List<Forwarded> messages = new ArrayList<>();
-            boolean complete = false;
-            String id = lastArchivedId;
+        if (!messages.isEmpty()) {
+            HashMap<String, ArrayList<Forwarded>> messagesByChat = new HashMap<>();
+            List<MessageItem> parsedMessages = new ArrayList<>();
+            List<AbstractChat> chatsNeedUpdateLastMessageId = new ArrayList<>();
 
-            // Request all new messages after last archived id
-            while (!complete && id != null) {
-                MamManager.MamQueryResult queryResult = requestMessagesFromId(accountItem, null, id);
-                if (queryResult != null) {
-                    messages.addAll(queryResult.forwardedMessages);
-                    complete = queryResult.mamFin.isComplete();
-                    id = getNextId(queryResult);
-                } else complete = true;
+            // Sort messages by chat to separate lists
+            for (Forwarded forwarded : messages) {
+                Stanza stanza = forwarded.getForwardedStanza();
+                Jid user = stanza.getFrom().asBareJid();
+                if (user.equals(accountItem.getAccount().getFullJid().asBareJid()))
+                    user = stanza.getTo().asBareJid();
+
+                if (!messagesByChat.containsKey(user.toString())) {
+                    messagesByChat.put(user.toString(), new ArrayList<Forwarded>());
+                }
+                ArrayList<Forwarded> list = messagesByChat.get(user.toString());
+                if (list != null) list.add(forwarded);
             }
 
-            if (!messages.isEmpty()) {
-                HashMap<String, ArrayList<Forwarded>> messagesByChat = new HashMap<>();
-                List<MessageItem> parsedMessages = new ArrayList<>();
-                List<AbstractChat> chatsNeedUpdateLastMessageId = new ArrayList<>();
+            // parse message lists
+            for (Map.Entry<String, ArrayList<Forwarded>> entry : messagesByChat.entrySet()) {
+                ArrayList<Forwarded> list = entry.getValue();
+                if (list != null) {
+                    try {
+                        AbstractChat chat = MessageManager.getInstance()
+                                .getOrCreateChat(accountItem.getAccount(), UserJid.from(entry.getKey()));
 
-                // Sort messages by chat to separate lists
-                for (Forwarded forwarded : messages) {
-                    Stanza stanza = forwarded.getForwardedStanza();
-                    Jid user = stanza.getFrom().asBareJid();
-                    if (user.equals(accountItem.getAccount().getFullJid().asBareJid()))
-                        user = stanza.getTo().asBareJid();
+                        // sort messages in list by timestamp
+                        Collections.sort(list, new Comparator<Forwarded>() {
+                            @Override
+                            public int compare(Forwarded o1, Forwarded o2) {
+                                DelayInformation delayInformation1 = o1.getDelayInformation();
+                                long time1 = delayInformation1.getStamp().getTime();
 
-                    if (!messagesByChat.containsKey(user.toString())) {
-                        messagesByChat.put(user.toString(), new ArrayList<Forwarded>());
-                    }
-                    ArrayList<Forwarded> list = messagesByChat.get(user.toString());
-                    if (list != null) list.add(forwarded);
-                }
+                                DelayInformation delayInformation2 = o2.getDelayInformation();
+                                long time2 = delayInformation2.getStamp().getTime();
 
-                // parse message lists
-                for (Map.Entry<String, ArrayList<Forwarded>> entry : messagesByChat.entrySet()) {
-                    ArrayList<Forwarded> list = entry.getValue();
-                    if (list != null) {
-                        try {
-                            AbstractChat chat = MessageManager.getInstance()
-                                    .getOrCreateChat(accountItem.getAccount(), UserJid.from(entry.getKey()));
+                                return Long.valueOf(time1).compareTo(time2);
+                            }
+                        });
 
-                            // sort messages in list by timestamp
-                            Collections.sort(list, new Comparator<Forwarded>() {
-                                @Override
-                                public int compare(Forwarded o1, Forwarded o2) {
-                                    DelayInformation delayInformation1 = o1.getDelayInformation();
-                                    long time1 = delayInformation1.getStamp().getTime();
+                        // parse messages and set previous id
+                        parsedMessages.addAll(
+                                parseMessage(accountItem, accountItem.getAccount(),
+                                        chat.getUser(), list, chat.getLastMessageId()));
+                        chatsNeedUpdateLastMessageId.add(chat);
 
-                                    DelayInformation delayInformation2 = o2.getDelayInformation();
-                                    long time2 = delayInformation2.getStamp().getTime();
-
-                                    return Long.valueOf(time1).compareTo(time2);
-                                }
-                            });
-
-                            // parse messages and set previous id
-                            parsedMessages.addAll(
-                                    parseMessage(accountItem, accountItem.getAccount(),
-                                            chat.getUser(), list, chat.getLastMessageId()));
-                            chatsNeedUpdateLastMessageId.add(chat);
-
-                        } catch (UserJid.UserJidCreateException e) {
-                            LogManager.d(LOG_TAG, e.toString());
-                            continue;
-                        }
+                    } catch (UserJid.UserJidCreateException e) {
+                        LogManager.d(LOG_TAG, e.toString());
+                        continue;
                     }
                 }
+            }
 
-                // save messages to Realm
-                saveOrUpdateMessages(realm, parsedMessages);
-                for (AbstractChat chat : chatsNeedUpdateLastMessageId) {
-                    updateLastMessageId(chat, realm);
-                }
+            // save messages to Realm
+            saveOrUpdateMessages(realm, parsedMessages);
+            for (AbstractChat chat : chatsNeedUpdateLastMessageId) {
+                updateLastMessageId(chat, realm);
             }
         }
+        return complete;
     }
 
     private boolean loadNextHistory(Realm realm, AccountItem accountItem, AbstractChat chat) {
@@ -714,17 +713,6 @@ public class NextMamManager implements OnRosterReceivedListener {
         if (results != null && !results.isEmpty()) {
             return results.first();
         } else return null;
-    }
-
-    private boolean isTimeToLoadAllNewMessages(AccountItem account, Realm realm) {
-        RealmResults<MessageItem> results = realm.where(MessageItem.class)
-                .equalTo(MessageItem.Fields.ACCOUNT, account.getAccount().toString())
-                .findAllSorted(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
-
-        if (results != null && !results.isEmpty()) {
-            MessageItem lastMessage = results.last();
-            return System.currentTimeMillis() < lastMessage.getTimestamp() + ALL_MESSAGE_LOAD_INTERVAL;
-        } else return false;
     }
 
     private boolean isNeedMigration(AccountItem account, Realm realm) {
