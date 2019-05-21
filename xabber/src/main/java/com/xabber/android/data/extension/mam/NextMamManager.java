@@ -586,13 +586,26 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
     private List<MessageItem> parseMessage(AccountItem accountItem, AccountJid account, UserJid user,
                                            List<Forwarded> forwardedMessages, String prevID) {
         List<MessageItem> messageItems = new ArrayList<>();
+        String lastOutgoingId = null;
         for (Forwarded forwarded : forwardedMessages) {
             MessageItem message = parseMessage(accountItem, account, user, forwarded, prevID);
             if (message != null) {
                 messageItems.add(message);
                 prevID = message.getArchivedId();
+                if (!message.isIncoming()) lastOutgoingId = message.getUniqueId();
             }
         }
+
+        // mark messages before outgoing as read
+        if (lastOutgoingId != null) {
+            for (MessageItem message : messageItems) {
+                if (lastOutgoingId.equals(message.getUniqueId())) {
+                    break;
+                }
+                message.setRead(true);
+            }
+        }
+
         return messageItems;
     }
 
