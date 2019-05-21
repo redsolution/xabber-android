@@ -20,7 +20,6 @@ import com.xabber.android.data.filedownload.FileCategory;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.NotificationState;
-import com.xabber.android.data.push.SyncManager;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
@@ -219,7 +218,6 @@ public class MessageNotificationManager implements OnLoadListener {
             case reply:
                 MessageManager.getInstance().sendMessage(accountJid, userJid, action.getReplyText().toString());
         }
-        SyncManager.getInstance().onDelayedNotificationActionDone();
     }
 
     private void onLoaded(List<Chat> loadedChats) {
