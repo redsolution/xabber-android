@@ -25,6 +25,7 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.CertificateManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.push.SyncManager;
+import com.xabber.android.service.XabberService;
 import com.xabber.android.ui.activity.AboutActivity;
 import com.xabber.android.ui.activity.ContactListActivity;
 import com.xabber.android.ui.activity.LoadActivity;
@@ -202,11 +203,11 @@ public class ActivityManager implements OnUnloadListener {
         if (LOG) {
             LogManager.i(activity, "onResume");
         }
-        if (!application.isInitialized() && !(activity instanceof LoadActivity)) {
+        if (!application.isInitialized() && !Application.getInstance().isClosing()) {
             if (LOG) {
                 LogManager.i(this, "Wait for loading");
             }
-            activity.startActivity(LoadActivity.createIntent(activity));
+            activity.startService(XabberService.createIntent(activity));
         }
         if (onErrorListener != null) {
             application.removeUIListener(OnErrorListener.class, onErrorListener);

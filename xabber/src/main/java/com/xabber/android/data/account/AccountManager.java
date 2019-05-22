@@ -718,6 +718,12 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
         return !accountItems.isEmpty();
     }
 
+    public boolean checkAccounts() {
+        Realm realm = RealmManager.getInstance().getRealmUiThread();
+        RealmResults<AccountRealm> accountRealms = realm.where(AccountRealm.class).findAll();
+        return !accountRealms.isEmpty();
+    }
+
     /**
      * @return List of all accounts including disabled.
      */
