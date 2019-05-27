@@ -48,7 +48,7 @@ public class RosterCacheManager {
         String user = messageItem.getUser().getBareJid().toString();
         ContactRealm contactRealm = realm.where(ContactRealm.class).equalTo(ContactRealm.Fields.ID, account + "/" + user).findFirst();
         realm.beginTransaction();
-        if (contactRealm != null) {
+        if (contactRealm != null && messageItem.isValid() && messageItem.isManaged()) {
             contactRealm.setLastMessage(messageItem);
             realm.copyToRealmOrUpdate(contactRealm);
         }
