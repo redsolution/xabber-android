@@ -45,6 +45,7 @@ import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.notification.MessageNotificationManager;
 import com.xabber.android.data.notification.NotificationManager;
+import com.xabber.android.data.roster.RosterCacheManager;
 import com.xabber.xmpp.sid.OriginIdElement;
 import com.xabber.xmpp.sid.UniqStanzaHelper;
 
@@ -429,6 +430,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         String id = messageItem.getArchivedId();
         if (id == null) id = messageItem.getStanzaId();
         setLastMessageId(id);
+        RosterCacheManager.saveLastMessageToContact(MessageDatabaseManager.getInstance().getRealmUiThread(), messageItem);
 
         return messageItem;
     }

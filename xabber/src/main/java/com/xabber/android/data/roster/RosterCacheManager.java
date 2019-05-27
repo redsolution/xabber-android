@@ -1,0 +1,50 @@
+package com.xabber.android.data.roster;
+
+import com.xabber.android.data.database.MessageDatabaseManager;
+import com.xabber.android.data.database.messagerealm.MessageItem;
+import com.xabber.android.data.database.realm.ContactRealm;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import io.realm.Realm;
+
+public class RosterCacheManager {
+
+    public static List<ContactRealm> loadContacts() {
+        Realm realm = MessageDatabaseManager.getInstance().getRealmUiThread();
+        return realm.where(ContactRealm.class).findAll();
+    }
+
+    public static void saveContact(Collection<RosterContact> contacts) {
+        Realm realm = MessageDatabaseManager.getInstance().getRealmUiThread();
+        List<ContactRealm> newContacts = new ArrayList<>();
+        for (RosterContact contact : contacts) {
+            String account = contact.getAccount().getFullJid().asBareJid().toString();
+            String user = contact.getUser().getBareJid().toString();
+
+            ContactRealm contactRealm = new ContactRealm(account + "/" + user);
+            contactRealm.setAccount(account);
+            contactRealm.setUser(user);
+            contactRealm.setName(contact.getName());
+            contactRealm.setAccountResource(contact.getAccount().getFullJid().getResourcepart().toString());
+            newContacts.add(contactRealm);
+        }
+        realm.beginTransaction();
+        realm.copyToRealmOrUpdate(newContacts);
+        realm.commitTransaction();
+    }
+
+    public static void saveLastMessageToContact(Realm realm, MessageItem messageItem) {
+        String account = messageItem.getAccount().getFullJid().asBareJid().toString();
+        String user = messageItem.getUser().getBareJid().toString();
+        ContactRealm contactRealm = realm.where(ContactRealm.class).equalTo(ContactRealm.Fields.ID, account + "/" + user).findFirst();
+        realm.beginTransaction();
+        if (contactRealm != null) {
+            contactRealm.setLastMessage(messageItem);
+            realm.copyToRealmOrUpdate(contactRealm);
+        }
+        realm.commitTransaction();
+    }
+}

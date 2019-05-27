@@ -25,6 +25,7 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.CertificateManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.push.SyncManager;
+import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.service.XabberService;
 import com.xabber.android.ui.activity.AboutActivity;
 import com.xabber.android.ui.activity.ContactListActivity;
@@ -44,6 +45,7 @@ import java.util.WeakHashMap;
 public class ActivityManager implements OnUnloadListener {
 
     private static final String EXTRA_TASK_INDEX = "com.xabber.android.data.ActivityManager.EXTRA_TASK_INDEX";
+    private static final long START_SERVICE_DELAY = 1000;
 
     private static final boolean LOG = true;
     private static ActivityManager instance;
@@ -207,7 +209,24 @@ public class ActivityManager implements OnUnloadListener {
             if (LOG) {
                 LogManager.i(this, "Wait for loading");
             }
-            activity.startService(XabberService.createIntent(activity));
+            AccountManager.getInstance().onPreInitialize();
+            RosterManager.getInstance().onPreInitialize();
+            Application.getInstance().runInBackground(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        Thread.sleep(START_SERVICE_DELAY);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    Application.getInstance().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            activity.startService(XabberService.createIntent(activity));
+                        }
+                    });
+                }
+            });
         }
         if (onErrorListener != null) {
             application.removeUIListener(OnErrorListener.class, onErrorListener);

@@ -22,6 +22,7 @@ import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.push.SyncManager;
 import com.xabber.android.data.roster.OnRosterReceivedListener;
+import com.xabber.android.data.roster.RosterCacheManager;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
 
@@ -901,6 +902,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
             String id = lastMessage.getArchivedId();
             if (id == null) id = lastMessage.getStanzaId();
             chat.setLastMessageId(id);
+            RosterCacheManager.saveLastMessageToContact(MessageDatabaseManager.getInstance().getRealmUiThread(), lastMessage);
         }
     }
 
