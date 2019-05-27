@@ -77,6 +77,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -170,7 +171,12 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
 
     public Collection<AbstractChat> getChatsOfEnabledAccount() {
         List<AbstractChat> chats = new ArrayList<>();
-        for (AccountJid accountJid : AccountManager.getInstance().getEnabledAccounts()) {
+
+        HashSet<AccountJid> enabledAccounts = new HashSet<>();
+        enabledAccounts.addAll(AccountManager.getInstance().getEnabledAccounts());
+        enabledAccounts.addAll(AccountManager.getInstance().getCachedEnabledAccounts());
+
+        for (AccountJid accountJid : enabledAccounts) {
             chats.addAll(this.chats.getNested(accountJid.toString()).values());
         }
         return chats;
@@ -456,6 +462,12 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
             }
         }
         return Collections.unmodifiableCollection(collection);
+    }
+
+    public AbstractChat getOrCreateChat(AccountJid account, UserJid user, MessageItem lastMessage) {
+        AbstractChat chat = getOrCreateChat(account, user);
+        chat.setLastMessage(lastMessage);
+        return chat;
     }
 
     /**
