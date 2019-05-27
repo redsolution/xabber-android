@@ -9,6 +9,7 @@ import com.xabber.android.data.database.messagerealm.Attachment;
 import com.xabber.android.data.database.messagerealm.ForwardId;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.database.messagerealm.SyncInfo;
+import com.xabber.android.data.database.realm.ContactRealm;
 import com.xabber.android.data.database.sqlite.MessageTable;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
@@ -33,7 +34,7 @@ import io.realm.annotations.RealmModule;
 
 public class MessageDatabaseManager {
     private static final String REALM_MESSAGE_DATABASE_NAME = "xabber.realm";
-    static final int REALM_MESSAGE_DATABASE_VERSION = 20;
+    static final int REALM_MESSAGE_DATABASE_VERSION = 21;
     private final RealmConfiguration realmConfiguration;
 
     private static MessageDatabaseManager instance;
@@ -137,7 +138,7 @@ public class MessageDatabaseManager {
     }
 
 
-    @RealmModule(classes = {MessageItem.class, SyncInfo.class, Attachment.class, ForwardId.class})
+    @RealmModule(classes = {MessageItem.class, SyncInfo.class, Attachment.class, ForwardId.class, ContactRealm.class})
     static class MessageRealmDatabaseModule {
     }
 
@@ -330,6 +331,18 @@ public class MessageDatabaseManager {
                                             obj.setString(MessageItem.Fields.PREVIOUS_ID, "legacy");
                                         }
                                     });
+                            oldVersion++;
+                        }
+
+                        if (oldVersion == 20) {
+                            schema.create(ContactRealm.class.getSimpleName())
+                                    .addField(ContactRealm.Fields.ID, String.class, FieldAttribute.PRIMARY_KEY, FieldAttribute.REQUIRED)
+                                    .addField(ContactRealm.Fields.ACCOUNT, String.class)
+                                    .addField(ContactRealm.Fields.USER, String.class)
+                                    .addField(ContactRealm.Fields.NAME, String.class)
+                                    .addField(ContactRealm.Fields.ACCOUNT_RESOURCE, String.class)
+                                    .addRealmObjectField(ContactRealm.Fields.LAST_MESSAGE, schema.get(MessageItem.class.getSimpleName()));
+
                             oldVersion++;
                         }
 
