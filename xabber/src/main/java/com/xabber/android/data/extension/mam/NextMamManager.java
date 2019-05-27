@@ -19,6 +19,7 @@ import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.ForwardManager;
 import com.xabber.android.data.message.MessageManager;
+import com.xabber.android.data.message.NewMessageEvent;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.push.SyncManager;
 import com.xabber.android.data.roster.OnRosterReceivedListener;
@@ -705,6 +706,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
         realm.copyToRealm(messagesToSave);
         realm.commitTransaction();
         SyncManager.getInstance().onMessageSaved();
+        EventBus.getDefault().post(new NewMessageEvent());
         return messagesToSave;
     }
 
