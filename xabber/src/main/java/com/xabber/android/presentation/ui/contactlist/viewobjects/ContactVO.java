@@ -166,7 +166,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
         AbstractChat chat = messageManager.getOrCreateChat(contact.getAccount(), contact.getUser());
         MessageItem lastMessage = chat.getLastMessage();
 
-        if (lastMessage == null) {
+        if (lastMessage == null || lastMessage.getText() == null) {
             messageText = statusText;
         } else {
             if (lastMessage.haveAttachments() && lastMessage.getAttachments().size() > 0) {
