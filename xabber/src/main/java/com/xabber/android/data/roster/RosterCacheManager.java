@@ -19,24 +19,31 @@ public class RosterCacheManager {
 
     public static void saveContact(Collection<RosterContact> contacts) {
         Realm realm = MessageDatabaseManager.getInstance().getRealmUiThread();
+
+        realm.beginTransaction();
         List<ContactRealm> newContacts = new ArrayList<>();
         for (RosterContact contact : contacts) {
             String account = contact.getAccount().getFullJid().asBareJid().toString();
             String user = contact.getUser().getBareJid().toString();
 
-            ContactRealm contactRealm = new ContactRealm(account + "/" + user);
+            ContactRealm contactRealm = realm.where(ContactRealm.class).equalTo(ContactRealm.Fields.ID,
+                    account + "/" + user).findFirst();
+            if (contactRealm == null) {
+                contactRealm = new ContactRealm(account + "/" + user);
+            }
+
             contactRealm.setAccount(account);
             contactRealm.setUser(user);
             contactRealm.setName(contact.getName());
             contactRealm.setAccountResource(contact.getAccount().getFullJid().getResourcepart().toString());
             newContacts.add(contactRealm);
         }
-        realm.beginTransaction();
         realm.copyToRealmOrUpdate(newContacts);
         realm.commitTransaction();
     }
 
     public static void saveLastMessageToContact(Realm realm, MessageItem messageItem) {
+        if (messageItem == null) return;
         String account = messageItem.getAccount().getFullJid().asBareJid().toString();
         String user = messageItem.getUser().getBareJid().toString();
         ContactRealm contactRealm = realm.where(ContactRealm.class).equalTo(ContactRealm.Fields.ID, account + "/" + user).findFirst();
