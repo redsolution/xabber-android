@@ -29,9 +29,13 @@ import org.jivesoftware.smackx.push_notifications.element.EnablePushNotification
 import org.jivesoftware.smackx.push_notifications.element.PushNotificationsElements;
 import org.jxmpp.jid.EntityBareJid;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 
 import okhttp3.ResponseBody;
 import rx.android.schedulers.AndroidSchedulers;
@@ -101,15 +105,23 @@ public class PushManager implements OnConnectedListener, OnPacketListener {
     }
 
     public void onNewMessagePush(Context context, String node) {
+        String log = new SimpleDateFormat("yyyy.MM.dd - HH:mm:ss", Locale.getDefault()).format(new Date());
+        String message = "";
         if (!Application.getInstance().isServiceStarted()
                 && SettingsManager.getEnabledPushNodes().contains(node)) {
             Utils.startXabberServiceCompatWithSyncMode(context, node);
-            LogManager.d(LOG_TAG, "Received message push. Starting service.");
+            message = "Received message push. Starting service.";
+            LogManager.d(LOG_TAG, message);
         } else if (SyncManager.getInstance().isSyncMode()) {
-            LogManager.d(LOG_TAG, "Received message push. Service also started. Add account to allowed accounts.");
+            message = "Received message push. Service also started. Add account to allowed accounts.";
+            LogManager.d(LOG_TAG, message);
             SyncManager.getInstance().addAllowedAccount(node);
+        } else {
+            message = "Received message push. Service also started. Not a sync mode - account maybe connected.";
+            LogManager.d(LOG_TAG, message);
         }
-        LogManager.d(LOG_TAG, "Received message push. Service also started. Not a sync mode - account maybe connected.");
+        LogManager.d("VALERA_TEST", log + ": " + message);
+        SettingsManager.addToPushLog(log + ": " + message);
     }
 
     @Override

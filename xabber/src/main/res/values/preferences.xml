@@ -538,6 +538,8 @@
     <string name="chat_events_suppress_100_key">chat_events_suppress_100</string>
     <bool name="chat_events_suppress_100_default">false</bool>
 
+    <string name="push_log">push_log</string>
+
 <!-- preference_xabber -->
 
     <!-- common values -->
