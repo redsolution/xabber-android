@@ -23,6 +23,7 @@ import android.widget.Toast;
 import com.xabber.android.R;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.CertificateManager;
+import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.push.SyncManager;
 import com.xabber.android.data.roster.RosterManager;
@@ -214,6 +215,7 @@ public class ActivityManager implements OnUnloadListener {
             Application.getInstance().runInBackground(new Runnable() {
                 @Override
                 public void run() {
+                    AvatarManager.getInstance().onPreInitialize();
                     try {
                         Thread.sleep(START_SERVICE_DELAY);
                     } catch (InterruptedException e) {
