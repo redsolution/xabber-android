@@ -904,7 +904,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
             String id = lastMessage.getArchivedId();
             if (id == null) id = lastMessage.getStanzaId();
             chat.setLastMessageId(id);
-            RosterCacheManager.saveLastMessageToContact(MessageDatabaseManager.getInstance().getRealmUiThread(), lastMessage);
+            RosterCacheManager.saveLastMessageToContact(realm, lastMessage);
         }
     }
 

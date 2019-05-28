@@ -430,7 +430,6 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         String id = messageItem.getArchivedId();
         if (id == null) id = messageItem.getStanzaId();
         setLastMessageId(id);
-        RosterCacheManager.saveLastMessageToContact(MessageDatabaseManager.getInstance().getRealmUiThread(), messageItem);
 
         return messageItem;
     }
@@ -522,6 +521,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
                 .isNull(MessageItem.Fields.ACTION)
                 .or().equalTo(MessageItem.Fields.ACTION, ChatAction.available.toString())
                 .findAllSorted(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING).last(null);
+        RosterCacheManager.saveLastMessageToContact(MessageDatabaseManager.getInstance().getRealmUiThread(), lastMessage);
     }
 
     /**
