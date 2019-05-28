@@ -4,6 +4,7 @@ import com.xabber.android.data.database.messagerealm.MessageItem;
 
 import java.util.UUID;
 
+import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.Required;
@@ -17,6 +18,7 @@ public class ContactRealm extends RealmObject {
         public static final String NAME = "name";
         public static final String ACCOUNT_RESOURCE = "accountResource";
         public static final String LAST_MESSAGE = "lastMessage";
+        public static final String GROUPS = "groups";
     }
 
     @PrimaryKey
@@ -28,6 +30,7 @@ public class ContactRealm extends RealmObject {
     private String accountResource;
     private String name;
     private MessageItem lastMessage;
+    private RealmList<ContactGroup> groups;
 
     public ContactRealm() {
         this.id = UUID.randomUUID().toString();
@@ -79,5 +82,13 @@ public class ContactRealm extends RealmObject {
 
     public void setLastMessage(MessageItem lastMessage) {
         this.lastMessage = lastMessage;
+    }
+
+    public RealmList<ContactGroup> getGroups() {
+        return groups;
+    }
+
+    public void setGroups(RealmList<ContactGroup> groups) {
+        this.groups = groups;
     }
 }

@@ -2,6 +2,7 @@ package com.xabber.android.data.roster;
 
 import com.xabber.android.data.database.MessageDatabaseManager;
 import com.xabber.android.data.database.messagerealm.MessageItem;
+import com.xabber.android.data.database.realm.ContactGroup;
 import com.xabber.android.data.database.realm.ContactRealm;
 
 import java.util.ArrayList;
@@ -9,6 +10,7 @@ import java.util.Collection;
 import java.util.List;
 
 import io.realm.Realm;
+import io.realm.RealmList;
 
 public class RosterCacheManager {
 
@@ -32,6 +34,14 @@ public class RosterCacheManager {
                 contactRealm = new ContactRealm(account + "/" + user);
             }
 
+            RealmList<ContactGroup> groups = new RealmList<>();
+            for (String groupName : contact.getGroupNames()) {
+                ContactGroup group = realm.copyToRealmOrUpdate(new ContactGroup(groupName));
+                if (group.isManaged() && group.isValid())
+                    groups.add(group);
+            }
+
+            contactRealm.setGroups(groups);
             contactRealm.setAccount(account);
             contactRealm.setUser(user);
             contactRealm.setName(contact.getName());

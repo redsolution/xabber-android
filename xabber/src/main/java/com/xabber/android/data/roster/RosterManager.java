@@ -17,6 +17,7 @@ package com.xabber.android.data.roster;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
@@ -29,6 +30,7 @@ import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.StanzaSender;
 import com.xabber.android.data.connection.listeners.OnDisconnectListener;
 import com.xabber.android.data.database.messagerealm.MessageItem;
+import com.xabber.android.data.database.realm.ContactGroup;
 import com.xabber.android.data.database.realm.ContactRealm;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.NestedMap;
@@ -97,6 +99,11 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
                 AccountJid account = AccountJid.from(contactRealm.getAccount() + "/" + contactRealm.getAccountResource());
                 UserJid userJid = UserJid.from(contactRealm.getUser());
                 RosterContact contact = RosterContact.getRosterContact(account, userJid, contactRealm.getName());
+
+                for (ContactGroup group : contactRealm.getGroups()) {
+                    contact.addGroupReference(new RosterGroupReference(new RosterGroup(account, group.getGroupName())));
+                }
+
                 rosterContacts.put(contact.getAccount().toString(),
                         contact.getUser().getBareJid().toString(), contact);
 
