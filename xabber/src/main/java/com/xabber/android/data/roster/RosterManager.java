@@ -199,7 +199,7 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
     }
 
     void onContactsDeleted(AccountJid account, Collection<Jid> addresses) {
-        Collection<RosterContact> removedContacts = new ArrayList<>(addresses.size());
+        final Collection<RosterContact> removedContacts = new ArrayList<>(addresses.size());
 
         for (Jid jid : addresses) {
             RosterContact contact = rosterContacts.remove(account.toString(), jid.asBareJid().toString());
@@ -207,6 +207,12 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
                 removedContacts.add(contact);
             }
         }
+        Application.getInstance().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                RosterCacheManager.removeContact(removedContacts);
+            }
+        });
 
         onContactsChanged(removedContacts);
     }

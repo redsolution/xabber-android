@@ -52,6 +52,21 @@ public class RosterCacheManager {
         realm.commitTransaction();
     }
 
+    public static void removeContact(Collection<RosterContact> contacts) {
+        Realm realm = MessageDatabaseManager.getInstance().getRealmUiThread();
+        realm.beginTransaction();
+        for (RosterContact contact : contacts) {
+            String account = contact.getAccount().getFullJid().asBareJid().toString();
+            String user = contact.getUser().getBareJid().toString();
+
+            ContactRealm contactRealm = realm.where(ContactRealm.class).equalTo(ContactRealm.Fields.ID,
+                    account + "/" + user).findFirst();
+            if (contactRealm != null)
+                contactRealm.deleteFromRealm();
+        }
+        realm.commitTransaction();
+    }
+
     public static void saveLastMessageToContact(Realm realm, MessageItem messageItem) {
         if (messageItem == null) return;
         String account = messageItem.getAccount().getFullJid().asBareJid().toString();
