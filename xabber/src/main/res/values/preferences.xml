@@ -376,6 +376,7 @@
     <bool name="debug_connection_errors_default">false</bool>
 
     <string name="debug_log_activity_key">debug_log_activity</string>
+    <string name="push_log_activity_key">push_log_activity_key</string>
 
     <string name="debug_crash_reports_key">debug_crash_reports</string>
     <bool name="debug_crash_reports_default">true</bool>

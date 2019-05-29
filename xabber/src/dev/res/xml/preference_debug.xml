@@ -53,4 +53,12 @@
         android:title="@string/debug_fetch_crowdfunding_feed_title">
     </Preference>
 
+    <Preference
+        android:key="@string/push_log_activity_key"
+        android:title="@string/push_log_title">
+        <intent
+            android:targetClass="com.xabber.android.ui.activity.PushLogActivity"
+            android:targetPackage="@string/application_package" />
+    </Preference>
+
 </PreferenceScreen>
