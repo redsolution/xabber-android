@@ -7,12 +7,23 @@ import com.xabber.android.data.database.realm.ContactRealm;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import io.realm.Realm;
 import io.realm.RealmList;
 
 public class RosterCacheManager {
+
+    private static RosterCacheManager instance;
+    private Map<Long, String> lastActivityCache = new HashMap<>();
+
+    public static RosterCacheManager getInstance() {
+        if (instance == null)
+            instance = new RosterCacheManager();
+        return instance;
+    }
 
     public static List<ContactRealm> loadContacts() {
         Realm realm = MessageDatabaseManager.getInstance().getRealmUiThread();
@@ -78,5 +89,13 @@ public class RosterCacheManager {
             realm.copyToRealmOrUpdate(contactRealm);
         }
         realm.commitTransaction();
+    }
+
+    public String getCachedLastActivityString(long lastActivityTime) {
+        return lastActivityCache.get(lastActivityTime);
+    }
+
+    public void putLastActivityStringToCache(long lastActivityTime, String string) {
+        lastActivityCache.put(lastActivityTime, string);
     }
 }
