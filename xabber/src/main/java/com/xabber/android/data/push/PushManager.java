@@ -13,6 +13,8 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.listeners.OnConnectedListener;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
+import com.xabber.android.data.database.RealmManager;
+import com.xabber.android.data.database.realm.PushLogRecord;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.http.PushApiClient;
@@ -29,14 +31,18 @@ import org.jivesoftware.smackx.push_notifications.element.EnablePushNotification
 import org.jivesoftware.smackx.push_notifications.element.PushNotificationsElements;
 import org.jxmpp.jid.EntityBareJid;
 
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 
+import io.realm.Realm;
+import io.realm.RealmResults;
+import io.realm.Sort;
 import okhttp3.ResponseBody;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
@@ -105,23 +111,18 @@ public class PushManager implements OnConnectedListener, OnPacketListener {
     }
 
     public void onNewMessagePush(Context context, String node) {
-        String log = new SimpleDateFormat("yyyy.MM.dd - HH:mm:ss", Locale.getDefault()).format(new Date());
-        String message = "";
+        String message;
         if (!Application.getInstance().isServiceStarted()
                 && SettingsManager.getEnabledPushNodes().contains(node)) {
             Utils.startXabberServiceCompatWithSyncMode(context, node);
-            message = "Received message push. Starting service.";
-            LogManager.d(LOG_TAG, message);
+            message = "Starting service";
         } else if (SyncManager.getInstance().isSyncMode()) {
-            message = "Received message push. Service also started. Add account to allowed accounts.";
-            LogManager.d(LOG_TAG, message);
+            message = "Service also started. Add account to allowed accounts";
             SyncManager.getInstance().addAllowedAccount(node);
-        } else {
-            message = "Received message push. Service also started. Not a sync mode - account maybe connected.";
-            LogManager.d(LOG_TAG, message);
-        }
-        LogManager.d("VALERA_TEST", log + ": " + message);
-        SettingsManager.addToPushLog(log + ": " + message);
+        } else message = "Service also started. Not a sync mode - account maybe connected";
+
+        LogManager.d(LOG_TAG, "Received message push. " + message);
+        addToPushLog(message);
     }
 
     @Override
@@ -180,6 +181,38 @@ public class PushManager implements OnConnectedListener, OnPacketListener {
                 | SmackException.NotConnectedException | InterruptedException e) {
             return false;
         }
+    }
+
+    /** Log */
+
+    private void addToPushLog(String message) {
+        Realm realm = RealmManager.getInstance().getNewBackgroundRealm();
+        PushLogRecord pushLogRecord = new PushLogRecord(System.currentTimeMillis(), message);
+        realm.beginTransaction();
+        realm.copyToRealm(pushLogRecord);
+        realm.commitTransaction();
+        realm.close();
+    }
+
+    public static List<String> getPushLogs() {
+        Realm realm = RealmManager.getInstance().getRealmUiThread();
+        List<String> logs = new ArrayList<>();
+        RealmResults<PushLogRecord> records = realm.where(PushLogRecord.class)
+                .findAllSorted(PushLogRecord.Fields.TIME, Sort.DESCENDING);
+        for (PushLogRecord record : records) {
+            String time = new SimpleDateFormat("yyyy.MM.dd - HH:mm:ss",
+                    Locale.getDefault()).format(new Date(record.getTime()));
+            logs.add(time + ": " + record.getMessage());
+        }
+        return logs;
+    }
+
+    public static void clearPushLog() {
+        Realm realm = RealmManager.getInstance().getRealmUiThread();
+        RealmResults<PushLogRecord> records = realm.where(PushLogRecord.class).findAll();
+        realm.beginTransaction();
+        records.deleteAllFromRealm();
+        realm.commitTransaction();
     }
 
     /** Private */
