@@ -6,6 +6,7 @@ import android.provider.Settings;
 import android.util.Log;
 
 import com.google.firebase.iid.FirebaseInstanceId;
+import com.xabber.android.BuildConfig;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
@@ -122,7 +123,7 @@ public class PushManager implements OnConnectedListener, OnPacketListener {
         } else message = "Service also started. Not a sync mode - account maybe connected";
 
         LogManager.d(LOG_TAG, "Received message push. " + message);
-        addToPushLog(message);
+        if (BuildConfig.FLAVOR.equals("dev")) addToPushLog(message);
     }
 
     @Override
