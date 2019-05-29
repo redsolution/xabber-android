@@ -46,9 +46,7 @@ import com.xabber.android.utils.Emoticons;
 
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.regex.Pattern;
 
 /**
@@ -141,17 +139,6 @@ public class SettingsManager implements OnInitializedListener,
     private static void setString(int key, String value) {
         Editor editor = getSharedPreferences().edit();
         editor.putString(Application.getInstance().getString(key), value);
-        editor.commit();
-    }
-
-    private static Set<String> getStringSet(int key) {
-        return getSharedPreferences().getStringSet(
-                Application.getInstance().getString(key), null);
-    }
-
-    private static void setStringSet(int key, Set<String> set) {
-        Editor editor = getSharedPreferences().edit();
-        editor.putStringSet(Application.getInstance().getString(key), set);
         editor.commit();
     }
 
@@ -873,17 +860,6 @@ public class SettingsManager implements OnInitializedListener,
 
     public static String getEnabledPushNodes() {
         return getString(R.string.enabled_push_nodes, "");
-    }
-
-    public static Set<String> getPushLog() {
-        return getStringSet(R.string.push_log);
-    }
-
-    public static void addToPushLog(String event) {
-        Set<String> log = getPushLog();
-        if (log == null) log = new HashSet<>();
-        log.add(event);
-        setStringSet(R.string.push_log, log);
     }
 
     public static void resetPreferences(Context context, String preferencesName) {
