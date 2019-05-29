@@ -61,4 +61,10 @@
             android:targetPackage="@string/application_package" />
     </Preference>
 
+    <CheckBoxPreference
+        android:title="@string/debug_sync_bookmarks_on_start_title"
+        android:key="@string/debug_sync_bookmarks_on_start_key"
+        android:defaultValue="@bool/debug_sync_bookmarks_on_start_default"
+        />
+
 </PreferenceScreen>

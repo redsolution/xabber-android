@@ -17,5 +17,6 @@
 <!-- preference_debug -->
     <bool name="debug_file_log_default">true</bool>
     <bool name="debug_use_develop_api_default">true</bool>
+    <bool name="debug_sync_bookmarks_on_start_default">false</bool>
 
 </resources>

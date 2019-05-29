@@ -600,6 +600,10 @@ public class SettingsManager implements OnInitializedListener,
         return getBoolean(R.string.debug_use_develop_api_key, R.bool.debug_use_develop_api_default);
     }
 
+    public static boolean syncBookmarksOnStart() {
+        return getBoolean(R.string.debug_sync_bookmarks_on_start_key, R.bool.debug_sync_bookmarks_on_start_default);
+    }
+
     public static boolean isCrashReportsSupported() {
         return BuildConfig.FLAVOR.equals("beta")
                 || BuildConfig.FLAVOR.equals("vip")

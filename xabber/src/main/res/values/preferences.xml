@@ -386,6 +386,7 @@
     <string name="debug_use_develop_api_key">debug_develop_xabber_api_key</string>
     <bool name="debug_use_develop_api_default">false</bool>
     <string name="debug_fetch_crowdfunding_feed_key">debug_fetch_crowdfunding_feed_key</string>
+    <string name="debug_sync_bookmarks_on_start_key">debug_sync_bookmarks_on_start_key</string>
 
     <!-- preference_about -->
     <string name="preference_about">@string/about_viewer</string>
