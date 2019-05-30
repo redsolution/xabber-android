@@ -99,15 +99,20 @@ public class RosterCacheManager {
 
     public static void saveLastMessageToContact(Realm realm, MessageItem messageItem) {
         if (messageItem == null) return;
-        String account = messageItem.getAccount().getFullJid().asBareJid().toString();
-        String user = messageItem.getUser().getBareJid().toString();
-        ContactRealm contactRealm = realm.where(ContactRealm.class).equalTo(ContactRealm.Fields.ID, account + "/" + user).findFirst();
-        realm.beginTransaction();
-        if (contactRealm != null && messageItem.isValid() && messageItem.isManaged()) {
-            contactRealm.setLastMessage(messageItem);
-            realm.copyToRealmOrUpdate(contactRealm);
-        }
-        realm.commitTransaction();
+        final String account = messageItem.getAccount().getFullJid().asBareJid().toString();
+        final String user = messageItem.getUser().getBareJid().toString();
+        final String messageID = messageItem.getUniqueId();
+        realm.executeTransactionAsync(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                ContactRealm contactRealm = realm.where(ContactRealm.class).equalTo(ContactRealm.Fields.ID, account + "/" + user).findFirst();
+                MessageItem message = realm.where(MessageItem.class).equalTo(MessageItem.Fields.UNIQUE_ID, messageID).findFirst();
+                if (contactRealm != null && message.isValid() && message.isManaged()) {
+                    contactRealm.setLastMessage(message);
+                    realm.copyToRealmOrUpdate(contactRealm);
+                }
+            }
+        });
     }
 
     public String getCachedLastActivityString(long lastActivityTime) {
