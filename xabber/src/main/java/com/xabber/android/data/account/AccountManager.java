@@ -53,6 +53,7 @@ import com.xabber.android.data.notification.BaseAccountNotificationProvider;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.push.PushManager;
 import com.xabber.android.data.roster.PresenceManager;
+import com.xabber.android.data.roster.RosterCacheManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.data.xaccount.XabberAccountManager;
 
@@ -506,6 +507,10 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
 
         // disable push
         PushManager.getInstance().disablePushNotification(getAccount(account), false);
+
+        // remove contacts and account from cache
+        RosterCacheManager.removeContacts(account);
+        cachedEnabledAccounts.remove(account);
 
         boolean wasEnabled = accountItem.isEnabled();
         accountItem.setEnabled(false);

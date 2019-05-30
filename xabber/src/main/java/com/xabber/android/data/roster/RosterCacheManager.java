@@ -4,6 +4,7 @@ import com.xabber.android.data.database.MessageDatabaseManager;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.database.realm.ContactGroup;
 import com.xabber.android.data.database.realm.ContactRealm;
+import com.xabber.android.data.entity.AccountJid;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -13,6 +14,7 @@ import java.util.Map;
 
 import io.realm.Realm;
 import io.realm.RealmList;
+import io.realm.RealmResults;
 
 public class RosterCacheManager {
 
@@ -75,6 +77,16 @@ public class RosterCacheManager {
             if (contactRealm != null)
                 contactRealm.deleteFromRealm();
         }
+        realm.commitTransaction();
+    }
+
+    public static void removeContacts(AccountJid account) {
+        String accountJid = account.getFullJid().asBareJid().toString();
+        Realm realm = MessageDatabaseManager.getInstance().getRealmUiThread();
+        RealmResults<ContactRealm> results = realm.where(ContactRealm.class)
+                .equalTo(ContactRealm.Fields.ACCOUNT, accountJid).findAll();
+        realm.beginTransaction();
+        results.deleteAllFromRealm();
         realm.commitTransaction();
     }
 
