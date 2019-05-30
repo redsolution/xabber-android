@@ -168,7 +168,7 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
         return Collections.unmodifiableCollection(rosterContacts.values());
     }
 
-    void onContactsAdded(AccountJid account, Collection<Jid> addresses) {
+    void onContactsAdded(final AccountJid account, Collection<Jid> addresses) {
         final Roster roster = RosterManager.getInstance().getRoster(account);
         final Collection<RosterContact> newContacts = new ArrayList<>(addresses.size());
         for (Jid jid : addresses) {
@@ -188,7 +188,7 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
         Application.getInstance().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                RosterCacheManager.saveContact(newContacts);
+                RosterCacheManager.saveContact(account, newContacts);
             }
         });
         onContactsChanged(newContacts);

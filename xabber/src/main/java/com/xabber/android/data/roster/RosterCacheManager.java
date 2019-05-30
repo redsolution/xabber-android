@@ -32,10 +32,17 @@ public class RosterCacheManager {
         return realm.where(ContactRealm.class).findAll();
     }
 
-    public static void saveContact(Collection<RosterContact> contacts) {
+    public static void saveContact(AccountJid accountJid, Collection<RosterContact> contacts) {
         Realm realm = MessageDatabaseManager.getInstance().getRealmUiThread();
 
         realm.beginTransaction();
+        if (contacts.size() > 1) {
+            RealmResults<ContactRealm> results = realm.where(ContactRealm.class)
+                    .equalTo(ContactRealm.Fields.ACCOUNT,
+                            accountJid.getFullJid().asBareJid().toString()).findAll();
+            results.deleteAllFromRealm();
+        }
+
         List<ContactRealm> newContacts = new ArrayList<>();
         for (RosterContact contact : contacts) {
             String account = contact.getAccount().getFullJid().asBareJid().toString();
