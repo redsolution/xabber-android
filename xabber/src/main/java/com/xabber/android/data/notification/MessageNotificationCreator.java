@@ -152,6 +152,7 @@ public class MessageNotificationCreator {
     }
 
     private void sendNotification(NotificationCompat.Builder builder, int notificationId) {
+        MessageNotificationManager.getInstance().setLastNotificationTime();
         try {
             notificationManager.notify(notificationId, builder.build());
         } catch (SecurityException e) {
@@ -164,6 +165,7 @@ public class MessageNotificationCreator {
 
     /** UTILS */
     private static boolean inGracePeriod(MessageNotificationManager.Chat chat) {
+        if (!MessageNotificationManager.getInstance().isTimeToNewFullNotification()) return true;
         if (chat == null) return false;
         AccountItem accountItem = AccountManager.getInstance().getAccount(chat.getAccountJid());
         if (accountItem != null) return accountItem.inGracePeriod();

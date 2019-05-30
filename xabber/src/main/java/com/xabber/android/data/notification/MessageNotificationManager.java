@@ -44,6 +44,7 @@ public class MessageNotificationManager implements OnLoadListener {
     private List<Chat> chats = new ArrayList<>();
     private Message lastMessage = null;
     private HashMap<Integer, Action> delayedActions = new HashMap<>();
+    private long lastNotificationTime = 0;
 
     private MessageNotificationManager() {
         context = Application.getInstance();
@@ -69,6 +70,14 @@ public class MessageNotificationManager implements OnLoadListener {
     public static MessageNotificationManager getInstance() {
         if (instance == null) instance = new MessageNotificationManager();
         return instance;
+    }
+
+    public boolean isTimeToNewFullNotification() {
+        return System.currentTimeMillis() > (lastNotificationTime + 1000);
+    }
+
+    public void setLastNotificationTime() {
+        this.lastNotificationTime = System.currentTimeMillis();
     }
 
     /** LISTENER */
