@@ -733,6 +733,9 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
         // disable push
         if (!enabled) PushManager.getInstance().disablePushNotification(getAccount(account), false);
 
+        // remove from cached if disabled
+        if (!enabled) cachedEnabledAccounts.remove(account);
+
         accountItem.setEnabled(enabled);
         requestToWriteAccount(accountItem);
         PushManager.getInstance().updateEnabledPushNodes();
