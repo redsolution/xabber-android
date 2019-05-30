@@ -206,16 +206,18 @@ public class ActivityManager implements OnUnloadListener {
         if (LOG) {
             LogManager.i(activity, "onResume");
         }
-        if (!application.isInitialized() && !Application.getInstance().isClosing()) {
+        if((!application.isInitialized() || SyncManager.getInstance().isSyncMode())
+                && !Application.getInstance().isClosing()) {
+
             if (LOG) {
                 LogManager.i(this, "Wait for loading");
             }
             AccountManager.getInstance().onPreInitialize();
             RosterManager.getInstance().onPreInitialize();
+            AvatarManager.getInstance().onPreInitialize();
             Application.getInstance().runInBackground(new Runnable() {
                 @Override
                 public void run() {
-                    AvatarManager.getInstance().onPreInitialize();
                     try {
                         Thread.sleep(START_SERVICE_DELAY);
                     } catch (InterruptedException e) {
