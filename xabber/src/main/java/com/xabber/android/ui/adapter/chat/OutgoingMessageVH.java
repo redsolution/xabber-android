@@ -105,12 +105,11 @@ public class OutgoingMessageVH extends FileMessageVH {
         if (isFileUploadInProgress)
             progressBar.setVisibility(View.VISIBLE);
 
-        int messageIcon = 0;
+        int messageIcon = R.drawable.ic_message_not_sent_14dp;
 
         if (messageItem.isError()) {
             messageIcon = R.drawable.ic_message_has_error_14dp;
-        } else if (!isFileUploadInProgress && !messageItem.isSent()
-                && System.currentTimeMillis() - messageItem.getTimestamp() > 1000) {
+        } else if (!isFileUploadInProgress && !messageItem.isSent()) {
             messageIcon = R.drawable.ic_message_not_sent_14dp;
         } else if (messageItem.isDisplayed() || messageItem.isReceivedFromMessageArchive()) {
             messageIcon = R.drawable.ic_message_displayed;
