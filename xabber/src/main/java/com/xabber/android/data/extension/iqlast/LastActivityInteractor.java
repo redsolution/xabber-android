@@ -1,6 +1,5 @@
 package com.xabber.android.data.extension.iqlast;
 
-import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
@@ -16,14 +15,11 @@ import org.jivesoftware.smackx.iqlast.packet.LastActivity;
 import org.jxmpp.jid.Jid;
 
 import java.util.HashMap;
-import java.util.LinkedList;
 
 public class LastActivityInteractor implements OnPacketListener {
 
     private static LastActivityInteractor instance;
     private HashMap<UserJid, Long> lastActivities = new HashMap<>();
-    private LinkedList<JidPair> queryForLastActivityUpdate = new LinkedList<>();
-    private boolean isRun;
 
     public static LastActivityInteractor getInstance() {
         if (instance == null) instance = new LastActivityInteractor();
@@ -46,17 +42,6 @@ public class LastActivityInteractor implements OnPacketListener {
         }
     }
 
-    public void addJidToLastActivityQuery(AccountJid account, UserJid user) {
-        queryForLastActivityUpdate.addLast(new JidPair(account, user));
-        if (!this.isRun)
-            Application.getInstance().runInBackground(new Runnable() {
-                @Override
-                public void run() {
-                    runGettingLastActivity();
-                }
-            });
-    }
-
     public void setLastActivityTimeNow(AccountJid account, UserJid user) {
         long time = System.currentTimeMillis()/1000;
         setLastActivity(account, user, time);
@@ -68,21 +53,7 @@ public class LastActivityInteractor implements OnPacketListener {
         else return 0;
     }
 
-    private void setLastActivity(AccountJid account, UserJid user, long time) {
-        lastActivities.put(user, time);
-        RosterManager.onContactChanged(account, user);
-    }
-
-    private synchronized void runGettingLastActivity() {
-        this.isRun = true;
-        while (!queryForLastActivityUpdate.isEmpty()) {
-            JidPair item = queryForLastActivityUpdate.removeFirst();
-            requestLastActivityAsync(item.account, item.user);
-        }
-        this.isRun = false;
-    }
-
-    private void requestLastActivityAsync(AccountJid account, UserJid user) {
+    public void requestLastActivityAsync(AccountJid account, UserJid user) {
         AccountItem accountItem = AccountManager.getInstance().getAccount(account);
         if (accountItem != null) {
             LastActivity activity = new LastActivity(user.getJid());
@@ -94,15 +65,9 @@ public class LastActivityInteractor implements OnPacketListener {
         }
     }
 
-    private class JidPair {
-        AccountJid account;
-        UserJid user;
-
-        public JidPair(AccountJid account, UserJid user) {
-            this.account = account;
-            this.user = user;
-        }
-
+    private void setLastActivity(AccountJid account, UserJid user, long time) {
+        lastActivities.put(user, time);
+        RosterManager.onContactChanged(account, user);
     }
 
 }

@@ -179,7 +179,7 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
                         contact.getUser().getBareJid().toString(), contact);
                 newContacts.add(contact);
 
-                LastActivityInteractor.getInstance().addJidToLastActivityQuery(account, UserJid.from(jid));
+                LastActivityInteractor.getInstance().requestLastActivityAsync(account, UserJid.from(jid));
             } catch (UserJid.UserJidCreateException e) {
                 LogManager.exception(LOG_TAG, e);
             }
