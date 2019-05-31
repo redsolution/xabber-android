@@ -750,8 +750,9 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
      * @return List of enabled accounts.
      */
     public Collection<AccountJid> getEnabledAccounts() {
+        Collection<AccountItem> accounts = Collections.unmodifiableCollection(accountItems.values());
         List<AccountJid> enabledAccounts = new ArrayList<>();
-        for (AccountItem accountItem : accountItems.values()) {
+        for (AccountItem accountItem : accounts) {
             if (accountItem.isEnabled()) {
                 AccountJid accountJid = accountItem.getAccount();
                 accountJid.setOrder(accountItem.getOrder());
