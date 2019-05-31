@@ -130,18 +130,16 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
                 MessageItem firstMessage = getFirstMessage(chat, realm);
                 if (firstMessage == null) loadLastMessage(realm, accountItem, chat);
 
+                synchronized (lock) {
+                    if (isRequested) return;
+                    else isRequested = true;
+                }
+
                 // load prev page if history is not enough
                 if (historyIsNotEnough(realm, chat) && !chat.historyIsFull()) {
-                    synchronized (lock) {
-                        if (isRequested) return;
-                        else isRequested = true;
-                    }
                     EventBus.getDefault().post(new LastHistoryLoadStartedEvent(chat));
                     loadNextHistory(realm, accountItem, chat);
                     EventBus.getDefault().post(new LastHistoryLoadFinishedEvent(chat));
-                    synchronized (lock) {
-                        isRequested = false;
-                    }
                 }
 
                 // load missed messages if need
@@ -150,6 +148,10 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
                     for (MessageItem message : messages) {
                         loadMissedMessages(realm, accountItem, chat, message);
                     }
+                }
+
+                synchronized (lock) {
+                    isRequested = false;
                 }
                 realm.close();
             }
