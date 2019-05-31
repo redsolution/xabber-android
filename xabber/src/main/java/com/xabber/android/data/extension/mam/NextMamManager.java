@@ -164,7 +164,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
                 || !isSupported(accountItem.getAccount())) return;
 
         if (chat.historyIsFull()) return;
-        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
+        Application.getInstance().runInBackground(new Runnable() {
             @Override
             public void run() {
                 synchronized (lock) {
@@ -733,7 +733,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
                 .isNull(MessageItem.Fields.PARENT_MESSAGE_ID)
                 .equalTo(MessageItem.Fields.STANZA_ID, message.getStanzaId())
                 .or().equalTo(MessageItem.Fields.STANZA_ID, message.getPacketId())
-                .or().equalTo(MessageItem.Fields.STANZA_ID, message.getArchivedId())
+                .or().equalTo(MessageItem.Fields.ARCHIVED_ID, message.getArchivedId())
                 .findFirst();
 
         if (localMessage == null) {
