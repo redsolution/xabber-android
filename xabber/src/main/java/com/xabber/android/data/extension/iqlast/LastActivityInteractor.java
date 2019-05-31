@@ -3,20 +3,22 @@ package com.xabber.android.data.extension.iqlast;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
+import com.xabber.android.data.connection.ConnectionItem;
+import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.roster.RosterManager;
 
 import org.jivesoftware.smack.SmackException;
-import org.jivesoftware.smack.XMPPException;
-import org.jivesoftware.smack.tcp.XMPPTCPConnection;
-import org.jivesoftware.smackx.iqlast.LastActivityManager;
+import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smackx.iqlast.packet.LastActivity;
+import org.jxmpp.jid.Jid;
 
 import java.util.HashMap;
 import java.util.LinkedList;
 
-public class LastActivityInteractor {
+public class LastActivityInteractor implements OnPacketListener {
 
     private static LastActivityInteractor instance;
     private HashMap<UserJid, Long> lastActivities = new HashMap<>();
@@ -26,6 +28,22 @@ public class LastActivityInteractor {
     public static LastActivityInteractor getInstance() {
         if (instance == null) instance = new LastActivityInteractor();
         return instance;
+    }
+
+    @Override
+    public void onStanza(ConnectionItem connection, Stanza packet) {
+        if (packet instanceof LastActivity) {
+            try {
+                Jid jid = packet.getFrom();
+                long result = ((LastActivity) packet).lastActivity;
+                if (result > 0) {
+                    result = System.currentTimeMillis() / 1000 - result;
+                    setLastActivity(connection.getAccount(), UserJid.from(jid), result);
+                }
+            } catch (UserJid.UserJidCreateException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public void addJidToLastActivityQuery(AccountJid account, UserJid user) {
@@ -59,37 +77,21 @@ public class LastActivityInteractor {
         this.isRun = true;
         while (!queryForLastActivityUpdate.isEmpty()) {
             JidPair item = queryForLastActivityUpdate.removeFirst();
-            long lastActivity = requestLastActivity(item.account, item.user);
-            setLastActivity(item.account, item.user, lastActivity);
+            requestLastActivityAsync(item.account, item.user);
         }
         this.isRun = false;
     }
 
-    private long requestLastActivity(AccountJid account, UserJid user) {
-        long lastActivitySeconds = 0;
-
-        AccountItem accountItem = AccountManager
-                .getInstance().getAccount(account);
-
-        if (accountItem == null) return lastActivitySeconds;
-
-        XMPPTCPConnection xmppConnection = accountItem.getConnection();
-
-        LastActivityManager lastActivityManager = LastActivityManager.getInstanceFor(xmppConnection);
-        LastActivity lastActivity = null;
-
-        try {
-            lastActivity = lastActivityManager.getLastActivity(user.getJid());
-        } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException
-                | SmackException.NotConnectedException | InterruptedException e) {
-            e.printStackTrace();
+    private void requestLastActivityAsync(AccountJid account, UserJid user) {
+        AccountItem accountItem = AccountManager.getInstance().getAccount(account);
+        if (accountItem != null) {
+            LastActivity activity = new LastActivity(user.getJid());
+            try {
+                accountItem.getConnection().sendStanza(activity);
+            } catch (SmackException.NotConnectedException | InterruptedException e) {
+                LogManager.d(LastActivityInteractor.class, e.toString());
+            }
         }
-
-        if (lastActivity != null) lastActivitySeconds = lastActivity.lastActivity;
-
-        if (lastActivitySeconds > 0)
-            lastActivitySeconds = System.currentTimeMillis()/1000 - lastActivitySeconds;
-        return lastActivitySeconds;
     }
 
     private class JidPair {

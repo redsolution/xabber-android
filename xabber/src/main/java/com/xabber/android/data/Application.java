@@ -44,6 +44,7 @@ import com.xabber.android.data.extension.carbons.CarbonManager;
 import com.xabber.android.data.extension.chat_markers.ChatMarkerManager;
 import com.xabber.android.data.extension.cs.ChatStateManager;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
+import com.xabber.android.data.extension.iqlast.LastActivityInteractor;
 import com.xabber.android.data.extension.mam.NextMamManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.otr.OTRManager;
@@ -392,6 +393,7 @@ public class Application extends android.app.Application {
         addManager(XMPPAuthManager.getInstance());
         addManager(PushManager.getInstance());
         addManager(DelayedNotificationActionManager.getInstance());
+        addManager(LastActivityInteractor.getInstance());
     }
 
     /**
