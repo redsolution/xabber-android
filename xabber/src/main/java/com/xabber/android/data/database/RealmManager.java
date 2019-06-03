@@ -324,12 +324,6 @@ public class RealmManager {
                         if (oldVersion == 22) {
                             schema.get(AccountRealm.class.getSimpleName())
                                     .addField(AccountRealm.Fields.PUSH_ENABLED, boolean.class)
-                                    .transform(new RealmObjectSchema.Function() {
-                                        @Override
-                                        public void apply(DynamicRealmObject obj) {
-                                            obj.setBoolean(AccountRealm.Fields.PUSH_ENABLED, true);
-                                        }
-                                    })
                                     .addField(AccountRealm.Fields.PUSH_WAS_ENABLED, boolean.class);
 
                             oldVersion++;
