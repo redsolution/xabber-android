@@ -147,7 +147,7 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.account_options_recycler_view);
 
 
-        accountOptionsAdapter = new AccountOptionsAdapter(AccountOption.values(), this, accountItem);
+        accountOptionsAdapter = new AccountOptionsAdapter(AccountOption.getValues(), this, accountItem);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(accountOptionsAdapter);
