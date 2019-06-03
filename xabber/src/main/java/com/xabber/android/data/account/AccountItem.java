@@ -116,7 +116,7 @@ public class AccountItem extends ConnectionItem implements Comparable<AccountIte
 
     private long gracePeriodEndTime = 0L;
 
-    private boolean pushEnabled = true;
+    private boolean pushEnabled;
     private boolean pushWasEnabled;
     private String pushNode;
     private String pushServiceJid;
