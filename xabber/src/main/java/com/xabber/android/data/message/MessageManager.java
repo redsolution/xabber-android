@@ -77,6 +77,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -170,7 +171,12 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
 
     public Collection<AbstractChat> getChatsOfEnabledAccount() {
         List<AbstractChat> chats = new ArrayList<>();
-        for (AccountJid accountJid : AccountManager.getInstance().getEnabledAccounts()) {
+
+        HashSet<AccountJid> enabledAccounts = new HashSet<>();
+        enabledAccounts.addAll(AccountManager.getInstance().getEnabledAccounts());
+        enabledAccounts.addAll(AccountManager.getInstance().getCachedEnabledAccounts());
+
+        for (AccountJid accountJid : enabledAccounts) {
             chats.addAll(this.chats.getNested(accountJid.toString()).values());
         }
         return chats;
@@ -458,6 +464,12 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
         return Collections.unmodifiableCollection(collection);
     }
 
+    public AbstractChat getOrCreateChat(AccountJid account, UserJid user, MessageItem lastMessage) {
+        AbstractChat chat = getOrCreateChat(account, user);
+        chat.setLastMessage(lastMessage);
+        return chat;
+    }
+
     /**
      * Returns existed chat or create new one.
      *
@@ -536,7 +548,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
      * @param chat
      * @return Whether specified chat is currently visible.
      */
-    boolean isVisibleChat(AbstractChat chat) {
+    public boolean isVisibleChat(AbstractChat chat) {
         return visibleChat == chat;
     }
 
@@ -783,7 +795,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
             if (forwardComment != null) text = forwardComment;
 
             MessageItem newMessageItem = finalChat.createNewMessageItem(text);
-            newMessageItem.setStanzaId(message.getStanzaId());
+            newMessageItem.setStanzaId(AbstractChat.getStanzaId(message));
             newMessageItem.setSent(true);
             newMessageItem.setForwarded(true);
 

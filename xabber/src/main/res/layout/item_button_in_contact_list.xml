@@ -14,6 +14,4 @@
         style="@style/Widget.AppCompat.Button.Borderless"
         />
 
-    <include layout="@layout/offline_shadow"/>
-
 </RelativeLayout>

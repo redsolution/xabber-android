@@ -72,7 +72,5 @@
         android:text="1"
         />
 
-    <include layout="@layout/offline_shadow" />
-
 </RelativeLayout>
 </LinearLayout>

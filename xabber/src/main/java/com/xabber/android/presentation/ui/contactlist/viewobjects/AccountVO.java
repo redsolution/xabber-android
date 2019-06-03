@@ -16,7 +16,6 @@ import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
-import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.notification.custom_notification.CustomNotifyPrefsManager;
@@ -39,7 +38,6 @@ public class AccountVO extends AbstractHeaderItem<AccountVO.ViewHolder> {
 
     private int accountColorIndicator;
     private int accountColorIndicatorBack;
-    private boolean showOfflineShadow;
 
     private String name;
     private String jid;
@@ -61,7 +59,7 @@ public class AccountVO extends AbstractHeaderItem<AccountVO.ViewHolder> {
         void onAccountMenuClick(int adapterPosition, View view);
     }
 
-    public AccountVO(int accountColorIndicator, int accountColorIndicatorBack, boolean showOfflineShadow,
+    public AccountVO(int accountColorIndicator, int accountColorIndicatorBack,
                      String name, String jid, String status, int statusLevel, int statusId,
                      Drawable avatar, int offlineModeLevel, String contactCount, AccountJid accountJid,
                      boolean isExpand, String groupName, boolean isCustomNotification,
@@ -69,7 +67,6 @@ public class AccountVO extends AbstractHeaderItem<AccountVO.ViewHolder> {
         this.id = UUID.randomUUID().toString();
         this.accountColorIndicator = accountColorIndicator;
         this.accountColorIndicatorBack = accountColorIndicatorBack;
-        this.showOfflineShadow = showOfflineShadow;
         this.name = name;
         this.jid = jid;
         this.status = status;
@@ -107,11 +104,6 @@ public class AccountVO extends AbstractHeaderItem<AccountVO.ViewHolder> {
     @Override
     public void bindViewHolder(FlexibleAdapter adapter, ViewHolder viewHolder, int position, List<Object> payloads) {
         Context context = viewHolder.itemView.getContext();
-
-        /** bind OFFLINE SHADOW */
-        if (isShowOfflineShadow())
-            viewHolder.offlineShadow.setVisibility(View.VISIBLE);
-        else viewHolder.offlineShadow.setVisibility(View.GONE);
 
         /** set up ACCOUNT COLOR indicator */
         viewHolder.accountColorIndicator.setBackgroundColor(getAccountColorIndicator());
@@ -177,7 +169,6 @@ public class AccountVO extends AbstractHeaderItem<AccountVO.ViewHolder> {
         int statusId;
         Drawable avatar;
         int offlineModeLevel;
-        boolean showOfflineShadow = false;
         int accountColorIndicator;
         int accountColorIndicatorBack;
         String contactCount;
@@ -214,20 +205,11 @@ public class AccountVO extends AbstractHeaderItem<AccountVO.ViewHolder> {
 
         offlineModeLevel = showOfflineMode.ordinal();
 
-
-        StatusMode statusMode = accountItem.getDisplayStatusMode();
-
-        if (statusMode == StatusMode.unavailable || statusMode == StatusMode.connection) {
-            showOfflineShadow = true;
-        } else {
-            showOfflineShadow = false;
-        }
-
         // custom notification
         boolean isCustomNotification = CustomNotifyPrefsManager.getInstance().
                 isPrefsExist(Key.createKey(account));
 
-        return new AccountVO(accountColorIndicator, accountColorIndicatorBack, showOfflineShadow,
+        return new AccountVO(accountColorIndicator, accountColorIndicatorBack,
                 name, jid, status, statusLevel,
                 statusId, avatar, offlineModeLevel, contactCount, configuration.getAccount(),
                 configuration.isExpanded(), configuration.getGroup(), isCustomNotification, listener);
@@ -289,11 +271,6 @@ public class AccountVO extends AbstractHeaderItem<AccountVO.ViewHolder> {
         return accountColorIndicatorBack;
     }
 
-
-    public boolean isShowOfflineShadow() {
-        return showOfflineShadow;
-    }
-
     public class ViewHolder extends ExpandableViewHolder {
 
         final ImageView ivAvatar;
@@ -304,7 +281,6 @@ public class AccountVO extends AbstractHeaderItem<AccountVO.ViewHolder> {
         final TextView tvContactCount;
         final ImageView ivStatus;
         final ImageView ivMenu;
-        final ImageView offlineShadow;
         final View accountColorIndicator;
         final View accountColorIndicatorBack;
         final View backgroundView;
@@ -327,7 +303,6 @@ public class AccountVO extends AbstractHeaderItem<AccountVO.ViewHolder> {
             tvContactCount = (TextView) view.findViewById(R.id.tvContactCount);
             ivStatus = (ImageView) view.findViewById(R.id.ivStatus);
             ivStatus.setOnClickListener(this);
-            offlineShadow = (ImageView) view.findViewById(R.id.offline_shadow);
             accountColorIndicator = view.findViewById(R.id.accountColorIndicator);
             accountColorIndicatorBack = view.findViewById(R.id.accountColorIndicatorBack);
             ivMenu = (ImageView) view.findViewById(R.id.ivMenu);

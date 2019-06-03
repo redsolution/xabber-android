@@ -8,14 +8,12 @@ import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.bookmarks.BookmarksManager;
 import com.xabber.android.data.extension.carbons.CarbonManager;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
-import com.xabber.android.data.extension.mam.MamManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.roster.PresenceManager;
 
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
-import org.jivesoftware.smack.packet.StreamError;
 import org.jivesoftware.smack.sasl.SASLErrorException;
 
 class ConnectionListener implements org.jivesoftware.smack.ConnectionListener {
@@ -63,7 +61,6 @@ class ConnectionListener implements org.jivesoftware.smack.ConnectionListener {
         // just to see the order of call
 
         CarbonManager.getInstance().onAuthorized(connectionItem);
-        MamManager.getInstance().onAuthorized(connectionItem);
         BlockingManager.getInstance().onAuthorized(connectionItem);
         HttpFileUploadManager.getInstance().onAuthorized(connectionItem);
 

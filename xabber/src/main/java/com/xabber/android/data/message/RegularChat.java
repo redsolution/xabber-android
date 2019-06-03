@@ -25,7 +25,6 @@ import com.xabber.android.data.database.messagerealm.ForwardId;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
-import com.xabber.android.data.extension.chat_markers.ChatMarkerManager;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.otr.OTRManager;
@@ -178,6 +177,11 @@ public class RegularChat extends AbstractChat {
             if (text == null)
                 return true;
 
+            DelayInformation delayInformation = message.getExtension(DelayInformation.ELEMENT, DelayInformation.NAMESPACE);
+            if (delayInformation != null && "Offline Storage".equals(delayInformation.getReason())) {
+                return true;
+            }
+
             // Xabber service message received
             if (message.getType() == Type.headline) {
                 if (XMPPAuthManager.getInstance().isXabberServiceMessage(message.getStanzaId()))
@@ -226,14 +230,14 @@ public class RegularChat extends AbstractChat {
                 createAndSaveFileMessage(true, uid, resource, text, null, getDelayStamp(message),
                         true, true, encrypted,
                         isOfflineMessage(account.getFullJid().getDomain(), packet),
-                        packet.getStanzaId(), attachments, originalStanza, null,
+                        getStanzaId(message), attachments, originalStanza, null,
                         originalFrom, false, false);
 
                 // create message without attachments
             else createAndSaveNewMessage(true, uid, resource, text, null, getDelayStamp(message),
                     true, true, encrypted,
                     isOfflineMessage(account.getFullJid().getDomain(), packet),
-                    packet.getStanzaId(), originalStanza, null,
+                    getStanzaId(message), originalStanza, null,
                     originalFrom, forwardIds,false, false);
 
             EventBus.getDefault().post(new NewIncomingMessageEvent(account, user));
@@ -271,12 +275,12 @@ public class RegularChat extends AbstractChat {
         // create message with file-attachments
         if (attachments.size() > 0)
             createAndSaveFileMessage(ui, uid, resource, text, null, null, true,
-                    false, encrypted, false, message.getStanzaId(), attachments,
+                    false, encrypted, false, getStanzaId(message), attachments,
                     originalStanza, parentMessageId, originalFrom, fromMuc, true);
 
             // create message without attachments
         else createAndSaveNewMessage(ui, uid, resource, text, null, null, true,
-                false, encrypted, false, message.getStanzaId(), originalStanza,
+                false, encrypted, false, getStanzaId(message), originalStanza,
                 parentMessageId, originalFrom, forwardIds, fromMuc, true);
 
         return uid;

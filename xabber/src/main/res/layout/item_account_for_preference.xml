@@ -16,6 +16,7 @@
     android:layout_width="match_parent"
     android:layout_height="@dimen/contact_list_item_height"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:gravity="center_vertical"
     android:background="@drawable/ripple_background">
 
@@ -72,6 +73,16 @@
             android:singleLine="true"
             android:ellipsize="marquee"
             android:gravity="top"
+            android:textColor="?android:attr/textColorSecondary"
+            />
+        <TextView
+            android:id="@+id/tvAccountPushStatus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:singleLine="true"
+            android:gravity="top"
+            tools:text="Push enabled"
             android:textColor="?android:attr/textColorSecondary"
             />
     </LinearLayout>

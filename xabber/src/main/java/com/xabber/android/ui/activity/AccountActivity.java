@@ -167,6 +167,9 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
 
         AccountOption.CONNECTION_SETTINGS.setDescription(account.getFullJid().asBareJid().toString());
 
+        AccountOption.PUSH_NOTIFICATIONS.setDescription(getString(accountItem.isPushWasEnabled()
+                ? R.string.account_push_state_enabled : R.string.account_push_state_disabled));
+
         AccountOption.COLOR.setDescription(ColorManager.getInstance().getAccountPainter().getAccountColorName(account));
 
         updateBlockListOption();
@@ -245,6 +248,9 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
         switch (option) {
             case CONNECTION_SETTINGS:
                 startAccountSettingsActivity();
+                break;
+            case PUSH_NOTIFICATIONS:
+                startActivity(AccountPushActivity.createIntent(this, account));
                 break;
             case COLOR:
                 AccountColorDialog.newInstance(account).show(getFragmentManager(),

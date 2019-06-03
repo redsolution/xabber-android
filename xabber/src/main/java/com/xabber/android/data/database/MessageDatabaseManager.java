@@ -9,6 +9,8 @@ import com.xabber.android.data.database.messagerealm.Attachment;
 import com.xabber.android.data.database.messagerealm.ForwardId;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.database.messagerealm.SyncInfo;
+import com.xabber.android.data.database.realm.ContactGroup;
+import com.xabber.android.data.database.realm.ContactRealm;
 import com.xabber.android.data.database.sqlite.MessageTable;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
@@ -16,6 +18,7 @@ import com.xabber.android.data.log.LogManager;
 
 import org.jxmpp.stringprep.XmppStringprepException;
 
+import java.lang.reflect.Field;
 import java.util.Date;
 
 import io.realm.DynamicRealm;
@@ -33,7 +36,7 @@ import io.realm.annotations.RealmModule;
 
 public class MessageDatabaseManager {
     private static final String REALM_MESSAGE_DATABASE_NAME = "xabber.realm";
-    static final int REALM_MESSAGE_DATABASE_VERSION = 19;
+    static final int REALM_MESSAGE_DATABASE_VERSION = 21;
     private final RealmConfiguration realmConfiguration;
 
     private static MessageDatabaseManager instance;
@@ -137,7 +140,8 @@ public class MessageDatabaseManager {
     }
 
 
-    @RealmModule(classes = {MessageItem.class, SyncInfo.class, Attachment.class, ForwardId.class})
+    @RealmModule(classes = {MessageItem.class, SyncInfo.class, Attachment.class, ForwardId.class,
+            ContactRealm.class, ContactGroup.class})
     static class MessageRealmDatabaseModule {
     }
 
@@ -317,6 +321,36 @@ public class MessageDatabaseManager {
                                         obj.setBoolean(MessageItem.Fields.READ, true);
                                     }
                                 });
+                            oldVersion++;
+                        }
+
+                        if (oldVersion == 19) {
+                            schema.get(MessageItem.class.getSimpleName())
+                                    .addField(MessageItem.Fields.PREVIOUS_ID, String.class)
+                                    .addField(MessageItem.Fields.ARCHIVED_ID, String.class)
+                                    .transform(new RealmObjectSchema.Function() {
+                                        @Override
+                                        public void apply(DynamicRealmObject obj) {
+                                            obj.setString(MessageItem.Fields.PREVIOUS_ID, "legacy");
+                                        }
+                                    });
+                            oldVersion++;
+                        }
+
+                        if (oldVersion == 20) {
+                            schema.create(ContactGroup.class.getSimpleName())
+                                    .addField(ContactGroup.Fields.GROUP_NAME, String.class,
+                                            FieldAttribute.PRIMARY_KEY, FieldAttribute.REQUIRED);
+
+                            schema.create(ContactRealm.class.getSimpleName())
+                                    .addField(ContactRealm.Fields.ID, String.class, FieldAttribute.PRIMARY_KEY, FieldAttribute.REQUIRED)
+                                    .addField(ContactRealm.Fields.ACCOUNT, String.class)
+                                    .addField(ContactRealm.Fields.USER, String.class)
+                                    .addField(ContactRealm.Fields.NAME, String.class)
+                                    .addField(ContactRealm.Fields.ACCOUNT_RESOURCE, String.class)
+                                    .addRealmObjectField(ContactRealm.Fields.LAST_MESSAGE, schema.get(MessageItem.class.getSimpleName()))
+                                    .addRealmListField(ContactRealm.Fields.GROUPS, schema.get(ContactGroup.class.getSimpleName()));
+
                             oldVersion++;
                         }
 

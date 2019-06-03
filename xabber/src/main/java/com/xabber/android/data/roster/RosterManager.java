@@ -17,6 +17,7 @@ package com.xabber.android.data.roster;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
@@ -29,6 +30,8 @@ import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.StanzaSender;
 import com.xabber.android.data.connection.listeners.OnDisconnectListener;
 import com.xabber.android.data.database.messagerealm.MessageItem;
+import com.xabber.android.data.database.realm.ContactGroup;
+import com.xabber.android.data.database.realm.ContactRealm;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.NestedMap;
 import com.xabber.android.data.entity.UserJid;
@@ -51,6 +54,7 @@ import org.jivesoftware.smack.roster.packet.RosterPacket;
 import org.jxmpp.jid.BareJid;
 import org.jxmpp.jid.EntityBareJid;
 import org.jxmpp.jid.Jid;
+import org.jxmpp.stringprep.XmppStringprepException;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -86,6 +90,35 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
         }
 
         return instance;
+    }
+
+    public void onPreInitialize() {
+        List<ContactRealm> contacts = RosterCacheManager.loadContacts();
+        for (ContactRealm contactRealm : contacts) {
+            try {
+                AccountJid account = AccountJid.from(contactRealm.getAccount() + "/" + contactRealm.getAccountResource());
+                UserJid userJid = UserJid.from(contactRealm.getUser());
+                RosterContact contact = RosterContact.getRosterContact(account, userJid, contactRealm.getName());
+
+                for (ContactGroup group : contactRealm.getGroups()) {
+                    contact.addGroupReference(new RosterGroupReference(new RosterGroup(account, group.getGroupName())));
+                }
+
+                rosterContacts.put(contact.getAccount().toString(),
+                        contact.getUser().getBareJid().toString(), contact);
+
+                MessageItem lastMessage = contactRealm.getLastMessage();
+                if (lastMessage != null) {
+                    MessageManager.getInstance().getOrCreateChat(contact.getAccount(), contact.getUser(), lastMessage);
+                } else MessageManager.getInstance().getOrCreateChat(contact.getAccount(), contact.getUser());
+
+            } catch (UserJid.UserJidCreateException e) {
+                e.printStackTrace();
+            } catch (XmppStringprepException e) {
+                e.printStackTrace();
+            }
+        }
+        onContactsChanged(Collections.<RosterContact>emptyList());
     }
 
     @Nullable
@@ -135,12 +168,9 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
         return Collections.unmodifiableCollection(rosterContacts.values());
     }
 
-    void onContactsAdded(AccountJid account, Collection<Jid> addresses) {
+    void onContactsAdded(final AccountJid account, Collection<Jid> addresses) {
         final Roster roster = RosterManager.getInstance().getRoster(account);
-
-        Collection<RosterContact> newContacts = new ArrayList<>(addresses.size());
-
-
+        final Collection<RosterContact> newContacts = new ArrayList<>(addresses.size());
         for (Jid jid : addresses) {
             RosterEntry entry = roster.getEntry(jid.asBareJid());
             try {
@@ -149,12 +179,18 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
                         contact.getUser().getBareJid().toString(), contact);
                 newContacts.add(contact);
 
-                LastActivityInteractor.getInstance().addJidToLastActivityQuery(account, UserJid.from(jid));
+                LastActivityInteractor.getInstance().requestLastActivityAsync(account, UserJid.from(jid));
             } catch (UserJid.UserJidCreateException e) {
                 LogManager.exception(LOG_TAG, e);
             }
         }
 
+        Application.getInstance().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                RosterCacheManager.saveContact(account, newContacts);
+            }
+        });
         onContactsChanged(newContacts);
     }
 
@@ -163,7 +199,7 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
     }
 
     void onContactsDeleted(AccountJid account, Collection<Jid> addresses) {
-        Collection<RosterContact> removedContacts = new ArrayList<>(addresses.size());
+        final Collection<RosterContact> removedContacts = new ArrayList<>(addresses.size());
 
         for (Jid jid : addresses) {
             RosterContact contact = rosterContacts.remove(account.toString(), jid.asBareJid().toString());
@@ -171,6 +207,12 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
                 removedContacts.add(contact);
             }
         }
+        Application.getInstance().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                RosterCacheManager.removeContact(removedContacts);
+            }
+        });
 
         onContactsChanged(removedContacts);
     }

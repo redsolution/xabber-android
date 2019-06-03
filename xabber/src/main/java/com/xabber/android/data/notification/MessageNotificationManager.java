@@ -25,6 +25,7 @@ import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
@@ -42,6 +43,8 @@ public class MessageNotificationManager implements OnLoadListener {
     private static MessageNotificationManager instance;
     private List<Chat> chats = new ArrayList<>();
     private Message lastMessage = null;
+    private HashMap<Integer, Action> delayedActions = new HashMap<>();
+    private long lastNotificationTime = 0;
 
     private MessageNotificationManager() {
         context = Application.getInstance();
@@ -69,60 +72,40 @@ public class MessageNotificationManager implements OnLoadListener {
         return instance;
     }
 
+    public boolean isTimeToNewFullNotification() {
+        return System.currentTimeMillis() > (lastNotificationTime + 1000);
+    }
+
+    public void setLastNotificationTime() {
+        this.lastNotificationTime = System.currentTimeMillis();
+    }
+
     /** LISTENER */
 
-    public void onNotificationReplied(int notificationId, final CharSequence replyText) {
-        final Chat chat = getChat(notificationId);
-        if (chat != null) {
-            // send message
-            MessageManager.getInstance().sendMessage(
-                    chat.getAccountJid(), chat.getUserJid(), replyText.toString());
-
-            // update notification
-            addMessage(chat, "", replyText, false);
-            saveNotifChatToRealm(chat);
-        }
-    }
-
-    public void onNotificationCanceled(int notificationId) {
-        if (notificationId == MESSAGE_BUNDLE_NOTIFICATION_ID)
-            removeAllMessageNotifications();
-        else removeChat(notificationId);
-    }
-
-    public void onNotificationMuted(int notificationId) {
-        Chat chatNotif = getChat(notificationId);
-        if (chatNotif != null) {
-            AbstractChat chat = MessageManager.getInstance().getChat(
-                    chatNotif.getAccountJid(), chatNotif.getUserJid());
+    public void onNotificationAction(Action action) {
+        if (action.getActionType() != Action.ActionType.cancel) {
+            Chat chat = getChat(action.getNotificationID());
             if (chat != null) {
-                chat.setNotificationState(new NotificationState(NotificationState.NotificationMode.snooze2h,
-                        (int) (System.currentTimeMillis() / 1000L)), true);
-                callUiUpdate();
+                performAction(new FullAction(action, chat.getAccountJid(), chat.getUserJid()));
+
+                // update notification
+                if (action.getActionType() == Action.ActionType.reply) {
+                    addMessage(chat, "", action.getReplyText(), false);
+                    saveNotifChatToRealm(chat);
+                }
             }
         }
 
         // cancel notification
-        notificationManager.cancel(notificationId);
-        onNotificationCanceled(notificationId);
+        if (action.getActionType() != Action.ActionType.reply) {
+            notificationManager.cancel(action.getNotificationID());
+            onNotificationCanceled(action.getNotificationID());
+        }
     }
 
-    public void onNotificationMarkedAsRead(int notificationId) {
-        // mark chat as read
-        Chat chatNotif = getChat(notificationId);
-        if (chatNotif != null) {
-            AbstractChat chat = MessageManager.getInstance().getChat(
-                    chatNotif.getAccountJid(), chatNotif.getUserJid());
-            if (chat != null) {
-                AccountManager.getInstance().stopGracePeriod(chat.getAccount());
-                chat.markAsReadAll(true);
-                callUiUpdate();
-            }
-        }
-
-        // cancel notification
-        notificationManager.cancel(notificationId);
-        onNotificationCanceled(notificationId);
+    public void onDelayedNotificationAction(Action action) {
+        notificationManager.cancel(action.getNotificationID());
+        delayedActions.put(action.getNotificationID(), action);
     }
 
     @Override
@@ -214,13 +197,57 @@ public class MessageNotificationManager implements OnLoadListener {
 
     /** PRIVATE METHODS */
 
+    private void onNotificationCanceled(int notificationId) {
+        if (notificationId == MESSAGE_BUNDLE_NOTIFICATION_ID)
+            removeAllMessageNotifications();
+        else removeChat(notificationId);
+    }
+
+    public void performAction(FullAction action) {
+        AccountJid accountJid = action.getAccountJid();
+        UserJid userJid = action.getUserJid();
+
+        switch (action.getActionType()) {
+            case read:
+                AbstractChat chat = MessageManager.getInstance().getChat(accountJid, userJid);
+                if (chat != null) {
+                    AccountManager.getInstance().stopGracePeriod(chat.getAccount());
+                    chat.markAsReadAll(true);
+                    callUiUpdate();
+                }
+                break;
+            case snooze:
+                AbstractChat chat1 = MessageManager.getInstance().getChat(accountJid, userJid);
+                if (chat1 != null) {
+                    chat1.setNotificationState(new NotificationState(NotificationState.NotificationMode.snooze2h,
+                            (int) (System.currentTimeMillis() / 1000L)), true);
+                    callUiUpdate();
+                }
+                break;
+            case reply:
+                MessageManager.getInstance().sendMessage(accountJid, userJid, action.getReplyText().toString());
+        }
+    }
+
     private void onLoaded(List<Chat> loadedChats) {
-        this.chats.addAll(loadedChats);
-        if (loadedChats != null && loadedChats.size() > 0) {
-            List<Message> messages = loadedChats.get(loadedChats.size() - 1).getMessages();
+        for (Chat chat : loadedChats) {
+            if (delayedActions.containsKey(chat.notificationId)) {
+                Action action = delayedActions.get(chat.notificationId);
+                if (action != null) {
+                    notificationManager.cancel(action.getNotificationID());
+                    DelayedNotificationActionManager.getInstance().addAction(
+                            new FullAction(action, chat.getAccountJid(), chat.getUserJid()));
+                    removeNotifChatFromRealm(chat.accountJid, chat.userJid);
+                }
+            } else chats.add(chat);
+        }
+        delayedActions.clear();
+
+        if (chats != null && chats.size() > 0) {
+            List<Message> messages = chats.get(chats.size() - 1).getMessages();
             if (messages != null && messages.size() > 0) {
                 lastMessage = messages.get(messages.size() - 1);
-                rebuildAllNotifications();
+                //rebuildAllNotifications();
             }
         }
     }

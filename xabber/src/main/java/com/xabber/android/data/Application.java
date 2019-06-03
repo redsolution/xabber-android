@@ -44,7 +44,8 @@ import com.xabber.android.data.extension.carbons.CarbonManager;
 import com.xabber.android.data.extension.chat_markers.ChatMarkerManager;
 import com.xabber.android.data.extension.cs.ChatStateManager;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
-import com.xabber.android.data.extension.mam.MamManager;
+import com.xabber.android.data.extension.iqlast.LastActivityInteractor;
+import com.xabber.android.data.extension.mam.NextMamManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.ssn.SSNManager;
@@ -56,8 +57,11 @@ import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.ReceiptManager;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.message.phrase.PhraseManager;
+import com.xabber.android.data.notification.DelayedNotificationActionManager;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.notification.custom_notification.CustomNotifyPrefsManager;
+import com.xabber.android.data.push.PushManager;
+import com.xabber.android.data.push.SyncManager;
 import com.xabber.android.data.roster.GroupManager;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterManager;
@@ -349,6 +353,7 @@ public class Application extends android.app.Application {
     }
 
     private void addManagers() {
+        addManager(SyncManager.getInstance());
         addManager(SettingsManager.getInstance());
         addManager(LogManager.getInstance());
         addManager(DatabaseManager.getInstance());
@@ -383,9 +388,12 @@ public class Application extends android.app.Application {
         addManager(CarbonManager.getInstance());
         addManager(HttpFileUploadManager.getInstance());
         addManager(BlockingManager.getInstance());
-        addManager(MamManager.getInstance());
+        addManager(NextMamManager.getInstance());
         addManager(CertificateManager.getInstance());
         addManager(XMPPAuthManager.getInstance());
+        addManager(PushManager.getInstance());
+        addManager(DelayedNotificationActionManager.getInstance());
+        addManager(LastActivityInteractor.getInstance());
     }
 
     /**
@@ -603,4 +611,7 @@ public class Application extends android.app.Application {
         handler.postDelayed(runnable, delayMillis);
     }
 
+    public boolean isServiceStarted() {
+        return serviceStarted;
+    }
 }

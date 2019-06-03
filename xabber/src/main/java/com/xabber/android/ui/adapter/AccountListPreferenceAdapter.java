@@ -23,6 +23,7 @@ import android.widget.TextView;
 import com.xabber.android.R;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
+import com.xabber.android.data.connection.ConnectionState;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.log.LogManager;
@@ -114,6 +115,12 @@ public class AccountListPreferenceAdapter extends RecyclerView.Adapter {
 
         accountHolder.status.setText(accountItem.getState().getStringId());
 
+        // push state
+        boolean pushEnabled = accountItem.getState().equals(ConnectionState.connected)
+                && accountItem.isPushWasEnabled();
+        accountHolder.tvAccountPushStatus.setVisibility(pushEnabled ? View.VISIBLE : View.GONE);
+        if (pushEnabled) accountHolder.tvAccountPushStatus.setText(R.string.account_push_state_enabled);
+
         accountHolder.enabledSwitch.setChecked(accountItem.isEnabled());
 
     }
@@ -129,6 +136,7 @@ public class AccountListPreferenceAdapter extends RecyclerView.Adapter {
         TextView name;
         TextView status;
         SwitchCompat enabledSwitch;
+        TextView tvAccountPushStatus;
 
 
         AccountViewHolder(View itemView) {
@@ -138,6 +146,7 @@ public class AccountListPreferenceAdapter extends RecyclerView.Adapter {
             name = (TextView) itemView.findViewById(R.id.item_account_name);
             status = (TextView) itemView.findViewById(R.id.item_account_status);
             enabledSwitch = (SwitchCompat) itemView.findViewById(R.id.item_account_switch);
+            tvAccountPushStatus = itemView.findViewById(R.id.tvAccountPushStatus);
 
             // I used on click listener instead of on checked change listener to avoid callback in onBindViewHolder
             enabledSwitch.setOnClickListener(this);

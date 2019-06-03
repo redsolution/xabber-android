@@ -59,7 +59,6 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
 
     private int accountColorIndicator;
     private int accountColorIndicatorBack;
-    private boolean showOfflineShadow;
 
     private final String name;
     private final String status;
@@ -91,7 +90,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
     }
 
     protected ContactVO(int accountColorIndicator, int accountColorIndicatorBack,
-                        boolean showOfflineShadow, String name,
+                        String name,
                         String status, int statusId, int statusLevel, Drawable avatar,
                         int mucIndicatorLevel, UserJid userJid, AccountJid accountJid, int unreadCount,
                         boolean mute, NotificationState.NotificationMode notificationMode, String messageText,
@@ -101,7 +100,6 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
         this.id = UUID.randomUUID().toString();
         this.accountColorIndicator = accountColorIndicator;
         this.accountColorIndicatorBack = accountColorIndicatorBack;
-        this.showOfflineShadow = showOfflineShadow;
         this.name = name;
         this.status = status;
         this.statusId = statusId;
@@ -126,7 +124,6 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
     }
 
     public static ContactVO convert(AbstractContact contact, ContactClickListener listener) {
-        boolean showOfflineShadow;
         int accountColorIndicator;
         int accountColorIndicatorBack;
         Drawable avatar;
@@ -138,13 +135,6 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
         int unreadCount = 0;
         int forwardedCount = 0;
         String messageOwner = null;
-
-        AccountItem accountItem = AccountManager.getInstance().getAccount(contact.getAccount());
-        if (accountItem != null && accountItem.getState() == ConnectionState.connected) {
-            showOfflineShadow = false;
-        } else {
-            showOfflineShadow = true;
-        }
 
         accountColorIndicator = ColorManager.getInstance().getAccountPainter()
                 .getAccountMainColor(contact.getAccount());
@@ -176,7 +166,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
         AbstractChat chat = messageManager.getOrCreateChat(contact.getAccount(), contact.getUser());
         MessageItem lastMessage = chat.getLastMessage();
 
-        if (lastMessage == null) {
+        if (lastMessage == null || lastMessage.getText() == null) {
             messageText = statusText;
         } else {
             if (lastMessage.haveAttachments() && lastMessage.getAttachments().size() > 0) {
@@ -228,7 +218,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
                 isPrefsExist(Key.createKey(contact.getAccount(), contact.getUser()));
 
         return new ContactVO(accountColorIndicator, accountColorIndicatorBack,
-                showOfflineShadow, name, statusText, statusId,
+                name, statusText, statusId,
                 statusLevel, avatar, mucIndicatorLevel, contact.getUser(), contact.getAccount(),
                 unreadCount, !chat.notifyAboutMessage(), mode, messageText, isOutgoing, time,
                 messageStatus, messageOwner, chat.isArchived(), lastActivity, listener, forwardedCount,
@@ -265,11 +255,6 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
     @Override
     public void bindViewHolder(FlexibleAdapter adapter, ViewHolder viewHolder, int position, List<Object> payloads) {
         Context context = viewHolder.itemView.getContext();
-
-        /** set up OFFLINE SHADOW */
-        if (isShowOfflineShadow())
-            viewHolder.offlineShadow.setVisibility(View.VISIBLE);
-        else viewHolder.offlineShadow.setVisibility(View.GONE);
 
         /** set up ACCOUNT COLOR indicator */
         viewHolder.accountColorIndicator.setBackgroundColor(getAccountColorIndicator());
@@ -432,10 +417,6 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
         return accountColorIndicatorBack;
     }
 
-    public boolean isShowOfflineShadow() {
-        return showOfflineShadow;
-    }
-
     public String getLastActivity() {
         return lastActivity;
     }
@@ -467,7 +448,6 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
         final TextView tvMessageText;
         final TextView tvTime;
         final ImageView ivMessageStatus;
-        final ImageView offlineShadow;
         final TextView tvUnreadCount;
         public final TextView tvAction;
         public final TextView tvActionLeft;
@@ -493,7 +473,6 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
             tvMessageText = (TextView) view.findViewById(R.id.tvMessageText);
             tvTime = (TextView) view.findViewById(R.id.tvTime);
             ivMessageStatus = (ImageView) view.findViewById(R.id.ivMessageStatus);
-            offlineShadow = (ImageView) view.findViewById(R.id.offline_shadow);
             tvUnreadCount = (TextView) view.findViewById(R.id.tvUnreadCount);
             foregroundView = (LinearLayout) view.findViewById(R.id.foregroundView);
             tvAction = (TextView) view.findViewById(R.id.tvAction);

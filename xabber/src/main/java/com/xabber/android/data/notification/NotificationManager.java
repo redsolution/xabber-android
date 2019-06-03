@@ -40,6 +40,7 @@ import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.log.LogManager;
+import com.xabber.android.data.push.SyncManager;
 import com.xabber.android.service.XabberService;
 import com.xabber.android.ui.activity.ClearNotificationsActivity;
 import com.xabber.android.ui.activity.ContactListActivity;
@@ -269,14 +270,12 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
     }
 
     private void updatePersistentNotification() {
-        if (!SettingsManager.eventsPersistent()) {
-            return;
-        }
-
         if (XabberService.getInstance() == null) return;
 
         // we do not want to show persistent notification if there are no enabled accounts
         XabberService.getInstance().changeForeground();
+        if (!XabberService.getInstance().needForeground()) return;
+
         Collection<AccountJid> accountList = AccountManager.getInstance().getEnabledAccounts();
         if (accountList.isEmpty()) {
             return;
@@ -321,15 +320,22 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
 
         persistentIntent = ContactListActivity.createPersistentIntent(application);
 
-        if (connected > 0) {
-            persistentNotificationBuilder.setColor(persistentNotificationColor);
-            persistentNotificationBuilder.setSmallIcon(R.drawable.ic_stat_online);
-        } else {
+        if (SyncManager.getInstance().isSyncMode()) {
             persistentNotificationBuilder.setColor(NotificationCompat.COLOR_DEFAULT);
-            persistentNotificationBuilder.setSmallIcon(R.drawable.ic_stat_offline);
+            persistentNotificationBuilder.setSmallIcon(R.drawable.ic_sync);
+            persistentNotificationBuilder.setContentText(application.getString(R.string.connection_state_sync));
+        } else {
+            if (connected > 0) {
+                persistentNotificationBuilder.setColor(persistentNotificationColor);
+                persistentNotificationBuilder.setSmallIcon(R.drawable.ic_stat_online);
+            } else {
+                persistentNotificationBuilder.setColor(NotificationCompat.COLOR_DEFAULT);
+                persistentNotificationBuilder.setSmallIcon(R.drawable.ic_stat_offline);
+            }
+
+            persistentNotificationBuilder.setContentText(getConnectionState(waiting, connecting, connected, accountList.size()));
         }
 
-        persistentNotificationBuilder.setContentText(getConnectionState(waiting, connecting, connected, accountList.size()));
         persistentNotificationBuilder.setContentIntent(PendingIntent.getActivity(application, 0, persistentIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT));
 
@@ -456,6 +462,7 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
 
     @Override
     public void onClose() {
-        notificationManager.cancelAll();
+        //notificationManager.cancelAll();
+        notificationManager.cancel(PERSISTENT_NOTIFICATION_ID);
     }
 }

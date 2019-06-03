@@ -15,4 +15,5 @@
 
     <string name="RECAPTCHA_KEY">temp</string>
     <string name="CROWDFUNDING_KEY">temp</string>
+    <string name="PUSH_API_KEY">temp</string>
 </resources>

@@ -12,7 +12,7 @@
 
         <RelativeLayout
             android:id="@+id/recentButtonView"
-            android:layout_width="48dp"
+            android:layout_width="50dp"
             android:layout_height="match_parent">
 
             <ImageView

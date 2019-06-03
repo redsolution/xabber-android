@@ -126,6 +126,12 @@ class ConnectionThread {
         LogManager.i(this, "Use DNS Java resolver");
         ExtDNSJavaResolver.setup();
 
+        ProviderManager.addExtensionProvider(DataForm.ELEMENT,
+                DataForm.NAMESPACE, new CustomDataProvider());
+
+        ProviderManager.addExtensionProvider(ForwardComment.ELEMENT,
+                ForwardComment.NAMESPACE, new ForwardCommentProvider());
+
         try {
             LogManager.i(this, "Trying to connect and login...");
             if (!connection.isConnected()) {
@@ -141,13 +147,6 @@ class ConnectionThread {
 
                 connection.login();
 
-                // can be a cause of strange Smack behavior
-                // not authorization or not receiving a iq's
-                ProviderManager.addExtensionProvider(DataForm.ELEMENT,
-                        DataForm.NAMESPACE, new CustomDataProvider());
-
-                ProviderManager.addExtensionProvider(ForwardComment.ELEMENT,
-                        ForwardComment.NAMESPACE, new ForwardCommentProvider());
             } else {
                 LogManager.i(this, "Already authenticated");
             }

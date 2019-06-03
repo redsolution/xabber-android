@@ -329,7 +329,7 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
     protected void onResume() {
         super.onResume();
 
-        if (!AccountManager.getInstance().hasAccounts() && XabberAccountManager.getInstance().getAccount() == null) {
+        if (!AccountManager.getInstance().checkAccounts() && XabberAccountManager.getInstance().getAccount() == null) {
             startActivity(TutorialActivity.createIntent(this));
             finish();
             return;

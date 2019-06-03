@@ -327,10 +327,10 @@ public class SettingsManager implements OnInitializedListener,
                 R.bool.events_lightning_default);
     }
 
-    public static boolean eventsPersistent() {
-        return getBoolean(R.string.events_persistent_key,
-                R.bool.events_persistent_default);
-    }
+//    public static boolean eventsPersistent() {
+//        return getBoolean(R.string.events_persistent_key,
+//                R.bool.events_persistent_default);
+//    }
 
     public static boolean eventsShowText() {
         return getNotifBoolean(R.string.events_show_text_key,
@@ -600,6 +600,10 @@ public class SettingsManager implements OnInitializedListener,
         return getBoolean(R.string.debug_use_develop_api_key, R.bool.debug_use_develop_api_default);
     }
 
+    public static boolean syncBookmarksOnStart() {
+        return getBoolean(R.string.debug_sync_bookmarks_on_start_key, R.bool.debug_sync_bookmarks_on_start_default);
+    }
+
     public static boolean isCrashReportsSupported() {
         return BuildConfig.FLAVOR.equals("beta")
                 || BuildConfig.FLAVOR.equals("vip")
@@ -852,6 +856,14 @@ public class SettingsManager implements OnInitializedListener,
 
     public static int getLastCrowdfundingPosition() {
         return getInteger(R.string.crowdfunding_last_position_key, 0);
+    }
+
+    public static void setEnabledPushNodes(String enabledPushNodes) {
+        setString(R.string.enabled_push_nodes, enabledPushNodes);
+    }
+
+    public static String getEnabledPushNodes() {
+        return getString(R.string.enabled_push_nodes, "");
     }
 
     public static void resetPreferences(Context context, String preferencesName) {

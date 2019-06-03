@@ -46,12 +46,14 @@ import com.xabber.android.data.database.sqlite.AccountTable;
 import com.xabber.android.data.database.sqlite.StatusTable;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.mam.LoadHistorySettings;
-import com.xabber.android.data.extension.mam.MamManager;
+import com.xabber.android.data.extension.mam.NextMamManager;
 import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.notification.BaseAccountNotificationProvider;
 import com.xabber.android.data.notification.NotificationManager;
+import com.xabber.android.data.push.PushManager;
 import com.xabber.android.data.roster.PresenceManager;
+import com.xabber.android.data.roster.RosterCacheManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.data.xaccount.XabberAccountManager;
 
@@ -106,6 +108,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
      * List of accounts.
      */
     private final Map<AccountJid, AccountItem> accountItems;
+    private final List<AccountJid> cachedEnabledAccounts;
     private final BaseAccountNotificationProvider<AccountError> accountErrorProvider;
 
     private final Application application;
@@ -130,12 +133,51 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
         this.application = Application.getInstance();
         accountItems = new HashMap<>();
         savedStatuses = new ArrayList<>();
+        cachedEnabledAccounts = new ArrayList<>();
         accountErrorProvider = new BaseAccountNotificationProvider<>(R.drawable.ic_stat_error);
 
         colors = application.getResources().getIntArray(R.array.account_color_names).length;
 
         away = false;
         xa = false;
+    }
+
+    public void onPreInitialize() {
+        Realm realm = RealmManager.getInstance().getRealmUiThread();
+        RealmResults<AccountRealm> accountRealms = realm.where(AccountRealm.class).findAll();
+
+        for (AccountRealm accountRealm : accountRealms) {
+            DomainBareJid serverName = null;
+            try {
+                serverName = JidCreate.domainBareFrom(accountRealm.getServerName());
+            } catch (XmppStringprepException e) {
+                LogManager.exception(this, e);
+            }
+
+            Localpart userName = null;
+            try {
+                userName = Localpart.from(accountRealm.getUserName());
+            } catch (XmppStringprepException e) {
+                LogManager.exception(this, e);
+            }
+
+            Resourcepart resource = null;
+            try {
+                resource = Resourcepart.from(accountRealm.getResource());
+            } catch (XmppStringprepException e) {
+                LogManager.exception(this, e);
+            }
+
+            if (serverName == null || userName == null || resource == null) {
+                LogManager.e(LOG_TAG, "could not create account. username " + userName
+                        + ", server name " + serverName
+                        + ", resource " + resource);
+                continue;
+            }
+
+            if (accountRealm.isEnabled())
+                cachedEnabledAccounts.add(AccountJid.from(userName, serverName, resource));
+        }
     }
 
     @Override
@@ -228,6 +270,10 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
                 accountItem.setLoadHistorySettings(accountRealm.getLoadHistorySettings());
             }
             accountItem.setSuccessfulConnectionHappened(accountRealm.isSuccessfulConnectionHappened());
+            accountItem.setPushNode(accountRealm.getPushNode());
+            accountItem.setPushServiceJid(accountRealm.getPushServiceJid());
+            accountItem.setPushEnabled(accountRealm.isPushEnabled());
+            accountItem.setPushWasEnabled(accountRealm.isPushWasEnabled());
 
             accountItems.add(accountItem);
 
@@ -459,6 +505,13 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
             return;
         }
 
+        // disable push
+        PushManager.getInstance().disablePushNotification(getAccount(account), false);
+
+        // remove contacts and account from cache
+        RosterCacheManager.removeContacts(account);
+        cachedEnabledAccounts.remove(account);
+
         boolean wasEnabled = accountItem.isEnabled();
         accountItem.setEnabled(false);
         accountItem.disconnect();
@@ -682,16 +735,24 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
             return;
         }
 
+        // disable push
+        if (!enabled) PushManager.getInstance().disablePushNotification(getAccount(account), false);
+
+        // remove from cached if disabled
+        if (!enabled) cachedEnabledAccounts.remove(account);
+
         accountItem.setEnabled(enabled);
         requestToWriteAccount(accountItem);
+        PushManager.getInstance().updateEnabledPushNodes();
     }
 
     /**
      * @return List of enabled accounts.
      */
     public Collection<AccountJid> getEnabledAccounts() {
+        Collection<AccountItem> accounts = Collections.unmodifiableCollection(accountItems.values());
         List<AccountJid> enabledAccounts = new ArrayList<>();
-        for (AccountItem accountItem : accountItems.values()) {
+        for (AccountItem accountItem : accounts) {
             if (accountItem.isEnabled()) {
                 AccountJid accountJid = accountItem.getAccount();
                 accountJid.setOrder(accountItem.getOrder());
@@ -702,8 +763,18 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
         return Collections.unmodifiableCollection(enabledAccounts);
     }
 
+    public Collection<AccountJid> getCachedEnabledAccounts() {
+        return Collections.unmodifiableCollection(cachedEnabledAccounts);
+    }
+
     public boolean hasAccounts() {
         return !accountItems.isEmpty();
+    }
+
+    public boolean checkAccounts() {
+        Realm realm = RealmManager.getInstance().getRealmUiThread();
+        RealmResults<AccountRealm> accountRealms = realm.where(AccountRealm.class).findAll();
+        return !accountRealms.isEmpty();
     }
 
     /**
@@ -965,7 +1036,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
         if (!accountItem.getMamDefaultBehaviour().equals(mamDefaultBehavior)) {
             accountItem.setMamDefaultBehaviour(mamDefaultBehavior);
             requestToWriteAccount(accountItem);
-            MamManager.getInstance().requestUpdatePreferences(accountJid);
+            NextMamManager.getInstance().onRequestUpdatePreferences(accountJid);
         }
     }
 
@@ -1206,6 +1277,31 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
         for (AccountJid accountJid : AccountManager.getInstance().getEnabledAccounts()) {
             stopGracePeriod(accountJid);
         }
+    }
+
+    public void setPushNode(AccountItem account, String pushNode, String pushServiceJid) {
+        account.setPushNode(pushNode);
+        account.setPushServiceJid(pushServiceJid);
+        requestToWriteAccount(account);
+    }
+
+    public void setPushEnabled(final AccountItem accountItem, final boolean enabled) {
+        accountItem.setPushEnabled(enabled);
+        requestToWriteAccount(accountItem);
+        Application.getInstance().runInBackground(new Runnable() {
+            @Override
+            public void run() {
+                if (enabled) PushManager.getInstance().enablePushNotificationsIfNeed(accountItem);
+                else PushManager.getInstance().disablePushNotification(accountItem, true);
+            }
+        });
+        PushManager.getInstance().updateEnabledPushNodes();
+    }
+
+    public void setPushWasEnabled(AccountItem accountItem, boolean enabled) {
+        accountItem.setPushWasEnabled(enabled);
+        requestToWriteAccount(accountItem);
+        PushManager.getInstance().updateEnabledPushNodes();
     }
 
 }

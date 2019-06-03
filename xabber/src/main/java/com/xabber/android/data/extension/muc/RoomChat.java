@@ -259,10 +259,6 @@ public class RoomChat extends AbstractChat {
                 newAction(resource, subject, ChatAction.subject, true);
             } else {
                 boolean notify = true;
-                String stanzaId = message.getStanzaId();
-
-                // Use stanza id from XEP-0359 if common stanza id is null
-                if (stanzaId == null) stanzaId = UniqStanzaHelper.getStanzaId(message);
 
                 DelayInformation delayInformation = DelayInformation.from(message);
                 Date delay = null;
@@ -280,7 +276,7 @@ public class RoomChat extends AbstractChat {
 
                 String originalFrom = stanza.getFrom().toString();
 
-                String messageUId = getMessageIdIfInHistory(stanzaId, text);
+                String messageUId = getMessageIdIfInHistory(getStanzaId(message), text);
                 if (messageUId != null) {
                     if (isSelf(resource)) {
                         markMessageAsDelivered(messageUId, originalFrom);
@@ -303,12 +299,12 @@ public class RoomChat extends AbstractChat {
                 // create message with file-attachments
                 if (attachments.size() > 0)
                     createAndSaveFileMessage(true, uid, resource, text, null, delay, true, notify,
-                            false, false, stanzaId, attachments,
+                            false, false, getStanzaId(message), attachments,
                             originalStanza, null, originalFrom, true, false);
 
                     // create message without attachments
                 else createAndSaveNewMessage(true, uid, resource, text, null, delay, true, notify,
-                        false, false, stanzaId,
+                        false, false, getStanzaId(message),
                         originalStanza, null, originalFrom, forwardIds, true, false);
 
                 EventBus.getDefault().post(new NewIncomingMessageEvent(account, user));
@@ -382,11 +378,6 @@ public class RoomChat extends AbstractChat {
         if (text == null) return null;
         if (subject != null) return null;
 
-        String stanzaId = message.getStanzaId();
-
-        // Use stanza id from XEP-0359 if common stanza id is null
-        if (stanzaId == null) stanzaId = UniqStanzaHelper.getStanzaId(message);
-
         RealmList<Attachment> attachments = HttpFileUploadManager.parseFileMessage(message);
 
         String uid = UUID.randomUUID().toString();
@@ -400,12 +391,12 @@ public class RoomChat extends AbstractChat {
         // create message with file-attachments
         if (attachments.size() > 0)
             createAndSaveFileMessage(ui, uid, resource, text, null, null,
-                    true, false, false, false, stanzaId, attachments,
+                    true, false, false, false, getStanzaId(message), attachments,
                     originalStanza, parentMessageId, originalFrom, fromMUC, true);
 
             // create message without attachments
         else createAndSaveNewMessage(ui, uid, resource, text, null, null,
-                true, false, false, false, stanzaId,
+                true, false, false, false, getStanzaId(message),
                 originalStanza, parentMessageId, originalFrom, forwardIds, fromMUC, true);
 
         return uid;

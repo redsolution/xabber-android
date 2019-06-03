@@ -3,6 +3,7 @@ package com.xabber.android.data.message;
 import com.xabber.android.data.database.MessageDatabaseManager;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.log.LogManager;
+import com.xabber.android.data.push.SyncManager;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -58,6 +59,7 @@ public class BackpressureMessageSaver {
                             @Override
                             public void onSuccess() {
                                 EventBus.getDefault().post(new NewMessageEvent());
+                                SyncManager.getInstance().onMessageSaved();
                             }
                         });
                     } catch (Exception e) {

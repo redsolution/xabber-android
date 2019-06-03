@@ -34,6 +34,7 @@
     <string name="crowdfunding_leader_last_load_timestamp_key">crowdfunding_leader_last_load_timestamp_key</string>
     <string name="first_app_run_timestamp_key">first_app_run_timestamp_key</string>
     <string name="crowdfunding_last_position_key">crowdfunding_last_position_key</string>
+    <string name="enabled_push_nodes">enabled_push_nodes</string>
 
     <string name="last_sync_date_key">last_sync_date_key</string>
     <string name="last_sync_date_default">@string/last_sync_date_never</string>
@@ -375,6 +376,7 @@
     <bool name="debug_connection_errors_default">false</bool>
 
     <string name="debug_log_activity_key">debug_log_activity</string>
+    <string name="push_log_activity_key">push_log_activity_key</string>
 
     <string name="debug_crash_reports_key">debug_crash_reports</string>
     <bool name="debug_crash_reports_default">true</bool>
@@ -383,7 +385,9 @@
     <string name="debug_download_all_messages_key">debug_download_all_messages_key</string>
     <string name="debug_use_develop_api_key">debug_develop_xabber_api_key</string>
     <bool name="debug_use_develop_api_default">false</bool>
+    <bool name="debug_sync_bookmarks_on_start_default">true</bool>
     <string name="debug_fetch_crowdfunding_feed_key">debug_fetch_crowdfunding_feed_key</string>
+    <string name="debug_sync_bookmarks_on_start_key">debug_sync_bookmarks_on_start_key</string>
 
     <!-- preference_about -->
     <string name="preference_about">@string/about_viewer</string>

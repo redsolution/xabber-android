@@ -104,5 +104,8 @@
     <string name="account_sync">Synchronization</string>
     <string name="account_sync_summary">Synchronization with Xabber Account</string>
 
+    <string name="account_push">Push notifications</string>
+    <string name="account_push_enable">Enable push notifications</string>
+
     <string name="bookmark_not_supported">Server does not support bookmarks</string>
 </resources>

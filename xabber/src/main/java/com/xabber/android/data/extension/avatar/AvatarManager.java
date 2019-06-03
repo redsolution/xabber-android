@@ -35,7 +35,6 @@ import com.amulyakhare.textdrawable.TextDrawable;
 import com.amulyakhare.textdrawable.util.ColorGenerator;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
-import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.OnLowMemoryListener;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
@@ -47,6 +46,8 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.data.log.LogManager;
+import com.xabber.android.data.roster.OnContactChangedListener;
+import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.xmpp.vcardupdate.VCardUpdate;
 
@@ -57,6 +58,7 @@ import org.jxmpp.jid.Jid;
 import org.jxmpp.jid.impl.JidCreate;
 import org.jxmpp.stringprep.XmppStringprepException;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -77,7 +79,7 @@ import java.util.Map;
  *
  * @author alexander.ivanov
  */
-public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPacketListener {
+public class AvatarManager implements OnLowMemoryListener, OnPacketListener {
 
     /**
      * Maximum image width / height to be loaded.
@@ -204,8 +206,7 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
         return output;
     }
 
-    @Override
-    public void onLoad() {
+    public void onPreInitialize() {
         final Map<Jid, String> hashes = new HashMap<>();
         final Map<String, Bitmap> bitmaps = new HashMap<>();
         Cursor cursor = AvatarTable.getInstance().list();
@@ -241,6 +242,11 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
     private void onLoaded(Map<Jid, String> hashes, Map<String, Bitmap> bitmaps) {
         this.hashes.putAll(hashes);
         this.bitmaps.putAll(bitmaps);
+        this.contactListDrawables.clear();
+        for (OnContactChangedListener onContactChangedListener : Application
+                .getInstance().getUIListeners(OnContactChangedListener.class)) {
+            onContactChangedListener.onContactsChanged(Collections.<RosterContact>emptyList());
+        }
     }
 
     /**
