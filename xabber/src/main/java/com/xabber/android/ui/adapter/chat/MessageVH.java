@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.amulyakhare.textdrawable.util.ColorGenerator;
+import com.google.android.gms.common.util.ArrayUtils;
 import com.xabber.android.R;
 import com.xabber.android.data.database.MessageDatabaseManager;
 import com.xabber.android.data.database.messagerealm.MessageItem;
@@ -22,6 +23,7 @@ import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.fragment.ChatFragment;
 import com.xabber.android.utils.StringUtils;
 
+import java.util.Arrays;
 import java.util.Date;
 
 import io.realm.RealmResults;
@@ -146,18 +148,21 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
     }
 
     protected void setupForwarded(MessageItem messageItem, MessagesAdapter.MessageExtraData extraData) {
-        RealmResults<MessageItem> forwardedMessages =
-            MessageDatabaseManager.getInstance().getRealmUiThread().where(MessageItem.class)
-                    .in(MessageItem.Fields.UNIQUE_ID, messageItem.getForwardedIdsAsArray()).findAll();
+        String[] forwardedIDs = messageItem.getForwardedIdsAsArray();
+        if (!Arrays.asList(forwardedIDs).contains(null)) {
+            RealmResults<MessageItem> forwardedMessages =
+                    MessageDatabaseManager.getInstance().getRealmUiThread().where(MessageItem.class)
+                            .in(MessageItem.Fields.UNIQUE_ID, forwardedIDs).findAll();
 
-        if (forwardedMessages.size() > 0) {
-            RecyclerView recyclerView = forwardLayout.findViewById(R.id.recyclerView);
-            ForwardedAdapter adapter = new ForwardedAdapter(forwardedMessages, extraData);
-            recyclerView.setLayoutManager(new LinearLayoutManager(extraData.getContext()));
-            recyclerView.setAdapter(adapter);
-            forwardLayout.setBackgroundColor(ColorManager.getColorWithAlpha(R.color.forwarded_background_color, 0.2f));
-            forwardLeftBorder.setBackgroundColor(extraData.getAccountMainColor());
-            forwardLayout.setVisibility(View.VISIBLE);
+            if (forwardedMessages.size() > 0) {
+                RecyclerView recyclerView = forwardLayout.findViewById(R.id.recyclerView);
+                ForwardedAdapter adapter = new ForwardedAdapter(forwardedMessages, extraData);
+                recyclerView.setLayoutManager(new LinearLayoutManager(extraData.getContext()));
+                recyclerView.setAdapter(adapter);
+                forwardLayout.setBackgroundColor(ColorManager.getColorWithAlpha(R.color.forwarded_background_color, 0.2f));
+                forwardLeftBorder.setBackgroundColor(extraData.getAccountMainColor());
+                forwardLayout.setVisibility(View.VISIBLE);
+            }
         }
     }
 
