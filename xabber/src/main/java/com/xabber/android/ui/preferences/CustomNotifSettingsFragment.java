@@ -123,13 +123,15 @@ public class CustomNotifSettingsFragment extends BaseSoundPrefFragment<CustomSet
         if (channel == null) return null;
         Uri uri = channel.getSound();
         Ringtone ringtone = RingtoneManager.getRingtone(getActivity(), uri);
-        return ringtone.getTitle(getActivity());
+        if (ringtone != null) return ringtone.getTitle(getActivity());
+        else return "Unknown ringtone";
     }
 
     private String getSoundTitle(NotifyPrefs notifyPrefs) {
         Uri uri = Uri.parse(notifyPrefs.getSound());
         Ringtone ringtone = RingtoneManager.getRingtone(getActivity(), uri);
-        return ringtone.getTitle(getActivity());
+        if (ringtone != null) return ringtone.getTitle(getActivity());
+        else return "Unknown ringtone";
     }
 
     private String getVibroSummary(Context context, NotifyPrefs notifyPrefs) {
