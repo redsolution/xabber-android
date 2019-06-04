@@ -726,16 +726,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
         AbstractChat chat = MessageManager.getInstance().getOrCreateChat(message.getAccount(), message.getUser());
         if (chat == null) return null;
 
-        MessageItem localMessage = realm.where(MessageItem.class)
-                .equalTo(MessageItem.Fields.ACCOUNT, chat.getAccount().toString())
-                .equalTo(MessageItem.Fields.USER, chat.getUser().toString())
-                .equalTo(MessageItem.Fields.TEXT, message.getText())
-                .isNull(MessageItem.Fields.PARENT_MESSAGE_ID)
-                .equalTo(MessageItem.Fields.STANZA_ID, message.getStanzaId())
-                .or().equalTo(MessageItem.Fields.STANZA_ID, message.getPacketId())
-                .or().equalTo(MessageItem.Fields.ARCHIVED_ID, message.getArchivedId())
-                .findFirst();
-
+        MessageItem localMessage = findSameLocalMessage(realm, chat, message);
         if (localMessage == null) {
             // forwarded
             if (originalMessage != null) {
@@ -908,6 +899,34 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
             chat.setLastMessageId(id);
             RosterCacheManager.saveLastMessageToContact(realm, lastMessage);
         }
+    }
+
+    private MessageItem findSameLocalMessage(Realm realm, AbstractChat chat, MessageItem message) {
+        return realm.where(MessageItem.class)
+                .equalTo(MessageItem.Fields.ACCOUNT, chat.getAccount().toString())
+                .equalTo(MessageItem.Fields.USER, chat.getUser().toString())
+                .equalTo(MessageItem.Fields.TEXT, message.getText())
+                .isNull(MessageItem.Fields.PARENT_MESSAGE_ID)
+                .equalTo(MessageItem.Fields.STANZA_ID, message.getStanzaId())
+                .or()
+                .equalTo(MessageItem.Fields.ACCOUNT, chat.getAccount().toString())
+                .equalTo(MessageItem.Fields.USER, chat.getUser().toString())
+                .equalTo(MessageItem.Fields.TEXT, message.getText())
+                .isNull(MessageItem.Fields.PARENT_MESSAGE_ID)
+                .equalTo(MessageItem.Fields.STANZA_ID, message.getPacketId())
+                .or()
+                .equalTo(MessageItem.Fields.ACCOUNT, chat.getAccount().toString())
+                .equalTo(MessageItem.Fields.USER, chat.getUser().toString())
+                .equalTo(MessageItem.Fields.TEXT, message.getText())
+                .isNull(MessageItem.Fields.PARENT_MESSAGE_ID)
+                .equalTo(MessageItem.Fields.STANZA_ID, message.getArchivedId())
+                .or()
+                .equalTo(MessageItem.Fields.ACCOUNT, chat.getAccount().toString())
+                .equalTo(MessageItem.Fields.USER, chat.getUser().toString())
+                .equalTo(MessageItem.Fields.TEXT, message.getText())
+                .isNull(MessageItem.Fields.PARENT_MESSAGE_ID)
+                .equalTo(MessageItem.Fields.ARCHIVED_ID, message.getArchivedId())
+                .findFirst();
     }
 
     private void runMigrationToNewArchive(AccountItem accountItem, Realm realm) {

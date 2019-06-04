@@ -516,10 +516,19 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     }
 
     private void updateLastMessage() {
-        lastMessage = MessageDatabaseManager.getChatMessagesQuery(
-                MessageDatabaseManager.getInstance().getRealmUiThread(), account, user)
+        Realm realm = MessageDatabaseManager.getInstance().getRealmUiThread();
+        lastMessage = realm.where(MessageItem.class)
+                .equalTo(MessageItem.Fields.ACCOUNT, account.toString())
+                .equalTo(MessageItem.Fields.USER, user.toString())
+                .isNull(MessageItem.Fields.PARENT_MESSAGE_ID)
+                .isNotNull(MessageItem.Fields.TEXT)
                 .isNull(MessageItem.Fields.ACTION)
-                .or().equalTo(MessageItem.Fields.ACTION, ChatAction.available.toString())
+                .or()
+                .equalTo(MessageItem.Fields.ACCOUNT, account.toString())
+                .equalTo(MessageItem.Fields.USER, user.toString())
+                .isNull(MessageItem.Fields.PARENT_MESSAGE_ID)
+                .isNotNull(MessageItem.Fields.TEXT)
+                .equalTo(MessageItem.Fields.ACTION, ChatAction.available.toString())
                 .findAllSorted(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING).last(null);
         RosterCacheManager.saveLastMessageToContact(MessageDatabaseManager.getInstance().getRealmUiThread(), lastMessage);
     }
