@@ -198,15 +198,26 @@ public class ChatMarkerManager implements OnPacketListener {
 
     private void markAsDelivered(final String stanzaID) {
         Realm realm = MessageDatabaseManager.getInstance().getRealmUiThread();
-
         MessageItem first = realm.where(MessageItem.class)
                 .equalTo(MessageItem.Fields.STANZA_ID, stanzaID).findFirst();
 
         if (first != null) {
-            realm.beginTransaction();
-            first.setDelivered(true);
-            realm.commitTransaction();
+            RealmResults<MessageItem> results = realm.where(MessageItem.class)
+                    .equalTo(MessageItem.Fields.ACCOUNT, first.getAccount().toString())
+                    .equalTo(MessageItem.Fields.USER, first.getUser().toString())
+                    .equalTo(MessageItem.Fields.INCOMING, false)
+                    .equalTo(MessageItem.Fields.DELIVERED, false)
+                    .lessThanOrEqualTo(MessageItem.Fields.TIMESTAMP, first.getTimestamp())
+                    .findAll();
+
+            if (results != null) {
+                realm.beginTransaction();
+                for (MessageItem item : results) {
+                    item.setDelivered(true);
+                }
+                realm.commitTransaction();
+                EventBus.getDefault().post(new MessageUpdateEvent());
+            }
         }
-        EventBus.getDefault().post(new MessageUpdateEvent());
     }
 }
