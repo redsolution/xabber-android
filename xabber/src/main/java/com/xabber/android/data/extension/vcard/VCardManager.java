@@ -15,6 +15,7 @@
 package com.xabber.android.data.extension.vcard;
 
 import android.database.Cursor;
+import android.util.Log;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
@@ -240,13 +241,13 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
             name = new StructuredName(vCard.getNickName(), vCard.getField(VCardProperty.FN.name()),
                     vCard.getFirstName(), vCard.getMiddleName(), vCard.getLastName());
 
-            try {
-                if (account.getFullJid().asBareJid().equals(bareAddress.asBareJid())) {
-                    PresenceManager.getInstance().resendPresence(account);
-                }
-            } catch (NetworkException e) {
-                LogManager.exception(this, e);
-            }
+//            try {
+//                if (account.getFullJid().asBareJid().equals(bareAddress.asBareJid())) {
+//                    PresenceManager.getInstance().resendPresence(account);
+//                }
+//            } catch (NetworkException e) {
+//                LogManager.exception(this, e);
+//            }
 
         }
         names.put(bareAddress, name);
