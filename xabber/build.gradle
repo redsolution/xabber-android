@@ -95,6 +95,12 @@ android {
             universalApk true
         }
     }
+
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+        }
+    }
 }
 
 def build_param = "${build}";
@@ -180,6 +186,10 @@ dependencies {
     debugImplementation 'com.github.markzhai:blockcanary-android:1.5.0'
     releaseImplementation 'com.github.markzhai:blockcanary-no-op:1.5.0'
 
+    // test
+    testImplementation 'junit:junit:4.12'
+    testImplementation "org.robolectric:robolectric:4.0"
+    testImplementation "org.robolectric:shadows-multidex:4.0.1"
 }
 apply plugin: 'com.google.gms.google-services'
 
