@@ -10,8 +10,13 @@ import com.xabber.android.data.extension.forward.ForwardComment;
 import org.greenrobot.eventbus.EventBus;
 import org.jivesoftware.smack.packet.ExtensionElement;
 import org.jivesoftware.smack.packet.Stanza;
+import org.jivesoftware.smackx.forward.packet.Forwarded;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+
+import javax.annotation.Nonnull;
 
 import io.realm.Realm;
 import io.realm.RealmList;
@@ -47,6 +52,20 @@ public class ForwardManager {
             return ((ForwardComment) comment).getComment();
         }
         return null;
+    }
+
+    @Nonnull
+    public static List<Forwarded> getForwardedFromStanza(Stanza packet) {
+        List<ExtensionElement> elements = packet.getExtensions(Forwarded.ELEMENT, Forwarded.NAMESPACE);
+        if (elements == null || elements.size() == 0) return Collections.emptyList();
+
+        List<Forwarded> forwarded = new ArrayList<>();
+        for (ExtensionElement element : elements) {
+            if (element instanceof Forwarded) {
+                forwarded.add((Forwarded)element);
+            }
+        }
+        return forwarded;
     }
 
 }

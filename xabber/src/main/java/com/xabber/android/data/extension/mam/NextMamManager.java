@@ -15,6 +15,7 @@ import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.otr.OTRManager;
+import com.xabber.android.data.extension.references.ReferencesManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.ForwardManager;
@@ -23,7 +24,6 @@ import com.xabber.android.data.message.NewMessageEvent;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.push.SyncManager;
 import com.xabber.android.data.roster.OnRosterReceivedListener;
-import com.xabber.android.data.roster.RosterCacheManager;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
 
@@ -648,6 +648,13 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
             else body = ((PlainTextMessage) otrMessage).cleanText;
         }
 
+        // forward comment (to support previous forwarded xep)
+        String forwardComment = ForwardManager.parseForwardComment(message);
+        if (forwardComment != null) body = forwardComment;
+
+        // modify body with references
+        body = ReferencesManager.modifyBodyWithReferences(message, body);
+
         boolean incoming = message.getFrom().asBareJid().equals(user.getJid().asBareJid());
 
         String uid = UUID.randomUUID().toString();
@@ -713,12 +720,9 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
     }
 
     private MessageItem determineSaveOrUpdate(Realm realm, final MessageItem message, boolean ui) {
-        // set text from comment to text in message for prevent doubling messages from MAM
         Message originalMessage = null;
         try {
             originalMessage = (Message) PacketParserUtils.parseStanza(message.getOriginalStanza());
-            String comment = ForwardManager.parseForwardComment(originalMessage);
-            if (comment != null) message.setText(comment);
         } catch (Exception e) {
             e.printStackTrace();
         }

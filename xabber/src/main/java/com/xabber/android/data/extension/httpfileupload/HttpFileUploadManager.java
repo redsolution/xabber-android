@@ -22,6 +22,9 @@ import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.file.FileManager;
+import com.xabber.android.data.extension.references.RefFile;
+import com.xabber.android.data.extension.references.RefMedia;
+import com.xabber.android.data.extension.references.ReferencesManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.service.UploadService;
@@ -224,6 +227,15 @@ public class HttpFileUploadManager implements OnLoadListener, OnAccountRemovedLi
     public static RealmList<Attachment> parseFileMessage(Stanza packet) {
         RealmList<Attachment> attachments = new RealmList<>();
 
+        // parsing data references
+        List<RefMedia> refMediaList = ReferencesManager.getMediaFromReferences(packet);
+        if (!refMediaList.isEmpty()) {
+            for (RefMedia media : refMediaList) {
+                attachments.add(refMediaToAttachment(media));
+            }
+        }
+
+        // parsing data forms
         DataForm dataForm = DataForm.from(packet);
         if (dataForm != null) {
 
@@ -236,6 +248,23 @@ public class HttpFileUploadManager implements OnLoadListener, OnAccountRemovedLi
             }
         }
         return attachments;
+    }
+
+    private static Attachment refMediaToAttachment(RefMedia media) {
+        Attachment attachment = new Attachment();
+        attachment.setFileUrl(media.getUri());
+        attachment.setIsImage(FileManager.isImageUrl(media.getUri()));
+
+        RefFile file = media.getFile();
+        if (file != null) {
+            attachment.setTitle(file.getName());
+            attachment.setMimeType(file.getMediaType());
+            attachment.setDuration(file.getDuration());
+            attachment.setFileSize(file.getSize());
+            if (file.getHeight() > 0) attachment.setImageHeight(file.getHeight());
+            if (file.getWidth() > 0) attachment.setImageWidth(file.getWidth());
+        }
+        return attachment;
     }
 
     private static Attachment mediaToAttachment(ExtendedFormField.Media media, String title) {

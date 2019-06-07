@@ -49,6 +49,7 @@ import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.muc.RoomChat;
+import com.xabber.android.data.extension.references.ReferencesManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.message.chat.MucPrivateChatNotification;
@@ -791,8 +792,13 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
             RealmList<ForwardId> forwardIds = finalChat.parseForwardedMessage(true, message, uid);
             String originalStanza = message.toXML().toString();
             String originalFrom = message.getFrom().toString();
+
+            // forward comment (to support previous forwarded xep)
             String forwardComment = ForwardManager.parseForwardComment(message);
             if (forwardComment != null) text = forwardComment;
+
+            // modify body with references
+            text = ReferencesManager.modifyBodyWithReferences(message, text);
 
             MessageItem newMessageItem = finalChat.createNewMessageItem(text);
             newMessageItem.setStanzaId(AbstractChat.getStanzaId(message));

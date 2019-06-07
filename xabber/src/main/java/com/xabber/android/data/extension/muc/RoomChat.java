@@ -29,13 +29,13 @@ import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
+import com.xabber.android.data.extension.references.ReferencesManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.ChatAction;
 import com.xabber.android.data.message.ForwardManager;
 import com.xabber.android.data.message.NewIncomingMessageEvent;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.roster.RosterManager;
-import com.xabber.xmpp.sid.UniqStanzaHelper;
 
 import org.greenrobot.eventbus.EventBus;
 import org.jivesoftware.smack.packet.Message;
@@ -270,9 +270,12 @@ public class RoomChat extends AbstractChat {
                     notify = false;
                 }
 
-                // forward comment
+                // forward comment (to support previous forwarded xep)
                 String forwardComment = ForwardManager.parseForwardComment(stanza);
                 if (forwardComment != null) text = forwardComment;
+
+                // modify body with references
+                text = ReferencesManager.modifyBodyWithReferences(message, text);
 
                 String originalFrom = stanza.getFrom().toString();
 
@@ -385,8 +388,13 @@ public class RoomChat extends AbstractChat {
         String originalStanza = message.toXML().toString();
         String originalFrom = message.getFrom().toString();
         boolean fromMUC = message.getType().equals(Type.groupchat);
+
+        // forward comment (to support previous forwarded xep)
         String forwardComment = ForwardManager.parseForwardComment(message);
         if (forwardComment != null) text = forwardComment;
+
+        // modify body with references
+        text = ReferencesManager.modifyBodyWithReferences(message, text);
 
         // create message with file-attachments
         if (attachments.size() > 0)

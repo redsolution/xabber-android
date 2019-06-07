@@ -22,6 +22,8 @@ import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.extension.forward.ForwardComment;
 import com.xabber.android.data.extension.forward.ForwardCommentProvider;
 import com.xabber.android.data.extension.httpfileupload.CustomDataProvider;
+import com.xabber.android.data.extension.references.ReferenceElement;
+import com.xabber.android.data.extension.references.ReferencesProvider;
 import com.xabber.android.data.log.AndroidLoggingHandler;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.xaccount.HttpConfirmIq;
@@ -131,6 +133,9 @@ class ConnectionThread {
 
         ProviderManager.addExtensionProvider(ForwardComment.ELEMENT,
                 ForwardComment.NAMESPACE, new ForwardCommentProvider());
+
+        ProviderManager.addExtensionProvider(ReferenceElement.ELEMENT,
+                ReferenceElement.NAMESPACE, new ReferencesProvider());
 
         try {
             LogManager.i(this, "Trying to connect and login...");

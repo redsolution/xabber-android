@@ -30,6 +30,7 @@ import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.otr.OTRUnencryptedException;
 import com.xabber.android.data.extension.otr.SecurityLevel;
+import com.xabber.android.data.extension.references.ReferencesManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.xaccount.XMPPAuthManager;
 
@@ -218,8 +219,13 @@ public class RegularChat extends AbstractChat {
             RealmList<ForwardId> forwardIds = parseForwardedMessage(true, packet, uid);
             String originalStanza = packet.toXML().toString();
             String originalFrom = packet.getFrom().toString();
+
+            // forward comment (to support previous forwarded xep)
             String forwardComment = ForwardManager.parseForwardComment(packet);
             if (forwardComment != null) text = forwardComment;
+
+            // modify body with references
+            text = ReferencesManager.modifyBodyWithReferences(message, text);
 
             // System message received.
             if ((text == null || text.trim().equals("")) && (forwardIds == null || forwardIds.isEmpty()))
@@ -268,9 +274,13 @@ public class RegularChat extends AbstractChat {
         String originalFrom = "";
         if (fromJid != null) originalFrom = fromJid.toString();
         boolean fromMuc = message.getType().equals(Type.groupchat);
+
+        // forward comment (to support previous forwarded xep)
         String forwardComment = ForwardManager.parseForwardComment(message);
-        if (forwardComment != null && !forwardComment.isEmpty())
-            text = forwardComment;
+        if (forwardComment != null && !forwardComment.isEmpty()) text = forwardComment;
+
+        // modify body with references
+        text = ReferencesManager.modifyBodyWithReferences(message, text);
 
         // create message with file-attachments
         if (attachments.size() > 0)

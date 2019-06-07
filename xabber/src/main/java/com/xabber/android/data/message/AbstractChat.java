@@ -41,6 +41,7 @@ import com.xabber.android.data.extension.httpfileupload.ExtendedFormField;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.otr.OTRManager;
+import com.xabber.android.data.extension.references.ReferencesManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.notification.MessageNotificationManager;
@@ -52,7 +53,6 @@ import com.xabber.xmpp.sid.UniqStanzaHelper;
 import org.greenrobot.eventbus.EventBus;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.StanzaListener;
-import org.jivesoftware.smack.packet.ExtensionElement;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Message.Type;
 import org.jivesoftware.smack.packet.Stanza;
@@ -930,19 +930,18 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     }
 
     public RealmList<ForwardId> parseForwardedMessage(boolean ui, Stanza packet, String parentMessageId) {
-        List<ExtensionElement> elements = packet.getExtensions(Forwarded.ELEMENT, Forwarded.NAMESPACE);
-        if (elements == null || elements.size() == 0) return null;
+        List<Forwarded> forwarded = ReferencesManager.getForwardedFromReferences(packet);
+        if (forwarded.isEmpty()) forwarded = ForwardManager.getForwardedFromStanza(packet);
+        if (forwarded.isEmpty()) return null;
 
-        RealmList<ForwardId> forwarded = new RealmList<>();
-        for (ExtensionElement element : elements) {
-            if (element instanceof Forwarded) {
-                Stanza stanza = ((Forwarded) element).getForwardedStanza();
-                if (stanza instanceof Message) {
-                    forwarded.add(new ForwardId(parseInnerMessage(ui, (Message) stanza, parentMessageId)));
-                }
+        RealmList<ForwardId> forwardedIds = new RealmList<>();
+        for (Forwarded forward : forwarded) {
+            Stanza stanza = forward.getForwardedStanza();
+            if (stanza instanceof Message) {
+                forwardedIds.add(new ForwardId(parseInnerMessage(ui, (Message) stanza, parentMessageId)));
             }
         }
-        return forwarded;
+        return forwardedIds;
     }
 
     protected abstract String parseInnerMessage(boolean ui, Message message, String parentMessageId);
