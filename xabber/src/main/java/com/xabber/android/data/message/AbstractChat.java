@@ -19,7 +19,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
@@ -36,11 +35,10 @@ import com.xabber.android.data.extension.chat_markers.BackpressureMessageReader;
 import com.xabber.android.data.extension.cs.ChatStateManager;
 import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.extension.file.UriUtils;
-import com.xabber.android.data.extension.forward.ForwardComment;
-import com.xabber.android.data.extension.httpfileupload.ExtendedFormField;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.otr.OTRManager;
+import com.xabber.android.data.extension.references.ReferenceElement;
 import com.xabber.android.data.extension.references.ReferencesManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.ChatManager;
@@ -56,11 +54,9 @@ import org.jivesoftware.smack.StanzaListener;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Message.Type;
 import org.jivesoftware.smack.packet.Stanza;
-import org.jivesoftware.smack.util.PacketParserUtils;
 import org.jivesoftware.smack.util.StringUtils;
 import org.jivesoftware.smackx.delay.packet.DelayInformation;
 import org.jivesoftware.smackx.forward.packet.Forwarded;
-import org.jivesoftware.smackx.xdata.packet.DataForm;
 import org.jxmpp.jid.Jid;
 import org.jxmpp.jid.parts.Resourcepart;
 
@@ -573,25 +569,8 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         message.setThread(threadId);
         if (stanzaId != null) message.setStanzaId(stanzaId);
 
-        DataForm dataForm = new DataForm(DataForm.Type.form);
-
-        int i = 1;
-        for (Attachment attachment : attachments) {
-            ExtendedFormField formField = new ExtendedFormField("media" + i);
-            i++;
-            formField.setLabel(attachment.getTitle());
-
-            ExtendedFormField.Uri uri = new ExtendedFormField.Uri(attachment.getMimeType(), attachment.getFileUrl());
-            uri.setSize(attachment.getFileSize());
-            uri.setDuration(attachment.getDuration());
-
-            formField.setMedia(
-                    new ExtendedFormField.Media(String.valueOf(attachment.getImageHeight()),
-                            String.valueOf(attachment.getImageWidth()), uri));
-
-            dataForm.addField(formField);
-        }
-        message.addExtension(dataForm);
+        ReferenceElement reference = ReferencesManager.createMediaReferences(attachments, body);
+        message.addExtension(reference);
         message.setBody(body);
 
         Log.d("XEP-0221", message.toXML().toString());
@@ -661,36 +640,17 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
                     messageItem.getAttachments(), text);
 
         } else if (messageItem.haveForwardedMessages()) {
-
-            int count = messageItem.getForwardedIds().size();
-            String body = String.format(Application.getInstance().getResources()
-                    .getString(R.string.forwarded_support_text), count);
-            if (text != null && !text.isEmpty()) body += "\n" + text;
-
-            message = createMessagePacket(body, messageItem.getStanzaId());
-
             Realm realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
+            RealmResults<MessageItem> items = realm.where(MessageItem.class)
+                    .in(MessageItem.Fields.UNIQUE_ID, messageItem.getForwardedIdsAsArray()).findAll();
 
-            // forwarded
-            if (messageItem.getForwardedIds() != null && messageItem.getForwardedIds().size() > 0) {
-                final String[] ids = new String[messageItem.getForwardedIds().size()];
-                int i = 0;
-                for (ForwardId id : messageItem.getForwardedIds()) {
-                    ids[i] = id.getForwardMessageId();
-                    i++;
-                }
+            String modifiedBody = ClipManager.createMessageTree(realm, messageItem.getForwardedIdsAsArray()) + "\n";
+            text = modifiedBody + text;
+            message = createMessagePacket(text, messageItem.getStanzaId());
 
-                RealmResults<MessageItem> items = realm.where(MessageItem.class)
-                        .in(MessageItem.Fields.UNIQUE_ID, ids).findAll();
-                for (MessageItem item : items) {
-                    try {
-                        Message forwarded = (Message) PacketParserUtils.parseStanza(item.getOriginalStanza());
-                        message.addExtension(new Forwarded(new DelayInformation(new Date(item.getTimestamp())), forwarded));
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-                message.addExtension(new ForwardComment(text));
+            if (items != null && !items.isEmpty()) {
+                ReferenceElement reference = ReferencesManager.createForwardReference(items, modifiedBody);
+                message.addExtension(reference);
             }
 
         } else if (text != null) {

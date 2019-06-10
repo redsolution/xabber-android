@@ -3,16 +3,25 @@ package com.xabber.android.data.extension.references;
 import android.text.Html;
 import android.text.TextUtils;
 
+import com.xabber.android.data.database.messagerealm.Attachment;
+import com.xabber.android.data.database.messagerealm.MessageItem;
+
 import org.jivesoftware.smack.packet.ExtensionElement;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Stanza;
+import org.jivesoftware.smack.util.PacketParserUtils;
+import org.jivesoftware.smackx.delay.packet.DelayInformation;
 import org.jivesoftware.smackx.forward.packet.Forwarded;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Nonnull;
+
+import io.realm.RealmList;
+import io.realm.RealmResults;
 
 public class ReferencesManager {
 
@@ -28,6 +37,43 @@ public class ReferencesManager {
             }
         }
         return forwarded;
+    }
+
+    public static ReferenceElement createMediaReferences(RealmList<Attachment> attachments, String legacyBody) {
+        List<RefMedia> mediaList = new ArrayList<>();
+        for (Attachment attachment : attachments) {
+            RefFile.Builder builder = RefFile.newBuilder();
+            builder.setName(attachment.getTitle());
+            builder.setMediaType(attachment.getMimeType());
+            builder.setVoice(false);
+            builder.setDuration(attachment.getDuration());
+            builder.setSize(attachment.getFileSize());
+            if (attachment.getImageHeight() != null)
+                builder.setHeight(attachment.getImageHeight());
+            if (attachment.getImageWidth() != null)
+                builder.setWidth(attachment.getImageWidth());
+            RefMedia media = new RefMedia(builder.build(), attachment.getFileUrl());
+            mediaList.add(media);
+        }
+
+        char[] chars = TextUtils.htmlEncode(legacyBody).toCharArray();
+        return new ReferenceElement(ReferenceElement.Type.data, 0, chars.length - 1, 0, null, mediaList);
+    }
+
+    public static ReferenceElement createForwardReference(RealmResults<MessageItem> items, String legacyBody) {
+        List<Forwarded> forwardedList = new ArrayList<>();
+        for (MessageItem item : items) {
+            try {
+                Message forwarded = PacketParserUtils.parseStanza(item.getOriginalStanza());
+                forwardedList.add(new Forwarded(new DelayInformation(new Date(item.getTimestamp())), forwarded));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        char[] chars = TextUtils.htmlEncode(legacyBody).toCharArray();
+        return new ReferenceElement(ReferenceElement.Type.forward, 0, chars.length - 1, 0,
+                forwardedList, null);
     }
 
     @Nonnull

@@ -1,5 +1,7 @@
 package com.xabber.android.data.extension.references;
 
+import org.jivesoftware.smack.util.XmlStringBuilder;
+
 public class RefMedia {
 
     public static final String ELEMENT = "media";
@@ -21,4 +23,18 @@ public class RefMedia {
         return uri;
     }
 
+    public CharSequence toXML() {
+        XmlStringBuilder xml = new XmlStringBuilder();
+        xml.openElement(ELEMENT);
+        if (file != null) {
+            xml.append(file.toXML());
+        }
+        if (uri != null) {
+            xml.openElement(ELEMENT_URI);
+            xml.append(uri);
+            xml.closeElement(ELEMENT_URI);
+        }
+        xml.closeElement(ELEMENT);
+        return xml;
+    }
 }

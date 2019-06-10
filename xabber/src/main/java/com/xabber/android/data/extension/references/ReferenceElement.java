@@ -46,6 +46,16 @@ public class ReferenceElement implements ExtensionElement {
         xml.attribute("end", end);
         xml.attribute("del", del);
         xml.rightAngleBracket();
+        if (forwarded != null && !forwarded.isEmpty()) {
+            for (Forwarded forward : forwarded) {
+                xml.append(forward.toXML());
+            }
+        }
+        if (media != null && !media.isEmpty()) {
+            for (RefMedia media1 : media) {
+                xml.append(media1.toXML());
+            }
+        }
         xml.closeElement(this);
         return xml;
     }

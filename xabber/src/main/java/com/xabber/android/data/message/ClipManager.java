@@ -32,6 +32,10 @@ public class ClipManager {
         });
     }
 
+    public static String createMessageTree(Realm realm, String[] messagesIDs) {
+        return messagesToText(realm, messagesIDs, 1);
+    }
+
     private static void insertDataToClipboard(final String text) {
         Application.getInstance().runOnUiThread(new Runnable() {
             @Override
