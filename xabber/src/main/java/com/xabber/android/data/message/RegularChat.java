@@ -224,12 +224,12 @@ public class RegularChat extends AbstractChat {
             String forwardComment = ForwardManager.parseForwardComment(packet);
             if (forwardComment != null) text = forwardComment;
 
-            // modify body with references
-            text = ReferencesManager.modifyBodyWithReferences(message, text);
-
             // System message received.
             if ((text == null || text.trim().equals("")) && (forwardIds == null || forwardIds.isEmpty()))
                 return true;
+
+            // modify body with references
+            text = ReferencesManager.modifyBodyWithReferences(message, text);
 
             // create message with file-attachments
             if (attachments.size() > 0)

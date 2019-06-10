@@ -102,7 +102,9 @@ public class IncomingMessageVH  extends FileMessageVH {
         setUpAvatar(messageItem, extraData.isMuc(), extraData.getUsername(), needTail);
 
         // hide empty message
-        if (messageItem.getText().trim().isEmpty() && !messageItem.haveForwardedMessages()) {
+        if (messageItem.getText().trim().isEmpty()
+                && !messageItem.haveForwardedMessages()
+                && !messageItem.haveAttachments()) {
             messageBalloon.setVisibility(View.GONE);
             messageTime.setVisibility(View.GONE);
             avatar.setVisibility(View.GONE);
