@@ -80,7 +80,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import io.realm.Realm;
@@ -327,13 +326,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
                         attachment.setFileUrl(urls.get(attachment.getFilePath()));
                     }
 
-                    StringBuilder strBuilder = new StringBuilder();
-                    for (Map.Entry<String, String> entry : urls.entrySet()) {
-                        if (strBuilder.length() > 0) strBuilder.append("\n");
-                        strBuilder.append(entry.getValue());
-                    }
-
-                    messageItem.setText(strBuilder.toString());
+                    messageItem.setText("");
                     messageItem.setSent(false);
                     messageItem.setInProgress(false);
                     messageItem.setError(false);

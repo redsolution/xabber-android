@@ -17,7 +17,6 @@ package com.xabber.android.data.message;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
@@ -559,7 +558,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     }
 
     /**
-     * Send stanza with XEP-0221
+     * Send stanza with data-references.
      */
     public Message createFileMessagePacket(String stanzaId, RealmList<Attachment> attachments, String body) {
 
@@ -569,11 +568,16 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         message.setThread(threadId);
         if (stanzaId != null) message.setStanzaId(stanzaId);
 
-        ReferenceElement reference = ReferencesManager.createMediaReferences(attachments, body);
-        message.addExtension(reference);
-        message.setBody(body);
+        StringBuilder builder = new StringBuilder();
+        for (Attachment attachment : attachments) {
+            if (builder.length() > 0) builder.append("\n");
+            builder.append(attachment.getFileUrl());
+        }
+        String legacyBody = builder.toString();
 
-        Log.d("XEP-0221", message.toXML().toString());
+        ReferenceElement reference = ReferencesManager.createMediaReferences(attachments, legacyBody);
+        message.addExtension(reference);
+        message.setBody(body + legacyBody);
         return message;
     }
 
