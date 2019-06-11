@@ -15,6 +15,7 @@ public class ReferencesProvider extends ExtensionElementProvider<ReferenceElemen
         String type = null, beginS = null, endS = null, delS = null;
         List<Forwarded> forwardedMessages = new ArrayList<>();
         List<RefMedia> mediaElements = new ArrayList<>();
+        boolean bold = false, italic = false, underline = false, strike = false;
 
         outerloop: while (true) {
             int eventType = parser.getEventType();
@@ -36,6 +37,18 @@ public class ReferencesProvider extends ExtensionElementProvider<ReferenceElemen
                         RefMedia media = parseMedia(parser);
                         if (media != null) mediaElements.add(media);
                     }
+                    if (ReferenceElement.ELEMENT_BOLD.equals(parser.getName())) {
+                        bold = true;
+                    }
+                    if (ReferenceElement.ELEMENT_ITALIC.equals(parser.getName())) {
+                        italic = true;
+                    }
+                    if (ReferenceElement.ELEMENT_UNDERLINE.equals(parser.getName())) {
+                        underline = true;
+                    }
+                    if (ReferenceElement.ELEMENT_STRIKE.equals(parser.getName())) {
+                        strike = true;
+                    }
                     parser.next();
                     break;
                 case XmlPullParser.END_TAG:
@@ -52,7 +65,8 @@ public class ReferencesProvider extends ExtensionElementProvider<ReferenceElemen
         if (beginS != null && !beginS.isEmpty()) begin = Integer.valueOf(beginS);
         if (endS != null && !endS.isEmpty()) end = Integer.valueOf(endS);
         if (delS != null && !delS.isEmpty()) del = Integer.valueOf(delS);
-        return new ReferenceElement(ReferenceElement.Type.valueOf(type), begin, end, del, forwardedMessages, mediaElements);
+        return new ReferenceElement(ReferenceElement.Type.valueOf(type), begin, end, del, bold,
+                italic, underline, strike, null, forwardedMessages, mediaElements);
     }
 
     private RefMedia parseMedia(XmlPullParser parser) throws Exception {

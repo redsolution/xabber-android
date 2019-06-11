@@ -7,6 +7,8 @@ import android.support.annotation.StyleRes;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.ImageView;
@@ -93,7 +95,7 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
             ivEncrypted.setVisibility(View.GONE);
         }
 
-        messageText.setText(messageItem.getText());
+        messageText.setText(Html.fromHtml(messageItem.getText()));
         if (OTRManager.getInstance().isEncrypted(messageItem.getText())) {
             if (extraData.isShowOriginalOTR())
                 messageText.setVisibility(View.VISIBLE);

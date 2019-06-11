@@ -10,11 +10,21 @@ public class ReferenceElement implements ExtensionElement {
 
     public static final String NAMESPACE = "urn:xmpp:reference:0";
     public static final String ELEMENT = "reference";
+    public static final String ELEMENT_BOLD = "bold";
+    public static final String ELEMENT_ITALIC = "italic";
+    public static final String ELEMENT_UNDERLINE = "underline";
+    public static final String ELEMENT_STRIKE = "strike";
 
     private final Type type;
     private final int begin;
     private final int end;
     private final int del;
+
+    private boolean bold;
+    private boolean italic;
+    private boolean underline;
+    private boolean strike;
+    private String url;
 
     private List<Forwarded> forwarded;
     private List<RefMedia> media;
@@ -24,6 +34,34 @@ public class ReferenceElement implements ExtensionElement {
         this.begin = begin;
         this.end = end;
         this.del = del;
+        this.forwarded = forwarded;
+        this.media = media;
+    }
+
+    public ReferenceElement(Type type, int begin, int end, int del, boolean bold, boolean italic,
+                            boolean underline, boolean strike, String url) {
+        this.type = type;
+        this.begin = begin;
+        this.end = end;
+        this.del = del;
+        this.bold = bold;
+        this.italic = italic;
+        this.underline = underline;
+        this.strike = strike;
+        this.url = url;
+    }
+
+    public ReferenceElement(Type type, int begin, int end, int del, boolean bold, boolean italic,
+                            boolean underline, boolean strike, String url, List<Forwarded> forwarded, List<RefMedia> media) {
+        this.type = type;
+        this.begin = begin;
+        this.end = end;
+        this.del = del;
+        this.bold = bold;
+        this.italic = italic;
+        this.underline = underline;
+        this.strike = strike;
+        this.url = url;
         this.forwarded = forwarded;
         this.media = media;
     }
@@ -74,6 +112,26 @@ public class ReferenceElement implements ExtensionElement {
 
     public int getDel() {
         return del;
+    }
+
+    public boolean isBold() {
+        return bold;
+    }
+
+    public boolean isItalic() {
+        return italic;
+    }
+
+    public boolean isUnderline() {
+        return underline;
+    }
+
+    public boolean isStrike() {
+        return strike;
+    }
+
+    public String getUrl() {
+        return url;
     }
 
     public List<Forwarded> getForwarded() {
