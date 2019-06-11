@@ -109,7 +109,7 @@ public class ReferencesManager {
 
         // chars to string and decode from html
         // then split string into chars
-        chars = stringToChars(Html.fromHtml(charsToString(chars)).toString());
+        chars = stringToChars(Html.fromHtml(charsToString(chars).replace("\n", "<br/>")).toString());
 
         // modify chars with markup references
         for (ReferenceElement reference : references) {
@@ -163,6 +163,9 @@ public class ReferencesManager {
             case markup:
                 chars = markup(begin, end, chars, (Markup) reference);
                 break;
+            case quote:
+                chars = removeInLine(begin, end, chars, (Quote) reference);
+                break;
         }
         return chars;
     }
@@ -170,6 +173,19 @@ public class ReferencesManager {
     private static String[] remove(int begin, int end, String[] source) {
         for (int i = begin; i <= end; i++) {
             source[i] = String.valueOf(Character.MIN_VALUE);
+        }
+        return source;
+    }
+
+    private static String[] removeInLine(int begin, int end, String[] source, Quote reference) {
+        int del = reference.getDel();
+        int removed = 0;
+        for (int i = begin; i <= end; i++) {
+            if (removed < del) {
+                source[i] = String.valueOf(Character.MIN_VALUE);
+                removed++;
+            }
+            if (source[i].equals("\n")) removed = 0;
         }
         return source;
     }

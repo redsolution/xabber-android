@@ -95,7 +95,7 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
             ivEncrypted.setVisibility(View.GONE);
         }
 
-        messageText.setText(Html.fromHtml(messageItem.getText()));
+        messageText.setText(Html.fromHtml(messageItem.getText().replace("\n", "<br/>")));
         if (OTRManager.getInstance().isEncrypted(messageItem.getText())) {
             if (extraData.isShowOriginalOTR())
                 messageText.setVisibility(View.VISIBLE);
