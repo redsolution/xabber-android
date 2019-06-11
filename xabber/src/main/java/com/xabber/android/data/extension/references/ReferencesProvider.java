@@ -12,7 +12,7 @@ public class ReferencesProvider extends ExtensionElementProvider<ReferenceElemen
 
     @Override
     public ReferenceElement parse(XmlPullParser parser, int initialDepth) throws Exception {
-        String type = null, beginS = null, endS = null, delS = null;
+        String type = null, beginS = null, endS = null, delS = null, uri = null, url = null;
         List<Forwarded> forwardedMessages = new ArrayList<>();
         List<RefMedia> mediaElements = new ArrayList<>();
         boolean bold = false, italic = false, underline = false, strike = false;
@@ -23,10 +23,11 @@ public class ReferencesProvider extends ExtensionElementProvider<ReferenceElemen
                 case XmlPullParser.START_TAG:
                     if (ReferenceElement.ELEMENT.equals(parser.getName())
                             && ReferenceElement.NAMESPACE.equals(parser.getNamespace())) {
-                        type = parser.getAttributeValue("", "type");
-                        beginS = parser.getAttributeValue("", "begin");
-                        endS = parser.getAttributeValue("", "end");
-                        delS = parser.getAttributeValue("", "del");
+                        type = parser.getAttributeValue("", ReferenceElement.ATTRIBUTE_TYPE);
+                        beginS = parser.getAttributeValue("", ReferenceElement.ATTRIBUTE_BEGIN);
+                        endS = parser.getAttributeValue("", ReferenceElement.ATTRIBUTE_END);
+                        delS = parser.getAttributeValue("", ReferenceElement.ATTRIBUTE_DEL);
+                        uri = parser.getAttributeValue("", ReferenceElement.ATTRIBUTE_URI);
                     }
                     if (Forwarded.ELEMENT.equals(parser.getName())
                             && Forwarded.NAMESPACE.equals(parser.getNamespace())) {
@@ -49,7 +50,9 @@ public class ReferencesProvider extends ExtensionElementProvider<ReferenceElemen
                     if (ReferenceElement.ELEMENT_STRIKE.equals(parser.getName())) {
                         strike = true;
                     }
-                    parser.next();
+                    if (ReferenceElement.ELEMENT_URL.equals(parser.getName())) {
+                        url = parser.nextText();
+                    } else parser.next();
                     break;
                 case XmlPullParser.END_TAG:
                     if (ReferenceElement.ELEMENT.equals(parser.getName())) {
@@ -65,8 +68,21 @@ public class ReferencesProvider extends ExtensionElementProvider<ReferenceElemen
         if (beginS != null && !beginS.isEmpty()) begin = Integer.valueOf(beginS);
         if (endS != null && !endS.isEmpty()) end = Integer.valueOf(endS);
         if (delS != null && !delS.isEmpty()) del = Integer.valueOf(delS);
-        return new ReferenceElement(ReferenceElement.Type.valueOf(type), begin, end, del, bold,
-                italic, underline, strike, null, forwardedMessages, mediaElements);
+
+        switch (ReferenceElement.Type.valueOf(type)) {
+            case forward:
+                return new Forward(begin, end, forwardedMessages);
+            case data:
+                return new Data(begin, end, mediaElements);
+            case markup:
+                return new Markup(begin, end, bold, italic, underline, strike, url);
+            case quote:
+                return new Quote(begin, end, del);
+            case mention:
+                return new Mention(begin, end, uri);
+            default:
+                return null;
+        }
     }
 
     private RefMedia parseMedia(XmlPullParser parser) throws Exception {

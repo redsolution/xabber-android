@@ -32,14 +32,14 @@ public class ReferencesManager {
 
         List<Forwarded> forwarded = new ArrayList<>();
         for (ExtensionElement element : elements) {
-            if (element instanceof ReferenceElement) {
-                forwarded.addAll(((ReferenceElement) element).getForwarded());
+            if (element instanceof Forward) {
+                forwarded.addAll(((Forward) element).getForwarded());
             }
         }
         return forwarded;
     }
 
-    public static ReferenceElement createMediaReferences(RealmList<Attachment> attachments, String legacyBody) {
+    public static Data createMediaReferences(RealmList<Attachment> attachments, String legacyBody) {
         List<RefMedia> mediaList = new ArrayList<>();
         for (Attachment attachment : attachments) {
             RefFile.Builder builder = RefFile.newBuilder();
@@ -57,10 +57,10 @@ public class ReferencesManager {
         }
 
         char[] chars = TextUtils.htmlEncode(legacyBody).toCharArray();
-        return new ReferenceElement(ReferenceElement.Type.data, 0, chars.length - 1, 0, null, mediaList);
+        return new Data(0, chars.length - 1, mediaList);
     }
 
-    public static ReferenceElement createForwardReference(RealmResults<MessageItem> items, String legacyBody) {
+    public static Forward createForwardReference(RealmResults<MessageItem> items, String legacyBody) {
         List<Forwarded> forwardedList = new ArrayList<>();
         for (MessageItem item : items) {
             try {
@@ -72,8 +72,7 @@ public class ReferencesManager {
         }
 
         char[] chars = TextUtils.htmlEncode(legacyBody).toCharArray();
-        return new ReferenceElement(ReferenceElement.Type.forward, 0, chars.length - 1, 0,
-                forwardedList, null);
+        return new Forward(0, chars.length - 1, forwardedList);
     }
 
     @Nonnull
@@ -83,8 +82,8 @@ public class ReferencesManager {
 
         List<RefMedia> media = new ArrayList<>();
         for (ExtensionElement element : elements) {
-            if (element instanceof ReferenceElement) {
-                media.addAll(((ReferenceElement) element).getMedia());
+            if (element instanceof Data) {
+                media.addAll(((Data) element).getMedia());
             }
         }
         return media;
@@ -104,7 +103,7 @@ public class ReferencesManager {
 
         // modify chars with references except markup
         for (ReferenceElement reference : references) {
-            if (!reference.getType().equals(ReferenceElement.Type.markup))
+            if (!(reference instanceof Markup))
                 chars = modifyBodyWithReferences(chars, reference);
         }
 
@@ -114,7 +113,7 @@ public class ReferencesManager {
 
         // modify chars with markup references
         for (ReferenceElement reference : references) {
-            if (reference.getType().equals(ReferenceElement.Type.markup))
+            if (reference instanceof Markup)
                 chars = modifyBodyWithReferences(chars, reference);
         }
 
@@ -161,11 +160,8 @@ public class ReferencesManager {
             case forward:
                 chars = remove(begin, end, chars);
                 break;
-            case legacy:
-                chars = remove(begin, end, chars);
-                break;
             case markup:
-                chars = markup(begin, end, chars, reference);
+                chars = markup(begin, end, chars, (Markup) reference);
                 break;
         }
         return chars;
@@ -178,7 +174,7 @@ public class ReferencesManager {
         return source;
     }
 
-    private static String[] markup(int begin, int end, String[] source, ReferenceElement reference) {
+    private static String[] markup(int begin, int end, String[] source, Markup reference) {
         StringBuilder builderOpen = new StringBuilder();
         StringBuilder builderClose = new StringBuilder();
         if (reference.isBold()) {

@@ -2,11 +2,8 @@ package com.xabber.android.data.extension.references;
 
 import org.jivesoftware.smack.packet.ExtensionElement;
 import org.jivesoftware.smack.util.XmlStringBuilder;
-import org.jivesoftware.smackx.forward.packet.Forwarded;
 
-import java.util.List;
-
-public class ReferenceElement implements ExtensionElement {
+public abstract class ReferenceElement implements ExtensionElement {
 
     public static final String NAMESPACE = "urn:xmpp:reference:0";
     public static final String ELEMENT = "reference";
@@ -14,56 +11,28 @@ public class ReferenceElement implements ExtensionElement {
     public static final String ELEMENT_ITALIC = "italic";
     public static final String ELEMENT_UNDERLINE = "underline";
     public static final String ELEMENT_STRIKE = "strike";
+    public static final String ELEMENT_URL = "url";
 
-    private final Type type;
-    private final int begin;
-    private final int end;
-    private final int del;
+    public static final String ATTRIBUTE_TYPE = "type";
+    public static final String ATTRIBUTE_BEGIN = "begin";
+    public static final String ATTRIBUTE_END = "end";
+    public static final String ATTRIBUTE_URI = "uri";
+    public static final String ATTRIBUTE_DEL = "del";
 
-    private boolean bold;
-    private boolean italic;
-    private boolean underline;
-    private boolean strike;
-    private String url;
-
-    private List<Forwarded> forwarded;
-    private List<RefMedia> media;
-
-    public ReferenceElement(Type type, int begin, int end, int del, List<Forwarded> forwarded, List<RefMedia> media) {
-        this.type = type;
-        this.begin = begin;
-        this.end = end;
-        this.del = del;
-        this.forwarded = forwarded;
-        this.media = media;
+    public enum Type {
+        data,
+        forward,
+        markup,
+        mention,
+        quote
     }
 
-    public ReferenceElement(Type type, int begin, int end, int del, boolean bold, boolean italic,
-                            boolean underline, boolean strike, String url) {
-        this.type = type;
-        this.begin = begin;
-        this.end = end;
-        this.del = del;
-        this.bold = bold;
-        this.italic = italic;
-        this.underline = underline;
-        this.strike = strike;
-        this.url = url;
-    }
+    protected final int begin;
+    protected final int end;
 
-    public ReferenceElement(Type type, int begin, int end, int del, boolean bold, boolean italic,
-                            boolean underline, boolean strike, String url, List<Forwarded> forwarded, List<RefMedia> media) {
-        this.type = type;
+    public ReferenceElement(int begin, int end) {
         this.begin = begin;
         this.end = end;
-        this.del = del;
-        this.bold = bold;
-        this.italic = italic;
-        this.underline = underline;
-        this.strike = strike;
-        this.url = url;
-        this.forwarded = forwarded;
-        this.media = media;
     }
 
     @Override
@@ -79,28 +48,16 @@ public class ReferenceElement implements ExtensionElement {
     @Override
     public CharSequence toXML() {
         XmlStringBuilder xml = new XmlStringBuilder(this);
-        xml.attribute("type", type);
-        xml.attribute("begin", begin);
-        xml.attribute("end", end);
-        xml.attribute("del", del);
+        xml.attribute(ATTRIBUTE_TYPE, getType());
+        xml.attribute(ATTRIBUTE_BEGIN, begin);
+        xml.attribute(ATTRIBUTE_END, end);
         xml.rightAngleBracket();
-        if (forwarded != null && !forwarded.isEmpty()) {
-            for (Forwarded forward : forwarded) {
-                xml.append(forward.toXML());
-            }
-        }
-        if (media != null && !media.isEmpty()) {
-            for (RefMedia media1 : media) {
-                xml.append(media1.toXML());
-            }
-        }
+        appendToXML(xml);
         xml.closeElement(this);
         return xml;
     }
 
-    public Type getType() {
-        return type;
-    }
+    public void appendToXML(XmlStringBuilder xml) { }
 
     public int getBegin() {
         return begin;
@@ -110,44 +67,5 @@ public class ReferenceElement implements ExtensionElement {
         return end;
     }
 
-    public int getDel() {
-        return del;
-    }
-
-    public boolean isBold() {
-        return bold;
-    }
-
-    public boolean isItalic() {
-        return italic;
-    }
-
-    public boolean isUnderline() {
-        return underline;
-    }
-
-    public boolean isStrike() {
-        return strike;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public List<Forwarded> getForwarded() {
-        return forwarded;
-    }
-
-    public List<RefMedia> getMedia() {
-        return media;
-    }
-
-    public enum Type {
-        data,
-        forward,
-        markup,
-        mention,
-        quote,
-        legacy
-    }
+    public abstract Type getType();
 }
