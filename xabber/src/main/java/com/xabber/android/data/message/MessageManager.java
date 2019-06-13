@@ -18,6 +18,7 @@ import android.net.Uri;
 import android.os.Environment;
 import android.os.Looper;
 import android.support.annotation.Nullable;
+import android.util.Pair;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
@@ -791,12 +792,15 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
             if (forwardComment != null) text = forwardComment;
 
             // modify body with references
-            text = ReferencesManager.modifyBodyWithReferences(message, text).first;
+            Pair<String, String> bodies = ReferencesManager.modifyBodyWithReferences(message, text);
+            text = bodies.first;
+            String markupText = bodies.second;
 
             MessageItem newMessageItem = finalChat.createNewMessageItem(text);
             newMessageItem.setStanzaId(AbstractChat.getStanzaId(message));
             newMessageItem.setSent(true);
             newMessageItem.setForwarded(true);
+            if (markupText != null) newMessageItem.setMarkupText(markupText);
 
             // forwarding
             if (forwardIds != null) newMessageItem.setForwardedIds(forwardIds);

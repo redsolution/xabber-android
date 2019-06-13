@@ -45,6 +45,7 @@ public class MessageItem extends RealmObject {
         public static final String USER = "user";
         public static final String RESOURCE = "resource";
         public static final String TEXT = "text";
+        public static final String MARKUP_TEXT = "markupText";
         public static final String ACTION = "action";
         public static final String INCOMING = "incoming";
         public static final String ENCRYPTED = "encrypted";
@@ -100,6 +101,7 @@ public class MessageItem extends RealmObject {
      * Text representation.
      */
     private String text;
+    private String markupText;
     /**
      * Optional action. If set message represent not an actual message but some
      * action in the chat.
@@ -592,5 +594,13 @@ public class MessageItem extends RealmObject {
 
     public void setFromMUC(boolean fromMUC) {
         this.fromMUC = fromMUC;
+    }
+
+    public String getMarkupText() {
+        return markupText;
+    }
+
+    public void setMarkupText(String markupText) {
+        this.markupText = markupText;
     }
 }

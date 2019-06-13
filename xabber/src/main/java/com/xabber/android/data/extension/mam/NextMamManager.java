@@ -1,5 +1,7 @@
 package com.xabber.android.data.extension.mam;
 
+import android.util.Pair;
+
 import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
@@ -653,7 +655,9 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
         if (forwardComment != null) body = forwardComment;
 
         // modify body with references
-        body = ReferencesManager.modifyBodyWithReferences(message, body).first;
+        Pair<String, String> bodies = ReferencesManager.modifyBodyWithReferences(message, body);
+        body = bodies.first;
+        String markupBody = bodies.second;
 
         boolean incoming = message.getFrom().asBareJid().equals(user.getJid().asBareJid());
 
@@ -670,6 +674,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
         messageItem.setUser(user);
         messageItem.setResource(user.getJid().getResourceOrNull());
         messageItem.setText(body);
+        if (markupBody != null) messageItem.setMarkupText(markupBody);
         messageItem.setTimestamp(timestamp);
         if (messageDelay != null) {
             messageItem.setDelayTimestamp(messageDelay.getStamp().getTime());
