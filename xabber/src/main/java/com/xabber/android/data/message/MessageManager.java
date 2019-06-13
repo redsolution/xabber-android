@@ -791,7 +791,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
             if (forwardComment != null) text = forwardComment;
 
             // modify body with references
-            text = ReferencesManager.modifyBodyWithReferences(message, text);
+            text = ReferencesManager.modifyBodyWithReferences(message, text).first;
 
             MessageItem newMessageItem = finalChat.createNewMessageItem(text);
             newMessageItem.setStanzaId(AbstractChat.getStanzaId(message));

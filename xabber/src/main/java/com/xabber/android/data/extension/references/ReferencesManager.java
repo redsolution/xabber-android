@@ -2,6 +2,7 @@ package com.xabber.android.data.extension.references;
 
 import android.text.Html;
 import android.text.TextUtils;
+import android.util.Pair;
 
 import com.xabber.android.data.database.messagerealm.Attachment;
 import com.xabber.android.data.database.messagerealm.MessageItem;
@@ -89,14 +90,14 @@ public class ReferencesManager {
         return media;
     }
 
-    public static String modifyBodyWithReferences(Message message, String body) {
-        if (body == null || body.isEmpty() || body.trim().isEmpty()) return body;
+    public static Pair<String, String> modifyBodyWithReferences(Message message, String body) {
+        if (body == null || body.isEmpty() || body.trim().isEmpty()) return new Pair<>(body, null);
 
         List<ExtensionElement> elements = message.getExtensions(ReferenceElement.ELEMENT, ReferenceElement.NAMESPACE);
-        if (elements == null || elements.size() == 0) return body;
+        if (elements == null || elements.size() == 0) return new Pair<>(body, null);
 
         List<ReferenceElement> references = getReferences(elements);
-        if (references.isEmpty()) return body;
+        if (references.isEmpty()) return new Pair<>(body, null);
 
         // encode HTML and split into chars
         String[] chars = stringToChars(TextUtils.htmlEncode(body));
@@ -108,18 +109,21 @@ public class ReferencesManager {
         }
 
         // chars to string and decode from html
-        // then split string into chars
-        chars = stringToChars(Html.fromHtml(charsToString(chars).replace("\n", "<br/>")).toString());
+        String regularBody = Html.fromHtml(charsToString(chars).replace("\n", "<br/>")).toString();
+        String markupBody = null;
 
         // modify chars with markup references
         for (ReferenceElement reference : references) {
             if (reference instanceof Markup)
                 chars = modifyBodyWithReferences(chars, reference);
         }
+        markupBody = charsToString(chars);
+        if (regularBody.equals(markupBody)) markupBody = null;
 
-        // chars to string
-        return charsToString(chars);
+        return new Pair<>(regularBody, markupBody);
     }
+
+
 
     private static List<ReferenceElement> getReferences(List<ExtensionElement> elements) {
         List<ReferenceElement> references = new ArrayList<>();

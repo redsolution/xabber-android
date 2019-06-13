@@ -653,7 +653,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
         if (forwardComment != null) body = forwardComment;
 
         // modify body with references
-        body = ReferencesManager.modifyBodyWithReferences(message, body);
+        body = ReferencesManager.modifyBodyWithReferences(message, body).first;
 
         boolean incoming = message.getFrom().asBareJid().equals(user.getJid().asBareJid());
 

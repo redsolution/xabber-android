@@ -229,7 +229,7 @@ public class RegularChat extends AbstractChat {
                 return true;
 
             // modify body with references
-            text = ReferencesManager.modifyBodyWithReferences(message, text);
+            text = ReferencesManager.modifyBodyWithReferences(message, text).first;
 
             // create message with file-attachments
             if (attachments.size() > 0)
@@ -280,7 +280,7 @@ public class RegularChat extends AbstractChat {
         if (forwardComment != null && !forwardComment.isEmpty()) text = forwardComment;
 
         // modify body with references
-        text = ReferencesManager.modifyBodyWithReferences(message, text);
+        text = ReferencesManager.modifyBodyWithReferences(message, text).first;
 
         // create message with file-attachments
         if (attachments.size() > 0)

@@ -275,7 +275,7 @@ public class RoomChat extends AbstractChat {
                 if (forwardComment != null) text = forwardComment;
 
                 // modify body with references
-                text = ReferencesManager.modifyBodyWithReferences(message, text);
+                text = ReferencesManager.modifyBodyWithReferences(message, text).first;
 
                 String originalFrom = stanza.getFrom().toString();
 
@@ -394,7 +394,7 @@ public class RoomChat extends AbstractChat {
         if (forwardComment != null) text = forwardComment;
 
         // modify body with references
-        text = ReferencesManager.modifyBodyWithReferences(message, text);
+        text = ReferencesManager.modifyBodyWithReferences(message, text).first;
 
         // create message with file-attachments
         if (attachments.size() > 0)
