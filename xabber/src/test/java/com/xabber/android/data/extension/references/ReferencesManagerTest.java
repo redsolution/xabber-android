@@ -1,5 +1,7 @@
 package com.xabber.android.data.extension.references;
 
+import android.util.Pair;
+
 import com.xabber.android.data.TestApplication;
 
 import org.jivesoftware.smack.packet.Message;
@@ -10,13 +12,14 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 @RunWith(RobolectricTestRunner.class)
 @Config(application = TestApplication.class)
 public class ReferencesManagerTest {
 
-    private String body1, body2, body3, body4;
-    private Message message1, message2, message3, message4;
+    private String body1, body2, body3, body4, body5, body6;
+    private Message message1, message2, message3, message4, message5, message6;
 
     @Before
     public void setUp() throws Exception {
@@ -50,22 +53,42 @@ public class ReferencesManagerTest {
 
         message4 = new Message("test@jabber.com", body4);
         message4.addExtension(new Quote(0, 37, 5));
+
+        // -------
+
+        body5 = "Тест > форматирования текста. <b>";
+
+        message5 = new Message("test@jabber.com", body5);
+        message5.addExtension(new Markup(10, 23, true, true, false, false, null));
+
+        // -------
+
+        body6 = ">> 😄😃😀 привет";
+
+        message6 = new Message("test@jabber.com", body6);
+        message6.addExtension(new Markup(13, 18, true, false, false, false, null));
     }
 
     @Test
     public void modifyBodyWithReferences1() {
-        assertEquals("Тест <b><i>форматирования</i></b> <i>текста</i>. <u>Использование</u> <strike>нескольких</strike> стилей.",
-                ReferencesManager.modifyBodyWithReferences(message3, body3));
+        Pair<String, String> result = ReferencesManager.modifyBodyWithReferences(message1, body1);
+        assertEquals("два", result.first);
+        assertNull(result.second);
     }
 
     @Test
     public void modifyBodyWithReferences2() {
-        assertEquals("два", ReferencesManager.modifyBodyWithReferences(message1, body1));
+        Pair<String, String> result = ReferencesManager.modifyBodyWithReferences(message2, body2);
+        assertEquals("hello", result.first);
+        assertNull(result.second);
     }
 
     @Test
     public void modifyBodyWithReferences3() {
-        assertEquals("hello", ReferencesManager.modifyBodyWithReferences(message2, body2));
+        Pair<String, String> result = ReferencesManager.modifyBodyWithReferences(message3, body3);
+        assertEquals("Тест форматирования текста. Использование нескольких стилей.", result.first);
+        assertEquals("Тест <b><i>форматирования</i></b> <i>текста</i>. " +
+                "<u>Использование</u> <strike>нескольких</strike> стилей.", result.second);
     }
 
     @Test
@@ -73,6 +96,22 @@ public class ReferencesManagerTest {
         String expected = "This is a quote\n" +
                           "of two lines\n" +
                           "Hello world!";
-        assertEquals(expected, ReferencesManager.modifyBodyWithReferences(message4, body4));
+        Pair<String, String> result = ReferencesManager.modifyBodyWithReferences(message4, body4);
+        assertEquals(expected, result.first);
+        assertNull(result.second);
+    }
+
+    @Test
+    public void modifyBodyWithReferences5() {
+        Pair<String, String> result = ReferencesManager.modifyBodyWithReferences(message5, body5);
+        assertEquals("Тест > форматирования текста. <b>", result.first);
+        assertEquals("Тест &gt; <b><i>форматирования</i></b> текста. &lt;b&gt;", result.second);
+    }
+
+    @Test
+    public void modifyBodyWithReferences6() {
+        Pair<String, String> result = ReferencesManager.modifyBodyWithReferences(message6, body6);
+        assertEquals(">> 😄😃😀 привет", result.first);
+        assertEquals("&gt;&gt; 😄😃😀 <b>привет</b>", result.second);
     }
 }

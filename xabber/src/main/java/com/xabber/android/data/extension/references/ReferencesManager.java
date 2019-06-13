@@ -143,10 +143,13 @@ public class ReferencesManager {
     }
 
     private static String[] stringToChars(String source) {
-        char[] chars = source.toCharArray();
-        String[] result = new String[chars.length];
-        for (int i = 0; i < chars.length; i++) {
-            result[i] = String.valueOf(chars[i]);
+        String[] result = new String[source.codePointCount(0, source.length())];
+        int i = 0;
+        for (int offset = 0; offset < source.length(); ) {
+            int codepoint = source.codePointAt(offset);
+            result[i] = String.valueOf(Character.toChars(codepoint));
+            offset += Character.charCount(codepoint);
+            i++;
         }
         return result;
     }
