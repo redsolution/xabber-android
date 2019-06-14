@@ -195,4 +195,5 @@ apply plugin: 'com.google.gms.google-services'
 
 configurations {
     all*.exclude group: 'xpp3', module: 'xpp3'
+    all*.exclude group: 'com.google.guava', module:'guava-jdk5'
 }
