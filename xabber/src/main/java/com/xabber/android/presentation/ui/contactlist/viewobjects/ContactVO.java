@@ -140,7 +140,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
                 .getAccountMainColor(contact.getAccount());
         accountColorIndicatorBack = ColorManager.getInstance().getAccountPainter()
                 .getAccountIndicatorBackColor(contact.getAccount());
-        avatar = contact.getAvatarForContactList();
+        avatar = contact.getAvatar();
 
 
         String name = contact.getName();

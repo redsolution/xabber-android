@@ -150,7 +150,7 @@ public class IncomingMessageVH  extends FileMessageVH {
         avatar.setVisibility(View.VISIBLE);
         avatarBackground.setVisibility(View.VISIBLE);
 
-        if (!isMUC) avatar.setImageDrawable(AvatarManager.getInstance().getUserAvatar(user, userName));
+        if (!isMUC) avatar.setImageDrawable(AvatarManager.getInstance().getUserAvatarForContactList(user, userName));
         else {
             if ((MUCManager.getInstance()
                     .getNickname(account, user.getJid().asEntityBareJidIfPossible())
@@ -158,7 +158,7 @@ public class IncomingMessageVH  extends FileMessageVH {
                 avatar.setImageDrawable(AvatarManager.getInstance().getAccountAvatar(account));
             } else {
                 if (resource.equals(Resourcepart.EMPTY)) {
-                    avatar.setImageDrawable(AvatarManager.getInstance().getRoomAvatar(user));
+                    avatar.setImageDrawable(AvatarManager.getInstance().getRoomAvatarForContactList(user));
                 } else {
 
                     String nick = resource.toString();

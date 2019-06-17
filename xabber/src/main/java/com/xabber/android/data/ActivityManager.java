@@ -214,7 +214,6 @@ public class ActivityManager implements OnUnloadListener {
             }
             AccountManager.getInstance().onPreInitialize();
             RosterManager.getInstance().onPreInitialize();
-            AvatarManager.getInstance().onPreInitialize();
             Application.getInstance().runInBackground(new Runnable() {
                 @Override
                 public void run() {

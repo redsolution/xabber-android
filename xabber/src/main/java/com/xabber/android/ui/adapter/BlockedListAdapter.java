@@ -57,7 +57,7 @@ public class BlockedListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         final AbstractContact rosterContact = RosterManager.getInstance().getBestContact(account, contact);
 
         if (viewHolder.avatar != null) {
-            viewHolder.avatar.setImageDrawable(rosterContact.getAvatarForContactList());
+            viewHolder.avatar.setImageDrawable(rosterContact.getAvatar());
         }
 
         viewHolder.name.setText(rosterContact.getName());
