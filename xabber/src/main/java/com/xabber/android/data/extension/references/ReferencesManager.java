@@ -159,6 +159,7 @@ public class ReferencesManager {
         if (begin < 0) begin = 0;
         int end = reference.getEnd();
         if (end >= chars.length) end = chars.length - 1;
+        if (begin > end) return chars;
 
         switch (reference.getType()) {
             case data:
