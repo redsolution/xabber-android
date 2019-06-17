@@ -26,7 +26,7 @@ public class ReferencesProviderTest {
     private ReferencesProvider provider;
     private XmlPullParserFactory factory;
     private String stringForward, stringMedia, stringMarkup1,
-            stringMarkup2, stringMention, stringQuote;
+            stringMarkup2, stringMention, stringQuote, stringNull, stringUnknown;
 
     @Before
     public void setUp() throws Exception {
@@ -62,6 +62,9 @@ public class ReferencesProviderTest {
                         "uri='xmpp:juliet@capulet.lit'/>";
 
         stringQuote = "<reference xmlns='urn:xmpp:reference:0' begin='0' end='31' del='5' type='quote'/>";
+
+        stringUnknown = "<reference xmlns='urn:xmpp:reference:0' end='17' begin='0' type='unknown'></reference>";
+        stringNull = "<reference xmlns='urn:xmpp:reference:0' end='17' begin='0'></reference>";
 
     }
 
@@ -155,6 +158,15 @@ public class ReferencesProviderTest {
         assertEquals(0, element.getBegin());
         assertEquals(31, element.getEnd());
         assertEquals(5, element.getDel());
+    }
+
+    @Test
+    public void parse7() {
+        ReferenceElement element = parseString(stringUnknown);
+        assertNull(element);
+
+        ReferenceElement element1 = parseString(stringNull);
+        assertNull(element1);
     }
 
     private ReferenceElement parseString(String source) {

@@ -1,5 +1,7 @@
 package com.xabber.android.data.extension.references;
 
+import com.xabber.android.data.log.LogManager;
+
 import org.jivesoftware.smack.provider.ExtensionElementProvider;
 import org.jivesoftware.smackx.forward.packet.Forwarded;
 import org.jivesoftware.smackx.forward.provider.ForwardedProvider;
@@ -69,19 +71,25 @@ public class ReferencesProvider extends ExtensionElementProvider<ReferenceElemen
         if (endS != null && !endS.isEmpty()) end = Integer.valueOf(endS);
         if (delS != null && !delS.isEmpty()) del = Integer.valueOf(delS);
 
-        switch (ReferenceElement.Type.valueOf(type)) {
-            case forward:
-                return new Forward(begin, end, forwardedMessages);
-            case data:
-                return new Data(begin, end, mediaElements);
-            case markup:
-                return new Markup(begin, end, bold, italic, underline, strike, url);
-            case quote:
-                return new Quote(begin, end, del);
-            case mention:
-                return new Mention(begin, end, uri);
-            default:
-                return null;
+        try {
+            ReferenceElement.Type refType = ReferenceElement.Type.valueOf(type);
+            switch (refType) {
+                case forward:
+                    return new Forward(begin, end, forwardedMessages);
+                case data:
+                    return new Data(begin, end, mediaElements);
+                case markup:
+                    return new Markup(begin, end, bold, italic, underline, strike, url);
+                case quote:
+                    return new Quote(begin, end, del);
+                case mention:
+                    return new Mention(begin, end, uri);
+                default:
+                    return null;
+            }
+        } catch (Exception e) {
+            LogManager.d(ReferencesProvider.class, e.toString());
+            return null;
         }
     }
 
