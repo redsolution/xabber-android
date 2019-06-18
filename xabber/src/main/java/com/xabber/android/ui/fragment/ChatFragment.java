@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
@@ -658,7 +659,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     public void onEvent(NewIncomingMessageEvent event) {
         if (event.getAccount().equals(account) && event.getUser().equals(user)) {
             listener.playIncomingAnimation();
-            //playIncomingSound();
+            playIncomingSound();
         }
     }
 
@@ -1189,16 +1190,27 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     }
 
     public void playIncomingSound() {
-        if (SettingsManager.eventsInChatSounds()) {
+        AbstractChat chat = getChat();
+        boolean event = false;
+        Uri soundUri = null;
+        if (chat instanceof RoomChat) {
+            event = SettingsManager.eventsOnMuc();
+            soundUri = SettingsManager.eventsSoundMuc();
+        } else {
+            event = SettingsManager.eventsOnChat();
+            soundUri = SettingsManager.eventsSound();
+        }
+
+        if (event) {
             final MediaPlayer mp;
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
                 AudioAttributes attr = new AudioAttributes.Builder()
                         .setContentType(AudioAttributes.CONTENT_TYPE_UNKNOWN)
                         .setUsage(AudioAttributes.USAGE_NOTIFICATION_EVENT).build();
-                mp = MediaPlayer.create(getActivity(), SettingsManager.eventsSound(),
+                mp = MediaPlayer.create(getActivity(), soundUri,
                         null, attr, AudioManager.AUDIO_SESSION_ID_GENERATE);
             } else {
-                mp = MediaPlayer.create(getActivity(), SettingsManager.eventsSound());
+                mp = MediaPlayer.create(getActivity(), soundUri);
                 mp.setAudioStreamType(AudioManager.STREAM_NOTIFICATION);
             }
 
