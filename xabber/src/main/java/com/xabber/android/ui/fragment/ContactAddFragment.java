@@ -147,7 +147,8 @@ public class ContactAddFragment extends GroupEditorFragment
             onNothingSelected(parent);
             setAccount(null);
         } else {
-            listenerActivity.onAccountSelected(selectedAccount);
+            if (listenerActivity != null)
+                listenerActivity.onAccountSelected(selectedAccount);
 
             if (!selectedAccount.equals(getAccount())) {
                 setAccount(selectedAccount);
@@ -201,7 +202,8 @@ public class ContactAddFragment extends GroupEditorFragment
             return;
         }
 
-        listenerActivity.showProgress(true);
+        if (listenerActivity != null)
+            listenerActivity.showProgress(true);
         final String name = nameView.getText().toString();
         final ArrayList<String> groups = getSelected();
 
@@ -237,7 +239,8 @@ public class ContactAddFragment extends GroupEditorFragment
         Application.getInstance().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                listenerActivity.showProgress(false);
+                if (listenerActivity != null)
+                    listenerActivity.showProgress(false);
                 if (success) getActivity().finish();
             }
         });
