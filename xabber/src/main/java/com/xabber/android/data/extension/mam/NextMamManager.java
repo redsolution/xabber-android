@@ -103,7 +103,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
         Realm realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
         accountItem.setStartHistoryTimestamp(getLastMessageTimestamp(accountItem, realm));
         if (accountItem.getStartHistoryTimestamp() == 0) {
-            initializeStartTimestamp(accountItem);
+            initializeStartTimestamp(realm, accountItem);
             loadLastMessagesAsync(accountItem);
         } else {
             if (isNeedMigration(accountItem, realm)) {
@@ -224,7 +224,8 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
                             (MamElements.MamResultExtension) packetExtension;
                     String resultID = resultExtension.getQueryId();
                     if (waitingRequests.contains(resultID)) {
-                        parseAndSaveMessageFromMamResult(connection.getAccount(), resultExtension);
+                        Realm realm = MessageDatabaseManager.getInstance().getRealmUiThread();
+                        parseAndSaveMessageFromMamResult(realm, connection.getAccount(), resultExtension.getForwarded());
                         waitingRequests.remove(resultID);
                     }
                 }
@@ -414,13 +415,14 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
 
     /** Request most recent message from all history and save it timestamp to startHistoryTimestamp
      *  If message is null save current time to startHistoryTimestamp */
-    private void initializeStartTimestamp(@Nonnull AccountItem accountItem) {
+    private void initializeStartTimestamp(Realm realm, @Nonnull AccountItem accountItem) {
         long startHistoryTimestamp = System.currentTimeMillis();
 
         MamManager.MamQueryResult queryResult = requestLastMessage(accountItem, null);
         if (queryResult != null && !queryResult.forwardedMessages.isEmpty()) {
             Forwarded forwarded = queryResult.forwardedMessages.get(0);
             startHistoryTimestamp = forwarded.getDelayInformation().getStamp().getTime();
+            parseAndSaveMessageFromMamResult(realm, accountItem.getAccount(), forwarded);
         }
         accountItem.setStartHistoryTimestamp(startHistoryTimestamp);
     }
@@ -568,8 +570,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
 
     /** PARSING */
 
-    private void parseAndSaveMessageFromMamResult(AccountJid account, MamElements.MamResultExtension resultExtension) {
-        Forwarded forwarded = resultExtension.getForwarded();
+    private void parseAndSaveMessageFromMamResult(Realm realm, AccountJid account,Forwarded forwarded) {
         Stanza stanza = forwarded.getForwardedStanza();
         AccountItem accountItem = AccountManager.getInstance().getAccount(account);
         Jid user = stanza.getFrom().asBareJid();
@@ -580,7 +581,6 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
             AbstractChat chat = MessageManager.getInstance().getOrCreateChat(account, UserJid.from(user));
             MessageItem messageItem = parseMessage(accountItem, account, chat.getUser(), forwarded, null);
             if (messageItem != null) {
-                Realm realm = MessageDatabaseManager.getInstance().getRealmUiThread();
                 saveOrUpdateMessages(realm, Collections.singletonList(messageItem), true);
                 updateLastMessageId(chat, realm);
             }
