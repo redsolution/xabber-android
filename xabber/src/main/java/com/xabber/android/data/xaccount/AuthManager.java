@@ -348,7 +348,7 @@ public class AuthManager {
             case AuthManager.PROVIDER_FACEBOOK:
                 return "Facebook";
             default:
-                return "Google+";
+                return "Google";
         }
     }
 
