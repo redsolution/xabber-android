@@ -762,6 +762,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     private void sendMessage() {
         String text = inputView.getText().toString().trim();
         clearInputText();
+        scrollDown();
 
         if (forwardIds != null && !forwardIds.isEmpty()) {
             sendForwardMessage(forwardIds, text);
@@ -806,6 +807,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     }
 
     private void scrollDown() {
+
         realmRecyclerView.scrollToPosition(chatMessageAdapter.getItemCount() - 1);
     }
 
