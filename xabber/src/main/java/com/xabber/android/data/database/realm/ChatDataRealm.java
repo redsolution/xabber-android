@@ -23,6 +23,7 @@ public class ChatDataRealm extends RealmObject {
     private boolean archived;
     private NotificationStateRealm notificationState;
     private int lastPosition;
+    private boolean historyRequestedAtStart;
 
     public ChatDataRealm(String accountJid, String userJid) {
         this.id = accountJid + "-" + userJid;
@@ -88,5 +89,13 @@ public class ChatDataRealm extends RealmObject {
 
     public void setLastPosition(int lastPosition) {
         this.lastPosition = lastPosition;
+    }
+
+    public boolean isHistoryRequestedAtStart() {
+        return historyRequestedAtStart;
+    }
+
+    public void setHistoryRequestedAtStart(boolean historyRequestedAtStart) {
+        this.historyRequestedAtStart = historyRequestedAtStart;
     }
 }

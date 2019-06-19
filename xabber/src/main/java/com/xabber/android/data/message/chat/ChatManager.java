@@ -511,6 +511,7 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
 
                         chatRealm.setLastPosition(chat.getLastPosition());
                         chatRealm.setArchived(chat.isArchived());
+                        chatRealm.setHistoryRequestedAtStart(chat.isHistoryRequestedAtStart());
 
                         NotificationStateRealm notificationStateRealm = chatRealm.getNotificationState();
                         if (notificationStateRealm == null)
@@ -557,7 +558,8 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
                     realmChat.getUserJid(),
                     realmChat.isArchived(),
                     notificationState,
-                    realmChat.getLastPosition());
+                    realmChat.getLastPosition(),
+                    realmChat.isHistoryRequestedAtStart());
         }
 
         realm.close();

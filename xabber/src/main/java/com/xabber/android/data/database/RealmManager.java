@@ -36,7 +36,7 @@ import io.realm.annotations.RealmModule;
 
 public class RealmManager {
     private static final String REALM_DATABASE_NAME = "realm_database.realm";
-    private static final int REALM_DATABASE_VERSION = 25;
+    private static final int REALM_DATABASE_VERSION = 26;
     private static final String LOG_TAG = RealmManager.class.getSimpleName();
     private final RealmConfiguration realmConfiguration;
 
@@ -341,6 +341,13 @@ public class RealmManager {
                                     .addField(UploadServer.Fields.ID, String.class, FieldAttribute.PRIMARY_KEY, FieldAttribute.REQUIRED)
                                     .addField(PushLogRecord.Fields.TIME, long.class)
                                     .addField(PushLogRecord.Fields.MESSAGE, String.class);
+
+                            oldVersion++;
+                        }
+
+                        if (oldVersion == 25) {
+                            schema.get(ChatDataRealm.class.getSimpleName())
+                                    .addField("historyRequestedAtStart", boolean.class);
 
                             oldVersion++;
                         }

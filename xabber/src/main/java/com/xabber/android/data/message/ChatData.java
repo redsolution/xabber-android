@@ -12,15 +12,18 @@ public class ChatData {
     private boolean archived;
     private NotificationState notificationState;
     private int lastPosition;
+    private boolean historyRequestedAtStart;
 
     public ChatData(String subject, String accountJid, String userJid,
-                    boolean archived, NotificationState notificationState, int lastPosition) {
+                    boolean archived, NotificationState notificationState, int lastPosition,
+                    boolean historyRequestedAtStart) {
         this.subject = subject;
         this.accountJid = accountJid;
         this.userJid = userJid;
         this.archived = archived;
         this.notificationState = notificationState;
         this.lastPosition = lastPosition;
+        this.historyRequestedAtStart = historyRequestedAtStart;
     }
 
     public String getSubject() {
@@ -69,5 +72,9 @@ public class ChatData {
 
     public void setLastPosition(int lastPosition) {
         this.lastPosition = lastPosition;
+    }
+
+    public boolean isHistoryRequestedAtStart() {
+        return historyRequestedAtStart;
     }
 }

@@ -211,6 +211,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
             chat.setLastPosition(chatData.getLastPosition());
             chat.setArchived(chatData.isArchived(), false);
             chat.setNotificationState(chatData.getNotificationState(), false);
+            if (chatData.isHistoryRequestedAtStart()) chat.setHistoryRequestedAtStart(false);
         }
         addChat(chat);
         return chat;
@@ -223,6 +224,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
             chat.setLastPosition(chatData.getLastPosition());
             chat.setArchived(chatData.isArchived(), false);
             chat.setNotificationState(chatData.getNotificationState(), false);
+            if (chatData.isHistoryRequestedAtStart()) chat.setHistoryRequestedAtStart(false);
         }
         addChat(chat);
         return chat;
