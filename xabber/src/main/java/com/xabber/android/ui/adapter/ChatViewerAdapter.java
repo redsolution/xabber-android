@@ -61,7 +61,10 @@ public class ChatViewerAdapter extends FragmentStatePagerAdapter {
     }
 
     private void setChat(@NonNull AccountJid accountJid, @NonNull UserJid userJid) {
-        itemCount = 3;
+        // Crowdfunding chat have only 2 page, other chat types have 3 page
+        if (CrowdfundingChat.USER.equals(userJid.getBareJid().toString()))
+            itemCount = 2;
+        else itemCount = 3;
         this.accountJid = accountJid;
         this.userJid = userJid;
     }
