@@ -168,9 +168,9 @@ public class ContactAddFragment extends GroupEditorFragment
 
     @Override
     public void addContact() {
-        if (getAccount() == null) {
-            Toast.makeText(getActivity(), getString(R.string.EMPTY_ACCOUNT),
-                    Toast.LENGTH_LONG).show();
+        final AccountJid account = (AccountJid) accountView.getSelectedItem();
+        if (account == null || getAccount() == null) {
+            Toast.makeText(getActivity(), getString(R.string.EMPTY_ACCOUNT), Toast.LENGTH_LONG).show();
             return;
         }
 
@@ -178,8 +178,7 @@ public class ContactAddFragment extends GroupEditorFragment
         contactString = contactString.replace(" ", "");
 
         if (TextUtils.isEmpty(contactString)) {
-            Toast.makeText(getActivity(), getString(R.string.EMPTY_USER_NAME),
-                    Toast.LENGTH_LONG).show();
+            userView.setError(getString(R.string.EMPTY_USER_NAME));
             return ;
         }
 
@@ -189,16 +188,7 @@ public class ContactAddFragment extends GroupEditorFragment
             user = UserJid.from(entityFullJid);
         } catch (XmppStringprepException | UserJid.UserJidCreateException  e) {
             e.printStackTrace();
-            Toast.makeText(getActivity(), getString(R.string.INCORRECT_USER_NAME), Toast.LENGTH_LONG).show();
-            return;
-        }
-
-        LogManager.i(this, "user: " + user);
-
-        final AccountJid account = (AccountJid) accountView.getSelectedItem();
-        if (account == null) {
-            Toast.makeText(getActivity(), getString(R.string.EMPTY_ACCOUNT),
-                    Toast.LENGTH_LONG).show();
+            userView.setError(getString(R.string.INCORRECT_USER_NAME));
             return;
         }
 

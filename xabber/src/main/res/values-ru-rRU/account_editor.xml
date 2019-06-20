@@ -42,7 +42,7 @@
     <string name="account_tls_require_summary">Требовать TLS шифрование при подключении к серверу</string>
     <string name="account_enable_tls">Включить протокол шифрования TLS</string>
     <string name="account_use_tor">Подключаться через анонимную сеть TOR (необходим Orbot proxy)</string>
-    <string name="INCORRECT_USER_NAME">Неправильное имя пользователя. Просмотрите подсказку внизу экрана</string>
+    <string name="INCORRECT_USER_NAME">Неправильное имя пользователя</string>
     <string name="orbot_required_message">Для использования TOR необходимо установить приложение Orbot и активировать в нём передачу данных. Вы хотите установить его из Google Play?</string>
     <string name="orbot_required_title">Установить Orbot?</string>
     <string name="install_orbot">Установить Orbot</string>
