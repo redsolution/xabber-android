@@ -6,7 +6,7 @@ buildscript {
         maven { url 'https://maven.fabric.io/public' }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.4.0'
+        classpath 'com.android.tools.build:gradle:3.4.1'
         classpath "io.realm:realm-gradle-plugin:3.1.1"
         classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
         classpath 'com.frogermcs.androiddevmetrics:androiddevmetrics-plugin:0.4'
