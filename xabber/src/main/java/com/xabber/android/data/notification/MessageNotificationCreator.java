@@ -12,6 +12,7 @@ import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.Person;
 import android.support.v4.app.RemoteInput;
+import android.support.v4.graphics.drawable.IconCompat;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
@@ -184,19 +185,22 @@ public class MessageNotificationCreator {
     }
 
     private NotificationCompat.Style createMessageStyle(MessageNotificationManager.Chat chat, boolean showText) {
-        NotificationCompat.Style messageStyle = new NotificationCompat.MessagingStyle(
+        NotificationCompat.MessagingStyle messageStyle = new NotificationCompat.MessagingStyle(
                 new Person.Builder().setName(context.getString(R.string.sender_is_you)).build());
         for (MessageNotificationManager.Message message : chat.getMessages()) {
             Person person = null;
-            if (message.getAuthor() != null && message.getAuthor().length() > 0)
-                person = new Person.Builder().setName(message.getAuthor()).build();
-            ((NotificationCompat.MessagingStyle) messageStyle).addMessage(
-                    new NotificationCompat.MessagingStyle.Message(
+            if (message.getAuthor() != null && message.getAuthor().length() > 0) {
+                person = new Person.Builder()
+                        .setName(message.getAuthor())
+                        .setIcon(IconCompat.createWithBitmap(getLargeIcon(chat)))
+                        .build();
+            }
+            messageStyle.addMessage(new NotificationCompat.MessagingStyle.Message(
                             showText ? message.getMessageText() : messageHidden,
                             message.getTimestamp(), person));
         }
-        ((NotificationCompat.MessagingStyle) messageStyle).setConversationTitle(chat.getChatTitle());
-        ((NotificationCompat.MessagingStyle) messageStyle).setGroupConversation(chat.isGroupChat());
+        messageStyle.setConversationTitle(chat.getChatTitle());
+        messageStyle.setGroupConversation(chat.isGroupChat());
         return messageStyle;
     }
 

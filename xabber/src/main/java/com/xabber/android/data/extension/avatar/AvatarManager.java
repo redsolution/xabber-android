@@ -18,12 +18,10 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
-import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -179,23 +177,27 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
     }
 
     public static Bitmap getCircleBitmap(Bitmap bitmap) {
-        final Bitmap output = Bitmap.createBitmap(bitmap.getWidth(),
-                bitmap.getHeight(), Bitmap.Config.ARGB_8888);
-        final Canvas canvas = new Canvas(output);
+        if (bitmap.getWidth() != bitmap.getHeight()) {
+            int min = Math.min(bitmap.getWidth(), bitmap.getHeight());
+            int max = Math.max(bitmap.getWidth(), bitmap.getHeight());
+            int x = bitmap.getWidth() > min ? ((max - min) / 2) : 0;
+            int y = bitmap.getHeight() > min ? ((max - min) / 2) : 0;
+            bitmap = Bitmap.createBitmap(bitmap, x, y, min, min);
+        }
+        final int size = bitmap.getWidth();
+        final Bitmap output = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
 
-        final int color = Color.RED;
+        final Canvas canvas = new Canvas(output);
         final Paint paint = new Paint();
-        final Rect rect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
-        final RectF rectF = new RectF(rect);
+        final Rect rect = new Rect(0, 0, size, size);
+        final float r = size / 2;
 
         paint.setAntiAlias(true);
         canvas.drawARGB(0, 0, 0, 0);
-        paint.setColor(color);
-        canvas.drawOval(rectF, paint);
-
+        paint.setColor(0xff424242);
+        canvas.drawCircle(r, r, r, paint);
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
         canvas.drawBitmap(bitmap, rect, rect, paint);
-
         return output;
     }
 
@@ -387,17 +389,12 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
 
     /** Gets bitmap with avatar for regular user. */
     public Bitmap getUserBitmap(UserJid user, String name) {
-        Bitmap value = getBitmap(user.getJid());
-        if (value != null) {
-            return getCircleBitmap(value);
-        } else {
-            return drawableToBitmap(generateDefaultAvatar(user.getBareJid().toString(), name));
-        }
+        return getCircleBitmap(drawableToBitmap(getUserAvatarForContactList(user, name)));
     }
 
     /** Gets bitmap with avatar for room. */
     public Bitmap getRoomBitmap(UserJid user) {
-        return drawableToBitmap(getRoomAvatar(user));
+        return getCircleBitmap(drawableToBitmap(getRoomAvatarForContactList(user)));
     }
 
     /** Generate text-based avatar for regular user. */
