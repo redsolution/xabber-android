@@ -43,6 +43,7 @@ public class BackpressureMessageSaver {
     private void createSubject() {
         subject = PublishSubject.create();
         subject.buffer(500, TimeUnit.MILLISECONDS)
+            .onBackpressureBuffer(50)
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(new Action1<List<MessageItem>>() {
                 @Override
