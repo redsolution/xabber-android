@@ -40,7 +40,7 @@ public class ReferencesManager {
         return forwarded;
     }
 
-    public static Data createMediaReferences(RealmList<Attachment> attachments, String legacyBody) {
+    public static Media createMediaReferences(RealmList<Attachment> attachments, String legacyBody) {
         List<RefMedia> mediaList = new ArrayList<>();
         for (Attachment attachment : attachments) {
             RefFile.Builder builder = RefFile.newBuilder();
@@ -58,7 +58,7 @@ public class ReferencesManager {
         }
 
         char[] chars = TextUtils.htmlEncode(legacyBody).toCharArray();
-        return new Data(0, chars.length - 1, mediaList);
+        return new Media(0, chars.length - 1, mediaList);
     }
 
     public static Forward createForwardReference(RealmResults<MessageItem> items, String legacyBody) {
@@ -83,8 +83,8 @@ public class ReferencesManager {
 
         List<RefMedia> media = new ArrayList<>();
         for (ExtensionElement element : elements) {
-            if (element instanceof Data) {
-                media.addAll(((Data) element).getMedia());
+            if (element instanceof Media) {
+                media.addAll(((Media) element).getMedia());
             }
         }
         return media;
@@ -162,7 +162,7 @@ public class ReferencesManager {
         if (begin > end) return chars;
 
         switch (reference.getType()) {
-            case data:
+            case media:
                 chars = remove(begin, end, chars);
                 break;
             case forward:
@@ -186,7 +186,7 @@ public class ReferencesManager {
     }
 
     private static String[] removeInLine(int begin, int end, String[] source, Quote reference) {
-        int del = reference.getDel();
+        int del = reference.getMarker().length();
         int removed = 0;
         for (int i = begin; i <= end; i++) {
             if (removed < del) {

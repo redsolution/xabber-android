@@ -16,15 +16,8 @@ public class Mention extends ReferenceElement {
     }
 
     @Override
-    public CharSequence toXML() {
-        XmlStringBuilder xml = new XmlStringBuilder(this);
-        xml.attribute(ATTRIBUTE_TYPE, getType());
-        xml.attribute(ATTRIBUTE_BEGIN, begin);
-        xml.attribute(ATTRIBUTE_END, end);
-        xml.attribute(ATTRIBUTE_URI, uri);
-        xml.rightAngleBracket();
-        xml.closeElement(this);
-        return xml;
+    public void appendToXML(XmlStringBuilder xml) {
+        xml.element(ELEMENT_URI, uri);
     }
 
     public String getUri() {

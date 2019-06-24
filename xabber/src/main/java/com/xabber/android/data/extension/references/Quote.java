@@ -3,11 +3,11 @@ package com.xabber.android.data.extension.references;
 import org.jivesoftware.smack.util.XmlStringBuilder;
 
 public class Quote extends ReferenceElement {
-    private final int del;
+    private final String marker;
 
-    public Quote(int begin, int end, int del) {
+    public Quote(int begin, int end, String marker) {
         super(begin, end);
-        this.del = del;
+        this.marker = marker;
     }
 
     @Override
@@ -16,18 +16,11 @@ public class Quote extends ReferenceElement {
     }
 
     @Override
-    public CharSequence toXML() {
-        XmlStringBuilder xml = new XmlStringBuilder(this);
-        xml.attribute(ATTRIBUTE_TYPE, getType());
-        xml.attribute(ATTRIBUTE_BEGIN, begin);
-        xml.attribute(ATTRIBUTE_END, end);
-        xml.attribute(ATTRIBUTE_DEL, del);
-        xml.rightAngleBracket();
-        xml.closeElement(this);
-        return xml;
+    public void appendToXML(XmlStringBuilder xml) {
+        xml.element(ELEMENT_MARKER, marker);
     }
 
-    public int getDel() {
-        return del;
+    public String getMarker() {
+        return marker;
     }
 }

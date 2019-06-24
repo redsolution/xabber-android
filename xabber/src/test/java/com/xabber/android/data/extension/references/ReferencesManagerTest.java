@@ -33,7 +33,7 @@ public class ReferencesManagerTest {
         body2 = "https://upload02.xabber.org/5ff2744e91/iKIlTIyZ/guide.txt\nhello";
 
         message2 = new Message("test@jabber.com", body2);
-        message2.addExtension(new Data(0, 57, null));
+        message2.addExtension(new Media(0, 57, null));
 
         // -------
 
@@ -52,7 +52,7 @@ public class ReferencesManagerTest {
                 "Hello world!";
 
         message4 = new Message("test@jabber.com", body4);
-        message4.addExtension(new Quote(0, 37, 5));
+        message4.addExtension(new Quote(0, 37, "&gt; "));
 
         // -------
 

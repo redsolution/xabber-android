@@ -4,17 +4,17 @@ import org.jivesoftware.smack.util.XmlStringBuilder;
 
 import java.util.List;
 
-public class Data extends ReferenceElement {
+public class Media extends ReferenceElement {
     private final List<RefMedia> media;
 
-    public Data(int begin, int end, List<RefMedia> media) {
+    public Media(int begin, int end, List<RefMedia> media) {
         super(begin, end);
         this.media = media;
     }
 
     @Override
     public Type getType() {
-        return Type.data;
+        return Type.media;
     }
 
     @Override

@@ -7,15 +7,15 @@ public class Markup extends ReferenceElement {
     private final boolean italic;
     private final boolean underline;
     private final boolean strike;
-    private final String url;
+    private final String uri;
 
-    public Markup(int begin, int end, boolean bold, boolean italic, boolean underline, boolean strike, String url) {
+    public Markup(int begin, int end, boolean bold, boolean italic, boolean underline, boolean strike, String uri) {
         super(begin, end);
         this.bold = bold;
         this.italic = italic;
         this.underline = underline;
         this.strike = strike;
-        this.url = url;
+        this.uri = uri;
     }
 
     @Override
@@ -29,8 +29,8 @@ public class Markup extends ReferenceElement {
         if (italic) xml.emptyElement(ELEMENT_ITALIC);
         if (underline) xml.emptyElement(ELEMENT_UNDERLINE);
         if (strike) xml.emptyElement(ELEMENT_STRIKE);
-        if (url != null && url.isEmpty()) {
-            xml.element(ELEMENT_URL, url);
+        if (uri != null && uri.isEmpty()) {
+            xml.element(ELEMENT_URI, uri);
         }
     }
 
@@ -50,7 +50,7 @@ public class Markup extends ReferenceElement {
         return strike;
     }
 
-    public String getUrl() {
-        return url;
+    public String getUri() {
+        return uri;
     }
 }
