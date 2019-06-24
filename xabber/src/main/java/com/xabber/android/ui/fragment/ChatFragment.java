@@ -651,7 +651,6 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     public void onEvent(MessageUpdateEvent event) {
         if (account.equals(event.getAccount()) && user.equals(event.getUser())) {
             updateUnread();
-            chatMessageAdapter.onChange();
         }
     }
 
