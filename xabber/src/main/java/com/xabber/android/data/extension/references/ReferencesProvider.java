@@ -56,7 +56,7 @@ public class ReferencesProvider extends ExtensionElementProvider<ReferenceElemen
                         uri = parser.nextText();
                     } else if (ReferenceElement.ELEMENT_MARKER.equals(parser.getName())) {
                         marker = TextUtils.htmlEncode(parser.nextText());
-                    }
+                    } else parser.next();
                     break;
                 case XmlPullParser.END_TAG:
                     if (ReferenceElement.ELEMENT.equals(parser.getName())) {

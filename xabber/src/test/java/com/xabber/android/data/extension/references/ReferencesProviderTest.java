@@ -34,7 +34,7 @@ public class ReferencesProviderTest {
         factory = XmlPullParserFactory.newInstance();
         factory.setNamespaceAware(true);
 
-        stringForward = "<reference xmlns=\"https://xabber.com/protocol/reference\" type=\"forward\" begin=\"11\" end=\"179\">" +
+        stringForward = "<reference xmlns=\"urn:xmpp:reference:0\" type=\"forward\" begin=\"11\" end=\"179\">" +
                 "<forwarded xmlns=\"urn:xmpp:forward:0\">" +
                 "<delay xmlns=\"urn:xmpp:delay\" stamp=\"2010-07-10T23:08:25Z\"/>" +
                 "<message from=\"valery\" to=\"xabber\" type=\"chat\" id=\"97\">" +
@@ -43,7 +43,7 @@ public class ReferencesProviderTest {
                 "</forwarded>" +
                 "</reference>";
 
-        stringMedia = "<reference xmlns='https://xabber.com/protocol/reference' type='media' begin=\"0\" end=\"89\"><media><file><media-type>" +
+        stringMedia = "<reference xmlns='urn:xmpp:reference:0' type='media' begin=\"0\" end=\"89\"><media><file><media-type>" +
                 "application/pdf</media-type><name>Android-Architecture_1-1.pdf</name><size>4255465" +
                 "</size></file><uri>https://upload02.xabber.org/5f70e738285c44c82039a73d42eccf27" +
                 "44e91/lQk6DkRJ/Android-Architecture_1-1.pdf</uri></media><media><file><media-type>" +
@@ -52,19 +52,19 @@ public class ReferencesProviderTest {
                 "e738285c44c82039a73d42eccf2744e91/rUdy3rHt/Screenshot_20190414-194652.png</uri>" +
                 "</media><bold/><italic/></reference>";
 
-        stringMarkup1 = "<reference xmlns='https://xabber.com/protocol/reference' begin='7' end='10'  type='markup'>" +
+        stringMarkup1 = "<reference xmlns='urn:xmpp:reference:0' begin='7' end='10'  type='markup'>" +
                         "<bold/><italic/></reference>";
 
-        stringMarkup2 = "<reference xmlns='https://xabber.com/protocol/reference' begin='34' end='37'  type='markup'>" +
+        stringMarkup2 = "<reference xmlns='urn:xmpp:reference:0' begin='34' end='37'  type='markup'>" +
                         "<bold/><uri>https://www.xabber.com</uri></reference>";
 
-        stringMention = "<reference xmlns='https://xabber.com/protocol/reference' begin='16' end='22' type='mention'>" +
+        stringMention = "<reference xmlns='urn:xmpp:reference:0' begin='16' end='22' type='mention'>" +
                         "<uri>xmpp:juliet@capulet.lit</uri></reference>";
 
-        stringQuote = "<reference xmlns='https://xabber.com/protocol/reference' begin='0' end='31' type='quote'>" +
+        stringQuote = "<reference xmlns='urn:xmpp:reference:0' begin='0' end='31' type='quote'>" +
                       "<marker>&gt; </marker></reference>";
 
-        stringUnknown = "<reference xmlns='https://xabber.com/protocol/reference' end='17' begin='0' type='unknown'></reference>";
+        stringUnknown = "<reference xmlns='urn:xmpp:reference:0' end='17' begin='0' type='unknown'></reference>";
         stringNull = "<reference xmlns='https://xabber.com/protocol/reference' end='17' begin='0'></reference>";
 
     }
