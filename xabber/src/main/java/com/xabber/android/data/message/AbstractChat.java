@@ -17,6 +17,7 @@ package com.xabber.android.data.message;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
@@ -574,17 +575,25 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         message.setThread(threadId);
         if (stanzaId != null) message.setStanzaId(stanzaId);
 
-        StringBuilder builder = new StringBuilder();
+        StringBuilder builder = new StringBuilder(body);
         for (Attachment attachment : attachments) {
-            if (builder.length() > 0) builder.append("\n");
-            builder.append(attachment.getFileUrl());
-        }
-        String legacyBody = builder.toString();
+            StringBuilder rowBuilder = new StringBuilder();
+            if (builder.length() > 0) rowBuilder.append("\n");
+            rowBuilder.append(attachment.getFileUrl());
 
-        ReferenceElement reference = ReferencesManager.createMediaReferences(attachments, legacyBody);
-        message.addExtension(reference);
-        message.setBody(body + legacyBody);
+            int begin = getSizeOfEncodedChars(builder.toString());
+            builder.append(rowBuilder);
+            ReferenceElement reference = ReferencesManager.createMediaReferences(attachment,
+                    begin, getSizeOfEncodedChars(builder.toString()) - 1);
+            message.addExtension(reference);
+        }
+
+        message.setBody(builder);
         return message;
+    }
+
+    private int getSizeOfEncodedChars(String str) {
+        return TextUtils.htmlEncode(str).toCharArray().length;
     }
 
     /**

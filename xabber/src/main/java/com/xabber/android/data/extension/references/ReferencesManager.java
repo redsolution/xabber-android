@@ -40,24 +40,21 @@ public class ReferencesManager {
         return forwarded;
     }
 
-    public static Media createMediaReferences(RealmList<Attachment> attachments, String legacyBody) {
+    public static Media createMediaReferences(Attachment attachment, int begin, int end) {
         List<RefMedia> mediaList = new ArrayList<>();
-        for (Attachment attachment : attachments) {
-            RefFile.Builder builder = RefFile.newBuilder();
-            builder.setName(attachment.getTitle());
-            builder.setMediaType(attachment.getMimeType());
-            builder.setDuration(attachment.getDuration());
-            builder.setSize(attachment.getFileSize());
-            if (attachment.getImageHeight() != null)
-                builder.setHeight(attachment.getImageHeight());
-            if (attachment.getImageWidth() != null)
-                builder.setWidth(attachment.getImageWidth());
-            RefMedia media = new RefMedia(builder.build(), attachment.getFileUrl());
-            mediaList.add(media);
-        }
+        RefFile.Builder builder = RefFile.newBuilder();
+        builder.setName(attachment.getTitle());
+        builder.setMediaType(attachment.getMimeType());
+        builder.setDuration(attachment.getDuration());
+        builder.setSize(attachment.getFileSize());
+        if (attachment.getImageHeight() != null)
+            builder.setHeight(attachment.getImageHeight());
+        if (attachment.getImageWidth() != null)
+            builder.setWidth(attachment.getImageWidth());
+        RefMedia media = new RefMedia(builder.build(), attachment.getFileUrl());
+        mediaList.add(media);
 
-        char[] chars = TextUtils.htmlEncode(legacyBody).toCharArray();
-        return new Media(0, chars.length - 1, mediaList);
+        return new Media(begin, end, mediaList);
     }
 
     public static Forward createForwardReference(RealmResults<MessageItem> items, String legacyBody) {
