@@ -12,6 +12,7 @@ android {
         targetSdkVersion 28
         versionCode 625
         versionName '2.6.4(625)'
+        manifestPlaceholders = [crashlytics:getLocalProperty("crashlytics.key")]
     }
 
     lintOptions {
@@ -111,6 +112,17 @@ if (build_param == "open") {
         if (!variant.getFlavors().get(0).name.equals('open')) {
             variant.setIgnore(true);
         }
+    }
+}
+
+def getLocalProperty(String propertyName) {
+    def propsFile = rootProject.file('local.properties')
+    if (propsFile.exists()) {
+        def props = new Properties()
+        props.load(new FileInputStream(propsFile))
+        return props[propertyName]
+    } else {
+        return ""
     }
 }
 

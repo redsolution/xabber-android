@@ -49,6 +49,12 @@
         android:label="@string/application_title_full"
         android:theme="@style/Theme"
         tools:replace="label, icon, allowBackup">
+
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="${crashlytics}"
+            />
+
         <activity
             android:name=".ui.activity.ContactListActivity"
             android:label="@string/application_title_full"
