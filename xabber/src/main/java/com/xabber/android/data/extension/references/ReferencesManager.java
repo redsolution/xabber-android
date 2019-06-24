@@ -46,7 +46,6 @@ public class ReferencesManager {
             RefFile.Builder builder = RefFile.newBuilder();
             builder.setName(attachment.getTitle());
             builder.setMediaType(attachment.getMimeType());
-            builder.setVoice(false);
             builder.setDuration(attachment.getDuration());
             builder.setSize(attachment.getFileSize());
             if (attachment.getImageHeight() != null)

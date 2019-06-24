@@ -13,7 +13,6 @@ public class RefFile {
     public static final String ELEMENT_WIDTH = "width";
     public static final String ELEMENT_SIZE = "size";
     public static final String ELEMENT_DURATION = "duration";
-    public static final String ELEMENT_VOICE = "voice";
 
     private String mediaType;
     private String name;
@@ -22,7 +21,6 @@ public class RefFile {
     private int width;
     private long size;
     private long duration;
-    private boolean voice;
 
     public String getMediaType() {
         return mediaType;
@@ -50,10 +48,6 @@ public class RefFile {
 
     public long getDuration() {
         return duration;
-    }
-
-    public boolean isVoice() {
-        return voice;
     }
 
     public CharSequence toXML() {
@@ -93,11 +87,6 @@ public class RefFile {
             xml.openElement(ELEMENT_DURATION);
             xml.append(String.valueOf(getDuration()));
             xml.closeElement(ELEMENT_DURATION);
-        }
-        if (isVoice()) {
-            xml.openElement(ELEMENT_VOICE);
-            xml.append(String.valueOf(isVoice()));
-            xml.closeElement(ELEMENT_VOICE);
         }
         xml.closeElement(ELEMENT);
         return xml;
@@ -146,11 +135,6 @@ public class RefFile {
 
         public Builder setDuration(long duration) {
             RefFile.this.duration = duration;
-            return this;
-        }
-
-        public Builder setVoice(boolean voice) {
-            RefFile.this.voice = voice;
             return this;
         }
     }

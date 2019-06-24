@@ -154,9 +154,6 @@ public class ReferencesProvider extends ExtensionElementProvider<ReferenceElemen
                         case RefFile.ELEMENT_DURATION:
                             builder.setDuration(Long.valueOf(parser.nextText()));
                             break;
-                        case RefFile.ELEMENT_VOICE:
-                            builder.setVoice(Boolean.valueOf(parser.nextText()));
-                            break;
                         default:
                             parser.next();
                     }
