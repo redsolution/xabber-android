@@ -66,9 +66,9 @@ public class CrowdfundingChatAdapter extends RealmRecyclerViewAdapter<Crowdfundi
     public CrowdMessageVH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         if (viewType == VIEW_TYPE_MESSAGE_NOFLEX)
             return new CrowdMessageVH(LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.item_message_incoming_noflex, parent, false));
+                    .inflate(R.layout.item_message_incoming_noflex_crowdfunding, parent, false));
         else return new CrowdMessageVH(LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_message_incoming, parent, false));
+                .inflate(R.layout.item_message_incoming_crowdfunding, parent, false));
     }
 
     @Override
