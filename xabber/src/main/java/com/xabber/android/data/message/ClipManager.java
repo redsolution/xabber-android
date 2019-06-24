@@ -33,8 +33,9 @@ public class ClipManager {
         });
     }
 
-    public static String createMessageTree(Realm realm, String[] messagesIDs) {
-        return messagesToText(realm, messagesIDs, 1);
+    public static String createMessageTree(Realm realm, String id) {
+        String[] str = {id};
+        return messagesToText(realm, str, 1);
     }
 
     private static void insertDataToClipboard(final String text) {

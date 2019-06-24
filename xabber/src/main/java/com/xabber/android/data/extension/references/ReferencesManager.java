@@ -57,19 +57,16 @@ public class ReferencesManager {
         return new Media(begin, end, mediaList);
     }
 
-    public static Forward createForwardReference(RealmResults<MessageItem> items, String legacyBody) {
+    public static Forward createForwardReference(MessageItem item, int begin, int end) {
         List<Forwarded> forwardedList = new ArrayList<>();
-        for (MessageItem item : items) {
-            try {
-                Message forwarded = PacketParserUtils.parseStanza(item.getOriginalStanza());
-                forwardedList.add(new Forwarded(new DelayInformation(new Date(item.getTimestamp())), forwarded));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+        try {
+            Message forwarded = PacketParserUtils.parseStanza(item.getOriginalStanza());
+            forwardedList.add(new Forwarded(new DelayInformation(new Date(item.getTimestamp())), forwarded));
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
-        char[] chars = TextUtils.htmlEncode(legacyBody).toCharArray();
-        return new Forward(0, chars.length - 1, forwardedList);
+        return new Forward(begin, end, forwardedList);
     }
 
     @Nonnull

@@ -61,6 +61,7 @@ import org.jxmpp.jid.Jid;
 import org.jxmpp.jid.parts.Resourcepart;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -663,13 +664,24 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
             RealmResults<MessageItem> items = realm.where(MessageItem.class)
                     .in(MessageItem.Fields.UNIQUE_ID, messageItem.getForwardedIdsAsArray()).findAll();
 
-            String modifiedBody = ClipManager.createMessageTree(realm, messageItem.getForwardedIdsAsArray()) + "\n";
-            text = modifiedBody + text;
-            message = createMessagePacket(text, messageItem.getStanzaId());
-
+            List<ReferenceElement> references = new ArrayList<>();
+            StringBuilder builder = new StringBuilder();
             if (items != null && !items.isEmpty()) {
-                ReferenceElement reference = ReferencesManager.createForwardReference(items, modifiedBody);
-                message.addExtension(reference);
+                for (MessageItem item : items) {
+                    String forward = ClipManager.createMessageTree(realm, item.getUniqueId()) + "\n";
+                    int begin = getSizeOfEncodedChars(builder.toString());
+                    builder.append(forward);
+                    ReferenceElement reference = ReferencesManager.createForwardReference(item,
+                            begin, getSizeOfEncodedChars(builder.toString()) - 1);
+                    references.add(reference);
+                }
+            }
+            builder.append(text);
+            text = builder.toString();
+
+            message = createMessagePacket(text, messageItem.getStanzaId());
+            for (ReferenceElement element : references) {
+                message.addExtension(element);
             }
 
         } else if (text != null) {
