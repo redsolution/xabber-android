@@ -158,7 +158,7 @@ public class CrowdfundingManager {
         Realm realm = RealmManager.getInstance().getNewRealm();
         return realm.where(CrowdfundingMessage.class)
                 .lessThanOrEqualTo("delay", delay)
-                .findAllSorted("timestamp");
+                .findAllSorted("receivedTimestamp");
     }
 
     public void removeDelay(int delay) {
@@ -176,7 +176,7 @@ public class CrowdfundingManager {
 
     public CrowdfundingMessage getLastMessageFromRealm() {
         Realm realm = RealmManager.getInstance().getNewRealm();
-        RealmResults<CrowdfundingMessage> messages = realm.where(CrowdfundingMessage.class).findAllSorted("timestamp");
+        RealmResults<CrowdfundingMessage> messages = realm.where(CrowdfundingMessage.class).findAllSorted("receivedTimestamp");
         if (messages != null && !messages.isEmpty()) return messages.last();
         else return null;
     }
@@ -185,7 +185,7 @@ public class CrowdfundingManager {
         Realm realm = RealmManager.getInstance().getNewRealm();
         RealmResults<CrowdfundingMessage> messages = realm.where(CrowdfundingMessage.class)
                 .equalTo("delay", 0)
-                .findAllSorted("timestamp");
+                .findAllSorted("receivedTimestamp");
         if (messages != null && !messages.isEmpty()) return messages.last();
         else return null;
     }
@@ -232,7 +232,7 @@ public class CrowdfundingManager {
 
     private void removeAllMessages() {
         Realm realm = RealmManager.getInstance().getNewRealm();
-        RealmResults<CrowdfundingMessage> messages = realm.where(CrowdfundingMessage.class).findAllSorted("timestamp");
+        RealmResults<CrowdfundingMessage> messages = realm.where(CrowdfundingMessage.class).findAll();
         realm.beginTransaction();
         for (CrowdfundingMessage message : messages)
             message.deleteFromRealm();
