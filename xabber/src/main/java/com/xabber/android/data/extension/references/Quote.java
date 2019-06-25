@@ -17,7 +17,9 @@ public class Quote extends ReferenceElement {
 
     @Override
     public void appendToXML(XmlStringBuilder xml) {
-        xml.element(ELEMENT_MARKER, marker);
+        if (marker != null && !marker.isEmpty()) {
+            xml.element(ELEMENT_MARKER, marker);
+        }
     }
 
     public String getMarker() {

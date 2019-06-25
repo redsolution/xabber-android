@@ -17,7 +17,9 @@ public class Mention extends ReferenceElement {
 
     @Override
     public void appendToXML(XmlStringBuilder xml) {
-        xml.element(ELEMENT_URI, uri);
+        if (uri != null && uri.isEmpty()) {
+            xml.element(ELEMENT_URI, uri);
+        }
     }
 
     public String getUri() {
