@@ -750,21 +750,21 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
      * @return List of enabled accounts.
      */
     public Collection<AccountJid> getEnabledAccounts() {
-        Collection<AccountItem> accounts = Collections.unmodifiableCollection(accountItems.values());
+        Map<AccountJid, AccountItem> accountsCopy = new HashMap<>(accountItems);
         List<AccountJid> enabledAccounts = new ArrayList<>();
-        for (AccountItem accountItem : accounts) {
+        for (AccountItem accountItem : accountsCopy.values()) {
             if (accountItem.isEnabled()) {
                 AccountJid accountJid = accountItem.getAccount();
                 accountJid.setOrder(accountItem.getOrder());
                 enabledAccounts.add(accountJid);
             }
         }
-
         return Collections.unmodifiableCollection(enabledAccounts);
     }
 
     public Collection<AccountJid> getCachedEnabledAccounts() {
-        return Collections.unmodifiableCollection(cachedEnabledAccounts);
+        List<AccountJid> copyCachedEnabledAccounts = new ArrayList<>(cachedEnabledAccounts);
+        return Collections.unmodifiableCollection(copyCachedEnabledAccounts);
     }
 
     public boolean hasAccounts() {
@@ -781,11 +781,13 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
      * @return List of all accounts including disabled.
      */
     public Collection<AccountJid> getAllAccounts() {
-        return Collections.unmodifiableCollection(accountItems.keySet());
+        Map<AccountJid, AccountItem> accountsCopy = new HashMap<>(accountItems);
+        return Collections.unmodifiableCollection(accountsCopy.keySet());
     }
 
     public Collection<AccountItem> getAllAccountItems() {
-        return Collections.unmodifiableCollection(accountItems.values());
+        Map<AccountJid, AccountItem> accountsCopy = new HashMap<>(accountItems);
+        return Collections.unmodifiableCollection(accountsCopy.values());
     }
 
     public CommonState getCommonState() {
