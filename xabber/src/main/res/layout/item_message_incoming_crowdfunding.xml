@@ -45,7 +45,7 @@
             layout="@layout/forwarded_layout"
             android:visibility="gone" />
 
-        <include layout="@layout/item_message" />
+        <include layout="@layout/item_message_crowdfunding" />
 
     </LinearLayout>
 
