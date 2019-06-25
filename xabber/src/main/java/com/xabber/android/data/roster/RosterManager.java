@@ -60,6 +60,7 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -161,11 +162,17 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
     }
 
     public Collection<RosterContact> getAccountRosterContacts(final AccountJid accountJid) {
-        return Collections.unmodifiableCollection(rosterContacts.getNested(accountJid.toString()).values());
+        List<RosterContact> contactsCopy = new ArrayList<>(rosterContacts.getNested(accountJid.toString()).values());
+        return Collections.unmodifiableCollection(contactsCopy);
     }
 
     public Collection<RosterContact> getAllContacts() {
-        return Collections.unmodifiableCollection(rosterContacts.values());
+        List<RosterContact> contactsCopy = new ArrayList<>();
+        Set<String> keys = new HashSet<>(rosterContacts.keySet());
+        for (String key : keys) {
+            contactsCopy.addAll(rosterContacts.getNested(key).values());
+        }
+        return Collections.unmodifiableCollection(contactsCopy);
     }
 
     void onContactsAdded(final AccountJid account, Collection<Jid> addresses) {

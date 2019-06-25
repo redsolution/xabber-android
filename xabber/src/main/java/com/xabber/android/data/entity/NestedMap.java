@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Set;
 
 /**
  * Map of map with string value as keys for both maps.
@@ -128,6 +129,10 @@ public class NestedMap<T> implements Iterable<NestedMap.Entry<T>> {
     public void addAll(NestedMap<T> nestedMap) {
         for (NestedMap.Entry<T> entry : nestedMap)
             put(entry.getFirst(), entry.getSecond(), entry.getValue());
+    }
+
+    public Set<String> keySet() {
+        return map.keySet();
     }
 
     /**
