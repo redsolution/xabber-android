@@ -443,6 +443,10 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
                     m1.setPreviousId(savedMessages.get(savedMessages.size() - 1).getArchivedId());
                     realm.commitTransaction();
                 }
+            } else {
+                realm.beginTransaction();
+                m1.setPreviousId(m2.getArchivedId());
+                realm.commitTransaction();
             }
         }
     }
@@ -751,7 +755,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
             }
         }
         realm.beginTransaction();
-        realm.copyToRealm(messagesToSave);
+        realm.copyToRealmOrUpdate(messagesToSave);
         realm.commitTransaction();
         SyncManager.getInstance().onMessageSaved();
         EventBus.getDefault().post(new NewMessageEvent());
@@ -792,7 +796,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
             realm.beginTransaction();
             localMessage.setArchivedId(message.getArchivedId());
             realm.commitTransaction();
-            return null;
+            return localMessage;
         }
     }
 
