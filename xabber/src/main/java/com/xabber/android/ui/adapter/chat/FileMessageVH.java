@@ -90,7 +90,7 @@ public class FileMessageVH extends MessageVH
         messageImage.setVisibility(View.GONE);
         imageGridContainer.removeAllViews();
         imageGridContainer.setVisibility(View.GONE);
-        messageText.setVisibility(View.VISIBLE);
+        //messageText.setVisibility(View.VISIBLE);
 
         if (messageItem.haveAttachments()) {
             setUpImage(messageItem.getAttachments());
@@ -125,7 +125,7 @@ public class FileMessageVH extends MessageVH
 
             imageGridContainer.addView(imageGridView);
             imageGridContainer.setVisibility(View.VISIBLE);
-            messageText.setVisibility(View.GONE);
+            //messageText.setVisibility(View.GONE);
         }
     }
 
@@ -140,7 +140,7 @@ public class FileMessageVH extends MessageVH
             rvFileList.setLayoutManager(layoutManager);
             FilesAdapter adapter = new FilesAdapter(fileAttachments, this);
             rvFileList.setAdapter(adapter);
-            messageText.setVisibility(View.GONE);
+            //messageText.setVisibility(View.GONE);
             fileLayout.setVisibility(View.VISIBLE);
         }
     }
@@ -155,7 +155,7 @@ public class FileMessageVH extends MessageVH
 
             if (result) {
                 messageImage.setVisibility(View.VISIBLE);
-                messageText.setVisibility(View.GONE);
+                //messageText.setVisibility(View.GONE);
             } else {
                 final Realm realm = MessageDatabaseManager.getInstance().getRealmUiThread();
                 realm.executeTransactionAsync(new Realm.Transaction() {
@@ -181,7 +181,7 @@ public class FileMessageVH extends MessageVH
                             @Override
                             public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
                                 messageImage.setVisibility(View.GONE);
-                                messageText.setVisibility(View.VISIBLE);
+                                //messageText.setVisibility(View.VISIBLE);
                                 return true;
                             }
 
@@ -193,7 +193,7 @@ public class FileMessageVH extends MessageVH
                         .into(messageImage);
 
                 messageImage.setVisibility(View.VISIBLE);
-                messageText.setVisibility(View.GONE);
+                //messageText.setVisibility(View.GONE);
             } else {
 
                 Glide.with(context)
@@ -207,7 +207,7 @@ public class FileMessageVH extends MessageVH
                                 super.onLoadStarted(placeholder);
                                 messageImage.setImageDrawable(placeholder);
                                 messageImage.setVisibility(View.VISIBLE);
-                                messageText.setVisibility(View.GONE);
+                                //messageText.setVisibility(View.GONE);
                             }
 
                             @Override
@@ -215,7 +215,7 @@ public class FileMessageVH extends MessageVH
                                 super.onLoadFailed(e, errorDrawable);
                                 messageImage.setImageDrawable(errorDrawable);
                                 messageImage.setVisibility(View.VISIBLE);
-                                messageText.setVisibility(View.GONE);
+                                //messageText.setVisibility(View.GONE);
                             }
 
                             @Override
@@ -225,7 +225,7 @@ public class FileMessageVH extends MessageVH
 
                                 if (width <= 0 || height <= 0) {
                                     messageImage.setVisibility(View.GONE);
-                                    messageText.setVisibility(View.VISIBLE);
+                                    //messageText.setVisibility(View.VISIBLE);
                                     return;
                                 }
 
@@ -249,7 +249,7 @@ public class FileMessageVH extends MessageVH
                                 messageImage.setImageBitmap(resource);
 
                                 messageImage.setVisibility(View.VISIBLE);
-                                messageText.setVisibility(View.GONE);
+                                //messageText.setVisibility(View.GONE);
                             }
                         });
             }
