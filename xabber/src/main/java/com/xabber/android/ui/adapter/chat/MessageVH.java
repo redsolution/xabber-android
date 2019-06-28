@@ -98,8 +98,8 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
         if (messageItem.getMarkupText() != null && !messageItem.getMarkupText().isEmpty())
             messageText.setText(Html.fromHtml(
                     messageItem.getMarkupText().replace("\n", "<br/>"),
-                    null, new ClickTagHandler(extraData.getContext())),
-                    TextView.BufferType.SPANNABLE);
+                    null, new ClickTagHandler(extraData.getContext(),
+                    extraData.getMentionColor())), TextView.BufferType.SPANNABLE);
         else messageText.setText(messageItem.getText());
         if (OTRManager.getInstance().isEncrypted(messageItem.getText())) {
             if (extraData.isShowOriginalOTR())

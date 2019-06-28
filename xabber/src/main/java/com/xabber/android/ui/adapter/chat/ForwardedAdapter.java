@@ -95,7 +95,7 @@ public class ForwardedAdapter extends RealmRecyclerViewAdapter<MessageItem, Basi
 
         MessagesAdapter.MessageExtraData extraData = new MessagesAdapter.MessageExtraData(
                 null, null, null, this.extraData.getContext(), messageItem.getOriginalFrom(),
-                this.extraData.getColorStateList(), this.extraData.getAccountMainColor(),
+                this.extraData.getColorStateList(), this.extraData.getAccountMainColor(), this.extraData.getMentionColor(),
                 false, false, false, false, false, false);
 
         final int viewType = getItemViewType(position);
