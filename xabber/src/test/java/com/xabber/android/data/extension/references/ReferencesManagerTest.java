@@ -18,8 +18,8 @@ import static org.junit.Assert.assertNull;
 @Config(application = TestApplication.class)
 public class ReferencesManagerTest {
 
-    private String body1, body2, body3, body4, body5, body6;
-    private Message message1, message2, message3, message4, message5, message6;
+    private String body1, body2, body3, body4, body5, body6, body7, body8;
+    private Message message1, message2, message3, message4, message5, message6, message7, message8;
 
     @Before
     public void setUp() throws Exception {
@@ -67,6 +67,20 @@ public class ReferencesManagerTest {
 
         message6 = new Message("test@jabber.com", body6);
         message6.addExtension(new Markup(13, 18, true, false, false, false, null));
+
+        // -------
+
+        body7 = "Тест форматирования текста";
+
+        message7 = new Message("test@jabber.com", body7);
+        message7.addExtension(new Markup(20, 26, false, false, false, false, "www.xabber.com"));
+
+        // -------
+
+        body8 = "Пользователь, привет!";
+
+        message8 = new Message("test@jabber.com", body8);
+        message8.addExtension(new Mention(0, 11, "xmpp:test@jabber.com"));
     }
 
     @Test
@@ -113,5 +127,19 @@ public class ReferencesManagerTest {
         Pair<String, String> result = ReferencesManager.modifyBodyWithReferences(message6, body6);
         assertEquals(">> 😄😃😀 привет", result.first);
         assertEquals("&gt;&gt; 😄😃😀 <b>привет</b>", result.second);
+    }
+
+    @Test
+    public void modifyBodyWithReferences7() {
+        Pair<String, String> result = ReferencesManager.modifyBodyWithReferences(message7, body7);
+        assertEquals("Тест форматирования текста", result.first);
+        assertEquals("Тест форматирования <click uri='www.xabber.com'>текста</click>", result.second);
+    }
+
+    @Test
+    public void modifyBodyWithReferences8() {
+        Pair<String, String> result = ReferencesManager.modifyBodyWithReferences(message8, body8);
+        assertEquals("Пользователь, привет!", result.first);
+        assertEquals("<click uri='xmpp:test@jabber.com'>Пользователь</click>, привет!", result.second);
     }
 }
