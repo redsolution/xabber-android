@@ -133,13 +133,13 @@ public class ReferencesManagerTest {
     public void modifyBodyWithReferences7() {
         Pair<String, String> result = ReferencesManager.modifyBodyWithReferences(message7, body7);
         assertEquals("Тест форматирования текста", result.first);
-        assertEquals("Тест форматирования <click uri='www.xabber.com'>текста</click>", result.second);
+        assertEquals("Тест форматирования &zwj;<click uri='www.xabber.com' type='hyperlink'>текста</click>", result.second);
     }
 
     @Test
     public void modifyBodyWithReferences8() {
         Pair<String, String> result = ReferencesManager.modifyBodyWithReferences(message8, body8);
         assertEquals("Пользователь, привет!", result.first);
-        assertEquals("<click uri='xmpp:test@jabber.com'>Пользователь</click>, привет!", result.second);
+        assertEquals("&zwj;<click uri='xmpp:test@jabber.com' type='mention'>Пользователь</click>, привет!", result.second);
     }
 }
