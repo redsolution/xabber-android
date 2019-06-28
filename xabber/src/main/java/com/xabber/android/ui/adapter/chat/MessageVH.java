@@ -15,7 +15,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.amulyakhare.textdrawable.util.ColorGenerator;
-import com.google.android.gms.common.util.ArrayUtils;
 import com.xabber.android.R;
 import com.xabber.android.data.database.MessageDatabaseManager;
 import com.xabber.android.data.database.messagerealm.MessageItem;
@@ -23,6 +22,7 @@ import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.fragment.ChatFragment;
+import com.xabber.android.ui.text.ClickTagHandler;
 import com.xabber.android.utils.StringUtils;
 
 import java.util.Arrays;
@@ -96,7 +96,10 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
         }
 
         if (messageItem.getMarkupText() != null && !messageItem.getMarkupText().isEmpty())
-            messageText.setText(Html.fromHtml(messageItem.getMarkupText().replace("\n", "<br/>")));
+            messageText.setText(Html.fromHtml(
+                    messageItem.getMarkupText().replace("\n", "<br/>"),
+                    null, new ClickTagHandler(extraData.getContext())),
+                    TextView.BufferType.SPANNABLE);
         else messageText.setText(messageItem.getText());
         if (OTRManager.getInstance().isEncrypted(messageItem.getText())) {
             if (extraData.isShowOriginalOTR())
@@ -107,6 +110,7 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
             messageText.setVisibility(View.VISIBLE);
             messageNotDecrypted.setVisibility(View.GONE);
         }
+        messageText.setMovementMethod(LinkMovementMethod.getInstance());
 
         String time = StringUtils.getTimeText(new Date(messageItem.getTimestamp()));
 

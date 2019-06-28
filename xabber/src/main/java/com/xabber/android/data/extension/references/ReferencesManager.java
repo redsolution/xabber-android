@@ -21,9 +21,6 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 
-import io.realm.RealmList;
-import io.realm.RealmResults;
-
 public class ReferencesManager {
 
     @Nonnull
@@ -95,9 +92,9 @@ public class ReferencesManager {
         // encode HTML and split into chars
         String[] chars = stringToChars(TextUtils.htmlEncode(body));
 
-        // modify chars with references except markup
+        // modify chars with references except markup and mention
         for (ReferenceElement reference : references) {
-            if (!(reference instanceof Markup))
+            if (!(reference instanceof Markup) && !(reference instanceof Mention))
                 chars = modifyBodyWithReferences(chars, reference);
         }
 
@@ -105,9 +102,9 @@ public class ReferencesManager {
         String regularBody = Html.fromHtml(charsToString(chars).replace("\n", "<br/>")).toString();
         String markupBody = null;
 
-        // modify chars with markup references
+        // modify chars with markup and mention references
         for (ReferenceElement reference : references) {
-            if (reference instanceof Markup)
+            if (reference instanceof Markup || reference instanceof Mention)
                 chars = modifyBodyWithReferences(chars, reference);
         }
         markupBody = charsToString(chars);
@@ -167,6 +164,9 @@ public class ReferencesManager {
             case quote:
                 chars = removeInLine(begin, end, chars, (Quote) reference);
                 break;
+            case mention:
+                chars = mention(begin, end, chars, (Mention) reference);
+                break;
         }
         return chars;
     }
@@ -209,6 +209,27 @@ public class ReferencesManager {
         if (reference.isStrike()) {
             builderOpen.append("<strike>");
             builderClose.append(new StringBuilder("</strike>").reverse());
+        }
+        if (reference.getUri() != null && !reference.getUri().isEmpty()) {
+            builderOpen.append("<click uri='");
+            builderOpen.append(reference.getUri());
+            builderOpen.append("'>");
+            builderClose.append(new StringBuilder("</click>").reverse());
+        }
+        source[begin] = builderOpen.append(source[begin]).toString();
+        builderClose.append(new StringBuilder(source[end]).reverse());
+        source[end] = builderClose.reverse().toString();
+        return source;
+    }
+
+    private static String[] mention(int begin, int end, String[] source, Mention reference) {
+        StringBuilder builderOpen = new StringBuilder();
+        StringBuilder builderClose = new StringBuilder();
+        if (reference.getUri() != null && !reference.getUri().isEmpty()) {
+            builderOpen.append("<click uri='");
+            builderOpen.append(reference.getUri());
+            builderOpen.append("'>");
+            builderClose.append(new StringBuilder("</click>").reverse());
         }
         source[begin] = builderOpen.append(source[begin]).toString();
         builderClose.append(new StringBuilder(source[end]).reverse());
