@@ -4,7 +4,11 @@ import android.content.Context;
 import android.text.Editable;
 import android.text.Html;
 import android.text.Spannable;
+import android.text.style.BackgroundColorSpan;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
+
+import com.xabber.android.R;
 
 import org.xml.sax.XMLReader;
 
@@ -17,12 +21,15 @@ public class ClickTagHandler implements Html.TagHandler {
     private final static String FIELD_DATA = "data";
     private final static String FIELD_LENGTH = "length";
     private final static String ATTRIBUTE_URI = "uri";
+    private final static String ATTRIBUTE_TYPE = "type";
     private final static String TAG = "click";
 
     private Context context;
+    private int backgroundColor;
 
-    public ClickTagHandler(Context context) {
+    public ClickTagHandler(Context context, int backgroundColor) {
         this.context = context;
+        this.backgroundColor = backgroundColor;
     }
 
     @Override
@@ -37,20 +44,28 @@ public class ClickTagHandler implements Html.TagHandler {
 
         if (opening) {
             String uri = getAttrubute(xmlReader, ATTRIBUTE_URI);
-            output.setSpan(new ClickSpan(uri, context), len, len, Spannable.SPAN_MARK_MARK);
+            String type = getAttrubute(xmlReader, ATTRIBUTE_TYPE);
+            output.setSpan(new ClickSpan(uri, type, context), len, len, Spannable.SPAN_MARK_MARK);
         } else {
             Object obj = getLast(output, ClickSpan.class);
             int where = output.getSpanStart(obj);
-            String uri = null;
+            String uri = null, type = null;
 
             if (obj instanceof ClickSpan) {
                 uri = ((ClickSpan)obj).getUrl();
+                type = ((ClickSpan)obj).getType();
             }
 
             output.removeSpan(obj);
 
-            if (where != len && uri != null) {
-                output.setSpan(new ClickSpan(uri, context), where, len, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            if (where != len && uri != null && type != null) {
+                output.setSpan(new ClickSpan(uri, type, context), where, len, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+                if (ClickSpan.TYPE_MENTION.equals(type)) {
+                    output.setSpan(new BackgroundColorSpan(backgroundColor), where, len, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    output.setSpan(new ForegroundColorSpan(context.getResources().getColor(R.color.black_text)),
+                            where, len, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                }
             }
         }
     }

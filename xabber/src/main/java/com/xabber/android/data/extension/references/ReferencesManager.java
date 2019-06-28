@@ -6,6 +6,7 @@ import android.util.Pair;
 
 import com.xabber.android.data.database.messagerealm.Attachment;
 import com.xabber.android.data.database.messagerealm.MessageItem;
+import com.xabber.android.ui.text.ClickSpan;
 
 import org.jivesoftware.smack.packet.ExtensionElement;
 import org.jivesoftware.smack.packet.Message;
@@ -215,6 +216,8 @@ public class ReferencesManager {
             // https://stackoverflow.com/questions/23568481/weird-taghandler-behavior-detecting-opening-and-closing-tags
             builderOpen.append("&zwj;<click uri='");
             builderOpen.append(reference.getUri());
+            builderOpen.append("' type='");
+            builderOpen.append(ClickSpan.TYPE_HYPERLINK);
             builderOpen.append("'>");
             builderClose.append(new StringBuilder("</click>").reverse());
         }
@@ -232,6 +235,8 @@ public class ReferencesManager {
             // https://stackoverflow.com/questions/23568481/weird-taghandler-behavior-detecting-opening-and-closing-tags
             builderOpen.append("&zwj;<click uri='");
             builderOpen.append(reference.getUri());
+            builderOpen.append("' type='");
+            builderOpen.append(ClickSpan.TYPE_MENTION);
             builderOpen.append("'>");
             builderClose.append(new StringBuilder("</click>").reverse());
         }
