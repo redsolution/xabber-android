@@ -211,7 +211,9 @@ public class ReferencesManager {
             builderClose.append(new StringBuilder("</strike>").reverse());
         }
         if (reference.getUri() != null && !reference.getUri().isEmpty()) {
-            builderOpen.append("<click uri='");
+            // Add [&zwj;] (zero-with-join) symbol before custom tag to avoid issue:
+            // https://stackoverflow.com/questions/23568481/weird-taghandler-behavior-detecting-opening-and-closing-tags
+            builderOpen.append("&zwj;<click uri='");
             builderOpen.append(reference.getUri());
             builderOpen.append("'>");
             builderClose.append(new StringBuilder("</click>").reverse());
@@ -226,7 +228,9 @@ public class ReferencesManager {
         StringBuilder builderOpen = new StringBuilder();
         StringBuilder builderClose = new StringBuilder();
         if (reference.getUri() != null && !reference.getUri().isEmpty()) {
-            builderOpen.append("<click uri='");
+            // Add [&zwj;] (zero-with-join) symbol before custom tag to avoid issue:
+            // https://stackoverflow.com/questions/23568481/weird-taghandler-behavior-detecting-opening-and-closing-tags
+            builderOpen.append("&zwj;<click uri='");
             builderOpen.append(reference.getUri());
             builderOpen.append("'>");
             builderClose.append(new StringBuilder("</click>").reverse());
