@@ -3,6 +3,8 @@ package com.xabber.android.ui.text;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.support.annotation.NonNull;
+import android.text.TextPaint;
 import android.text.style.ClickableSpan;
 import android.view.View;
 
@@ -29,6 +31,12 @@ public class ClickSpan extends ClickableSpan {
                 context.startActivity(browserIntent);
             }
         }
+    }
+
+    @Override
+    public void updateDrawState(@NonNull TextPaint ds) {
+        if (TYPE_HYPERLINK.equals(type)) ds.setUnderlineText(true);
+        ds.setColor(ds.linkColor);
     }
 
     public String getUrl() {
