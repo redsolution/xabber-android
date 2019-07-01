@@ -353,6 +353,9 @@
     <string name="connection_use_carbons_key">connection_use_carbons_new</string>
     <bool name="connection_use_carbons_default">true</bool>
 
+    <string name="connection_compress_image_on_upload_key">connection_compress_image_on_upload</string>
+    <bool name="connection_compress_image_on_upload_default">true</bool>
+
     <string name="connection_dns_resolver_type_key">connection_dns_resolver_type</string>
 
     <string name="connection_dns_resolver_type_dns_java_resolver_value">connection_dns_resolver_type_dns_java_resolver</string>

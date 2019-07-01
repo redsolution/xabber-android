@@ -11,6 +11,7 @@ import android.provider.OpenableColumns;
 import android.support.annotation.Nullable;
 import android.webkit.MimeTypeMap;
 
+import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
@@ -202,7 +203,7 @@ public class UploadService extends IntentService {
                 final File file;
 
                 // compress file if image
-                if (FileManager.fileIsImage(uncompressedFile)) {
+                if (FileManager.fileIsImage(uncompressedFile) && SettingsManager.connectionCompressImage()) {
                     file = ImageCompressor.compressImage(uncompressedFile, getCompressedDirPath());
                     if (file == null)
                         throw new Exception("Compress image failed");

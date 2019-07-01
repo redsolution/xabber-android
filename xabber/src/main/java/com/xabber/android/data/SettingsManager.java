@@ -527,6 +527,11 @@ public class SettingsManager implements OnInitializedListener,
                 R.bool.connection_use_carbons_default);
     }
 
+    public static boolean connectionCompressImage() {
+        return getBoolean(R.string.connection_compress_image_on_upload_key,
+                R.bool.connection_compress_image_on_upload_default);
+    }
+
     public static DnsResolverType connectionDnsResolver() {
         String value = getString(R.string.connection_dns_resolver_type_key,
                 R.string.connection_dns_resolver_type_default);
