@@ -139,7 +139,7 @@
     <string name="events_in_app_preview_title">Предпросмотр в приложении</string>
     <string name="events_in_app_preview_summary">Предпросмотр при сообщениях в других чатах</string>
     <string name="events_in_chat_sounds_title">Звук в текущем чате</string>
-    <string name="events_in_chat_sounds_summary">Воспроизводить уведомление при сообщениях в текущем чате</string>
+    <string name="events_in_chat_sounds_summary">Воспроизводить уведомление при получении и отправке сообщений в текущем чате</string>
     <string name="events_reset_title">Сброс</string>
     <string name="events_reset_summary">Все настройки уведомлений будут установлены в значения по умолчанию</string>
     <string name="events_reset_alert">Сбросить настройки уведомлений?</string>

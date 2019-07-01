@@ -163,7 +163,7 @@
     <string name="events_in_app_preview_title">In-app preview</string>
     <string name="events_in_app_preview_summary">Show preview on message in another chat</string>
     <string name="events_in_chat_sounds_title">In-chat sounds</string>
-    <string name="events_in_chat_sounds_summary">Play sound on message in current chat</string>
+    <string name="events_in_chat_sounds_summary">Play sound on receiving and sending message in current chat</string>
 
     <string name="events_reset_title">Reset</string>
     <string name="events_reset_summary">All notification settings would be set to default values</string>
