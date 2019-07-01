@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
@@ -658,7 +657,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     public void onEvent(NewIncomingMessageEvent event) {
         if (event.getAccount().equals(account) && event.getUser().equals(user)) {
             listener.playIncomingAnimation();
-            if (SettingsManager.eventsInChatSounds()) playIncomingSound();
+            playMessageSound();
         }
     }
 
@@ -762,6 +761,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         String text = inputView.getText().toString().trim();
         clearInputText();
         scrollDown();
+        playMessageSound();
 
         if (forwardIds != null && !forwardIds.isEmpty()) {
             sendForwardMessage(forwardIds, text);
@@ -1190,39 +1190,28 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         chatMessageAdapter.notifyDataSetChanged();
     }
 
-    public void playIncomingSound() {
-        AbstractChat chat = getChat();
-        boolean event = false;
-        Uri soundUri = null;
-        if (chat instanceof RoomChat) {
-            event = SettingsManager.eventsOnMuc();
-            soundUri = SettingsManager.eventsSoundMuc();
+    public void playMessageSound() {
+        if (!SettingsManager.eventsInChatSounds()) return;
+
+        final MediaPlayer mp;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            AudioAttributes attr = new AudioAttributes.Builder()
+                    .setContentType(AudioAttributes.CONTENT_TYPE_UNKNOWN)
+                    .setUsage(AudioAttributes.USAGE_NOTIFICATION_EVENT).build();
+            mp = MediaPlayer.create(getActivity(), R.raw.message_alert,
+                    attr, AudioManager.AUDIO_SESSION_ID_GENERATE);
         } else {
-            event = SettingsManager.eventsOnChat();
-            soundUri = SettingsManager.eventsSound();
+            mp = MediaPlayer.create(getActivity(), R.raw.message_alert);
+            mp.setAudioStreamType(AudioManager.STREAM_NOTIFICATION);
         }
 
-        if (event) {
-            final MediaPlayer mp;
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-                AudioAttributes attr = new AudioAttributes.Builder()
-                        .setContentType(AudioAttributes.CONTENT_TYPE_UNKNOWN)
-                        .setUsage(AudioAttributes.USAGE_NOTIFICATION_EVENT).build();
-                mp = MediaPlayer.create(getActivity(), soundUri,
-                        null, attr, AudioManager.AUDIO_SESSION_ID_GENERATE);
-            } else {
-                mp = MediaPlayer.create(getActivity(), soundUri);
-                mp.setAudioStreamType(AudioManager.STREAM_NOTIFICATION);
+        mp.start();
+        mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mediaPlayer) {
+                mp.release();
             }
-
-            mp.start();
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mediaPlayer) {
-                    mp.release();
-                }
-            });
-        }
+        });
     }
 
     @Override
