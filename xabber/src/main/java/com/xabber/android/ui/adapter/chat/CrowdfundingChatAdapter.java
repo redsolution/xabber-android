@@ -142,7 +142,7 @@ public class CrowdfundingChatAdapter extends RealmRecyclerViewAdapter<Crowdfundi
         } else holder.messageHeader.setVisibility(View.GONE);
 
         // time
-        String time = StringUtils.getTimeText(new Date((long)message.getReceivedTimestamp()*1000));
+        String time = StringUtils.getTimeText(new Date((long)message.getTimestamp()*1000));
         holder.messageTime.setText(time);
 
         // status
@@ -160,14 +160,14 @@ public class CrowdfundingChatAdapter extends RealmRecyclerViewAdapter<Crowdfundi
         boolean needDate;
         CrowdfundingMessage previousMessage = getMessage(i - 1);
         if (previousMessage != null) {
-            needDate = !Utils.isSameDay((long) message.getReceivedTimestamp()*1000,
-                    (long) previousMessage.getReceivedTimestamp()*1000);
+            needDate = !Utils.isSameDay((long) message.getTimestamp()*1000,
+                    (long) previousMessage.getTimestamp()*1000);
         } else needDate = true;
 
         if (holder.tvDate != null) {
             if (needDate) {
                 holder.tvDate.setText(StringUtils.getDateStringForMessage(
-                        (long) message.getReceivedTimestamp()*1000));
+                        (long) message.getTimestamp()*1000));
                 holder.tvDate.setVisibility(View.VISIBLE);
             } else holder.tvDate.setVisibility(View.GONE);
         }
