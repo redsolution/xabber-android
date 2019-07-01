@@ -13,7 +13,7 @@
     <string name="about_text_xep">XMPP is highly extensible, via extensions known as XEPs (XMPP Extension Protocol). Xabber supports a number of popular XEPs that are essential to providing great chat experience for our users.</string>
 
     <string name="about_header_developers">Developers</string>
-    <string name="about_text_developers">Xabber for Android was originally developed by <a href="http://www.redsolution.com/">Redsolution, Inc.</a> — an international software and services company currently based in Estonia. Since then, a number of individuals joined Xabber as developers, testers and translators.\n\nOur goal is to create a stable, reliable, interoperable and user friendly ecosystem for instant messaging that does not rely on proprietary services and data silos. We welcome anyone who believes in open standards and free information interchange to take part in moving Xabber forward.\n\nFollow us on Twitter and Github.</string>
+    <string name="about_text_developers">Xabber for Android was originally developed by <a href="http://www.redsolution.com/">Redsolution</a> — an international software and services company currently based in Estonia. Since then, a number of individuals joined Xabber as developers, testers and translators.\n\nOur goal is to create a stable, reliable, interoperable and user friendly ecosystem for instant messaging that does not rely on proprietary services and data silos. We welcome anyone who believes in open standards and free information interchange to take part in moving Xabber forward.\n\nFollow us on Twitter and Github.</string>
 
     <string name="about_redsolution_url">http://www.redsolution.com/</string>
     <string name="about_xabber_url">http://www.xabber.com</string>
