@@ -100,7 +100,7 @@
     <string name="connection_load_vcard">Загружать vCard\nЗагружать и обновлять персональную информацию и аватары контактов. Отключение поможет сэкономить трафик.</string>
     <string name="connection_load_images">Загружать изображения\nЗагружать изображения по ссылкам автоматически. Отключите для экономии трафика.</string>
     <string name="connection_use_carbons">Сообщения carbons\nПринимать сообщения других сессий Вашей учетной записи. Отключение поможет сэкономить трафик.</string>
-    <string name="connection_compress_image_on_upload_title">Сжатие изображений\nСжимать изображения при загрузке на сервер. Включение поможет сэкономить трафика. Некоторые серверы могут иметь ограничение размера загружаемого файла. Включите, чтобы обойти ограничение.</string>
+    <string name="connection_compress_image_on_upload_title">Сжатие изображений\nСжимать изображения при загрузке на сервер. Включение поможет сэкономить трафик. Некоторые серверы могут иметь ограничение размера загружаемого файла. Включите, чтобы обойти ограничение.</string>
     <string name="connection_dns_resolver_type_dns_java_resolver">DNSJavaResolver</string>
     <string name="connection_dns_resolver_type_mini_dns_resolver">MiniDNSResolver (экспериментальный)</string>
     <string name="events_phrases">Ключевые фразы</string>
