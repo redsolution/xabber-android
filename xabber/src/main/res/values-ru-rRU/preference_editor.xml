@@ -123,6 +123,7 @@
     <string name="category_inapp_notifications">Уведомления в приложении</string>
     <string name="category_key_phrase">Ключевые фразы</string>
     <string name="custom_notifications">Специальные уведомления</string>
+    <string name="category_other">Другое</string>
     <string name="events_on_chat_title">Оповещение</string>
     <string name="events_on_chat_summary">Уведомлять о новых сообщениях в чатах</string>
     <string name="events_on_muc_title">Оповещение</string>

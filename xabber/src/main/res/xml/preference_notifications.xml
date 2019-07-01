@@ -132,6 +132,17 @@
 
     </PreferenceCategory>
     <PreferenceCategory
+        android:title="@string/category_other">
+
+        <CheckBoxPreference
+            android:defaultValue="@bool/events_in_chat_sounds_default"
+            android:key="@string/events_in_chat_sounds_key"
+            android:title="@string/events_in_chat_sounds_title"
+            android:summary="@string/events_in_chat_sounds_summary"
+            />
+
+    </PreferenceCategory>
+    <PreferenceCategory
         android:title="@string/category_reset">
 
         <Preference

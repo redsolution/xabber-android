@@ -367,9 +367,8 @@ public class SettingsManager implements OnInitializedListener,
 //                R.bool.events_in_app_preview_default);
 //    }
 
-    @Deprecated
     public static boolean eventsInChatSounds() {
-        return getBoolean(R.string.events_in_chat_sounds_key,
+        return getNotifBoolean(R.string.events_in_chat_sounds_key,
                 R.bool.events_in_chat_sounds_default);
     }
 

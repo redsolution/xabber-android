@@ -658,7 +658,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     public void onEvent(NewIncomingMessageEvent event) {
         if (event.getAccount().equals(account) && event.getUser().equals(user)) {
             listener.playIncomingAnimation();
-            playIncomingSound();
+            if (SettingsManager.eventsInChatSounds()) playIncomingSound();
         }
     }
 

@@ -144,6 +144,7 @@
     <string name="category_inapp_notifications">In-app notification</string>
     <string name="category_key_phrase">Key phrases</string>
     <string name="custom_notifications">Custom notifications</string>
+    <string name="category_other">Other</string>
 
     <string name="events_on_chat_title">Alert</string>
     <string name="events_on_chat_summary">Alert about new messages in chats</string>
