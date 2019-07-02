@@ -326,7 +326,7 @@ public class MessageNotificationManager implements OnLoadListener {
     }
 
     private int getNextChatNotificationId() {
-        return 100 + chats.size() + 1;
+        return (int) System.currentTimeMillis();
     }
 
     private String getNotificationText(MessageItem message) {
