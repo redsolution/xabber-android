@@ -91,7 +91,9 @@ public class CrowdfundingChatAdapter extends RealmRecyclerViewAdapter<Crowdfundi
         // text
         String text = message.getMessageForCurrentLocale();
         if (text == null) text = "";
-        holder.messageText.setText(Html.fromHtml(text));
+        // Added .concat("&zwj;")
+        // to avoid click by empty space after ClickableSpan
+        holder.messageText.setText(Html.fromHtml(text.concat("&zwj;")));
         // to avoid bug - https://issuetracker.google.com/issues/36907309
         holder.messageText.setAutoLinkMask(0);
         holder.messageText.setMovementMethod(CorrectlyMeasuringTextView.LocalLinkMovementMethod.getInstance());
