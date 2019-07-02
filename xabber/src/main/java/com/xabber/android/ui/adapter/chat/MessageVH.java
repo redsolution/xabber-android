@@ -8,7 +8,6 @@ import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
-import android.text.method.LinkMovementMethod;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.ImageView;
@@ -23,6 +22,7 @@ import com.xabber.android.data.log.LogManager;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.fragment.ChatFragment;
 import com.xabber.android.ui.text.ClickTagHandler;
+import com.xabber.android.ui.widget.CorrectlyMeasuringTextView;
 import com.xabber.android.utils.StringUtils;
 
 import java.util.Arrays;
@@ -110,7 +110,7 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
             messageText.setVisibility(View.VISIBLE);
             messageNotDecrypted.setVisibility(View.GONE);
         }
-        messageText.setMovementMethod(LinkMovementMethod.getInstance());
+        messageText.setMovementMethod(CorrectlyMeasuringTextView.LocalLinkMovementMethod.getInstance());
 
         String time = StringUtils.getTimeText(new Date(messageItem.getTimestamp()));
 
