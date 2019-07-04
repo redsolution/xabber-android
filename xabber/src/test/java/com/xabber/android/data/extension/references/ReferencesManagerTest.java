@@ -105,15 +105,15 @@ public class ReferencesManagerTest {
                 "<u>Использование</u> <strike>нескольких</strike> стилей.", result.second);
     }
 
-    @Test
-    public void modifyBodyWithReferences4() {
-        String expected = "This is a quote\n" +
-                          "of two lines\n" +
-                          "Hello world!";
-        Pair<String, String> result = ReferencesManager.modifyBodyWithReferences(message4, body4);
-        assertEquals(expected, result.first);
-        assertNull(result.second);
-    }
+//    @Test
+//    public void modifyBodyWithReferences4() {
+//        String expected = "This is a quote\n" +
+//                          "of two lines\n" +
+//                          "Hello world!";
+//        Pair<String, String> result = ReferencesManager.modifyBodyWithReferences(message4, body4);
+//        assertEquals(expected, result.first);
+//        assertNull(result.second);
+//    }
 
     @Test
     public void modifyBodyWithReferences5() {

@@ -163,7 +163,7 @@ public class ReferencesManager {
                 chars = markup(begin, end, chars, (Markup) reference);
                 break;
             case quote:
-                chars = removeInLine(begin, end, chars, (Quote) reference);
+                //chars = removeInLine(begin, end, chars, (Quote) reference);
                 break;
             case mention:
                 chars = mention(begin, end, chars, (Mention) reference);
