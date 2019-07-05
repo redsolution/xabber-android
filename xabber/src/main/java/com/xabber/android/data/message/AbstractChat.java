@@ -44,6 +44,7 @@ import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.notification.MessageNotificationManager;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.RosterCacheManager;
+import com.xabber.android.utils.Utils;
 import com.xabber.xmpp.sid.OriginIdElement;
 import com.xabber.xmpp.sid.UniqStanzaHelper;
 
@@ -593,7 +594,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     }
 
     private int getSizeOfEncodedChars(String str) {
-        return com.xabber.android.utils.StringUtils.xmlEncode(str).toCharArray().length;
+        return Utils.xmlEncode(str).toCharArray().length;
     }
 
     /**

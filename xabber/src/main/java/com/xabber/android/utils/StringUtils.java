@@ -122,35 +122,6 @@ public class StringUtils {
         return builder.toString();
     }
 
-    public static String xmlEncode(String s) {
-        StringBuilder sb = new StringBuilder();
-        char c;
-        for (int i = 0; i < s.length(); i++) {
-            c = s.charAt(i);
-            switch (c) {
-                case '<':
-                    sb.append("&lt;"); //$NON-NLS-1$
-                    break;
-                case '>':
-                    sb.append("&gt;"); //$NON-NLS-1$
-                    break;
-                case '&':
-                    sb.append("&amp;"); //$NON-NLS-1$
-                    break;
-                case '\'':
-                    // In this implementation we use &apos; instead of &#39; because we encode XML, not HTML.
-                    sb.append("&apos;"); //$NON-NLS-1$
-                    break;
-                case '"':
-                    sb.append("&quot;"); //$NON-NLS-1$
-                    break;
-                default:
-                    sb.append(c);
-            }
-        }
-        return sb.toString();
-    }
-
     /**
      * @param timeStamp
      * @return String with date and time to be display.
