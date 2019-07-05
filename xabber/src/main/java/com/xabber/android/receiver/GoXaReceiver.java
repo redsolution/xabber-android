@@ -18,6 +18,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
+import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountManager;
 
 /**
@@ -29,7 +30,12 @@ public class GoXaReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        AccountManager.getInstance().goXa();
+        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
+            @Override
+            public void run() {
+                AccountManager.getInstance().goXa();
+            }
+        });
     }
 
     public static Intent createIntent(Context context) {
