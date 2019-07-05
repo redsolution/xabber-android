@@ -8,11 +8,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
-import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
-import com.bumptech.glide.request.target.Target;
 import com.xabber.android.R;
 import com.xabber.android.data.database.MessageDatabaseManager;
 import com.xabber.android.data.database.messagerealm.Attachment;
@@ -23,6 +20,8 @@ import io.realm.Realm;
 import io.realm.RealmList;
 
 public class ImageGridBuilder {
+
+    private static final int MAX_IMAGE_IN_GRID = 5;
 
     public View inflateView(ViewGroup parent, int imageCount) {
         return LayoutInflater.from(parent.getContext()).inflate(getLayoutResource(imageCount), parent, false);
@@ -51,8 +50,8 @@ public class ImageGridBuilder {
             }
 
             if (tvCounter != null) {
-                if (attachments.size() > 6) {
-                    tvCounter.setText("+" + (attachments.size() - 6));
+                if (attachments.size() > MAX_IMAGE_IN_GRID) {
+                    tvCounter.setText(new StringBuilder("+").append(attachments.size() - MAX_IMAGE_IN_GRID));
                     tvCounter.setVisibility(View.VISIBLE);
                 } else tvCounter.setVisibility(View.GONE);
             }
