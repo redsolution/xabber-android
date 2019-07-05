@@ -102,14 +102,18 @@ public class ScreenManager implements OnInitializedListener, OnCloseListener {
         if (Intent.ACTION_SCREEN_ON.equals(intent.getAction())) {
             LogManager.i(LOG_TAG, "onScreen ACTION_SCREEN_ON isOptimizingBattery: " + BatteryHelper.isOptimizingBattery());
 
-//            ConnectionManager.getInstance().updateConnections(false);
             alarmManager.cancel(goAwayPendingIntent);
             alarmManager.cancel(goXaPendingIntent);
-            AccountManager.getInstance().wakeUp();
-            AccountManager.getInstance().stopGracePeriod();
 
-            // notify server(s) that client is now active
-            ClientStateManager.setActive();
+            AccountManager.getInstance().stopGracePeriod();
+            Application.getInstance().runInBackgroundUserRequest(new Runnable() {
+                @Override
+                public void run() {
+                    // notify server(s) that client is now active
+                    AccountManager.getInstance().wakeUp();
+                    ClientStateManager.setActive();
+                }
+            });
         } else if (Intent.ACTION_SCREEN_OFF.equals(intent.getAction())) {
             LogManager.i(LOG_TAG, "onScreen ACTION_SCREEN_OFF isOptimizingBattery: " + BatteryHelper.isOptimizingBattery());
 
@@ -120,8 +124,13 @@ public class ScreenManager implements OnInitializedListener, OnCloseListener {
                 alarmManager.set(AlarmManager.RTC_WAKEUP, getTime(goXa),
                         goXaPendingIntent);
 
-            // notify server(s) that client is now inactive
-            ClientStateManager.setInactive();
+            Application.getInstance().runInBackgroundUserRequest(new Runnable() {
+                @Override
+                public void run() {
+                    // notify server(s) that client is now inactive
+                    ClientStateManager.setInactive();
+                }
+            });
         }
     }
 
