@@ -1,12 +1,12 @@
 package com.xabber.android.data.extension.references;
 
 import android.text.Html;
-import android.text.TextUtils;
 import android.util.Pair;
 
 import com.xabber.android.data.database.messagerealm.Attachment;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.ui.text.ClickSpan;
+import com.xabber.android.utils.StringUtils;
 
 import org.jivesoftware.smack.packet.ExtensionElement;
 import org.jivesoftware.smack.packet.Message;
@@ -91,7 +91,7 @@ public class ReferencesManager {
         if (references.isEmpty()) return new Pair<>(body, null);
 
         // encode HTML and split into chars
-        String[] chars = stringToChars(TextUtils.htmlEncode(body));
+        String[] chars = stringToChars(StringUtils.xmlEncode(body));
 
         // modify chars with references except markup and mention
         for (ReferenceElement reference : references) {

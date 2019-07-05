@@ -17,7 +17,6 @@ package com.xabber.android.data.message;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.text.TextUtils;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
@@ -594,7 +593,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     }
 
     private int getSizeOfEncodedChars(String str) {
-        return TextUtils.htmlEncode(str).toCharArray().length;
+        return com.xabber.android.utils.StringUtils.xmlEncode(str).toCharArray().length;
     }
 
     /**

@@ -1,8 +1,7 @@
 package com.xabber.android.data.extension.references;
 
-import android.text.TextUtils;
-
 import com.xabber.android.data.log.LogManager;
+import com.xabber.android.utils.StringUtils;
 
 import org.jivesoftware.smack.provider.ExtensionElementProvider;
 import org.jivesoftware.smackx.forward.packet.Forwarded;
@@ -55,7 +54,7 @@ public class ReferencesProvider extends ExtensionElementProvider<ReferenceElemen
                     } else if (ReferenceElement.ELEMENT_URI.equals(parser.getName())) {
                         uri = parser.nextText();
                     } else if (ReferenceElement.ELEMENT_MARKER.equals(parser.getName())) {
-                        marker = TextUtils.htmlEncode(parser.nextText());
+                        marker = StringUtils.xmlEncode(parser.nextText());
                     } else parser.next();
                     break;
                 case XmlPullParser.END_TAG:
