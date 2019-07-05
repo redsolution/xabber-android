@@ -194,7 +194,7 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
         } else if (!supported) {
             description  = getString(R.string.blocked_contacts_not_supported);
         } else {
-            int size = blockingManager.getBlockedContacts(account).size();
+            int size = blockingManager.getCachedBlockedContacts(account).size();
             if (size == 0) {
                 description = getString(R.string.blocked_contacts_empty);
             } else {

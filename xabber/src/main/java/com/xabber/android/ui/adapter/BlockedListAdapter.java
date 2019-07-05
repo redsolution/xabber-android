@@ -74,7 +74,7 @@ public class BlockedListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     @Override
     public void onChange() {
         blockedContacts.clear();
-        final Collection<UserJid> blockedContacts = BlockingManager.getInstance().getBlockedContacts(account);
+        final Collection<UserJid> blockedContacts = BlockingManager.getInstance().getCachedBlockedContacts(account);
         if (blockedContacts != null) {
             this.blockedContacts.addAll(blockedContacts);
         }
