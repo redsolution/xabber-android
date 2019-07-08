@@ -29,6 +29,7 @@ import java.util.Arrays;
 import java.util.Date;
 
 import io.realm.RealmResults;
+import io.realm.Sort;
 
 public class MessageVH extends BasicMessageVH implements View.OnClickListener, View.OnLongClickListener {
 
@@ -162,7 +163,8 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
         if (!Arrays.asList(forwardedIDs).contains(null)) {
             RealmResults<MessageItem> forwardedMessages =
                     MessageDatabaseManager.getInstance().getRealmUiThread().where(MessageItem.class)
-                            .in(MessageItem.Fields.UNIQUE_ID, forwardedIDs).findAll();
+                            .in(MessageItem.Fields.UNIQUE_ID, forwardedIDs)
+                            .findAllSorted(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
 
             if (forwardedMessages.size() > 0) {
                 RecyclerView recyclerView = forwardLayout.findViewById(R.id.recyclerView);

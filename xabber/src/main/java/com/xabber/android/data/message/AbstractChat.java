@@ -262,7 +262,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
      */
     public void newAction(Resourcepart resource, String text, ChatAction action, boolean fromMUC) {
         createAndSaveNewMessage(true, UUID.randomUUID().toString(), resource, text, null,
-                action, null, true, false, false, false,
+                action, null, null, true, false, false, false,
                 null, null, null, null, null, fromMUC, false);
     }
 
@@ -282,14 +282,14 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
      * @return
      */
     protected void createAndSaveNewMessage(boolean ui, String uid, Resourcepart resource, String text,
-                   String markupText, final ChatAction action,
+                   String markupText, final ChatAction action, final Date timestamp,
                    final Date delayTimestamp, final boolean incoming, boolean notify,
                    final boolean encrypted, final boolean offline, final String stanzaId,
                    final String originalStanza, final String parentMessageId, final String originalFrom,
                    final RealmList<ForwardId> forwardIds, boolean fromMUC, boolean fromMAM) {
 
         final MessageItem messageItem = createMessageItem(uid, resource, text, markupText, action,
-                delayTimestamp, incoming, notify, encrypted, offline, stanzaId, null,
+                timestamp, delayTimestamp, incoming, notify, encrypted, offline, stanzaId, null,
                 originalStanza, parentMessageId, originalFrom, forwardIds, fromMUC, fromMAM);
 
         saveMessageItem(ui, messageItem);
@@ -297,14 +297,14 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     }
 
     protected void createAndSaveFileMessage(boolean ui, String uid, Resourcepart resource, String text,
-                    String markupText, final ChatAction action,
+                    String markupText, final ChatAction action, final Date timestamp,
                     final Date delayTimestamp, final boolean incoming, boolean notify,
                     final boolean encrypted, final boolean offline, final String stanzaId,
                     RealmList<Attachment> attachments, final String originalStanza,
                     final String parentMessageId, final String originalFrom, boolean fromMUC, boolean fromMAM) {
 
         final MessageItem messageItem = createMessageItem(uid, resource, text, markupText, action,
-                delayTimestamp, incoming, notify, encrypted, offline, stanzaId, attachments,
+                timestamp, delayTimestamp, incoming, notify, encrypted, offline, stanzaId, attachments,
                 originalStanza, parentMessageId, originalFrom, null, fromMUC, fromMAM);
 
         saveMessageItem(ui, messageItem);
@@ -336,12 +336,12 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
                         RealmList<ForwardId> forwardIds, boolean fromMUC) {
 
         return createMessageItem(UUID.randomUUID().toString(), resource,  text,  markupText, action,
-                delayTimestamp,  incoming,  notify,  encrypted, offline,  stanzaId, attachments,
+                null, delayTimestamp,  incoming,  notify,  encrypted, offline,  stanzaId, attachments,
                  originalStanza,  parentMessageId,  originalFrom, forwardIds, fromMUC, false);
     }
 
     protected MessageItem createMessageItem(String uid, Resourcepart resource, String text,
-                        String markupText, ChatAction action,
+                        String markupText, ChatAction action, Date timestamp,
                         Date delayTimestamp, boolean incoming, boolean notify, boolean encrypted,
                         boolean offline, String stanzaId, RealmList<Attachment> attachments,
                         String originalStanza, String parentMessageId, String originalFrom,
@@ -361,7 +361,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
             send = true;
         }
 
-        final Date timestamp = new Date();
+        if (timestamp == null) timestamp = new Date();
 
         if (text.trim().isEmpty()) {
             notify = false;
@@ -928,14 +928,16 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         RealmList<ForwardId> forwardedIds = new RealmList<>();
         for (Forwarded forward : forwarded) {
             Stanza stanza = forward.getForwardedStanza();
+            DelayInformation delayInformation = forward.getDelayInformation();
+            Date timestamp = delayInformation.getStamp();
             if (stanza instanceof Message) {
-                forwardedIds.add(new ForwardId(parseInnerMessage(ui, (Message) stanza, parentMessageId)));
+                forwardedIds.add(new ForwardId(parseInnerMessage(ui, (Message) stanza, timestamp, parentMessageId)));
             }
         }
         return forwardedIds;
     }
 
-    protected abstract String parseInnerMessage(boolean ui, Message message, String parentMessageId);
+    protected abstract String parseInnerMessage(boolean ui, Message message, Date timestamp, String parentMessageId);
 
     public String getLastMessageId() {
         return lastMessageId;
@@ -973,5 +975,14 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
 
         stanzaId = message.getStanzaId();
         return stanzaId;
+    }
+
+    public static Date getDelayStamp(Message message) {
+        DelayInformation delayInformation = DelayInformation.from(message);
+        if (delayInformation != null) {
+            return delayInformation.getStamp();
+        } else {
+            return null;
+        }
     }
 }

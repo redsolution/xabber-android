@@ -236,15 +236,15 @@ public class RegularChat extends AbstractChat {
 
             // create message with file-attachments
             if (attachments.size() > 0)
-                createAndSaveFileMessage(true, uid, resource, text, markupText, null, getDelayStamp(message),
-                        true, true, encrypted,
+                createAndSaveFileMessage(true, uid, resource, text, markupText, null,
+                        null, getDelayStamp(message), true, true, encrypted,
                         isOfflineMessage(account.getFullJid().getDomain(), packet),
                         getStanzaId(message), attachments, originalStanza, null,
                         originalFrom, false, false);
 
                 // create message without attachments
-            else createAndSaveNewMessage(true, uid, resource, text, markupText, null, getDelayStamp(message),
-                    true, true, encrypted,
+            else createAndSaveNewMessage(true, uid, resource, text, markupText, null,
+                    null, getDelayStamp(message), true, true, encrypted,
                     isOfflineMessage(account.getFullJid().getDomain(), packet),
                     getStanzaId(message), originalStanza, null,
                     originalFrom, forwardIds,false, false);
@@ -255,7 +255,7 @@ public class RegularChat extends AbstractChat {
     }
 
     @Override
-    protected String parseInnerMessage(boolean ui, Message message, String parentMessageId) {
+    protected String parseInnerMessage(boolean ui, Message message, Date timestamp, String parentMessageId) {
         if (message.getType() == Message.Type.error) return null;
 
         MUCUser mucUser = MUCUser.from(message);
@@ -289,13 +289,15 @@ public class RegularChat extends AbstractChat {
 
         // create message with file-attachments
         if (attachments.size() > 0)
-            createAndSaveFileMessage(ui, uid, resource, text, markupText, null, null, true,
-                    false, encrypted, false, getStanzaId(message), attachments,
+            createAndSaveFileMessage(ui, uid, resource, text, markupText, null,
+                    timestamp, getDelayStamp(message), true, false, encrypted,
+                    false, getStanzaId(message), attachments,
                     originalStanza, parentMessageId, originalFrom, fromMuc, true);
 
             // create message without attachments
-        else createAndSaveNewMessage(ui, uid, resource, text, markupText, null, null, true,
-                false, encrypted, false, getStanzaId(message), originalStanza,
+        else createAndSaveNewMessage(ui, uid, resource, text, markupText, null,
+                timestamp, getDelayStamp(message), true, false, encrypted,
+                false, getStanzaId(message), originalStanza,
                 parentMessageId, originalFrom, forwardIds, fromMuc, true);
 
         return uid;
@@ -310,16 +312,6 @@ public class RegularChat extends AbstractChat {
         return delayInformation != null
                 && TextUtils.equals(delayInformation.getFrom(), server);
     }
-
-    public static Date getDelayStamp(Message message) {
-        DelayInformation delayInformation = DelayInformation.from(message);
-        if (delayInformation != null) {
-            return delayInformation.getStamp();
-        } else {
-            return null;
-        }
-    }
-
 
     @Override
     protected void onComplete() {

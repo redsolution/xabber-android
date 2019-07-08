@@ -56,7 +56,7 @@ public class CrowdfundingChat extends AbstractChat {
     }
 
     @Override
-    protected String parseInnerMessage(boolean ui, Message message, String parentMessageId) {
+    protected String parseInnerMessage(boolean ui, Message message, Date timestamp, String parentMessageId) {
         return null;
     }
 
