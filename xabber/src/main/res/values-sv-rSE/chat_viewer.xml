@@ -108,7 +108,6 @@
     <string name="toast_archived_show">Arkiverade chattar visas</string>
     <string name="toast_archived_hide">Arkiverade chattar är dolda</string>
     <string name="chat_notification_settings_title">Den här chattens aviseringar</string>
-    <string name="error_file_upload_not_support">Servern som du använder har inte stöd för filöverföring. Du kan prova servern xabber.org.</string>
     <string name="button_join_conference">Anslut till konferens</string>
     <string name="showcase_chat_text_1">Dra åt höger för att visa senaste chattar</string>
     <string name="showcase_chat_text_2">Dra åt vänster för att visa kontaktinformation</string>

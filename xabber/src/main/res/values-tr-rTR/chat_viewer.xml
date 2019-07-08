@@ -106,7 +106,6 @@
     <string name="toast_archived_show">Gösterilen sohbetleri arşivle</string>
     <string name="toast_archived_hide">Gizlenen sohbetleri arşivle</string>
     <string name="chat_notification_settings_title">Bu sohbet için bildirimler</string>
-    <string name="error_file_upload_not_support">Kullandığınız sunucu dosya aktarımını desteklemiyor. Bunun için xabber.org sunucusunu deneyebilirsiniz.</string>
     <string name="button_join_conference">Konferansa katıl</string>
     <string name="showcase_chat_text_1">Son sohbetleri açmak için sağa kaydırın</string>
     <string name="showcase_chat_text_2">Kişi bilgisini görüntülemek için sola kaydırın</string>

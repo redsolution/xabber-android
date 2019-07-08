@@ -108,7 +108,6 @@
     <string name="toast_archived_show">Αρχειοθέτηση εμφανιζόμενων συνομιλιών</string>
     <string name="toast_archived_hide">Αρχειοθέτηση κρυμμένων συνομιλιών</string>
     <string name="chat_notification_settings_title">Ειδοποίηση για αυτήν τη συνομιλία</string>
-    <string name="error_file_upload_not_support">Ο διακομιστής που χρησιμοποιείτε δεν υποστηρίζει μεταφορά αρχείων. Μπορείτε να δοκιμάσετε το διακομιστή xabber.org.</string>
     <string name="button_join_conference">Συμμετοχή στη συνεδρία</string>
     <string name="showcase_chat_text_1">Σαρώστε προς τα δεξιά για να ανοίξετε τις πρόσφατες συνομιλίες</string>
     <string name="showcase_chat_text_2">Σαρώστε προς τα αριστερά για να ανοίξετε στοιχεία επικοινωνίας</string>

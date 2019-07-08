@@ -110,7 +110,6 @@
     <string name="toast_archived_show">الدردشات الأرشيف هو مبين</string>
     <string name="toast_archived_hide">الدردشات الأرشيف مخفية</string>
     <string name="chat_notification_settings_title">إشعار لهذه الدردشة</string>
-    <string name="error_file_upload_not_support">الخادم الذي تستخدمه لا يدعم نقل الملفات. يمكنك تجربة خادم xabber.org.</string>
     <string name="button_join_conference">الانضمام إلى المؤتمر</string>
     <string name="showcase_chat_text_1">اسحب لليمين لفتح الدردشات الحديثة</string>
     <string name="showcase_chat_text_2">اسحب لليسار لفتح معلومات الاتصال</string>

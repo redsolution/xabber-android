@@ -105,7 +105,6 @@
     <string name="toast_archived_show">התכתבויות מהארכיון מוצגות</string>
     <string name="toast_archived_hide">התכתבויות מהארכיון מוסתרות</string>
     <string name="chat_notification_settings_title">התראה להתכתבות זו</string>
-    <string name="error_file_upload_not_support">השרת בו נעשה שימוש כרגע אינו תומך בהעברת קבצים. ניתן לנסות את השרת xabber.org.</string>
     <string name="button_join_conference">הצטרפות לוועידה</string>
     <string name="action_copy_link">העתקת קישור</string>
     <string name="action_download">הורדה</string>

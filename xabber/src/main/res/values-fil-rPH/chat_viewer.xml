@@ -106,7 +106,6 @@
     <string name="toast_archived_show">I-archive ang mga chats na pinapakita</string>
     <string name="toast_archived_hide">Nakatago ang mga chat sa archive</string>
     <string name="chat_notification_settings_title">Abiso para sa chat na ito</string>
-    <string name="error_file_upload_not_support">Ang server na iyong ginagamit ay hindi sumusuporta sa paglilipat ng file. Maaari mong subukan ang xabber.org server.</string>
     <string name="button_join_conference">Sumali sa kumperensya</string>
     <string name="showcase_chat_text_1">Mag-swipe pakanan upang buksan ang mga kamakailang mga chat</string>
     <string name="showcase_chat_text_2">Mag-swipe pakaliwa upang buksan ang impormasyon ng kontak</string>

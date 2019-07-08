@@ -106,7 +106,6 @@
     <string name="toast_archived_show">Arkiver viste sludringer</string>
     <string name="toast_archived_hide">Arkiver skjulte sludringer</string>
     <string name="chat_notification_settings_title">Merknad for denne sludringen</string>
-    <string name="error_file_upload_not_support">Tjeneren du bruker støtter ikke filoverføringer. Du kan prøve xabber.org-tjeneren.</string>
     <string name="button_join_conference">Ta del i konferanse</string>
     <string name="showcase_chat_text_1">Dra til høyre for å åpne nylige sludringer</string>
     <string name="showcase_chat_text_2">Dra til venstre for å åpne kontaktinfo</string>

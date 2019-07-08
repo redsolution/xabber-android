@@ -280,8 +280,9 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
     protected void onAttachButtonPressed() {
         if (!HttpFileUploadManager.getInstance().isFileUploadSupported(account)) {
             // show notification
+            String serverName = account.getFullJid().getDomain().toString();
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            builder.setMessage(R.string.error_file_upload_not_support)
+            builder.setMessage(getActivity().getResources().getString(R.string.error_file_upload_not_support, serverName))
                     .setTitle(getString(R.string.error_sending_file, ""))
                     .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                         @Override
