@@ -66,8 +66,7 @@ public class ContactDeleteDialogFragment extends DialogFragment implements Dialo
             // delete chat
             AbstractChat chat = MessageManager.getInstance().getChat(account, user);
             if (chat != null) {
-                MessageManager.getInstance().clearHistory(account, user);
-                MessageManager.getInstance().removeChat(chat);
+                chat.setArchived(true, true);
             }
 
             // remove roster contact
