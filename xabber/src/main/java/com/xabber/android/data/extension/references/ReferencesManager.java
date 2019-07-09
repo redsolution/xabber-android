@@ -95,7 +95,7 @@ public class ReferencesManager {
 
         // modify chars with references except markup and mention
         for (ReferenceElement reference : references) {
-            if (!(reference instanceof Markup) && !(reference instanceof Mention))
+            if (!(reference instanceof Markup) && !(reference instanceof Mention) && !(reference instanceof Quote))
                 chars = modifyBodyWithReferences(chars, reference);
         }
 
@@ -105,7 +105,7 @@ public class ReferencesManager {
 
         // modify chars with markup and mention references
         for (ReferenceElement reference : references) {
-            if (reference instanceof Markup || reference instanceof Mention)
+            if (reference instanceof Markup || reference instanceof Mention || reference instanceof Quote)
                 chars = modifyBodyWithReferences(chars, reference);
         }
         markupBody = charsToString(chars);
@@ -163,7 +163,7 @@ public class ReferencesManager {
                 chars = markup(begin, end, chars, (Markup) reference);
                 break;
             case quote:
-                //chars = removeInLine(begin, end, chars, (Quote) reference);
+                chars = quote(begin, end, chars, (Quote) reference);
                 break;
             case mention:
                 chars = mention(begin, end, chars, (Mention) reference);
@@ -179,12 +179,13 @@ public class ReferencesManager {
         return source;
     }
 
-    private static String[] removeInLine(int begin, int end, String[] source, Quote reference) {
+    private static String[] quote(int begin, int end, String[] source, Quote reference) {
         int del = reference.getMarker().length();
         int removed = 0;
         for (int i = begin; i <= end; i++) {
             if (removed < del) {
-                source[i] = String.valueOf(Character.MIN_VALUE);
+                if (removed == 0) source[i] = "<font color='#9e9e9e'>\u2503</font> ";
+                else source[i] = String.valueOf(Character.MIN_VALUE);
                 removed++;
             }
             if (source[i].equals("\n")) removed = 0;
