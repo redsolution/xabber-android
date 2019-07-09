@@ -10,8 +10,8 @@ android {
     defaultConfig {
         minSdkVersion 15
         targetSdkVersion 28
-        versionCode 633
-        versionName '2.6.4(633)'
+        versionCode 634
+        versionName '2.6.4(634)'
         manifestPlaceholders = [crashlytics:getLocalProperty("crashlytics.key")]
     }
 
