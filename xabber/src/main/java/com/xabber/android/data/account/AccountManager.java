@@ -423,6 +423,10 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
             throw new NetworkException(R.string.EMPTY_USER_NAME);
         }
 
+        if (user.contains(" ")) {
+            throw new NetworkException(R.string.INCORRECT_USER_NAME);
+        }
+
         DomainBareJid serverName;
         try {
             serverName = JidCreate.domainBareFrom(user);

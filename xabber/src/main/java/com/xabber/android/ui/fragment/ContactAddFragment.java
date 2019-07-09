@@ -175,7 +175,12 @@ public class ContactAddFragment extends GroupEditorFragment
         }
 
         String contactString = userView.getText().toString();
-        contactString = contactString.replace(" ", "");
+        contactString = contactString.trim();
+
+        if (contactString.contains(" ")) {
+            userView.setError(getString(R.string.INCORRECT_USER_NAME));
+            return;
+        }
 
         if (TextUtils.isEmpty(contactString)) {
             userView.setError(getString(R.string.EMPTY_USER_NAME));
