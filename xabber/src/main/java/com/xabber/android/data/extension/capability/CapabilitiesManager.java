@@ -15,7 +15,7 @@
 package com.xabber.android.data.extension.capability;
 
 import android.content.Context;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import com.xabber.android.BuildConfig;
 import com.xabber.android.R;

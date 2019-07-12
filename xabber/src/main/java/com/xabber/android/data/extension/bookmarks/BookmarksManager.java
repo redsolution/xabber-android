@@ -1,6 +1,6 @@
 package com.xabber.android.data.extension.bookmarks;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;

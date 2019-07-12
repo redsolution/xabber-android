@@ -13,12 +13,10 @@
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
 package com.xabber.android.data.connection;
-
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.widget.Toast;
 
 import com.xabber.android.data.Application;
-import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.listeners.OnPacketListener;

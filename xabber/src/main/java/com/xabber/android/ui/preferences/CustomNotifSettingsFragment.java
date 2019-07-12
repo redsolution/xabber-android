@@ -12,8 +12,8 @@ import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.RingtonePreference;
 import android.preference.SwitchPreference;
-import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 
 import com.xabber.android.R;
 import com.xabber.android.data.notification.custom_notification.CustomNotifyPrefsManager;

@@ -13,8 +13,8 @@ import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.RingtonePreference;
-import android.support.annotation.RequiresApi;
-import android.support.annotation.StringRes;
+import androidx.annotation.RequiresApi;
+import androidx.annotation.StringRes;
 import android.widget.Toast;
 
 import com.xabber.android.R;

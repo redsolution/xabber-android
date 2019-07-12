@@ -14,7 +14,7 @@
  */
 package com.xabber.android.data.connection;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.util.Log;
 
 import com.xabber.android.data.account.AccountErrorEvent;
