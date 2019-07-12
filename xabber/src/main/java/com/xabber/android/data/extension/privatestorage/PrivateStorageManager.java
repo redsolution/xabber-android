@@ -1,6 +1,6 @@
 package com.xabber.android.data.extension.privatestorage;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;

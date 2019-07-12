@@ -17,15 +17,11 @@ package com.xabber.android.data;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Handler;
-import android.os.StrictMode;
-import android.support.annotation.NonNull;
-import android.support.multidex.MultiDex;
+import androidx.annotation.NonNull;
+import androidx.multidex.MultiDex;
 
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.core.CrashlyticsCore;
-import com.frogermcs.androiddevmetrics.AndroidDevMetrics;
-import com.github.moduth.blockcanary.BlockCanary;
-import com.squareup.leakcanary.LeakCanary;
 import com.xabber.android.BuildConfig;
 import com.xabber.android.R;
 import com.xabber.android.data.account.AccountManager;
