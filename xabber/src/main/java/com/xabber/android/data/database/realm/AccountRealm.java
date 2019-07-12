@@ -1,6 +1,6 @@
 package com.xabber.android.data.database.realm;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import com.xabber.android.data.account.ArchiveMode;
 import com.xabber.android.data.account.StatusMode;

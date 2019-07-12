@@ -1,7 +1,7 @@
 package com.xabber.android.ui.adapter.accountoptions;
 
-import android.support.annotation.DrawableRes;
-import android.support.annotation.StringRes;
+import androidx.annotation.DrawableRes;
+import androidx.annotation.StringRes;
 
 import com.xabber.android.BuildConfig;
 import com.xabber.android.R;

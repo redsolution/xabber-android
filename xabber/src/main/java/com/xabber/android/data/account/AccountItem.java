@@ -14,7 +14,7 @@
  */
 package com.xabber.android.data.account;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.xabber.android.R;
 import com.xabber.android.data.NetworkException;

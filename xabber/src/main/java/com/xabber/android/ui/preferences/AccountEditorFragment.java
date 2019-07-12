@@ -3,7 +3,7 @@ package com.xabber.android.ui.preferences;
 import android.app.Activity;
 import android.os.Bundle;
 import android.preference.Preference;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.widget.Toast;
 
 import com.xabber.android.R;

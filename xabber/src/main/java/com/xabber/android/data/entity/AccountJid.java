@@ -2,11 +2,11 @@ package com.xabber.android.data.entity;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.xabber.android.data.log.LogManager;
 
-import org.jxmpp.jid.BareJid;
+
 import org.jxmpp.jid.DomainBareJid;
 import org.jxmpp.jid.FullJid;
 import org.jxmpp.jid.impl.JidCreate;

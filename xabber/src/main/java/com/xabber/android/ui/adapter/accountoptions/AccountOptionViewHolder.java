@@ -1,6 +1,6 @@
 package com.xabber.android.ui.adapter.accountoptions;
 
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
