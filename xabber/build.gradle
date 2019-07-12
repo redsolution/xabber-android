@@ -4,12 +4,12 @@ apply plugin: 'com.frogermcs.androiddevmetrics'
 apply plugin: 'io.fabric'
 
 android {
-    compileSdkVersion 28
-    buildToolsVersion '28.0.3'
+    compileSdkVersion 29
+    buildToolsVersion '29.0.1'
 
     defaultConfig {
         minSdkVersion 15
-        targetSdkVersion 28
+        targetSdkVersion 29
         versionCode 635
         versionName '2.6.4(635)'
         manifestPlaceholders = [crashlytics:getLocalProperty("crashlytics.key")]
@@ -126,10 +126,6 @@ def getLocalProperty(String propertyName) {
     }
 }
 
-ext {
-    supportVersion = '28.0.0'
-}
-
 dependencies {
     implementation project(path: 'MemorizingTrustManager', configuration: 'default')
     implementation project(path: 'emojicon', configuration: 'default')
@@ -141,10 +137,10 @@ dependencies {
     implementation 'com.github.str4tocaster.smack:smack-resolver-dnsjava:ffb99cc'
 
     // android support
-    implementation "com.android.support:design:$supportVersion"
-    implementation "com.android.support:support-v13:$supportVersion"
-    implementation "com.android.support:customtabs:$supportVersion"
-    implementation 'com.android.support:multidex:1.0.3'
+    implementation 'com.google.android.material:material:1.0.0'
+    implementation 'androidx.legacy:legacy-support-v13:1.0.0'
+    implementation 'androidx.browser:browser:1.0.0'
+    implementation 'androidx.multidex:multidex:2.0.0'
 
     // firebase
     implementation 'com.google.firebase:firebase-messaging:17.3.4'
@@ -188,7 +184,7 @@ dependencies {
 
     // ui
     implementation 'me.relex:circleindicator:1.2.2@aar'
-    implementation 'com.github.bumptech.glide:glide:3.7.0'
+    implementation 'com.github.bumptech.glide:glide:3.8.0'
     implementation 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1'
     implementation 'ru.egslava:MaskedEditText:1.0.5'
     implementation 'eu.davidea:flexible-adapter:5.0.0-rc4'
