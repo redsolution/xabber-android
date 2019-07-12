@@ -184,7 +184,7 @@ dependencies {
 
     // ui
     implementation 'me.relex:circleindicator:1.2.2@aar'
-    implementation 'com.github.bumptech.glide:glide:3.8.0'
+    implementation 'com.github.bumptech.glide:glide:4.9.0'
     implementation 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1'
     implementation 'ru.egslava:MaskedEditText:1.0.5'
     implementation 'eu.davidea:flexible-adapter:5.0.0-rc4'

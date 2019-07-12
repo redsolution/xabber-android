@@ -193,7 +193,6 @@ public class ContactListDrawerFragment extends Fragment implements View.OnClickL
 
     private void update() {
         Glide.with(this)
-                .fromResource()
                 .load(headerImageResources[AccountPainter.getDefaultAccountColorLevel()])
                 .fitCenter()
                 .into(drawerHeaderImage);

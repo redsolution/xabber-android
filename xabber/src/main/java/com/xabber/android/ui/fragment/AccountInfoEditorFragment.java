@@ -4,10 +4,13 @@ import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Fragment;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -24,8 +27,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.animation.GlideAnimation;
-import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.target.CustomTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.soundcloud.android.crop.Crop;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
@@ -45,6 +48,7 @@ import com.xabber.xmpp.vcard.VCardProperty;
 import org.jivesoftware.smackx.vcardtemp.packet.VCard;
 import org.jxmpp.jid.Jid;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -530,34 +534,43 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
 
     private void preprocessAndStartCrop(Uri source) {
         enableProgressMode(getString(R.string.processing_image));
-        Glide.with(this).load(source).asBitmap().toBytes().override(MAX_IMAGE_SIZE, MAX_IMAGE_SIZE).into(new SimpleTarget<byte[]>() {
-            @Override
-            public void onResourceReady(final byte[] data, GlideAnimation anim) {
-                Application.getInstance().runInBackgroundUserRequest(new Runnable() {
+        Glide.with(this).asBitmap().load(source).override(MAX_IMAGE_SIZE, MAX_IMAGE_SIZE)
+                .into(new CustomTarget<Bitmap>() {
                     @Override
-                    public void run() {
-                        final Uri rotatedImage = FileManager.saveImage(data, ROTATE_FILE_NAME);
-                        if (rotatedImage == null) return;
-
-                        Application.getInstance().runOnUiThread(new Runnable() {
+                    public void onResourceReady(@NonNull final Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+                        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
                             @Override
                             public void run() {
-                                startImageCropActivity(rotatedImage);
-                                disableProgressMode();
+                                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                                resource.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                                byte[] data = stream.toByteArray();
+                                resource.recycle();
+
+                                final Uri rotatedImage = FileManager.saveImage(data, ROTATE_FILE_NAME);
+                                if (rotatedImage == null) return;
+
+                                Application.getInstance().runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        startImageCropActivity(rotatedImage);
+                                        disableProgressMode();
+                                    }
+                                });
+
                             }
                         });
-
                     }
-                });
-            }
 
-            @Override
-            public void onLoadFailed(Exception e, Drawable errorDrawable) {
-                super.onLoadFailed(e, errorDrawable);
-                disableProgressMode();
-                Toast.makeText(getActivity(), R.string.error_during_image_processing, Toast.LENGTH_SHORT).show();
-            }
-        });
+                    @Override
+                    public void onLoadFailed(@Nullable Drawable errorDrawable) {
+                        super.onLoadFailed(errorDrawable);
+                        disableProgressMode();
+                        Toast.makeText(getActivity(), R.string.error_during_image_processing, Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onLoadCleared(@Nullable Drawable placeholder) { }
+                });
     }
 
     private void startImageCropActivity(Uri srcUri) {
