@@ -5,7 +5,7 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.content.pm.PackageManager;
 import android.os.Build;
-import android.support.v4.content.ContextCompat;
+import androidx.core.content.ContextCompat;
 
 import com.xabber.android.data.Application;
 
@@ -21,7 +21,7 @@ public class PermissionsRequester {
         return checkAndRequestPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, fragment, requestCode);
     }
 
-    public static boolean requestFileReadPermissionIfNeeded(android.support.v4.app.Fragment fragment, int requestCode) {
+    public static boolean requestFileReadPermissionIfNeeded(androidx.fragment.app.Fragment fragment, int requestCode) {
         return checkAndRequestPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, fragment, requestCode);
     }
 
@@ -29,7 +29,7 @@ public class PermissionsRequester {
         return checkAndRequestPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, fragment, requestCode);
     }
 
-    public static boolean requestFileWritePermissionIfNeeded(android.support.v4.app.Fragment fragment, int requestCode) {
+    public static boolean requestFileWritePermissionIfNeeded(androidx.fragment.app.Fragment fragment, int requestCode) {
         return checkAndRequestPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, fragment, requestCode);
     }
 
@@ -41,7 +41,7 @@ public class PermissionsRequester {
         return checkAndRequestPermission(Manifest.permission.CAMERA, fragment, requestCode);
     }
 
-    public static boolean requestCameraPermissionIfNeeded(android.support.v4.app.Fragment  fragment, int requestCode) {
+    public static boolean requestCameraPermissionIfNeeded(androidx.fragment.app.Fragment  fragment, int requestCode) {
         return checkAndRequestPermission(Manifest.permission.CAMERA, fragment, requestCode);
     }
 
@@ -79,7 +79,7 @@ public class PermissionsRequester {
         return false;
     }
 
-    private static boolean checkAndRequestPermission(String permission, android.support.v4.app.Fragment fragment, int requestCode) {
+    private static boolean checkAndRequestPermission(String permission, androidx.fragment.app.Fragment fragment, int requestCode) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             return true;
         }
