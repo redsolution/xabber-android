@@ -20,7 +20,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 @RunWith(RobolectricTestRunner.class)
-@Config(application = TestApplication.class)
+@Config(sdk = 28, application = TestApplication.class)
 public class ReferencesProviderTest {
 
     private ReferencesProvider provider;
