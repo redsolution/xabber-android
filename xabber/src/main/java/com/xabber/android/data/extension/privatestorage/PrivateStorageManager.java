@@ -9,7 +9,7 @@ import com.xabber.android.ui.adapter.XMPPAccountAuthAdapter;
 
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
-import org.jivesoftware.smack.tcp.XMPPTCPConnection;
+import com.xabber.xmpp.smack.XMPPTCPConnection;
 import org.jivesoftware.smackx.iqprivate.PrivateDataManager;
 import org.jivesoftware.smackx.iqprivate.packet.PrivateData;
 

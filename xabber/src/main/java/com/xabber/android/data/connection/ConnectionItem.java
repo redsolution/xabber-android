@@ -32,7 +32,7 @@ import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.parsing.ExceptionLoggingCallback;
 import org.jivesoftware.smack.roster.Roster;
 import org.jivesoftware.smack.sm.predicates.ForEveryStanza;
-import org.jivesoftware.smack.tcp.XMPPTCPConnection;
+import com.xabber.xmpp.smack.XMPPTCPConnection;
 import org.jivesoftware.smackx.ping.PingFailedListener;
 import org.jivesoftware.smackx.ping.PingManager;
 import org.jxmpp.jid.DomainBareJid;

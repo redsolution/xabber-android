@@ -19,6 +19,7 @@ import android.util.Log;
 
 import com.xabber.android.data.account.AccountErrorEvent;
 import com.xabber.android.data.account.AccountItem;
+import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.extension.forward.ForwardComment;
 import com.xabber.android.data.extension.forward.ForwardCommentProvider;
 import com.xabber.android.data.extension.httpfileupload.CustomDataProvider;
@@ -29,7 +30,7 @@ import com.xabber.android.data.log.AndroidLoggingHandler;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.xaccount.HttpConfirmIq;
 import com.xabber.android.data.xaccount.HttpConfirmIqProvider;
-import com.xabber.xmpp.SASLXTOKENMechanism;
+import com.xabber.xmpp.smack.SASLXTOKENMechanism;
 import com.xabber.xmpp.XTokenIQ;
 
 import org.greenrobot.eventbus.EventBus;
@@ -38,7 +39,7 @@ import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.provider.ProviderManager;
 import org.jivesoftware.smack.sasl.SASLErrorException;
-import org.jivesoftware.smack.tcp.XMPPTCPConnection;
+import com.xabber.xmpp.smack.XMPPTCPConnection;
 import org.jivesoftware.smack.util.DNSUtil;
 import org.jivesoftware.smackx.xdata.packet.DataForm;
 

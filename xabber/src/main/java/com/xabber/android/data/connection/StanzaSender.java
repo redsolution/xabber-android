@@ -14,7 +14,7 @@ import org.jivesoftware.smack.StanzaListener;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.sm.StreamManagementException;
-import org.jivesoftware.smack.tcp.XMPPTCPConnection;
+import com.xabber.xmpp.smack.XMPPTCPConnection;
 
 public class StanzaSender {
     private static String LOG_TAG = StanzaSender.class.getSimpleName();

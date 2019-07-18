@@ -25,7 +25,7 @@ import com.xabber.android.ui.color.BarPainter;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.roster.Roster;
-import org.jivesoftware.smack.tcp.XMPPTCPConnection;
+import com.xabber.xmpp.smack.XMPPTCPConnection;
 import org.jivesoftware.smackx.blocking.BlockingCommandManager;
 import org.jivesoftware.smackx.csi.ClientStateIndicationManager;
 import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;

@@ -16,6 +16,8 @@ package com.xabber.android.data;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.Handler;
 import android.os.StrictMode;
 import androidx.annotation.NonNull;
@@ -615,5 +617,15 @@ public class Application extends android.app.Application {
 
     public boolean isServiceStarted() {
         return serviceStarted;
+    }
+
+    public String getVersionName() {
+        try {
+            PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+            return getString(R.string.application_title_full) + " " + pInfo.versionName;
+        } catch (PackageManager.NameNotFoundException e) {
+            LogManager.exception(this, e);
+        }
+        return "";
     }
 }

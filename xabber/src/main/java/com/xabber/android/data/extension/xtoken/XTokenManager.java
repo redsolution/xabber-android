@@ -1,12 +1,18 @@
 package com.xabber.android.data.extension.xtoken;
 
+import android.os.Build;
+
+import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.database.realm.XTokenRealm;
 import com.xabber.xmpp.XToken;
 import com.xabber.xmpp.XTokenIQ;
+import com.xabber.xmpp.smack.XMPPTCPConnection;
+import com.xabber.xmpp.smack.XTokenRequestIQ;
 
+import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Stanza;
 
 public class XTokenManager implements OnPacketListener {
@@ -24,6 +30,19 @@ public class XTokenManager implements OnPacketListener {
         if (packet instanceof XTokenIQ) {
             AccountManager.getInstance()
                     .updateXToken(connection.getAccount(), iqToXToken((XTokenIQ) packet));
+        }
+    }
+
+    public void sendXTokenRequest(XMPPTCPConnection connection) {
+        String device = Build.MANUFACTURER + " " + Build.MODEL + ", Android " + Build.VERSION.RELEASE;
+        String client = Application.getInstance().getVersionName();
+        XTokenRequestIQ requestIQ = new XTokenRequestIQ(client, device);
+        requestIQ.setType(IQ.Type.set);
+        requestIQ.setTo(connection.getHost());
+        try {
+            connection.sendStanza(requestIQ);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

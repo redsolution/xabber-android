@@ -7,14 +7,14 @@ import android.util.Patterns;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.xmpp.SASLXTOKENMechanism;
+import com.xabber.xmpp.smack.SASLXTOKENMechanism;
 import org.jivesoftware.smack.SASLAuthentication;
 
 import org.apache.http.conn.ssl.AllowAllHostnameVerifier;
 import org.jivesoftware.smack.proxy.ProxyInfo;
 import org.jivesoftware.smack.sasl.core.SASLXOauth2Mechanism;
-import org.jivesoftware.smack.tcp.XMPPTCPConnection;
-import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
+import com.xabber.xmpp.smack.XMPPTCPConnection;
+import com.xabber.xmpp.smack.XMPPTCPConnectionConfiguration;
 import org.jivesoftware.smack.util.TLSUtils;
 
 import java.net.InetAddress;
