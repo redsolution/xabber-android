@@ -32,6 +32,7 @@ import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.RealmManager;
 import com.xabber.android.data.database.realm.AccountRealm;
 import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.extension.xtoken.XTokenManager;
 
 import java.security.KeyFactory;
 import java.security.KeyPair;
@@ -455,6 +456,7 @@ public class AccountTable extends AbstractTable {
         }
         accountRealm.setPassword(password);
 
+        accountRealm.setXToken(XTokenManager.tokenToXTokenRealm(connectionSettings.getXToken()));
         accountRealm.setToken(connectionSettings.getToken());
         accountRealm.setOrder(accountItem.getOrder());
         accountRealm.setSyncNotAllowed(accountItem.isSyncNotAllowed());

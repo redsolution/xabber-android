@@ -24,10 +24,13 @@ import com.xabber.android.data.extension.forward.ForwardCommentProvider;
 import com.xabber.android.data.extension.httpfileupload.CustomDataProvider;
 import com.xabber.android.data.extension.references.ReferenceElement;
 import com.xabber.android.data.extension.references.ReferencesProvider;
+import com.xabber.android.data.extension.xtoken.XTokenProvider;
 import com.xabber.android.data.log.AndroidLoggingHandler;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.xaccount.HttpConfirmIq;
 import com.xabber.android.data.xaccount.HttpConfirmIqProvider;
+import com.xabber.xmpp.SASLXTOKENMechanism;
+import com.xabber.xmpp.XTokenIQ;
 
 import org.greenrobot.eventbus.EventBus;
 import org.jivesoftware.smack.AbstractXMPPConnection;
@@ -137,6 +140,9 @@ class ConnectionThread {
         ProviderManager.addExtensionProvider(ReferenceElement.ELEMENT,
                 ReferenceElement.NAMESPACE, new ReferencesProvider());
 
+        ProviderManager.addIQProvider(XTokenIQ.ELEMENT,
+                XTokenIQ.NAMESPACE, new XTokenProvider());
+
         try {
             LogManager.i(this, "Trying to connect and login...");
             if (!connection.isConnected()) {
@@ -157,6 +163,10 @@ class ConnectionThread {
             }
         } catch (SASLErrorException e)  {
             LogManager.exception(this, e);
+
+            if (e.getMechanism().equals(SASLXTOKENMechanism.NAME)) {
+                AccountManager.getInstance().removeXToken(connectionItem.getAccount());
+            }
 
             AccountErrorEvent accountErrorEvent = new AccountErrorEvent(connectionItem.getAccount(),
                     AccountErrorEvent.Type.AUTHORIZATION, e.getMessage());

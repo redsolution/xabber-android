@@ -13,17 +13,21 @@
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
 package com.xabber.android.data.connection;
-import androidx.annotation.NonNull;
+
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+
 import com.xabber.android.data.Application;
-import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.roster.AccountRosterListener;
+import com.xabber.xmpp.XToken;
 
-import org.jivesoftware.smack.*;
+import org.jivesoftware.smack.SmackException;
+import org.jivesoftware.smack.StanzaListener;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.parsing.ExceptionLoggingCallback;
 import org.jivesoftware.smack.roster.Roster;
@@ -77,7 +81,7 @@ public abstract class ConnectionItem {
     public ConnectionItem(boolean custom,
                           String host, int port, DomainBareJid serverName, Localpart userName,
                           Resourcepart resource, boolean storePassword, String password, String token,
-                          boolean saslEnabled, TLSMode tlsMode, boolean compression,
+                          XToken xToken, boolean saslEnabled, TLSMode tlsMode, boolean compression,
                           ProxyType proxyType, String proxyHost, int proxyPort,
                           String proxyUser, String proxyPassword) {
         this.account = AccountJid.from(userName, serverName, resource);
@@ -86,7 +90,7 @@ public abstract class ConnectionItem {
         connectionListener = new com.xabber.android.data.connection.ConnectionListener(this);
 
         connectionSettings = new ConnectionSettings(userName,
-                serverName, resource, custom, host, port, password, token,
+                serverName, resource, custom, host, port, password, token, xToken,
                 saslEnabled, tlsMode, compression, proxyType, proxyHost,
                 proxyPort, proxyUser, proxyPassword);
         connection = createConnection();

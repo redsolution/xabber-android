@@ -14,6 +14,8 @@
  */
 package com.xabber.android.data.connection;
 
+import com.xabber.xmpp.XToken;
+
 import org.jxmpp.jid.DomainBareJid;
 import org.jxmpp.jid.parts.Localpart;
 import org.jxmpp.jid.parts.Resourcepart;
@@ -65,6 +67,11 @@ public class ConnectionSettings {
     private String token;
 
     /**
+     * X-Token.
+     */
+    private XToken xtoken;
+
+    /**
      * Whether SASL Authentication Enabled.
      */
     private boolean saslEnabled;
@@ -91,7 +98,7 @@ public class ConnectionSettings {
 
     public ConnectionSettings(Localpart userName,
                               DomainBareJid serverName, Resourcepart resource, boolean custom, String host,
-                              int port, String password, String token, boolean saslEnabled, TLSMode tlsMode,
+                              int port, String password, String token, XToken xtoken, boolean saslEnabled, TLSMode tlsMode,
                               boolean compression, ProxyType proxyType, String proxyHost,
                               int proxyPort, String proxyUser, String proxyPassword) {
         super();
@@ -103,6 +110,7 @@ public class ConnectionSettings {
         this.port = port;
         this.password = password;
         this.token = token;
+        this.xtoken = xtoken;
         this.saslEnabled = saslEnabled;
         this.tlsMode = tlsMode;
         this.compression = compression;
@@ -155,6 +163,10 @@ public class ConnectionSettings {
 
     public String getToken() {
         return token;
+    }
+
+    public XToken getXToken() {
+        return xtoken;
     }
 
     /**
@@ -224,6 +236,13 @@ public class ConnectionSettings {
      */
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    /**
+     * Sets XToken.
+     */
+    public void setXToken(XToken token) {
+        this.xtoken = token;
     }
 
 }

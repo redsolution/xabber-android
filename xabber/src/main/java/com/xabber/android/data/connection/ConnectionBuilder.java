@@ -7,6 +7,8 @@ import android.util.Patterns;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.log.LogManager;
+import com.xabber.xmpp.SASLXTOKENMechanism;
+import org.jivesoftware.smack.SASLAuthentication;
 
 import org.apache.http.conn.ssl.AllowAllHostnameVerifier;
 import org.jivesoftware.smack.proxy.ProxyInfo;
@@ -75,6 +77,13 @@ class ConnectionBuilder {
 
             // and set token as password
             builder.setUsernameAndPassword(connectionSettings.getUserName(), connectionSettings.getToken());
+        }
+
+        // X-TOKEN
+        if (connectionSettings.getXToken() != null && !connectionSettings.getXToken().isExpired()) {
+            SASLAuthentication.registerSASLMechanism(new SASLXTOKENMechanism());
+            builder.addEnabledSaslMechanism(SASLXTOKENMechanism.NAME);
+            builder.setUsernameAndPassword(connectionSettings.getUserName(), connectionSettings.getXToken().getToken());
         }
 
         LogManager.i(LOG_TAG, "new XMPPTCPConnection " + connectionSettings.getServerName());
