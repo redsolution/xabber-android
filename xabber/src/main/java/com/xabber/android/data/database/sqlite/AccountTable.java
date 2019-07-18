@@ -456,7 +456,8 @@ public class AccountTable extends AbstractTable {
         }
         accountRealm.setPassword(password);
 
-        accountRealm.setXToken(XTokenManager.tokenToXTokenRealm(connectionSettings.getXToken()));
+        if (connectionSettings.getXToken() != null)
+            accountRealm.setXToken(XTokenManager.tokenToXTokenRealm(connectionSettings.getXToken()));
         accountRealm.setToken(connectionSettings.getToken());
         accountRealm.setOrder(accountItem.getOrder());
         accountRealm.setSyncNotAllowed(accountItem.isSyncNotAllowed());
