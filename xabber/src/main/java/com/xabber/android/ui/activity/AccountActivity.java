@@ -280,6 +280,12 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
                     } else startActivity(AccountSyncActivity.createIntent(this, account));
                 } else startActivity(TutorialActivity.createIntent(this));
                 break;
+            case SESSIONS:
+                if (accountItem.getConnectionSettings().getXToken() != null &&
+                        !accountItem.getConnectionSettings().getXToken().isExpired()) {
+                    startActivity(ActiveSessionsActivity.createIntent(this, account));
+                }
+                break;
         }
     }
 
