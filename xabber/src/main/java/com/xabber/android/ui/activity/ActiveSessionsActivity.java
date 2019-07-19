@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.appcompat.widget.Toolbar;
@@ -31,6 +32,8 @@ public class ActiveSessionsActivity extends ManagedActivity {
     private TextView tvCurrentDevice;
     private TextView tvCurrentIPAddress;
     private TextView tvCurrentDate;
+    private ProgressBar progressBar;
+    private View contentView;
 
     private AccountItem accountItem;
 
@@ -72,12 +75,15 @@ public class ActiveSessionsActivity extends ManagedActivity {
         toolbar.setTitle(R.string.account_active_sessions);
         barPainter = new BarPainter(this, toolbar);
         barPainter.updateWithAccountName(account);
+        progressBar = findViewById(R.id.progressBar);
+        contentView = findViewById(R.id.contentView);
 
         // other sessions
         RecyclerView recyclerView = findViewById(R.id.rvSessions);
         adapter = new SessionAdapter();
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
+        recyclerView.setNestedScrollingEnabled(false);
 
         // current session
         tvCurrentClient = findViewById(R.id.tvClient);
@@ -89,17 +95,22 @@ public class ActiveSessionsActivity extends ManagedActivity {
     }
 
     private void updateData() {
+        progressBar.setVisibility(View.VISIBLE);
+        contentView.setVisibility(View.GONE);
         XTokenManager.getInstance().requestSessions(
             accountItem.getConnectionSettings().getXToken().getUid(),
             accountItem.getConnection(), new XTokenManager.SessionsListener() {
                 @Override
                 public void onResult(SessionVO currentSession, List<SessionVO> sessions) {
+                    progressBar.setVisibility(View.GONE);
+                    contentView.setVisibility(View.VISIBLE);
                     setCurrentSession(currentSession);
                     adapter.setItems(sessions);
                 }
 
                 @Override
                 public void onError() {
+                    progressBar.setVisibility(View.GONE);
                     // TODO: 19.07.19 show error
                 }
             });
