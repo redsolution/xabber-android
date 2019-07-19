@@ -25,6 +25,8 @@ import com.xabber.android.data.extension.forward.ForwardCommentProvider;
 import com.xabber.android.data.extension.httpfileupload.CustomDataProvider;
 import com.xabber.android.data.extension.references.ReferenceElement;
 import com.xabber.android.data.extension.references.ReferencesProvider;
+import com.xabber.android.data.extension.xtoken.SessionsIQ;
+import com.xabber.android.data.extension.xtoken.SessionsProvider;
 import com.xabber.android.data.extension.xtoken.XTokenProvider;
 import com.xabber.android.data.log.AndroidLoggingHandler;
 import com.xabber.android.data.log.LogManager;
@@ -143,6 +145,9 @@ class ConnectionThread {
 
         ProviderManager.addIQProvider(XTokenIQ.ELEMENT,
                 XTokenIQ.NAMESPACE, new XTokenProvider());
+
+        ProviderManager.addIQProvider(SessionsIQ.ELEMENT,
+                SessionsIQ.NAMESPACE, new SessionsProvider());
 
         try {
             LogManager.i(this, "Trying to connect and login...");

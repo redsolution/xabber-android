@@ -16,10 +16,10 @@ import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.xtoken.SessionVO;
+import com.xabber.android.data.extension.xtoken.XTokenManager;
 import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.ui.color.BarPainter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ActiveSessionsActivity extends ManagedActivity {
@@ -84,23 +84,25 @@ public class ActiveSessionsActivity extends ManagedActivity {
         tvCurrentDevice = findViewById(R.id.tvDevice);
         tvCurrentIPAddress = findViewById(R.id.tvIPAddress);
         tvCurrentDate = findViewById(R.id.tvDate);
+
+        updateData();
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
+    private void updateData() {
+        XTokenManager.getInstance().requestSessions(
+            accountItem.getConnectionSettings().getXToken().getUid(),
+            accountItem.getConnection(), new XTokenManager.SessionsListener() {
+                @Override
+                public void onResult(SessionVO currentSession, List<SessionVO> sessions) {
+                    setCurrentSession(currentSession);
+                    adapter.setItems(sessions);
+                }
 
-        // current session
-        setCurrentSession(new SessionVO("Xabber Dev 2.6.4(636)",
-                "Google Android SDK built for x86, Android 10", "123", "127.0.0.1", "Online"));
-
-        // other sessions
-        List<SessionVO> testItems = new ArrayList<>();
-        for (int i = 0; i < 20; i++) {
-            testItems.add(new SessionVO("Xabber for Web 1.0.131",
-                    "PC, Linux x86_64", "123", "127.0.0.1", "14 Jul"));
-        }
-        adapter.setItems(testItems);
+                @Override
+                public void onError() {
+                    // TODO: 19.07.19 show error
+                }
+            });
     }
 
     private void setCurrentSession(SessionVO session) {
