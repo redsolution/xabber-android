@@ -70,6 +70,8 @@
 
     <string name="account_connection_settings">Connection settings</string>
     <string name="account_active_sessions">Active sessions</string>
+    <string name="account_current_session">Current session</string>
+    <string name="account_terminate_all_sessions">Terminate all others sessions</string>
     <string name="account_active_sessions_summary">Manage your sessions with X-Token</string>
     <string name="account_active_sessions_disabled">Server not support X-Token</string>
 

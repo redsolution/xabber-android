@@ -69,6 +69,8 @@
     <string name="account_color_name_brown">Коричневый</string>
     <string name="account_connection_settings">Параметры подключения</string>
     <string name="account_active_sessions">Активные сеансы</string>
+    <string name="account_current_session">Текущий сеанс</string>
+    <string name="account_terminate_all_sessions">Завершить все другие сеансы</string>
     <string name="account_active_sessions_summary">Управляйте своими сеансами с помощью X-Token</string>
     <string name="account_active_sessions_disabled">Сервер не поддерживает X-Token</string>
     <string name="blocked_contacts">Заблокированные контакты</string>
