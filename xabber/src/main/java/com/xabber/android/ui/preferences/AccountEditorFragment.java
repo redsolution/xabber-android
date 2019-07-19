@@ -2,18 +2,20 @@ package com.xabber.android.ui.preferences;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.preference.CheckBoxPreference;
 import android.preference.Preference;
-import androidx.annotation.Nullable;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
+
 import com.xabber.android.R;
-import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.ArchiveMode;
 import com.xabber.android.data.connection.ProxyType;
 import com.xabber.android.data.connection.TLSMode;
 import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.ui.helper.OrbotHelper;
 
 import org.jxmpp.jid.DomainBareJid;
@@ -46,6 +48,20 @@ public class AccountEditorFragment extends BaseSettingsFragment {
     public void onPause() {
         super.onPause();
         saveChanges();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (listener != null) {
+            if (listener.getAccountItem().getConnectionSettings().getXToken() != null) {
+                findPreference(getString(R.string.account_password_key)).setEnabled(false);
+                findPreference(getString(R.string.account_password_key)).setSummary(getString(R.string.account_password_disabled));
+                findPreference(getString(R.string.account_store_password_key)).setEnabled(false);
+                ((CheckBoxPreference)findPreference(getString(R.string.account_store_password_key))).setChecked(false);
+                findPreference(getString(R.string.account_store_password_key)).setSummary(getString(R.string.account_password_disabled));
+            }
+        }
     }
 
     @Override

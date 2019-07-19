@@ -33,6 +33,7 @@
     <string name="account_sasl_summary">Отключите эту опцию для подключения к очень старому серверу</string>
     <string name="account_store_password">Хранить пароль</string>
     <string name="account_store_password_summary">Отключение приведет к запросу пароля при каждом подключении</string>
+    <string name="account_password_disabled">Отключено потому что вы используете X-Token</string>
     <string name="account_tls_enable">Использовать TLS</string>
     <string name="account_tls_enable_summary">Использовать TLS шифрование если поддерживается сервером</string>
     <string name="account_tls_legacy">Старый SSL</string>

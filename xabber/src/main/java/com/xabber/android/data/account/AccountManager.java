@@ -580,10 +580,12 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
         requestToWriteAccount(result);
     }
 
+    /** Set x-token to account and remove password */
     public void updateXToken(AccountJid account, XToken token) {
         AccountItem accountItem = getAccount(account);
         if (accountItem != null) {
             accountItem.setXToken(token);
+            accountItem.setPassword("");
             accountItem.recreateConnectionWithEnable(accountItem.getAccount());
             requestToWriteAccount(accountItem);
         }

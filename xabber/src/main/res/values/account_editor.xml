@@ -32,6 +32,7 @@
     <string name="account_sasl_summary">Disable for very old server</string>
     <string name="account_store_password">Store password</string>
     <string name="account_store_password_summary">Disable this option to request password each time you go online</string>
+    <string name="account_password_disabled">Disabled because you use X-Token</string>
     <string name="account_tls_enable">Enable TLS</string>
     <string name="account_tls_enable_summary">Use TLS encryption when possible to connect to server</string>
     <string name="account_tls_legacy">Legacy SSL</string>
