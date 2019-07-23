@@ -14,8 +14,9 @@
  */
 package com.xabber.android.data.connection;
 
-import androidx.annotation.NonNull;
 import android.util.Log;
+
+import androidx.annotation.NonNull;
 
 import com.xabber.android.data.account.AccountErrorEvent;
 import com.xabber.android.data.account.AccountItem;
@@ -27,13 +28,14 @@ import com.xabber.android.data.extension.references.ReferenceElement;
 import com.xabber.android.data.extension.references.ReferencesProvider;
 import com.xabber.android.data.extension.xtoken.SessionsIQ;
 import com.xabber.android.data.extension.xtoken.SessionsProvider;
+import com.xabber.android.data.extension.xtoken.XTokenIQ;
 import com.xabber.android.data.extension.xtoken.XTokenProvider;
 import com.xabber.android.data.log.AndroidLoggingHandler;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.xaccount.HttpConfirmIq;
 import com.xabber.android.data.xaccount.HttpConfirmIqProvider;
 import com.xabber.xmpp.smack.SASLXTOKENMechanism;
-import com.xabber.android.data.extension.xtoken.XTokenIQ;
+import com.xabber.xmpp.smack.XMPPTCPConnection;
 
 import org.greenrobot.eventbus.EventBus;
 import org.jivesoftware.smack.AbstractXMPPConnection;
@@ -41,7 +43,6 @@ import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.provider.ProviderManager;
 import org.jivesoftware.smack.sasl.SASLErrorException;
-import com.xabber.xmpp.smack.XMPPTCPConnection;
 import org.jivesoftware.smack.util.DNSUtil;
 import org.jivesoftware.smackx.xdata.packet.DataForm;
 
@@ -171,6 +172,7 @@ class ConnectionThread {
             LogManager.exception(this, e);
 
             if (e.getMechanism().equals(SASLXTOKENMechanism.NAME)) {
+                LogManager.d(this, "Authorization error with x-token: " + e.toString());
                 AccountManager.getInstance().removeXToken(connectionItem.getAccount());
             }
 

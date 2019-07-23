@@ -9,6 +9,7 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.database.realm.XTokenRealm;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.utils.StringUtils;
 import com.xabber.xmpp.smack.XMPPTCPConnection;
 import com.xabber.xmpp.smack.XTokenRequestIQ;
@@ -23,6 +24,7 @@ import java.util.List;
 
 public class XTokenManager implements OnPacketListener {
 
+    private static final String LOG_TAG = XTokenManager.class.getSimpleName();
     private static XTokenManager instance;
 
     public static XTokenManager getInstance() {
@@ -40,6 +42,7 @@ public class XTokenManager implements OnPacketListener {
     }
 
     public void sendXTokenRequest(XMPPTCPConnection connection) {
+        LogManager.d(LOG_TAG, "Request x-token before bind");
         String device = Build.MANUFACTURER + " " + Build.MODEL + ", Android " + Build.VERSION.RELEASE;
         String client = Application.getInstance().getVersionName();
         XTokenRequestIQ requestIQ = new XTokenRequestIQ(client, device);
@@ -48,7 +51,7 @@ public class XTokenManager implements OnPacketListener {
         try {
             connection.sendStanza(requestIQ);
         } catch (Exception e) {
-            e.printStackTrace();
+            LogManager.d(LOG_TAG, "Error on request x-token: " + e.toString());
         }
     }
 
@@ -59,6 +62,7 @@ public class XTokenManager implements OnPacketListener {
     }
 
     public void sendRevokeXTokenRequest(XMPPTCPConnection connection, List<String> tokenIDs) {
+        LogManager.d(LOG_TAG, "Request revoke x-token");
         XTokenRevokeIQ revokeIQ = new XTokenRevokeIQ(tokenIDs);
         revokeIQ.setType(IQ.Type.set);
         revokeIQ.setTo(connection.getHost());
@@ -126,6 +130,7 @@ public class XTokenManager implements OnPacketListener {
     private void sendSessionsRequestIQ(final String currentTokenUID,
                                        final XMPPTCPConnection connection,
                                        final SessionsListener listener) {
+        LogManager.d(LOG_TAG, "Request x-token list");
         SessionsRequestIQ requestIQ = new SessionsRequestIQ();
         requestIQ.setType(IQ.Type.get);
         requestIQ.setTo(connection.getHost());
