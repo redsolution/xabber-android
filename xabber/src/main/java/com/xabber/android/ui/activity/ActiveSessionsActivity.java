@@ -150,6 +150,7 @@ public class ActiveSessionsActivity extends ManagedActivity implements SessionAd
                 public void onClick(DialogInterface dialogInterface, int i) {
                     XTokenManager.getInstance().sendRevokeXTokenRequest(
                             accountItem.getConnection(), adapter.getItemsIDs());
+                    updateData();
                 }
             })
             .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -169,6 +170,7 @@ public class ActiveSessionsActivity extends ManagedActivity implements SessionAd
                 public void onClick(DialogInterface dialogInterface, int i) {
                     XTokenManager.getInstance().sendRevokeXTokenRequest(
                             accountItem.getConnection(), uid);
+                    updateData();
                 }
             })
             .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
