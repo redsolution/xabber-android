@@ -35,7 +35,7 @@ public class ChatVO extends ExtContactVO {
         boolean isCurrentChat(String account, String user);
     }
 
-    public ChatVO(int accountColorIndicator, int accountColorIndicatorBack, boolean showOfflineShadow,
+    public ChatVO(int accountColorIndicator, int accountColorIndicatorBack,
                   String name, String status, int statusId, int statusLevel, Drawable avatar,
                   int mucIndicatorLevel, UserJid userJid, AccountJid accountJid, int unreadCount,
                   boolean mute, NotificationState.NotificationMode notificationMode, String messageText,
@@ -44,7 +44,7 @@ public class ChatVO extends ExtContactVO {
                   @Nullable IsCurrentChatListener currentChatListener, int forwardedCount,
                   boolean isCustomNotification) {
 
-        super(accountColorIndicator, accountColorIndicatorBack, showOfflineShadow, name, status,
+        super(accountColorIndicator, accountColorIndicatorBack, name, status,
                 statusId, statusLevel, avatar, mucIndicatorLevel, userJid, accountJid,
                 unreadCount, mute, notificationMode, messageText, isOutgoing, time, messageStatus,
                 messageOwner, archived, lastActivity, listener, forwardedCount, isCustomNotification);
@@ -57,7 +57,6 @@ public class ChatVO extends ExtContactVO {
         ExtContactVO contactVO = ExtContactVO.convert(contact, listener);
         return new ChatVO(
                 contactVO.getAccountColorIndicator(), contactVO.getAccountColorIndicatorBack(),
-                contactVO.isShowOfflineShadow(),
                 contactVO.getName(), contactVO.getStatus(), contactVO.getStatusId(),
                 contactVO.getStatusLevel(), contactVO.getAvatar(), contactVO.getMucIndicatorLevel(),
                 contactVO.getUserJid(), contactVO.getAccountJid(), contactVO.getUnreadCount(),

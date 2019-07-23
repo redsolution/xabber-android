@@ -48,11 +48,6 @@ public class RoomContact extends AbstractContact {
 
     @Override
     public Drawable getAvatar() {
-        return AvatarManager.getInstance().getRoomAvatar(user);
-    }
-
-    @Override
-    public Drawable getAvatarForContactList() {
         return AvatarManager.getInstance().getRoomAvatarForContactList(user);
     }
 

@@ -108,7 +108,6 @@
     <string name="toast_archived_show">Archív chatů zobrazen</string>
     <string name="toast_archived_hide">Arcvhív chatů skryt</string>
     <string name="chat_notification_settings_title">Oznámení pro tento chat</string>
-    <string name="error_file_upload_not_support">Server, který používáte nepodporuje přenos souborů. Můžete vyzkoušet na serveru xabber.org.</string>
     <string name="button_join_conference">Připojit se do konference</string>
     <string name="showcase_chat_text_1">Potáhnutím doprava otevřete současné chaty</string>
     <string name="showcase_chat_text_2">Potáhnutím doleva otevřete informace o kontaktu</string>

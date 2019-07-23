@@ -22,11 +22,13 @@
     <string name="debug_log">Debug log\nWrite messages to debug log (please restart application to apply changes)</string>
     <string name="debug_file_log_title">Write file log\nWrite debug log to local file (you can share it).</string>
     <string name="debug_log_files_title">Log files\nList of written log files.</string>
+    <string name="push_log_title">Push-notification log</string>
     <string name="debug_download_all_messages_title">Download all messages from archive\nDebug function. May works with errors</string>
     <string name="debug_log_files_activity_title">Log files</string>
     <string name="debug_connection_errors_title">Show connection errors\nDisplay connection exceptions pop-ups</string>
     <string name="debug_crash_reports_title">Share crash and diagnostics data\nHelp app developers improve Xabber by allowing to share crash and diagnostics data with them (please restart application to apply changes).</string>
     <string name="debug_use_develop_api_title">Use development Xabber API\nChanges will be applied after restart</string>
+    <string name="debug_sync_bookmarks_on_start_title">Sync bookmarks on start</string>
     <string name="debug_fetch_crowdfunding_feed_title">Fetch crowdfunding feed now</string>
 
     <string name="debug_crash_reports_dialog_title">Crash and diagnostics data</string>
@@ -115,6 +117,7 @@
     <string name="connection_load_vcard">Load vCard\nLoad and update contact\'s personal info and avatar. Disable to reduce traffic usage.</string>
     <string name="connection_load_images">Load images\nLoad images from file URL automatically. Disable to reduce traffic usage.</string>
     <string name="connection_use_carbons">Carbon-copied mode\nWill share sessions for the same account on this client. Disable to reduce traffic usage.</string>
+    <string name="connection_compress_image_on_upload_title">Compress images\nCompress images on upload to reduce traffic usage. Some servers may have upload size restrictions, use this option to avoid it.</string>
     <string name="connection_dns_resolver_type_dns_java_resolver">DNSJavaResolver</string>
     <string name="connection_dns_resolver_type_mini_dns_resolver">MiniDNSResolver (experimental)</string>
 
@@ -142,6 +145,7 @@
     <string name="category_inapp_notifications">In-app notification</string>
     <string name="category_key_phrase">Key phrases</string>
     <string name="custom_notifications">Custom notifications</string>
+    <string name="category_other">Other</string>
 
     <string name="events_on_chat_title">Alert</string>
     <string name="events_on_chat_summary">Alert about new messages in chats</string>
@@ -160,7 +164,7 @@
     <string name="events_in_app_preview_title">In-app preview</string>
     <string name="events_in_app_preview_summary">Show preview on message in another chat</string>
     <string name="events_in_chat_sounds_title">In-chat sounds</string>
-    <string name="events_in_chat_sounds_summary">Play sound on message in current chat</string>
+    <string name="events_in_chat_sounds_summary">Play sound on receiving and sending message in current chat</string>
 
     <string name="events_reset_title">Reset</string>
     <string name="events_reset_summary">All notification settings would be set to default values</string>

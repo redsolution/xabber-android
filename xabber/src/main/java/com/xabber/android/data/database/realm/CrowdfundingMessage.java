@@ -11,12 +11,18 @@ import io.realm.annotations.Required;
 
 public class CrowdfundingMessage extends RealmObject {
 
+    public static class Fields {
+        public static final String ID = "id";
+        public static final String TIMESTAMP = "timestamp";
+        public static final String READ = "read";
+        public static final String DELAY = "delay";
+    }
+
     @PrimaryKey
     @Required
     private String id;
     private boolean isLeader;
     private int timestamp;
-    private int receivedTimestamp;
     private String messageRu;
     private String messageEn;
     private boolean read;
@@ -117,14 +123,6 @@ public class CrowdfundingMessage extends RealmObject {
 
     public void setDelay(int delay) {
         this.delay = delay;
-    }
-
-    public int getReceivedTimestamp() {
-        return receivedTimestamp;
-    }
-
-    public void setReceivedTimestamp(int receivedTimestamp) {
-        this.receivedTimestamp = receivedTimestamp;
     }
 
     public String getNameForCurrentLocale() {

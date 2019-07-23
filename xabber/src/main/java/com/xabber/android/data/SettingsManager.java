@@ -327,10 +327,10 @@ public class SettingsManager implements OnInitializedListener,
                 R.bool.events_lightning_default);
     }
 
-    public static boolean eventsPersistent() {
-        return getBoolean(R.string.events_persistent_key,
-                R.bool.events_persistent_default);
-    }
+//    public static boolean eventsPersistent() {
+//        return getBoolean(R.string.events_persistent_key,
+//                R.bool.events_persistent_default);
+//    }
 
     public static boolean eventsShowText() {
         return getNotifBoolean(R.string.events_show_text_key,
@@ -367,9 +367,8 @@ public class SettingsManager implements OnInitializedListener,
 //                R.bool.events_in_app_preview_default);
 //    }
 
-    @Deprecated
     public static boolean eventsInChatSounds() {
-        return getBoolean(R.string.events_in_chat_sounds_key,
+        return getNotifBoolean(R.string.events_in_chat_sounds_key,
                 R.bool.events_in_chat_sounds_default);
     }
 
@@ -528,6 +527,11 @@ public class SettingsManager implements OnInitializedListener,
                 R.bool.connection_use_carbons_default);
     }
 
+    public static boolean connectionCompressImage() {
+        return getBoolean(R.string.connection_compress_image_on_upload_key,
+                R.bool.connection_compress_image_on_upload_default);
+    }
+
     public static DnsResolverType connectionDnsResolver() {
         String value = getString(R.string.connection_dns_resolver_type_key,
                 R.string.connection_dns_resolver_type_default);
@@ -598,6 +602,10 @@ public class SettingsManager implements OnInitializedListener,
 
     public static boolean useDevelopAPI() {
         return getBoolean(R.string.debug_use_develop_api_key, R.bool.debug_use_develop_api_default);
+    }
+
+    public static boolean syncBookmarksOnStart() {
+        return getBoolean(R.string.debug_sync_bookmarks_on_start_key, R.bool.debug_sync_bookmarks_on_start_default);
     }
 
     public static boolean isCrashReportsSupported() {
@@ -852,6 +860,14 @@ public class SettingsManager implements OnInitializedListener,
 
     public static int getLastCrowdfundingPosition() {
         return getInteger(R.string.crowdfunding_last_position_key, 0);
+    }
+
+    public static void setEnabledPushNodes(String enabledPushNodes) {
+        setString(R.string.enabled_push_nodes, enabledPushNodes);
+    }
+
+    public static String getEnabledPushNodes() {
+        return getString(R.string.enabled_push_nodes, "");
     }
 
     public static void resetPreferences(Context context, String preferencesName) {

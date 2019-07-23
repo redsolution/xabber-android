@@ -18,6 +18,7 @@ import com.xabber.android.data.extension.bookmarks.BookmarksManager;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.data.log.LogManager;
+import com.xabber.android.data.push.PushManager;
 import com.xabber.android.ui.adapter.ServerInfoAdapter;
 import com.xabber.android.ui.color.BarPainter;
 
@@ -34,7 +35,6 @@ import org.jivesoftware.smackx.mam.MamManager;
 import org.jivesoftware.smackx.muc.MultiUserChatManager;
 import org.jivesoftware.smackx.muclight.MultiUserChatLightManager;
 import org.jivesoftware.smackx.pep.PEPManager;
-import org.jivesoftware.smackx.push_notifications.PushNotificationsManager;
 import org.jxmpp.jid.DomainBareJid;
 
 import java.util.ArrayList;
@@ -152,7 +152,7 @@ public class ServerInfoActivity extends ManagedActivity {
             boolean carbons = org.jivesoftware.smackx.carbons.CarbonManager.getInstanceFor(connection).isSupportedByServer();
             boolean mam = MamManager.getInstanceFor(connection).isSupportedByServer();
             boolean csi = ClientStateIndicationManager.isSupported(connection);
-            boolean push = PushNotificationsManager.getInstanceFor(connection).isSupportedByServer();
+            boolean push = PushManager.getInstance().isSupport(connection);
             boolean fileUpload = HttpFileUploadManager.getInstance().isFileUploadSupported(accountItem.getAccount());
             boolean mucLight = !MultiUserChatLightManager.getInstanceFor(connection).getLocalServices().isEmpty();
             boolean bookmarks = BookmarksManager.getInstance().isSupported(accountItem.getAccount());

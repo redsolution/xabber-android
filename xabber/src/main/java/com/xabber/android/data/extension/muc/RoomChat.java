@@ -16,6 +16,7 @@ package com.xabber.android.data.extension.muc;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Pair;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
@@ -29,13 +30,13 @@ import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
+import com.xabber.android.data.extension.references.ReferencesManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.ChatAction;
 import com.xabber.android.data.message.ForwardManager;
 import com.xabber.android.data.message.NewIncomingMessageEvent;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.roster.RosterManager;
-import com.xabber.xmpp.sid.UniqStanzaHelper;
 
 import org.greenrobot.eventbus.EventBus;
 import org.jivesoftware.smack.packet.Message;
@@ -189,7 +190,7 @@ public class RoomChat extends AbstractChat {
 
     @Override
     protected MessageItem createNewMessageItem(String text) {
-        return createMessageItem(nickname, text, null, null, false,
+        return createMessageItem(nickname, text, null, null, null, false,
                 false, false, false, UUID.randomUUID().toString(), null,
         null, null, account.getFullJid().toString(), null, true);
     }
@@ -259,28 +260,25 @@ public class RoomChat extends AbstractChat {
                 newAction(resource, subject, ChatAction.subject, true);
             } else {
                 boolean notify = true;
-                String stanzaId = message.getStanzaId();
 
-                // Use stanza id from XEP-0359 if common stanza id is null
-                if (stanzaId == null) stanzaId = UniqStanzaHelper.getStanzaId(message);
-
-                DelayInformation delayInformation = DelayInformation.from(message);
-                Date delay = null;
-                if (delayInformation != null) {
-                    delay = delayInformation.getStamp();
-                }
+                Date delay = getDelayStamp(message);
 
                 if (delay != null) {
                     notify = false;
                 }
 
-                // forward comment
+                // forward comment (to support previous forwarded xep)
                 String forwardComment = ForwardManager.parseForwardComment(stanza);
                 if (forwardComment != null) text = forwardComment;
 
+                // modify body with references
+                Pair<String, String> bodies = ReferencesManager.modifyBodyWithReferences(message, text);
+                text = bodies.first;
+                String markupText = bodies.second;
+
                 String originalFrom = stanza.getFrom().toString();
 
-                String messageUId = getMessageIdIfInHistory(stanzaId, text);
+                String messageUId = getMessageIdIfInHistory(getStanzaId(message), text);
                 if (messageUId != null) {
                     if (isSelf(resource)) {
                         markMessageAsDelivered(messageUId, originalFrom);
@@ -302,13 +300,15 @@ public class RoomChat extends AbstractChat {
 
                 // create message with file-attachments
                 if (attachments.size() > 0)
-                    createAndSaveFileMessage(true, uid, resource, text, null, delay, true, notify,
-                            false, false, stanzaId, attachments,
+                    createAndSaveFileMessage(true, uid, resource, text, markupText, null,
+                            null, delay, true, notify,
+                            false, false, getStanzaId(message), attachments,
                             originalStanza, null, originalFrom, true, false);
 
                     // create message without attachments
-                else createAndSaveNewMessage(true, uid, resource, text, null, delay, true, notify,
-                        false, false, stanzaId,
+                else createAndSaveNewMessage(true, uid, resource, text, markupText, null,
+                        null, delay, true, notify,
+                        false, false, getStanzaId(message),
                         originalStanza, null, originalFrom, forwardIds, true, false);
 
                 EventBus.getDefault().post(new NewIncomingMessageEvent(account, user));
@@ -371,7 +371,7 @@ public class RoomChat extends AbstractChat {
     }
 
     @Override
-    protected String parseInnerMessage(boolean ui, Message message, String parentMessageId) {
+    protected String parseInnerMessage(boolean ui, Message message, Date timestamp, String parentMessageId) {
         if (message.getType() == Message.Type.error) return null;
 
         final org.jxmpp.jid.Jid from = message.getFrom();
@@ -382,11 +382,6 @@ public class RoomChat extends AbstractChat {
         if (text == null) return null;
         if (subject != null) return null;
 
-        String stanzaId = message.getStanzaId();
-
-        // Use stanza id from XEP-0359 if common stanza id is null
-        if (stanzaId == null) stanzaId = UniqStanzaHelper.getStanzaId(message);
-
         RealmList<Attachment> attachments = HttpFileUploadManager.parseFileMessage(message);
 
         String uid = UUID.randomUUID().toString();
@@ -394,18 +389,25 @@ public class RoomChat extends AbstractChat {
         String originalStanza = message.toXML().toString();
         String originalFrom = message.getFrom().toString();
         boolean fromMUC = message.getType().equals(Type.groupchat);
+
+        // forward comment (to support previous forwarded xep)
         String forwardComment = ForwardManager.parseForwardComment(message);
         if (forwardComment != null) text = forwardComment;
 
+        // modify body with references
+        Pair<String, String> bodies = ReferencesManager.modifyBodyWithReferences(message, text);
+        text = bodies.first;
+        String markupText = bodies.second;
+
         // create message with file-attachments
         if (attachments.size() > 0)
-            createAndSaveFileMessage(ui, uid, resource, text, null, null,
-                    true, false, false, false, stanzaId, attachments,
+            createAndSaveFileMessage(ui, uid, resource, text, markupText, null, timestamp, getDelayStamp(message),
+                    true, false, false, false, getStanzaId(message), attachments,
                     originalStanza, parentMessageId, originalFrom, fromMUC, true);
 
             // create message without attachments
-        else createAndSaveNewMessage(ui, uid, resource, text, null, null,
-                true, false, false, false, stanzaId,
+        else createAndSaveNewMessage(ui, uid, resource, text, markupText, null, timestamp, getDelayStamp(message),
+                true, false, false, false, getStanzaId(message),
                 originalStanza, parentMessageId, originalFrom, forwardIds, fromMUC, true);
 
         return uid;
@@ -474,8 +476,8 @@ public class RoomChat extends AbstractChat {
             if (isRequested()) {
                 if (showStatusChange()) {
                     createAndSaveNewMessage(true, UUID.randomUUID().toString(), resource, Application.getInstance().getString(
-                                    R.string.action_join_complete_to, user),
-                            ChatAction.complete, null, true, true,
+                                    R.string.action_join_complete_to, user), null,
+                            ChatAction.complete, null, null, true, true,
                             false, false, null,
                             null, null, null, null, true, false);
                 }

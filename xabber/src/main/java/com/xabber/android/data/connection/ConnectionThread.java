@@ -22,6 +22,8 @@ import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.extension.forward.ForwardComment;
 import com.xabber.android.data.extension.forward.ForwardCommentProvider;
 import com.xabber.android.data.extension.httpfileupload.CustomDataProvider;
+import com.xabber.android.data.extension.references.ReferenceElement;
+import com.xabber.android.data.extension.references.ReferencesProvider;
 import com.xabber.android.data.log.AndroidLoggingHandler;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.xaccount.HttpConfirmIq;
@@ -126,6 +128,15 @@ class ConnectionThread {
         LogManager.i(this, "Use DNS Java resolver");
         ExtDNSJavaResolver.setup();
 
+        ProviderManager.addExtensionProvider(DataForm.ELEMENT,
+                DataForm.NAMESPACE, new CustomDataProvider());
+
+        ProviderManager.addExtensionProvider(ForwardComment.ELEMENT,
+                ForwardComment.NAMESPACE, new ForwardCommentProvider());
+
+        ProviderManager.addExtensionProvider(ReferenceElement.ELEMENT,
+                ReferenceElement.NAMESPACE, new ReferencesProvider());
+
         try {
             LogManager.i(this, "Trying to connect and login...");
             if (!connection.isConnected()) {
@@ -141,13 +152,6 @@ class ConnectionThread {
 
                 connection.login();
 
-                // can be a cause of strange Smack behavior
-                // not authorization or not receiving a iq's
-                ProviderManager.addExtensionProvider(DataForm.ELEMENT,
-                        DataForm.NAMESPACE, new CustomDataProvider());
-
-                ProviderManager.addExtensionProvider(ForwardComment.ELEMENT,
-                        ForwardComment.NAMESPACE, new ForwardCommentProvider());
             } else {
                 LogManager.i(this, "Already authenticated");
             }

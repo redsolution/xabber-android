@@ -12,6 +12,7 @@ import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.Person;
 import android.support.v4.app.RemoteInput;
+import android.support.v4.graphics.drawable.IconCompat;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
@@ -78,7 +79,7 @@ public class MessageNotificationCreator {
 
         boolean showText = isNeedShowTextInNotification(chat);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            builder.addAction(createReplyAction(chat.getNotificationId()))
+            builder.addAction(createReplyAction(chat.getNotificationId(), chat.getAccountJid()))
                     .setStyle(createMessageStyle(chat, showText));
         } else {
             builder.setContentTitle(createTitleSingleChat(chat.getMessages().size(), chat.getChatTitle()))
@@ -90,8 +91,8 @@ public class MessageNotificationCreator {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O && alert && !inGracePeriod(chat))
             addEffects(builder, chat.getLastMessage().getMessageText().toString(), chat, context);
 
-        builder.addAction(createMarkAsReadAction(chat.getNotificationId()))
-                .addAction(createMuteAction(chat.getNotificationId()));
+        builder.addAction(createMarkAsReadAction(chat.getNotificationId(), chat.getAccountJid()))
+                .addAction(createMuteAction(chat.getNotificationId(), chat.getAccountJid()));
         sendNotification(builder, chat.getNotificationId());
     }
 
@@ -152,6 +153,7 @@ public class MessageNotificationCreator {
     }
 
     private void sendNotification(NotificationCompat.Builder builder, int notificationId) {
+        MessageNotificationManager.getInstance().setLastNotificationTime();
         try {
             notificationManager.notify(notificationId, builder.build());
         } catch (SecurityException e) {
@@ -164,6 +166,7 @@ public class MessageNotificationCreator {
 
     /** UTILS */
     private static boolean inGracePeriod(MessageNotificationManager.Chat chat) {
+        if (!MessageNotificationManager.getInstance().isTimeToNewFullNotification()) return true;
         if (chat == null) return false;
         AccountItem accountItem = AccountManager.getInstance().getAccount(chat.getAccountJid());
         if (accountItem != null) return accountItem.inGracePeriod();
@@ -182,19 +185,22 @@ public class MessageNotificationCreator {
     }
 
     private NotificationCompat.Style createMessageStyle(MessageNotificationManager.Chat chat, boolean showText) {
-        NotificationCompat.Style messageStyle = new NotificationCompat.MessagingStyle(
+        NotificationCompat.MessagingStyle messageStyle = new NotificationCompat.MessagingStyle(
                 new Person.Builder().setName(context.getString(R.string.sender_is_you)).build());
         for (MessageNotificationManager.Message message : chat.getMessages()) {
             Person person = null;
-            if (message.getAuthor() != null && message.getAuthor().length() > 0)
-                person = new Person.Builder().setName(message.getAuthor()).build();
-            ((NotificationCompat.MessagingStyle) messageStyle).addMessage(
-                    new NotificationCompat.MessagingStyle.Message(
+            if (message.getAuthor() != null && message.getAuthor().length() > 0) {
+                person = new Person.Builder()
+                        .setName(message.getAuthor())
+                        .setIcon(IconCompat.createWithBitmap(getLargeIcon(chat)))
+                        .build();
+            }
+            messageStyle.addMessage(new NotificationCompat.MessagingStyle.Message(
                             showText ? message.getMessageText() : messageHidden,
                             message.getTimestamp(), person));
         }
-        ((NotificationCompat.MessagingStyle) messageStyle).setConversationTitle(chat.getChatTitle());
-        ((NotificationCompat.MessagingStyle) messageStyle).setGroupConversation(chat.isGroupChat());
+        messageStyle.setConversationTitle(chat.getChatTitle());
+        messageStyle.setGroupConversation(chat.isGroupChat());
         return messageStyle;
     }
 
@@ -363,26 +369,26 @@ public class MessageNotificationCreator {
 
     /** ACTIONS */
 
-    private NotificationCompat.Action createReplyAction(int notificationId) {
+    private NotificationCompat.Action createReplyAction(int notificationId, AccountJid accountJid) {
         RemoteInput remoteInput = new RemoteInput.Builder(NotificationReceiver.KEY_REPLY_TEXT)
                 .setLabel(context.getString(R.string.chat_input_hint))
                 .build();
 
         return new NotificationCompat.Action.Builder(R.drawable.ic_message_forwarded_14dp,
-                context.getString(R.string.action_reply), NotificationReceiver.createReplyIntent(context, notificationId))
+                context.getString(R.string.action_reply), NotificationReceiver.createReplyIntent(context, notificationId, accountJid))
                 .addRemoteInput(remoteInput)
                 .build();
     }
 
-    private NotificationCompat.Action createMarkAsReadAction(int notificationId) {
+    private NotificationCompat.Action createMarkAsReadAction(int notificationId, AccountJid accountJid) {
         return new NotificationCompat.Action.Builder(R.drawable.ic_mark_as_read,
-                context.getString(R.string.action_mark_as_read), NotificationReceiver.createMarkAsReadIntent(context, notificationId))
+                context.getString(R.string.action_mark_as_read), NotificationReceiver.createMarkAsReadIntent(context, notificationId, accountJid))
                 .build();
     }
 
-    private NotificationCompat.Action createMuteAction(int notificationId) {
+    private NotificationCompat.Action createMuteAction(int notificationId, AccountJid accountJid) {
         return new NotificationCompat.Action.Builder(R.drawable.ic_snooze,
-                context.getString(R.string.action_snooze), NotificationReceiver.createMuteIntent(context, notificationId))
+                context.getString(R.string.action_snooze), NotificationReceiver.createMuteIntent(context, notificationId, accountJid))
                 .build();
     }
 

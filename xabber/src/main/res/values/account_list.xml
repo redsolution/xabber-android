@@ -12,4 +12,8 @@
     <string name="account_state_disconnecting">Disconnecting</string>
     <string name="account_state_offline">Offline</string>
     <string name="account_state_waiting">Waiting to reconnect</string>
+
+    <string name="account_push_state_disabled">Push-notifications disabled</string>
+    <string name="account_push_state_not_support">Push-notifications not supported</string>
+    <string name="account_push_state_enabled">Push-notifications enabled</string>
 </resources>

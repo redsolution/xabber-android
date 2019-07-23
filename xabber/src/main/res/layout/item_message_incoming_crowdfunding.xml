@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingRight="16dp"
+    android:paddingEnd="16dp">
+
+    <include layout="@layout/item_first_unread_message"/>
+
+    <include layout="@layout/item_message_date"/>
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/avatarBackground"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginLeft="8dp"
+        android:layout_alignBottom="@id/message"
+        android:layout_marginBottom="3dp"
+        android:scaleType="centerCrop"
+        android:src="@color/white"
+        />
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/avatar"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_alignBottom="@id/message"
+        android:layout_marginBottom="3dp"
+        android:layout_marginLeft="8dp"
+        android:scaleType="centerCrop"
+        android:src="#80CBC4"
+        />
+
+    <LinearLayout
+        android:id="@+id/message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/avatar"
+        android:layout_toEndOf="@id/avatar"
+        android:layout_below="@id/tvDate"
+        android:orientation="vertical">
+
+        <include
+            android:id="@+id/forwardLayout"
+            layout="@layout/forwarded_layout"
+            android:visibility="gone" />
+
+        <include layout="@layout/item_message_crowdfunding" />
+
+    </LinearLayout>
+
+</RelativeLayout>

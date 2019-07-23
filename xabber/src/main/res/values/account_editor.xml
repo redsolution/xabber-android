@@ -41,7 +41,7 @@
     <string name="account_tls_require_summary">Require TLS encryption when connect to server</string>
     <string name="account_enable_tls">Enable TLS cryptographic protocol</string>
     <string name="account_use_tor">Use TOR anonymity network (requires Orbot proxy)</string>
-    <string name="INCORRECT_USER_NAME">Incorrect user name. Check help text below for details.</string>
+    <string name="INCORRECT_USER_NAME">Incorrect user name</string>
     <string name="orbot_required_message">In order to process using TOR you must have Orbot installed and activated to proxy traffic through it. Would you like to install it from Google Play?</string>
     <string name="orbot_required_title">Install Orbot?</string>
     <string name="install_orbot">Install Orbot</string>
@@ -103,6 +103,9 @@
 
     <string name="account_sync">Synchronization</string>
     <string name="account_sync_summary">Synchronization with Xabber Account</string>
+
+    <string name="account_push">Push notifications</string>
+    <string name="account_push_enable">Enable push notifications</string>
 
     <string name="bookmark_not_supported">Server does not support bookmarks</string>
 </resources>

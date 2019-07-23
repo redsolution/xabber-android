@@ -21,15 +21,6 @@
     android:id="@+id/root_view"
     android:elevation="24dp">
 
-    <android.support.v4.widget.SwipeRefreshLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/swipeContainer"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@+id/secondBottomPanel"
-        android:layout_below="@+id/toolbar_default"
-        >
-
     <android.support.v7.widget.RecyclerView
         android:id="@+id/chat_messages_recycler_view"
         android:layout_width="match_parent"
@@ -42,9 +33,9 @@
         android:paddingBottom="4dp"
         android:paddingTop="4dp"
         android:clipToPadding="false"
+        android:layout_above="@+id/secondBottomPanel"
+        android:layout_below="@+id/toolbar_default"
         />
-
-    </android.support.v4.widget.SwipeRefreshLayout>
 
     <TextView
         android:id="@+id/tvTopDate"

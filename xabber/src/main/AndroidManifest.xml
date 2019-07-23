@@ -49,6 +49,12 @@
         android:label="@string/application_title_full"
         android:theme="@style/Theme"
         tools:replace="label, icon, allowBackup">
+
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="${crashlytics}"
+            />
+
         <activity
             android:name=".ui.activity.ContactListActivity"
             android:label="@string/application_title_full"
@@ -570,6 +576,12 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.xabber.android.ui.activity.ChatActivity" />
+        </activity>
+        <activity android:name=".ui.activity.AccountPushActivity" />
+        <activity android:name=".ui.activity.PushLogActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.xabber.android.ui.preferences.DebugSettings"/>
         </activity>
     </application>
 

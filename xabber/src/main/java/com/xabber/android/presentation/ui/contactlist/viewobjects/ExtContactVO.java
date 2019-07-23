@@ -26,7 +26,7 @@ import eu.davidea.flexibleadapter.FlexibleAdapter;
 public class ExtContactVO extends ContactVO {
 
     public ExtContactVO(int accountColorIndicator, int accountColorIndicatorBack,
-                        boolean showOfflineShadow, String name,
+                        String name,
                         String status, int statusId, int statusLevel, Drawable avatar,
                         int mucIndicatorLevel, UserJid userJid, AccountJid accountJid, int unreadCount,
                         boolean mute, NotificationState.NotificationMode notificationMode, String messageText,
@@ -34,7 +34,7 @@ public class ExtContactVO extends ContactVO {
                         boolean archived, String lastActivity, ContactClickListener listener, int forwardedCount,
                         boolean isCustomNotification) {
 
-        super(accountColorIndicator, accountColorIndicatorBack, showOfflineShadow, name, status,
+        super(accountColorIndicator, accountColorIndicatorBack, name, status,
                 statusId, statusLevel, avatar,
                 mucIndicatorLevel, userJid, accountJid, unreadCount, mute, notificationMode, messageText,
                 isOutgoing, time, messageStatus, messageOwner, archived, lastActivity, listener, forwardedCount,
@@ -45,7 +45,6 @@ public class ExtContactVO extends ContactVO {
         ContactVO contactVO = ContactVO.convert(contact, listener);
         return new ExtContactVO(
                 contactVO.getAccountColorIndicator(), contactVO.getAccountColorIndicatorBack(),
-                contactVO.isShowOfflineShadow(),
                 contactVO.getName(), contactVO.getStatus(), contactVO.getStatusId(),
                 contactVO.getStatusLevel(), contactVO.getAvatar(), contactVO.getMucIndicatorLevel(),
                 contactVO.getUserJid(), contactVO.getAccountJid(), contactVO.getUnreadCount(),

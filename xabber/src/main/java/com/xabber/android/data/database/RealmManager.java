@@ -14,6 +14,7 @@ import com.xabber.android.data.database.realm.NotifMessageRealm;
 import com.xabber.android.data.database.realm.NotificationStateRealm;
 import com.xabber.android.data.database.realm.PatreonGoalRealm;
 import com.xabber.android.data.database.realm.PatreonRealm;
+import com.xabber.android.data.database.realm.PushLogRecord;
 import com.xabber.android.data.database.realm.SocialBindingRealm;
 import com.xabber.android.data.database.realm.SyncStateRealm;
 import com.xabber.android.data.database.realm.XMPPUserRealm;
@@ -24,6 +25,7 @@ import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.notification.custom_notification.NotifyPrefsRealm;
 
 import io.realm.DynamicRealm;
+import io.realm.DynamicRealmObject;
 import io.realm.FieldAttribute;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
@@ -34,7 +36,7 @@ import io.realm.annotations.RealmModule;
 
 public class RealmManager {
     private static final String REALM_DATABASE_NAME = "realm_database.realm";
-    private static final int REALM_DATABASE_VERSION = 21;
+    private static final int REALM_DATABASE_VERSION = 27;
     private static final String LOG_TAG = RealmManager.class.getSimpleName();
     private final RealmConfiguration realmConfiguration;
 
@@ -69,7 +71,7 @@ public class RealmManager {
             XMPPUserRealm.class, EmailRealm.class, SocialBindingRealm.class, SyncStateRealm.class,
             PatreonGoalRealm.class, PatreonRealm.class, ChatDataRealm.class, NotificationStateRealm.class,
             CrowdfundingMessage.class, NotifChatRealm.class, NotifMessageRealm.class, NotifyPrefsRealm.class,
-            UploadServer.class})
+            UploadServer.class, PushLogRecord.class})
     static class RealmDatabaseModule {
     }
 
@@ -308,6 +310,51 @@ public class RealmManager {
                                         .addField(UploadServer.Fields.ACCOUNT, String.class)
                                         .addField(UploadServer.Fields.SERVER, String.class);
                             }
+
+                            oldVersion++;
+                        }
+
+                        if (oldVersion == 21) {
+                            schema.get(AccountRealm.class.getSimpleName())
+                                    .addField(AccountRealm.Fields.PUSH_NODE, String.class);
+
+                            oldVersion++;
+                        }
+
+                        if (oldVersion == 22) {
+                            schema.get(AccountRealm.class.getSimpleName())
+                                    .addField(AccountRealm.Fields.PUSH_ENABLED, boolean.class)
+                                    .addField(AccountRealm.Fields.PUSH_WAS_ENABLED, boolean.class);
+
+                            oldVersion++;
+                        }
+
+                        if (oldVersion == 23) {
+                            schema.get(AccountRealm.class.getSimpleName())
+                                    .addField(AccountRealm.Fields.PUSH_SERVICE_JID, String.class);
+
+                            oldVersion++;
+                        }
+
+                        if (oldVersion == 24) {
+                            schema.create(PushLogRecord.class.getSimpleName())
+                                    .addField(UploadServer.Fields.ID, String.class, FieldAttribute.PRIMARY_KEY, FieldAttribute.REQUIRED)
+                                    .addField(PushLogRecord.Fields.TIME, long.class)
+                                    .addField(PushLogRecord.Fields.MESSAGE, String.class);
+
+                            oldVersion++;
+                        }
+
+                        if (oldVersion == 25) {
+                            schema.get(ChatDataRealm.class.getSimpleName())
+                                    .addField("historyRequestedAtStart", boolean.class);
+
+                            oldVersion++;
+                        }
+
+                        if (oldVersion == 26) {
+                            schema.get(CrowdfundingMessage.class.getSimpleName())
+                                    .removeField("receivedTimestamp");
 
                             oldVersion++;
                         }

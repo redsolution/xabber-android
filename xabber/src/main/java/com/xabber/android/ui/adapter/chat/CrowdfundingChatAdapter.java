@@ -7,7 +7,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
-import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,10 +21,10 @@ import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
-import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.database.realm.CrowdfundingMessage;
 import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.ui.color.ColorManager;
+import com.xabber.android.ui.widget.CorrectlyMeasuringTextView;
 import com.xabber.android.utils.StringUtils;
 import com.xabber.android.utils.Utils;
 
@@ -66,9 +65,9 @@ public class CrowdfundingChatAdapter extends RealmRecyclerViewAdapter<Crowdfundi
     public CrowdMessageVH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         if (viewType == VIEW_TYPE_MESSAGE_NOFLEX)
             return new CrowdMessageVH(LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.item_message_incoming_noflex, parent, false));
+                    .inflate(R.layout.item_message_incoming_noflex_crowdfunding, parent, false));
         else return new CrowdMessageVH(LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_message_incoming, parent, false));
+                .inflate(R.layout.item_message_incoming_crowdfunding, parent, false));
     }
 
     @Override
@@ -92,10 +91,12 @@ public class CrowdfundingChatAdapter extends RealmRecyclerViewAdapter<Crowdfundi
         // text
         String text = message.getMessageForCurrentLocale();
         if (text == null) text = "";
-        holder.messageText.setText(Html.fromHtml(text));
+        // Added .concat("&zwj;")
+        // to avoid click by empty space after ClickableSpan
+        holder.messageText.setText(Html.fromHtml(text.concat("&zwj;")));
         // to avoid bug - https://issuetracker.google.com/issues/36907309
         holder.messageText.setAutoLinkMask(0);
-        holder.messageText.setMovementMethod(LinkMovementMethod.getInstance());
+        holder.messageText.setMovementMethod(CorrectlyMeasuringTextView.LocalLinkMovementMethod.getInstance());
 
         // text or image
         if (FileManager.isImageUrl(text)) {
@@ -142,7 +143,7 @@ public class CrowdfundingChatAdapter extends RealmRecyclerViewAdapter<Crowdfundi
         } else holder.messageHeader.setVisibility(View.GONE);
 
         // time
-        String time = StringUtils.getTimeText(new Date((long)message.getReceivedTimestamp()*1000));
+        String time = StringUtils.getTimeText(new Date((long)message.getTimestamp()*1000));
         holder.messageTime.setText(time);
 
         // status
@@ -160,14 +161,14 @@ public class CrowdfundingChatAdapter extends RealmRecyclerViewAdapter<Crowdfundi
         boolean needDate;
         CrowdfundingMessage previousMessage = getMessage(i - 1);
         if (previousMessage != null) {
-            needDate = !Utils.isSameDay((long) message.getReceivedTimestamp()*1000,
-                    (long) previousMessage.getReceivedTimestamp()*1000);
+            needDate = !Utils.isSameDay((long) message.getTimestamp()*1000,
+                    (long) previousMessage.getTimestamp()*1000);
         } else needDate = true;
 
         if (holder.tvDate != null) {
             if (needDate) {
                 holder.tvDate.setText(StringUtils.getDateStringForMessage(
-                        (long) message.getReceivedTimestamp()*1000));
+                        (long) message.getTimestamp()*1000));
                 holder.tvDate.setVisibility(View.VISIBLE);
             } else holder.tvDate.setVisibility(View.GONE);
         }

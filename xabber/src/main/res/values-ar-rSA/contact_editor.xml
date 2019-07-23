@@ -5,7 +5,7 @@
     <string name="contact_group">اختر المجموعات</string>
     <string name="contact_name">المعرف (اختياري)</string>
     <string name="contact_subscribe_confirm">مشاركة حالة الحساب %1$s مع طرف الاتصال؟</string>
-    <string name="contact_user">معرف طرف الاتصال</string>
+    <string name="contact_user">اسم طرف الاتصال</string>
     <string name="ENTRY_IS_NOT_FOUND">لم يتم العثور على طرف الاتصال</string>
     <string name="group_is_empty">حدد اسم المجموعة</string>
     <string name="group_name">اسم المجموعة</string>
@@ -14,4 +14,11 @@
     <string name="add_new_group">أضف مجموعة جديدة&#8230;</string>
     <string name="accept_contact">تصريح</string>
     <string name="decline_contact">إلغاء</string>
+    <string name="processing_image">جار معالجة الصورة...</string>
+    <string name="error_during_crop">خطأ أثناء قص الصورة</string>
+    <string name="error_during_image_processing">خطأ أثناء معالجة الصور</string>
+    <string name="account_server_info">معلومات الخادم</string>
+    <string name="account_server_info_description">قائمة قدرات الخادم</string>
+    <string name="conference_private_chat_invitation">%1$s من %2$s يريد لبدء محادثة خاصة معك</string>
+    <string name="accept_muc_private_chat">قبول</string>
 </resources>

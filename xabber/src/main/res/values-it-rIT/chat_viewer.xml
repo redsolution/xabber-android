@@ -108,7 +108,6 @@
     <string name="toast_archived_show">Chat archiviate mostrate</string>
     <string name="toast_archived_hide">Chat archiviate nascoste</string>
     <string name="chat_notification_settings_title">Notifica per questa chat</string>
-    <string name="error_file_upload_not_support">Il server che stai usando non supporta il trasferimento di file. Puoi provare il server xabber.org .</string>
     <string name="button_join_conference">Entra nella conferenza</string>
     <string name="showcase_chat_text_1">Scorri verso destra per aprire le chat recenti</string>
     <string name="showcase_chat_text_2">Scorri verso sinistra per aprire le informazioni di contatto</string>

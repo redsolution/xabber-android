@@ -33,6 +33,7 @@ public class ForwardedFragment extends FileInteractionFragment {
 
     private String userName;
     private int accountMainColor;
+    private int mentionColor;
     private ColorStateList colorStateList;
     private boolean isMUC;
     private String messageId;
@@ -62,6 +63,7 @@ public class ForwardedFragment extends FileInteractionFragment {
 
             userName = RosterManager.getInstance().getName(account, user);
             accountMainColor = ColorManager.getInstance().getAccountPainter().getAccountMainColor(account);
+            mentionColor = ColorManager.getInstance().getAccountPainter().getAccountIndicatorBackColor(account);
             colorStateList = ColorManager.getInstance().getChatIncomingBalloonColorsStateList(account);
             isMUC = MUCManager.getInstance().hasRoom(account, user.getJid().asEntityBareJidIfPossible());
         }
@@ -101,8 +103,8 @@ public class ForwardedFragment extends FileInteractionFragment {
 
         MessagesAdapter.MessageExtraData extraData = new MessagesAdapter.MessageExtraData(this,
                 this, null, getActivity(),
-                userName, colorStateList, accountMainColor, isMUC, false, false,
-                false, false, false);
+                userName, colorStateList, accountMainColor, mentionColor, isMUC, false,
+                false, false, false, false);
 
         if (forwardedMessages.size() > 0) {
             ForwardedAdapter adapter = new ForwardedAdapter(forwardedMessages, extraData);

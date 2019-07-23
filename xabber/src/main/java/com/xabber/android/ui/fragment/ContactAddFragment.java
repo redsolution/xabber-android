@@ -147,7 +147,8 @@ public class ContactAddFragment extends GroupEditorFragment
             onNothingSelected(parent);
             setAccount(null);
         } else {
-            listenerActivity.onAccountSelected(selectedAccount);
+            if (listenerActivity != null)
+                listenerActivity.onAccountSelected(selectedAccount);
 
             if (!selectedAccount.equals(getAccount())) {
                 setAccount(selectedAccount);
@@ -167,18 +168,22 @@ public class ContactAddFragment extends GroupEditorFragment
 
     @Override
     public void addContact() {
-        if (getAccount() == null) {
-            Toast.makeText(getActivity(), getString(R.string.EMPTY_ACCOUNT),
-                    Toast.LENGTH_LONG).show();
+        final AccountJid account = (AccountJid) accountView.getSelectedItem();
+        if (account == null || getAccount() == null) {
+            Toast.makeText(getActivity(), getString(R.string.EMPTY_ACCOUNT), Toast.LENGTH_LONG).show();
             return;
         }
 
         String contactString = userView.getText().toString();
-        contactString = contactString.replace(" ", "");
+        contactString = contactString.trim();
+
+        if (contactString.contains(" ")) {
+            userView.setError(getString(R.string.INCORRECT_USER_NAME));
+            return;
+        }
 
         if (TextUtils.isEmpty(contactString)) {
-            Toast.makeText(getActivity(), getString(R.string.EMPTY_USER_NAME),
-                    Toast.LENGTH_LONG).show();
+            userView.setError(getString(R.string.EMPTY_USER_NAME));
             return ;
         }
 
@@ -188,20 +193,12 @@ public class ContactAddFragment extends GroupEditorFragment
             user = UserJid.from(entityFullJid);
         } catch (XmppStringprepException | UserJid.UserJidCreateException  e) {
             e.printStackTrace();
-            Toast.makeText(getActivity(), getString(R.string.INCORRECT_USER_NAME), Toast.LENGTH_LONG).show();
+            userView.setError(getString(R.string.INCORRECT_USER_NAME));
             return;
         }
 
-        LogManager.i(this, "user: " + user);
-
-        final AccountJid account = (AccountJid) accountView.getSelectedItem();
-        if (account == null) {
-            Toast.makeText(getActivity(), getString(R.string.EMPTY_ACCOUNT),
-                    Toast.LENGTH_LONG).show();
-            return;
-        }
-
-        listenerActivity.showProgress(true);
+        if (listenerActivity != null)
+            listenerActivity.showProgress(true);
         final String name = nameView.getText().toString();
         final ArrayList<String> groups = getSelected();
 
@@ -237,7 +234,8 @@ public class ContactAddFragment extends GroupEditorFragment
         Application.getInstance().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                listenerActivity.showProgress(false);
+                if (listenerActivity != null)
+                    listenerActivity.showProgress(false);
                 if (success) getActivity().finish();
             }
         });

@@ -17,9 +17,7 @@ package com.xabber.android.data.message;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
-import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
@@ -28,7 +26,6 @@ import com.xabber.android.data.database.MessageDatabaseManager;
 import com.xabber.android.data.database.messagerealm.Attachment;
 import com.xabber.android.data.database.messagerealm.ForwardId;
 import com.xabber.android.data.database.messagerealm.MessageItem;
-import com.xabber.android.data.database.messagerealm.SyncInfo;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.UserJid;
@@ -37,32 +34,34 @@ import com.xabber.android.data.extension.chat_markers.BackpressureMessageReader;
 import com.xabber.android.data.extension.cs.ChatStateManager;
 import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.extension.file.UriUtils;
-import com.xabber.android.data.extension.forward.ForwardComment;
-import com.xabber.android.data.extension.httpfileupload.ExtendedFormField;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.otr.OTRManager;
+import com.xabber.android.data.extension.references.ReferenceElement;
+import com.xabber.android.data.extension.references.ReferencesManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.notification.MessageNotificationManager;
 import com.xabber.android.data.notification.NotificationManager;
+import com.xabber.android.data.roster.RosterCacheManager;
+import com.xabber.android.utils.Utils;
+import com.xabber.xmpp.sid.OriginIdElement;
+import com.xabber.xmpp.sid.UniqStanzaHelper;
 
 import org.greenrobot.eventbus.EventBus;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.StanzaListener;
-import org.jivesoftware.smack.packet.ExtensionElement;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Message.Type;
 import org.jivesoftware.smack.packet.Stanza;
-import org.jivesoftware.smack.util.PacketParserUtils;
 import org.jivesoftware.smack.util.StringUtils;
 import org.jivesoftware.smackx.delay.packet.DelayInformation;
 import org.jivesoftware.smackx.forward.packet.Forwarded;
-import org.jivesoftware.smackx.xdata.packet.DataForm;
 import org.jxmpp.jid.Jid;
 import org.jxmpp.jid.parts.Resourcepart;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -119,9 +118,11 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     private boolean isRemotePreviousHistoryCompletelyLoaded = false;
 
     private Date lastSyncedTime;
-    private RealmResults<SyncInfo> syncInfo;
     private MessageItem lastMessage;
     private RealmResults<MessageItem> messages;
+    private String lastMessageId = null;
+    private boolean historyIsFull = false;
+    private boolean historyRequestedAtStart = false;
 
     protected AbstractChat(@NonNull final AccountJid account, @NonNull final UserJid user, boolean isPrivateMucChat) {
         super(account, isPrivateMucChat ? user : user.getBareUserJid());
@@ -198,18 +199,6 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         return messages;
     }
 
-    public RealmResults<SyncInfo> getSyncInfo() {
-        if (syncInfo == null) {
-            syncInfo = MessageDatabaseManager.getInstance()
-                    .getRealmUiThread().where(SyncInfo.class)
-                    .equalTo(SyncInfo.FIELD_ACCOUNT, getAccountString())
-                    .equalTo(SyncInfo.FIELD_USER, getUserString())
-                    .findAllAsync();
-        }
-
-        return syncInfo;
-    }
-
     boolean isStatusTrackingEnabled() {
         return trackStatus;
     }
@@ -246,7 +235,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         else return false;
     }
 
-    private void enableNotificationsIfNeed() {
+    public void enableNotificationsIfNeed() {
         int currentTime = (int) (System.currentTimeMillis() / 1000L);
         NotificationState.NotificationMode mode = notificationState.getMode();
 
@@ -272,8 +261,8 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
      * @param text     can be <code>null</code>.
      */
     public void newAction(Resourcepart resource, String text, ChatAction action, boolean fromMUC) {
-        createAndSaveNewMessage(true, UUID.randomUUID().toString(), resource, text, action,
-                null, true, false, false, false,
+        createAndSaveNewMessage(true, UUID.randomUUID().toString(), resource, text, null,
+                action, null, null, true, false, false, false,
                 null, null, null, null, null, fromMUC, false);
     }
 
@@ -292,28 +281,30 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
      * @param offline        Whether message was received from server side offline storage.
      * @return
      */
-    protected void createAndSaveNewMessage(boolean ui, String uid, Resourcepart resource, String text, final ChatAction action,
+    protected void createAndSaveNewMessage(boolean ui, String uid, Resourcepart resource, String text,
+                   String markupText, final ChatAction action, final Date timestamp,
                    final Date delayTimestamp, final boolean incoming, boolean notify,
                    final boolean encrypted, final boolean offline, final String stanzaId,
                    final String originalStanza, final String parentMessageId, final String originalFrom,
                    final RealmList<ForwardId> forwardIds, boolean fromMUC, boolean fromMAM) {
 
-        final MessageItem messageItem = createMessageItem(uid, resource, text, action, delayTimestamp,
-                incoming, notify, encrypted, offline, stanzaId, null,
+        final MessageItem messageItem = createMessageItem(uid, resource, text, markupText, action,
+                timestamp, delayTimestamp, incoming, notify, encrypted, offline, stanzaId, null,
                 originalStanza, parentMessageId, originalFrom, forwardIds, fromMUC, fromMAM);
 
         saveMessageItem(ui, messageItem);
         //EventBus.getDefault().post(new NewMessageEvent());
     }
 
-    protected void createAndSaveFileMessage(boolean ui, String uid, Resourcepart resource, String text, final ChatAction action,
+    protected void createAndSaveFileMessage(boolean ui, String uid, Resourcepart resource, String text,
+                    String markupText, final ChatAction action, final Date timestamp,
                     final Date delayTimestamp, final boolean incoming, boolean notify,
                     final boolean encrypted, final boolean offline, final String stanzaId,
                     RealmList<Attachment> attachments, final String originalStanza,
                     final String parentMessageId, final String originalFrom, boolean fromMUC, boolean fromMAM) {
 
-        final MessageItem messageItem = createMessageItem(uid, resource, text, action, delayTimestamp,
-                incoming, notify, encrypted, offline, stanzaId, attachments,
+        final MessageItem messageItem = createMessageItem(uid, resource, text, markupText, action,
+                timestamp, delayTimestamp, incoming, notify, encrypted, offline, stanzaId, attachments,
                 originalStanza, parentMessageId, originalFrom, null, fromMUC, fromMAM);
 
         saveMessageItem(ui, messageItem);
@@ -337,18 +328,20 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         }
     }
 
-    protected MessageItem createMessageItem(Resourcepart resource, String text, ChatAction action,
+    protected MessageItem createMessageItem(Resourcepart resource, String text,
+                        String markupText, ChatAction action,
                         Date delayTimestamp, boolean incoming, boolean notify, boolean encrypted,
                         boolean offline, String stanzaId, RealmList<Attachment> attachments,
                         String originalStanza, String parentMessageId, String originalFrom,
                         RealmList<ForwardId> forwardIds, boolean fromMUC) {
 
-        return createMessageItem(UUID.randomUUID().toString(), resource,  text,  action,
-                delayTimestamp,  incoming,  notify,  encrypted, offline,  stanzaId, attachments,
+        return createMessageItem(UUID.randomUUID().toString(), resource,  text,  markupText, action,
+                null, delayTimestamp,  incoming,  notify,  encrypted, offline,  stanzaId, attachments,
                  originalStanza,  parentMessageId,  originalFrom, forwardIds, fromMUC, false);
     }
 
-    protected MessageItem createMessageItem(String uid, Resourcepart resource, String text, ChatAction action,
+    protected MessageItem createMessageItem(String uid, Resourcepart resource, String text,
+                        String markupText, ChatAction action, Date timestamp,
                         Date delayTimestamp, boolean incoming, boolean notify, boolean encrypted,
                         boolean offline, String stanzaId, RealmList<Attachment> attachments,
                         String originalStanza, String parentMessageId, String originalFrom,
@@ -368,7 +361,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
             send = true;
         }
 
-        final Date timestamp = new Date();
+        if (timestamp == null) timestamp = new Date();
 
         if (text.trim().isEmpty()) {
             notify = false;
@@ -402,6 +395,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
             messageItem.setAction(action.toString());
         }
         messageItem.setText(text);
+        if (markupText != null) messageItem.setMarkupText(markupText);
         messageItem.setTimestamp(timestamp.getTime());
         if (delayTimestamp != null) {
             messageItem.setDelayTimestamp(delayTimestamp.getTime());
@@ -433,6 +427,12 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         // when getting new message, unarchive chat if chat not muted
         if (this.notifyAboutMessage())
             this.archived = false;
+
+        // update last id in chat
+        messageItem.setPreviousId(getLastMessageId());
+        String id = messageItem.getArchivedId();
+        if (id == null) id = messageItem.getStanzaId();
+        setLastMessageId(id);
 
         return messageItem;
     }
@@ -514,22 +514,25 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         return lastMessage;
     }
 
-    private void updateLastMessage() {
-        if (messages.isValid() && messages.isLoaded() && !messages.isEmpty()) {
-            List<MessageItem> textMessages = MessageDatabaseManager.getInstance()
-                    .getRealmUiThread()
-                    .copyFromRealm(messages.where().isNull(MessageItem.Fields.ACTION)
-                            .or().equalTo(MessageItem.Fields.ACTION, ChatAction.available.toString()).findAll());
+    public void setLastMessage(MessageItem lastMessage) {
+        this.lastMessage = lastMessage;
+    }
 
-            if (!textMessages.isEmpty())
-                lastMessage = textMessages.get(textMessages.size() - 1);
-            else
-                lastMessage = MessageDatabaseManager.getInstance()
-                    .getRealmUiThread()
-                    .copyFromRealm(messages.last());
-        } else {
-            lastMessage = null;
-        }
+    private void updateLastMessage() {
+        Realm realm = MessageDatabaseManager.getInstance().getRealmUiThread();
+        lastMessage = realm.where(MessageItem.class)
+                .equalTo(MessageItem.Fields.ACCOUNT, account.toString())
+                .equalTo(MessageItem.Fields.USER, user.toString())
+                .isNull(MessageItem.Fields.PARENT_MESSAGE_ID)
+                .isNotNull(MessageItem.Fields.TEXT)
+                .isNull(MessageItem.Fields.ACTION)
+                .or()
+                .equalTo(MessageItem.Fields.ACCOUNT, account.toString())
+                .equalTo(MessageItem.Fields.USER, user.toString())
+                .isNull(MessageItem.Fields.PARENT_MESSAGE_ID)
+                .isNotNull(MessageItem.Fields.TEXT)
+                .equalTo(MessageItem.Fields.ACTION, ChatAction.available.toString())
+                .findAllSorted(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING).last(null);
     }
 
     /**
@@ -563,7 +566,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     }
 
     /**
-     * Send stanza with XEP-0221
+     * Send stanza with data-references.
      */
     public Message createFileMessagePacket(String stanzaId, RealmList<Attachment> attachments, String body) {
 
@@ -573,29 +576,25 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         message.setThread(threadId);
         if (stanzaId != null) message.setStanzaId(stanzaId);
 
-        DataForm dataForm = new DataForm(DataForm.Type.form);
-
-        int i = 1;
+        StringBuilder builder = new StringBuilder(body);
         for (Attachment attachment : attachments) {
-            ExtendedFormField formField = new ExtendedFormField("media" + i);
-            i++;
-            formField.setLabel(attachment.getTitle());
+            StringBuilder rowBuilder = new StringBuilder();
+            if (builder.length() > 0) rowBuilder.append("\n");
+            rowBuilder.append(attachment.getFileUrl());
 
-            ExtendedFormField.Uri uri = new ExtendedFormField.Uri(attachment.getMimeType(), attachment.getFileUrl());
-            uri.setSize(attachment.getFileSize());
-            uri.setDuration(attachment.getDuration());
-
-            formField.setMedia(
-                    new ExtendedFormField.Media(String.valueOf(attachment.getImageHeight()),
-                            String.valueOf(attachment.getImageWidth()), uri));
-
-            dataForm.addField(formField);
+            int begin = getSizeOfEncodedChars(builder.toString());
+            builder.append(rowBuilder);
+            ReferenceElement reference = ReferencesManager.createMediaReferences(attachment,
+                    begin, getSizeOfEncodedChars(builder.toString()) - 1);
+            message.addExtension(reference);
         }
-        message.addExtension(dataForm);
-        message.setBody(body);
 
-        Log.d("XEP-0221", message.toXML().toString());
+        message.setBody(builder);
         return message;
+    }
+
+    private int getSizeOfEncodedChars(String str) {
+        return Utils.xmlEncode(str).toCharArray().length;
     }
 
     /**
@@ -661,36 +660,28 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
                     messageItem.getAttachments(), text);
 
         } else if (messageItem.haveForwardedMessages()) {
-
-            int count = messageItem.getForwardedIds().size();
-            String body = String.format(Application.getInstance().getResources()
-                    .getString(R.string.forwarded_support_text), count);
-            if (text != null && !text.isEmpty()) body += "\n" + text;
-
-            message = createMessagePacket(body, messageItem.getStanzaId());
-
             Realm realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
+            RealmResults<MessageItem> items = realm.where(MessageItem.class)
+                    .in(MessageItem.Fields.UNIQUE_ID, messageItem.getForwardedIdsAsArray()).findAll();
 
-            // forwarded
-            if (messageItem.getForwardedIds() != null && messageItem.getForwardedIds().size() > 0) {
-                final String[] ids = new String[messageItem.getForwardedIds().size()];
-                int i = 0;
-                for (ForwardId id : messageItem.getForwardedIds()) {
-                    ids[i] = id.getForwardMessageId();
-                    i++;
-                }
-
-                RealmResults<MessageItem> items = realm.where(MessageItem.class)
-                        .in(MessageItem.Fields.UNIQUE_ID, ids).findAll();
+            List<ReferenceElement> references = new ArrayList<>();
+            StringBuilder builder = new StringBuilder();
+            if (items != null && !items.isEmpty()) {
                 for (MessageItem item : items) {
-                    try {
-                        Message forwarded = (Message) PacketParserUtils.parseStanza(item.getOriginalStanza());
-                        message.addExtension(new Forwarded(new DelayInformation(new Date(item.getTimestamp())), forwarded));
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                    String forward = ClipManager.createMessageTree(realm, item.getUniqueId()) + "\n";
+                    int begin = getSizeOfEncodedChars(builder.toString());
+                    builder.append(forward);
+                    ReferenceElement reference = ReferencesManager.createForwardReference(item,
+                            begin, getSizeOfEncodedChars(builder.toString()) - 1);
+                    references.add(reference);
                 }
-                message.addExtension(new ForwardComment(text));
+            }
+            builder.append(text);
+            text = builder.toString();
+
+            message = createMessagePacket(text, messageItem.getStanzaId());
+            for (ReferenceElement element : references) {
+                message.addExtension(element);
             }
 
         } else if (text != null) {
@@ -700,6 +691,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         if (message != null) {
             ChatStateManager.getInstance().updateOutgoingMessage(AbstractChat.this, message);
             CarbonManager.getInstance().updateOutgoingMessage(AbstractChat.this, message);
+            message.addExtension(new OriginIdElement(messageItem.getStanzaId()));
             if (delayTimestamp != null) {
                 message.addExtension(new DelayInformation(delayTimestamp));
             }
@@ -786,6 +778,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
      * Disconnection occured.
      */
     protected void onDisconnect() {
+        setLastMessageId(null);
     }
 
     public void setIsPrivateMucChatAccepted(boolean isPrivateMucChatAccepted) {
@@ -803,6 +796,8 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     @Override
     public void onChange(RealmResults<MessageItem> messageItems) {
         updateLastMessage();
+        RosterCacheManager.saveLastMessageToContact(
+                MessageDatabaseManager.getInstance().getRealmUiThread(), lastMessage);
     }
 
     /** UNREAD MESSAGES */
@@ -926,20 +921,68 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     }
 
     public RealmList<ForwardId> parseForwardedMessage(boolean ui, Stanza packet, String parentMessageId) {
-        List<ExtensionElement> elements = packet.getExtensions(Forwarded.ELEMENT, Forwarded.NAMESPACE);
-        if (elements == null || elements.size() == 0) return null;
+        List<Forwarded> forwarded = ReferencesManager.getForwardedFromReferences(packet);
+        if (forwarded.isEmpty()) forwarded = ForwardManager.getForwardedFromStanza(packet);
+        if (forwarded.isEmpty()) return null;
 
-        RealmList<ForwardId> forwarded = new RealmList<>();
-        for (ExtensionElement element : elements) {
-            if (element instanceof Forwarded) {
-                Stanza stanza = ((Forwarded) element).getForwardedStanza();
-                if (stanza instanceof Message) {
-                    forwarded.add(new ForwardId(parseInnerMessage(ui, (Message) stanza, parentMessageId)));
-                }
+        RealmList<ForwardId> forwardedIds = new RealmList<>();
+        for (Forwarded forward : forwarded) {
+            Stanza stanza = forward.getForwardedStanza();
+            DelayInformation delayInformation = forward.getDelayInformation();
+            Date timestamp = delayInformation.getStamp();
+            if (stanza instanceof Message) {
+                forwardedIds.add(new ForwardId(parseInnerMessage(ui, (Message) stanza, timestamp, parentMessageId)));
             }
         }
-        return forwarded;
+        return forwardedIds;
     }
 
-    protected abstract String parseInnerMessage(boolean ui, Message message, String parentMessageId);
+    protected abstract String parseInnerMessage(boolean ui, Message message, Date timestamp, String parentMessageId);
+
+    public String getLastMessageId() {
+        return lastMessageId;
+    }
+
+    public void setLastMessageId(String lastMessageId) {
+        this.lastMessageId = lastMessageId;
+    }
+
+    public boolean historyIsFull() {
+        return historyIsFull;
+    }
+
+    public void setHistoryIsFull() {
+        this.historyIsFull = true;
+    }
+
+    public boolean isHistoryRequestedAtStart() {
+        return historyRequestedAtStart;
+    }
+
+    public void setHistoryRequestedAtStart(boolean needSaveToRealm) {
+        this.historyRequestedAtStart = true;
+        if (needSaveToRealm) ChatManager.getInstance().saveOrUpdateChatDataToRealm(this);
+    }
+
+    public static String getStanzaId(Message message) {
+        String stanzaId = null;
+
+        stanzaId = UniqStanzaHelper.getOriginId(message);
+        if (stanzaId != null && !stanzaId.isEmpty()) return stanzaId;
+
+        stanzaId = UniqStanzaHelper.getStanzaId(message);
+        if (stanzaId != null && !stanzaId.isEmpty()) return stanzaId;
+
+        stanzaId = message.getStanzaId();
+        return stanzaId;
+    }
+
+    public static Date getDelayStamp(Message message) {
+        DelayInformation delayInformation = DelayInformation.from(message);
+        if (delayInformation != null) {
+            return delayInformation.getStamp();
+        } else {
+            return null;
+        }
+    }
 }

@@ -4,7 +4,7 @@
     <string name="contact_viewer">بيانات طرف الاتصال</string>
     <string name="contact_viewer_client">عميل</string>
     <string name="contact_viewer_this_device">هذا الجهاز</string>
-    <string name="vcard_nick_name">كنية</string>
+    <string name="vcard_nick_name">الاسم المستعار</string>
     <string name="vcard_formatted_name">الاسم الكامل</string>
     <string name="vcard_prefix_name">بادئة</string>
     <string name="vcard_given_name">الاسم</string>
@@ -48,6 +48,20 @@
     <string name="edit_alias">تعديل المعرِّف</string>
     <string name="edit_contact_groups">تعديل المجموعات</string>
     <string name="remove_contact">حذف جهة اتصال</string>
+    <string name="edit_account_user_info">تعديل معلومات المستخدم</string>
     <string name="edit_vcard">تعديل</string>
     <string name="account_user_info_save_success">تم حفظ معلومات الحساب بنجاح</string>
+    <string name="account_user_info_save_fail">لا يمكن حفظ معلومات مستخدم الحساب</string>
+    <string name="saving">حفظ...</string>
+    <string name="choose_from_gallery">اختيار من المعرض</string>
+    <string name="take_photo">اختيار صورة</string>
+    <string name="remove_avatar">ازالة الصوره</string>
+    <string name="change">تغيير</string>
+    <string name="could_not_get_room_info">لا يمكن الحصول على معلومات المؤتمر</string>
+    <string name="conference_name">الاسم</string>
+    <string name="conference_description">وصف</string>
+    <string name="conference_subject">الموضوع</string>
+    <string name="message_info_occupants_number">الركاب %d</string>
+    <string name="contact_info_connected_clients_header">الأجهزة المتصلة</string>
+    <string name="contact_info_visiting_card_header">البروفايل</string>
 </resources>

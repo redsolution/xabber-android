@@ -100,6 +100,7 @@
     <string name="connection_load_vcard">Загружать vCard\nЗагружать и обновлять персональную информацию и аватары контактов. Отключение поможет сэкономить трафик.</string>
     <string name="connection_load_images">Загружать изображения\nЗагружать изображения по ссылкам автоматически. Отключите для экономии трафика.</string>
     <string name="connection_use_carbons">Сообщения carbons\nПринимать сообщения других сессий Вашей учетной записи. Отключение поможет сэкономить трафик.</string>
+    <string name="connection_compress_image_on_upload_title">Сжатие изображений\nСжимать изображения при загрузке на сервер. Включение поможет сэкономить трафик. Некоторые серверы могут иметь ограничение размера загружаемого файла. Включите, чтобы обойти ограничение.</string>
     <string name="connection_dns_resolver_type_dns_java_resolver">DNSJavaResolver</string>
     <string name="connection_dns_resolver_type_mini_dns_resolver">MiniDNSResolver (экспериментальный)</string>
     <string name="events_phrases">Ключевые фразы</string>
@@ -123,6 +124,7 @@
     <string name="category_inapp_notifications">Уведомления в приложении</string>
     <string name="category_key_phrase">Ключевые фразы</string>
     <string name="custom_notifications">Специальные уведомления</string>
+    <string name="category_other">Другое</string>
     <string name="events_on_chat_title">Оповещение</string>
     <string name="events_on_chat_summary">Уведомлять о новых сообщениях в чатах</string>
     <string name="events_on_muc_title">Оповещение</string>
@@ -138,7 +140,7 @@
     <string name="events_in_app_preview_title">Предпросмотр в приложении</string>
     <string name="events_in_app_preview_summary">Предпросмотр при сообщениях в других чатах</string>
     <string name="events_in_chat_sounds_title">Звук в текущем чате</string>
-    <string name="events_in_chat_sounds_summary">Воспроизводить уведомление при сообщениях в текущем чате</string>
+    <string name="events_in_chat_sounds_summary">Воспроизводить уведомление при получении и отправке сообщений в текущем чате</string>
     <string name="events_reset_title">Сброс</string>
     <string name="events_reset_summary">Все настройки уведомлений будут установлены в значения по умолчанию</string>
     <string name="events_reset_alert">Сбросить настройки уведомлений?</string>

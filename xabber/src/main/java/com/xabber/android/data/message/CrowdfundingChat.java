@@ -42,7 +42,7 @@ public class CrowdfundingChat extends AbstractChat {
 
     public Date getLastTime() {
         if (lastMessage != null)
-            return new Date((long) lastMessage.getReceivedTimestamp() * 1000);
+            return new Date((long) lastMessage.getTimestamp() * 1000);
         return new Date(0);
     }
 
@@ -56,7 +56,7 @@ public class CrowdfundingChat extends AbstractChat {
     }
 
     @Override
-    protected String parseInnerMessage(boolean ui, Message message, String parentMessageId) {
+    protected String parseInnerMessage(boolean ui, Message message, Date timestamp, String parentMessageId) {
         return null;
     }
 

@@ -3,12 +3,8 @@ package com.xabber.android.presentation.ui.contactlist.viewobjects;
 import android.support.annotation.Nullable;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 
 import com.xabber.android.R;
-import com.xabber.android.data.account.AccountItem;
-import com.xabber.android.data.account.AccountManager;
-import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.ui.adapter.contactlist.AccountConfiguration;
 import com.xabber.android.ui.color.ColorManager;
@@ -31,18 +27,15 @@ public class ButtonVO extends AbstractFlexibleItem<ButtonVO.ViewHolder> {
     private String id;
 
     private int accountColorIndicator;
-    private boolean showOfflineShadow;
 
     private String title;
     private String action;
     private AccountJid account;
 
-    public ButtonVO(int accountColorIndicator, boolean showOfflineShadow,
-                    String title, String action, AccountJid account) {
+    public ButtonVO(int accountColorIndicator, String title, String action, AccountJid account) {
 
         this.id = UUID.randomUUID().toString();
         this.accountColorIndicator = accountColorIndicator;
-        this.showOfflineShadow = showOfflineShadow;
         this.title = title;
         this.action = action;
         this.account = account;
@@ -69,32 +62,18 @@ public class ButtonVO extends AbstractFlexibleItem<ButtonVO.ViewHolder> {
 
     @Override
     public void bindViewHolder(FlexibleAdapter adapter, ViewHolder holder, int position, List<Object> payloads) {
-
         holder.btnListAction.setText(getTitle());
-
-        /** set up OFFLINE SHADOW */
-        if (isShowOfflineShadow())
-            holder.offlineShadow.setVisibility(View.VISIBLE);
-        else holder.offlineShadow.setVisibility(View.GONE);
     }
 
     public static ButtonVO convert(@Nullable AccountConfiguration configuration, String title, String action) {
-        boolean showOfflineShadow = false;
         int accountColorIndicator = ColorManager.getInstance().getAccountPainter().getDefaultMainColor();
         AccountJid account = null;
 
         if (configuration != null) {
             account = configuration.getAccount();
             accountColorIndicator = ColorManager.getInstance().getAccountPainter().getAccountMainColor(account);
-
-            AccountItem accountItem = AccountManager.getInstance().getAccount(configuration.getAccount());
-            if (accountItem != null) {
-                StatusMode statusMode = accountItem.getDisplayStatusMode();
-                if (statusMode == StatusMode.unavailable || statusMode == StatusMode.connection)
-                    showOfflineShadow = true;
-            }
         }
-        return new ButtonVO(accountColorIndicator, showOfflineShadow, title, action, account);
+        return new ButtonVO(accountColorIndicator, title, action, account);
     }
 
     public String getTitle() {
@@ -103,10 +82,6 @@ public class ButtonVO extends AbstractFlexibleItem<ButtonVO.ViewHolder> {
 
     public int getAccountColorIndicator() {
         return accountColorIndicator;
-    }
-
-    public boolean isShowOfflineShadow() {
-        return showOfflineShadow;
     }
 
     public String getAction() {
@@ -119,12 +94,10 @@ public class ButtonVO extends AbstractFlexibleItem<ButtonVO.ViewHolder> {
 
     public class ViewHolder extends FlexibleViewHolder {
         final Button btnListAction;
-        final ImageView offlineShadow;
 
         public ViewHolder(View view, FlexibleAdapter adapter) {
             super(view, adapter);
 
-            offlineShadow = (ImageView) view.findViewById(R.id.offline_shadow);
             btnListAction = (Button) itemView.findViewById(R.id.btnListAction);
             btnListAction.setOnClickListener(this);
         }

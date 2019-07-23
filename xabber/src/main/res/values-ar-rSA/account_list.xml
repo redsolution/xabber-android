@@ -3,10 +3,11 @@
 <resources>
     <string name="account_delete_confirm">هل حقاً تريد حذف الحساب %s؟\n(لن يتم حذفه من الخادم، فقط من Xabber)</string>
     <string name="account_add">أضف حساب</string>
-    <string name="account_register">سجل حساب جديد</string>
+    <string name="account_register">تسجيل حساب جديد</string>
     <string name="account_delete">حذف الحساب</string>
+    <string name="account_editor">إعدادات الحساب</string>
     <string name="account_state_registration">جارِ التسجيل</string>
-    <string name="account_state_authentication">جارِ التخويل</string>
+    <string name="account_state_authentication">جارِ الاتصال</string>
     <string name="account_state_connected">متصل</string>
     <string name="account_state_connecting">جارِ الاتصال</string>
     <string name="account_state_disconnecting">جارِ قطع الاتصال</string>

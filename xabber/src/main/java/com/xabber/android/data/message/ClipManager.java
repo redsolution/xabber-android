@@ -5,6 +5,7 @@ import android.content.Context;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.database.MessageDatabaseManager;
+import com.xabber.android.data.database.messagerealm.Attachment;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.utils.StringUtils;
@@ -30,6 +31,11 @@ public class ClipManager {
                 if (!text.isEmpty()) insertDataToClipboard(text);
             }
         });
+    }
+
+    public static String createMessageTree(Realm realm, String id) {
+        String[] str = {id};
+        return messagesToText(realm, str, 1);
     }
 
     private static void insertDataToClipboard(final String text) {
@@ -87,6 +93,14 @@ public class ClipManager {
         if (message.haveForwardedMessages()) {
             stringBuilder.append(messagesToText(realm, message.getForwardedIdsAsArray(), level + 1));
             stringBuilder.append("\n");
+        }
+
+        if (message.haveAttachments()) {
+            for (Attachment attachment : message.getAttachments()) {
+                stringBuilder.append(space);
+                stringBuilder.append(attachment.getFileUrl());
+                stringBuilder.append("\n");
+            }
         }
 
         if (!message.getText().isEmpty()) {

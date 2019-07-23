@@ -88,7 +88,5 @@
         android:layout_marginLeft="2dp"
         />
 
-    <include layout="@layout/offline_shadow" />
-
 </RelativeLayout>
 </LinearLayout>

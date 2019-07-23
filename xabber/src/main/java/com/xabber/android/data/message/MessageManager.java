@@ -18,6 +18,7 @@ import android.net.Uri;
 import android.os.Environment;
 import android.os.Looper;
 import android.support.annotation.Nullable;
+import android.util.Pair;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
@@ -49,6 +50,7 @@ import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.muc.RoomChat;
+import com.xabber.android.data.extension.references.ReferencesManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.message.chat.MucPrivateChatNotification;
@@ -77,8 +79,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import io.realm.Realm;
@@ -170,7 +172,12 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
 
     public Collection<AbstractChat> getChatsOfEnabledAccount() {
         List<AbstractChat> chats = new ArrayList<>();
-        for (AccountJid accountJid : AccountManager.getInstance().getEnabledAccounts()) {
+
+        HashSet<AccountJid> enabledAccounts = new HashSet<>();
+        enabledAccounts.addAll(AccountManager.getInstance().getEnabledAccounts());
+        enabledAccounts.addAll(AccountManager.getInstance().getCachedEnabledAccounts());
+
+        for (AccountJid accountJid : enabledAccounts) {
             chats.addAll(this.chats.getNested(accountJid.toString()).values());
         }
         return chats;
@@ -204,6 +211,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
             chat.setLastPosition(chatData.getLastPosition());
             chat.setArchived(chatData.isArchived(), false);
             chat.setNotificationState(chatData.getNotificationState(), false);
+            if (chatData.isHistoryRequestedAtStart()) chat.setHistoryRequestedAtStart(false);
         }
         addChat(chat);
         return chat;
@@ -216,6 +224,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
             chat.setLastPosition(chatData.getLastPosition());
             chat.setArchived(chatData.isArchived(), false);
             chat.setNotificationState(chatData.getNotificationState(), false);
+            if (chatData.isHistoryRequestedAtStart()) chat.setHistoryRequestedAtStart(false);
         }
         addChat(chat);
         return chat;
@@ -320,13 +329,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
                         attachment.setFileUrl(urls.get(attachment.getFilePath()));
                     }
 
-                    StringBuilder strBuilder = new StringBuilder();
-                    for (Map.Entry<String, String> entry : urls.entrySet()) {
-                        if (strBuilder.length() > 0) strBuilder.append("\n");
-                        strBuilder.append(entry.getValue());
-                    }
-
-                    messageItem.setText(strBuilder.toString());
+                    messageItem.setText("");
                     messageItem.setSent(false);
                     messageItem.setInProgress(false);
                     messageItem.setError(false);
@@ -458,6 +461,12 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
         return Collections.unmodifiableCollection(collection);
     }
 
+    public AbstractChat getOrCreateChat(AccountJid account, UserJid user, MessageItem lastMessage) {
+        AbstractChat chat = getOrCreateChat(account, user);
+        chat.setLastMessage(lastMessage);
+        return chat;
+    }
+
     /**
      * Returns existed chat or create new one.
      *
@@ -536,7 +545,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
      * @param chat
      * @return Whether specified chat is currently visible.
      */
-    boolean isVisibleChat(AbstractChat chat) {
+    public boolean isVisibleChat(AbstractChat chat) {
         return visibleChat == chat;
     }
 
@@ -779,13 +788,21 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
             RealmList<ForwardId> forwardIds = finalChat.parseForwardedMessage(true, message, uid);
             String originalStanza = message.toXML().toString();
             String originalFrom = message.getFrom().toString();
+
+            // forward comment (to support previous forwarded xep)
             String forwardComment = ForwardManager.parseForwardComment(message);
             if (forwardComment != null) text = forwardComment;
 
+            // modify body with references
+            Pair<String, String> bodies = ReferencesManager.modifyBodyWithReferences(message, text);
+            text = bodies.first;
+            String markupText = bodies.second;
+
             MessageItem newMessageItem = finalChat.createNewMessageItem(text);
-            newMessageItem.setStanzaId(message.getStanzaId());
+            newMessageItem.setStanzaId(AbstractChat.getStanzaId(message));
             newMessageItem.setSent(true);
             newMessageItem.setForwarded(true);
+            if (markupText != null) newMessageItem.setMarkupText(markupText);
 
             // forwarding
             if (forwardIds != null) newMessageItem.setForwardedIds(forwardIds);

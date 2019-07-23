@@ -53,12 +53,14 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
     private final int appearanceStyle = SettingsManager.chatsAppearanceStyle();
     private int accountMainColor;
     private ColorStateList colorStateList;
+    private int mentionColor;
     private boolean isMUC;
     private Resourcepart mucNickname;
     private String userName;
     private AccountJid account;
     private UserJid user;
     private int prevItemCount;
+    private String prevFirstItemId;
     private String firstUnreadMessageID;
     private boolean isCheckMode;
 
@@ -66,9 +68,10 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
     private List<String> checkedItemIds = new ArrayList<>();
 
     public interface Listener {
-        void onMessageNumberChanged(int prevItemCount);
         void onMessagesUpdated();
         void onChangeCheckedItems(int checkedItems);
+        int getLastVisiblePosition();
+        void scrollTo(int position);
     }
 
     public interface AnchorHolder {
@@ -94,8 +97,10 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
         user = chat.getUser();
         userName = RosterManager.getInstance().getName(account, user);
         prevItemCount = getItemCount();
+        prevFirstItemId = getFirstMessageId();
         accountMainColor = ColorManager.getInstance().getAccountPainter().getAccountMainColor(account);
         colorStateList = ColorManager.getInstance().getChatIncomingBalloonColorsStateList(account);
+        mentionColor = ColorManager.getInstance().getAccountPainter().getAccountIndicatorBackColor(account);
 
         isMUC = MUCManager.getInstance().hasRoom(account, user.getJid().asEntityBareJidIfPossible());
         if (isMUC) mucNickname = MUCManager.getInstance().getNickname(account, user.getJid().asEntityBareJidIfPossible());
@@ -106,6 +111,12 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
         if (realmResults.isValid() && realmResults.isLoaded())
             return realmResults.size();
         else return 0;
+    }
+
+    private String getFirstMessageId() {
+        if (realmResults.isValid() && realmResults.isLoaded() && realmResults.size() > 0)
+            return realmResults.first().getUniqueId();
+        else return null;
     }
 
     @Override
@@ -202,8 +213,8 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
         } else needDate = true;
 
         MessageExtraData extraData = new MessageExtraData(fileListener, fwdListener, anchorHolder,
-                context, userName, colorStateList, accountMainColor, isMUC, showOriginalOTR, unread,
-                checked, needTail, needDate);
+                context, userName, colorStateList, accountMainColor, mentionColor, isMUC,
+                showOriginalOTR, unread, checked, needTail, needDate);
 
         switch (viewType) {
             case VIEW_TYPE_ACTION_MESSAGE:
@@ -230,13 +241,20 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
 
     @Override
     public void onChange() {
+        int lastPosition = listener.getLastVisiblePosition();
+        String firstMessageId = getFirstMessageId();
         notifyDataSetChanged();
         listener.onMessagesUpdated();
 
         int itemCount = getItemCount();
         if (prevItemCount != itemCount) {
-            listener.onMessageNumberChanged(prevItemCount);
+            if (firstMessageId != null && !firstMessageId.equals(prevFirstItemId))
+                listener.scrollTo(lastPosition + (itemCount - prevItemCount));
+            else if (lastPosition == prevItemCount - 1)
+                listener.scrollTo(itemCount - 1);
+
             prevItemCount = itemCount;
+            prevFirstItemId = firstMessageId;
         }
     }
 
@@ -358,6 +376,7 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
         private String username;
         private ColorStateList colorStateList;
         private int accountMainColor;
+        private int mentionColor;
 
         private boolean isMuc;
         private boolean showOriginalOTR;
@@ -370,7 +389,7 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
                                 ForwardedAdapter.ForwardListener fwdListener,
                                 AnchorHolder anchorHolder,
                                 Context context, String username, ColorStateList colorStateList,
-                                int accountMainColor, boolean isMuc, boolean showOriginalOTR,
+                                int accountMainColor, int mentionColor, boolean isMuc, boolean showOriginalOTR,
                                 boolean unread, boolean checked, boolean needTail, boolean needDate) {
             this.listener = listener;
             this.fwdListener = fwdListener;
@@ -379,6 +398,7 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
             this.username = username;
             this.colorStateList = colorStateList;
             this.accountMainColor = accountMainColor;
+            this.mentionColor = mentionColor;
             this.isMuc = isMuc;
             this.showOriginalOTR = showOriginalOTR;
             this.unread = unread;
@@ -413,6 +433,10 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
 
         public int getAccountMainColor() {
             return accountMainColor;
+        }
+
+        public int getMentionColor() {
+            return mentionColor;
         }
 
         public boolean isMuc() {

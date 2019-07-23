@@ -62,6 +62,7 @@ public class AvatarStorage implements OnLoadListener, OnClearListener {
         byte[] value;
         FileInputStream inputStream;
         try {
+            if (!getFile(hash).exists()) return null;
             inputStream = new FileInputStream(getFile(hash));
             value = new byte[inputStream.available()];
             inputStream.read(value);

@@ -106,7 +106,6 @@
     <string name="toast_archived_show">Arkib chat ditunjukkan</string>
     <string name="toast_archived_hide">Arkib chat sembunyi</string>
     <string name="chat_notification_settings_title">Notifikasi untuk chat ini</string>
-    <string name="error_file_upload_not_support">Pelayan yang anda gunakan tiada sokongan untuk pemindahan fail. Anda boleh cuba di xabber.org server.</string>
     <string name="button_join_conference">Sertai persidangan</string>
     <string name="showcase_chat_text_1">Leret kanan untuk buka chat sebelumnya</string>
     <string name="showcase_chat_text_2">Leret kiri untuk buka info kenalan</string>

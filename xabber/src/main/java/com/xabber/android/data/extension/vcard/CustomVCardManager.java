@@ -114,6 +114,12 @@ public class CustomVCardManager extends Manager {
         return result;
     }
 
+    public void sendVCardRequest(Jid jid) throws SmackException.NotConnectedException, InterruptedException {
+        VCard vcardRequest = new VCard();
+        vcardRequest.setTo(jid);
+        connection().sendStanza(vcardRequest);
+    }
+
     /**
      * Returns true if the given entity understands the vCard-XML format and allows the exchange of such.
      *

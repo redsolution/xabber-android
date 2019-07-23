@@ -10,8 +10,9 @@ android {
     defaultConfig {
         minSdkVersion 15
         targetSdkVersion 28
-        versionCode 602
-        versionName '2.6.3(602)'
+        versionCode 634
+        versionName '2.6.4(634)'
+        manifestPlaceholders = [crashlytics:getLocalProperty("crashlytics.key")]
     }
 
     lintOptions {
@@ -95,6 +96,12 @@ android {
             universalApk true
         }
     }
+
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+        }
+    }
 }
 
 def build_param = "${build}";
@@ -105,6 +112,17 @@ if (build_param == "open") {
         if (!variant.getFlavors().get(0).name.equals('open')) {
             variant.setIgnore(true);
         }
+    }
+}
+
+def getLocalProperty(String propertyName) {
+    def propsFile = rootProject.file('local.properties')
+    if (propsFile.exists()) {
+        def props = new Properties()
+        props.load(new FileInputStream(propsFile))
+        return props[propertyName]
+    } else {
+        return ""
     }
 }
 
@@ -180,9 +198,14 @@ dependencies {
     debugImplementation 'com.github.markzhai:blockcanary-android:1.5.0'
     releaseImplementation 'com.github.markzhai:blockcanary-no-op:1.5.0'
 
+    // test
+    testImplementation 'junit:junit:4.12'
+    testImplementation "org.robolectric:robolectric:4.0"
+    testImplementation "org.robolectric:shadows-multidex:4.0.1"
 }
 apply plugin: 'com.google.gms.google-services'
 
 configurations {
     all*.exclude group: 'xpp3', module: 'xpp3'
+    all*.exclude group: 'com.google.guava', module:'guava-jdk5'
 }

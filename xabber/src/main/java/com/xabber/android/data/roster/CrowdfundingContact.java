@@ -16,7 +16,7 @@ public class CrowdfundingContact extends AbstractContact {
         CrowdfundingMessage lastMessage = chat.getLastCrowdMessage();
         if (lastMessage != null) {
             this.lastMessageText = lastMessage.getMessageForCurrentLocale();
-            this.lastMessageTime = new Date((long) lastMessage.getReceivedTimestamp() * 1000);
+            this.lastMessageTime = new Date((long) lastMessage.getTimestamp() * 1000);
         }
         this.unreadCount = chat.getUnreadCount();
     }

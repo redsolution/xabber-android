@@ -415,8 +415,7 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
 
             ImageView statusIcon = (ImageView) resourceView.findViewById(R.id.contact_info_right_icon);
             statusIcon.setVisibility(View.VISIBLE);
-
-            statusIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_status));
+            statusIcon.setImageResource(R.drawable.ic_status);
             statusIcon.setImageLevel(statusMode.getStatusLevel());
 
             resourcesList.add(resourceView);

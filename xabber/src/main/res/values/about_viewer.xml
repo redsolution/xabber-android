@@ -3,7 +3,7 @@
     <string name="about_open_source_xmpp_client">open source XMPP client</string>
 
     <string name="about_header_about">About</string>
-    <string name="about_text_about">Xabber is an open-source XMPP messenger for Android platform. It is built around open standards, interoperability, design and user experience. Xabber supports many popular XMPP extension protocols, Off-The-Record Chat Encryption and is available in multiple languages.</string>
+    <string name="about_text_about">Xabber is an open source XMPP messenger for Android, iOS and Web platforms. It is build around open standards, interoperability, design and great user experience. Versions of Xabber for every platform are built to provide a continuous chat experience between them.</string>
 
     <string name="about_header_xmpp">XMPP protocol</string>
     <string name="about_text_xmpp">Extensible Messaging and Presence Protocol (XMPP) is a communications protocol for message-oriented middleware based on XML (Extensible Markup Language). It enables the near-real-time exchange of structured yet extensible data between any two or more network entities. The protocol was originally named Jabber, and was developed by the Jabber open-source community in 1999 for near real-time instant messaging (IM),presence information, and contact list maintenance.</string>
@@ -13,7 +13,7 @@
     <string name="about_text_xep">XMPP is highly extensible, via extensions known as XEPs (XMPP Extension Protocol). Xabber supports a number of popular XEPs that are essential to providing great chat experience for our users.</string>
 
     <string name="about_header_developers">Developers</string>
-    <string name="about_text_developers">Xabber was originally developed by <a href="http://www.redsolution.com/">Redsolution, Inc.</a> — an international software and services company based in Russia and United States. Xabber was licensed under GNU/GPL v.3 license early in 2013. Since then, a number of individuals joined Xabber as developers, testers and translators.\n\nOur goal is to create a stable, reliable and user friendly ecosystem for instant messaging that does not rely on proprietary services. We welcome anyone who believes in open standards and free information interchange to take part in moving Xabber forward.\n\nFollow us on Twitter and Github.</string>
+    <string name="about_text_developers">Xabber for Android was originally developed by <a href="http://www.redsolution.com/">Redsolution</a> — an international software and services company currently based in Estonia. Since then, a number of individuals joined Xabber as developers, testers and translators.\n\nOur goal is to create a stable, reliable, interoperable and user friendly ecosystem for instant messaging that does not rely on proprietary services and data silos. We welcome anyone who believes in open standards and free information interchange to take part in moving Xabber forward.\n\nFollow us on Twitter and Github.</string>
 
     <string name="about_redsolution_url">http://www.redsolution.com/</string>
     <string name="about_xabber_url">http://www.xabber.com</string>

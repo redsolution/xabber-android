@@ -1,11 +1,10 @@
 package com.xabber.android.ui.widget;
 
 import android.content.Context;
-import android.support.v7.widget.AppCompatTextView;
 import android.text.Layout;
 import android.util.AttributeSet;
 
-public class CorrectlyMeasuringTextView extends AppCompatTextView {
+public class CorrectlyMeasuringTextView extends CorrectlyTouchEventTextView {
 
     public CorrectlyMeasuringTextView(Context context) {
         super(context);

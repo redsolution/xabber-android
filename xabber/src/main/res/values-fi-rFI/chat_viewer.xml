@@ -106,7 +106,6 @@
     <string name="toast_archived_show">Keskustelun arkisto näytetty</string>
     <string name="toast_archived_hide">Keskustelu arkisto piilotettu</string>
     <string name="chat_notification_settings_title">Ilmoitus tälle keskustelulle</string>
-    <string name="error_file_upload_not_support">Palvelin jota käytät ei tue tiedostonsiirtoa. Voit kokeilla xabber.org palvelinta.</string>
     <string name="button_join_conference">Liity konferenssiin</string>
     <string name="showcase_chat_text_1">Pyyhkäise oikealle avataksesi viimeaikaiset keskustelut</string>
     <string name="showcase_chat_text_2">Pyyhkäise vasemmalle avataksesi yhteystiedon tiedot</string>

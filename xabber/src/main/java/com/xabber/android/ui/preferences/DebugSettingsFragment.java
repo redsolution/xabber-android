@@ -10,7 +10,7 @@ import com.xabber.android.BuildConfig;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
-import com.xabber.android.data.extension.mam.MamManager;
+import com.xabber.android.data.extension.mam.NextMamManager;
 import com.xabber.android.data.http.CrowdfundingManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
@@ -112,7 +112,7 @@ public class DebugSettingsFragment extends android.preference.PreferenceFragment
 
                 for (AbstractChat chat : chats) {
                     setDownloadProgress(totalArchives, downloadedArchives);
-                    MamManager.getInstance().requestFullChatHistory(chat);
+                    NextMamManager.getInstance().loadFullChatHistory(chat);
                     downloadedArchives++;
                 }
                 closeDownloadArchiveDialog();

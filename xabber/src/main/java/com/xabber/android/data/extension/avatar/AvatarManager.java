@@ -18,12 +18,10 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
-import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -47,6 +45,8 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.data.log.LogManager;
+import com.xabber.android.data.roster.OnContactChangedListener;
+import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.xmpp.vcardupdate.VCardUpdate;
 
@@ -57,6 +57,7 @@ import org.jxmpp.jid.Jid;
 import org.jxmpp.jid.impl.JidCreate;
 import org.jxmpp.stringprep.XmppStringprepException;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -105,14 +106,7 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
      * Map with drawable used in contact list only for specified uses.
      */
     private final Map<Jid, Drawable> contactListDrawables;
-    /**
-     * Users' default avatar set.
-     */
-    private final BaseAvatarSet userAvatarSet;
-    /**
-     * Rooms' default avatar set.
-     */
-    private final BaseAvatarSet roomAvatarSet;
+    private final Map<Jid, Drawable> contactListDefaultDrawables;
 
     public static AvatarManager getInstance() {
         if (instance == null) {
@@ -124,12 +118,11 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
 
     private AvatarManager() {
         this.application = Application.getInstance();
-        userAvatarSet = new BaseAvatarSet(application, R.array.default_avatars_icons, R.array.default_avatars_colors);
-        roomAvatarSet = new BaseAvatarSet(application, R.array.muc_avatars, R.array.default_avatars_colors);
 
         hashes = new HashMap<>();
         bitmaps = new HashMap<>();
         contactListDrawables = new HashMap<>();
+        contactListDefaultDrawables = new HashMap<>();
     }
 
     /**
@@ -184,23 +177,27 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
     }
 
     public static Bitmap getCircleBitmap(Bitmap bitmap) {
-        final Bitmap output = Bitmap.createBitmap(bitmap.getWidth(),
-                bitmap.getHeight(), Bitmap.Config.ARGB_8888);
-        final Canvas canvas = new Canvas(output);
+        if (bitmap.getWidth() != bitmap.getHeight()) {
+            int min = Math.min(bitmap.getWidth(), bitmap.getHeight());
+            int max = Math.max(bitmap.getWidth(), bitmap.getHeight());
+            int x = bitmap.getWidth() > min ? ((max - min) / 2) : 0;
+            int y = bitmap.getHeight() > min ? ((max - min) / 2) : 0;
+            bitmap = Bitmap.createBitmap(bitmap, x, y, min, min);
+        }
+        final int size = bitmap.getWidth();
+        final Bitmap output = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
 
-        final int color = Color.RED;
+        final Canvas canvas = new Canvas(output);
         final Paint paint = new Paint();
-        final Rect rect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
-        final RectF rectF = new RectF(rect);
+        final Rect rect = new Rect(0, 0, size, size);
+        final float r = size / 2;
 
         paint.setAntiAlias(true);
         canvas.drawARGB(0, 0, 0, 0);
-        paint.setColor(color);
-        canvas.drawOval(rectF, paint);
-
+        paint.setColor(0xff424242);
+        canvas.drawCircle(r, r, r, paint);
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
         canvas.drawBitmap(bitmap, rect, rect, paint);
-
         return output;
     }
 
@@ -241,6 +238,10 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
     private void onLoaded(Map<Jid, String> hashes, Map<String, Bitmap> bitmaps) {
         this.hashes.putAll(hashes);
         this.bitmaps.putAll(bitmaps);
+        for (OnContactChangedListener onContactChangedListener : Application
+                .getInstance().getUIListeners(OnContactChangedListener.class)) {
+            onContactChangedListener.onContactsChanged(Collections.<RosterContact>emptyList());
+        }
     }
 
     /**
@@ -252,6 +253,7 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
     private void setHash(final Jid jid, final String hash) {
         hashes.put(jid, hash == null ? EMPTY_HASH : hash);
         contactListDrawables.remove(jid);
+        contactListDefaultDrawables.remove(jid);
         application.runInBackground(new Runnable() {
             @Override
             public void run() {
@@ -308,8 +310,7 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
     @Override
     public void onLowMemory() {
         contactListDrawables.clear();
-        userAvatarSet.onLowMemory();
-        roomAvatarSet.onLowMemory();
+        contactListDefaultDrawables.clear();
     }
 
     /**
@@ -352,46 +353,97 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
         return generateDefaultAvatar(account.getFullJid().asBareJid().toString(), name, color);
     }
 
-    /**
-     * Gets avatar for regular user.
-     *
-     * @param user
-     * @return
-     */
-    public Drawable getUserAvatar(UserJid user, String name) {
-        Bitmap value = getBitmap(user.getJid());
-        if (value != null) {
-            return new BitmapDrawable(application.getResources(), value);
-        } else {
-            return generateDefaultAvatar(user.getBareJid().toString(), name);
+    /** Gets and caches drawable with avatar for regular user.
+     * Or generate and caches text-based avatar. */
+    public Drawable getUserAvatarForContactList(UserJid user, String name) {
+        Drawable drawable = contactListDrawables.get(user.getJid());
+        if (drawable == null) {
+            drawable = getUserAvatar(user);
+            if (drawable != null) {
+                contactListDrawables.put(user.getJid(), drawable);
+                contactListDefaultDrawables.remove(user.getJid());
+                return drawable;
+            } else {
+                return getDefaultAvatar(user, name);
+            }
         }
+        return drawable;
     }
 
-    private Drawable getDefaultAvatarDrawable(BaseAvatarSet.DefaultAvatar defaultAvatar) {
-        Drawable[] layers = new Drawable[2];
-        layers[0] = new ColorDrawable(defaultAvatar.getBackgroundColor());
-        layers[1] = application.getResources().getDrawable(defaultAvatar.getIconResource());
-
-
-        return new LayerDrawable(layers);
+    /** Gets and caches drawable with room's avatar.
+     * Or generate and caches text-based avatar. */
+    public Drawable getRoomAvatarForContactList(UserJid user) {
+        Drawable drawable = contactListDrawables.get(user.getJid());
+        if (drawable == null) {
+            drawable = getRoomAvatar(user);
+            if (drawable != null) {
+                contactListDrawables.put(user.getJid(), drawable);
+                contactListDefaultDrawables.remove(user.getJid());
+                return drawable;
+            } else {
+                return getDefaultRoomAvatar(user);
+            }
+        }
+        return drawable;
     }
 
-    public Drawable generateDefaultRoomAvatar(@NonNull String jid) {
-        Drawable[] layers = new Drawable[2];
-        layers[0] = new ColorDrawable(ColorGenerator.MATERIAL.getColor(jid));
-        layers[1] = application.getResources().getDrawable(R.drawable.ic_conference_white);
-
-        LayerDrawable layerDrawable = new LayerDrawable(layers);
-        layerDrawable.setLayerInset(1, 25, 25, 25, 30);
-
-        return layerDrawable;
+    /** Gets bitmap with avatar for regular user. */
+    public Bitmap getUserBitmap(UserJid user, String name) {
+        return getCircleBitmap(drawableToBitmap(getUserAvatarForContactList(user, name)));
     }
 
+    /** Gets bitmap with avatar for room. */
+    public Bitmap getRoomBitmap(UserJid user) {
+        return getCircleBitmap(drawableToBitmap(getRoomAvatarForContactList(user)));
+    }
+
+    /** Generate text-based avatar for regular user. */
     public Drawable generateDefaultAvatar(@NonNull String jid, @NonNull String name) {
         return generateDefaultAvatar(jid, name, ColorGenerator.MATERIAL.getColor(jid));
     }
 
-    public Drawable generateDefaultAvatar(@NonNull String jid, @NonNull String name, int color) {
+    /** PRIVATE */
+
+    /** Gets avatar drawable for regular user from bitmap. */
+    private Drawable getUserAvatar(UserJid user) {
+        Bitmap value = getBitmap(user.getJid());
+        if (value != null) {
+            return new BitmapDrawable(application.getResources(), value);
+        }
+        return null;
+    }
+
+    /** Gets avatar drawable for room from bitmap. */
+    private Drawable getRoomAvatar(UserJid user) {
+        Bitmap value = getBitmap(user.getJid());
+        if (value != null) {
+            return new BitmapDrawable(application.getResources(), value);
+        }
+        return null;
+    }
+
+    /** Gets and caches text-base avatar for regular user from cached drawables. */
+    private Drawable getDefaultAvatar(UserJid user, String name) {
+        Drawable drawable = contactListDefaultDrawables.get(user.getJid());
+        if (drawable == null) {
+            drawable = generateDefaultAvatar(user.getBareJid().toString(), name);
+            contactListDefaultDrawables.put(user.getJid(), drawable);
+        }
+        return drawable;
+    }
+
+    /** Gets and caches text-base avatar for room from cached drawables. */
+    private Drawable getDefaultRoomAvatar(UserJid user) {
+        Drawable drawable = contactListDefaultDrawables.get(user.getJid());
+        if (drawable == null) {
+            drawable = generateDefaultRoomAvatar(user.getBareJid().toString());
+            contactListDefaultDrawables.put(user.getJid(), drawable);
+        }
+        return drawable;
+    }
+
+    /** Generate text-based avatar for regular user. */
+    private Drawable generateDefaultAvatar(@NonNull String jid, @NonNull String name, int color) {
         String[] words = name.split("\\s+");
         String chars = "";
 
@@ -406,74 +458,16 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
                 .buildRound(chars.toUpperCase(), color);
     }
 
-    /**
-     * Gets bitmap with avatar for regular user.
-     *
-     * @param user
-     * @return
-     */
-    public Bitmap getUserBitmap(UserJid user, String name) {
-        Bitmap value = getBitmap(user.getJid());
-        if (value != null) {
-            return getCircleBitmap(value);
-        } else {
-            return drawableToBitmap(generateDefaultAvatar(user.getBareJid().toString(), name));
-        }
-    }
+    /** Generate text-based avatar for room. */
+    private Drawable generateDefaultRoomAvatar(@NonNull String jid) {
+        Drawable[] layers = new Drawable[2];
+        layers[0] = new ColorDrawable(ColorGenerator.MATERIAL.getColor(jid));
+        layers[1] = application.getResources().getDrawable(R.drawable.ic_conference_white);
 
-    /**
-     * Gets and caches drawable with avatar for regular user.
-     *
-     * @param user
-     * @return
-     */
-    public Drawable getUserAvatarForContactList(UserJid user, String name) {
-        Drawable drawable = contactListDrawables.get(user.getJid());
-        if (drawable == null) {
-            drawable = getUserAvatar(user, name);
-            contactListDrawables.put(user.getJid(), drawable);
-        }
-        return drawable;
-    }
+        LayerDrawable layerDrawable = new LayerDrawable(layers);
+        layerDrawable.setLayerInset(1, 25, 25, 25, 30);
 
-    /**
-     * Gets avatar for the room.
-     *
-     * @param user
-     * @return
-     */
-    public Drawable getRoomAvatar(UserJid user) {
-        Bitmap value = getBitmap(user.getJid());
-        if (value != null) {
-            return new BitmapDrawable(application.getResources(), value);
-        } else {
-            return generateDefaultRoomAvatar(user.getBareJid().toString());
-        }
-    }
-
-    /**
-     * Gets bitmap for the room.
-     *
-     * @param user
-     * @return
-     */
-    public Bitmap getRoomBitmap(UserJid user) {
-        return drawableToBitmap(getRoomAvatar(user));
-    }
-
-    /**
-     * Gets and caches drawable with room's avatar.
-     *
-     * @param user
-     * @return
-     */
-    public Drawable getRoomAvatarForContactList(UserJid user) {
-        Drawable drawable = contactListDrawables.get(user.getJid());
-        if (drawable == null) {
-            drawable = getRoomAvatar(user);
-            contactListDrawables.put(user.getJid(), drawable);
-        }
-        return drawable;
+        return layerDrawable;
     }
 
     /**

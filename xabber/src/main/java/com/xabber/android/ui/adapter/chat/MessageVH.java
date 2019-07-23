@@ -7,6 +7,7 @@ import android.support.annotation.StyleRes;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.ImageView;
@@ -20,11 +21,15 @@ import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.fragment.ChatFragment;
+import com.xabber.android.ui.text.ClickTagHandler;
+import com.xabber.android.ui.widget.CorrectlyMeasuringTextView;
 import com.xabber.android.utils.StringUtils;
 
+import java.util.Arrays;
 import java.util.Date;
 
 import io.realm.RealmResults;
+import io.realm.Sort;
 
 public class MessageVH extends BasicMessageVH implements View.OnClickListener, View.OnLongClickListener {
 
@@ -91,7 +96,14 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
             ivEncrypted.setVisibility(View.GONE);
         }
 
-        messageText.setText(messageItem.getText());
+        // Added .concat("&zwj;") and .concat(String.valueOf(Character.MIN_VALUE)
+        // to avoid click by empty space after ClickableSpan
+        if (messageItem.getMarkupText() != null && !messageItem.getMarkupText().isEmpty())
+            messageText.setText(Html.fromHtml(
+                    messageItem.getMarkupText().replace("\n", "<br/>").concat("&zwj;"),
+                    null, new ClickTagHandler(extraData.getContext(),
+                    extraData.getMentionColor())), TextView.BufferType.SPANNABLE);
+        else messageText.setText(messageItem.getText().concat(String.valueOf(Character.MIN_VALUE)));
         if (OTRManager.getInstance().isEncrypted(messageItem.getText())) {
             if (extraData.isShowOriginalOTR())
                 messageText.setVisibility(View.VISIBLE);
@@ -101,6 +113,7 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
             messageText.setVisibility(View.VISIBLE);
             messageNotDecrypted.setVisibility(View.GONE);
         }
+        messageText.setMovementMethod(CorrectlyMeasuringTextView.LocalLinkMovementMethod.getInstance());
 
         String time = StringUtils.getTimeText(new Date(messageItem.getTimestamp()));
 
@@ -146,18 +159,22 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
     }
 
     protected void setupForwarded(MessageItem messageItem, MessagesAdapter.MessageExtraData extraData) {
-        RealmResults<MessageItem> forwardedMessages =
-            MessageDatabaseManager.getInstance().getRealmUiThread().where(MessageItem.class)
-                    .in(MessageItem.Fields.UNIQUE_ID, messageItem.getForwardedIdsAsArray()).findAll();
+        String[] forwardedIDs = messageItem.getForwardedIdsAsArray();
+        if (!Arrays.asList(forwardedIDs).contains(null)) {
+            RealmResults<MessageItem> forwardedMessages =
+                    MessageDatabaseManager.getInstance().getRealmUiThread().where(MessageItem.class)
+                            .in(MessageItem.Fields.UNIQUE_ID, forwardedIDs)
+                            .findAllSorted(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
 
-        if (forwardedMessages.size() > 0) {
-            RecyclerView recyclerView = forwardLayout.findViewById(R.id.recyclerView);
-            ForwardedAdapter adapter = new ForwardedAdapter(forwardedMessages, extraData);
-            recyclerView.setLayoutManager(new LinearLayoutManager(extraData.getContext()));
-            recyclerView.setAdapter(adapter);
-            forwardLayout.setBackgroundColor(ColorManager.getColorWithAlpha(R.color.forwarded_background_color, 0.2f));
-            forwardLeftBorder.setBackgroundColor(extraData.getAccountMainColor());
-            forwardLayout.setVisibility(View.VISIBLE);
+            if (forwardedMessages.size() > 0) {
+                RecyclerView recyclerView = forwardLayout.findViewById(R.id.recyclerView);
+                ForwardedAdapter adapter = new ForwardedAdapter(forwardedMessages, extraData);
+                recyclerView.setLayoutManager(new LinearLayoutManager(extraData.getContext()));
+                recyclerView.setAdapter(adapter);
+                forwardLayout.setBackgroundColor(ColorManager.getColorWithAlpha(R.color.forwarded_background_color, 0.2f));
+                forwardLeftBorder.setBackgroundColor(extraData.getAccountMainColor());
+                forwardLayout.setVisibility(View.VISIBLE);
+            }
         }
     }
 

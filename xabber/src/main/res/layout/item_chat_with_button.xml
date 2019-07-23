@@ -187,6 +187,4 @@
 
     </RelativeLayout>
 
-    <include layout="@layout/offline_shadow" />
-
 </FrameLayout>
