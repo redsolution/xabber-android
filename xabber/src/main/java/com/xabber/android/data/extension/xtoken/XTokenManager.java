@@ -20,6 +20,8 @@ import org.jivesoftware.smack.packet.Stanza;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -105,6 +107,12 @@ public class XTokenManager implements OnPacketListener {
         SessionVO currentSession = null;
         List<SessionVO> result = new ArrayList<>();
         List<Session> sessions = iq.getSessions();
+        Collections.sort(sessions, Collections.reverseOrder(new Comparator<Session>() {
+            @Override
+            public int compare(Session session, Session t1) {
+                return (int)(session.getLastAuth() - t1.getLastAuth());
+            }
+        }));
         for (Session session : sessions) {
             if (session.getUid().equals(currentSessionUID)) {
                 currentSession = new SessionVO(
