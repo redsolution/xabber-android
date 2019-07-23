@@ -58,7 +58,7 @@ import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterCacheManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.data.xaccount.XabberAccountManager;
-import com.xabber.xmpp.XToken;
+import com.xabber.android.data.extension.xtoken.XToken;
 
 import org.jivesoftware.smack.util.StringUtils;
 import org.jivesoftware.smackx.mam.element.MamPrefsIQ;

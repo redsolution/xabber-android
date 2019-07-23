@@ -1,4 +1,4 @@
-package com.xabber.xmpp;
+package com.xabber.android.data.extension.xtoken;
 
 import org.jivesoftware.smack.packet.IQ;
 

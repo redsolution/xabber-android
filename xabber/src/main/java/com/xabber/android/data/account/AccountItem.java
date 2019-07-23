@@ -24,7 +24,7 @@ import com.xabber.android.data.connection.ConnectionState;
 import com.xabber.android.data.connection.ProxyType;
 import com.xabber.android.data.connection.TLSMode;
 import com.xabber.android.data.extension.mam.LoadHistorySettings;
-import com.xabber.xmpp.XToken;
+import com.xabber.android.data.extension.xtoken.XToken;
 
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.Presence.Type;

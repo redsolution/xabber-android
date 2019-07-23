@@ -1,4 +1,4 @@
-package com.xabber.xmpp;
+package com.xabber.android.data.extension.xtoken;
 
 public class XToken {
 

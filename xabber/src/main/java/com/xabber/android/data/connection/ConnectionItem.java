@@ -24,7 +24,7 @@ import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.roster.AccountRosterListener;
-import com.xabber.xmpp.XToken;
+import com.xabber.android.data.extension.xtoken.XToken;
 
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.StanzaListener;

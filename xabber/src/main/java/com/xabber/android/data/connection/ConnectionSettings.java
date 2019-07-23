@@ -14,7 +14,7 @@
  */
 package com.xabber.android.data.connection;
 
-import com.xabber.xmpp.XToken;
+import com.xabber.android.data.extension.xtoken.XToken;
 
 import org.jxmpp.jid.DomainBareJid;
 import org.jxmpp.jid.parts.Localpart;

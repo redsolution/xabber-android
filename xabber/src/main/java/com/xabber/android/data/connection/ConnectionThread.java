@@ -33,7 +33,7 @@ import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.xaccount.HttpConfirmIq;
 import com.xabber.android.data.xaccount.HttpConfirmIqProvider;
 import com.xabber.xmpp.smack.SASLXTOKENMechanism;
-import com.xabber.xmpp.XTokenIQ;
+import com.xabber.android.data.extension.xtoken.XTokenIQ;
 
 import org.greenrobot.eventbus.EventBus;
 import org.jivesoftware.smack.AbstractXMPPConnection;

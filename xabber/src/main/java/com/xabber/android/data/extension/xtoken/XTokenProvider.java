@@ -1,7 +1,5 @@
 package com.xabber.android.data.extension.xtoken;
 
-import com.xabber.xmpp.XTokenIQ;
-
 import org.jivesoftware.smack.provider.IQProvider;
 import org.xmlpull.v1.XmlPullParser;
 

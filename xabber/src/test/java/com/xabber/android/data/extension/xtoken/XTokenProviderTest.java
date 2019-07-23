@@ -1,7 +1,6 @@
 package com.xabber.android.data.extension.xtoken;
 
 import com.xabber.android.data.TestApplication;
-import com.xabber.xmpp.XTokenIQ;
 
 import org.junit.Before;
 import org.junit.Test;
