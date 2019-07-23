@@ -34,6 +34,7 @@ public class ActiveSessionsActivity extends ManagedActivity implements SessionAd
     private TextView tvCurrentDevice;
     private TextView tvCurrentIPAddress;
     private TextView tvCurrentDate;
+    private TextView tvActiveSessions;
     private View terminateAll;
     private ProgressBar progressBar;
     private View contentView;
@@ -80,6 +81,7 @@ public class ActiveSessionsActivity extends ManagedActivity implements SessionAd
         barPainter.updateWithAccountName(account);
         progressBar = findViewById(R.id.progressBar);
         contentView = findViewById(R.id.contentView);
+        tvActiveSessions = findViewById(R.id.tvActiveSessions);
         terminateAll = findViewById(R.id.llTerminateAll);
         terminateAll.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -116,6 +118,8 @@ public class ActiveSessionsActivity extends ManagedActivity implements SessionAd
                     contentView.setVisibility(View.VISIBLE);
                     setCurrentSession(currentSession);
                     adapter.setItems(sessions);
+                    terminateAll.setVisibility(sessions.isEmpty() ? View.GONE : View.VISIBLE);
+                    tvActiveSessions.setVisibility(sessions.isEmpty() ? View.GONE : View.VISIBLE);
                 }
 
                 @Override
