@@ -54,6 +54,23 @@ public class XTokenManager implements OnPacketListener {
         }
     }
 
+    public void sendRevokeXTokenRequest(XMPPTCPConnection connection, String tokenID) {
+        List<String> ids = new ArrayList<>();
+        ids.add(tokenID);
+        sendRevokeXTokenRequest(connection, ids);
+    }
+
+    public void sendRevokeXTokenRequest(XMPPTCPConnection connection, List<String> tokenIDs) {
+        XTokenRevokeIQ revokeIQ = new XTokenRevokeIQ(tokenIDs);
+        revokeIQ.setType(IQ.Type.set);
+        revokeIQ.setTo(connection.getHost());
+        try {
+            connection.sendStanza(revokeIQ);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public void requestSessions(final String currentTokenUID, final XMPPTCPConnection connection,
                                 final SessionsListener listener) {
         Application.getInstance().runInBackgroundUserRequest(new Runnable() {

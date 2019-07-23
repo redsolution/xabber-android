@@ -25,7 +25,7 @@ import com.xabber.android.ui.color.BarPainter;
 
 import java.util.List;
 
-public class ActiveSessionsActivity extends ManagedActivity {
+public class ActiveSessionsActivity extends ManagedActivity implements SessionAdapter.Listener {
 
     private Toolbar toolbar;
     private BarPainter barPainter;
@@ -133,13 +133,38 @@ public class ActiveSessionsActivity extends ManagedActivity {
         tvCurrentDate.setText(session.getLastAuth());
     }
 
+    @Override
+    public void onItemClick(String tokenUID) {
+        showTerminateSessionDialog(tokenUID);
+    }
+
     private void showTerminateAllSessionsDialog() {
         new AlertDialog.Builder(ActiveSessionsActivity.this)
             .setMessage(R.string.terminate_all_sessions_title)
             .setPositiveButton(R.string.button_terminate, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
+                    XTokenManager.getInstance().sendRevokeXTokenRequest(
+                            accountItem.getConnection(), adapter.getItemsIDs());
+                }
+            })
+            .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    dialogInterface.cancel();
+                }
+            })
+            .create().show();
+    }
 
+    private void showTerminateSessionDialog(final String uid) {
+        new AlertDialog.Builder(ActiveSessionsActivity.this)
+            .setMessage(R.string.terminate_session_title)
+            .setPositiveButton(R.string.button_terminate, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    XTokenManager.getInstance().sendRevokeXTokenRequest(
+                            accountItem.getConnection(), uid);
                 }
             })
             .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {

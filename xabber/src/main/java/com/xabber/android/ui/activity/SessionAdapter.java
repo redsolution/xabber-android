@@ -1,8 +1,5 @@
 package com.xabber.android.ui.activity;
 
-import android.app.AlertDialog;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,16 +17,28 @@ import java.util.List;
 public class SessionAdapter extends RecyclerView.Adapter<SessionAdapter.SessionHolder> {
 
     private List<SessionVO> items;
-    private Context context;
+    private Listener listener;
 
-    public SessionAdapter(Context context) {
+    public interface Listener {
+        void onItemClick(String tokenUID);
+    }
+
+    public SessionAdapter(Listener listener) {
         this.items = new ArrayList<>();
-        this.context = context;
+        this.listener = listener;
     }
 
     public void setItems(List<SessionVO> items) {
         this.items = items;
         notifyDataSetChanged();
+    }
+
+    public List<String> getItemsIDs() {
+        List<String> ids = new ArrayList<>();
+        for (SessionVO session : items) {
+            ids.add(session.getUid());
+        }
+        return ids;
     }
 
     @NonNull
@@ -41,7 +50,7 @@ public class SessionAdapter extends RecyclerView.Adapter<SessionAdapter.SessionH
 
     @Override
     public void onBindViewHolder(@NonNull SessionHolder holder, int position) {
-        SessionVO session = items.get(position);
+        final SessionVO session = items.get(position);
         holder.tvClient.setText(session.getClient());
         holder.tvDevice.setText(session.getDevice());
         holder.tvIPAddress.setText(session.getIp());
@@ -49,7 +58,7 @@ public class SessionAdapter extends RecyclerView.Adapter<SessionAdapter.SessionH
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showTerminateSessionDialog();
+                listener.onItemClick(session.getUid());
             }
         });
     }
@@ -73,24 +82,6 @@ public class SessionAdapter extends RecyclerView.Adapter<SessionAdapter.SessionH
             tvIPAddress = (TextView) itemView.findViewById(R.id.tvIPAddress);
             tvDate = (TextView) itemView.findViewById(R.id.tvDate);
         }
-    }
-
-    private void showTerminateSessionDialog() {
-        new AlertDialog.Builder(context)
-            .setMessage(R.string.terminate_session_title)
-            .setPositiveButton(R.string.button_terminate, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-
-                }
-            })
-            .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    dialogInterface.cancel();
-                }
-            })
-            .create().show();
     }
 
 }
