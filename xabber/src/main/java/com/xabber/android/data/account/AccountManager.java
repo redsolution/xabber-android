@@ -15,9 +15,10 @@
 package com.xabber.android.data.account;
 
 import android.database.Cursor;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
@@ -48,6 +49,7 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.mam.LoadHistorySettings;
 import com.xabber.android.data.extension.mam.NextMamManager;
 import com.xabber.android.data.extension.vcard.VCardManager;
+import com.xabber.android.data.extension.xtoken.XTokenManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.notification.BaseAccountNotificationProvider;
 import com.xabber.android.data.notification.NotificationManager;
@@ -56,6 +58,7 @@ import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterCacheManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.data.xaccount.XabberAccountManager;
+import com.xabber.android.data.extension.xtoken.XToken;
 
 import org.jivesoftware.smack.util.StringUtils;
 import org.jivesoftware.smackx.mam.element.MamPrefsIQ;
@@ -240,6 +243,8 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
                     accountRealm.isStorePassword(),
                     accountRealm.getPassword(),
                     accountRealm.getToken(),
+                    accountRealm.getXToken() != null
+                            ? XTokenManager.xTokenRealmToXToken(accountRealm.getXToken()) : null,
                     accountRealm.getColorIndex(),
                     order,
                     accountRealm.isSyncNotAllowed(),
@@ -398,7 +403,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
                                    boolean registerNewAccount) {
 
         AccountItem accountItem = new AccountItem(custom, host, port, serverName, userName,
-                resource, storePassword, password, token, color, order, syncNotAllowed, timestamp, priority, statusMode, statusText, enabled,
+                resource, storePassword, password, token, null, color, order, syncNotAllowed, timestamp, priority, statusMode, statusText, enabled,
                 saslEnabled, tlsMode, compression, proxyType, proxyHost, proxyPort, proxyUser,
                 proxyPassword, syncable, keyPair, lastSync, archiveMode, true);
 
@@ -573,6 +578,24 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
         result.setPassword(pass);
         result.recreateConnectionWithEnable(result.getAccount());
         requestToWriteAccount(result);
+    }
+
+    /** Set x-token to account and remove password */
+    public void updateXToken(AccountJid account, XToken token) {
+        AccountItem accountItem = getAccount(account);
+        if (accountItem != null) {
+            accountItem.setXToken(token);
+            accountItem.setPassword("");
+            accountItem.recreateConnectionWithEnable(accountItem.getAccount());
+            requestToWriteAccount(accountItem);
+        }
+    }
+
+    public void removeXToken(AccountJid account) {
+        AccountItem accountItem = getAccount(account);
+        if (accountItem != null) {
+            accountItem.setXToken(null);
+        }
     }
 
     /**

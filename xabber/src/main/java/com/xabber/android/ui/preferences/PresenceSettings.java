@@ -1,7 +1,7 @@
 package com.xabber.android.ui.preferences;
 
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
+import androidx.appcompat.widget.Toolbar;
 
 import com.xabber.android.R;
 import com.xabber.android.ui.activity.ManagedActivity;

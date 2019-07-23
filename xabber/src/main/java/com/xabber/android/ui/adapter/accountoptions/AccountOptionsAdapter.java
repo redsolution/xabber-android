@@ -1,7 +1,7 @@
 package com.xabber.android.ui.adapter.accountoptions;
 
 
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
-import com.xabber.android.data.entity.AccountJid;
+
 import com.xabber.android.data.xaccount.XabberAccountManager;
 
 public class AccountOptionsAdapter extends RecyclerView.Adapter<AccountOptionViewHolder>
@@ -51,7 +51,7 @@ public class AccountOptionsAdapter extends RecyclerView.Adapter<AccountOptionVie
             holder.separator.setVisibility(View.VISIBLE);
         }
 
-        if (position == 1) {
+        if (accountOption.equals(AccountOption.SYNCHRONIZATION)) {
             if (XabberAccountManager.getInstance().isAccountSynchronize(
                     accountItem.getAccount().getFullJid().asBareJid().toString())
                     || SettingsManager.isSyncAllAccounts()) {
@@ -65,6 +65,19 @@ public class AccountOptionsAdapter extends RecyclerView.Adapter<AccountOptionVie
             } else {
                 holder.title.setEnabled(true);
                 holder.description.setEnabled(true);
+            }
+        }
+
+        if (accountOption.equals(AccountOption.SESSIONS)) {
+            if (accountItem.getConnectionSettings().getXToken() != null &&
+                    !accountItem.getConnectionSettings().getXToken().isExpired()) {
+                holder.title.setEnabled(true);
+                holder.description.setEnabled(true);
+                holder.description.setText(R.string.account_active_sessions_summary);
+            } else {
+                holder.title.setEnabled(false);
+                holder.description.setEnabled(false);
+                holder.description.setText(R.string.account_active_sessions_disabled);
             }
         }
     }

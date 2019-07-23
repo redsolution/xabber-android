@@ -14,23 +14,25 @@
  */
 package com.xabber.android.data.connection;
 
-import android.support.annotation.NonNull;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+
 import com.xabber.android.data.Application;
-import com.xabber.android.data.account.AccountItem;
-import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.roster.AccountRosterListener;
+import com.xabber.android.data.extension.xtoken.XToken;
 
-import org.jivesoftware.smack.*;
+import org.jivesoftware.smack.SmackException;
+import org.jivesoftware.smack.StanzaListener;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.parsing.ExceptionLoggingCallback;
 import org.jivesoftware.smack.roster.Roster;
 import org.jivesoftware.smack.sm.predicates.ForEveryStanza;
-import org.jivesoftware.smack.tcp.XMPPTCPConnection;
+import com.xabber.xmpp.smack.XMPPTCPConnection;
 import org.jivesoftware.smackx.ping.PingFailedListener;
 import org.jivesoftware.smackx.ping.PingManager;
 import org.jxmpp.jid.DomainBareJid;
@@ -79,7 +81,7 @@ public abstract class ConnectionItem {
     public ConnectionItem(boolean custom,
                           String host, int port, DomainBareJid serverName, Localpart userName,
                           Resourcepart resource, boolean storePassword, String password, String token,
-                          boolean saslEnabled, TLSMode tlsMode, boolean compression,
+                          XToken xToken, boolean saslEnabled, TLSMode tlsMode, boolean compression,
                           ProxyType proxyType, String proxyHost, int proxyPort,
                           String proxyUser, String proxyPassword) {
         this.account = AccountJid.from(userName, serverName, resource);
@@ -88,7 +90,7 @@ public abstract class ConnectionItem {
         connectionListener = new com.xabber.android.data.connection.ConnectionListener(this);
 
         connectionSettings = new ConnectionSettings(userName,
-                serverName, resource, custom, host, port, password, token,
+                serverName, resource, custom, host, port, password, token, xToken,
                 saslEnabled, tlsMode, compression, proxyType, proxyHost,
                 proxyPort, proxyUser, proxyPassword);
         connection = createConnection();

@@ -3,9 +3,9 @@ package com.xabber.android.ui.adapter.chat;
 import android.content.Context;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,9 +16,8 @@ import android.widget.TextView;
 
 import com.amulyakhare.textdrawable.util.ColorGenerator;
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
-import com.bumptech.glide.request.animation.GlideAnimation;
-import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.target.DrawableImageViewTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.database.realm.CrowdfundingMessage;
@@ -109,25 +108,26 @@ public class CrowdfundingChatAdapter extends RealmRecyclerViewAdapter<Crowdfundi
                 .load(text)
                 .placeholder(R.drawable.ic_recent_image_placeholder)
                 .error(R.drawable.ic_recent_image_placeholder)
-                .into(new SimpleTarget<GlideDrawable>() {
-                    @Override
-                    public void onLoadStarted(Drawable placeholder) {
-                        super.onLoadStarted(placeholder);
-                        image.setImageDrawable(placeholder);
-                    }
+                    .into(new DrawableImageViewTarget(image) {
+                        @Override
+                        public void onLoadStarted(@Nullable Drawable placeholder) {
+                            super.onLoadStarted(placeholder);
+                            image.setImageDrawable(placeholder);
+                        }
 
-                    @Override
-                    public void onLoadFailed(Exception e, Drawable errorDrawable) {
-                        super.onLoadFailed(e, errorDrawable);
-                        image.setImageDrawable(errorDrawable);
-                        textMessage.setVisibility(View.VISIBLE);
-                    }
+                        @Override
+                        public void onLoadFailed(@Nullable Drawable errorDrawable) {
+                            super.onLoadFailed(errorDrawable);
+                            image.setImageDrawable(errorDrawable);
+                            textMessage.setVisibility(View.VISIBLE);
+                        }
 
-                    @Override
-                    public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> glideAnimation) {
-                        image.setImageDrawable(resource);
-                    }
-                });
+                        @Override
+                        public void onResourceReady(@NonNull Drawable resource,
+                                @Nullable Transition<? super Drawable> transition) {
+                            image.setImageDrawable(resource);
+                        }
+                    });
         } else {
             holder.messageImage.setVisibility(View.GONE);
             holder.messageText.setVisibility(View.VISIBLE);

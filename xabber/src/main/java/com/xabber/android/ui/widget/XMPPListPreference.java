@@ -2,8 +2,8 @@ package com.xabber.android.ui.widget;
 
 import android.content.Context;
 import android.preference.Preference;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,7 +17,6 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.ui.adapter.AccountListPreferenceAdapter;
-import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.preferences.PreferenceEditor;
 
 import org.greenrobot.eventbus.EventBus;

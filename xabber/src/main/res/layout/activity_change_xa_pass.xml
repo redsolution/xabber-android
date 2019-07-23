@@ -10,7 +10,7 @@
 
     <include layout="@layout/toolbar_default" />
 
-    <android.support.v7.widget.CardView
+    <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -23,7 +23,7 @@
             android:paddingTop="32dp"
             >
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/tilOldPass"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -40,9 +40,9 @@
                 android:inputType="textPassword"
                 />
 
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/tilPass"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -59,9 +59,9 @@
                 android:inputType="textPassword"
                 />
 
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/tilConfirmPass"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -79,7 +79,7 @@
                 android:inputType="textPassword"
                 />
 
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
         <LinearLayout
             android:orientation="horizontal"
@@ -111,6 +111,6 @@
 
         </LinearLayout>
 
-    </android.support.v7.widget.CardView>
+    </androidx.cardview.widget.CardView>
 
 </LinearLayout>

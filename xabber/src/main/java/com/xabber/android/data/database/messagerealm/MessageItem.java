@@ -14,7 +14,7 @@
  */
 package com.xabber.android.data.database.messagerealm;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.TextUtils;
@@ -27,7 +27,6 @@ import com.xabber.android.data.message.ChatAction;
 import org.jxmpp.jid.parts.Resourcepart;
 import org.jxmpp.stringprep.XmppStringprepException;
 
-import java.util.List;
 import java.util.UUID;
 
 import io.realm.RealmList;

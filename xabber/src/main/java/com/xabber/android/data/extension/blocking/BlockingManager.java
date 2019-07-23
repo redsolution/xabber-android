@@ -1,6 +1,6 @@
 package com.xabber.android.data.extension.blocking;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountItem;
@@ -16,7 +16,7 @@ import com.xabber.android.data.roster.RosterContact;
 
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
-import org.jivesoftware.smack.tcp.XMPPTCPConnection;
+import com.xabber.xmpp.smack.XMPPTCPConnection;
 import org.jivesoftware.smackx.blocking.BlockingCommandManager;
 import org.jxmpp.jid.Jid;
 

@@ -39,12 +39,11 @@ class ConnectionListener implements org.jivesoftware.smack.ConnectionListener {
     @Override
     public void connected(XMPPConnection connection) {
         LogManager.i(getLogTag(), "connected");
+        connectionItem.updateState(ConnectionState.authentication);
 
         Application.getInstance().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                connectionItem.updateState(ConnectionState.authentication);
-
                 for (OnConnectedListener listener : Application.getInstance().getManagers(OnConnectedListener.class)) {
                     listener.onConnected(connectionItem);
                 }
@@ -55,15 +54,12 @@ class ConnectionListener implements org.jivesoftware.smack.ConnectionListener {
     @Override
     public void authenticated(XMPPConnection connection, final boolean resumed) {
         LogManager.i(getLogTag(), "authenticated. resumed: " + resumed);
-
         connectionItem.updateState(ConnectionState.connected);
 
         // just to see the order of call
-
         CarbonManager.getInstance().onAuthorized(connectionItem);
         BlockingManager.getInstance().onAuthorized(connectionItem);
         HttpFileUploadManager.getInstance().onAuthorized(connectionItem);
-
         PresenceManager.getInstance().onAuthorized(connectionItem);
         BookmarksManager.getInstance().onAuthorized(connectionItem.getAccount());
 
@@ -78,12 +74,11 @@ class ConnectionListener implements org.jivesoftware.smack.ConnectionListener {
     @Override
     public void connectionClosed() {
         LogManager.i(getLogTag(), "connectionClosed");
+        connectionItem.updateState(ConnectionState.offline);
 
         Application.getInstance().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                connectionItem.updateState(ConnectionState.offline);
-
                 for (OnDisconnectListener listener
                         : Application.getInstance().getManagers(OnDisconnectListener.class)) {
                     listener.onDisconnect(connectionItem);
@@ -96,22 +91,22 @@ class ConnectionListener implements org.jivesoftware.smack.ConnectionListener {
     @Override
     public void connectionClosedOnError(final Exception e) {
         LogManager.i(getLogTag(), "connectionClosedOnError " + e + " " + e.getMessage());
+        connectionItem.updateState(ConnectionState.waiting);
+
+        if (e instanceof XMPPException.StreamErrorException) {
+            String message = e.getMessage();
+            if (message.contains("conflict")) {
+                AccountManager.getInstance().generateNewResourceForAccount(connectionItem.getAccount());
+            }
+        }
+
+        if (e instanceof SASLErrorException) {
+            AccountManager.getInstance().setEnabled(connectionItem.getAccount(), false);
+        }
 
         Application.getInstance().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                connectionItem.updateState(ConnectionState.waiting);
-
-                if (e instanceof XMPPException.StreamErrorException) {
-                    String message = e.getMessage();
-                    if (message.contains("conflict")) {
-                        AccountManager.getInstance().generateNewResourceForAccount(connectionItem.getAccount());
-                    }
-                }
-
-                if (e instanceof SASLErrorException) {
-                    AccountManager.getInstance().setEnabled(connectionItem.getAccount(), false);
-                }
                 /*
                   Send to chats action of disconnect
                   Then RoomChat set state in "waiting" which need for rejoin to room
@@ -129,27 +124,15 @@ class ConnectionListener implements org.jivesoftware.smack.ConnectionListener {
     @Override
     public void reconnectingIn(final int seconds) {
         LogManager.i(getLogTag(), "reconnectionSuccessful");
-
-        Application.getInstance().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if (connectionItem.getState() != ConnectionState.waiting && !connectionItem.getConnection().isAuthenticated()
-                        && !connectionItem.getConnection().isConnected()) {
-                    connectionItem.updateState(ConnectionState.waiting);
-                }
-            }
-        });
+        if (connectionItem.getState() != ConnectionState.waiting && !connectionItem.getConnection().isAuthenticated()
+                && !connectionItem.getConnection().isConnected()) {
+            connectionItem.updateState(ConnectionState.waiting);
+        }
     }
 
     @Override
     public void reconnectionFailed(final Exception e) {
         LogManager.i(getLogTag(), "reconnectionFailed " + e + " " + e.getMessage());
-
-        Application.getInstance().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                connectionItem.updateState(ConnectionState.offline);
-            }
-        });
+        connectionItem.updateState(ConnectionState.offline);
     }
 }

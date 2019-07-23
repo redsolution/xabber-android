@@ -5,12 +5,12 @@ import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v4.app.NavUtils;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SwitchCompat;
-import android.support.v7.widget.Toolbar;
+import androidx.annotation.NonNull;
+import androidx.core.app.NavUtils;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.appcompat.widget.SwitchCompat;
+import androidx.appcompat.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CompoundButton;
@@ -279,6 +279,12 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
                         dialog.show();
                     } else startActivity(AccountSyncActivity.createIntent(this, account));
                 } else startActivity(TutorialActivity.createIntent(this));
+                break;
+            case SESSIONS:
+                if (accountItem.getConnectionSettings().getXToken() != null &&
+                        !accountItem.getConnectionSettings().getXToken().isExpired()) {
+                    startActivity(ActiveSessionsActivity.createIntent(this, account));
+                }
                 break;
         }
     }

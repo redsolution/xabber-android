@@ -3,8 +3,10 @@ package com.xabber.android.ui.adapter.chat;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -14,11 +16,12 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.animation.GlideAnimation;
-import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.target.Target;
+import com.bumptech.glide.request.transition.Transition;
 import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.database.MessageDatabaseManager;
@@ -90,7 +93,6 @@ public class FileMessageVH extends MessageVH
         messageImage.setVisibility(View.GONE);
         imageGridContainer.removeAllViews();
         imageGridContainer.setVisibility(View.GONE);
-        //messageText.setVisibility(View.VISIBLE);
 
         if (messageItem.haveAttachments()) {
             setUpImage(messageItem.getAttachments());
@@ -125,7 +127,6 @@ public class FileMessageVH extends MessageVH
 
             imageGridContainer.addView(imageGridView);
             imageGridContainer.setVisibility(View.VISIBLE);
-            //messageText.setVisibility(View.GONE);
         }
     }
 
@@ -140,7 +141,6 @@ public class FileMessageVH extends MessageVH
             rvFileList.setLayoutManager(layoutManager);
             FilesAdapter adapter = new FilesAdapter(fileAttachments, this);
             rvFileList.setAdapter(adapter);
-            //messageText.setVisibility(View.GONE);
             fileLayout.setVisibility(View.VISIBLE);
         }
     }
@@ -155,7 +155,6 @@ public class FileMessageVH extends MessageVH
 
             if (result) {
                 messageImage.setVisibility(View.VISIBLE);
-                //messageText.setVisibility(View.GONE);
             } else {
                 final Realm realm = MessageDatabaseManager.getInstance().getRealmUiThread();
                 realm.executeTransactionAsync(new Realm.Transaction() {
@@ -177,55 +176,52 @@ public class FileMessageVH extends MessageVH
                 FileManager.scaleImage(layoutParams, imageHeight, imageWidth);
                 Glide.with(context)
                         .load(imageUrl)
-                        .listener(new RequestListener<String, GlideDrawable>() {
+                        .listener(new RequestListener<Drawable>() {
                             @Override
-                            public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                            public boolean onLoadFailed(@Nullable GlideException e, Object model,
+                                    Target<Drawable> target, boolean isFirstResource) {
                                 messageImage.setVisibility(View.GONE);
-                                //messageText.setVisibility(View.VISIBLE);
                                 return true;
                             }
 
                             @Override
-                            public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                            public boolean onResourceReady(Drawable resource, Object model,
+                                   Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
                                 return false;
                             }
                         })
                         .into(messageImage);
 
                 messageImage.setVisibility(View.VISIBLE);
-                //messageText.setVisibility(View.GONE);
             } else {
 
                 Glide.with(context)
-                        .load(imageUrl)
                         .asBitmap()
+                        .load(imageUrl)
                         .placeholder(R.drawable.ic_recent_image_placeholder)
                         .error(R.drawable.ic_recent_image_placeholder)
-                        .into(new SimpleTarget<Bitmap>() {
+                        .into(new CustomTarget<Bitmap>() {
                             @Override
-                            public void onLoadStarted(Drawable placeholder) {
+                            public void onLoadStarted(@Nullable Drawable placeholder) {
                                 super.onLoadStarted(placeholder);
                                 messageImage.setImageDrawable(placeholder);
                                 messageImage.setVisibility(View.VISIBLE);
-                                //messageText.setVisibility(View.GONE);
                             }
 
                             @Override
-                            public void onLoadFailed(Exception e, Drawable errorDrawable) {
-                                super.onLoadFailed(e, errorDrawable);
+                            public void onLoadFailed(@Nullable Drawable errorDrawable) {
+                                super.onLoadFailed(errorDrawable);
                                 messageImage.setImageDrawable(errorDrawable);
                                 messageImage.setVisibility(View.VISIBLE);
-                                //messageText.setVisibility(View.GONE);
                             }
 
                             @Override
-                            public void onResourceReady(final Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                            public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
                                 final int width = resource.getWidth();
                                 final int height = resource.getHeight();
 
                                 if (width <= 0 || height <= 0) {
                                     messageImage.setVisibility(View.GONE);
-                                    //messageText.setVisibility(View.VISIBLE);
                                     return;
                                 }
 
@@ -243,14 +239,13 @@ public class FileMessageVH extends MessageVH
                                     }
                                 });
 
-
                                 FileManager.scaleImage(layoutParams, height, width);
-
                                 messageImage.setImageBitmap(resource);
-
                                 messageImage.setVisibility(View.VISIBLE);
-                                //messageText.setVisibility(View.GONE);
                             }
+
+                            @Override
+                            public void onLoadCleared(@Nullable Drawable placeholder) { }
                         });
             }
         }

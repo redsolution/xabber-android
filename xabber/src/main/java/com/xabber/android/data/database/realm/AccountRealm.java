@@ -1,6 +1,6 @@
 package com.xabber.android.data.database.realm;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import com.xabber.android.data.account.ArchiveMode;
 import com.xabber.android.data.account.StatusMode;
@@ -39,6 +39,7 @@ public class AccountRealm extends RealmObject {
         public static final String PUSH_SERVICE_JID = "pushServiceJid";
         public static final String PUSH_ENABLED = "pushEnabled";
         public static final String PUSH_WAS_ENABLED = "pushWasEnabled";
+        public static final String XTOKEN = "xToken";
     }
 
     @PrimaryKey
@@ -58,6 +59,7 @@ public class AccountRealm extends RealmObject {
     private boolean storePassword;
     private String password;
     private String token;
+    private XTokenRealm xToken;
 
     private int colorIndex;
     private int timestamp;
@@ -455,5 +457,13 @@ public class AccountRealm extends RealmObject {
 
     public void setPushWasEnabled(boolean pushWasEnabled) {
         this.pushWasEnabled = pushWasEnabled;
+    }
+
+    public XTokenRealm getXToken() {
+        return xToken;
+    }
+
+    public void setXToken(XTokenRealm xToken) {
+        this.xToken = xToken;
     }
 }

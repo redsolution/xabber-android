@@ -16,22 +16,21 @@ package com.xabber.android.ui.activity;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.v4.app.NavUtils;
-import android.support.v7.widget.Toolbar;
 import android.text.method.LinkMovementMethod;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.NavUtils;
+
 import com.bumptech.glide.Glide;
+import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.xabber.android.R;
-import com.xabber.android.data.log.LogManager;
+import com.xabber.android.data.Application;
 
 public class AboutActivity extends ManagedActivity implements View.OnClickListener {
 
@@ -68,7 +67,7 @@ public class AboutActivity extends ManagedActivity implements View.OnClickListen
                 (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
         collapsingToolbar.setTitle(getString(R.string.application_title_short));
 
-        ((TextView) findViewById(R.id.about_version)).setText(getVersionName());
+        ((TextView) findViewById(R.id.about_version)).setText(Application.getInstance().getVersionName());
 
         loadBackdrop();
     }
@@ -76,16 +75,6 @@ public class AboutActivity extends ManagedActivity implements View.OnClickListen
     private void loadBackdrop() {
         final ImageView imageView = (ImageView) findViewById(R.id.backdrop);
         Glide.with(this).load(R.drawable.about_backdrop).centerCrop().into(imageView);
-    }
-
-    private String getVersionName() {
-        try {
-            PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
-            return getString(R.string.application_title_full) + " " + pInfo.versionName;
-        } catch (PackageManager.NameNotFoundException e) {
-            LogManager.exception(this, e);
-        }
-        return "";
     }
 
     @Override

@@ -4,7 +4,7 @@ package com.xabber.android.ui.preferences;
 import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;

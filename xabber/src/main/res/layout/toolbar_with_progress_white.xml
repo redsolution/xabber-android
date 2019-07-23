@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<android.support.v7.widget.Toolbar xmlns:app="http://schemas.android.com/apk/res-auto"
+<androidx.appcompat.widget.Toolbar xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/toolbar_default"
     android:layout_width="match_parent"
@@ -24,4 +24,4 @@
         android:visibility="invisible"
         />
 
-</android.support.v7.widget.Toolbar>
+</androidx.appcompat.widget.Toolbar>

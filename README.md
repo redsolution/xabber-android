@@ -8,11 +8,12 @@ Being both free (as in freedom!) and ad-free, [Xabber](https://www.xabber.com/) 
 ## Build instructions [![Build Status](https://travis-ci.org/redsolution/xabber-android.svg?branch=develop)](https://travis-ci.org/redsolution/xabber-android)
 **1. Prepare**
 
-Xabber uses Gradle build system. The only specific thing is git submodule for ge0rg/MemorizingTrustManager library. To make it work use following commands:
+Xabber uses Gradle build system. The only specific thing is git submodule for MemorizingTrustManager library. To make it work use following commands:
 
  ```
+ git submodule sync
  git submodule init
- git submodule update
+ git submodule update --remote
  ```
  And MemorizingTrustManager would be cloned to your local repository.
  

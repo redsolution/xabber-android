@@ -3,9 +3,9 @@ package com.xabber.android.ui.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v13.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.viewpager.widget.ViewPager;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -46,7 +46,7 @@ public class TutorialActivity extends ManagedActivity {
 
         ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
 
-        FragmentPagerAdapter pagerAdapter = new TutorialAdapter(getFragmentManager());
+        FragmentPagerAdapter pagerAdapter = new TutorialAdapter(getSupportFragmentManager());
         viewPager.setAdapter(pagerAdapter);
 
         CircleIndicator indicator = (CircleIndicator) findViewById(R.id.indicator);

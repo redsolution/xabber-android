@@ -1,7 +1,7 @@
 package com.xabber.android.ui.widget;
 
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.helper.ItemTouchHelper;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.ItemTouchHelper;
 
 /**
  * Created by valery.miller on 01.08.17.

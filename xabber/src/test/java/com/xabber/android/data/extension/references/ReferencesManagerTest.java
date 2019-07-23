@@ -15,7 +15,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 @RunWith(RobolectricTestRunner.class)
-@Config(application = TestApplication.class)
+@Config(sdk = 28, application = TestApplication.class)
 public class ReferencesManagerTest {
 
     private String body1, body2, body3, body4, body5, body6, body7, body8;

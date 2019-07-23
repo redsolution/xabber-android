@@ -1,7 +1,7 @@
 package com.xabber.android.data.message;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.database.realm.CrowdfundingMessage;

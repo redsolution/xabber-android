@@ -1,15 +1,19 @@
 package com.xabber.android.ui.widget;
 
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.animation.GlideAnimation;
-import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.target.CustomTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.xabber.android.R;
 import com.xabber.android.data.database.MessageDatabaseManager;
 import com.xabber.android.data.database.messagerealm.Attachment;
@@ -95,11 +99,11 @@ public class ImageGridBuilder {
             } else {
 
                 Glide.with(parent.getContext())
-                        .load(imageUrl)
                         .asBitmap()
-                        .into(new SimpleTarget<Bitmap>() {
+                        .load(imageUrl)
+                        .into(new CustomTarget<Bitmap>() {
                             @Override
-                            public void onResourceReady(final Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                            public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
                                 final int width = resource.getWidth();
                                 final int height = resource.getHeight();
 
@@ -123,6 +127,9 @@ public class ImageGridBuilder {
                                 FileManager.scaleImage(layoutParams, height, width);
                                 imageView.setImageBitmap(resource);
                             }
+
+                            @Override
+                            public void onLoadCleared(@Nullable Drawable placeholder) { }
                         });
             }
         }

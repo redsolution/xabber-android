@@ -8,7 +8,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
 import android.os.ResultReceiver;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.webkit.MimeTypeMap;
 
 import com.xabber.android.data.Application;
