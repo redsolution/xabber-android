@@ -1,6 +1,8 @@
 package com.xabber.android.ui.activity;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -32,6 +34,7 @@ public class ActiveSessionsActivity extends ManagedActivity {
     private TextView tvCurrentDevice;
     private TextView tvCurrentIPAddress;
     private TextView tvCurrentDate;
+    private View terminateAll;
     private ProgressBar progressBar;
     private View contentView;
 
@@ -77,10 +80,17 @@ public class ActiveSessionsActivity extends ManagedActivity {
         barPainter.updateWithAccountName(account);
         progressBar = findViewById(R.id.progressBar);
         contentView = findViewById(R.id.contentView);
+        terminateAll = findViewById(R.id.llTerminateAll);
+        terminateAll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showTerminateAllSessionsDialog();
+            }
+        });
 
         // other sessions
         RecyclerView recyclerView = findViewById(R.id.rvSessions);
-        adapter = new SessionAdapter();
+        adapter = new SessionAdapter(this);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
         recyclerView.setNestedScrollingEnabled(false);
@@ -121,5 +131,23 @@ public class ActiveSessionsActivity extends ManagedActivity {
         tvCurrentDevice.setText(session.getDevice());
         tvCurrentIPAddress.setText(session.getIp());
         tvCurrentDate.setText(session.getLastAuth());
+    }
+
+    private void showTerminateAllSessionsDialog() {
+        new AlertDialog.Builder(ActiveSessionsActivity.this)
+            .setMessage(R.string.terminate_all_sessions_title)
+            .setPositiveButton(R.string.button_terminate, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+
+                }
+            })
+            .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    dialogInterface.cancel();
+                }
+            })
+            .create().show();
     }
 }

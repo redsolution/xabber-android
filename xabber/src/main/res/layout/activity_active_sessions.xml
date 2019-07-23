@@ -46,13 +46,18 @@
                     android:text="@string/account_current_session"
                     />
 
-                <include layout="@layout/item_session" />
+                <include layout="@layout/item_session"
+                    android:clickable="false"
+                    android:focusable="false"
+                    />
 
                 <LinearLayout
                     android:id="@+id/llTerminateAll"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
+                    android:clickable="true"
+                    android:focusable="true"
                     android:background="?android:attr/selectableItemBackground">
 
                     <TextView

@@ -102,4 +102,8 @@
     <string name="account_sync">Синхронизация</string>
     <string name="account_sync_summary">Синхронизация с аккаунтом Xabber</string>
     <string name="bookmark_not_supported">Сервер не поддерживает закладки.</string>
+
+    <string name="terminate_all_sessions_title">Вы точно хотите завершить все другие сеансы?</string>
+    <string name="terminate_session_title">Завершить этот сеанс?</string>
+    <string name="button_terminate">Завершить</string>
 </resources>

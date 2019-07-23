@@ -1,5 +1,8 @@
 package com.xabber.android.ui.activity;
 
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,9 +20,11 @@ import java.util.List;
 public class SessionAdapter extends RecyclerView.Adapter<SessionAdapter.SessionHolder> {
 
     private List<SessionVO> items;
+    private Context context;
 
-    public SessionAdapter() {
+    public SessionAdapter(Context context) {
         this.items = new ArrayList<>();
+        this.context = context;
     }
 
     public void setItems(List<SessionVO> items) {
@@ -41,6 +46,12 @@ public class SessionAdapter extends RecyclerView.Adapter<SessionAdapter.SessionH
         holder.tvDevice.setText(session.getDevice());
         holder.tvIPAddress.setText(session.getIp());
         holder.tvDate.setText(session.getLastAuth());
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showTerminateSessionDialog();
+            }
+        });
     }
 
     @Override
@@ -62,6 +73,24 @@ public class SessionAdapter extends RecyclerView.Adapter<SessionAdapter.SessionH
             tvIPAddress = (TextView) itemView.findViewById(R.id.tvIPAddress);
             tvDate = (TextView) itemView.findViewById(R.id.tvDate);
         }
+    }
+
+    private void showTerminateSessionDialog() {
+        new AlertDialog.Builder(context)
+            .setMessage(R.string.terminate_session_title)
+            .setPositiveButton(R.string.button_terminate, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+
+                }
+            })
+            .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    dialogInterface.cancel();
+                }
+            })
+            .create().show();
     }
 
 }
