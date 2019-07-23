@@ -18,6 +18,7 @@ import org.jivesoftware.smack.StanzaListener;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Stanza;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -78,7 +79,7 @@ public class XTokenManager implements OnPacketListener {
         Application.getInstance().runInBackgroundUserRequest(new Runnable() {
             @Override
             public void run() {
-                sendSessionsRequestIQ(currentTokenUID, connection, listener);
+                sendSessionsRequestIQ(currentTokenUID, connection, new WeakReference<>(listener));
             }
         });
     }
@@ -100,7 +101,7 @@ public class XTokenManager implements OnPacketListener {
         void onError();
     }
 
-    private Pair<SessionVO, List<SessionVO>> parseSessions(String currentSessionUID, SessionsIQ iq) {
+    private static Pair<SessionVO, List<SessionVO>> parseSessions(String currentSessionUID, SessionsIQ iq) {
         SessionVO currentSession = null;
         List<SessionVO> result = new ArrayList<>();
         List<Session> sessions = iq.getSessions();
@@ -129,7 +130,7 @@ public class XTokenManager implements OnPacketListener {
 
     private void sendSessionsRequestIQ(final String currentTokenUID,
                                        final XMPPTCPConnection connection,
-                                       final SessionsListener listener) {
+                                       final WeakReference<SessionsListener> wrListener) {
         LogManager.d(LOG_TAG, "Request x-token list");
         SessionsRequestIQ requestIQ = new SessionsRequestIQ();
         requestIQ.setType(IQ.Type.get);
@@ -137,20 +138,21 @@ public class XTokenManager implements OnPacketListener {
         try {
             connection.sendStanzaWithResponseCallback(requestIQ,
                     new SessionsResultFilter(requestIQ, connection),
-                    new SessionRequestListener(currentTokenUID, listener));
+                    new SessionRequestListener(currentTokenUID, wrListener));
         } catch (Exception e) {
-            listener.onError();
+            SessionsListener listener = wrListener.get();
+            if (listener != null) listener.onError();
             e.printStackTrace();
         }
     }
 
-    private class SessionRequestListener implements StanzaListener {
-        final String currentTokenUID;
-        final SessionsListener listener;
+    private static class SessionRequestListener implements StanzaListener {
+        private final String currentTokenUID;
+        private final WeakReference<SessionsListener> wrListener;
 
-        public SessionRequestListener(String currentTokenUID, SessionsListener listener) {
+        public SessionRequestListener(String currentTokenUID, WeakReference<SessionsListener> wrListener) {
             this.currentTokenUID = currentTokenUID;
-            this.listener = listener;
+            this.wrListener = wrListener;
         }
 
         @Override
@@ -162,7 +164,9 @@ public class XTokenManager implements OnPacketListener {
                 Application.getInstance().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        listener.onResult(result.first, result.second);
+                        SessionsListener listener = wrListener.get();
+                        if (listener != null)
+                            listener.onResult(result.first, result.second);
                     }
                 });
             }
