@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -125,7 +126,8 @@ public class ActiveSessionsActivity extends ManagedActivity implements SessionAd
                 @Override
                 public void onError() {
                     progressBar.setVisibility(View.GONE);
-                    // TODO: 19.07.19 show error
+                    Toast.makeText(ActiveSessionsActivity.this,
+                            R.string.account_active_sessions_error, Toast.LENGTH_LONG).show();
                 }
             });
     }
