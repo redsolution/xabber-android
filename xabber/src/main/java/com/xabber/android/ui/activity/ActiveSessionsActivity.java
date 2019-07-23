@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.account.AccountErrorEvent;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
@@ -182,5 +183,11 @@ public class ActiveSessionsActivity extends ManagedActivity implements SessionAd
                 }
             })
             .create().show();
+    }
+
+    @Override
+    public void onAuthErrorEvent(AccountErrorEvent accountErrorEvent) {
+        super.onAuthErrorEvent(accountErrorEvent);
+        finish();
     }
 }
