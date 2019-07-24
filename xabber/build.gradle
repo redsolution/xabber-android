@@ -129,6 +129,9 @@ def getLocalProperty(String propertyName) {
 ext {
     crashlyticsVersion = '2.9.5@aar'
     firebaseVersion = '17.3.4'
+    googleAuthVersion = '15.0.0'
+    googleSafetynetVersion = '16.0.0'
+    googleApiClientVersion = '1.22.0'
 }
 
 dependencies {
@@ -170,13 +173,26 @@ dependencies {
     implementation 'io.reactivex:rxjava:1.1.0'
 
     // social
-    implementation 'com.google.android.gms:play-services-safetynet:16.0.0'
     implementation 'com.facebook.android:facebook-login:4.36.1'
     implementation 'com.twitter.sdk.android:twitter:3.0.0'
-    implementation 'com.google.android.gms:play-services-auth:15.0.0'
-    implementation ('com.google.api-client:google-api-client-android:1.22.0') {
-        exclude module: 'httpclient'
-    }
+
+    // google safetynet (recaptcha)
+    prodImplementation "com.google.android.gms:play-services-safetynet:$googleSafetynetVersion"
+    betaImplementation "com.google.android.gms:play-services-safetynet:$googleSafetynetVersion"
+    devImplementation "com.google.android.gms:play-services-safetynet:$googleSafetynetVersion"
+    vipImplementation "com.google.android.gms:play-services-safetynet:$googleSafetynetVersion"
+
+    // google auth
+    prodImplementation "com.google.android.gms:play-services-auth:$googleAuthVersion"
+    betaImplementation "com.google.android.gms:play-services-auth:$googleAuthVersion"
+    devImplementation "com.google.android.gms:play-services-auth:$googleAuthVersion"
+    vipImplementation "com.google.android.gms:play-services-auth:$googleAuthVersion"
+
+    // google-api-client
+    prodImplementation ("com.google.api-client:google-api-client-android:$googleApiClientVersion") { exclude module: 'httpclient' }
+    betaImplementation ("com.google.api-client:google-api-client-android:$googleApiClientVersion") { exclude module: 'httpclient' }
+    devImplementation ("com.google.api-client:google-api-client-android:$googleApiClientVersion") { exclude module: 'httpclient' }
+    vipImplementation ("com.google.api-client:google-api-client-android:$googleApiClientVersion") { exclude module: 'httpclient' }
 
     // okhttp
     implementation 'com.squareup.okhttp3:okhttp:3.5.0'
