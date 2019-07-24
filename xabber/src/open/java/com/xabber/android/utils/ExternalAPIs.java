@@ -2,7 +2,7 @@ package com.xabber.android.utils;
 
 import android.content.Context;
 
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 public class ExternalAPIs {
 

@@ -20,11 +20,11 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import javax.annotation.Nonnull;
+import androidx.annotation.NonNull;
 
 public class ReferencesManager {
 
-    @Nonnull
+    @NonNull
     public static List<Forwarded> getForwardedFromReferences(Stanza packet) {
         List<ExtensionElement> elements = packet.getExtensions(ReferenceElement.ELEMENT, ReferenceElement.NAMESPACE);
         if (elements == null || elements.size() == 0) return Collections.emptyList();
@@ -67,7 +67,7 @@ public class ReferencesManager {
         return new Forward(begin, end, forwardedList);
     }
 
-    @Nonnull
+    @NonNull
     public static List<RefMedia> getMediaFromReferences(Stanza packet) {
         List<ExtensionElement> elements = packet.getExtensions(ReferenceElement.ELEMENT, ReferenceElement.NAMESPACE);
         if (elements == null || elements.size() == 0) return Collections.emptyList();

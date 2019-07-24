@@ -66,8 +66,8 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import io.realm.Realm;
 import io.realm.RealmList;
@@ -453,7 +453,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
 
     /** Request most recent message from all history and save it timestamp to startHistoryTimestamp
      *  If message is null save current time to startHistoryTimestamp */
-    private void initializeStartTimestamp(Realm realm, @Nonnull AccountItem accountItem) {
+    private void initializeStartTimestamp(Realm realm, @NonNull AccountItem accountItem) {
         long startHistoryTimestamp = System.currentTimeMillis();
 
         MamManager.MamQueryResult queryResult = requestLastMessage(accountItem, null);
@@ -479,7 +479,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
         AccountManager.getInstance().onAccountChanged(accountItem.getAccount());
     }
 
-    private void updatePreferencesFromServer(@Nonnull AccountItem accountItem) {
+    private void updatePreferencesFromServer(@NonNull AccountItem accountItem) {
         MamManager.MamPrefsResult prefsResult = requestPreferencesFromServer(accountItem);
         if (prefsResult != null) {
             MamPrefsIQ.DefaultBehavior behavior = prefsResult.mamPrefs.getDefault();
@@ -513,7 +513,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
     /** Request recent message from chat history if chat not null
      *  Else request most recent message from all history*/
     private @Nullable MamManager.MamQueryResult requestLastMessage(
-            @Nonnull AccountItem accountItem, @Nullable final AbstractChat chat) {
+            @NonNull AccountItem accountItem, @Nullable final AbstractChat chat) {
 
         return requestToMessageArchive(accountItem, new MamRequest<MamManager.MamQueryResult>() {
             @Override
@@ -525,7 +525,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
     }
 
     /** Send async request for recent message from chat history */
-    private void requestLastMessageAsync(@Nonnull final AccountItem accountItem, @Nonnull final AbstractChat chat) {
+    private void requestLastMessageAsync(@NonNull final AccountItem accountItem, @NonNull final AbstractChat chat) {
         requestToMessageArchive(accountItem, new MamRequest<MamManager.MamQueryResult>() {
             @Override
             MamManager.MamQueryResult execute(MamManager manager) throws Exception {
@@ -550,7 +550,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
     /** Request messages after archivedID from chat history
     *  Else request messages after archivedID from all history */
     private @Nullable MamManager.MamQueryResult requestMessagesFromId(
-            @Nonnull AccountItem accountItem, @Nullable final AbstractChat chat, final String archivedId) {
+            @NonNull AccountItem accountItem, @Nullable final AbstractChat chat, final String archivedId) {
 
         return requestToMessageArchive(accountItem, new MamRequest<MamManager.MamQueryResult>() {
             @Override
@@ -563,7 +563,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
 
     /** Request messages before archivedID from chat history */
     private @Nullable MamManager.MamQueryResult requestMessagesBeforeId(
-            @Nonnull AccountItem accountItem, @Nonnull final AbstractChat chat, final String archivedId) {
+            @NonNull AccountItem accountItem, @NonNull final AbstractChat chat, final String archivedId) {
 
         return requestToMessageArchive(accountItem, new MamRequest<MamManager.MamQueryResult>() {
             @Override
@@ -575,7 +575,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
 
     /** Request messages started with startID and ending with endID from chat history */
     private @Nullable MamManager.MamQueryResult requestMissedMessages(
-            @Nonnull AccountItem accountItem, @Nonnull final AbstractChat chat,
+            @NonNull AccountItem accountItem, @NonNull final AbstractChat chat,
             final Date startDate, final Date endDate) {
 
         return requestToMessageArchive(accountItem, new MamRequest<MamManager.MamQueryResult>() {
@@ -587,7 +587,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
     }
 
     /** Request update archiving preferences on server */
-    private void requestUpdatePreferences(@Nonnull final AccountItem accountItem) {
+    private void requestUpdatePreferences(@NonNull final AccountItem accountItem) {
         requestToMessageArchive(accountItem, new MamRequest<MamManager.MamPrefsResult>() {
             @Override
             MamManager.MamPrefsResult execute(MamManager manager) throws Exception {
@@ -597,7 +597,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
     }
 
     /** Request archiving preferences from server */
-    private @Nullable MamManager.MamPrefsResult requestPreferencesFromServer(@Nonnull final AccountItem accountItem) {
+    private @Nullable MamManager.MamPrefsResult requestPreferencesFromServer(@NonNull final AccountItem accountItem) {
         return requestToMessageArchive(accountItem, new MamRequest<MamManager.MamPrefsResult>() {
             @Override
             MamManager.MamPrefsResult execute(MamManager manager) throws Exception {
