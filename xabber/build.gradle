@@ -128,6 +128,7 @@ def getLocalProperty(String propertyName) {
 
 ext {
     crashlyticsVersion = '2.9.5@aar'
+    firebaseVersion = '17.3.4'
 }
 
 dependencies {
@@ -147,7 +148,10 @@ dependencies {
     implementation 'androidx.multidex:multidex:2.0.0'
 
     // firebase
-    implementation 'com.google.firebase:firebase-messaging:17.3.4'
+    prodImplementation "com.google.firebase:firebase-messaging:$firebaseVersion"
+    betaImplementation "com.google.firebase:firebase-messaging:$firebaseVersion"
+    vipImplementation "com.google.firebase:firebase-messaging:$firebaseVersion"
+    devImplementation "com.google.firebase:firebase-messaging:$firebaseVersion"
 
     // otr
     implementation 'com.github.redsolution:otr4j:custom-SNAPSHOT'

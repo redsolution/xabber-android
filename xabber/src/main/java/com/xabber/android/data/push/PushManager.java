@@ -5,7 +5,6 @@ import android.content.Context;
 import android.provider.Settings;
 import android.util.Log;
 
-import com.google.firebase.iid.FirebaseInstanceId;
 import com.xabber.android.BuildConfig;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
@@ -20,6 +19,7 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.http.PushApiClient;
 import com.xabber.android.data.log.LogManager;
+import com.xabber.android.utils.ExternalAPIs;
 import com.xabber.android.utils.Utils;
 
 import org.jivesoftware.smack.SmackException;
@@ -219,9 +219,12 @@ public class PushManager implements OnConnectedListener, OnPacketListener {
     /** Private */
 
     private void registerEndpoint(AccountJid accountJid) {
+        String token = ExternalAPIs.getPushEndpointToken();
+        if (token == null) return;
+
         compositeSubscription.add(
                 PushApiClient.registerEndpoint(
-                        FirebaseInstanceId.getInstance().getToken(),
+                        token,
                         accountJid.getFullJid().asBareJid().toString() + getAndroidId())
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
@@ -239,9 +242,12 @@ public class PushManager implements OnConnectedListener, OnPacketListener {
     }
 
     private void deleteEndpoint(final AccountItem accountItem) {
+        String token = ExternalAPIs.getPushEndpointToken();
+        if (token == null) return;
+
         compositeSubscription.add(
                 PushApiClient.deleteEndpoint(
-                        FirebaseInstanceId.getInstance().getToken(), accountItem.getAccount().toString())
+                        token, accountItem.getAccount().toString())
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(new Action1<ResponseBody>() {
