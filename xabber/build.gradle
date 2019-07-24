@@ -132,6 +132,8 @@ ext {
     googleAuthVersion = '15.0.0'
     googleSafetynetVersion = '16.0.0'
     googleApiClientVersion = '1.22.0'
+    facebookVersion = '4.36.1'
+    twitterVersion = '3.0.0'
 }
 
 dependencies {
@@ -172,9 +174,17 @@ dependencies {
     implementation 'io.reactivex:rxandroid:1.1.0'
     implementation 'io.reactivex:rxjava:1.1.0'
 
-    // social
-    implementation 'com.facebook.android:facebook-login:4.36.1'
-    implementation 'com.twitter.sdk.android:twitter:3.0.0'
+    // facebook
+    prodImplementation "com.facebook.android:facebook-login:$facebookVersion"
+    betaImplementation "com.facebook.android:facebook-login:$facebookVersion"
+    devImplementation "com.facebook.android:facebook-login:$facebookVersion"
+    vipImplementation "com.facebook.android:facebook-login:$facebookVersion"
+
+    // twitter
+    prodImplementation "com.twitter.sdk.android:twitter:$twitterVersion"
+    betaImplementation "com.twitter.sdk.android:twitter:$twitterVersion"
+    devImplementation "com.twitter.sdk.android:twitter:$twitterVersion"
+    vipImplementation "com.twitter.sdk.android:twitter:$twitterVersion"
 
     // google safetynet (recaptcha)
     prodImplementation "com.google.android.gms:play-services-safetynet:$googleSafetynetVersion"

@@ -4,22 +4,6 @@ import android.content.Intent;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.facebook.CallbackManager;
-import com.facebook.FacebookCallback;
-import com.facebook.FacebookException;
-import com.facebook.FacebookSdk;
-import com.facebook.login.LoginManager;
-import com.facebook.login.LoginResult;
-import com.google.gson.Gson;
-import com.twitter.sdk.android.core.Callback;
-import com.twitter.sdk.android.core.DefaultLogger;
-import com.twitter.sdk.android.core.Result;
-import com.twitter.sdk.android.core.Twitter;
-import com.twitter.sdk.android.core.TwitterAuthConfig;
-import com.twitter.sdk.android.core.TwitterConfig;
-import com.twitter.sdk.android.core.TwitterException;
-import com.twitter.sdk.android.core.TwitterSession;
-import com.twitter.sdk.android.core.identity.TwitterAuthClient;
 import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
@@ -33,7 +17,6 @@ import com.xabber.android.ui.fragment.XAccountLinksFragment;
 import com.xabber.android.ui.helper.OnSocialBindListener;
 import com.xabber.android.utils.RetrofitErrorConverter;
 
-import java.util.Collections;
 import java.util.List;
 
 import okhttp3.ResponseBody;
@@ -52,14 +35,6 @@ public abstract class BaseLoginActivity extends ManagedActivity implements XAcco
 
     private final static String LOG_TAG = BaseLoginActivity.class.getSimpleName();
 
-    // facebook auth
-    private CallbackManager callbackManager;
-
-    // twitter auth
-    private TwitterAuthClient twitterAuthClient;
-    private Callback<TwitterSession> twitterSessionCallback;
-
-    private Gson gson = new Gson();
     protected CompositeSubscription compositeSubscription = new CompositeSubscription();
 
     @Override
@@ -71,81 +46,6 @@ public abstract class BaseLoginActivity extends ManagedActivity implements XAcco
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        // facebook auth
-        if (callbackManager != null)
-            callbackManager.onActivityResult(requestCode, resultCode, data);
-        // twitter auth
-        if (twitterAuthClient != null)
-            twitterAuthClient.onActivityResult(requestCode, resultCode, data);
-    }
-
-    public void loginFacebook() {
-        FacebookSdk.setApplicationId(getString(R.string.SOCIAL_AUTH_FACEBOOK_KEY));
-        FacebookSdk.sdkInitialize(this);
-        initFacebookAuth();
-        LoginManager.getInstance().logInWithReadPermissions(this, Collections.singletonList("public_profile"));
-    }
-
-    public void loginTwitter() {
-        initTwitterAuth();
-        twitterAuthClient.authorize(this, twitterSessionCallback);
-    }
-
-    private void initFacebookAuth() {
-        if (callbackManager != null) return;
-        callbackManager = CallbackManager.Factory.create();
-        LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
-            @Override
-            public void onSuccess(LoginResult loginResult) {
-                String token = loginResult.getAccessToken().getToken();
-                if (token != null) {
-                    String credentials = gson.toJson(new AuthManager.AccessToken(token));
-                    onSocialAuthSuccess(AuthManager.PROVIDER_FACEBOOK, credentials);
-                }
-            }
-
-            @Override
-            public void onCancel() {
-                Toast.makeText(BaseLoginActivity.this, R.string.auth_facebook_cancel, Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onError(FacebookException error) {
-                Toast.makeText(BaseLoginActivity.this, R.string.auth_facebook_error, Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    private void initTwitterAuth() {
-        if (twitterAuthClient != null && twitterSessionCallback != null) return;
-        TwitterConfig config = new TwitterConfig.Builder(this)
-                .logger(new DefaultLogger(Log.DEBUG))
-                .twitterAuthConfig(new TwitterAuthConfig(
-                        getResources().getString(R.string.SOCIAL_AUTH_TWITTER_KEY),
-                        getResources().getString(R.string.SOCIAL_AUTH_TWITTER_SECRET)))
-                .debug(true)
-                .build();
-        Twitter.initialize(config);
-        twitterAuthClient = new TwitterAuthClient();
-        twitterSessionCallback = new Callback<TwitterSession>() {
-            @Override
-            public void success(Result<TwitterSession> result) {
-                String token = result.data.getAuthToken().token;
-                String secret = result.data.getAuthToken().secret;
-                if (token != null && secret != null) {
-                    String credentials = gson.toJson(new AuthManager.TwitterAccessToken(
-                            new AuthManager.TwitterTokens(secret, token),
-                            getResources().getString(R.string.SOCIAL_AUTH_TWITTER_SECRET),
-                            getResources().getString(R.string.SOCIAL_AUTH_TWITTER_KEY)));
-                    onSocialAuthSuccess(AuthManager.PROVIDER_TWITTER, credentials);
-                }
-            }
-
-            @Override
-            public void failure(TwitterException exception) {
-                Toast.makeText(BaseLoginActivity.this, R.string.auth_twitter_error, Toast.LENGTH_SHORT).show();
-            }
-        };
     }
 
     protected abstract void onSocialAuthSuccess(final String provider, final String credentials);
@@ -425,14 +325,7 @@ public abstract class BaseLoginActivity extends ManagedActivity implements XAcco
 
     @Override
     public void onBindClick(String provider) {
-        switch (provider) {
-            case AuthManager.PROVIDER_FACEBOOK:
-                loginFacebook();
-                break;
-            case AuthManager.PROVIDER_TWITTER:
-                loginTwitter();
-                break;
-        }
+
     }
 
     @Override
