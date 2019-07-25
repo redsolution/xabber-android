@@ -104,17 +104,6 @@ android {
     }
 }
 
-def build_param = "${build}";
-
-if (build_param == "open") {
-    // exclude all flavours except open
-    android.variantFilter { variant ->
-        if (!variant.getFlavors().get(0).name.equals('open')) {
-            variant.setIgnore(true);
-        }
-    }
-}
-
 def getLocalProperty(String propertyName) {
     def propsFile = rootProject.file('local.properties')
     if (propsFile.exists()) {
