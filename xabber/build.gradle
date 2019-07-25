@@ -1,7 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'realm-android'
 apply plugin: 'com.frogermcs.androiddevmetrics'
-apply plugin: 'io.fabric'
 
 android {
     compileSdkVersion 29
@@ -109,7 +108,8 @@ def getLocalProperty(String propertyName) {
     if (propsFile.exists()) {
         def props = new Properties()
         props.load(new FileInputStream(propsFile))
-        return props[propertyName]
+        if (props[propertyName] != null) return props[propertyName]
+        else return ""
     } else {
         return ""
     }
@@ -117,6 +117,7 @@ def getLocalProperty(String propertyName) {
 
 if (getGradle().getStartParameter().getTaskRequests().toString().contains("Store")) {
     apply plugin: 'com.google.gms.google-services'
+    apply plugin: 'io.fabric'
 }
 
 ext {
