@@ -36,7 +36,7 @@ android {
         }
     }
 
-    flavorDimensions "build", "destribution"
+    flavorDimensions "destribution", "build"
     productFlavors {
 
         open {
@@ -113,6 +113,10 @@ def getLocalProperty(String propertyName) {
     } else {
         return ""
     }
+}
+
+if (getGradle().getStartParameter().getTaskRequests().toString().contains("Store")) {
+    apply plugin: 'com.google.gms.google-services'
 }
 
 ext {
@@ -205,7 +209,6 @@ dependencies {
     testImplementation "org.robolectric:robolectric:4.0"
     testImplementation "org.robolectric:shadows-multidex:4.0.1"
 }
-apply plugin: 'com.google.gms.google-services'
 
 configurations {
     all*.exclude group: 'xpp3', module: 'xpp3'
