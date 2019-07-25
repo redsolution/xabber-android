@@ -2,16 +2,20 @@ package com.xabber.android.ui.activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.FragmentPagerAdapter;
-import androidx.viewpager.widget.ViewPager;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 
+import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.viewpager.widget.ViewPager;
+
+import com.xabber.android.BuildConfig;
 import com.xabber.android.R;
 import com.xabber.android.data.account.AccountManager;
+import com.xabber.android.data.xaccount.HttpApiManager;
 import com.xabber.android.data.xaccount.XabberAccountManager;
 import com.xabber.android.ui.adapter.TutorialAdapter;
 import com.xabber.android.ui.preferences.PreferenceEditor;
@@ -64,7 +68,15 @@ public class TutorialActivity extends ManagedActivity {
         btnRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(XabberLoginActivity.createIntent(TutorialActivity.this, XabberLoginActivity.FRAGMENT_SIGNUP_STEP1));
+                if (BuildConfig.FLAVOR_destribution.equals("store")) {
+                    startActivity(XabberLoginActivity.createIntent(
+                            TutorialActivity.this, XabberLoginActivity.FRAGMENT_SIGNUP_STEP1));
+                } else {
+                    String url = HttpApiManager.XABBER_SIGNUP_URL;
+                    Intent intent = new Intent(Intent.ACTION_VIEW);
+                    intent.setData(Uri.parse(url));
+                    startActivity(intent);
+                }
             }
         });
 
