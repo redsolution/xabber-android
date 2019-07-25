@@ -36,14 +36,15 @@ android {
         }
     }
 
-    flavorDimensions "build"
+    flavorDimensions "build", "destribution"
     productFlavors {
 
         open {
-            dimension "build"
-            applicationId "com.xabber.android.open"
-            resValue 'string', 'application_package', applicationId
-            multiDexEnabled true
+            dimension "destribution"
+        }
+
+        store {
+            dimension "destribution"
         }
 
         dev {
@@ -92,7 +93,6 @@ android {
             enable true
             reset()
             include 'armeabi', 'armeabi-v7a', 'arm64-v8a', 'mips', 'x86', 'x86_64'
-
             universalApk true
         }
     }
@@ -127,13 +127,7 @@ def getLocalProperty(String propertyName) {
 }
 
 ext {
-    crashlyticsVersion = '2.9.5@aar'
-    firebaseVersion = '17.3.4'
-    googleAuthVersion = '15.0.0'
-    googleSafetynetVersion = '16.0.0'
-    googleApiClientVersion = '1.22.0'
-    facebookVersion = '4.36.1'
-    twitterVersion = '3.0.0'
+    smackVerstion = 'ffb99cc'
 }
 
 dependencies {
@@ -141,10 +135,10 @@ dependencies {
     implementation project(path: 'emojicon', configuration: 'default')
 
     // smack
-    implementation 'com.github.str4tocaster.smack:smack-android-extensions:ffb99cc'
-    implementation 'com.github.str4tocaster.smack:smack-experimental:ffb99cc'
-    implementation 'com.github.str4tocaster.smack:smack-tcp:ffb99cc'
-    implementation 'com.github.str4tocaster.smack:smack-resolver-dnsjava:ffb99cc'
+    implementation "com.github.str4tocaster.smack:smack-android-extensions:$smackVerstion"
+    implementation "com.github.str4tocaster.smack:smack-experimental:$smackVerstion"
+    implementation "com.github.str4tocaster.smack:smack-tcp:$smackVerstion"
+    implementation "com.github.str4tocaster.smack:smack-resolver-dnsjava:$smackVerstion"
 
     // android support
     implementation 'com.google.android.material:material:1.0.0'
@@ -153,10 +147,7 @@ dependencies {
     implementation 'androidx.multidex:multidex:2.0.0'
 
     // firebase
-    prodImplementation "com.google.firebase:firebase-messaging:$firebaseVersion"
-    betaImplementation "com.google.firebase:firebase-messaging:$firebaseVersion"
-    vipImplementation "com.google.firebase:firebase-messaging:$firebaseVersion"
-    devImplementation "com.google.firebase:firebase-messaging:$firebaseVersion"
+    storeImplementation "com.google.firebase:firebase-messaging:17.3.4"
 
     // otr
     implementation 'com.github.redsolution:otr4j:custom-SNAPSHOT'
@@ -174,35 +165,16 @@ dependencies {
     implementation 'io.reactivex:rxandroid:1.1.0'
     implementation 'io.reactivex:rxjava:1.1.0'
 
-    // facebook
-    prodImplementation "com.facebook.android:facebook-login:$facebookVersion"
-    betaImplementation "com.facebook.android:facebook-login:$facebookVersion"
-    devImplementation "com.facebook.android:facebook-login:$facebookVersion"
-    vipImplementation "com.facebook.android:facebook-login:$facebookVersion"
+    // social
+    storeImplementation "com.facebook.android:facebook-login:4.36.1"
+    storeImplementation "com.twitter.sdk.android:twitter:3.0.0"
 
-    // twitter
-    prodImplementation "com.twitter.sdk.android:twitter:$twitterVersion"
-    betaImplementation "com.twitter.sdk.android:twitter:$twitterVersion"
-    devImplementation "com.twitter.sdk.android:twitter:$twitterVersion"
-    vipImplementation "com.twitter.sdk.android:twitter:$twitterVersion"
-
-    // google safetynet (recaptcha)
-    prodImplementation "com.google.android.gms:play-services-safetynet:$googleSafetynetVersion"
-    betaImplementation "com.google.android.gms:play-services-safetynet:$googleSafetynetVersion"
-    devImplementation "com.google.android.gms:play-services-safetynet:$googleSafetynetVersion"
-    vipImplementation "com.google.android.gms:play-services-safetynet:$googleSafetynetVersion"
-
-    // google auth
-    prodImplementation "com.google.android.gms:play-services-auth:$googleAuthVersion"
-    betaImplementation "com.google.android.gms:play-services-auth:$googleAuthVersion"
-    devImplementation "com.google.android.gms:play-services-auth:$googleAuthVersion"
-    vipImplementation "com.google.android.gms:play-services-auth:$googleAuthVersion"
-
-    // google-api-client
-    prodImplementation ("com.google.api-client:google-api-client-android:$googleApiClientVersion") { exclude module: 'httpclient' }
-    betaImplementation ("com.google.api-client:google-api-client-android:$googleApiClientVersion") { exclude module: 'httpclient' }
-    devImplementation ("com.google.api-client:google-api-client-android:$googleApiClientVersion") { exclude module: 'httpclient' }
-    vipImplementation ("com.google.api-client:google-api-client-android:$googleApiClientVersion") { exclude module: 'httpclient' }
+    // gms
+    storeImplementation "com.google.android.gms:play-services-safetynet:16.0.0"
+    storeImplementation "com.google.android.gms:play-services-auth:15.0.0"
+    storeImplementation ("com.google.api-client:google-api-client-android:1.22.0") {
+        exclude module: 'httpclient'
+    }
 
     // okhttp
     implementation 'com.squareup.okhttp3:okhttp:3.5.0'
@@ -227,10 +199,9 @@ dependencies {
     implementation 'com.melnykov:floatingactionbutton:1.3.0'
 
     // crashlytics
-    prodImplementation("com.crashlytics.sdk.android:crashlytics:$crashlyticsVersion") { transitive = true }
-    betaImplementation("com.crashlytics.sdk.android:crashlytics:$crashlyticsVersion") { transitive = true }
-    vipImplementation("com.crashlytics.sdk.android:crashlytics:$crashlyticsVersion") { transitive = true }
-    devImplementation("com.crashlytics.sdk.android:crashlytics:$crashlyticsVersion") { transitive = true }
+    storeImplementation("com.crashlytics.sdk.android:crashlytics:2.9.5@aar") {
+        transitive = true
+    }
 
     // leak canary
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.5.4'
