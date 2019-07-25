@@ -325,7 +325,7 @@ public abstract class BaseLoginActivity extends ManagedActivity implements XAcco
 
     @Override
     public void onBindClick(String provider) {
-
+        Toast.makeText(this, R.string.nostore_restriction, Toast.LENGTH_SHORT).show();
     }
 
     @Override
