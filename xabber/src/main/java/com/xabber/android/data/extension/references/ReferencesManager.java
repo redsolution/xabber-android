@@ -180,7 +180,7 @@ public class ReferencesManager {
     }
 
     private static String[] quote(int begin, int end, String[] source, Quote reference) {
-        int del = reference.getMarker().length();
+        int del = Utils.xmlEncode(reference.getMarker()).length();
         int removed = 0;
         for (int i = begin; i <= end; i++) {
             if (removed < del) {
