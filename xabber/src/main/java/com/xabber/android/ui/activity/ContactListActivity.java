@@ -208,7 +208,8 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
             return;
         }
 
-        if (!isTaskRoot() && !ACTION_ROOM_INVITE.equals(getIntent().getAction())) {
+        if (!isTaskRoot() && !ACTION_ROOM_INVITE.equals(getIntent().getAction())
+            && !Intent.ACTION_CREATE_SHORTCUT.equals(getIntent().getAction())) {
             finish();
             return;
         }
