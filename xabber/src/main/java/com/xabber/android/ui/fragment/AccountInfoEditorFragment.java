@@ -444,11 +444,15 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
     }
 
     private void onTakePhotoClick() {
-        takePhoto();
+        if (PermissionsRequester.requestCameraPermissionIfNeeded(
+                this, PermissionsRequester.REQUEST_PERMISSION_CAMERA)) {
+            takePhoto();
+        }
     }
 
     private void onChooseFromGalleryClick() {
-        if (PermissionsRequester.requestFileReadPermissionIfNeeded(this, REQUEST_PERMISSION_GALLERY)) {
+        if (PermissionsRequester.requestFileReadPermissionIfNeeded(
+                this, REQUEST_PERMISSION_GALLERY)) {
             chooseFromGallery();
         }
     }
@@ -493,6 +497,13 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
                     chooseFromGallery();
                 } else {
                     Toast.makeText(getActivity(), R.string.no_permission_to_read_files, Toast.LENGTH_SHORT).show();
+                }
+                break;
+            case PermissionsRequester.REQUEST_PERMISSION_CAMERA:
+                if (PermissionsRequester.isPermissionGranted(grantResults)) {
+                    takePhoto();
+                } else {
+                    Toast.makeText(getActivity(), R.string.no_permission_to_camera, Toast.LENGTH_SHORT).show();
                 }
                 break;
         }
