@@ -640,7 +640,9 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
             return;
         }
         boolean processed = false;
-        for (AbstractChat chat : chats.getNested(account.toString()).values()) {
+        List<AbstractChat> chatsCopy = new ArrayList<>();
+        chatsCopy.addAll(chats.getNested(account.toString()).values());
+        for (AbstractChat chat : chatsCopy) {
             if (chat.onPacket(user, stanza, false)) {
                 processed = true;
                 break;
