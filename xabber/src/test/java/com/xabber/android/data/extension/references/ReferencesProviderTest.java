@@ -158,7 +158,7 @@ public class ReferencesProviderTest {
         assertEquals("quote", element.getType().toString());
         assertEquals(0, element.getBegin());
         assertEquals(31, element.getEnd());
-        assertEquals("&gt; ", element.getMarker());
+        assertEquals("> ", element.getMarker());
     }
 
     @Test

@@ -52,7 +52,7 @@ public class ReferencesManagerTest {
                 "Hello world!";
 
         message4 = new Message("test@jabber.com", body4);
-        message4.addExtension(new Quote(0, 37, "&gt; "));
+        message4.addExtension(new Quote(0, 37, "> "));
 
         // -------
 
