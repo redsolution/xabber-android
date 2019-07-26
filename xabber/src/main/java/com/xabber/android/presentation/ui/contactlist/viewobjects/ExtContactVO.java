@@ -74,13 +74,13 @@ public class ExtContactVO extends ContactVO {
         if (isOutgoing()) {
             viewHolder.tvOutgoingMessage.setText(context.getString(R.string.sender_is_you) + ": ");
             viewHolder.tvOutgoingMessage.setVisibility(View.VISIBLE);
-            //viewHolder.tvOutgoingMessage.setTextColor(getAccountColorIndicator());
+            viewHolder.tvOutgoingMessage.setTextColor(getAccountColorIndicator());
         }
 
         if (getMessageOwner() != null && !getMessageOwner().trim().isEmpty()) {
             viewHolder.tvOutgoingMessage.setText(getMessageOwner() + ": ");
             viewHolder.tvOutgoingMessage.setVisibility(View.VISIBLE);
-            //viewHolder.tvOutgoingMessage.setTextColor(getAccountColorIndicator());
+            viewHolder.tvOutgoingMessage.setTextColor(getAccountColorIndicator());
         }
 
         /** set up MESSAGE TEXT */

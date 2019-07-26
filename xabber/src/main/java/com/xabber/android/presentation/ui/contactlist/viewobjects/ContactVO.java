@@ -10,7 +10,6 @@ import android.content.res.TypedArray;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
-import androidx.recyclerview.widget.RecyclerView;
 import android.util.TypedValue;
 import android.view.ContextMenu;
 import android.view.View;
@@ -19,15 +18,17 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
+import com.xabber.android.data.database.MessageDatabaseManager;
 import com.xabber.android.data.database.messagerealm.Attachment;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.muc.RoomChat;
-import com.xabber.android.data.filedownload.FileCategory;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.ChatAction;
 import com.xabber.android.data.message.MessageManager;
@@ -36,10 +37,13 @@ import com.xabber.android.data.notification.custom_notification.CustomNotifyPref
 import com.xabber.android.data.notification.custom_notification.Key;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.RosterContact;
+import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.color.ColorManager;
+import com.xabber.android.utils.StringUtils;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -49,6 +53,8 @@ import eu.davidea.flexibleadapter.FlexibleAdapter;
 import eu.davidea.flexibleadapter.items.AbstractFlexibleItem;
 import eu.davidea.flexibleadapter.items.IFlexible;
 import eu.davidea.viewholders.FlexibleViewHolder;
+import io.realm.RealmResults;
+import io.realm.Sort;
 
 public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
 
@@ -168,12 +174,11 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
         } else {
             if (lastMessage.haveAttachments() && lastMessage.getAttachments().size() > 0) {
                 Attachment attachment = lastMessage.getAttachments().get(0);
-                FileCategory category = FileCategory.determineFileCategory(attachment.getMimeType());
-                messageText = FileCategory.getCategoryName(category, true) + attachment.getTitle();
+                messageText = StringUtils.getColoredText(attachment.getTitle().trim(), accountColorIndicator);
             } else if (lastMessage.getFilePath() != null) {
                 messageText = new File(lastMessage.getFilePath()).getName();
             } else if (ChatAction.available.toString().equals(lastMessage.getAction())) {
-                messageText = "<font color='#388E3C'>" + lastMessage.getText().trim() + "</font>";
+                messageText = StringUtils.getColoredText(lastMessage.getText().trim(), accountColorIndicator);
             } else {
                 messageText = lastMessage.getText().trim();
             }
@@ -203,7 +208,30 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
             }
 
             // forwarded
-            if (lastMessage.haveForwardedMessages()) forwardedCount = lastMessage.getForwardedIds().size();
+            if (lastMessage.haveForwardedMessages()) {
+                forwardedCount = lastMessage.getForwardedIds().size();
+
+                if (messageText.isEmpty()) {
+                    String[] forwardedIDs = lastMessage.getForwardedIdsAsArray();
+                    if (!Arrays.asList(forwardedIDs).contains(null)) {
+                        RealmResults<MessageItem> forwardedMessages =
+                                MessageDatabaseManager.getInstance().getRealmUiThread().where(MessageItem.class)
+                                        .in(MessageItem.Fields.UNIQUE_ID, forwardedIDs)
+                                        .findAllSorted(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
+
+                        if (forwardedMessages.size() > 0) {
+                            MessageItem message = forwardedMessages.last();
+                            String author = RosterManager.getDisplayAuthorName(message);
+                            StringBuilder stringBuilder = new StringBuilder();
+                            if (!author.isEmpty())
+                                stringBuilder.append(StringUtils.getColoredText(author + ":", accountColorIndicator));
+                            stringBuilder.append(message.getText().trim());
+                            if (!message.getText().trim().isEmpty())
+                                messageText = stringBuilder.toString();
+                        }
+                    }
+                }
+            }
         }
 
         if (!isOutgoing) unreadCount = chat.getUnreadMessageCount();
