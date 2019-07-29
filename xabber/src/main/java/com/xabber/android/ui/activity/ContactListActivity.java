@@ -21,14 +21,10 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
@@ -36,6 +32,10 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.Toast;
+
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.xabber.android.R;
 import com.xabber.android.data.ActivityManager;
@@ -48,7 +48,6 @@ import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.UserJid;
-import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.http.CrowdfundingManager;
 import com.xabber.android.data.intent.EntityIntentBuilder;
@@ -73,6 +72,7 @@ import com.xabber.android.ui.dialog.MucPrivateChatInvitationDialog;
 import com.xabber.android.ui.dialog.TranslationDialog;
 import com.xabber.android.ui.fragment.ContactListDrawerFragment;
 import com.xabber.android.ui.preferences.PreferenceEditor;
+import com.xabber.android.ui.widget.ShortcutBuilder;
 import com.xabber.android.ui.widget.bottomnavigation.BottomMenu;
 import com.xabber.xmpp.uri.XMPPUri;
 
@@ -667,20 +667,8 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
     }
 
     private void createShortcut(AbstractContact abstractContact) {
-        Intent intent = new Intent();
-        intent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, ChatActivity.createClearTopIntent(this,
-                abstractContact.getAccount(), abstractContact.getUser()));
-        intent.putExtra(Intent.EXTRA_SHORTCUT_NAME, abstractContact.getName());
-        Bitmap bitmap;
-        if (MUCManager.getInstance().hasRoom(abstractContact.getAccount(),
-                abstractContact.getUser())) {
-            bitmap = AvatarManager.getInstance().getRoomBitmap(abstractContact.getUser());
-        } else {
-            bitmap = AvatarManager.getInstance().getUserBitmap(abstractContact.getUser(), abstractContact.getName());
-        }
-        intent.putExtra(Intent.EXTRA_SHORTCUT_ICON,
-                    AvatarManager.getInstance().createShortcutBitmap(bitmap));
-        setResult(RESULT_OK, intent);
+        Intent intent = ShortcutBuilder.createPinnedShortcut(this, abstractContact);
+        if (intent != null) setResult(RESULT_OK, intent);
     }
 
     private void forwardMessages(AbstractContact abstractContact, Intent intent) {
