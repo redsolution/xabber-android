@@ -21,6 +21,7 @@ import java.util.Date;
 import java.util.List;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 public class ReferencesManager {
 
@@ -79,6 +80,19 @@ public class ReferencesManager {
             }
         }
         return media;
+    }
+
+    @Nullable
+    public static RefUser getGroupchatUserFromReferences(Stanza packet) {
+        List<ExtensionElement> elements = packet.getExtensions(ReferenceElement.ELEMENT, ReferenceElement.NAMESPACE);
+        if (elements == null || elements.size() == 0) return null;
+
+        for (ExtensionElement element : elements) {
+            if (element instanceof Groupchat) {
+                return ((Groupchat) element).getUser();
+            }
+        }
+        return null;
     }
 
     public static Pair<String, String> modifyBodyWithReferences(Message message, String body) {

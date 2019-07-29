@@ -1,7 +1,6 @@
 package com.xabber.android.data.extension.references;
 
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.utils.Utils;
 
 import org.jivesoftware.smack.provider.ExtensionElementProvider;
 import org.jivesoftware.smackx.forward.packet.Forwarded;
@@ -19,6 +18,7 @@ public class ReferencesProvider extends ExtensionElementProvider<ReferenceElemen
         List<Forwarded> forwardedMessages = new ArrayList<>();
         List<RefMedia> mediaElements = new ArrayList<>();
         boolean bold = false, italic = false, underline = false, strike = false;
+        RefUser user = null;
 
         outerloop: while (true) {
             int eventType = parser.getEventType();
@@ -38,6 +38,10 @@ public class ReferencesProvider extends ExtensionElementProvider<ReferenceElemen
                     } else if (RefMedia.ELEMENT.equals(parser.getName())) {
                         RefMedia media = parseMedia(parser);
                         if (media != null) mediaElements.add(media);
+                        parser.next();
+                    } else if (RefUser.ELEMENT.equals(parser.getName())
+                            && RefUser.NAMESPACE.equals(parser.getNamespace())) {
+                        user = parseUser(parser);
                         parser.next();
                     } else if (ReferenceElement.ELEMENT_BOLD.equals(parser.getName())) {
                         bold = true;
@@ -84,6 +88,8 @@ public class ReferencesProvider extends ExtensionElementProvider<ReferenceElemen
                     return new Quote(begin, end, marker);
                 case mention:
                     return new Mention(begin, end, uri);
+                case groupchat:
+                    return new Groupchat(begin, end, user);
                 default:
                     return null;
             }
@@ -167,5 +173,73 @@ public class ReferencesProvider extends ExtensionElementProvider<ReferenceElemen
             }
         }
         return builder.build();
+    }
+
+    private RefUser parseUser(XmlPullParser parser) throws Exception {
+        String id = null;
+        String jid = null;
+        String nickname = null;
+        String role = null;
+        String badge = null;
+        String avatar = null;
+
+        outerloop: while (true) {
+            int eventType = parser.getEventType();
+            switch (eventType) {
+                case XmlPullParser.START_TAG:
+                    switch (parser.getName()) {
+                        case RefUser.ELEMENT:
+                            id = parser.getAttributeValue("", RefUser.ATTR_ID);
+                            parser.next();
+                            break;
+                        case RefUser.ELEMENT_JID:
+                            jid = parser.nextText();
+                            break;
+                        case RefUser.ELEMENT_BADGE:
+                            badge = parser.nextText();
+                            break;
+                        case RefUser.ELEMENT_NICKNAME:
+                            nickname = parser.nextText();
+                            break;
+                        case RefUser.ELEMENT_ROLE:
+                            role = parser.nextText();
+                            break;
+                        case RefUser.ELEMENT_METADATA:
+                            if (RefUser.NAMESPACE_METADATA.equals(parser.getNamespace()))
+                            avatar = parseAvatar(parser);
+                            parser.next();
+                            break;
+                        default:
+                            parser.next();
+                    }
+                    break;
+                case XmlPullParser.END_TAG:
+                    if (RefUser.ELEMENT.equals(parser.getName())) {
+                        break outerloop;
+                    } else parser.next();
+                    break;
+                default:
+                    parser.next();
+            }
+        }
+        if (id != null && nickname != null && role != null) {
+            RefUser user = new RefUser(id, nickname, role);
+            user.setBadge(badge);
+            user.setJid(jid);
+            user.setAvatar(avatar);
+            return user;
+        } else return null;
+    }
+
+    private String parseAvatar(XmlPullParser parser) throws Exception {
+        String avatar = null;
+        parser.next();
+        if (parser.getEventType() == XmlPullParser.START_TAG) {
+            if (RefUser.ELEMENT_INFO.equals(parser.getName())) {
+                avatar = parser.getAttributeValue("", RefUser.ATTR_URL);
+                parser.next();
+            }
+        }
+        return avatar;
     }
 }
