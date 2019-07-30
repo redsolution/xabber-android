@@ -36,7 +36,7 @@ import io.realm.annotations.RealmModule;
 
 public class MessageDatabaseManager {
     private static final String REALM_MESSAGE_DATABASE_NAME = "xabber.realm";
-    static final int REALM_MESSAGE_DATABASE_VERSION = 22;
+    static final int REALM_MESSAGE_DATABASE_VERSION = 23;
     private final RealmConfiguration realmConfiguration;
 
     private static MessageDatabaseManager instance;
@@ -65,7 +65,7 @@ public class MessageDatabaseManager {
      * Realm should be closed after use.
      *
      * @return new realm instance
-     * @throws IllegalStateException if called from UI (main) thread
+     * @throws 'IllegalStateException' if called from UI (main) thread
      */
     public Realm getNewBackgroundRealm() {
         if (Looper.myLooper() == Looper.getMainLooper()) {
@@ -80,7 +80,7 @@ public class MessageDatabaseManager {
      * Do not close realm after use!
      *
      * @return realm instance for UI thread
-     * @throws IllegalStateException if called from background thread
+     * @throws 'IllegalStateException' if called from background thread
      */
     public Realm getRealmUiThread() {
         if (Looper.myLooper() != Looper.getMainLooper()) {
@@ -357,6 +357,12 @@ public class MessageDatabaseManager {
                         if (oldVersion == 21) {
                             schema.get(MessageItem.class.getSimpleName())
                                     .addField(MessageItem.Fields.MARKUP_TEXT, String.class);
+                            oldVersion++;
+                        }
+
+                        if (oldVersion == 22) {
+                            schema.get(MessageItem.class.getSimpleName())
+                                    .addField(MessageItem.Fields.GROUPCHAT_USER_ID, String.class);
                             oldVersion++;
                         }
 

@@ -77,6 +77,7 @@ public class MessageItem extends RealmObject {
         public static final String FROM_MUC = "fromMUC";
         public static final String PREVIOUS_ID = "previousId";
         public static final String ARCHIVED_ID = "archivedId";
+        public static final String GROUPCHAT_USER_ID = "groupchatUserId";
     }
 
     /**
@@ -217,6 +218,7 @@ public class MessageItem extends RealmObject {
     private String archivedId;
     @Ignore
     private String packetId;
+    private String groupchatUserId;
 
     private RealmList<ForwardId> forwardedIds;
 
@@ -601,5 +603,13 @@ public class MessageItem extends RealmObject {
 
     public void setMarkupText(String markupText) {
         this.markupText = markupText;
+    }
+
+    public String getGroupchatUserId() {
+        return groupchatUserId;
+    }
+
+    public void setGroupchatUserId(String groupchatUserId) {
+        this.groupchatUserId = groupchatUserId;
     }
 }

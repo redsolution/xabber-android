@@ -4,6 +4,7 @@ import android.database.Cursor;
 import android.os.Looper;
 
 import com.xabber.android.data.Application;
+import com.xabber.android.data.database.messagerealm.GroupchatUser;
 import com.xabber.android.data.database.realm.AccountRealm;
 import com.xabber.android.data.database.realm.ChatDataRealm;
 import com.xabber.android.data.database.realm.CrowdfundingMessage;
@@ -36,7 +37,7 @@ import io.realm.annotations.RealmModule;
 
 public class RealmManager {
     private static final String REALM_DATABASE_NAME = "realm_database.realm";
-    private static final int REALM_DATABASE_VERSION = 28;
+    private static final int REALM_DATABASE_VERSION = 29;
     private static final String LOG_TAG = RealmManager.class.getSimpleName();
     private final RealmConfiguration realmConfiguration;
 
@@ -71,7 +72,7 @@ public class RealmManager {
             XMPPUserRealm.class, EmailRealm.class, SocialBindingRealm.class, SyncStateRealm.class,
             PatreonGoalRealm.class, PatreonRealm.class, ChatDataRealm.class, NotificationStateRealm.class,
             CrowdfundingMessage.class, NotifChatRealm.class, NotifMessageRealm.class, NotifyPrefsRealm.class,
-            UploadServer.class, PushLogRecord.class, XTokenRealm.class})
+            UploadServer.class, PushLogRecord.class, XTokenRealm.class, GroupchatUser.class})
     static class RealmDatabaseModule {
     }
 
@@ -370,6 +371,19 @@ public class RealmManager {
 
                             oldVersion++;
                         }
+
+                        if (oldVersion == 28) {
+                            schema.create(GroupchatUser.class.getSimpleName())
+                                    .addField(GroupchatUser.Fields.UNIQUE_ID, String.class, FieldAttribute.PRIMARY_KEY, FieldAttribute.REQUIRED)
+                                    .addField(GroupchatUser.Fields.NICKNAME, String.class)
+                                    .addField(GroupchatUser.Fields.AVATAR, String.class)
+                                    .addField(GroupchatUser.Fields.BADGE, String.class)
+                                    .addField(GroupchatUser.Fields.JID, String.class)
+                                    .addField(GroupchatUser.Fields.ROLE, String.class)
+                                    .addField(GroupchatUser.Fields.TIMESTAMP, long.class);
+
+                            oldVersion++;
+                        }
                     }
                 })
                 .modules(new RealmDatabaseModule())
@@ -394,7 +408,7 @@ public class RealmManager {
      * Realm should be closed after use.
      *
      * @return new realm instance
-     * @throws IllegalStateException if called from UI (main) thread
+     * @throws 'IllegalStateException' if called from UI (main) thread
      */
     public Realm getNewBackgroundRealm() {
         if (Looper.myLooper() == Looper.getMainLooper()) {
@@ -419,7 +433,7 @@ public class RealmManager {
      * Do not close realm after use!
      *
      * @return realm instance for UI thread
-     * @throws IllegalStateException if called from background thread
+     * @throws 'IllegalStateException' if called from background thread
      */
     public Realm getRealmUiThread() {
         if (Looper.myLooper() != Looper.getMainLooper()) {
