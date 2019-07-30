@@ -4,7 +4,7 @@ import android.database.Cursor;
 import android.os.Looper;
 
 import com.xabber.android.data.Application;
-import com.xabber.android.data.database.messagerealm.GroupchatUser;
+import com.xabber.android.data.database.messagerealm.GroupchatUserRealm;
 import com.xabber.android.data.database.realm.AccountRealm;
 import com.xabber.android.data.database.realm.ChatDataRealm;
 import com.xabber.android.data.database.realm.CrowdfundingMessage;
@@ -72,7 +72,7 @@ public class RealmManager {
             XMPPUserRealm.class, EmailRealm.class, SocialBindingRealm.class, SyncStateRealm.class,
             PatreonGoalRealm.class, PatreonRealm.class, ChatDataRealm.class, NotificationStateRealm.class,
             CrowdfundingMessage.class, NotifChatRealm.class, NotifMessageRealm.class, NotifyPrefsRealm.class,
-            UploadServer.class, PushLogRecord.class, XTokenRealm.class, GroupchatUser.class})
+            UploadServer.class, PushLogRecord.class, XTokenRealm.class, GroupchatUserRealm.class})
     static class RealmDatabaseModule {
     }
 
@@ -373,14 +373,15 @@ public class RealmManager {
                         }
 
                         if (oldVersion == 28) {
-                            schema.create(GroupchatUser.class.getSimpleName())
-                                    .addField(GroupchatUser.Fields.UNIQUE_ID, String.class, FieldAttribute.PRIMARY_KEY, FieldAttribute.REQUIRED)
-                                    .addField(GroupchatUser.Fields.NICKNAME, String.class)
-                                    .addField(GroupchatUser.Fields.AVATAR, String.class)
-                                    .addField(GroupchatUser.Fields.BADGE, String.class)
-                                    .addField(GroupchatUser.Fields.JID, String.class)
-                                    .addField(GroupchatUser.Fields.ROLE, String.class)
-                                    .addField(GroupchatUser.Fields.TIMESTAMP, long.class);
+                            schema.create(GroupchatUserRealm.class.getSimpleName())
+                                    .addField(GroupchatUserRealm.Fields.UNIQUE_ID, String.class,
+                                            FieldAttribute.PRIMARY_KEY, FieldAttribute.REQUIRED)
+                                    .addField(GroupchatUserRealm.Fields.NICKNAME, String.class)
+                                    .addField(GroupchatUserRealm.Fields.AVATAR, String.class)
+                                    .addField(GroupchatUserRealm.Fields.BADGE, String.class)
+                                    .addField(GroupchatUserRealm.Fields.JID, String.class)
+                                    .addField(GroupchatUserRealm.Fields.ROLE, String.class)
+                                    .addField(GroupchatUserRealm.Fields.TIMESTAMP, long.class);
 
                             oldVersion++;
                         }
