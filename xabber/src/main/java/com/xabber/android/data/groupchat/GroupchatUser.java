@@ -1,6 +1,6 @@
 package com.xabber.android.data.groupchat;
 
-public class GroupUser {
+public class GroupchatUser {
 
     private String id;
     private String jid;
@@ -10,7 +10,7 @@ public class GroupUser {
     private String avatar;
     private long timestamp;
 
-    public GroupUser(String id) {
+    public GroupchatUser(String id) {
         this.id = id;
     }
 

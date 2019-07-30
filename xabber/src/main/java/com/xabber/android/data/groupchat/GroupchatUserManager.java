@@ -15,7 +15,7 @@ import io.realm.RealmResults;
 public class GroupchatUserManager implements OnLoadListener {
 
     private static GroupchatUserManager instance;
-    private final Map<String, GroupUser> users = new HashMap<>();
+    private final Map<String, GroupchatUser> users = new HashMap<>();
 
     public static GroupchatUserManager getInstance() {
         if (instance == null) instance = new GroupchatUserManager();
@@ -31,7 +31,7 @@ public class GroupchatUserManager implements OnLoadListener {
         }
     }
 
-    public GroupUser getGroupchatUser(String id) {
+    public GroupchatUser getGroupchatUser(String id) {
         return users.get(id);
     }
 
@@ -76,8 +76,8 @@ public class GroupchatUserManager implements OnLoadListener {
         return realmUser;
     }
 
-    private GroupUser refUserToUser(RefUser refUser) {
-        GroupUser user = new GroupUser(refUser.getId());
+    private GroupchatUser refUserToUser(RefUser refUser) {
+        GroupchatUser user = new GroupchatUser(refUser.getId());
         user.setAvatar(refUser.getAvatar());
         user.setBadge(refUser.getBadge());
         user.setJid(refUser.getJid());
@@ -86,8 +86,8 @@ public class GroupchatUserManager implements OnLoadListener {
         return user;
     }
 
-    private GroupUser realmUserToUser(GroupchatUserRealm groupchatUser) {
-        GroupUser user = new GroupUser(groupchatUser.getUniqueId());
+    private GroupchatUser realmUserToUser(GroupchatUserRealm groupchatUser) {
+        GroupchatUser user = new GroupchatUser(groupchatUser.getUniqueId());
         user.setAvatar(groupchatUser.getAvatar());
         user.setBadge(groupchatUser.getBadge());
         user.setJid(groupchatUser.getJid());
