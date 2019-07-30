@@ -51,6 +51,7 @@ import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.ssn.SSNManager;
 import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.data.extension.xtoken.XTokenManager;
+import com.xabber.android.data.groupchat.GroupchatUserManager;
 import com.xabber.android.data.http.CrowdfundingManager;
 import com.xabber.android.data.http.PatreonManager;
 import com.xabber.android.data.log.LogManager;
@@ -392,6 +393,7 @@ public class Application extends android.app.Application {
         addManager(DelayedNotificationActionManager.getInstance());
         addManager(LastActivityInteractor.getInstance());
         addManager(XTokenManager.getInstance());
+        addManager(GroupchatUserManager.getInstance());
     }
 
     /**

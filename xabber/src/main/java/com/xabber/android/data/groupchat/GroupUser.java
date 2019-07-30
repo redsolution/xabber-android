@@ -1,26 +1,8 @@
-package com.xabber.android.data.database.messagerealm;
+package com.xabber.android.data.groupchat;
 
-import java.util.UUID;
+public class GroupUser {
 
-import io.realm.RealmObject;
-import io.realm.annotations.PrimaryKey;
-import io.realm.annotations.Required;
-
-public class GroupchatUser extends RealmObject {
-
-    public static class Fields {
-        public static final String UNIQUE_ID = "uniqueId";
-        public static final String JID = "jid";
-        public static final String NICKNAME = "nickname";
-        public static final String ROLE = "role";
-        public static final String BADGE = "badge";
-        public static final String AVATAR = "avatar";
-        public static final String TIMESTAMP = "timestamp";
-    }
-
-    @PrimaryKey
-    @Required
-    private String uniqueId;
+    private String id;
     private String jid;
     private String nickname;
     private String role;
@@ -28,16 +10,12 @@ public class GroupchatUser extends RealmObject {
     private String avatar;
     private long timestamp;
 
-    public GroupchatUser(String uniqueId) {
-        this.uniqueId = uniqueId;
+    public GroupUser(String id) {
+        this.id = id;
     }
 
-    public GroupchatUser() {
-        this.uniqueId = UUID.randomUUID().toString();
-    }
-
-    public String getUniqueId() {
-        return uniqueId;
+    public String getId() {
+        return id;
     }
 
     public String getJid() {
