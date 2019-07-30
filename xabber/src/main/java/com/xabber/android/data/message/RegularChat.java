@@ -31,7 +31,9 @@ import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.otr.OTRUnencryptedException;
 import com.xabber.android.data.extension.otr.SecurityLevel;
+import com.xabber.android.data.extension.references.RefUser;
 import com.xabber.android.data.extension.references.ReferencesManager;
+import com.xabber.android.data.groupchat.GroupchatUserManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.xaccount.XMPPAuthManager;
 
@@ -214,6 +216,14 @@ public class RegularChat extends AbstractChat {
                 }
             }
 
+            // groupchat
+            String gropchatUserId = null;
+            RefUser groupchatUser = ReferencesManager.getGroupchatUserFromReferences(packet);
+            if (groupchatUser != null) {
+                gropchatUserId = groupchatUser.getId();
+                GroupchatUserManager.getInstance().saveGroupchatUser(groupchatUser);
+            }
+
             RealmList<Attachment> attachments = HttpFileUploadManager.parseFileMessage(packet);
 
             String uid = UUID.randomUUID().toString();
@@ -240,14 +250,14 @@ public class RegularChat extends AbstractChat {
                         null, getDelayStamp(message), true, true, encrypted,
                         isOfflineMessage(account.getFullJid().getDomain(), packet),
                         getStanzaId(message), attachments, originalStanza, null,
-                        originalFrom, false, false);
+                        originalFrom, false, false, gropchatUserId);
 
                 // create message without attachments
             else createAndSaveNewMessage(true, uid, resource, text, markupText, null,
                     null, getDelayStamp(message), true, true, encrypted,
                     isOfflineMessage(account.getFullJid().getDomain(), packet),
                     getStanzaId(message), originalStanza, null,
-                    originalFrom, forwardIds,false, false);
+                    originalFrom, forwardIds,false, false, gropchatUserId);
 
             EventBus.getDefault().post(new NewIncomingMessageEvent(account, user));
         }
@@ -278,6 +288,14 @@ public class RegularChat extends AbstractChat {
         if (fromJid != null) originalFrom = fromJid.toString();
         boolean fromMuc = message.getType().equals(Type.groupchat);
 
+        // groupchat
+        String gropchatUserId = null;
+        RefUser groupchatUser = ReferencesManager.getGroupchatUserFromReferences(message);
+        if (groupchatUser != null) {
+            gropchatUserId = groupchatUser.getId();
+            GroupchatUserManager.getInstance().saveGroupchatUser(groupchatUser);
+        }
+
         // forward comment (to support previous forwarded xep)
         String forwardComment = ForwardManager.parseForwardComment(message);
         if (forwardComment != null && !forwardComment.isEmpty()) text = forwardComment;
@@ -292,13 +310,13 @@ public class RegularChat extends AbstractChat {
             createAndSaveFileMessage(ui, uid, resource, text, markupText, null,
                     timestamp, getDelayStamp(message), true, false, encrypted,
                     false, getStanzaId(message), attachments,
-                    originalStanza, parentMessageId, originalFrom, fromMuc, true);
+                    originalStanza, parentMessageId, originalFrom, fromMuc, true, gropchatUserId);
 
             // create message without attachments
         else createAndSaveNewMessage(ui, uid, resource, text, markupText, null,
                 timestamp, getDelayStamp(message), true, false, encrypted,
                 false, getStanzaId(message), originalStanza,
-                parentMessageId, originalFrom, forwardIds, fromMuc, true);
+                parentMessageId, originalFrom, forwardIds, fromMuc, true, gropchatUserId);
 
         return uid;
     }
