@@ -1,5 +1,7 @@
 package com.xabber.android.data.extension.references;
 
+import org.jivesoftware.smack.util.XmlStringBuilder;
+
 public class Groupchat extends ReferenceElement {
 
     private final RefUser user;
@@ -12,6 +14,11 @@ public class Groupchat extends ReferenceElement {
     @Override
     public Type getType() {
         return Type.groupchat;
+    }
+
+    @Override
+    public void appendToXML(XmlStringBuilder xml) {
+        if (user != null) xml.append(user.toXML());
     }
 
     public RefUser getUser() {

@@ -1,6 +1,9 @@
 package com.xabber.android.data.extension.references;
 
-public class RefUser {
+import org.jivesoftware.smack.packet.ExtensionElement;
+import org.jivesoftware.smack.util.XmlStringBuilder;
+
+public class RefUser implements ExtensionElement {
 
     public static final String ELEMENT            = "user";
     public static final String NAMESPACE          = "http://xabber.com/protocol/groupchat";
@@ -26,6 +29,55 @@ public class RefUser {
         this.id = id;
         this.nickname = nickname;
         this.role = role;
+    }
+
+    @Override
+    public String getNamespace() {
+        return NAMESPACE;
+    }
+
+    @Override
+    public String getElementName() {
+        return ELEMENT;
+    }
+
+    @Override
+    public CharSequence toXML() {
+        XmlStringBuilder xml = new XmlStringBuilder(this);
+        xml.attribute(ATTR_ID, id);
+        xml.rightAngleBracket();
+        if (role != null) {
+            xml.openElement(ELEMENT_ROLE);
+            xml.append(role);
+            xml.closeElement(ELEMENT_ROLE);
+        }
+        if (nickname != null) {
+            xml.openElement(ELEMENT_NICKNAME);
+            xml.append(nickname);
+            xml.closeElement(ELEMENT_NICKNAME);
+        }
+        if (badge != null) {
+            xml.openElement(ELEMENT_BADGE);
+            xml.append(badge);
+            xml.closeElement(ELEMENT_BADGE);
+        }
+        if (jid != null) {
+            xml.openElement(ELEMENT_JID);
+            xml.append(jid);
+            xml.closeElement(ELEMENT_JID);
+        }
+        if (avatar != null) {
+            xml.halfOpenElement(ELEMENT_METADATA);
+            xml.xmlnsAttribute(NAMESPACE_METADATA);
+            xml.rightAngleBracket();
+            xml.halfOpenElement(ELEMENT_INFO);
+            xml.attribute(ATTR_URL, avatar);
+            xml.rightAngleBracket();
+            xml.closeElement(ELEMENT_INFO);
+            xml.closeElement(ELEMENT_METADATA);
+        }
+        xml.closeElement(this);
+        return xml;
     }
 
     public void setJid(String jid) {
