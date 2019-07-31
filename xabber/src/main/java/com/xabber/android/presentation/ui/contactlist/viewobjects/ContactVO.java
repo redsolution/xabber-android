@@ -316,8 +316,10 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
         }
 
         /** set up GROUPCHAT indicator */
-        viewHolder.ivStatus.setVisibility(isGroupchat ? View.GONE : View.VISIBLE);
-        viewHolder.ivStatusGroupchat.setVisibility(isGroupchat ? View.VISIBLE : View.GONE);
+        if (viewHolder.ivStatus.getVisibility() == View.VISIBLE) {
+            viewHolder.ivStatus.setVisibility(isGroupchat ? View.INVISIBLE : View.VISIBLE);
+            viewHolder.ivStatusGroupchat.setVisibility(isGroupchat ? View.VISIBLE : View.GONE);
+        } else viewHolder.ivStatusGroupchat.setVisibility(View.GONE);
 
         /** set up NOTIFICATION MUTE */
         Resources resources = context.getResources();
