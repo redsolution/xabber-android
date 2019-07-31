@@ -365,7 +365,8 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
 
         if (timestamp == null) timestamp = new Date();
 
-        if (text.trim().isEmpty()) {
+        if (text.trim().isEmpty() && (forwardIds == null || forwardIds.isEmpty())
+            && (attachments == null || attachments.isEmpty())) {
             notify = false;
         }
 
