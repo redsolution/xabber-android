@@ -20,6 +20,17 @@
         />
 
     <ImageView
+        android:id="@+id/ivStatusGroupchat"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:src="@drawable/ic_groupchat"
+        android:layout_toLeftOf="@id/ivAvatar"
+        android:layout_alignBottom="@id/ivAvatar"
+        android:layout_marginRight="-48dp"
+        android:layout_marginBottom="2dp"
+        />
+
+    <ImageView
         android:id="@+id/ivStatus"
         android:layout_width="12dp"
         android:layout_height="12dp"

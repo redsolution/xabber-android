@@ -22,7 +22,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
-import com.xabber.android.data.database.MessageDatabaseManager;
 import com.xabber.android.data.database.messagerealm.Attachment;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
@@ -37,13 +36,11 @@ import com.xabber.android.data.notification.custom_notification.CustomNotifyPref
 import com.xabber.android.data.notification.custom_notification.Key;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.RosterContact;
-import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.utils.StringUtils;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -53,8 +50,6 @@ import eu.davidea.flexibleadapter.FlexibleAdapter;
 import eu.davidea.flexibleadapter.items.AbstractFlexibleItem;
 import eu.davidea.flexibleadapter.items.IFlexible;
 import eu.davidea.viewholders.FlexibleViewHolder;
-import io.realm.RealmResults;
-import io.realm.Sort;
 
 public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
 
@@ -83,6 +78,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
     private final boolean isCustomNotification;
     protected boolean archived;
     protected int forwardedCount;
+    private boolean isGroupchat;
 
     protected final ContactClickListener listener;
 
@@ -99,7 +95,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
                         boolean mute, NotificationState.NotificationMode notificationMode, String messageText,
                         boolean isOutgoing, Date time, int messageStatus, String messageOwner,
                         boolean archived, String lastActivity, ContactClickListener listener,
-                        int forwardedCount, boolean isCustomNotification) {
+                        int forwardedCount, boolean isCustomNotification, boolean isGroupchat) {
         this.id = UUID.randomUUID().toString();
         this.accountColorIndicator = accountColorIndicator;
         this.accountColorIndicatorBack = accountColorIndicatorBack;
@@ -124,6 +120,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
         this.listener = listener;
         this.forwardedCount = forwardedCount;
         this.isCustomNotification = isCustomNotification;
+        this.isGroupchat = isGroupchat;
     }
 
     public static ContactVO convert(AbstractContact contact, ContactClickListener listener) {
@@ -232,7 +229,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
                 statusLevel, avatar, mucIndicatorLevel, contact.getUser(), contact.getAccount(),
                 unreadCount, !chat.notifyAboutMessage(), mode, messageText, isOutgoing, time,
                 messageStatus, messageOwner, chat.isArchived(), lastActivity, listener, forwardedCount,
-                isCustomNotification);
+                isCustomNotification, false);
     }
 
     public static ArrayList<IFlexible> convert(Collection<AbstractContact> contacts, ContactClickListener listener) {
@@ -317,6 +314,10 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
                         R.attr.contact_list_contact_name_text_color)));
             }
         }
+
+        /** set up GROUPCHAT indicator */
+        viewHolder.ivStatus.setVisibility(isGroupchat ? View.GONE : View.VISIBLE);
+        viewHolder.ivStatusGroupchat.setVisibility(isGroupchat ? View.VISIBLE : View.GONE);
 
         /** set up NOTIFICATION MUTE */
         Resources resources = context.getResources();
@@ -435,6 +436,10 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
         return isCustomNotification;
     }
 
+    public boolean isGroupchat() {
+        return isGroupchat;
+    }
+
     private int getThemeResource(Context context, int themeResourceId) {
         TypedValue typedValue = new TypedValue();
         TypedArray a = context.obtainStyledAttributes(typedValue.data, new int[] {themeResourceId});
@@ -452,6 +457,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
         final ImageView ivAvatar;
         final ImageView ivStatus;
         final ImageView ivOnlyStatus;
+        final ImageView ivStatusGroupchat;
         final TextView tvStatus;
         final TextView tvContactName;
         final TextView tvOutgoingMessage;
@@ -477,6 +483,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
             ivAvatar.setOnClickListener(this);
             ivStatus = (ImageView) view.findViewById(R.id.ivStatus);
             ivOnlyStatus = (ImageView) view.findViewById(R.id.ivOnlyStatus);
+            ivStatusGroupchat = (ImageView) view.findViewById(R.id.ivStatusGroupchat);
             tvStatus = (TextView) view.findViewById(R.id.tvStatus);
             tvContactName = (TextView) view.findViewById(R.id.tvContactName);
             tvOutgoingMessage = (TextView) view.findViewById(R.id.tvOutgoingMessage);

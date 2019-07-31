@@ -32,13 +32,13 @@ public class ExtContactVO extends ContactVO {
                         boolean mute, NotificationState.NotificationMode notificationMode, String messageText,
                         boolean isOutgoing, Date time, int messageStatus, String messageOwner,
                         boolean archived, String lastActivity, ContactClickListener listener, int forwardedCount,
-                        boolean isCustomNotification) {
+                        boolean isCustomNotification, boolean isGroupchat) {
 
         super(accountColorIndicator, accountColorIndicatorBack, name, status,
                 statusId, statusLevel, avatar,
                 mucIndicatorLevel, userJid, accountJid, unreadCount, mute, notificationMode, messageText,
                 isOutgoing, time, messageStatus, messageOwner, archived, lastActivity, listener, forwardedCount,
-                isCustomNotification);
+                isCustomNotification, isGroupchat);
     }
 
     public static ExtContactVO convert(AbstractContact contact, ContactClickListener listener) {
@@ -51,7 +51,7 @@ public class ExtContactVO extends ContactVO {
                 contactVO.isMute(), contactVO.getNotificationMode(), contactVO.getMessageText(),
                 contactVO.isOutgoing(), contactVO.getTime(), contactVO.getMessageStatus(),
                 contactVO.getMessageOwner(), contactVO.isArchived(), contactVO.getLastActivity(),
-                contactVO.listener, contactVO.forwardedCount, contactVO.isCustomNotification());
+                contactVO.listener, contactVO.forwardedCount, contactVO.isCustomNotification(), contactVO.isGroupchat());
     }
 
     @Override
