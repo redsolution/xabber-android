@@ -135,6 +135,8 @@ public class IncomingMessageVH  extends FileMessageVH {
     private void setUpAvatar(Context context, GroupchatUser groupchatUser, MessageItem messageItem,
                              boolean isMUC, String userName, boolean needTail) {
         boolean needAvatar = isMUC ? SettingsManager.chatsShowAvatarsMUC() : SettingsManager.chatsShowAvatars();
+        // for new groupchats (0GGG)
+        if (groupchatUser != null && SettingsManager.chatsShowAvatarsMUC()) needAvatar = true;
 
         if (!needAvatar) {
             avatar.setVisibility(View.GONE);
