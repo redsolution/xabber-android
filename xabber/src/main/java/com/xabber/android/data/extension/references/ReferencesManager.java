@@ -173,6 +173,9 @@ public class ReferencesManager {
             case forward:
                 chars = remove(begin, end, chars);
                 break;
+            case groupchat:
+                chars = remove(begin, end, chars);
+                break;
             case markup:
                 chars = markup(begin, end, chars, (Markup) reference);
                 break;
