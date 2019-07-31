@@ -123,6 +123,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     private String lastMessageId = null;
     private boolean historyIsFull = false;
     private boolean historyRequestedAtStart = false;
+    protected boolean isGroupchat = false;
 
     protected AbstractChat(@NonNull final AccountJid account, @NonNull final UserJid user, boolean isPrivateMucChat) {
         super(account, isPrivateMucChat ? user : user.getBareUserJid());
@@ -990,5 +991,9 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         } else {
             return null;
         }
+    }
+
+    public boolean isGroupchat() {
+        return isGroupchat;
     }
 }

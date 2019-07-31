@@ -165,6 +165,10 @@ public class RegularChat extends AbstractChat {
                 this.resource = null;
             }
 
+            if (packet.hasExtension(RefUser.NAMESPACE)) {
+                this.isGroupchat = true;
+            }
+
 //            if (presence.getType() == Presence.Type.unavailable) {
 //                OTRManager.getInstance().onContactUnAvailable(account, user);
 //            }
