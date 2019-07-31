@@ -210,26 +210,9 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
             // forwarded
             if (lastMessage.haveForwardedMessages()) {
                 forwardedCount = lastMessage.getForwardedIds().size();
-
                 if (messageText.isEmpty()) {
-                    String[] forwardedIDs = lastMessage.getForwardedIdsAsArray();
-                    if (!Arrays.asList(forwardedIDs).contains(null)) {
-                        RealmResults<MessageItem> forwardedMessages =
-                                MessageDatabaseManager.getInstance().getRealmUiThread().where(MessageItem.class)
-                                        .in(MessageItem.Fields.UNIQUE_ID, forwardedIDs)
-                                        .findAllSorted(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
-
-                        if (forwardedMessages.size() > 0) {
-                            MessageItem message = forwardedMessages.last();
-                            String author = RosterManager.getDisplayAuthorName(message);
-                            StringBuilder stringBuilder = new StringBuilder();
-                            if (!author.isEmpty())
-                                stringBuilder.append(StringUtils.getColoredText(author + ":", accountColorIndicator));
-                            stringBuilder.append(message.getText().trim());
-                            if (!message.getText().trim().isEmpty())
-                                messageText = stringBuilder.toString();
-                        }
-                    }
+                    String forwardText = lastMessage.getFirstForwardedMessageText(accountColorIndicator);
+                    if (forwardText != null) messageText = forwardText;
                 }
             }
         }
