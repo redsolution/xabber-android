@@ -9,6 +9,7 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.database.realm.XTokenRealm;
+import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.utils.StringUtils;
 import com.xabber.xmpp.smack.XMPPTCPConnection;
@@ -68,7 +69,7 @@ public class XTokenManager implements OnPacketListener {
         LogManager.d(LOG_TAG, "Request revoke x-token");
         XTokenRevokeIQ revokeIQ = new XTokenRevokeIQ(tokenIDs);
         revokeIQ.setType(IQ.Type.set);
-        revokeIQ.setTo(connection.getHost());
+        revokeIQ.setTo(connection.getXMPPServiceDomain());
         try {
             connection.sendStanza(revokeIQ);
         } catch (Exception e) {
@@ -142,7 +143,7 @@ public class XTokenManager implements OnPacketListener {
         LogManager.d(LOG_TAG, "Request x-token list");
         SessionsRequestIQ requestIQ = new SessionsRequestIQ();
         requestIQ.setType(IQ.Type.get);
-        requestIQ.setTo(connection.getHost());
+        requestIQ.setTo(connection.getXMPPServiceDomain());
         try {
             connection.sendStanzaWithResponseCallback(requestIQ,
                     new SessionsResultFilter(requestIQ, connection),
