@@ -31,11 +31,11 @@ public class StructuredName {
     public StructuredName(String nickName, String formattedName,
                           String firstName, String middleName, String lastName) {
         super();
-        this.nickName = nickName == null ? "" : nickName;
-        this.formattedName = formattedName == null ? "" : formattedName;
-        this.firstName = firstName == null ? "" : firstName;
-        this.middleName = middleName == null ? "" : middleName;
-        this.lastName = lastName == null ? "" : lastName;
+        this.nickName = nickName == null ? "" : nickName.trim();
+        this.formattedName = formattedName == null ? "" : formattedName.trim();
+        this.firstName = firstName == null ? "" : firstName.trim();
+        this.middleName = middleName == null ? "" : middleName.trim();
+        this.lastName = lastName == null ? "" : lastName.trim();
         if (!"".equals(this.nickName))
             bestName = this.nickName;
         else if (!"".equals(this.formattedName))

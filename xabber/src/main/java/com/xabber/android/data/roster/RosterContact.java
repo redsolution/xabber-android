@@ -64,10 +64,10 @@ public class RosterContact extends AbstractContact {
         WeakReference<RosterContact> contactWeakReference = instances.get(account.toString(), user.toString());
         if (contactWeakReference != null && contactWeakReference.get() != null) {
             // if formatted name is empty, then formatted name == userJid
-            if ((name == null) || name.trim().equals("")){
-                contactWeakReference.get().setName(user.toString());
-            }
-            else
+//            if (name == null){
+//                contactWeakReference.get().setName(user.toString());
+//            }
+//            else
                 contactWeakReference.get().setName(name);
             return contactWeakReference.get();
         }
