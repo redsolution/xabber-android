@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<GridLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="56dp"
+    android:columnCount="5"
+    android:rowCount="1"
+    android:orientation="horizontal"
+    android:useDefaultMargins="true"
+    android:background="@color/bottom_navigation_background">
+
+
+    <ImageButton
+        android:id="@+id/show_chats_button"
+        android:layout_width="56dp"
+        android:layout_height="match_parent"
+        android:src="@drawable/ic_message"
+        android:background="@color/bottom_navigation_background"
+        android:layout_columnWeight="1">
+    </ImageButton>
+
+    <ImageButton
+        android:id="@+id/show_calls_button"
+        android:layout_width="56dp"
+        android:layout_height="match_parent"
+        android:src="@drawable/ic_call_black_24dp"
+        android:background="@color/bottom_navigation_background"
+        android:layout_columnWeight="1">
+    </ImageButton>
+
+    <ImageButton
+        android:id="@+id/show_contacts_button"
+        android:layout_width="56dp"
+        android:layout_height="match_parent"
+        android:src="@drawable/ic_contacts_black_24dp"
+        android:background="@color/bottom_navigation_background"
+        android:layout_columnWeight="1">
+    </ImageButton>
+
+    <ImageButton
+        android:id="@+id/show_search_button"
+        android:layout_width="56dp"
+        android:layout_height="match_parent"
+        android:src="@drawable/ic_search"
+        android:background="@color/bottom_navigation_background"
+        android:layout_columnWeight="1">
+    </ImageButton>
+
+    <ImageButton
+        android:id="@+id/show_settings_button"
+        android:layout_width="56dp"
+        android:layout_height="match_parent"
+        android:src="@drawable/ic_settings_black_24dp"
+        android:background="@color/bottom_navigation_background"
+        android:layout_columnWeight="1">
+    </ImageButton>
+
+
+</GridLayout>
