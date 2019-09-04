@@ -116,6 +116,16 @@
                 android:value="com.xabber.android.ui.preferences.PreferenceEditor" />
         </activity>
         <activity
+            android:name=".ui.activity.CallsActivity"
+            android:label="Calls"
+            android:parentActivityName=".ui.activity.ContactListActivity"
+            android:theme="@style/ThemeDark">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.xabber.android.ui.preferences.PreferenceEditor" />
+        </activity>
+
+        <activity
             android:name=".ui.activity.AccountListActivity"
             android:label="@string/preference_accounts"
             android:parentActivityName=".ui.preferences.PreferenceEditor">
