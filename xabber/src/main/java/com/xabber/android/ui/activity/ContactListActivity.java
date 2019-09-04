@@ -73,7 +73,7 @@ import com.xabber.android.ui.dialog.TranslationDialog;
 import com.xabber.android.ui.fragment.ContactListDrawerFragment;
 import com.xabber.android.ui.preferences.PreferenceEditor;
 import com.xabber.android.ui.widget.ShortcutBuilder;
-import com.xabber.android.ui.widget.bottomnavigation.BottomMenu;
+import com.xabber.android.ui.widget.bottomnavigation.BottomBar;
 import com.xabber.xmpp.uri.XMPPUri;
 
 import org.greenrobot.eventbus.Subscribe;
@@ -93,7 +93,7 @@ import rx.subscriptions.CompositeSubscription;
  */
 public class ContactListActivity extends ManagedActivity implements OnAccountChangedListener,
         View.OnClickListener, OnChooseListener, ContactListFragment.ContactListFragmentListener,
-        ContactListDrawerFragment.ContactListDrawerListener, BottomMenu.OnClickListener {
+        ContactListDrawerFragment.ContactListDrawerListener, BottomBar.OnClickListener {
 
     /**
      * Select contact to be invited to the room was requested.
@@ -126,7 +126,7 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
      */
     private String sendText;
 
-    private BottomMenu bottomMenu;
+    private BottomBar bottomBar;
     private Fragment contentFragment;
 
     private View showcaseView;
@@ -336,7 +336,7 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
             return;
         }
 
-        rebuildAccountToggle();
+        //rebuildAccountToggle();
         setStatusBarColor();
         Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
 
@@ -593,7 +593,7 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
     public void onContactClick(AbstractContact abstractContact) {
         if (contentFragment != null)
             ((ContactListFragment) contentFragment).filterContactList("");
-        if (bottomMenu != null) bottomMenu.closeSearch();
+        //if (bottomBar != null) bottomBar.closeSearch(); need for old menu
 
         if (action == null) {
             startActivityForResult(ChatActivity.createSendIntent(this, abstractContact.getAccount(),
@@ -680,7 +680,7 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
 
     @Override
     public void onAccountsChanged(Collection<AccountJid> accounts) {
-        rebuildAccountToggle();
+        //rebuildAccountToggle();
         setStatusBarColor();
     }
 
@@ -690,9 +690,9 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
     }
 
     private void rebuildAccountToggle() {
-        BottomMenu bottomMenu = ((BottomMenu)getSupportFragmentManager().findFragmentById(R.id.containerBottomNavigation));
-        if (bottomMenu != null)
-            bottomMenu.update();
+//        BottomMenu bottomBar = ((BottomMenu)getSupportFragmentManager().findFragmentById(R.id.containerBottomNavigation));
+//        if (bottomBar != null)
+//            bottomBar.update();
     }
 
     @Override
@@ -725,7 +725,7 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
     }
 
     @Override
-    public void onRecentClick() {
+    public void onChatsClick() {
         if (contentFragment != null && contentFragment instanceof ContactListFragment) {
             ((ContactListFragment) contentFragment).showRecent();
             ((ContactListFragment) contentFragment).scrollTo(0);
@@ -734,33 +734,48 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
     }
 
     @Override
-    public void onMenuClick() {
+    public void onSettingsClick() {
         //drawerLayout.openDrawer(Gravity.START);
         showMenuFragment();
     }
 
     @Override
-    public void onAccountShortcutClick(AccountJid jid) {
-        if (contentFragment != null && contentFragment instanceof ContactListFragment) {
-            //((ContactListFragment) contentFragment).showRecent();
-            ((ContactListFragment) contentFragment).scrollToAccount(jid);
-            ((ContactListFragment) contentFragment).closeSnackbar();
-        } else showContactListFragment(jid);
+    public void onCallsClick() {
+        startActivity(new Intent(this, CallsActivity.class));
+
     }
 
     @Override
-    public void onSearch(String filter) {
-        if (contentFragment != null && contentFragment instanceof ContactListFragment)
-            ((ContactListFragment) contentFragment).filterContactList(filter);
-        else showContactListFragment(null);
+    public void onDiscoverClick() {
+        Toast.makeText(this, "Diascover are not implemented yet", Toast.LENGTH_SHORT).show();
     }
 
     @Override
-    public void onSearchClick() {
-        if (contentFragment != null && contentFragment instanceof ContactListFragment) {
-            ((ContactListFragment) contentFragment).closeSnackbar();
-        } else showContactListFragment(null);
+    public void onContactsClick() {
+        Toast.makeText(this, "Contacts are not implemented yet", Toast.LENGTH_SHORT).show();
     }
+    //    @Override             need for old menu
+//    public void onAccountShortcutClick(AccountJid jid) {
+//        if (contentFragment != null && contentFragment instanceof ContactListFragment) {
+//            //((ContactListFragment) contentFragment).showRecent();
+//            ((ContactListFragment) contentFragment).scrollToAccount(jid);
+//            ((ContactListFragment) contentFragment).closeSnackbar();
+//        } else showContactListFragment(jid);
+//    }
+
+//    @Override           for old menu
+//    public void onSearch(String filter) {
+//        if (contentFragment != null && contentFragment instanceof ContactListFragment)
+//            ((ContactListFragment) contentFragment).filterContactList(filter);
+//        else showContactListFragment(null);
+//    }
+
+//    @Override               for old menu
+//    public void onSearchClick() {
+//        if (contentFragment != null && contentFragment instanceof ContactListFragment) {
+//            ((ContactListFragment) contentFragment).closeSnackbar();
+//        } else showContactListFragment(null);
+//    }
 
     private void onXabberAccountClick() {
         startActivity(XabberAccountActivity.createIntent(this));
@@ -768,11 +783,11 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
 
     private void showBottomNavigation() {
         if (!isFinishing()) {
-            if (bottomMenu == null)
-                bottomMenu = BottomMenu.newInstance();
+            if (bottomBar == null)
+                bottomBar = BottomBar.Companion.newInstance();
 
             FragmentTransaction fTrans = getSupportFragmentManager().beginTransaction();
-            fTrans.replace(R.id.containerBottomNavigation, bottomMenu);
+            fTrans.replace(R.id.containerBottomNavigation, bottomBar);
             fTrans.commit();
         }
     }
@@ -799,8 +814,8 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onUnreadMessagesCountChanged(ContactListPresenter.UpdateUnreadCountEvent event) {
-        if (bottomMenu != null)
-            bottomMenu.setUnreadMessages(event.getCount());
+        if (bottomBar != null)
+            bottomBar.setUnreadMessages(event.getCount());
     }
 
     public void setStatusBarColor(AccountJid account) {
@@ -837,6 +852,6 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
     }
 
     public void closeSearch() {
-        if (bottomMenu != null) bottomMenu.closeSearch();
+        //if (bottomBar != null) bottomBar.closeSearch(); need for ol menu
     }
 }
