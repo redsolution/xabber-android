@@ -55,6 +55,7 @@
         <attr name="patreon_progress_background_color" format="reference|color" />
 
         <attr name="bottom_navigation_background" format="reference|color" />
+        <attr name="bottom_navigation_background_pressed" format="reference|color" />
         <attr name="half_transparent_background" format="reference" />
         <attr name="action_with_chat_background" format="reference|color" />
         <attr name="contact_list_contact_archived_background" format="reference|color" />

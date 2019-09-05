@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
+import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.xabber.android.R
@@ -13,7 +14,7 @@ import com.xabber.android.R
 class BottomBar : Fragment(), View.OnClickListener {
 
     private var listener: OnClickListener? = null
-    private var chatsButton: ImageButton? = null
+    private var chatsButton: RelativeLayout? = null
     private var contactsButton: ImageButton? = null
     private var discoverButton: ImageButton? = null
     private var callsButton: ImageButton? = null
@@ -56,6 +57,12 @@ class BottomBar : Fragment(), View.OnClickListener {
     }
 
     override fun onClick(view: View) {
+        chatsButton?.setBackgroundColor(getResources().getColor(R.color.bottom_navigation_background))
+        callsButton?.setBackgroundColor(getResources().getColor(R.color.bottom_navigation_background))
+        contactsButton?.setBackgroundColor(getResources().getColor(R.color.bottom_navigation_background))
+        discoverButton?.setBackgroundColor(getResources().getColor(R.color.bottom_navigation_background))
+        settingsButton?.setBackgroundColor(getResources().getColor(R.color.bottom_navigation_background))
+        view.setBackgroundColor(getResources().getColor(R.color.bottom_navigation_background_pressed))
         when (view.id) {
             R.id.show_chats_button -> listener!!.onChatsClick()
             R.id.show_calls_button -> listener!!.onCallsClick()
