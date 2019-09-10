@@ -2,7 +2,6 @@ apply plugin: 'com.android.application'
 apply plugin: 'realm-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-android'
-
 apply plugin: 'com.frogermcs.androiddevmetrics'
 
 android {
@@ -213,14 +212,13 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     testImplementation "org.robolectric:robolectric:4.0"
     testImplementation "org.robolectric:shadows-multidex:4.0.1"
-    compile "androidx.core:core-ktx:+"
+
+    //kotlin
+    implementation "androidx.core:core-ktx:1.1.0"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
 
 configurations {
     all*.exclude group: 'xpp3', module: 'xpp3'
     all*.exclude group: 'com.google.guava', module:'guava-jdk5'
-}
-repositories {
-    mavenCentral()
 }
