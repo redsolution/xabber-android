@@ -5,7 +5,7 @@
     android:layout_height="56dp"
     android:orientation="horizontal"
     android:useDefaultMargins="true"
-    android:background="@color/bottom_navigation_background">
+    android:background="?attr/bottom_navigation_background">
 
 
     <RelativeLayout
@@ -13,15 +13,16 @@
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:layout_width="0dp"
-        android:background="@color/bottom_navigation_background">
+        android:background="@color/transparent">
 
-        <ImageButton
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/show_chats_image"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_message"
+            android:src="@drawable/ic_chats_list"
             android:background="@color/transparent"
             android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true"/>
+            android:layout_centerVertical="true" />
 
         <TextView
             android:id="@+id/unread_count_textview"
@@ -48,16 +49,16 @@
         android:id="@+id/show_calls_button"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:src="@drawable/ic_call_black_24dp"
-        android:background="@color/bottom_navigation_background"
+        android:src="@drawable/ic_calls_list"
+        android:background="@color/transparent"
         android:layout_weight="1"/>
 
     <ImageButton
         android:id="@+id/show_contacts_button"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:src="@drawable/ic_contacts_black_24dp"
-        android:background="@color/bottom_navigation_background"
+        android:src="@drawable/ic_contacts_list"
+        android:background="@color/transparent"
         android:layout_weight="1"/>
 
     <ImageButton
@@ -65,7 +66,7 @@
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:src="@drawable/ic_search"
-        android:background="@color/bottom_navigation_background"
+        android:background="@color/transparent"
         android:layout_weight="1"/>
 
     <ImageButton
@@ -73,7 +74,7 @@
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:src="@drawable/ic_menu"
-        android:background="@color/bottom_navigation_background"
+        android:background="@color/transparent"
         android:layout_weight="1"/>
 
 

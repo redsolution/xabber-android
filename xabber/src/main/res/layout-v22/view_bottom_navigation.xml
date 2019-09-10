@@ -22,7 +22,7 @@
                 android:layout_marginLeft="4dp"
                 android:padding="10dp"
                 android:layout_centerVertical="true"
-                android:src="@drawable/ic_message"
+                android:src="@drawable/ic_chats_list"
                 android:tint="?attr/chat_input_button_color"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:layout_marginTop="6dp"

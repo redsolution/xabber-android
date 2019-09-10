@@ -12,6 +12,7 @@ import android.widget.TextView;
 import com.xabber.android.R;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.presentation.mvp.contactlist.ContactListPresenter;
+import com.xabber.android.presentation.ui.contactlist.ChatListFragment;
 import com.xabber.android.ui.color.AccountPainter;
 import com.xabber.android.ui.color.ColorManager;
 
@@ -31,21 +32,21 @@ public class ToolbarVO extends AbstractHeaderItem<ToolbarVO.ViewHolder> implemen
 
     private String id;
 
-    private ContactListPresenter.ChatListState currentChatsState =
-            ContactListPresenter.ChatListState.recent;
+    private ChatListFragment.ChatListState currentChatsState =
+            ChatListFragment.ChatListState.recent;
 
     private Context context;
     protected OnClickListener listener;
 
     public interface OnClickListener {
-        void onStateSelected(ContactListPresenter.ChatListState state);
+        void onStateSelected(ChatListFragment.ChatListState state);
         void onAddContactClick();
         void onJoinConferenceClick();
         void onSetStatusClick();
     }
 
     public ToolbarVO(Context context, OnClickListener listener,
-                     ContactListPresenter.ChatListState currentChatsState) {
+                     ChatListFragment.ChatListState currentChatsState) {
         this.id = UUID.randomUUID().toString();
         this.context = context;
         this.listener = listener;
@@ -167,13 +168,13 @@ public class ToolbarVO extends AbstractHeaderItem<ToolbarVO.ViewHolder> implemen
                     listener.onJoinConferenceClick();
                     return true;
                 case R.id.action_recent_chats:
-                    listener.onStateSelected(ContactListPresenter.ChatListState.recent);
+                    listener.onStateSelected(ChatListFragment.ChatListState.recent);
                     return true;
                 case R.id.action_unread_chats:
-                    listener.onStateSelected(ContactListPresenter.ChatListState.unread);
+                    listener.onStateSelected(ChatListFragment.ChatListState.unread);
                     return true;
                 case R.id.action_archived_chats:
-                    listener.onStateSelected(ContactListPresenter.ChatListState.archived);
+                    listener.onStateSelected(ChatListFragment.ChatListState.archived);
                     return true;
                 default:
                     return false;

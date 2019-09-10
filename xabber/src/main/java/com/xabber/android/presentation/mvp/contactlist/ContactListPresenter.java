@@ -42,7 +42,6 @@ import com.xabber.android.presentation.ui.contactlist.viewobjects.ContactVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.CrowdfundingChatVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.ExtContactVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.GroupVO;
-import com.xabber.android.presentation.ui.contactlist.viewobjects.ToolbarVO;
 import com.xabber.android.ui.adapter.ChatComparator;
 import com.xabber.android.ui.adapter.contactlist.AccountConfiguration;
 import com.xabber.android.ui.adapter.contactlist.ContactListGroupUtils;
@@ -69,7 +68,7 @@ import eu.davidea.flexibleadapter.items.IFlexible;
  */
 
 public class ContactListPresenter implements OnContactChangedListener, OnAccountChangedListener,
-        ContactVO.ContactClickListener, AccountVO.AccountClickListener, ToolbarVO.OnClickListener,
+        ContactVO.ContactClickListener, AccountVO.AccountClickListener,// ToolbarVO.OnClickListener,
         GroupVO.GroupClickListener, UpdateBackpressure.UpdatableObject {
 
     private static final int MAX_RECENT_ITEMS = 12;
@@ -151,7 +150,7 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
 
     @Override
     public void onContactButtonClick(int adapterPosition) {
-        onStateSelected(ChatListState.all);
+        //onStateSelected(ChatListState.all);
     }
 
     @Override
@@ -164,30 +163,30 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
         if (this.view != null) this.view.onAccountMenuClick(adapterPosition, view);
     }
 
-    @Override
-    public void onStateSelected(ChatListState state) {
-        this.currentChatsState = state;
-        updateBackpressure.build();
-        if (view != null) {
-            view.closeSnackbar();
-            view.closeSearch();
-        }
-    }
+//    @Override
+//    public void onStateSelected(ChatListState state) {
+//        this.currentChatsState = state;
+//        updateBackpressure.build();
+//        if (view != null) {
+//            view.closeSnackbar();
+//            view.closeSearch();
+//        }
+//    }
 
-    @Override
-    public void onAddContactClick() {
-        if (view != null) view.startAddContactActivity();
-    }
-
-    @Override
-    public void onJoinConferenceClick() {
-        if (view != null) view.startJoinConferenceActivity();
-    }
-
-    @Override
-    public void onSetStatusClick() {
-        if (view != null) view.startSetStatusActivity();
-    }
+//    @Override
+//    public void onAddContactClick() {
+//        if (view != null) view.startAddContactActivity();
+//    }
+//
+//    @Override
+//    public void onJoinConferenceClick() {
+//        if (view != null) view.startJoinConferenceActivity();
+//    }
+//
+//    @Override
+//    public void onSetStatusClick() {
+//        if (view != null) view.startSetStatusActivity();
+//    }
 
     public void setFilterString(String filter) {
         filterString = filter;
@@ -381,7 +380,7 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
 
             // Remove empty groups, sort and apply structure.
             items.clear();
-            items.add(new ToolbarVO(Application.getInstance().getApplicationContext(), this, currentChatsState));
+            //items.add(new ToolbarVO(Application.getInstance().getApplicationContext(), this, currentChatsState));
 
             // set hasVisibleContacts as true if have crowdfunding message
             CrowdfundingMessage message = CrowdfundingManager.getInstance().getLastNotDelayedMessageFromRealm();
@@ -391,18 +390,18 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
 
                 if (currentChatsState == ChatListState.recent) {
 
-                    // add recent chats
-                    int i = 0;
-                    for (AbstractContact contact : chatsGroup.getAbstractContacts()) {
-                        if (contact instanceof CrowdfundingContact) {
-                            items.add(CrowdfundingChatVO.convert((CrowdfundingContact) contact));
-                        } else if (i == MAX_RECENT_ITEMS - 1) {
-                            if (getAllChatsSize() > MAX_RECENT_ITEMS)
-                                items.add(ChatWithButtonVO.convert(contact, this));
-                            else items.add(ChatVO.convert(contact, this, null));
-                        } else items.add(ChatVO.convert(contact, this, null));
-                        i++;
-                    }
+//                    // add recent chats
+//                    int i = 0;
+//                    for (AbstractContact contact : chatsGroup.getAbstractContacts()) {
+//                        if (contact instanceof CrowdfundingContact) {
+//                            items.add(CrowdfundingChatVO.convert((CrowdfundingContact) contact));
+//                        } else if (i == MAX_RECENT_ITEMS - 1) {
+//                            if (getAllChatsSize() > MAX_RECENT_ITEMS)
+//                                items.add(ChatWithButtonVO.convert(contact, this));
+//                            else items.add(ChatVO.convert(contact, this, null));
+//                        } else items.add(ChatVO.convert(contact, this, null));
+//                        i++;
+//                    }
 
                     if (showAccounts) {
                         for (AccountConfiguration rosterAccount : accounts.values()) {

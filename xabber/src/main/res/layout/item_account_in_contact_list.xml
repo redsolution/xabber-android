@@ -60,7 +60,8 @@
             android:alpha="0.5"
             android:text="10 / 30"
             android:drawablePadding="4dp"
-            android:drawableTint="?attr/contact_list_account_group_small_right_icon_color"/>
+            android:drawableTint="?attr/contact_list_account_group_small_right_icon_color"
+            android:visibility="gone"/>
 
         <TextView
             android:id="@+id/tvStatus"

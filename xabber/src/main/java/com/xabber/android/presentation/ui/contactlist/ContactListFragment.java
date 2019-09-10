@@ -204,10 +204,10 @@ public class ContactListFragment extends Fragment implements ContactListView,
         super.onResume();
         presenter.bindView(this);
 
-        if (scrollToAccountJid != null) {
-            scrollToAccount(scrollToAccountJid);
-            scrollToAccountJid = null;
-        }
+//        if (scrollToAccountJid != null) {
+//            scrollToAccount(scrollToAccountJid);
+//            scrollToAccountJid = null;
+//        }
     }
 
     @Override
@@ -548,32 +548,32 @@ public class ContactListFragment extends Fragment implements ContactListView,
         buttonView.setOnClickListener(listener);
     }
 
-    public void showRecent() {
-        if (presenter != null) {
-            presenter.onStateSelected(ContactListPresenter.ChatListState.recent);
-            ((ContactListActivity)getActivity()).setStatusBarColor();
-        }
-    }
+//    public void showRecent() {
+//        if (presenter != null) {
+//            presenter.onStateSelected(ContactListPresenter.ChatListState.recent);
+//            ((ContactListActivity)getActivity()).setStatusBarColor();
+//        }
+//    }
 
     /**
      * Scroll contact list to specified account.
      *
      * @param account
      */
-    public void scrollToAccount(AccountJid account) {
-        if (presenter.getCurrentChatsState() != ContactListPresenter.ChatListState.recent)
-            showRecent();
-
-        long count = adapter.getItemCount();
-        for (int position = 0; position < (int) count; position++) {
-            Object itemAtPosition = adapter.getItem(position);
-            if (itemAtPosition != null && itemAtPosition instanceof AccountVO
-                    && ((AccountVO)itemAtPosition).getAccountJid().equals(account)) {
-                scrollTo(position);
-                break;
-            }
-        }
-    }
+//    public void scrollToAccount(AccountJid account) {
+//        if (presenter.getCurrentChatsState() != ContactListPresenter.ChatListState.recent)
+//            showRecent();
+//
+//        long count = adapter.getItemCount();
+//        for (int position = 0; position < (int) count; position++) {
+//            Object itemAtPosition = adapter.getItem(position);
+//            if (itemAtPosition != null && itemAtPosition instanceof AccountVO
+//                    && ((AccountVO)itemAtPosition).getAccountJid().equals(account)) {
+//                scrollTo(position);
+//                break;
+//            }
+//        }
+//    }
 
     /**
      * Scroll to the top of contact list.
