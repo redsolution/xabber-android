@@ -71,7 +71,9 @@ import com.xabber.android.ui.dialog.EnterPassDialog;
 import com.xabber.android.ui.dialog.MucInviteDialog;
 import com.xabber.android.ui.dialog.MucPrivateChatInvitationDialog;
 import com.xabber.android.ui.dialog.TranslationDialog;
+import com.xabber.android.ui.fragment.CallsFragment;
 import com.xabber.android.ui.fragment.ContactListDrawerFragment;
+import com.xabber.android.ui.fragment.DiscoverFragment;
 import com.xabber.android.ui.preferences.PreferenceEditor;
 import com.xabber.android.ui.widget.ShortcutBuilder;
 import com.xabber.android.ui.widget.bottomnavigation.BottomBar;
@@ -119,6 +121,9 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
 
     private static final String CONTACT_LIST_TAG = "CONTACT_LIST";
     private static final String CHAT_LIST_TAG = "CHAT_LIST";
+    private static final String DISCOVER_TAG = "DISCOVER_TAG";
+    private static final String CALLS_TAG = "CALLS_TAG";
+
     private static final String LOG_TAG = ContactListActivity.class.getSimpleName();
 
     /**
@@ -758,10 +763,10 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
     }
 
     @Override
-    public void onCallsClick() {    }
+    public void onCallsClick() { showCallsFragment();   }
 
     @Override
-    public void onDiscoverClick() {    }
+    public void onDiscoverClick() {  showDiscoverFragment();  }
 
 
     //    @Override             need for old menu
@@ -841,6 +846,24 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
         }
     }
 
+    private void showDiscoverFragment(){
+        if (!isFinishing()){
+            contentFragment = DiscoverFragment.Companion.newInstance();
+            FragmentTransaction ftrans = getSupportFragmentManager().beginTransaction();
+            ftrans.replace(R.id.container, contentFragment, DISCOVER_TAG);
+            ftrans.commit();
+        }
+    }
+
+    private void showCallsFragment(){
+        if (!isFinishing()){
+            contentFragment = CallsFragment.Companion.newInstance();
+            FragmentTransaction ftrans = getSupportFragmentManager().beginTransaction();
+            ftrans.replace(R.id.container, contentFragment, CALLS_TAG);
+            ftrans.commit();
+        }
+    }
+
 
 
     @Override
@@ -850,6 +873,8 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
             case "ContactListFragment" : currentActiveFragment = ActiveFragment.CONTACTS; break;
             case "ChatListFragment" : currentActiveFragment = ActiveFragment.CHATS; break;
             case "ContactListDrawerFragment" : currentActiveFragment = ActiveFragment.SETTINGS; break;
+            case "DiscoverFragment" : currentActiveFragment = ActiveFragment.DISCOVER; break;
+            case "CallsFragment" : currentActiveFragment = ActiveFragment.CALLS; break;
         }
         bottomBar.setColoredButton(currentActiveFragment);
     }
