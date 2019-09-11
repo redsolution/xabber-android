@@ -50,7 +50,6 @@ import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.presentation.mvp.contactlist.ContactListPresenter;
 import com.xabber.android.presentation.mvp.contactlist.UpdateBackpressure;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.ChatVO;
-import com.xabber.android.presentation.ui.contactlist.viewobjects.ChatWithButtonVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.ContactVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.CrowdfundingChatVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.GroupVO;
@@ -64,6 +63,7 @@ import com.xabber.android.ui.adapter.ChatComparator;
 import com.xabber.android.ui.adapter.contactlist.AccountConfiguration;
 import com.xabber.android.ui.adapter.contactlist.ContactListGroupUtils;
 import com.xabber.android.ui.adapter.contactlist.GroupConfiguration;
+import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.widget.ShortcutBuilder;
 
 import org.greenrobot.eventbus.EventBus;
@@ -91,7 +91,7 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
     private CoordinatorLayout coordinatorLayout;
     private LinearLayoutManager linearLayoutManager;
     private View placeholderView;
-    private TextView tvPlaceholderMessage;
+    private TextView placeholderMessage;
     private ImageView placeholderImage;
     private ChatListFragmentListener chatListFragmentListener;
     private View infoView;
@@ -186,7 +186,12 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         recyclerView.setLayoutManager(linearLayoutManager);
         coordinatorLayout = (CoordinatorLayout) view.findViewById(R.id.chatlist_coordinator_layout);
 
-        //TODO placeholders
+        placeholderView = view.findViewById(R.id.chatlist_placeholder_view);
+        placeholderMessage = view.findViewById(R.id.chatlist_placeholder_message);
+        placeholderImage = view.findViewById(R.id.chatlist_placeholder_image);
+        ColorManager.setGrayScaleFilter(placeholderImage);
+
+        // TODO connected/disconnected states
 
         items = new ArrayList<>();
         adapter = new FlexibleAdapter<>(items, null, false);
@@ -473,6 +478,16 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
             }
         }
 
+        //check empty state and show placeholder
+        if (items.size() == 1){
+            if (currentChatsState == ChatListState.unread){
+                showPlaceholder(Application.getInstance().getApplicationContext().getString(R.string.placeholder_no_unread));
+            }
+            else if (currentChatsState == ChatListState.archived){
+                showPlaceholder(Application.getInstance().getApplicationContext().getString(R.string.placeholder_no_archived));
+            }
+        } else hidePlaceholder();
+
         updateUnreadCount();
         updateItems(items);
 
@@ -548,6 +563,12 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         archived,
         all
     }
+    private void showPlaceholder(String message){
+        placeholderMessage.setText(message);
+        placeholderView.setVisibility(View.VISIBLE);
+    }
+
+    private void hidePlaceholder(){ placeholderView.setVisibility(View.GONE);   }
 
     public void showSnackbar(final ChatVO deletedItem, final int deletedIndex) {
         if (snackbar != null) snackbar.dismiss();
