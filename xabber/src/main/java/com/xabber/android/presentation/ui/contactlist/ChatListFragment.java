@@ -82,7 +82,8 @@ import eu.davidea.flexibleadapter.items.IFlexible;
 
 public class ChatListFragment extends Fragment implements ContactVO.ContactClickListener,
         FlexibleAdapter.OnItemClickListener, FlexibleAdapter.OnItemSwipeListener,
-        OnContactChangedListener, OnAccountChangedListener, ToolbarVO.OnClickListener {
+        OnContactChangedListener, OnAccountChangedListener, ToolbarVO.OnClickListener,
+        UpdateBackpressure.UpdatableObject {
 
     private UpdateBackpressure updateBackpressure;
     private FlexibleAdapter<IFlexible> adapter;
@@ -119,12 +120,12 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onNewMessageEvent(NewMessageEvent event) {
-        update();
+        updateBackpressure.refreshRequest();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(MessageUpdateEvent event) {
-        update();
+        updateBackpressure.refreshRequest();
     }
 
     @Override
@@ -132,8 +133,11 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         chatListFragmentListener = null;
         Application.getInstance().removeUIListener(OnAccountChangedListener.class, this);
         Application.getInstance().removeUIListener(OnContactChangedListener.class,this);
+        updateBackpressure.removeRefreshRequests();
         super.onDetach();
     }
+
+    public ChatListFragment() { updateBackpressure = new UpdateBackpressure(this);}
 
     public static ChatListFragment newInstance(@Nullable AccountJid account, boolean showUnread) {
         ChatListFragment fragment = new ChatListFragment();
@@ -141,16 +145,20 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         if (account != null)
             args.putSerializable("account_jid", account);
         fragment.setArguments(args);
-        if (showUnread) fragment.currentChatsState = ChatListState.unread;
-        else fragment.currentChatsState = ChatListState.recent;
+        if (showUnread) {
+            fragment.currentChatsState = ChatListState.unread;
+            fragment.updateBackpressure.run();
+        } else fragment.currentChatsState = ChatListState.recent;
         return fragment;
     }
+
+    public void updateChatList() {updateBackpressure.refreshRequest();}         //pay attention
 
     @Override
     public void onStateSelected(ChatListState state) {
         this.currentChatsState = state;
-        update();
-        //updateBackpressure.build();
+        //update();
+        updateBackpressure.run();
         this.closeSnackbar();
             //this.closeSearch();
     }
@@ -200,7 +208,7 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         adapter.setSwipeEnabled(true);
         adapter.expandItemsAtStartUp();
         adapter.addListener(this);
-        update();
+        update();            //pay attention
         return view;
     }
 
@@ -215,12 +223,12 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
 
     @Override
     public void onContactsChanged(Collection<RosterContact> entities) {
-        update();
+        updateBackpressure.refreshRequest();
     }
 
     @Override
     public void onAccountsChanged(Collection<AccountJid> accounts) {
-        update();
+        updateBackpressure.refreshRequest();
     }
 
     @Override
@@ -318,7 +326,8 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         return true;
     }
 
-    void update(){
+    @Override
+    public void update(){
         List<IFlexible> items = new ArrayList<>();
         final Collection<RosterContact> allRosterContacts = RosterManager.getInstance().getAllContacts(); // Получаем все контакты
         Map<AccountJid, Collection<UserJid>> blockedContacts = new TreeMap<>();
