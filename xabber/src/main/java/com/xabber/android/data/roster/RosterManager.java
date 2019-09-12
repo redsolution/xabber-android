@@ -277,6 +277,8 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
         if (abstractChat != null && abstractChat instanceof RoomChat) {
             return new RoomContact((RoomChat) abstractChat);
         }
+
+
         RosterContact rosterContact = getRosterContact(account, user);
         if (rosterContact != null) {
             return rosterContact;

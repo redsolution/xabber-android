@@ -49,4 +49,16 @@ public class ContactTitleActionBarInflater {
     public void hideStatusIcon() {
         contactView.findViewById(R.id.ivStatus).setVisibility(View.GONE);
     }
+
+    public void hideStatusGroupIcon() {
+        contactView.findViewById(R.id.ivStatusGroupchat).setVisibility(View.GONE);
+    }
+
+    public void showStatusIcon() {
+        contactView.findViewById(R.id.ivStatus).setVisibility(View.VISIBLE);
+    }
+
+    public void showStatusGroupIcon() {
+        contactView.findViewById(R.id.ivStatusGroupchat).setVisibility(View.VISIBLE);
+    }
 }

@@ -22,6 +22,8 @@ import android.widget.TextView;
 import com.xabber.android.R;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.cs.ChatStateManager;
+import com.xabber.android.data.message.AbstractChat;
+import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.roster.AbstractContact;
 
 import org.jivesoftware.smackx.chatstates.ChatState;
@@ -46,14 +48,23 @@ public class ContactTitleInflater {
 
     private static void setStatus(Context context, View titleView, AbstractContact abstractContact) {
         final ImageView statusModeView = (ImageView) titleView.findViewById(R.id.ivStatus);
+        ImageView statusModeGroupView = (ImageView) titleView.findViewById(R.id.ivStatusGroupchat);
+
+        MessageManager messageManager = MessageManager.getInstance();
+        AbstractChat chat = messageManager.getOrCreateChat(abstractContact.getAccount(), abstractContact.getUser());
+
 
         int statusLevel = abstractContact.getStatusMode().getStatusLevel();
         statusModeView.setVisibility(View.GONE);
-        if (isContactOffline(statusLevel)) {
-            statusModeView.setVisibility(View.GONE);
-        } else {
-            statusModeView.setVisibility(View.VISIBLE);
-            statusModeView.setImageLevel(statusLevel);
+        if (chat.isGroupchat()){
+            statusModeGroupView.setVisibility(View.VISIBLE);
+        }else {
+            if (isContactOffline(statusLevel)) {
+                statusModeView.setVisibility(View.GONE);
+            } else {
+                statusModeView.setVisibility(View.VISIBLE);
+                statusModeView.setImageLevel(statusLevel);
+            }
         }
 
         final TextView statusTextView = (TextView) titleView.findViewById(R.id.status_text);

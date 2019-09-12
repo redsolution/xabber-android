@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center|center_horizontal"
+    android:background="@color/white"
+    android:gravity="center"
+    app:layout_anchorGravity="center">
+
+    <ImageView
+        android:id="@+id/qrCode"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:visibility="visible"
+        tools:srcCompat="@drawable/art_tutorial_4" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/qrCode"
+        android:layout_marginTop="-30dp"
+        android:gravity="center_horizontal"
+        android:text="Let your opponent scan the code"
+        android:textColor="@color/black"
+        android:textSize="30sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textView"
+        android:layout_marginTop="3dp"
+        android:gravity="center_horizontal"
+        android:text="Let your opponent scan the code"
+        android:textSize="18sp"
+        android:visibility="invisible" />
+
+
+</RelativeLayout>

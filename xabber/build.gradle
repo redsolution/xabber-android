@@ -12,6 +12,7 @@ android {
         versionCode 644
         versionName '2.6.6.644'
         manifestPlaceholders = [crashlytics:getLocalProperty("crashlytics.key")]
+        vectorDrawables.useSupportLibrary = true
     }
 
     lintOptions {
@@ -148,7 +149,9 @@ dependencies {
     implementation 'com.github.redsolution:otr4j:custom-SNAPSHOT'
 
     // barcode scanner
-    implementation 'com.google.zxing:android-integration:3.3.0'
+    //implementation 'com.google.zxing:android-integration:3.3.0'
+    implementation 'com.journeyapps:zxing-android-embedded:3.6.0'
+    //implementation 'com.google.android.gms:play-services:8.1.0'
 
     // retrofit
     implementation 'com.squareup.retrofit2:retrofit:2.3.0'
