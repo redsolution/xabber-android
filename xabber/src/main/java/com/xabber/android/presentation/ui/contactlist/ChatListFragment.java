@@ -332,8 +332,14 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
             AccountJid accountJid = ((ContactVO)item).getAccountJid();
             UserJid userJid = ((ContactVO) item).getUserJid();
             chatListFragmentListener.onChatClick(RosterManager.getInstance().getAbstractContact(accountJid, userJid));
-            // TODO finish this
         }
+        else if (item instanceof CrowdfundingChatVO) {
+            AccountJid accountJid = CrowdfundingChat.getDefaultAccount();
+            UserJid userJid = CrowdfundingChat.getDefaultUser();
+            if (accountJid != null && userJid != null)
+                chatListFragmentListener.onChatClick(RosterManager.getInstance().getAbstractContact(accountJid, userJid));
+        }
+
         return true;
     }
 
