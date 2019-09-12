@@ -114,7 +114,6 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
         Application.getInstance().addUIListener(OnContactChangedListener.class, this);
         EventBus.getDefault().register(this);
-
         super.onAttach(context);
     }
 
@@ -133,11 +132,12 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         chatListFragmentListener = null;
         Application.getInstance().removeUIListener(OnAccountChangedListener.class, this);
         Application.getInstance().removeUIListener(OnContactChangedListener.class,this);
+        EventBus.getDefault().unregister(this);
         updateBackpressure.removeRefreshRequests();
         super.onDetach();
     }
 
-    public ChatListFragment() { updateBackpressure = new UpdateBackpressure(this);}
+    //public ChatListFragment() {}
 
     public static ChatListFragment newInstance(@Nullable AccountJid account, boolean showUnread) {
         ChatListFragment fragment = new ChatListFragment();
@@ -145,10 +145,8 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         if (account != null)
             args.putSerializable("account_jid", account);
         fragment.setArguments(args);
-        if (showUnread) {
-            fragment.currentChatsState = ChatListState.unread;
-            fragment.updateBackpressure.run();
-        } else fragment.currentChatsState = ChatListState.recent;
+        if (showUnread) fragment.currentChatsState = ChatListState.unread;
+            else fragment.currentChatsState = ChatListState.recent;
         return fragment;
     }
 
@@ -199,16 +197,20 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         placeholderImage = view.findViewById(R.id.chatlist_placeholder_image);
         ColorManager.setGrayScaleFilter(placeholderImage);
 
+
         // TODO connected/disconnected states
 
         items = new ArrayList<>();
+
         adapter = new FlexibleAdapter<>(items, null, false);
         recyclerView.setAdapter(adapter);
         adapter.setDisplayHeadersAtStartUp(true);
         adapter.setSwipeEnabled(true);
         adapter.expandItemsAtStartUp();
         adapter.addListener(this);
-        update();            //pay attention
+        updateBackpressure = new UpdateBackpressure(this);
+        updateBackpressure.run();
+        //updateBackpressure.refreshRequest();            //pay attention
         return view;
     }
 
@@ -216,6 +218,15 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
 
     // notify adapter to update ui items
     private void updateItems(List<IFlexible> items){
+        //check empty state and show placeholder
+        if (items.size() == 1){
+            if (currentChatsState == ChatListState.unread){
+                showPlaceholder(Application.getInstance().getApplicationContext().getString(R.string.placeholder_no_unread));
+            }
+            else if (currentChatsState == ChatListState.archived){
+                showPlaceholder(Application.getInstance().getApplicationContext().getString(R.string.placeholder_no_archived));
+            }
+        } else if (placeholderView != null) hidePlaceholder();
         this.items.clear();
         this.items.addAll(items);
         adapter.updateDataSet(this.items);
@@ -462,8 +473,13 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
 
         // Remove empty groups, sort and apply structure.
         items.clear();
-        items.add(new ToolbarVO(Application.getInstance().getApplicationContext(), this, currentChatsState));
 
+        //ToolbarVO toolbar = new ToolbarVO(Application.getInstance().getApplicationContext(),
+         //        this, currentChatsState);
+
+        items.add(new ToolbarVO(Application.getInstance().getApplicationContext(), this, currentChatsState));
+        //toolbar.setDraggable(true);
+        //items.add(toolbar);
         // set hasVisibleContacts as true if have crowdfunding message
         CrowdfundingMessage message = CrowdfundingManager.getInstance().getLastNotDelayedMessageFromRealm();
         if (message != null) hasVisibleContacts = true;
@@ -486,17 +502,6 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
                 }
             }
         }
-
-        //check empty state and show placeholder
-        if (items.size() == 1){
-            if (currentChatsState == ChatListState.unread){
-                showPlaceholder(Application.getInstance().getApplicationContext().getString(R.string.placeholder_no_unread));
-            }
-            else if (currentChatsState == ChatListState.archived){
-                showPlaceholder(Application.getInstance().getApplicationContext().getString(R.string.placeholder_no_archived));
-            }
-        } else hidePlaceholder();
-
         updateUnreadCount();
         updateItems(items);
 
