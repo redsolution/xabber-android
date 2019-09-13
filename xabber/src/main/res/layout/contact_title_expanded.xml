@@ -59,6 +59,6 @@
         android:background="@drawable/test_ripple"
         android:clickable="true"
         android:focusable="true"
-        app:srcCompat="@drawable/qrcode_scan_icon_white" />
+        app:srcCompat="@drawable/image_qr_code_generate" />
 
 </LinearLayout>

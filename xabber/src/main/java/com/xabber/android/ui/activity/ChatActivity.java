@@ -1180,6 +1180,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         intent.putExtra("account_name", textName);
         String textAddress = user.toString();
         intent.putExtra("account_address", textAddress);
+        intent.putExtra("caller", "ChatActivity");
         startActivity(intent);
     }
 }

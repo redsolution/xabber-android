@@ -10,11 +10,14 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.NavUtils;
 
 import com.journeyapps.barcodescanner.CaptureManager;
 import com.journeyapps.barcodescanner.DecoratedBarcodeView;
@@ -35,23 +38,33 @@ public class QRCodeScannerActivity extends AppCompatActivity implements Decorate
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_custom_qr_code_scanner);
 
         qrScannerView = (DecoratedBarcodeView)findViewById(R.id.custom_qr_scanner);
         qrScannerView.setTorchListener(this);
 
         toolbar = (Toolbar) findViewById(R.id.scanner_toolbar);
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
         toolbar.setTitle("Scan QR Code");
         toolbar.setTitleTextColor(Color.WHITE);
+        //toolbar.setBackgroundColor(Color.GRAY);
         toolbar.inflateMenu(R.menu.toolbar_qrscanner);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        //setSupportActionBar(toolbar);
+        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         toolbar.setOnMenuItemClickListener(this);
-        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_arrow_left_white_24dp);
+        //getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_arrow_left_white_24dp);
 
 
         Button testButton = findViewById(R.id.button2);
-        testButton.setOnClickListener(new View.OnClickListener() {
+        TextView msg = findViewById(R.id.addMessage);
+        /*testButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(QRCodeScannerActivity.this, QRCodeActivity.class);
@@ -69,14 +82,22 @@ public class QRCodeScannerActivity extends AppCompatActivity implements Decorate
             accountAddress = bundle.get("account_address").toString();
         }else {
             testButton.setVisibility(View.GONE);
+        }*/
+        testButton.setVisibility(View.GONE);
+        Intent intent = getIntent();
+        if(intent.hasExtra("caller")){
+            Bundle bundle = intent.getExtras();
+            if(bundle.get("caller").toString().equals("AccountAddFragment"))
+                msg.setText("Place the Account QR code in the center of the highlighted area.");
+            else
+                msg.setText("Place the Contact QR code in the center of the highlighted area.");
         }
 
         if(Camera.getNumberOfCameras() == 1){
             toolbar.getMenu().findItem(R.id.switch_camera).setVisible(false);
         }
 
-
-            capture = new CaptureManager(this, qrScannerView);
+        capture = new CaptureManager(this, qrScannerView);
         capture.initializeFromIntent(getIntent(),savedInstanceState);
         capture.decode();
     }

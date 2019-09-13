@@ -154,6 +154,7 @@ public class AccountAddFragment extends Fragment implements View.OnClickListener
                         .setBeepEnabled(false)
                         .setCameraId(0)
                         .setPrompt("")
+                        .addExtra("caller","AccountAddFragment")
                         .setCaptureActivity(QRCodeScannerActivity.class)
                         .initiateScan(Collections.unmodifiableList(Collections.singletonList(IntentIntegrator.QR_CODE)));
                 break;
@@ -170,12 +171,14 @@ public class AccountAddFragment extends Fragment implements View.OnClickListener
                 Toast.makeText(getActivity(), "no-go", Toast.LENGTH_LONG).show();
             } else {
                 Toast.makeText(getActivity(), "Scanned = " + result.getContents(), Toast.LENGTH_LONG).show();
-                if(result.getContents().length()>5)
-                    if(result.getContents().substring(0,5).equals("xmpp:")) {
-                        userView.setText(result.getContents().substring(5));
+                if(result.getContents().length()>5) {
+                    String[] s = result.getContents().split(":");
+                    if (s[0].equals("xmpp") && s.length>=2) {
+                        userView.setText(s[1]);
                         addAccount();
                         //passwordView.requestFocus();
                     }
+                }
             }
         } else {
             super.onActivityResult(requestCode, resultCode, data);

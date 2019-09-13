@@ -8,13 +8,14 @@
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/scanner_toolbar"
-        android:layout_height="wrap_content"
         android:layout_width="match_parent"
-        android:minHeight="?attr/actionBarSize"
-        android:background="?attr/colorPrimary"
-        android:layout_alignParentTop="true"
+        android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        app:theme="@style/ThemeOverlay.AppCompat.ActionBar"/>
+        android:layout_alignParentTop="true"
+        android:background="?attr/colorPrimary"
+        android:minHeight="?attr/actionBarSize"
+        app:contentInsetStartWithNavigation="0dp"
+        app:theme="@style/ThemeOverlay.AppCompat.ActionBar" />
 
     <com.journeyapps.barcodescanner.DecoratedBarcodeView
         android:id="@+id/custom_qr_scanner"
@@ -50,9 +51,11 @@
         android:layout_alignEnd="@+id/custom_qr_scanner"
         android:layout_alignRight="@+id/custom_qr_scanner"
         android:layout_centerHorizontal="true"
+        android:layout_marginLeft="20dp"
         android:layout_marginTop="100dp"
+        android:layout_marginRight="20dp"
         android:gravity="center_horizontal"
-        android:text="Place the QR code in the center of the window."
+        android:text="Place the QR code in the center of the highlighted area."
         android:textColor="@color/white"
         android:textSize="20sp" />
 

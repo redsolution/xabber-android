@@ -22,7 +22,6 @@ import com.xabber.android.ui.fragment.QRCodeFragment;
 public class QRCodeActivity extends AppCompatActivity {
 
     private Toolbar toolbar;
-    private View contactTitleView;
     private AccountJid account;
 
     public static Intent createIntent(Context context, AccountJid account) {
@@ -40,8 +39,21 @@ public class QRCodeActivity extends AppCompatActivity {
         Intent intent = getIntent();
 /*
         Bundle bundle = getIntent().getExtras();
+
 */
+
+        account = getAccount(intent);
+        toolbar = (Toolbar) findViewById(R.id.toolbar_default);
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
         if(intent.hasExtra("fingerprint")){
+            toolbar.setTitle("My QR Code");
             Bundle bundle = intent.getExtras();
             String fingerprint = bundle.get("fingerprint").toString();
             if(savedInstanceState==null){
@@ -51,6 +63,12 @@ public class QRCodeActivity extends AppCompatActivity {
 
         if(intent.hasExtra("account_name")&&intent.hasExtra("account_address")){
             Bundle bundle = intent.getExtras();
+            if(intent.hasExtra("caller")){
+                if(bundle.get("caller").toString().equals("AccountActivity"))
+                    toolbar.setTitle("My QR Code");
+                else
+                    toolbar.setTitle("Contact's QR Code");
+            }
             String accountName = bundle.get("account_name").toString();
             String accountAddress = bundle.get("account_address").toString();
             if(savedInstanceState==null){
@@ -62,17 +80,6 @@ public class QRCodeActivity extends AppCompatActivity {
         //ImageView qrCode = findViewById(R.id.qrCode);
 
         findViewById(R.id.fragment_container).setBackgroundColor(Color.WHITE);
-
-        account = getAccount(intent);
-        toolbar = (Toolbar) findViewById(R.id.toolbar_default);
-        toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
-        toolbar.setTitle("My QR Code");
         setColors(account);
     }
 

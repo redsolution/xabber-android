@@ -47,7 +47,6 @@ import com.xabber.android.ui.helper.ContactTitleInflater;
 import org.greenrobot.eventbus.Subscribe;
 
 import java.util.Collection;
-import java.util.Collections;
 
 public class AccountActivity extends ManagedActivity implements AccountOptionsAdapter.Listener,
         OnAccountChangedListener, OnBlockedListChangedListener, ContactVcardViewerFragment.Listener {
@@ -159,22 +158,23 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
             @Override
             public void onClick(View view) {
                 RosterContact rosterContact = RosterManager.getInstance().getRosterContact(account, fakeAccountUser);
-                //Intent intent = FingerprintQRCodeActivity.createIntent(AccountActivity.this, account);
+                Intent intent = QRCodeActivity.createIntent(AccountActivity.this, account);
                 String textName = rosterContact != null ? rosterContact.getName() : "";
-                //intent.putExtra("account_name", textName);
+                intent.putExtra("account_name", textName);
                 String textAddress =  account.getFullJid().asBareJid().toString();
-                //intent.putExtra("account_address", textAddress);
+                intent.putExtra("account_address", textAddress);
+                intent.putExtra("caller", "AccountActivity");
 
-                integrator.setOrientationLocked(true)
-                        .setBeepEnabled(false)
-                        .setCameraId(0)
-                        .setPrompt("")
-                        .addExtra("account_name", textName)
-                        .addExtra("account_address", textAddress)
-                        .setCaptureActivity(QRCodeScannerActivity.class)
-                        .initiateScan(Collections.unmodifiableList(Collections.singletonList(IntentIntegrator.QR_CODE)));
+                //integrator.setOrientationLocked(true)
+                //        .setBeepEnabled(false)
+                //        .setCameraId(0)
+                //        .setPrompt("")
+                //        .addExtra("account_name", textName)
+                //        .addExtra("account_address", textAddress)
+                //        .setCaptureActivity(QRCodeScannerActivity.class)
+                //        .initiateScan(Collections.unmodifiableList(Collections.singletonList(IntentIntegrator.QR_CODE)));
 
-                //startActivity(intent);
+                startActivity(intent);
             }
         });
 
