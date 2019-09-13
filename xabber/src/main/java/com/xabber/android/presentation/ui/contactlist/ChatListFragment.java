@@ -3,6 +3,7 @@ package com.xabber.android.presentation.ui.contactlist;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -23,6 +24,7 @@ import com.google.android.material.snackbar.Snackbar;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
+import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.CommonState;
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
@@ -30,6 +32,7 @@ import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.database.realm.CrowdfundingMessage;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.muc.RoomChat;
@@ -346,6 +349,7 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
     @Override
     public void update(){
         List<IFlexible> items = new ArrayList<>();
+
         final Collection<RosterContact> allRosterContacts = RosterManager.getInstance().getAllContacts(); // Получаем все контакты
         Map<AccountJid, Collection<UserJid>> blockedContacts = new TreeMap<>();
         for (AccountJid account : AccountManager.getInstance().getEnabledAccounts()) {
@@ -480,13 +484,18 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         // Remove empty groups, sort and apply structure.
         items.clear();
 
-        //ToolbarVO toolbar = new ToolbarVO(Application.getInstance().getApplicationContext(),
-         //        this, currentChatsState);
+        /** adding toolbar with avatar of main(top) user account) */
+        ArrayList<AccountConfiguration> accountsConfigurationList = new ArrayList<AccountConfiguration>(accounts.values());
+        if (accountsConfigurationList.size() != 0){
+            AccountJid mainAccountJid = accountsConfigurationList.get(0).getAccount();
+            AccountItem mainAccountItem = AccountManager.getInstance().getAccount(mainAccountJid);
+            Drawable mainAccountAvatar = AvatarManager.getInstance().getAccountAvatar(mainAccountJid);
+            int mainAccountStatusMode = mainAccountItem.getDisplayStatusMode().getStatusLevel();
+            items.add(new ToolbarVO(Application.getInstance().getApplicationContext(),
+                    this, currentChatsState, mainAccountAvatar, mainAccountStatusMode));
+        }
 
-        items.add(new ToolbarVO(Application.getInstance().getApplicationContext(), this, currentChatsState));
-        //toolbar.setDraggable(true);
-        //items.add(toolbar);
-        // set hasVisibleContacts as true if have crowdfunding message
+        /** adding crowdfunding chat item */
         CrowdfundingMessage message = CrowdfundingManager.getInstance().getLastNotDelayedMessageFromRealm();
         if (message != null) hasVisibleContacts = true;
 
@@ -508,6 +517,7 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
                 }
             }
         }
+
         updateUnreadCount();
         updateItems(items);
 

@@ -94,9 +94,9 @@
     <string name="chat_was_unarchived">Removed from archive</string>
     <string name="undo">UNDO</string>
 
-    <string name="recent_chats">Recent chats</string>
-    <string name="unread_chats">Unread chats</string>
-    <string name="archived_chats">Archived chats</string>
+    <string name="recent_chats">Recent</string>
+    <string name="unread_chats">Unread</string>
+    <string name="archived_chats">Archived</string>
     <string name="all_chats">All chats</string>
     <string name="no_messages">No messages</string>
     <string name="show_all_chats">Show all chats</string>
