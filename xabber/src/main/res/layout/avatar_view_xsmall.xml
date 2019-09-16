@@ -33,6 +33,14 @@
             android:layout_alignParentRight="true"
             />
 
+        <ImageView
+            android:id="@+id/ivOnlyStatus"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:src="@drawable/ic_status"
+            android:visibility="gone"
+            />
+
     </RelativeLayout>
 
 </RelativeLayout>
