@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="56dp"
     android:clickable="true"
     android:background="@color/white"
-    android:elevation="2dp"
-    >
+    android:elevation="2dp">
 
     <include layout="@layout/account_color_indicator" />
 
@@ -41,7 +40,7 @@
         android:layout_toLeftOf="@+id/ivSetStatus"
         android:layout_marginRight="8dp"
         android:padding="8dp"
-        android:src="@drawable/ic_add_contact"
+        app:srcCompat="@drawable/ic_add_contact"
         android:tint="?attr/contact_list_account_group_small_right_icon_color"
         android:alpha="0.5"
         android:background="?attr/selectableItemBackgroundBorderless"
