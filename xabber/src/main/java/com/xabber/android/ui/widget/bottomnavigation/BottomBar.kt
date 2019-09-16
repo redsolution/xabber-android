@@ -12,6 +12,7 @@ import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.xabber.android.R
+import com.xabber.android.presentation.ui.contactlist.ChatListFragment
 import com.xabber.android.ui.activity.ContactListActivity
 import com.xabber.android.ui.color.ColorManager
 
@@ -41,7 +42,6 @@ class BottomBar : Fragment(), View.OnClickListener {
         } catch (e: ClassCastException) {
             throw ClassCastException(context!!.toString() + " must implement OnClickListener")
         }
-
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -78,18 +78,24 @@ class BottomBar : Fragment(), View.OnClickListener {
                     unreadCoutTextView?.text = "99"
                     unreadCoutTextView?.visibility = View.VISIBLE
                 }
-                chatsImage?.setImageDrawable(resources.getDrawable(R.drawable.ic_chats_list_unread))
                 unreadCoutTextView?.text = count.toString()
                 unreadCoutTextView?.visibility = View.VISIBLE
             } else {
                 unreadCoutTextView?.visibility = View.GONE
-                chatsImage?.setImageDrawable(resources.getDrawable(R.drawable.ic_chats_list))
             }
 
     }
 
     companion object {
         fun newInstance(): BottomBar = BottomBar()
+    }
+
+    fun setChatStateIcon (currentChatState : ChatListFragment.ChatListState){
+        when (currentChatState){
+            ChatListFragment.ChatListState.recent -> chatsImage?.setImageDrawable(resources.getDrawable(R.drawable.ic_chats_list))
+            ChatListFragment.ChatListState.unread -> chatsImage?.setImageDrawable(resources.getDrawable(R.drawable.ic_chats_list_unread))
+            ChatListFragment.ChatListState.archived -> chatsImage?.setImageDrawable(resources.getDrawable(R.drawable.ic_chats_list))
+        }
     }
 
     fun setColoredButton(activeFragment : ContactListActivity.ActiveFragment){

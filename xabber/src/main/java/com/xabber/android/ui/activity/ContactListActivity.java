@@ -99,8 +99,6 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
         ChatListFragment.ChatListFragmentListener, ContactListDrawerFragment.ContactListDrawerListener,
         BottomBar.OnClickListener {
 
-    //TODO implement ChatListFragmentListener methods
-
     /**
      * Select contact to be invited to the room was requested.
      */
@@ -140,6 +138,7 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
     private Fragment contentFragment;
     private ActiveFragment currentActiveFragment = ActiveFragment.CHATS;
     private boolean fragmentToggle = false;
+    private ChatListFragment.ChatListState currentChatListState;
 
     private View showcaseView;
     private Button btnShowcaseGotIt;
@@ -555,6 +554,11 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
         super.onBackPressed();
     }
 
+    public void onChatListStateChanged(ChatListFragment.ChatListState chatListState){
+        currentChatListState = chatListState;
+        bottomBar.setChatStateIcon(chatListState);
+    }
+
     private void exit() {
         Application.getInstance().requestToClose();
         showDialog(DIALOG_CLOSE_APPLICATION_ID);
@@ -831,10 +835,12 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
         if (!isFinishing()) {
             if (fragmentToggle){
                 contentFragment = ChatListFragment.newInstance(account, false);
+                bottomBar.setChatStateIcon(ChatListFragment.ChatListState.recent);
                 fragmentToggle = !fragmentToggle;
             }
             else if ((unreadMessagesCount > 0) && (currentActiveFragment == ActiveFragment.CHATS)){
                 contentFragment = ChatListFragment.newInstance(account, true);
+                bottomBar.setChatStateIcon(ChatListFragment.ChatListState.unread);
                 fragmentToggle = !fragmentToggle;
             }
             else contentFragment = ChatListFragment.newInstance(account, false);
@@ -878,8 +884,6 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
         }
         bottomBar.setColoredButton(currentActiveFragment);
     }
-
-
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onUnreadMessagesCountChanged(ContactListPresenter.UpdateUnreadCountEvent event) {

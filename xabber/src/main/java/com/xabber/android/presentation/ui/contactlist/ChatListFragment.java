@@ -108,7 +108,7 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
 
     public interface ChatListFragmentListener{
         void onChatClick(AbstractContact contact);
-        //void onChatListChanged()
+        void onChatListStateChanged(ChatListState chatListState);
     }
 
     @Override
@@ -158,10 +158,13 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
     @Override
     public void onStateSelected(ChatListState state) {
         this.currentChatsState = state;
-        //update();
         updateBackpressure.run();
+        chatListFragmentListener.onChatListStateChanged(state);
         this.closeSnackbar();
-            //this.closeSearch();
+    }
+
+    public ChatListState getCurrentChatsState(){
+        return currentChatsState;
     }
 
     @Override
@@ -210,10 +213,11 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         adapter.setDisplayHeadersAtStartUp(true);
         adapter.setSwipeEnabled(true);
         adapter.expandItemsAtStartUp();
+        adapter.setStickyHeaders(true);
         adapter.addListener(this);
         updateBackpressure = new UpdateBackpressure(this);
         updateBackpressure.run();
-        //updateBackpressure.refreshRequest();            //pay attention
+        updateBackpressure.refreshRequest();
         return view;
     }
 
@@ -492,7 +496,7 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
             Drawable mainAccountAvatar = AvatarManager.getInstance().getAccountAvatar(mainAccountJid);
             int mainAccountStatusMode = mainAccountItem.getDisplayStatusMode().getStatusLevel();
             items.add(new ToolbarVO(Application.getInstance().getApplicationContext(),
-                    this, currentChatsState, mainAccountAvatar, mainAccountStatusMode));
+                    this, currentChatsState, mainAccountAvatar,mainAccountStatusMode));
         }
 
         /** adding crowdfunding chat item */
