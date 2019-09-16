@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -26,14 +25,10 @@ import com.xabber.android.data.extension.xtoken.XTokenManager;
 import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.ui.color.BarPainter;
 
-import org.jivesoftware.smack.SmackException;
-import org.jivesoftware.smack.StanzaListener;
-import org.jivesoftware.smack.packet.Presence;
-import org.jivesoftware.smack.packet.Stanza;
 
 import java.util.List;
 
-public class ActiveSessionsActivity extends ManagedActivity implements SessionAdapter.Listener, Toolbar.OnMenuItemClickListener, StanzaListener {
+public class ActiveSessionsActivity extends ManagedActivity implements SessionAdapter.Listener {
 
     private Toolbar toolbar;
     private BarPainter barPainter;
@@ -85,8 +80,6 @@ public class ActiveSessionsActivity extends ManagedActivity implements SessionAd
             }
         });
         toolbar.setTitle(R.string.account_active_sessions);
-        toolbar.inflateMenu(R.menu.menu_token_sessions);
-        toolbar.setOnMenuItemClickListener(this);
 
         barPainter = new BarPainter(this, toolbar);
         barPainter.updateWithAccountName(account);
@@ -114,8 +107,6 @@ public class ActiveSessionsActivity extends ManagedActivity implements SessionAd
         tvCurrentDevice = findViewById(R.id.tvDevice);
         tvCurrentIPAddress = findViewById(R.id.tvIPAddress);
         tvCurrentDate = findViewById(R.id.tvDate);
-
-        //new XTokenManager.SessionsListener(){}
 
         updateData();
     }
@@ -201,23 +192,5 @@ public class ActiveSessionsActivity extends ManagedActivity implements SessionAd
     public void onAuthErrorEvent(AccountErrorEvent accountErrorEvent) {
         super.onAuthErrorEvent(accountErrorEvent);
         finish();
-    }
-
-    @Override
-    public boolean onMenuItemClick(MenuItem item) {
-        switch(item.getItemId()) {
-            case R.id.sessions_refresh:
-                updateData();
-                return true;
-            default:
-                return true;
-        }
-    }
-
-    @Override
-    public void processStanza(Stanza packet) throws SmackException.NotConnectedException, InterruptedException {
-        Presence presence = (Presence) packet;
-        if(presence.getStatus().equals("Stream closed by us: Token was revoked"));
-            updateData();
     }
 }
