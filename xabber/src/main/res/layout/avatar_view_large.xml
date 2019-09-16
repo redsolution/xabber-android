@@ -27,4 +27,17 @@
         android:layout_margin="5dp"
         />
 
+    <ImageView
+        android:id="@+id/ivStatusGroupchat"
+        android:layout_width="18dp"
+        android:layout_height="18dp"
+        android:layout_alignBaseline="@+id/imageView"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="3dp"
+
+        android:visibility="gone"
+        app:srcCompat="@drawable/ic_groupchat"
+        tools:visibility="visible" />
+
 </RelativeLayout>

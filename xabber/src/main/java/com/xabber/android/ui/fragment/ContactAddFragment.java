@@ -1,16 +1,22 @@
 package com.xabber.android.ui.fragment;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
@@ -20,6 +26,8 @@ import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterManager;
+import com.xabber.android.ui.activity.ContactAddActivity;
+import com.xabber.android.ui.activity.QRCodeScannerActivity;
 import com.xabber.android.ui.adapter.AccountChooseAdapter;
 import com.xabber.android.ui.helper.ContactAdder;
 
@@ -31,6 +39,7 @@ import org.jxmpp.stringprep.XmppStringprepException;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 
 public class ContactAddFragment extends GroupEditorFragment
         implements AdapterView.OnItemSelectedListener, ContactAdder {
@@ -43,12 +52,26 @@ public class ContactAddFragment extends GroupEditorFragment
     private EditText userView;
     private EditText nameView;
     private String name;
+    private IntentIntegrator integrator;
+    private ImageView qrScan;
+    private ImageView clearText;
+
 
     public static ContactAddFragment newInstance(AccountJid account, UserJid user) {
         ContactAddFragment fragment = new ContactAddFragment();
         Bundle args = new Bundle();
         args.putParcelable(ARG_ACCOUNT, account);
         args.putParcelable(ARG_USER, user);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    public static ContactAddFragment newInstance(AccountJid account, UserJid user, String contact){
+        ContactAddFragment fragment = new ContactAddFragment();
+        Bundle args = new Bundle();
+        args.putParcelable(ARG_ACCOUNT, account);
+        args.putParcelable(ARG_USER, user);
+        args.putString("contact", contact);
         fragment.setArguments(args);
         return fragment;
     }
@@ -86,14 +109,47 @@ public class ContactAddFragment extends GroupEditorFragment
 
         setUpAccountView((Spinner) view.findViewById(R.id.contact_account));
 
+        clearText = view.findViewById(R.id.imgCross);
+        clearText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                userView.setText("");
+            }
+        });
         userView = (EditText) view.findViewById(R.id.contact_user);
+        userView.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if (editable.toString().equals("")) {
+                    ((ContactAddActivity)getActivity()).toolbarSetEnabled(false);
+                    clearText.setVisibility(View.GONE);
+                    qrScan.setVisibility(View.VISIBLE);
+                } else {
+                    ((ContactAddActivity)getActivity()).toolbarSetEnabled(true);
+                    clearText.setVisibility(View.VISIBLE);
+                    qrScan.setVisibility(View.GONE);
+                }
+            }
+        });
         nameView = (EditText) view.findViewById(R.id.contact_name);
+        qrScan = (ImageView) view.findViewById(R.id.imgQRcode);
+        qrScan.setOnClickListener(this);
 
         if (getUser() != null) {
             userView.setText(getUser().toString());
         }
         if (name != null) {
             nameView.setText(name);
+        }
+
+        if(getArguments()!=null){
+            userView.setText(getArguments().getString("contact"));
         }
 
         return view;
@@ -115,6 +171,44 @@ public class ContactAddFragment extends GroupEditorFragment
                     break;
                 }
             }
+        }
+    }
+
+    @Override
+    public void onClick(View view){
+        switch (view.getId()){
+            case R.id.imgQRcode:
+                integrator = IntentIntegrator.forFragment(this);
+                integrator.setOrientationLocked(false)
+                        .setBeepEnabled(false)
+                        .setCameraId(0)
+                        .setPrompt("")
+                        .addExtra("caller","ContactAddFragment")
+                        .setCaptureActivity(QRCodeScannerActivity.class)
+                        .initiateScan(Collections.unmodifiableList(Collections.singletonList(IntentIntegrator.QR_CODE)));
+                break;
+            default:
+                break;
+        }
+    }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent data){
+        IntentResult result = IntentIntegrator.parseActivityResult(requestCode,resultCode, data);
+        if(result!=null){
+            if(result.getContents()==null){
+                Toast.makeText(getActivity(), "no-go", Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(getActivity(), "Scanned = " + result.getContents(), Toast.LENGTH_LONG).show();
+                if(result.getContents().length()>5) {
+                    String[] s = result.getContents().split(":");
+                    if (s[0].equals("xmpp") && s.length >= 2) {
+                        userView.setText(s[1]);
+                        nameView.requestFocus();
+                    }
+                }
+            }
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
         }
     }
 

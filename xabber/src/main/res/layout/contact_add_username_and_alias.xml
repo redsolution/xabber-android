@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge xmlns:tools="http://schemas.android.com/tools"
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:showIn="@layout/contact_add_header">
 
 
@@ -12,14 +13,49 @@
         android:layout_marginTop="10dp"
         />
 
-    <EditText
-        android:text=""
-        android:id="@+id/contact_user"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/user_domain_name"
-        android:singleLine="true"
-        android:inputType="textEmailAddress" />
+        android:layout_height="match_parent">
+        <EditText
+            android:text=""
+            android:id="@+id/contact_user"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/user_domain_name"
+            android:singleLine="true"
+            android:inputType="textEmailAddress" />
+
+        <ImageView
+            android:id="@+id/imgQRcode"
+            style="@style/QRCodeLoginButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/contact_user"
+            android:layout_alignEnd="@id/contact_user"
+            android:layout_alignRight="@id/contact_user"
+            android:background="@drawable/test_ripple"
+            android:layout_marginBottom="5dp"
+            android:clickable="true"
+            android:focusable="true"
+            app:srcCompat="@drawable/qrcode_scan_icon_grey"
+             />
+        <ImageView
+            android:id="@+id/imgCross"
+            style="@style/QRCodeLoginButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/contact_user"
+            android:layout_alignEnd="@id/contact_user"
+            android:layout_alignRight="@id/contact_user"
+            android:background="@drawable/test_ripple"
+            android:layout_marginBottom="5dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:visibility="gone"
+            app:srcCompat="@drawable/ic_close"
+            />
+    </RelativeLayout>
+
 
     <TextView
         android:text="@string/contact_name"
@@ -35,4 +71,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:singleLine="true" />
+
+
 </merge>

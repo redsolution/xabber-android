@@ -47,6 +47,7 @@ import com.xabber.android.ui.helper.ContactTitleActionBarInflater;
 import org.jxmpp.jid.BareJid;
 
 import java.util.Collection;
+import java.util.Collections;
 
 public class FingerprintActivity extends ManagedActivity implements
         OnCheckedChangeListener, OnAccountChangedListener,
@@ -209,10 +210,23 @@ public class FingerprintActivity extends ManagedActivity implements
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.scan:
-                integrator.initiateScan(IntentIntegrator.QR_CODE_TYPES);
+                integrator.setOrientationLocked(false)
+                        .setBeepEnabled(false)
+                        .setPrompt("")
+                        .addExtra("account", account)
+                        .setCaptureActivity(QRCodeScannerActivity.class)
+                        .initiateScan(Collections.unmodifiableList(Collections.singletonList(IntentIntegrator.QR_CODE)));
+
+                //legacy:
+                //integrator.initiateScan(IntentIntegrator.QR_CODE_TYPES);
                 break;
             case R.id.show:
-                integrator.shareText(localFingerprint);
+                Intent intent = QRCodeActivity.createIntent(this, account);
+                intent.putExtra("fingerprint", localFingerprint);
+                startActivity(intent);
+
+                //legacy:
+                //integrator.shareText(localFingerprint);
                 break;
             case R.id.copy:
                 ((ClipboardManager) getSystemService(CLIPBOARD_SERVICE))

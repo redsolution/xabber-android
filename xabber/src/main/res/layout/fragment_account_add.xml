@@ -14,6 +14,7 @@
 -->
 
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -31,39 +32,104 @@
             android:focusableInTouchMode="true"
             android:orientation="vertical">
 
-            <TextView
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/account_user_name" />
+                android:layout_height="match_parent">
 
-            <EditText
-                android:id="@+id/account_user_name"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/name_example_com"
-                android:inputType="textEmailAddress"
-                android:singleLine="true"
-                android:text="" />
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/edtUsernameLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:weightSum="10"
+                    android:theme="@style/Theme">
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/account_password" />
+                    <androidx.appcompat.widget.AppCompatEditText
+                        android:id="@+id/account_user_name"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="XMPP ID"
+                        android:imeOptions="actionNext"
+                        android:inputType="textEmailAddress"
+                        android:nextFocusForward="@+id/account_password"
+                        android:singleLine="true"
+                        android:textSize="16sp"
+                        android:theme="@style/Theme" />
 
-            <EditText
-                android:id="@+id/account_password"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textPassword"
-                android:singleLine="true"
-                android:text="" />
+                </com.google.android.material.textfield.TextInputLayout>
 
-            <CheckBox
-                android:id="@+id/store_password"
+                <ImageView
+                    android:id="@+id/imgQRcode"
+                    style="@style/QRCodeLoginButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBottom="@id/edtUsernameLayout"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="-1dp"
+                    android:layout_marginBottom="0dp"
+                    android:background="@drawable/test_ripple"
+                    android:clickable="true"
+                    android:focusable="true"
+                    app:srcCompat="@drawable/qrcode_scan_icon_grey" />
+                <ImageView
+                    android:id="@+id/imgCross"
+                    style="@style/QRCodeLoginButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBottom="@id/edtUsernameLayout"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="-1dp"
+                    android:layout_marginBottom="0dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="@drawable/test_ripple"
+                    app:srcCompat="@drawable/ic_close"
+                    android:visibility="gone"/>
+
+            </RelativeLayout>
+
+
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:checked="true"
-                android:text="@string/account_store_password" />
+                app:passwordToggleEnabled="true"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
+                android:theme="@style/Theme"
+                >
+
+                <androidx.appcompat.widget.AppCompatEditText
+                    android:id="@+id/account_password"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:imeOptions="actionDone"
+                    android:singleLine="true"
+                    android:textSize="16sp"
+                    android:theme="@style/Theme"
+                    android:hint="@string/hint_pass"
+                    android:inputType="textPassword"
+                    />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <CheckBox
+                    android:id="@+id/store_password"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left"
+                    android:layout_weight="2"
+                    android:checked="true"
+                    android:text="@string/account_store_password" />
+
+            </LinearLayout>
+
 
         </LinearLayout>
 
@@ -126,12 +192,11 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_error_grey_24dp"
-                android:paddingTop="16dp"
-                android:paddingBottom="16dp"
                 android:paddingLeft="4dp"
+                android:paddingTop="16dp"
                 android:paddingRight="4dp"
-                />
+                android:paddingBottom="16dp"
+                app:srcCompat="@drawable/ic_error_grey_24dp" />
 
             <TextView
                 android:id="@+id/account_help"
@@ -143,5 +208,6 @@
                 />
 
         </LinearLayout>
+
     </LinearLayout>
 </ScrollView>

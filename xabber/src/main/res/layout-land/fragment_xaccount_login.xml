@@ -21,9 +21,14 @@
             android:focusableInTouchMode="true"
             >
 
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:id="@+id/edtUsernameLayout"
+
                 >
 
                 <androidx.appcompat.widget.AppCompatEditText
@@ -40,6 +45,37 @@
                     />
 
             </com.google.android.material.textfield.TextInputLayout>
+
+            <ImageView
+                android:id="@+id/imgQRcode"
+                style="@style/QRCodeLoginButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@id/edtUsernameLayout"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="-1dp"
+                android:layout_marginBottom="0dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="@drawable/test_ripple"
+                app:srcCompat="@drawable/qrcode_scan_icon_grey" />
+                <ImageView
+                    android:id="@+id/imgCross"
+                    style="@style/QRCodeLoginButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBottom="@id/edtUsernameLayout"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="-1dp"
+                    android:layout_marginBottom="0dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="@drawable/test_ripple"
+                    app:srcCompat="@drawable/ic_close"
+                    android:visibility="gone"/>
+            </RelativeLayout>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
@@ -148,7 +184,7 @@
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/ic_error_grey_24dp"
+                    app:srcCompat="@drawable/ic_error_grey_24dp"
                     android:paddingTop="16dp"
                     android:paddingBottom="16dp"
                     android:paddingLeft="4dp"

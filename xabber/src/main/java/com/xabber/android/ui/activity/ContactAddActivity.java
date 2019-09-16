@@ -59,6 +59,13 @@ public class ContactAddActivity extends ManagedActivity implements ContactAddFra
         return EntityIntentBuilder.getUser(intent);
     }
 
+    private static String getContact(Intent intent){
+        String contact;
+        Bundle bundle = intent.getExtras();
+        contact = bundle.get("contact").toString();
+        return contact;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,7 +87,14 @@ public class ContactAddActivity extends ManagedActivity implements ContactAddFra
 
         Intent intent = getIntent();
 
-        if (savedInstanceState == null) {
+        if(intent.hasExtra("contact")) {
+            if (savedInstanceState == null) {
+                getFragmentManager()
+                        .beginTransaction()
+                        .add(R.id.fragment_container, ContactAddFragment.newInstance(getAccount(intent), getUser(intent), getContact(intent)))
+                        .commit();
+            }
+        }else if (savedInstanceState == null) {
             getFragmentManager()
                     .beginTransaction()
                     .add(R.id.fragment_container, ContactAddFragment.newInstance(getAccount(intent), getUser(intent)))
@@ -97,7 +111,7 @@ public class ContactAddActivity extends ManagedActivity implements ContactAddFra
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater=getMenuInflater();
         inflater.inflate(R.menu.toolbar_add_contact, menu);
-
+        toolbar.getMenu().findItem(R.id.action_add_account).setEnabled(false);
         return true;
     }
 
@@ -125,4 +139,10 @@ public class ContactAddActivity extends ManagedActivity implements ContactAddFra
             toolbar.getMenu().findItem(R.id.action_add_contact).setVisible(!show);
         }
     }
+
+    public void toolbarSetEnabled(boolean active){
+        if (active) toolbar.getMenu().findItem(R.id.action_add_contact).setEnabled(true);
+        else toolbar.getMenu().findItem(R.id.action_add_contact).setEnabled(false);
+    }
+
 }

@@ -31,11 +31,10 @@
         android:id="@+id/ivStatusGroupchat"
         android:layout_width="16dp"
         android:layout_height="16dp"
-        android:src="@drawable/ic_groupchat"
         android:layout_alignBaseline="@+id/imageView"
-        android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
-        android:visibility="visible"
-        />
+        android:layout_alignParentBottom="true"
+        app:srcCompat="@drawable/ic_groupchat"
+        android:visibility="invisible" />
 
 </RelativeLayout>
