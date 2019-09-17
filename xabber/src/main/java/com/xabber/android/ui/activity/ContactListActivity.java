@@ -135,10 +135,8 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
      */
     private String sendText;
     private int unreadMessagesCount;
-    private BottomBar bottomBar;
     private Fragment contentFragment;
     private ActiveFragment currentActiveFragment = ActiveFragment.CHATS;
-    private boolean fragmentToggle = false;
     private ChatListFragment.ChatListState currentChatListState;
 
     private View showcaseView;
@@ -271,11 +269,6 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
         outState.putString(SAVED_SEND_TEXT, sendText);
         super.onSaveInstanceState(outState);
     }
-
-//    @Override
-//    public void onBackStackChanged() {
-//        Toast.makeText(this, "CHANGED BACKSTACK", Toast.LENGTH_SHORT).show();
-//    }
 
     /**
      * Open chat with specified contact.
@@ -416,7 +409,6 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
                     }
                     break;
                 }
-
                 case ContactListActivity.ACTION_MUC_PRIVATE_CHAT_INVITE:
                     action = null;
                     showMucPrivateChatDialog();
@@ -442,7 +434,6 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
                 }
             }
         }
-
         showPassDialogs();
 
         //showcase
@@ -920,7 +911,6 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
             if (requestCode == CODE_OPEN_CHAT &&
                     (currentState == (ContactListPresenter.ChatListState.unread)
                     || currentState == (ContactListPresenter.ChatListState.archived))) {
-                //((ContactListFragment) contentFragment).showRecent();
             }
         }
     }
@@ -931,10 +921,6 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
 
     public void showShowcase(boolean show) {
         showcaseView.setVisibility(show ? View.VISIBLE : View.INVISIBLE);
-    }
-
-    public void closeSearch() {
-        //if (bottomBar != null) bottomBar.closeSearch(); need for ol menu
     }
 
     public enum ActiveFragment {

@@ -65,7 +65,7 @@
         android:id="@+id/show_search_button"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:src="@drawable/ic_search"
+        android:src="@drawable/ic_discover"
         android:background="@color/transparent"
         android:layout_weight="1"/>
 

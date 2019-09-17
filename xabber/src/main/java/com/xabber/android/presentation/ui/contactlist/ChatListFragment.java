@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -28,6 +29,8 @@ import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.CommonState;
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
+import com.xabber.android.data.connection.ConnectionManager;
+import com.xabber.android.data.connection.ConnectionState;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.database.realm.CrowdfundingMessage;
 import com.xabber.android.data.entity.AccountJid;
@@ -50,6 +53,7 @@ import com.xabber.android.data.roster.GroupManager;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
+import com.xabber.android.data.xaccount.AuthManager;
 import com.xabber.android.presentation.mvp.contactlist.ContactListPresenter;
 import com.xabber.android.presentation.mvp.contactlist.UpdateBackpressure;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.ChatVO;
@@ -98,13 +102,8 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
     private TextView placeholderMessage;
     private ImageView placeholderImage;
     private ChatListFragmentListener chatListFragmentListener;
-    private View infoView;
-    private View connectedView;
-    private ImageView disconnectedView;
-    private TextView textView;
-    private Button buttonView;
-    private Animation animation;
     private ChatListState currentChatsState = ChatListState.recent;
+    private RecyclerView recyclerView;
 
     public interface ChatListFragmentListener{
         void onChatClick(AbstractContact contact);
@@ -113,7 +112,7 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
 
     @Override
     public void onAttach(Context context) {
-        chatListFragmentListener = (ChatListFragmentListener) context; // Передали обязанность листенера за клики на этом фрагменте ContactListActivity
+        chatListFragmentListener = (ChatListFragmentListener) context;
         Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
         Application.getInstance().addUIListener(OnContactChangedListener.class, this);
         EventBus.getDefault().register(this);
@@ -154,8 +153,6 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         updateBackpressure.run();
     }
 
-    public void updateChatList() {updateBackpressure.refreshRequest();}         //pay attention
-
     @Override
     public void onStateSelected(ChatListState state) {
         this.currentChatsState = state;
@@ -194,27 +191,23 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_chat_list, container, false);
 
-        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.chatlist_recyclerview);
+        recyclerView = (RecyclerView) view.findViewById(R.id.chatlist_recyclerview);
         linearLayoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(linearLayoutManager);
         coordinatorLayout = (CoordinatorLayout) view.findViewById(R.id.chatlist_coordinator_layout);
-
         placeholderView = view.findViewById(R.id.chatlist_placeholder_view);
         placeholderMessage = view.findViewById(R.id.chatlist_placeholder_message);
         placeholderImage = view.findViewById(R.id.chatlist_placeholder_image);
         ColorManager.setGrayScaleFilter(placeholderImage);
 
-
-        // TODO connected/disconnected states
-
         items = new ArrayList<>();
-
         adapter = new FlexibleAdapter<>(items, null, false);
         recyclerView.setAdapter(adapter);
         adapter.setDisplayHeadersAtStartUp(true);
         adapter.setSwipeEnabled(true);
         adapter.expandItemsAtStartUp();
         adapter.setStickyHeaders(true);
+
         adapter.addListener(this);
         updateBackpressure = new UpdateBackpressure(this);
         updateBackpressure.run();
@@ -227,14 +220,14 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
     // notify adapter to update ui items
     private void updateItems(List<IFlexible> items){
         //check empty state and show placeholder
-        if (items.size() == 1){
-            if (currentChatsState == ChatListState.unread){
-                showPlaceholder(Application.getInstance().getApplicationContext().getString(R.string.placeholder_no_unread));
-            }
-            else if (currentChatsState == ChatListState.archived){
-                showPlaceholder(Application.getInstance().getApplicationContext().getString(R.string.placeholder_no_archived));
-            }
-        } else if (placeholderView != null) hidePlaceholder();
+        if (items.size() <= 1){
+            if (currentChatsState == ChatListState.unread) showPlaceholder(Application.getInstance().getApplicationContext().getString(R.string.placeholder_no_unread));
+            else if (currentChatsState == ChatListState.archived) showPlaceholder(Application.getInstance().getApplicationContext().getString(R.string.placeholder_no_archived));
+        } else if (AccountManager.getInstance().getCommonState() != CommonState.online){
+            showPlaceholder(Application.getInstance().getApplicationContext().getString(R.string.application_state_waiting));
+            recyclerView.setVisibility(View.GONE);
+        } else hidePlaceholder();
+
         this.items.clear();
         this.items.addAll(items);
         adapter.updateDataSet(this.items);
@@ -603,7 +596,10 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         placeholderView.setVisibility(View.VISIBLE);
     }
 
-    private void hidePlaceholder(){ placeholderView.setVisibility(View.GONE);   }
+    private void hidePlaceholder(){
+        recyclerView.setVisibility(View.VISIBLE);
+        placeholderView.setVisibility(View.GONE);
+    }
 
     public void showSnackbar(final ChatVO deletedItem, final int deletedIndex) {
         if (snackbar != null) snackbar.dismiss();
@@ -628,15 +624,10 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         snackbar.show();
     }
 
-    //@Override
     public void closeSnackbar() {
         if (snackbar != null) snackbar.dismiss();
     }
 
     @Override
-    public void onActionStateChanged(RecyclerView.ViewHolder viewHolder, int actionState) {
-
-    }
-
-
+    public void onActionStateChanged(RecyclerView.ViewHolder viewHolder, int actionState) { }
 }

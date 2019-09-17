@@ -24,6 +24,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.xabber.android.R;
+import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.CommonState;
@@ -218,6 +219,10 @@ public class ContactListFragment extends Fragment implements ContactListView,
 
     @Override
     public void updateItems(List<IFlexible> items) {
+        if (AccountManager.getInstance().getCommonState() != CommonState.online){
+            showPlaceholder(Application.getInstance().getString(R.string.application_state_waiting));
+            items.clear();
+        } else hidePlaceholder();
         this.items.clear();
         this.items.addAll(items);
         adapter.updateDataSet(this.items);
@@ -400,7 +405,7 @@ public class ContactListFragment extends Fragment implements ContactListView,
 
     @Override
     public void closeSearch() {
-        ((ContactListActivity)getActivity()).closeSearch();
+        //((ContactListActivity)getActivity()).closeSearch();
     }
 
     @Override
