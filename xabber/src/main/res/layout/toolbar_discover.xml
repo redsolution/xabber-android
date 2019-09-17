@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    android:id="@+id/toolbar_discover"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="56dp"
+    android:background="?attr/selectableItemBackgroundBorderless"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/button_close_search_discover"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="6dp"
+        android:padding="8dp"
+        android:src="@drawable/ic_close_circle_grey600_24dp"
+        android:visibility="gone"
+        android:layout_toLeftOf="@id/edittext_discover_search"/>
+
+    <EditText
+        android:id="@+id/edittext_discover_search"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:hint="@string/search"
+        android:layout_marginRight="4dp"
+        android:layout_marginLeft="4dp"
+        android:layout_toLeftOf="@id/button_search_discover"/>
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/button_search_discover"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        app:srcCompat="@drawable/ic_search"
+        android:layout_marginRight="6dp"
+        android:layout_alignParentRight="true"
+        android:padding="8dp"/>
+
+
+
+
+</RelativeLayout>

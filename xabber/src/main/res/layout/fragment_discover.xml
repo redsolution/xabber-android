@@ -6,7 +6,13 @@
     android:layout_height="match_parent"
     android:background="@color/white">
 
+    <include
+        layout="@layout/toolbar_discover"
+        android:layout_width="wrap_content"
+        android:layout_height="56dp"/>
+
     <ImageView
+        android:layout_below="@+id/toolbar_discover"
         android:id="@+id/discover_filler_image"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
