@@ -140,17 +140,18 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         super.onDetach();
     }
 
-    //public ChatListFragment() {}
-
-    public static ChatListFragment newInstance(@Nullable AccountJid account, boolean showUnread) {
+    public static ChatListFragment newInstance(@Nullable AccountJid account){
         ChatListFragment fragment = new ChatListFragment();
         Bundle args = new Bundle();
         if (account != null)
             args.putSerializable("account_jid", account);
         fragment.setArguments(args);
-        if (showUnread) fragment.currentChatsState = ChatListState.unread;
-            else fragment.currentChatsState = ChatListState.recent;
         return fragment;
+    }
+
+    public void showChatListWithState(ChatListState state){
+        currentChatsState = state;
+        updateBackpressure.run();
     }
 
     public void updateChatList() {updateBackpressure.refreshRequest();}         //pay attention
