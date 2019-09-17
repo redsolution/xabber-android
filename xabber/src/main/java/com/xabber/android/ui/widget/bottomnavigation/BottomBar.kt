@@ -114,7 +114,4 @@ class BottomBar : Fragment(), View.OnClickListener {
             ContactListActivity.ActiveFragment.SETTINGS -> settingsButton?.setColorFilter(colorActive)
         }
     }
-
-
-
 }
