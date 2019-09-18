@@ -31,13 +31,20 @@
 
     </androidx.appcompat.widget.Toolbar>
 
-    <androidx.viewpager.widget.ViewPager
-        android:id="@+id/pager"
+    <RelativeLayout
+        android:id="@+id/chat_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:overScrollMode="never"
-        android:layout_below="@id/toolbar_default"
-    />
+        android:layout_below="@id/toolbar_default"/>
+
+
+<!--    <androidx.viewpager.widget.ViewPager-->
+<!--        android:id="@+id/pager"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent"-->
+<!--        android:overScrollMode="never"-->
+<!--        android:layout_below="@id/toolbar_default"-->
+<!--    />-->
 
     <ViewStub
         android:id="@+id/showcaseView"

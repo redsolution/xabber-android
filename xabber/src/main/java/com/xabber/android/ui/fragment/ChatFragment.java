@@ -1000,9 +1000,9 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         if (v.getId() == R.id.avatar) {
             showContactInfo();
         }
-        if (v.getId() == R.id.placeholder) {
-            ((ChatActivity)getActivity()).selectPage(1, true);
-        }
+//        if (v.getId() == R.id.placeholder) {
+//            ((ChatActivity)getActivity()).selectPage(1, true);
+//        }
         if (v.getId() == R.id.actionJoin) {
             ((ChatActivity)getActivity()).onJoinConferenceClick();
             showJoinButtonIfNeed();
