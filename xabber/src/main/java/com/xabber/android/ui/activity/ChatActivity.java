@@ -28,9 +28,11 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager.widget.ViewPager;
 import androidx.appcompat.widget.Toolbar;
 import android.text.InputType;
+import android.view.GestureDetector;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.Animation;
@@ -121,6 +123,11 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     private static final String CHAT_FRAGMENT_TAG = "CHAT_FRAGMENT_TAG";
     private static final String CONTACT_INFO_FRAGMENT_TAG = "CONTACT_INFO_FRAGMENT_TAG";
 
+    private static final int SWIPE_MIN_DISTANCE = 120;
+    private static final int SWIPE_MAX_OFF_PATH = 250;
+    private static final int SWIPE_THRESHOLD_VELOCITY = 200;
+    private GestureDetector gestureDetector;
+
     private String currentFragment;
 
     private static final String ACTION_ATTENTION = "com.xabber.android.data.ATTENTION";
@@ -191,6 +198,8 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
             inputManager.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
         }
     }
+
+    public String getCurrentFragment(){ return currentFragment;}
 
     @Nullable
     private static AccountJid getAccount(Intent intent) {
@@ -335,7 +344,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
             @Override
             public void onClick(View v) {
                 if (currentFragment.equals(CONTACT_INFO_FRAGMENT_TAG)){
-                    initChats();
+                    initChats(false);
                     updateToolbar();
                     //updateToolbarMenuIcon();
                 } else NavUtils.navigateUpFromSameTask(ChatActivity.this);
@@ -357,8 +366,25 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
 //        if (savedInstanceState != null) {
 //            restoreInstanceState(savedInstanceState);
 //        }
+        gestureDetector = new GestureDetector(new SwipeDetector());
+        initChats(false);
+    }
 
-        initChats();
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        // TouchEvent dispatcher.
+        if (gestureDetector != null) {
+            if (gestureDetector.onTouchEvent(ev))
+                // If the gestureDetector handles the event, a swipe has been
+                // executed and no more needs to be done.
+                return true;
+        }
+        return super.dispatchTouchEvent(ev);
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        return gestureDetector.onTouchEvent(event);
     }
 
     @Override
@@ -502,13 +528,14 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         super.onBackPressed();
     }
 
-    private void initChats() {
+    private void initChats(boolean animated) {
         Fragment fragment;
         if (CrowdfundingChat.USER.equals(user.getBareJid().toString()))
             fragment = CrowdfundingChatFragment.newInstance();
         else fragment = ChatFragment.newInstance(account, user);
 
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        if (animated) fragmentTransaction.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right);
         fragmentTransaction.replace(R.id.chat_container, fragment, CHAT_FRAGMENT_TAG);
         fragmentTransaction.commit();
         //        if (account != null && user != null) {
@@ -1219,5 +1246,32 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         intent.putExtra("account_address", textAddress);
         intent.putExtra("caller", "ChatActivity");
         startActivity(intent);
+    }
+
+    private class SwipeDetector extends GestureDetector.SimpleOnGestureListener {
+        @Override
+        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+
+            // Check movement along the Y-axis. If it exceeds SWIPE_MAX_OFF_PATH,
+            // then dismiss the swipe.
+            if (Math.abs(e1.getY() - e2.getY()) > SWIPE_MAX_OFF_PATH)
+                return false;
+
+            // Swipe from left to right.
+            // The swipe needs to exceed a certain distance (SWIPE_MIN_DISTANCE)
+            // and a certain velocity (SWIPE_THRESHOLD_VELOCITY).
+            if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
+                if (ChatActivity.this.getCurrentFragment().equals(CONTACT_INFO_FRAGMENT_TAG))
+                    ChatActivity.this.initChats(true);
+                else{
+                    startActivity(new Intent(ChatActivity.this, ContactListActivity.class));
+                    ChatActivity.this.overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+                    finish();
+                }
+                return true;
+            }
+
+            return false;
+        }
     }
 }
