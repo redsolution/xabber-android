@@ -170,8 +170,8 @@ dependencies {
     storeImplementation "com.twitter.sdk.android:twitter:3.0.0"
 
     // gms
-    storeImplementation "com.google.android.gms:play-services-safetynet:16.0.0"
-    storeImplementation "com.google.android.gms:play-services-auth:15.0.0"
+    storeImplementation "com.google.android.gms:play-services-safetynet:17.0.0"
+    storeImplementation "com.google.android.gms:play-services-auth:17.0.0"
     storeImplementation ("com.google.api-client:google-api-client-android:1.22.0") {
         exclude module: 'httpclient'
     }
@@ -197,6 +197,7 @@ dependencies {
     implementation 'com.soundcloud.android:android-crop:1.0.1@aar'
     implementation 'de.hdodenhof:circleimageview:3.0.1'
     implementation 'com.melnykov:floatingactionbutton:1.3.0'
+    implementation 'com.gongwen:swipeback:1.0.2'
 
     // crashlytics
     storeImplementation("com.crashlytics.sdk.android:crashlytics:2.9.5@aar") {

@@ -143,7 +143,7 @@
             android:label="@string/chat_viewer"
             android:launchMode="singleTop"
             android:parentActivityName=".ui.activity.ContactListActivity"
-            android:windowSoftInputMode="adjustResize">
+            android:theme="@style/SwipeBack">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>

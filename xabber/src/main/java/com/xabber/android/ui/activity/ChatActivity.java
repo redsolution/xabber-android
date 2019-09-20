@@ -44,6 +44,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.gw.swipeback.SwipeBackLayout;
+import com.gw.swipeback.tools.Util;
 import com.xabber.android.R;
 import com.xabber.android.data.ActivityManager;
 import com.xabber.android.data.Application;
@@ -123,10 +125,10 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     private static final String CHAT_FRAGMENT_TAG = "CHAT_FRAGMENT_TAG";
     private static final String CONTACT_INFO_FRAGMENT_TAG = "CONTACT_INFO_FRAGMENT_TAG";
 
-    private static final int SWIPE_MIN_DISTANCE = 120;
-    private static final int SWIPE_MAX_OFF_PATH = 250;
-    private static final int SWIPE_THRESHOLD_VELOCITY = 200;
-    private GestureDetector gestureDetector;
+//    private static final int SWIPE_MIN_DISTANCE = 120;
+//    private static final int SWIPE_MAX_OFF_PATH = 250;
+//    private static final int SWIPE_THRESHOLD_VELOCITY = 200;
+//    private GestureDetector gestureDetector;
 
     private String currentFragment;
 
@@ -317,6 +319,22 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         LogManager.i(LOG_TAG, "onCreate " + savedInstanceState);
 
         setContentView(R.layout.activity_chat);
+        SwipeBackLayout swipeBackLayout = (SwipeBackLayout) findViewById(R.id.swipe_back_layout);
+//        swipeBackLayout.setSwipeBackListener(new SwipeBackLayout.OnSwipeBackListener() {
+//            @Override
+//            public void onViewPositionChanged(View mView, float swipeBackFraction, float swipeBackFactor) {
+//            }
+//
+//            @Override
+//            public void onViewSwipeFinished(View mView, boolean isEnd) {
+//                if (currentFragment.equals(CONTACT_INFO_FRAGMENT_TAG)){
+//                    initChats(false);
+//                    updateToolbar();
+//                    //updateToolbarMenuIcon();
+//                } else NavUtils.navigateUpFromSameTask(ChatActivity.this);
+//            }
+//        });
+
         getWindow().setBackgroundDrawable(null);
 
         updateBackpressure = new UpdateBackpressure(this);
@@ -366,26 +384,26 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
 //        if (savedInstanceState != null) {
 //            restoreInstanceState(savedInstanceState);
 //        }
-        gestureDetector = new GestureDetector(new SwipeDetector());
+        //gestureDetector = new GestureDetector(new SwipeDetector());
         initChats(false);
     }
 
-    @Override
-    public boolean dispatchTouchEvent(MotionEvent ev) {
-        // TouchEvent dispatcher.
-        if (gestureDetector != null) {
-            if (gestureDetector.onTouchEvent(ev))
-                // If the gestureDetector handles the event, a swipe has been
-                // executed and no more needs to be done.
-                return true;
-        }
-        return super.dispatchTouchEvent(ev);
-    }
-
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        return gestureDetector.onTouchEvent(event);
-    }
+//    @Override
+//    public boolean dispatchTouchEvent(MotionEvent ev) {
+//        // TouchEvent dispatcher.
+//        if (gestureDetector != null) {
+//            if (gestureDetector.onTouchEvent(ev))
+//                // If the gestureDetector handles the event, a swipe has been
+//                // executed and no more needs to be done.
+//                return true;
+//        }
+//        return super.dispatchTouchEvent(ev);
+//    }
+//
+//    @Override
+//    public boolean onTouchEvent(MotionEvent event) {
+//        return gestureDetector.onTouchEvent(event);
+//    }
 
     @Override
     protected void onNewIntent(Intent intent) {
@@ -1248,30 +1266,30 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         startActivity(intent);
     }
 
-    private class SwipeDetector extends GestureDetector.SimpleOnGestureListener {
-        @Override
-        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-
-            // Check movement along the Y-axis. If it exceeds SWIPE_MAX_OFF_PATH,
-            // then dismiss the swipe.
-            if (Math.abs(e1.getY() - e2.getY()) > SWIPE_MAX_OFF_PATH)
-                return false;
-
-            // Swipe from left to right.
-            // The swipe needs to exceed a certain distance (SWIPE_MIN_DISTANCE)
-            // and a certain velocity (SWIPE_THRESHOLD_VELOCITY).
-            if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
-                if (ChatActivity.this.getCurrentFragment().equals(CONTACT_INFO_FRAGMENT_TAG))
-                    ChatActivity.this.initChats(true);
-                else{
-                    startActivity(new Intent(ChatActivity.this, ContactListActivity.class));
-                    ChatActivity.this.overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
-                    finish();
-                }
-                return true;
-            }
-
-            return false;
-        }
-    }
+//    private class SwipeDetector extends GestureDetector.SimpleOnGestureListener {
+//        @Override
+//        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+//
+//            // Check movement along the Y-axis. If it exceeds SWIPE_MAX_OFF_PATH,
+//            // then dismiss the swipe.
+//            if (Math.abs(e1.getY() - e2.getY()) > SWIPE_MAX_OFF_PATH)
+//                return false;
+//
+//            // Swipe from left to right.
+//            // The swipe needs to exceed a certain distance (SWIPE_MIN_DISTANCE)
+//            // and a certain velocity (SWIPE_THRESHOLD_VELOCITY).
+//            if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
+//                if (ChatActivity.this.getCurrentFragment().equals(CONTACT_INFO_FRAGMENT_TAG))
+//                    ChatActivity.this.initChats(true);
+//                else{
+//                    startActivity(new Intent(ChatActivity.this, ContactListActivity.class));
+//                    ChatActivity.this.overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+//                    finish();
+//                }
+//                return true;
+//            }
+//
+//            return false;
+//        }
+//    }
 }
