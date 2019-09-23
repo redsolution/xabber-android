@@ -108,6 +108,7 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
     public interface ChatListFragmentListener{
         void onChatClick(AbstractContact contact);
         void onChatListStateChanged(ChatListState chatListState);
+        void onUnreadChanged(int unread);
     }
 
     @Override
@@ -149,7 +150,7 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
     }
 
     public void showChatListWithState(ChatListState state){
-        currentChatsState = state;
+        onStateSelected(state);
         updateBackpressure.run();
     }
 
@@ -320,7 +321,8 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         }
 
         unreadMessageCount += CrowdfundingManager.getInstance().getUnreadMessageCount();
-        EventBus.getDefault().post(new ContactListPresenter.UpdateUnreadCountEvent(unreadMessageCount));
+        //EventBus.getDefault().post(new ContactListPresenter.UpdateUnreadCountEvent(unreadMessageCount));
+        chatListFragmentListener.onUnreadChanged(unreadMessageCount);
     }
 
 

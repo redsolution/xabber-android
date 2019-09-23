@@ -702,7 +702,12 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onUnreadMessagesCountChanged(ContactListPresenter.UpdateUnreadCountEvent event) {
         unreadMessagesCount = event.getCount();
-        getBottomBarFragment().setUnreadMessages(unreadMessagesCount);
+        getBottomBarFragment().setUnreadMessages(event.getCount());
+    }
+
+    public void onUnreadChanged(int unread){
+        unreadMessagesCount = unread;
+        getBottomBarFragment().setUnreadMessages(unread);
     }
 
     @Override
