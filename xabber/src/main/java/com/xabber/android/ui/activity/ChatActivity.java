@@ -1252,17 +1252,13 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         @Override
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
 
-            // Check movement along the Y-axis. If it exceeds SWIPE_MAX_OFF_PATH,
-            // then dismiss the swipe.
             if (Math.abs(e1.getY() - e2.getY()) > SWIPE_MAX_OFF_PATH)
                 return false;
 
-            // Swipe from left to right.
-            // The swipe needs to exceed a certain distance (SWIPE_MIN_DISTANCE)
-            // and a certain velocity (SWIPE_THRESHOLD_VELOCITY).
             if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
-                if (ChatActivity.this.getCurrentFragment().equals(CONTACT_INFO_FRAGMENT_TAG))
-                    ChatActivity.this.initChats(true);
+                if (ChatActivity.this.getCurrentFragment().equals(CONTACT_INFO_FRAGMENT_TAG)){
+                    //ChatActivity.this.initChats(true);
+                }
                 else{
                     startActivity(new Intent(ChatActivity.this, ContactListActivity.class));
                     ChatActivity.this.overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
