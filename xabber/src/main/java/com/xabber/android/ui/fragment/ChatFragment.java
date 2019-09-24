@@ -72,6 +72,7 @@ import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.MessageUpdateEvent;
 import com.xabber.android.data.message.NewIncomingMessageEvent;
 import com.xabber.android.data.message.NewMessageEvent;
+import com.xabber.android.data.message.NotificationState;
 import com.xabber.android.data.message.RegularChat;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.notification.NotificationManager;
@@ -210,6 +211,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         Bundle args = getArguments();
         account = args.getParcelable(ARGUMENT_ACCOUNT);
         user = args.getParcelable(ARGUMENT_USER);
+        getChat().setNotificationStateOrDefault(new NotificationState(NotificationState.NotificationMode.disabled,
+                        0), false);
 
         LogManager.i(this, "onCreate " + user);
     }
@@ -423,6 +426,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     public void onDestroy() {
         super.onDestroy();
         chatMessageAdapter.release();
+        getChat().setNotificationStateOrDefault(
+                new NotificationState(NotificationState.NotificationMode.enabled, 0), false);
     }
 
     @Override
