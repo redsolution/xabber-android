@@ -28,6 +28,7 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager.widget.ViewPager;
 import androidx.appcompat.widget.Toolbar;
 import android.text.InputType;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -286,6 +287,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         intent.putExtra(Intent.EXTRA_TEXT, text);
         AbstractChat chat = MessageManager.getInstance().getChat(account, user);
         intent.putExtra(KEY_SHOW_ARCHIVED, chat != null && chat.isArchived());
+        //LogManager.i(LOG_TAG, "Intent created:" + intent.c);
         return intent;
     }
 
@@ -467,6 +469,9 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
             forwardsIds = (ArrayList<String>) messages;
             intent.removeExtra(KEY_MESSAGES_ID);
         }
+
+        insertExtraText();
+        setForwardMessages();
     }
 
     public void handleShareFileUri(Uri fileUri) {

@@ -739,6 +739,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
 
     public void restoreInputState() {
+        if (!inputView.getText().equals("") && inputView.getText() != null) return;
+
         skipOnTextChanges = true;
 
         inputView.setText(ChatManager.getInstance().getTypedMessage(account, user));
@@ -843,6 +845,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         skipOnTextChanges = true;
         inputView.setText(additional);
         inputView.setSelection(additional.length());
+
         skipOnTextChanges = false;
     }
 
