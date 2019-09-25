@@ -142,6 +142,19 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         super.onDetach();
     }
 
+    @Override
+    public void onPause() {
+        EventBus.getDefault().unregister(this);
+        super.onPause();
+    }
+
+    @Override
+    public void onResume() {
+        if (!EventBus.getDefault().isRegistered(this))
+            EventBus.getDefault().register(this);
+        super.onResume();
+    }
+
     public static ChatListFragment newInstance(@Nullable AccountJid account){
         ChatListFragment fragment = new ChatListFragment();
         Bundle args = new Bundle();
