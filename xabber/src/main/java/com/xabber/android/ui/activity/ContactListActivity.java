@@ -605,6 +605,15 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
     }
 
     @Override
+    public void onMarkAllReadButtonClick() {
+        for (AbstractChat chat : MessageManager.getInstance().getChatsOfEnabledAccount()){
+            chat.markAsReadAll(true);
+        }
+        getChatListFragment().onStateSelected(ChatListFragment.ChatListState.recent);
+        Toast.makeText(this, "All messages was marked as read.", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
     public void onContactClick(AbstractContact abstractContact) {
         //if (contentFragment != null)
             //((ContactListFragment) contentFragment).filterContactList("");

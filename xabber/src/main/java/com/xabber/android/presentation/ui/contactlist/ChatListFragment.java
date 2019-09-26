@@ -53,6 +53,7 @@ import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.presentation.mvp.contactlist.ContactListPresenter;
 import com.xabber.android.presentation.mvp.contactlist.UpdateBackpressure;
+import com.xabber.android.presentation.ui.contactlist.viewobjects.ButtonVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.ChatVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.ContactVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.CrowdfundingChatVO;
@@ -107,6 +108,7 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         void onChatClick(AbstractContact contact);
         void onChatListStateChanged(ChatListState chatListState);
         void onUnreadChanged(int unread);
+        void onMarkAllReadButtonClick();
     }
 
     @Override
@@ -366,6 +368,9 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
             if (accountJid != null && userJid != null)
                 chatListFragmentListener.onChatClick(RosterManager.getInstance().getAbstractContact(accountJid, userJid));
         }
+        else if (item instanceof ButtonVO){
+            chatListFragmentListener.onMarkAllReadButtonClick();
+        }
 
         return true;
     }
@@ -540,6 +545,13 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
                     else items.add(ChatVO.convert(contact, this, null));
                 }
             }
+        }
+
+        /*
+        Adding at the end of list "Mark all as read button as need"
+         */
+        if (currentChatsState == ChatListState.unread && getUnreadCount() > 0){
+            items.add(ButtonVO.convert(null, "Mark all as read", "what"));
         }
 
         updateUnreadCount();
