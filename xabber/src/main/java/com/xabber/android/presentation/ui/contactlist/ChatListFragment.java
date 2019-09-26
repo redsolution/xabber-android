@@ -51,6 +51,7 @@ import com.xabber.android.data.roster.GroupManager;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
+import com.xabber.android.presentation.mvp.contactlist.ContactListPresenter;
 import com.xabber.android.presentation.mvp.contactlist.UpdateBackpressure;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.ChatVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.ContactVO;
@@ -143,15 +144,16 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
     }
 
     @Override
-    public void onPause() {
+    public void onStop() {
         EventBus.getDefault().unregister(this);
-        super.onPause();
+        super.onStop();
     }
 
     @Override
     public void onResume() {
         if (!EventBus.getDefault().isRegistered(this))
             EventBus.getDefault().register(this);
+        updateUnreadCount();
         super.onResume();
     }
 
@@ -336,7 +338,7 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         }
 
         unreadMessageCount += CrowdfundingManager.getInstance().getUnreadMessageCount();
-        //EventBus.getDefault().post(new ContactListPresenter.UpdateUnreadCountEvent(unreadMessageCount));
+        EventBus.getDefault().post(new ContactListPresenter.UpdateUnreadCountEvent(unreadMessageCount));
         chatListFragmentListener.onUnreadChanged(unreadMessageCount);
     }
 
