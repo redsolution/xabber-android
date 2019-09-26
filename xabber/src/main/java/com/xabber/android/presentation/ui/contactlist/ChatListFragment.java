@@ -115,6 +115,7 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
         Application.getInstance().addUIListener(OnContactChangedListener.class, this);
         EventBus.getDefault().register(this);
+        chatListFragmentListener.onChatListStateChanged(currentChatsState);
         super.onAttach(context);
     }
 
@@ -154,6 +155,9 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         if (!EventBus.getDefault().isRegistered(this))
             EventBus.getDefault().register(this);
         updateUnreadCount();
+        if (getUnreadCount() == 0){
+            onStateSelected(ChatListState.recent);
+        }
         super.onResume();
     }
 
@@ -168,7 +172,6 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
 
     public void showChatListWithState(ChatListState state){
         onStateSelected(state);
-        updateBackpressure.run();
     }
 
     @Override
@@ -230,6 +233,7 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         updateBackpressure = new UpdateBackpressure(this);
         updateBackpressure.run();
         updateBackpressure.refreshRequest();
+        chatListFragmentListener.onChatListStateChanged(currentChatsState);
         return view;
     }
 
@@ -329,17 +333,20 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         if (chat != null) chat.setArchived(archived, true);
     }
 
-    public void updateUnreadCount() {
+    public int getUnreadCount(){
         int unreadMessageCount = 0;
-
         for (AbstractChat abstractChat : MessageManager.getInstance().getChatsOfEnabledAccount()) {
             if (abstractChat.notifyAboutMessage() && !abstractChat.isArchived())
                 unreadMessageCount += abstractChat.getUnreadMessageCount();
         }
-
         unreadMessageCount += CrowdfundingManager.getInstance().getUnreadMessageCount();
-        EventBus.getDefault().post(new ContactListPresenter.UpdateUnreadCountEvent(unreadMessageCount));
-        chatListFragmentListener.onUnreadChanged(unreadMessageCount);
+        return unreadMessageCount;
+    }
+
+    public void updateUnreadCount() {
+
+        EventBus.getDefault().post(new ContactListPresenter.UpdateUnreadCountEvent(getUnreadCount()));
+        chatListFragmentListener.onUnreadChanged(getUnreadCount());
     }
 
 

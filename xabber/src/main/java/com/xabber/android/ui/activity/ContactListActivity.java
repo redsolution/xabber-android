@@ -761,19 +761,29 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
     }
 
     @Override
-    public void onContactsClick() { showContactListFragment(null);    }
+    public void onContactsClick() {
+        showContactListFragment(null);
+        getBottomBarFragment().setChatStateIcon(ChatListFragment.ChatListState.recent);
+    }
 
     @Override
     public void onSettingsClick() {
         //drawerLayout.openDrawer(Gravity.START);
         showMenuFragment();
+        getBottomBarFragment().setChatStateIcon(ChatListFragment.ChatListState.recent);
     }
 
     @Override
-    public void onCallsClick() { showCallsFragment();   }
+    public void onCallsClick() {
+        showCallsFragment();
+        getBottomBarFragment().setChatStateIcon(ChatListFragment.ChatListState.recent);
+    }
 
     @Override
-    public void onDiscoverClick() {  showDiscoverFragment();  }
+    public void onDiscoverClick() {
+        showDiscoverFragment();
+        getBottomBarFragment().setChatStateIcon(ChatListFragment.ChatListState.recent);
+    }
 
 
     //    @Override             need for old menu
