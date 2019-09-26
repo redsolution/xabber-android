@@ -417,9 +417,9 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         }
 
         //showcase
-        if (!SettingsManager.chatShowcaseSuggested()) {
-            showShowcase(true);
-        }
+//        if (!SettingsManager.chatShowcaseSuggested()) {
+//            showShowcase(true);
+//        }
 
         // forward
         if (ACTION_FORWARD.equals(intent.getAction())) {
