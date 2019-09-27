@@ -2,12 +2,15 @@ package com.xabber.android.ui.widget.bottomnavigation;
 
 import android.content.Context;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.xabber.android.R;
+import com.xabber.android.ui.color.ColorManager;
 
 import java.util.ArrayList;
 
@@ -68,7 +71,9 @@ public class AccountShortcutAdapter extends RecyclerView.Adapter<AccountShortcut
         AccountShortcutVO account = items.get(position);
         holder.ivAvatar.setImageDrawable(account.getAvatar());
         //holder.ivAvatar.setBorderColor(account.getAccountColorIndicator());
-        holder.ivStatus.setImageLevel(account.getStatusLevel());
+        holder.ivStatus.setVisibility(View.GONE);
+        //holder.ivStatus.setImageLevel(account.getStatusLevel());
+        holder.ivAvatar.setBorderColor(ColorManager.getInstance().getAccountPainter().getAccountMainColor(account.getAccountJid()));
     }
 
     @Override
