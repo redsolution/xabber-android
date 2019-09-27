@@ -11,8 +11,8 @@ android {
     defaultConfig {
         minSdkVersion 15
         targetSdkVersion 29
-        versionCode 653
-        versionName '2.6.6.653'
+        versionCode 655
+        versionName '2.6.6.655'
         manifestPlaceholders = [crashlytics:getLocalProperty("crashlytics.key")]
         vectorDrawables.useSupportLibrary = true
     }
@@ -170,8 +170,8 @@ dependencies {
     storeImplementation "com.twitter.sdk.android:twitter:3.0.0"
 
     // gms
-    storeImplementation "com.google.android.gms:play-services-safetynet:16.0.0"
-    storeImplementation "com.google.android.gms:play-services-auth:15.0.0"
+    storeImplementation "com.google.android.gms:play-services-safetynet:17.0.0"
+    storeImplementation "com.google.android.gms:play-services-auth:17.0.0"
     storeImplementation ("com.google.api-client:google-api-client-android:1.22.0") {
         exclude module: 'httpclient'
     }
