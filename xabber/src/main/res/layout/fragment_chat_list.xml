@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout
-    android:id="@+id/chatlist_coordinator_layout"
+<androidx.coordinatorlayout.widget.CoordinatorLayout android:id="@+id/chatlist_coordinator_layout"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/contact_list_background">
+    android:background="?attr/contact_list_background"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -47,5 +47,16 @@
             android:textColor="?android:attr/textColorSecondary" />
 
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/mark_all_as_read_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:textSize="16dp"
+        android:textColor="@color/white"
+        android:layout_marginBottom="12dp"
+        android:text="Mark all as read"
+        />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

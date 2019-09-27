@@ -3,7 +3,12 @@ package com.xabber.android.presentation.ui.contactlist;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.media.AudioAttributes;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -11,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -20,6 +26,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.snackbar.Snackbar;
+import com.xabber.android.BuildConfig;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
@@ -53,7 +60,6 @@ import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.presentation.mvp.contactlist.ContactListPresenter;
 import com.xabber.android.presentation.mvp.contactlist.UpdateBackpressure;
-import com.xabber.android.presentation.ui.contactlist.viewobjects.ButtonVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.ChatVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.ContactVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.CrowdfundingChatVO;
@@ -103,12 +109,13 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
     private ChatListFragmentListener chatListFragmentListener;
     private ChatListState currentChatsState = ChatListState.recent;
     private RecyclerView recyclerView;
+    private TextView markAllAsReadButton;
+    private Drawable markAllReadBackground;
 
     public interface ChatListFragmentListener{
         void onChatClick(AbstractContact contact);
         void onChatListStateChanged(ChatListState chatListState);
         void onUnreadChanged(int unread);
-        void onMarkAllReadButtonClick();
     }
 
     @Override
@@ -121,14 +128,45 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         super.onAttach(context);
     }
 
+    public void playMessageSound() {
+        if (!SettingsManager.eventsInChatSounds()) return;
+
+        final MediaPlayer mp;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            AudioAttributes attr = new AudioAttributes.Builder()
+                    .setContentType(AudioAttributes.CONTENT_TYPE_UNKNOWN)
+                    .setUsage(AudioAttributes.USAGE_NOTIFICATION_EVENT).build();
+            mp = MediaPlayer.create(getActivity(), R.raw.message_alert,
+                    attr, AudioManager.AUDIO_SESSION_ID_GENERATE);
+        } else {
+            mp = MediaPlayer.create(getActivity(), R.raw.message_alert);
+            mp.setAudioStreamType(AudioManager.STREAM_NOTIFICATION);
+        }
+
+        mp.start();
+        mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mediaPlayer) {
+                mp.release();
+            }
+        });
+    }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onNewMessageEvent(NewMessageEvent event) {
+        playMessageSound();
         updateBackpressure.refreshRequest();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(NewIncomingMessageEvent event){
         MessageNotificationManager.getInstance().removeAllMessageNotifications();
+        updateBackpressure.refreshRequest();
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onUnreadMessagesCountChanged(ContactListPresenter.UpdateUnreadCountEvent event) {
+        updateBackpressure.refreshRequest();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -182,6 +220,7 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         updateBackpressure.run();
         chatListFragmentListener.onChatListStateChanged(state);
         this.closeSnackbar();
+
     }
 
     public ChatListState getCurrentChatsState(){
@@ -218,6 +257,20 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         linearLayoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(linearLayoutManager);
         coordinatorLayout = (CoordinatorLayout) view.findViewById(R.id.chatlist_coordinator_layout);
+        markAllAsReadButton = (TextView) view.findViewById(R.id.mark_all_as_read_button);
+        markAllAsReadButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                for (AbstractChat chat : MessageManager.getInstance().getChatsOfEnabledAccount()){
+                    chat.markAsReadAll(true);
+                }
+                onStateSelected(ChatListFragment.ChatListState.recent);
+                Toast.makeText(getActivity(), "All mesages were marked as read", Toast.LENGTH_SHORT).show();
+            }
+        });
+        markAllReadBackground = view.getResources().getDrawable(R.drawable.unread_button_background);
+        if (Build.VERSION.SDK_INT >= 21) markAllAsReadButton.setElevation(2);
+        if (Build.VERSION.SDK_INT >= 16) markAllAsReadButton.setBackground(markAllReadBackground);
         placeholderView = view.findViewById(R.id.chatlist_placeholder_view);
         placeholderMessage = view.findViewById(R.id.chatlist_placeholder_message);
         placeholderImage = view.findViewById(R.id.chatlist_placeholder_image);
@@ -368,9 +421,9 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
             if (accountJid != null && userJid != null)
                 chatListFragmentListener.onChatClick(RosterManager.getInstance().getAbstractContact(accountJid, userJid));
         }
-        else if (item instanceof ButtonVO){
-            chatListFragmentListener.onMarkAllReadButtonClick();
-        }
+//        else if (item instanceof ButtonVO){
+//            chatListFragmentListener.onMarkAllReadButtonClick();
+//        }
 
         return true;
     }
@@ -547,13 +600,17 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
             }
         }
 
-        /*
-        Adding at the end of list "Mark all as read button as need"
-         */
-        if (currentChatsState == ChatListState.unread && getUnreadCount() > 0){
-            items.add(ButtonVO.convert(null, "Mark all as read", "what"));
+//        /*
+//        Adding at the end of list "Mark all as read button as need"
+//         */
+//        if (currentChatsState == ChatListState.unread && getUnreadCount() > 0){
+//            items.add(ButtonVO.convert(null, "Mark all as read", "what"));
+//        }
+        if (currentChatsState == ChatListState.unread && items.size() > 1){
+            markAllReadBackground.setColorFilter(ColorManager.getInstance().getAccountPainter().getDefaultMainColor(), PorterDuff.Mode.SRC_ATOP);
+            markAllAsReadButton.setVisibility(View.VISIBLE);
         }
-
+        else markAllAsReadButton.setVisibility(View.GONE);
         updateUnreadCount();
         updateItems(items);
 
