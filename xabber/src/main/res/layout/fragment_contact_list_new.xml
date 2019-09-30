@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?attr/contact_list_background"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:clipToPadding="false">
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -24,16 +25,14 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center_vertical"
-        android:visibility="gone"
-        >
+        android:visibility="gone">
 
         <ImageView
             android:id="@+id/placeholderImage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:src="@drawable/xabber_logo_80dp"
-            />
+            android:src="@drawable/xabber_logo_80dp" />
 
         <TextView
             android:id="@+id/tvPlaceholderMessage"
@@ -53,8 +52,8 @@
         android:overScrollMode="never"
         android:layout_gravity="bottom|center_horizontal"
         android:paddingBottom="4dp"
-        tools:listitem="@layout/avatar_view_xsmall"
-        android:elevation="4dp"/>
+        android:background="@color/transparent"
+        tools:listitem="@layout/avatar_view_xsmall"/>
 
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

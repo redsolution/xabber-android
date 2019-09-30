@@ -33,4 +33,5 @@ public interface ContactListView {
     void startAddContactActivity();
     void startJoinConferenceActivity();
     void startSetStatusActivity();
+    void updateAccountsList();
 }
