@@ -93,8 +93,8 @@ public class ContactListFragment extends Fragment implements ContactListView,
     private ImageView placeholderImage;
     private AccountShortcutAdapter accountShortcutAdapter;
     private RecyclerView accountsRecyclerView;
-    //private LinearLayoutCompat accountLinearLayout;
     private ArrayList<AccountShortcutVO> accountShortcutVOArrayList = new ArrayList<>();
+    private ArrayList<AccountJid> accountsJidList = new ArrayList<>();
     /**
      * View with information shown on empty contact list.
      */
@@ -207,16 +207,19 @@ public class ContactListFragment extends Fragment implements ContactListView,
     }
 
     public void updateAccountsList(){
-        ArrayList<AccountJid> list = new ArrayList<>();
-        list.addAll(AccountManager.getInstance().getEnabledAccounts());
-        Collections.sort(list);
+        accountsJidList.addAll(AccountManager.getInstance().getEnabledAccounts());
+        Collections.sort(accountsJidList);
 
-        if (list.size() >= 1) accountsRecyclerView.setVisibility(View.VISIBLE);
+        if (accountsJidList.size() > 1){
+            accountShortcutVOArrayList.clear();
+            accountShortcutVOArrayList.addAll(AccountShortcutVO.convert(accountsJidList));
+            accountShortcutAdapter = new AccountShortcutAdapter(accountShortcutVOArrayList, getActivity(), this);
+            accountsRecyclerView.setAdapter(accountShortcutAdapter);
+            accountsRecyclerView.setVisibility(View.VISIBLE);
+            accountsRecyclerView.getLayoutParams().width = 132 * accountsJidList.size();
+            accountsRecyclerView.setOnClickListener(this);
+        }
         else accountsRecyclerView.setVisibility(View.GONE);
-        accountShortcutVOArrayList.clear();
-        accountShortcutVOArrayList.addAll(AccountShortcutVO.convert(list));
-        accountShortcutAdapter = new AccountShortcutAdapter(accountShortcutVOArrayList, getActivity(), this);
-        accountsRecyclerView.setAdapter(accountShortcutAdapter);
     }
 
     @Override
@@ -276,7 +279,11 @@ public class ContactListFragment extends Fragment implements ContactListView,
 
     @Override
     public void onClick(View v) {
-
+        if (v.getId() == R.id.avatarView){
+            int position = accountsRecyclerView.getChildLayoutPosition(v);
+            AccountJid clickedAccountJid = accountsJidList.get(position);
+            scrollToAccount(clickedAccountJid);
+        }
     }
 
     @Override
@@ -596,20 +603,18 @@ public class ContactListFragment extends Fragment implements ContactListView,
      *
      * @param account
      */
-//    public void scrollToAccount(AccountJid account) {
-//        if (presenter.getCurrentChatsState() != ContactListPresenter.ChatListState.recent)
-//            showRecent();
-//
-//        long count = adapter.getItemCount();
-//        for (int position = 0; position < (int) count; position++) {
-//            Object itemAtPosition = adapter.getItem(position);
-//            if (itemAtPosition != null && itemAtPosition instanceof AccountVO
-//                    && ((AccountVO)itemAtPosition).getAccountJid().equals(account)) {
-//                scrollTo(position);
-//                break;
-//            }
-//        }
-//    }
+    public void scrollToAccount(AccountJid account) {
+
+        long count = adapter.getItemCount();
+        for (int position = 0; position < (int) count; position++) {
+            Object itemAtPosition = adapter.getItem(position);
+            if (itemAtPosition != null && itemAtPosition instanceof AccountVO
+                    && ((AccountVO)itemAtPosition).getAccountJid().equals(account)) {
+                scrollTo(position);
+                break;
+            }
+        }
+    }
 
     /**
      * Scroll to the top of contact list.

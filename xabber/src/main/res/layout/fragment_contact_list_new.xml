@@ -46,14 +46,15 @@
 
     </LinearLayout>
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/accounts_list_in_contact_list_recycler"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:overScrollMode="never"
-                android:layout_gravity="bottom|center_horizontal"
-                android:paddingBottom="8dp"
-                tools:listitem="@layout/avatar_view_xsmall"/>
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/accounts_list_in_contact_list_recycler"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:overScrollMode="never"
+        android:layout_gravity="bottom|center_horizontal"
+        android:paddingBottom="4dp"
+        tools:listitem="@layout/avatar_view_xsmall"
+        android:elevation="4dp"/>
 
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

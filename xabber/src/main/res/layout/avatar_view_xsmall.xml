@@ -42,6 +42,11 @@
             android:visibility="gone"
             />
 
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/ivAvatarOverlay"
+            android:layout_width="40dp"
+            android:layout_height="40dp"/>
+
     </RelativeLayout>
 
 </RelativeLayout>
