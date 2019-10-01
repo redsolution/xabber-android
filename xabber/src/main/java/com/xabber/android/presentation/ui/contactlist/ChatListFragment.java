@@ -663,16 +663,16 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         Collections.sort(newChats, ChatComparator.CHAT_COMPARATOR);
         chatsGroup.setNotEmpty();
 
-        int itemsCount = 0;
+//        int itemsCount = 0;
         for (AbstractChat chat : newChats) {
-            if (itemsCount < 50 || state != ChatListState.recent) {
+//            if (itemsCount < 50 || state != ChatListState.recent) {
                 if (chat instanceof CrowdfundingChat)
                     chatsGroup.addAbstractContact(new CrowdfundingContact((CrowdfundingChat) chat));
                 else chatsGroup.addAbstractContact(RosterManager.getInstance()
                         .getBestContact(chat.getAccount(), chat.getUser()));
                 chatsGroup.increment(true);
-                itemsCount++;
-            } else break;
+//                itemsCount++;
+//            } else break;
         }
 
         ShortcutBuilder.updateShortcuts(Application.getInstance(),
