@@ -2,6 +2,7 @@ package com.xabber.android.presentation.ui.contactlist.viewobjects;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.drawable.Drawable;
 import android.util.TypedValue;
 import android.view.MenuItem;
 import android.view.View;
@@ -10,8 +11,9 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import com.xabber.android.R;
+import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
-import com.xabber.android.presentation.mvp.contactlist.ContactListPresenter;
+import com.xabber.android.presentation.ui.contactlist.ChatListFragment;
 import com.xabber.android.ui.color.AccountPainter;
 import com.xabber.android.ui.color.ColorManager;
 
@@ -30,26 +32,28 @@ import eu.davidea.viewholders.FlexibleViewHolder;
 public class ToolbarVO extends AbstractHeaderItem<ToolbarVO.ViewHolder> implements IHeader<ToolbarVO.ViewHolder> {
 
     private String id;
-
-    private ContactListPresenter.ChatListState currentChatsState =
-            ContactListPresenter.ChatListState.recent;
+    private Drawable avatar;
+    private ChatListFragment.ChatListState currentChatsState;
+    private int statusLevel;
 
     private Context context;
     protected OnClickListener listener;
 
     public interface OnClickListener {
-        void onStateSelected(ContactListPresenter.ChatListState state);
+        void onStateSelected(ChatListFragment.ChatListState state);
         void onAddContactClick();
         void onJoinConferenceClick();
         void onSetStatusClick();
     }
 
     public ToolbarVO(Context context, OnClickListener listener,
-                     ContactListPresenter.ChatListState currentChatsState) {
+                     ChatListFragment.ChatListState currentChatsState, Drawable avatar, int statusLevel) {
         this.id = UUID.randomUUID().toString();
         this.context = context;
         this.listener = listener;
         this.currentChatsState = currentChatsState;
+        this.avatar = avatar;
+        this.statusLevel = statusLevel;
     }
 
     @Override
@@ -67,13 +71,26 @@ public class ToolbarVO extends AbstractHeaderItem<ToolbarVO.ViewHolder> implemen
     }
 
     @Override
-    public ViewHolder createViewHolder(View view, FlexibleAdapter adapter) {
-        return new ViewHolder(view, adapter, context, listener);
+    public ToolbarVO.ViewHolder createViewHolder(View view, FlexibleAdapter adapter) {
+        return new ToolbarVO.ViewHolder(view, adapter, context, listener);
     }
 
     @Override
     public void bindViewHolder(FlexibleAdapter adapter, ViewHolder holder, int position, List<Object> payloads) {
         Context context = holder.itemView.getContext();
+
+        /** bind AVATAR */
+        if (SettingsManager.contactsShowAvatars()){
+            holder.ivAvatar.setVisibility(View.VISIBLE);
+            holder.ivStatus.setVisibility(View.VISIBLE);
+            holder.ivAvatar.setImageDrawable(avatar);
+        } else {
+            holder.ivAvatar.setVisibility(View.GONE);
+            holder.ivStatus.setVisibility(View.GONE);
+        }
+
+        /** bind STATUS IMAGE */
+        holder.ivStatus.setImageLevel(statusLevel);
 
         /** set up ACCOUNT COLOR indicator */
         holder.accountColorIndicator.setBackgroundColor(
@@ -118,8 +135,9 @@ public class ToolbarVO extends AbstractHeaderItem<ToolbarVO.ViewHolder> implemen
         final View accountColorIndicator;
         final View accountColorIndicatorBack;
         final ImageView ivAdd;
-        final ImageView ivSetStatus;
         final TextView tvTitle;
+        final ImageView ivAvatar;
+        final ImageView ivStatus;
 
         private final Context context;
         private OnClickListener listener;
@@ -134,9 +152,10 @@ public class ToolbarVO extends AbstractHeaderItem<ToolbarVO.ViewHolder> implemen
             accountColorIndicatorBack = view.findViewById(R.id.accountColorIndicatorBack);
             ivAdd = (ImageView) view.findViewById(R.id.ivAdd);
             ivAdd.setOnClickListener(this);
-            ivSetStatus = (ImageView) view.findViewById(R.id.ivSetStatus);
-            ivSetStatus.setOnClickListener(this);
             tvTitle = (TextView) view.findViewById(R.id.tvTitle);
+            ivAvatar = (ImageView) view.findViewById(R.id.ivAvatar);
+            ivStatus = (ImageView) view.findViewById(R.id.ivStatus);
+            ivAvatar.setOnClickListener(this);
             tvTitle.setOnClickListener(this);
         }
 
@@ -146,7 +165,7 @@ public class ToolbarVO extends AbstractHeaderItem<ToolbarVO.ViewHolder> implemen
                 case R.id.ivAdd:
                     showToolbarPopup(ivAdd);
                     break;
-                case R.id.ivSetStatus:
+                case R.id.ivAvatar:
                     listener.onSetStatusClick();
                     break;
                 case R.id.tvTitle:
@@ -167,13 +186,13 @@ public class ToolbarVO extends AbstractHeaderItem<ToolbarVO.ViewHolder> implemen
                     listener.onJoinConferenceClick();
                     return true;
                 case R.id.action_recent_chats:
-                    listener.onStateSelected(ContactListPresenter.ChatListState.recent);
+                    listener.onStateSelected(ChatListFragment.ChatListState.recent);
                     return true;
                 case R.id.action_unread_chats:
-                    listener.onStateSelected(ContactListPresenter.ChatListState.unread);
+                    listener.onStateSelected(ChatListFragment.ChatListState.unread);
                     return true;
                 case R.id.action_archived_chats:
-                    listener.onStateSelected(ContactListPresenter.ChatListState.archived);
+                    listener.onStateSelected(ChatListFragment.ChatListState.archived);
                     return true;
                 default:
                     return false;
@@ -194,7 +213,4 @@ public class ToolbarVO extends AbstractHeaderItem<ToolbarVO.ViewHolder> implemen
             popupMenu.show();
         }
     }
-
-
-
 }

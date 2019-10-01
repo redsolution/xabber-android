@@ -17,6 +17,8 @@ import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.muc.MUCManager;
+import com.xabber.android.data.groupchat.GroupchatUser;
+import com.xabber.android.data.groupchat.GroupchatUserManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.activity.ForwardedActivity;
 import com.xabber.android.ui.adapter.chat.ForwardedAdapter;
@@ -101,9 +103,12 @@ public class ForwardedFragment extends FileInteractionFragment {
                 MessageDatabaseManager.getInstance().getRealmUiThread().where(MessageItem.class)
                         .in(MessageItem.Fields.UNIQUE_ID, messageItem.getForwardedIdsAsArray()).findAll();
 
+        // groupchat user
+        GroupchatUser groupchatUser = GroupchatUserManager.getInstance().getGroupchatUser(messageItem.getGroupchatUserId());
+
         MessagesAdapter.MessageExtraData extraData = new MessagesAdapter.MessageExtraData(this,
                 this, null, getActivity(),
-                userName, colorStateList, accountMainColor, mentionColor, isMUC, false,
+                userName, colorStateList, groupchatUser, accountMainColor, mentionColor, isMUC, false,
                 false, false, false, false);
 
         if (forwardedMessages.size() > 0) {

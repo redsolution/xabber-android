@@ -9,7 +9,9 @@ import androidx.appcompat.widget.Toolbar;
 import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
@@ -29,6 +31,7 @@ import com.xabber.android.ui.helper.PermissionsRequester;
 public class ContactEditActivity extends ContactActivity implements Toolbar.OnMenuItemClickListener {
 
     private static final int PERMISSIONS_REQUEST_EXPORT_CHAT = 27;
+    private ImageView qrImage;
 
     public static Intent createIntent(Context context, AccountJid account, UserJid user) {
         return new EntityIntentBuilder(context, ContactEditActivity.class)
@@ -48,6 +51,15 @@ public class ContactEditActivity extends ContactActivity implements Toolbar.OnMe
             toolbar.setOverflowIcon(getResources().getDrawable(R.drawable.ic_overflow_menu_white_24dp));
             onCreateOptionsMenu(toolbar.getMenu());
         }
+
+        qrImage = (ImageView) findViewById(R.id.imgQRcode);
+        qrImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                generateQR();
+            }
+        });
+
     }
 
     @Override
@@ -82,6 +94,10 @@ public class ContactEditActivity extends ContactActivity implements Toolbar.OnMe
 
             case R.id.action_send_contact:
                 sendContact();
+                return true;
+
+            case R.id.action_generate_qrcode:
+                generateQR();
                 return true;
 
             case R.id.action_clear_history:
@@ -147,11 +163,21 @@ public class ContactEditActivity extends ContactActivity implements Toolbar.OnMe
     private void sendContact() {
         RosterContact rosterContact = RosterManager.getInstance().getRosterContact(getAccount(), getUser());
         String text = rosterContact != null ? rosterContact.getName() + "\nxmpp:" + getUser().toString() : "xmpp:" + getUser().toString();
-
         Intent sendIntent = new Intent();
         sendIntent.setAction(Intent.ACTION_SEND);
         sendIntent.putExtra(Intent.EXTRA_TEXT, text);
         sendIntent.setType("text/plain");
         startActivity(Intent.createChooser(sendIntent, getResources().getText(R.string.send_to)));
+    }
+
+    private void  generateQR(){
+        RosterContact rosterContact = RosterManager.getInstance().getRosterContact(getAccount(), getUser());
+        Intent intent = QRCodeActivity.createIntent(this, getAccount());
+        String textName = rosterContact != null ? rosterContact.getName() : "";
+        intent.putExtra("account_name", textName);
+        String textAddress = getUser().toString();
+        intent.putExtra("account_address", textAddress);
+        intent.putExtra("caller", "ContactEditActivity");
+        startActivity(intent);
     }
 }

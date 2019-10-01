@@ -18,8 +18,8 @@ import static org.junit.Assert.assertNull;
 @Config(sdk = 28, application = TestApplication.class)
 public class ReferencesManagerTest {
 
-    private String body1, body2, body3, body4, body5, body6, body7, body8;
-    private Message message1, message2, message3, message4, message5, message6, message7, message8;
+    private String body1, body2, body3, body4, body5, body6, body7, body8, body9;
+    private Message message1, message2, message3, message4, message5, message6, message7, message8, message9;
 
     @Before
     public void setUp() throws Exception {
@@ -52,7 +52,7 @@ public class ReferencesManagerTest {
                 "Hello world!";
 
         message4 = new Message("test@jabber.com", body4);
-        message4.addExtension(new Quote(0, 37, "&gt; "));
+        message4.addExtension(new Quote(0, 37, "> "));
 
         // -------
 
@@ -81,6 +81,13 @@ public class ReferencesManagerTest {
 
         message8 = new Message("test@jabber.com", body8);
         message8.addExtension(new Mention(0, 11, "xmpp:test@jabber.com"));
+
+        // -------
+
+        body9 = "John Doe:\nHello from groupchat!";
+
+        message9 = new Message("test@jabber.com", body9);
+        message9.addExtension(new Media(0, 9, null));
     }
 
     @Test
@@ -142,4 +149,12 @@ public class ReferencesManagerTest {
         assertEquals("Пользователь, привет!", result.first);
         assertEquals("&zwj;<click uri='xmpp:test@jabber.com' type='mention'>Пользователь</click>, привет!", result.second);
     }
+
+    @Test
+    public void modifyBodyWithReferences9() {
+        Pair<String, String> result = ReferencesManager.modifyBodyWithReferences(message9, body9);
+        assertEquals("Hello from groupchat!", result.first);
+        assertNull(result.second);
+    }
+
 }

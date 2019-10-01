@@ -19,7 +19,7 @@
             android:id="@+id/ivAvatar"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            app:civ_fill_color="@color/white"
+            app:civ_circle_background_color="@color/white"
             tools:src="@tools:sample/avatars"
             />
 
@@ -31,6 +31,14 @@
             android:layout_alignBaseline="@+id/imageView"
             android:layout_alignParentBottom="true"
             android:layout_alignParentRight="true"
+            />
+
+        <ImageView
+            android:id="@+id/ivOnlyStatus"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:src="@drawable/ic_status"
+            android:visibility="gone"
             />
 
     </RelativeLayout>

@@ -3,12 +3,14 @@ package com.xabber.android.ui.adapter.chat;
 import android.content.Context;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
-import androidx.annotation.StyleRes;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import androidx.annotation.StyleRes;
+
+import com.bumptech.glide.Glide;
 import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.database.messagerealm.MessageItem;
@@ -16,6 +18,7 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.muc.MUCManager;
+import com.xabber.android.data.groupchat.GroupchatUser;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.utils.Utils;
 
@@ -99,7 +102,8 @@ public class IncomingMessageVH  extends FileMessageVH {
         // setup BACKGROUND COLOR
         setUpMessageBalloonBackground(messageBalloon, extraData.getColorStateList());
 
-        setUpAvatar(messageItem, extraData.isMuc(), extraData.getUsername(), needTail);
+        setUpAvatar(context, extraData.getGroupchatUser(), messageItem,
+                extraData.isMuc(), extraData.getUsername(), needTail);
 
         // hide empty message
         if (messageItem.getText().trim().isEmpty()
@@ -128,8 +132,11 @@ public class IncomingMessageVH  extends FileMessageVH {
         });
     }
 
-    private void setUpAvatar(MessageItem messageItem, boolean isMUC, String userName, boolean needTail) {
+    private void setUpAvatar(Context context, GroupchatUser groupchatUser, MessageItem messageItem,
+                             boolean isMUC, String userName, boolean needTail) {
         boolean needAvatar = isMUC ? SettingsManager.chatsShowAvatarsMUC() : SettingsManager.chatsShowAvatars();
+        // for new groupchats (0GGG)
+        if (groupchatUser != null && SettingsManager.chatsShowAvatarsMUC()) needAvatar = true;
 
         if (!needAvatar) {
             avatar.setVisibility(View.GONE);
@@ -143,12 +150,31 @@ public class IncomingMessageVH  extends FileMessageVH {
             return;
         }
 
+        avatar.setVisibility(View.VISIBLE);
+        avatarBackground.setVisibility(View.VISIBLE);
+
+        //groupchat avatar
+        if (groupchatUser != null) {
+            Drawable placeholder;
+            try {
+                UserJid userJid = UserJid.from(messageItem.getUser().getJid().toString() + "/" + groupchatUser.getNickname());
+                placeholder = AvatarManager.getInstance().getOccupantAvatar(userJid, groupchatUser.getNickname());
+            } catch (UserJid.UserJidCreateException e) {
+               placeholder = AvatarManager.getInstance()
+                       .generateDefaultAvatar(groupchatUser.getNickname(), groupchatUser.getNickname());
+            }
+            Glide.with(context)
+                    .load(groupchatUser.getAvatar())
+                    .centerCrop()
+                    .placeholder(placeholder)
+                    .error(placeholder)
+                    .into(avatar);
+            return;
+        }
 
         final UserJid user = messageItem.getUser();
         final AccountJid account = messageItem.getAccount();
         final Resourcepart resource = messageItem.getResource();
-        avatar.setVisibility(View.VISIBLE);
-        avatarBackground.setVisibility(View.VISIBLE);
 
         if (!isMUC) avatar.setImageDrawable(AvatarManager.getInstance().getUserAvatarForContactList(user, userName));
         else {

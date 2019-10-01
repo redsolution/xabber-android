@@ -187,4 +187,5 @@
     <string name="password_reset_success">Request for reset password sent. Check: %1$s</string>
     <string name="password_reset_fail">Request for reset password failed</string>
     <string name="password_reset_need_email">For reset password need at least one confirmed email</string>
+    <string name="nostore_restriction">Available only in Google Play version of the app</string>
 </resources>

@@ -10,6 +10,8 @@ import com.xabber.android.R;
 import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.cs.ChatStateManager;
+import com.xabber.android.data.message.AbstractChat;
+import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.NotificationState;
 import com.xabber.android.data.notification.custom_notification.CustomNotifyPrefsManager;
 import com.xabber.android.data.notification.custom_notification.Key;
@@ -59,18 +61,26 @@ public class NewContactTitleInflater {
 
     private static void setStatus(Context context, View titleView, AbstractContact abstractContact) {
         final ImageView statusModeView = (ImageView) titleView.findViewById(R.id.ivStatus);
-        //final ImageView ivStatusBackground = (ImageView) titleView.findViewById(R.id.ivStatusBackground);
+        final ImageView groupchatStatusView = (ImageView) titleView.findViewById(R.id.ivStatusGroupchat);
+
+        boolean isGroupchat = false;
+        AbstractChat chat = MessageManager.getInstance().getOrCreateChat(abstractContact.getAccount(), abstractContact.getUser());
+        if (chat != null) isGroupchat = chat.isGroupchat();
 
         int statusLevel = abstractContact.getStatusMode().getStatusLevel();
         statusModeView.setVisibility(View.GONE);
         if (isContactOffline(statusLevel)) {
             statusModeView.setVisibility(View.GONE);
-            //ivStatusBackground.setVisibility(View.GONE);
+            groupchatStatusView.setVisibility(View.GONE);
         } else {
-            statusModeView.setVisibility(View.VISIBLE);
-            statusModeView.setImageLevel(statusLevel);
-            //ivStatusBackground.setVisibility(View.VISIBLE);
-            //ivStatusBackground.setImageLevel(AccountPainter.getAccountColorLevel(abstractContact.getAccount()));
+            if (isGroupchat) {
+                statusModeView.setVisibility(View.GONE);
+                groupchatStatusView.setVisibility(View.VISIBLE);
+            } else {
+                statusModeView.setVisibility(View.VISIBLE);
+                statusModeView.setImageLevel(statusLevel);
+                groupchatStatusView.setVisibility(View.GONE);
+            }
         }
 
         final TextView statusTextView = (TextView) titleView.findViewById(R.id.status_text);

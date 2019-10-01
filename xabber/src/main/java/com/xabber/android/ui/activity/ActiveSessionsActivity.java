@@ -25,6 +25,7 @@ import com.xabber.android.data.extension.xtoken.XTokenManager;
 import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.ui.color.BarPainter;
 
+
 import java.util.List;
 
 public class ActiveSessionsActivity extends ManagedActivity implements SessionAdapter.Listener {
@@ -79,6 +80,7 @@ public class ActiveSessionsActivity extends ManagedActivity implements SessionAd
             }
         });
         toolbar.setTitle(R.string.account_active_sessions);
+
         barPainter = new BarPainter(this, toolbar);
         barPainter.updateWithAccountName(account);
         progressBar = findViewById(R.id.progressBar);
@@ -91,6 +93,7 @@ public class ActiveSessionsActivity extends ManagedActivity implements SessionAd
                 showTerminateAllSessionsDialog();
             }
         });
+
 
         // other sessions
         RecyclerView recyclerView = findViewById(R.id.rvSessions);

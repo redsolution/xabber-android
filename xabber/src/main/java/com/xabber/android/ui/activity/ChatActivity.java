@@ -843,6 +843,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         menu.findItem(R.id.action_remove_contact).setVisible(false);
         menu.findItem(R.id.action_delete_conference).setVisible(true);
 
+        menu.findItem(R.id.action_generate_qrcode).setVisible(false);
         menu.findItem(R.id.action_send_contact).setVisible(false);
         menu.findItem(R.id.action_edit_alias).setVisible(false);
         menu.findItem(R.id.action_edit_groups).setVisible(false);
@@ -938,6 +939,10 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
 
             case R.id.action_send_contact:
                 sendContact();
+                return true;
+
+            case R.id.action_generate_qrcode:
+                generateQR();
                 return true;
 
             case R.id.action_view_contact:
@@ -1166,5 +1171,16 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
             needScrollToUnread = false;
             return true;
         } else return false;
+    }
+
+    private void  generateQR(){
+        RosterContact rosterContact = RosterManager.getInstance().getRosterContact(account, user);
+        Intent intent = QRCodeActivity.createIntent(ChatActivity.this, account);
+        String textName = rosterContact != null ? rosterContact.getName() : "";
+        intent.putExtra("account_name", textName);
+        String textAddress = user.toString();
+        intent.putExtra("account_address", textAddress);
+        intent.putExtra("caller", "ChatActivity");
+        startActivity(intent);
     }
 }

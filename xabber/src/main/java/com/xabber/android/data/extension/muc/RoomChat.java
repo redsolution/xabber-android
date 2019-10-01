@@ -302,13 +302,13 @@ public class RoomChat extends AbstractChat {
                     createAndSaveFileMessage(true, uid, resource, text, markupText, null,
                             null, delay, true, notify,
                             false, false, getStanzaId(message), attachments,
-                            originalStanza, null, originalFrom, true, false);
+                            originalStanza, null, originalFrom, true, false, null);
 
                     // create message without attachments
                 else createAndSaveNewMessage(true, uid, resource, text, markupText, null,
                         null, delay, true, notify,
                         false, false, getStanzaId(message),
-                        originalStanza, null, originalFrom, forwardIds, true, false);
+                        originalStanza, null, originalFrom, forwardIds, true, false, null);
 
                 EventBus.getDefault().post(new NewIncomingMessageEvent(account, user));
             }
@@ -402,12 +402,12 @@ public class RoomChat extends AbstractChat {
         if (attachments.size() > 0)
             createAndSaveFileMessage(ui, uid, resource, text, markupText, null, timestamp, getDelayStamp(message),
                     true, false, false, false, getStanzaId(message), attachments,
-                    originalStanza, parentMessageId, originalFrom, fromMUC, true);
+                    originalStanza, parentMessageId, originalFrom, fromMUC, true, null);
 
             // create message without attachments
         else createAndSaveNewMessage(ui, uid, resource, text, markupText, null, timestamp, getDelayStamp(message),
                 true, false, false, false, getStanzaId(message),
-                originalStanza, parentMessageId, originalFrom, forwardIds, fromMUC, true);
+                originalStanza, parentMessageId, originalFrom, forwardIds, fromMUC, true, null);
 
         return uid;
     }
@@ -478,7 +478,7 @@ public class RoomChat extends AbstractChat {
                                     R.string.action_join_complete_to, user), null,
                             ChatAction.complete, null, null, true, true,
                             false, false, null,
-                            null, null, null, null, true, false);
+                            null, null, null, null, true, false, null);
                 }
                 active = true;
                 setRequested(false);

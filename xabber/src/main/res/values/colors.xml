@@ -396,6 +396,7 @@
     <color name="unread_messages_background">#66bdbdbd</color>
 
     <color name="bottom_navigation_background">#eeeeee</color>
+    <color name="bottom_navigation_background_pressed">#DADADA</color>
     <color name="status_color_in_contact_list_online">#FF388E3C</color>
     <color name="status_color_in_contact_list">#96616161</color>
 

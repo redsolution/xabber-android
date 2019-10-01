@@ -16,8 +16,19 @@
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_marginRight="2dp"
-        app:civ_fill_color="@color/white"
+        app:civ_circle_background_color="@color/white"
         tools:src="@tools:sample/avatars"
+        />
+
+    <ImageView
+        android:id="@+id/ivStatusGroupchat"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:src="@drawable/ic_groupchat"
+        android:layout_toLeftOf="@id/ivAvatar"
+        android:layout_alignBottom="@id/ivAvatar"
+        android:layout_marginRight="-43dp"
+        android:visibility="gone"
         />
 
     <ImageView

@@ -71,6 +71,8 @@ public class GroupEditActivity extends ManagedActivity implements OnContactChang
         account = GroupEditActivity.getAccount(intent);
         user = GroupEditActivity.getUser(intent);
 
+        update();
+
         if (AccountManager.getInstance().getAccount(account) == null || user == null) {
             Application.getInstance().onError(R.string.ENTRY_IS_NOT_FOUND);
             finish();
@@ -100,9 +102,19 @@ public class GroupEditActivity extends ManagedActivity implements OnContactChang
 
     private void update() {
         AbstractContact abstractContact = RosterManager.getInstance().getBestContact(account, user);
+        //MessageManager messageManager = MessageManager.getInstance();
+        //AbstractChat chat = messageManager.getOrCreateChat(abstractContact.getAccount(), abstractContact.getUser());
+
+        /*if(chat.isGroupchat()){
+            contactTitleActionBarInflater.hideStatusIcon();
+            contactTitleActionBarInflater.showStatusGroupIcon();
+        } else {
+            contactTitleActionBarInflater.hideStatusGroupIcon();
+            contactTitleActionBarInflater.showStatusIcon();
+        }*/
         contactTitleActionBarInflater.update(abstractContact);
         contactTitleActionBarInflater.setStatusText(user.toString());
-        //contactTitleActionBarInflater.hideStatusIcon();
+
     }
 
     @Override

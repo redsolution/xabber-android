@@ -2,11 +2,11 @@ package com.xabber.android.data.xaccount;
 
 import android.util.Base64;
 
-import com.google.firebase.iid.FirebaseInstanceId;
 import com.xabber.android.BuildConfig;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.privatestorage.PrivateStorageManager;
+import com.xabber.android.utils.ExternalAPIs;
 
 import org.jxmpp.stringprep.XmppStringprepException;
 
@@ -66,7 +66,10 @@ public class AuthManager {
                 .flatMap(new Func1<ResponseBody, Single<? extends ResponseBody>>() {
                     @Override
                     public Single<? extends ResponseBody> call(ResponseBody responseBody) {
-                        return unregisterFCMEndpoint(FirebaseInstanceId.getInstance().getToken());
+                        String token = ExternalAPIs.getPushEndpointToken();
+                        if (token != null)
+                            return unregisterFCMEndpoint(token);
+                        else return Single.just(responseBody);
                     }
                 });
     }

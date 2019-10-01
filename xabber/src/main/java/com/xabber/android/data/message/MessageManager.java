@@ -50,7 +50,9 @@ import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.muc.RoomChat;
+import com.xabber.android.data.extension.references.RefUser;
 import com.xabber.android.data.extension.references.ReferencesManager;
+import com.xabber.android.data.groupchat.GroupchatUserManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.message.chat.MucPrivateChatNotification;
@@ -640,7 +642,9 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
             return;
         }
         boolean processed = false;
-        for (AbstractChat chat : chats.getNested(account.toString()).values()) {
+        List<AbstractChat> chatsCopy = new ArrayList<>();
+        chatsCopy.addAll(chats.getNested(account.toString()).values());
+        for (AbstractChat chat : chatsCopy) {
             if (chat.onPacket(user, stanza, false)) {
                 processed = true;
                 break;
@@ -813,6 +817,13 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
             RealmList<Attachment> attachments = HttpFileUploadManager.parseFileMessage(message);
             if (attachments.size() > 0)
                 newMessageItem.setAttachments(attachments);
+
+            // groupchat
+            RefUser groupchatUser = ReferencesManager.getGroupchatUserFromReferences(message);
+            if (groupchatUser != null) {
+                GroupchatUserManager.getInstance().saveGroupchatUser(groupchatUser);
+                newMessageItem.setGroupchatUserId(groupchatUser.getId());
+            }
 
             BackpressureMessageSaver.getInstance().saveMessageItem(newMessageItem);
 

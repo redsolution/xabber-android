@@ -2,8 +2,12 @@ package com.xabber.android.ui.fragment;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.Intent;
 import android.os.Bundle;
 import androidx.annotation.Nullable;
+
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,7 +17,10 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
@@ -21,10 +28,14 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.xaccount.AuthManager;
 import com.xabber.android.data.xaccount.XabberAccountManager;
+import com.xabber.android.ui.activity.AccountAddActivity;
 import com.xabber.android.ui.activity.ContactListActivity;
+import com.xabber.android.ui.activity.QRCodeScannerActivity;
 import com.xabber.android.ui.dialog.OrbotInstallerDialog;
 import com.xabber.android.ui.helper.OnSocialBindListener;
 import com.xabber.android.ui.helper.OrbotHelper;
+
+import java.util.Collections;
 
 public class XAccountLoginFragment extends Fragment implements View.OnClickListener {
 
@@ -37,6 +48,8 @@ public class XAccountLoginFragment extends Fragment implements View.OnClickListe
     private Button btnLogin;
     private Button btnOptions;
     private Button btnForgotPass;
+    private ImageView imgQRcode;
+    private ImageView imgClearText;
     private View optionsView;
     private View socialView;
 
@@ -75,6 +88,30 @@ public class XAccountLoginFragment extends Fragment implements View.OnClickListe
         optionsView = view.findViewById(R.id.optionsView);
         socialView = view.findViewById(R.id.socialView);
         edtUsername = (EditText) view.findViewById(R.id.edtUsername);
+        edtUsername.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if (editable.toString().equals("")) {
+                    ((AccountAddActivity)getActivity()).toolbarSetEnabled(false);
+                    imgClearText.setVisibility(View.GONE);
+                    imgQRcode.setVisibility(View.VISIBLE);
+                } else {
+                    imgClearText.setVisibility(View.VISIBLE);
+                    imgQRcode.setVisibility(View.GONE);
+                }
+            }
+        });
         edtPassword = (EditText) view.findViewById(R.id.edtPass);
         btnLogin = view.findViewById(R.id.btnLogin);
         btnLogin.setOnClickListener(this);
@@ -82,6 +119,10 @@ public class XAccountLoginFragment extends Fragment implements View.OnClickListe
         btnOptions.setOnClickListener(this);
         btnForgotPass = view.findViewById(R.id.btnForgotPass);
         btnForgotPass.setOnClickListener(this);
+        imgQRcode = view.findViewById(R.id.imgQRcode);
+        imgQRcode.setOnClickListener(this);
+        imgClearText = view.findViewById(R.id.imgCross);
+        imgClearText.setOnClickListener(this);
 
         ((TextView) view.findViewById(R.id.account_help))
                 .setMovementMethod(LinkMovementMethod.getInstance());
@@ -148,6 +189,44 @@ public class XAccountLoginFragment extends Fragment implements View.OnClickListe
             case R.id.btnForgotPass:
                 forgotPassListener.onForgotPassClick();
                 break;
+            case R.id.imgQRcode:
+                scanQRcode();
+                break;
+            case R.id.imgCross:
+                clearUsername();
+                break;
+        }
+    }
+
+    private void clearUsername() {
+        edtUsername.setText("");
+    }
+
+    private void scanQRcode(){
+        IntentIntegrator integrator = IntentIntegrator.forFragment(this);
+        integrator.setOrientationLocked(false)
+                .setBeepEnabled(false)
+                .setPrompt("")
+                .setCameraId(0)
+                .setCaptureActivity(QRCodeScannerActivity.class)
+                .initiateScan(Collections.unmodifiableList(Collections.singletonList(IntentIntegrator.QR_CODE)));
+    }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+        if (result != null) {
+            if (result.getContents() == null) {
+                Toast.makeText(getActivity(), "no-go", Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(getActivity(), "Scanned = " + result.getContents(), Toast.LENGTH_LONG).show();
+                if (result.getContents().length() > 5) {
+                    String[] s = result.getContents().split(":");
+                    if (s[0].equals("xmpp") && s.length>=2)
+                        edtUsername.setText(s[1]);
+                }
+            }
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
         }
     }
 

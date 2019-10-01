@@ -296,4 +296,19 @@ public class StringUtils {
                 Application.getInstance().getResources().getConfiguration().locale);
         return pattern.format(date);
     }
+
+    public static String getColoredText(String text, String hexColor) {
+        StringBuilder builder = new StringBuilder();
+        builder.append("<font color='");
+        builder.append(hexColor);
+        builder.append("'>");
+        builder.append(text);
+        builder.append("</font> ");
+        return builder.toString();
+    }
+
+    public static String getColoredText(String text, int color) {
+        String hexColor = String.format("#%06X", 0xFFFFFF & color);
+        return getColoredText(text, hexColor);
+    }
 }

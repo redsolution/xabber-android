@@ -68,7 +68,7 @@ public class XTokenManager implements OnPacketListener {
         LogManager.d(LOG_TAG, "Request revoke x-token");
         XTokenRevokeIQ revokeIQ = new XTokenRevokeIQ(tokenIDs);
         revokeIQ.setType(IQ.Type.set);
-        revokeIQ.setTo(connection.getHost());
+        revokeIQ.setTo(connection.getXMPPServiceDomain());
         try {
             connection.sendStanza(revokeIQ);
         } catch (Exception e) {
@@ -142,7 +142,7 @@ public class XTokenManager implements OnPacketListener {
         LogManager.d(LOG_TAG, "Request x-token list");
         SessionsRequestIQ requestIQ = new SessionsRequestIQ();
         requestIQ.setType(IQ.Type.get);
-        requestIQ.setTo(connection.getHost());
+        requestIQ.setTo(connection.getXMPPServiceDomain());
         try {
             connection.sendStanzaWithResponseCallback(requestIQ,
                     new SessionsResultFilter(requestIQ, connection),

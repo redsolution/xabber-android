@@ -26,7 +26,7 @@ public class ReferencesProviderTest {
     private ReferencesProvider provider;
     private XmlPullParserFactory factory;
     private String stringForward, stringMedia, stringMarkup1,
-            stringMarkup2, stringMention, stringQuote, stringNull, stringUnknown;
+            stringMarkup2, stringMention, stringQuote, stringNull, stringUnknown, stringGroupchat;
 
     @Before
     public void setUp() throws Exception {
@@ -66,6 +66,19 @@ public class ReferencesProviderTest {
 
         stringUnknown = "<reference xmlns='urn:xmpp:reference:0' end='17' begin='0' type='unknown'></reference>";
         stringNull = "<reference xmlns='https://xabber.com/protocol/reference' end='17' begin='0'></reference>";
+
+        stringGroupchat = "<reference xmlns='urn:xmpp:reference:0' end='16' begin='0' type='groupchat'>" +
+                "<user xmlns='http://xabber.com/protocol/groupchat' id='kubsgzldk3csvtez'>" +
+                "<role>member</role>" +
+                "<nickname>john.doe</nickname>" +
+                "<badge />" +
+                "<jid>john.doe@xabber.org</jid>" +
+                "<metadata xmlns='urn:xmpp:avatar:metadata'>" +
+                "<info url='http://xabber.org/images/d7072b2bc4652580911649870699787b18.jpeg' " +
+                "type='image/jpeg' id='d7072b2bc4652580911649870699787b18' bytes='9145' />" +
+                "</metadata>'" +
+                "</user>'" +
+                "</reference>";
 
     }
 
@@ -158,7 +171,7 @@ public class ReferencesProviderTest {
         assertEquals("quote", element.getType().toString());
         assertEquals(0, element.getBegin());
         assertEquals(31, element.getEnd());
-        assertEquals("&gt; ", element.getMarker());
+        assertEquals("> ", element.getMarker());
     }
 
     @Test
@@ -168,6 +181,24 @@ public class ReferencesProviderTest {
 
         ReferenceElement element1 = parseString(stringNull);
         assertNull(element1);
+    }
+
+    @Test
+    public void parse8() {
+        Groupchat element = (Groupchat) parseString(stringGroupchat);
+        assertNotNull(element);
+        assertEquals("groupchat", element.getType().toString());
+        assertEquals(0, element.getBegin());
+        assertEquals(16, element.getEnd());
+
+        RefUser user = element.getUser();
+        assertNotNull(user);
+        assertEquals("", user.getBadge());
+        assertEquals("kubsgzldk3csvtez", user.getId());
+        assertEquals("john.doe@xabber.org", user.getJid());
+        assertEquals("john.doe", user.getNickname());
+        assertEquals("member", user.getRole());
+        assertEquals("http://xabber.org/images/d7072b2bc4652580911649870699787b18.jpeg", user.getAvatar());
     }
 
     private ReferenceElement parseString(String source) {

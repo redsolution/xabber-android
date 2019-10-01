@@ -88,3 +88,6 @@
 -dontnote **.ILicensingService
 -dontnote sun.misc.Unsafe
 -dontwarn sun.misc.Unsafe
+
+# retrofit
+-dontwarn retrofit2.Platform$Java8

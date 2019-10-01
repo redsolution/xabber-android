@@ -14,8 +14,12 @@ import androidx.appcompat.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CompoundButton;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountErrorEvent;
@@ -29,6 +33,7 @@ import com.xabber.android.data.extension.blocking.OnBlockedListChangedListener;
 import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.roster.AbstractContact;
+import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.data.xaccount.XabberAccountManager;
 import com.xabber.android.ui.adapter.accountoptions.AccountOption;
@@ -59,6 +64,8 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
     private SwitchCompat switchCompat;
     private AccountItem accountItem;
     private boolean isConnectionSettingsAction;
+    private ImageView qrImage;
+    private IntentIntegrator integrator;
 
     public AccountActivity() {
     }
@@ -84,6 +91,8 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
         super.onCreate(savedInstanceState);
 
         final Intent intent = getIntent();
+
+        integrator = new IntentIntegrator(this);
 
         account = getAccount(intent);
         if (account == null) {
@@ -131,7 +140,7 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
 
         barPainter = new BarPainter(this, toolbar);
 
-        UserJid fakeAccountUser;
+        final UserJid fakeAccountUser;
         try {
             fakeAccountUser = UserJid.from(account.getFullJid().asBareJid());
         } catch (UserJid.UserJidCreateException e) {
@@ -143,6 +152,31 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
         contactTitleView = findViewById(R.id.contact_title_expanded);
         statusIcon = findViewById(R.id.ivStatus);
         statusText = (TextView) findViewById(R.id.status_text);
+
+        qrImage = (ImageView) findViewById(R.id.imgQRcode);
+        qrImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                RosterContact rosterContact = RosterManager.getInstance().getRosterContact(account, fakeAccountUser);
+                Intent intent = QRCodeActivity.createIntent(AccountActivity.this, account);
+                String textName = rosterContact != null ? rosterContact.getName() : "";
+                intent.putExtra("account_name", textName);
+                String textAddress =  account.getFullJid().asBareJid().toString();
+                intent.putExtra("account_address", textAddress);
+                intent.putExtra("caller", "AccountActivity");
+
+                //integrator.setOrientationLocked(true)
+                //        .setBeepEnabled(false)
+                //        .setCameraId(0)
+                //        .setPrompt("")
+                //        .addExtra("account_name", textName)
+                //        .addExtra("account_address", textAddress)
+                //        .setCaptureActivity(QRCodeScannerActivity.class)
+                //        .initiateScan(Collections.unmodifiableList(Collections.singletonList(IntentIntegrator.QR_CODE)));
+
+                startActivity(intent);
+            }
+        });
 
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.account_options_recycler_view);
 
@@ -159,6 +193,26 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.account_fragment_container, ContactVcardViewerFragment.newInstance(account))
                     .commit();
+        }
+    }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent data){
+        IntentResult result = IntentIntegrator.parseActivityResult(requestCode,resultCode, data);
+        if(result!=null){
+            if(result.getContents()==null){
+                Toast.makeText(AccountActivity.this, "no-go", Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(AccountActivity.this, "Scanned = " + result.getContents(), Toast.LENGTH_LONG).show();
+                if(result.getContents().length()>5)
+                    if(result.getContents().substring(0,5).equals("xmpp:")) {
+                        Intent intent = ContactAddActivity.createIntent(this, account);
+                        intent.putExtra("contact",result.getContents().substring(5));
+                        startActivity(intent);
+                        //startActivity(intent);
+                    }
+            }
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
         }
     }
 
@@ -327,4 +381,5 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
             super.onAuthErrorEvent(accountErrorEvent);
         }
     }
+
 }

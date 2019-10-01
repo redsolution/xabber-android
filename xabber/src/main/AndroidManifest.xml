@@ -48,7 +48,9 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/application_title_full"
         android:theme="@style/Theme"
-        tools:replace="label, icon, allowBackup">
+        tools:replace="label, icon, allowBackup"
+
+        android:hardwareAccelerated="true">
 
         <meta-data
             android:name="io.fabric.ApiKey"
@@ -115,6 +117,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.xabber.android.ui.preferences.PreferenceEditor" />
         </activity>
+
         <activity
             android:name=".ui.activity.AccountListActivity"
             android:label="@string/preference_accounts"
@@ -173,6 +176,10 @@
         <activity
             android:name=".ui.activity.AccountAddActivity"
             android:label="@string/account_add"
+
+            android:screenOrientation="portrait"
+            tools:replace="screenOrientation"
+
             android:parentActivityName=".ui.activity.AccountListActivity">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
@@ -584,6 +591,9 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.xabber.android.ui.preferences.DebugSettings"/>
         </activity>
+        <activity android:name=".ui.activity.QRCodeScannerActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".ui.activity.QRCodeActivity" />
     </application>
 
 </manifest>

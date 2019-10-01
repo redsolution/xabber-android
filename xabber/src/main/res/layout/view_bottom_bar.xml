@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="56dp"
+    android:orientation="horizontal"
+    android:useDefaultMargins="true"
+    android:background="?attr/bottom_navigation_background">
+
+
+    <RelativeLayout
+        android:id="@+id/show_chats_button"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:layout_width="0dp"
+        android:background="@color/transparent">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/show_chats_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_chats_list"
+            android:background="@color/transparent"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true" />
+
+        <TextView
+            android:id="@+id/unread_count_textview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="8dp"
+            android:layout_marginLeft="40dp"
+            android:paddingTop="1dp"
+            android:paddingBottom="2dp"
+            android:paddingRight="6dp"
+            android:paddingLeft="6dp"
+            android:background="@drawable/rounded_background_green_border"
+            android:textColor="@color/white"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:text="1"
+            android:visibility="gone"
+            />
+
+    </RelativeLayout>
+
+    <ImageButton
+        android:id="@+id/show_calls_button"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:src="@drawable/ic_calls_list"
+        android:background="@color/transparent"
+        android:layout_weight="1"/>
+
+    <ImageButton
+        android:id="@+id/show_contacts_button"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:src="@drawable/ic_contacts_list"
+        android:background="@color/transparent"
+        android:layout_weight="1"/>
+
+    <ImageButton
+        android:id="@+id/show_search_button"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:src="@drawable/ic_discover"
+        android:background="@color/transparent"
+        android:layout_weight="1"/>
+
+    <ImageButton
+        android:id="@+id/show_settings_button"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:src="@drawable/ic_menu"
+        android:background="@color/transparent"
+        android:layout_weight="1"/>
+
+
+</LinearLayout
+    >

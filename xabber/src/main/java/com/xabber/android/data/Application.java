@@ -23,8 +23,6 @@ import android.os.StrictMode;
 import androidx.annotation.NonNull;
 import androidx.multidex.MultiDex;
 
-import com.crashlytics.android.Crashlytics;
-import com.crashlytics.android.core.CrashlyticsCore;
 import com.frogermcs.androiddevmetrics.AndroidDevMetrics;
 import com.github.moduth.blockcanary.BlockCanary;
 import com.squareup.leakcanary.LeakCanary;
@@ -53,6 +51,7 @@ import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.ssn.SSNManager;
 import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.data.extension.xtoken.XTokenManager;
+import com.xabber.android.data.groupchat.GroupchatUserManager;
 import com.xabber.android.data.http.CrowdfundingManager;
 import com.xabber.android.data.http.PatreonManager;
 import com.xabber.android.data.log.LogManager;
@@ -72,6 +71,7 @@ import com.xabber.android.data.xaccount.XMPPAuthManager;
 import com.xabber.android.data.xaccount.XabberAccountManager;
 import com.xabber.android.service.XabberService;
 import com.xabber.android.utils.AppBlockCanaryContext;
+import com.xabber.android.utils.ExternalAPIs;
 
 import org.jivesoftware.smack.provider.ProviderFileLoader;
 import org.jivesoftware.smack.provider.ProviderManager;
@@ -87,8 +87,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadFactory;
-
-import io.fabric.sdk.android.Fabric;
 
 /**
  * Base entry point.
@@ -344,10 +342,7 @@ public class Application extends android.app.Application {
         }
 
         /** Crashlytics */
-        CrashlyticsCore crashlyticsCore = new CrashlyticsCore.Builder()
-                .disabled(BuildConfig.DEBUG || BuildConfig.FLAVOR == "open")
-                .build();
-        Fabric.with(this, new Crashlytics.Builder().core(crashlyticsCore).build());
+        ExternalAPIs.enableCrashlyticsIfNeed(this);
 
         Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
         addManagers();
@@ -398,6 +393,7 @@ public class Application extends android.app.Application {
         addManager(DelayedNotificationActionManager.getInstance());
         addManager(LastActivityInteractor.getInstance());
         addManager(XTokenManager.getInstance());
+        addManager(GroupchatUserManager.getInstance());
     }
 
     /**

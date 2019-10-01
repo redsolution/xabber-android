@@ -8,7 +8,7 @@ import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.message.phrase.Phrase;
 import com.xabber.android.data.message.phrase.PhraseManager;
 
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 public class Key {
     private AccountJid account;

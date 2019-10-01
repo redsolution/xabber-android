@@ -108,7 +108,7 @@ public class MessageNotificationCreator {
                 new NotificationCompat.Builder(context, getChannelID(lastChat))
                         .setColor(context.getResources().getColor(R.color.persistent_notification_color))
                         .setWhen(lastChat != null ? lastChat.getLastMessageTimestamp() : System.currentTimeMillis())
-                        .setSmallIcon(R.drawable.ic_message)
+                        .setSmallIcon(R.drawable.ic_stat_chat)
                         .setContentIntent(createBundleContentIntent())
                         .setDeleteIntent(NotificationReceiver.createDeleteIntent(context, MESSAGE_BUNDLE_NOTIFICATION_ID))
                         .setCategory(NotificationCompat.CATEGORY_MESSAGE)

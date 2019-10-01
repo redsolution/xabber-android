@@ -139,8 +139,18 @@ public class ContactActivity extends ManagedActivity implements
 
         final int accountMainColor = ColorManager.getInstance().getAccountPainter().getAccountMainColor(account);
 
+/*        MessageManager messageManager = MessageManager.getInstance();
+        AbstractChat chat = messageManager.getOrCreateChat(bestContact.getAccount(), bestContact.getUser());*/
+
+
         contactTitleView = findViewById(R.id.contact_title_expanded);
-        findViewById(R.id.ivStatus).setVisibility(View.GONE);
+ /*       if(chat.isGroupchat()){
+            findViewById(R.id.ivStatus).setVisibility(View.GONE);
+            findViewById(R.id.ivStatusGroupchat).setVisibility(View.VISIBLE);
+        } else {
+            findViewById(R.id.ivStatus).setVisibility(View.VISIBLE);
+            findViewById(R.id.ivStatusGroupchat).setVisibility(View.GONE);
+        }*/
         contactTitleView.setBackgroundColor(accountMainColor);
         TextView contactNameView = (TextView) findViewById(R.id.name);
         contactNameView.setVisibility(View.INVISIBLE);

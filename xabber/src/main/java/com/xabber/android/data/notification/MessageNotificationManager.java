@@ -330,14 +330,16 @@ public class MessageNotificationManager implements OnLoadListener {
     }
 
     private String getNotificationText(MessageItem message) {
-        String text = message.getText();
+        String text = message.getText().trim();
         if (message.haveAttachments() && message.getAttachments().size() > 0) {
             Attachment attachment = message.getAttachments().get(0);
             FileCategory category = FileCategory.determineFileCategory(attachment.getMimeType());
             text = FileCategory.getCategoryName(category, false) + attachment.getTitle();
         }
-        if (message.haveForwardedMessages() && message.getForwardedIds().size() > 0) {
-            text = context.getString(R.string.forwarded_messages_count, message.getForwardedIds().size());
+        if (message.haveForwardedMessages() && message.getForwardedIds().size() > 0 && text.isEmpty()) {
+            String forwardText = message.getFirstForwardedMessageText();
+            if (forwardText != null && !forwardText.isEmpty()) text = forwardText;
+            else text = context.getString(R.string.forwarded_messages_count, message.getForwardedIds().size());
         }
         return text;
     }

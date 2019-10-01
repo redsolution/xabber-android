@@ -14,26 +14,65 @@
         android:focusableInTouchMode="true"
         >
 
-        <com.google.android.material.textfield.TextInputLayout
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:theme="@style/Theme"
-            >
+            android:layout_height="match_parent">
 
-            <androidx.appcompat.widget.AppCompatEditText
-                android:id="@+id/edtUsername"
+
+
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/edtUsernameLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:imeOptions="actionNext"
-                android:inputType="textEmailAddress"
-                android:nextFocusForward="@+id/edtPass"
-                android:singleLine="true"
-                android:hint="@string/label_xmpp_id"
-                android:textSize="16sp"
-                android:theme="@style/Theme"
-                />
+                android:weightSum="10"
+                android:theme="@style/Theme">
 
-        </com.google.android.material.textfield.TextInputLayout>
+                <androidx.appcompat.widget.AppCompatEditText
+                    android:id="@+id/edtUsername"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/label_xmpp_id"
+                    android:imeOptions="actionNext"
+                    android:inputType="textEmailAddress"
+                    android:nextFocusForward="@+id/edtPass"
+                    android:singleLine="true"
+                    android:textSize="16sp"
+                    android:theme="@style/Theme" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <ImageView
+                android:id="@+id/imgQRcode"
+                style="@style/QRCodeLoginButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@id/edtUsernameLayout"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="-1dp"
+                android:layout_marginBottom="0dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="@drawable/test_ripple"
+                app:srcCompat="@drawable/qrcode_scan_icon_grey" />
+            <ImageView
+                android:id="@+id/imgCross"
+                style="@style/QRCodeLoginButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@id/edtUsernameLayout"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="-1dp"
+                android:layout_marginBottom="0dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="@drawable/test_ripple"
+                app:srcCompat="@drawable/ic_close"
+                android:visibility="gone"/>
+
+        </RelativeLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
@@ -147,7 +186,7 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_error_grey_24dp"
+                app:srcCompat="@drawable/ic_error_grey_24dp"
                 android:paddingTop="16dp"
                 android:paddingBottom="16dp"
                 android:paddingLeft="4dp"
