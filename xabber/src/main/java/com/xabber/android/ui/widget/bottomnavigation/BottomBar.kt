@@ -92,9 +92,9 @@ class BottomBar : Fragment(), View.OnClickListener {
 
     fun setChatStateIcon (currentChatState : ChatListFragment.ChatListState){
         when (currentChatState){
-            ChatListFragment.ChatListState.recent -> chatsImage?.setImageDrawable(resources.getDrawable(R.drawable.ic_chats_list))
-            ChatListFragment.ChatListState.unread -> chatsImage?.setImageDrawable(resources.getDrawable(R.drawable.ic_chats_list_unread))
-            ChatListFragment.ChatListState.archived -> chatsImage?.setImageDrawable(resources.getDrawable(R.drawable.ic_chats_list))
+            ChatListFragment.ChatListState.recent -> chatsImage?.setImageDrawable(resources.getDrawable(R.drawable.ic_chats_list_new))
+            ChatListFragment.ChatListState.unread -> chatsImage?.setImageDrawable(resources.getDrawable(R.drawable.ic_chats_list_unread_new))
+            ChatListFragment.ChatListState.archived -> chatsImage?.setImageDrawable(resources.getDrawable(R.drawable.ic_chats_list_new))
         }
     }
 

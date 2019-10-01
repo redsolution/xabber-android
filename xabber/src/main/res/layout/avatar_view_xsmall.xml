@@ -21,7 +21,8 @@
             android:layout_height="40dp"
             app:civ_circle_background_color="@color/white"
             tools:src="@tools:sample/avatars"
-            />
+            app:civ_border_width="2dp"
+            app:civ_border_color="@color/transparent"/>
 
         <ImageView
             android:id="@+id/ivStatus"
@@ -40,6 +41,13 @@
             android:src="@drawable/ic_status"
             android:visibility="gone"
             />
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/ivAvatarOverlay"
+            android:layout_width="40dp"
+            android:src="@drawable/ic_offline_shadow_24dp"
+            android:layout_height="40dp"
+            android:visibility="gone"/>
 
     </RelativeLayout>
 

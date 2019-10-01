@@ -457,6 +457,7 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
             } else view.hidePlaceholder();
             view.updateItems(items);
         }
+        view.updateAccountsList();
         updateUnreadCount();
     }
 

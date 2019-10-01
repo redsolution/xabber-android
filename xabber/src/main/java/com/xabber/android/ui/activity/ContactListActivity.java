@@ -604,6 +604,15 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
         onContactClick(contact);
     }
 
+//    @Override
+//    public void onMarkAllReadButtonClick() {
+//        for (AbstractChat chat : MessageManager.getInstance().getChatsOfEnabledAccount()){
+//            chat.markAsReadAll(true);
+//        }
+//        getChatListFragment().onStateSelected(ChatListFragment.ChatListState.recent);
+//        Toast.makeText(this, "All messages was marked as read.", Toast.LENGTH_SHORT).show();
+//    }
+
     @Override
     public void onContactClick(AbstractContact abstractContact) {
         //if (contentFragment != null)
@@ -702,7 +711,12 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onUnreadMessagesCountChanged(ContactListPresenter.UpdateUnreadCountEvent event) {
         unreadMessagesCount = event.getCount();
-        getBottomBarFragment().setUnreadMessages(unreadMessagesCount);
+        getBottomBarFragment().setUnreadMessages(event.getCount());
+    }
+
+    public void onUnreadChanged(int unread){
+        unreadMessagesCount = unread;
+        getBottomBarFragment().setUnreadMessages(unread);
     }
 
     @Override
@@ -756,19 +770,29 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
     }
 
     @Override
-    public void onContactsClick() { showContactListFragment(null);    }
+    public void onContactsClick() {
+        showContactListFragment(null);
+        getBottomBarFragment().setChatStateIcon(ChatListFragment.ChatListState.recent);
+    }
 
     @Override
     public void onSettingsClick() {
         //drawerLayout.openDrawer(Gravity.START);
         showMenuFragment();
+        getBottomBarFragment().setChatStateIcon(ChatListFragment.ChatListState.recent);
     }
 
     @Override
-    public void onCallsClick() { showCallsFragment();   }
+    public void onCallsClick() {
+        showCallsFragment();
+        getBottomBarFragment().setChatStateIcon(ChatListFragment.ChatListState.recent);
+    }
 
     @Override
-    public void onDiscoverClick() {  showDiscoverFragment();  }
+    public void onDiscoverClick() {
+        showDiscoverFragment();
+        getBottomBarFragment().setChatStateIcon(ChatListFragment.ChatListState.recent);
+    }
 
 
     //    @Override             need for old menu

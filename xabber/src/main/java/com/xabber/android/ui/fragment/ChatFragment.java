@@ -10,13 +10,6 @@ import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.appcompat.app.AlertDialog;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.appcompat.widget.Toolbar;
 import android.text.Editable;
 import android.text.Spannable;
 import android.text.TextWatcher;
@@ -38,6 +31,14 @@ import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
@@ -658,6 +659,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         if (event.getAccount().equals(account) && event.getUser().equals(user)) {
             listener.playIncomingAnimation();
             playMessageSound();
+            NotificationManager.getInstance().removeMessageNotification(account, user);
         }
     }
 
@@ -739,6 +741,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
 
     public void restoreInputState() {
+        if (!inputView.getText().equals("") && inputView.getText() != null) return;
+
         skipOnTextChanges = true;
 
         inputView.setText(ChatManager.getInstance().getTypedMessage(account, user));
@@ -843,6 +847,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         skipOnTextChanges = true;
         inputView.setText(additional);
         inputView.setSelection(additional.length());
+
         skipOnTextChanges = false;
     }
 
@@ -1000,9 +1005,9 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         if (v.getId() == R.id.avatar) {
             showContactInfo();
         }
-        if (v.getId() == R.id.placeholder) {
-            ((ChatActivity)getActivity()).selectPage(1, true);
-        }
+//        if (v.getId() == R.id.placeholder) {
+//            ((ChatActivity)getActivity()).selectPage(1, true);
+//        }
         if (v.getId() == R.id.actionJoin) {
             ((ChatActivity)getActivity()).onJoinConferenceClick();
             showJoinButtonIfNeed();
