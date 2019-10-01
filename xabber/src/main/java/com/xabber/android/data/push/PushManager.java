@@ -154,7 +154,7 @@ public class PushManager implements OnConnectedListener, OnPacketListener {
 
     public void disablePushNotification(AccountItem accountItem, boolean needConfirm) {
         if (accountItem != null) {
-            deleteEndpoint(accountItem);
+            //deleteEndpoint(accountItem);  //Disable to avoid sending annoying requests to PUSH-server
             AccountManager.getInstance().setPushWasEnabled(accountItem, false);
         }
     }
