@@ -26,7 +26,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.snackbar.Snackbar;
-import com.xabber.android.BuildConfig;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
@@ -154,12 +153,12 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onNewMessageEvent(NewMessageEvent event) {
-        playMessageSound();
         updateBackpressure.refreshRequest();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(NewIncomingMessageEvent event){
+        playMessageSound();
         MessageNotificationManager.getInstance().removeAllMessageNotifications();
         updateBackpressure.refreshRequest();
     }
@@ -288,7 +287,7 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         adapter.addListener(this);
         updateBackpressure = new UpdateBackpressure(this);
         updateBackpressure.run();
-        updateBackpressure.refreshRequest();
+        MessageNotificationManager.getInstance().removeAllMessageNotifications();
         chatListFragmentListener.onChatListStateChanged(currentChatsState);
         return view;
     }
