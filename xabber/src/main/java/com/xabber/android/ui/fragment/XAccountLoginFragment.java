@@ -103,7 +103,6 @@ public class XAccountLoginFragment extends Fragment implements View.OnClickListe
             @Override
             public void afterTextChanged(Editable editable) {
                 if (editable.toString().equals("")) {
-                    ((AccountAddActivity)getActivity()).toolbarSetEnabled(false);
                     imgClearText.setVisibility(View.GONE);
                     imgQRcode.setVisibility(View.VISIBLE);
                 } else {
@@ -199,7 +198,7 @@ public class XAccountLoginFragment extends Fragment implements View.OnClickListe
     }
 
     private void clearUsername() {
-        edtUsername.setText("");
+        edtUsername.getText().clear();
     }
 
     private void scanQRcode(){
