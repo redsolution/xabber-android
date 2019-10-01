@@ -2,6 +2,7 @@ package com.xabber.android.ui.fragment;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -47,11 +48,13 @@ public class ContactAddFragment extends GroupEditorFragment
     private static final String SAVED_NAME = "com.xabber.android.ui.fragment..ContactAddFragment.SAVED_NAME";
     private static final String SAVED_ACCOUNT = "com.xabber.android.ui.fragment..ContactAddFragment.SAVED_ACCOUNT";
     private static final String SAVED_USER = "com.xabber.android.ui.fragment..ContactAddFragment.SAVED_USER";
+    private static final String SAVED_ERROR = "com.xabber.android.ui.fragment..ContactAddFragment.SAVED_ERROR";
     Listener listenerActivity;
     private Spinner accountView;
     private EditText userView;
     private EditText nameView;
     private String name;
+    private String error;
     private IntentIntegrator integrator;
     private ImageView qrScan;
     private ImageView clearText;
@@ -88,6 +91,7 @@ public class ContactAddFragment extends GroupEditorFragment
 
         if (savedInstanceState != null) {
             name = savedInstanceState.getString(SAVED_NAME);
+            error = savedInstanceState.getString(SAVED_ERROR);
             setAccount((AccountJid) savedInstanceState.getParcelable(SAVED_ACCOUNT));
             setUser((UserJid) savedInstanceState.getParcelable(SAVED_USER));
         } else {
@@ -113,7 +117,7 @@ public class ContactAddFragment extends GroupEditorFragment
         clearText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                userView.setText("");
+                userView.getText().clear();
             }
         });
         userView = (EditText) view.findViewById(R.id.contact_user);
@@ -146,6 +150,10 @@ public class ContactAddFragment extends GroupEditorFragment
         }
         if (name != null) {
             nameView.setText(name);
+        }
+
+        if (error != null) {
+            setError(error);
         }
 
         if(getArguments()!=null){
@@ -224,7 +232,9 @@ public class ContactAddFragment extends GroupEditorFragment
         outState.putParcelable(SAVED_ACCOUNT, getAccount());
         outState.putString(SAVED_USER, userView.getText().toString());
         outState.putString(SAVED_NAME, nameView.getText().toString());
-
+        if (userView.getError()!=null) {
+            outState.putString(SAVED_ERROR, userView.getError().toString());
+        }
     }
 
     @Override
@@ -272,13 +282,26 @@ public class ContactAddFragment extends GroupEditorFragment
         contactString = contactString.trim();
 
         if (contactString.contains(" ")) {
-            userView.setError(getString(R.string.INCORRECT_USER_NAME));
+            setError(getString(R.string.INCORRECT_USER_NAME));
             return;
         }
 
         if (TextUtils.isEmpty(contactString)) {
-            userView.setError(getString(R.string.EMPTY_USER_NAME));
+            setError(getString(R.string.EMPTY_USER_NAME));
             return ;
+        }
+
+        int atChar = contactString.indexOf('@');
+        String domainName = contactString.substring(atChar);
+
+        if (atChar<=0) {
+            setError(getString(R.string.INCORRECT_USER_NAME));
+            return;
+        }
+
+        if (domainName.charAt(domainName.length()-1)=='.' || domainName.charAt(0)=='.'){
+            setError(getString(R.string.INCORRECT_USER_NAME));
+            return;
         }
 
         final UserJid user;
@@ -287,7 +310,7 @@ public class ContactAddFragment extends GroupEditorFragment
             user = UserJid.from(entityFullJid);
         } catch (XmppStringprepException | UserJid.UserJidCreateException  e) {
             e.printStackTrace();
-            userView.setError(getString(R.string.INCORRECT_USER_NAME));
+            setError(getString(R.string.INCORRECT_USER_NAME));
             return;
         }
 
@@ -322,6 +345,13 @@ public class ContactAddFragment extends GroupEditorFragment
                 stopAddContactProcess(true);
             }
         });
+    }
+
+    private void setError(String error){
+        Drawable warning = (Drawable)getResources().getDrawable(R.color.transparent);
+        Drawable qr = (Drawable)getResources().getDrawable(R.drawable.qrcode_scan_icon_grey);
+        warning.setBounds(0,0,qr.getIntrinsicWidth()+50, qr.getIntrinsicHeight());
+        userView.setError(error, warning);
     }
 
     private void stopAddContactProcess(final boolean success) {
