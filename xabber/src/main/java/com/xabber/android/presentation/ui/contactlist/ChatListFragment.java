@@ -164,10 +164,10 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         updateBackpressure.refreshRequest();
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onUnreadMessagesCountChanged(ContactListPresenter.UpdateUnreadCountEvent event) {
-        updateBackpressure.refreshRequest();
-    }
+//    @Subscribe(threadMode = ThreadMode.MAIN)
+//    public void onUnreadMessagesCountChanged(ContactListPresenter.UpdateUnreadCountEvent event) {
+//        updateBackpressure.refreshRequest();
+//    }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(MessageUpdateEvent event) {
@@ -198,6 +198,7 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         if (getUnreadCount() == 0){
             onStateSelected(ChatListState.recent);
         }
+        updateBackpressure.refreshRequest();
         super.onResume();
     }
 

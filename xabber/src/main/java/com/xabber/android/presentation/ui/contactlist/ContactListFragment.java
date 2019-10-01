@@ -64,6 +64,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import de.hdodenhof.circleimageview.CircleImageView;
 import eu.davidea.flexibleadapter.FlexibleAdapter;
 import eu.davidea.flexibleadapter.items.IFlexible;
 
@@ -94,7 +95,8 @@ public class ContactListFragment extends Fragment implements ContactListView,
     private AccountShortcutAdapter accountShortcutAdapter;
     private RecyclerView accountsRecyclerView;
     private ArrayList<AccountShortcutVO> accountShortcutVOArrayList = new ArrayList<>();
-    private ArrayList<AccountJid> accountsJidList = new ArrayList<>();
+    private ArrayList<AccountJid> accountsJidList;
+    private CircleImageView ivAvatarOverlay;
     /**
      * View with information shown on empty contact list.
      */
@@ -199,17 +201,22 @@ public class ContactListFragment extends Fragment implements ContactListView,
 
         ((SimpleItemAnimator) recyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
 
-        //accountLinearLayout = view.findViewById(R.id.accounts_list_in_contact_list_layout);
+        /*
+        Setting accounts buttons-avatars-list
+         */
         accountsRecyclerView = view.findViewById(R.id.accounts_list_in_contact_list_recycler);
         accountsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
+        ivAvatarOverlay = view.findViewById(R.id.ivAvatarOverlay);
         updateAccountsList();
         return view;
     }
 
+    /**
+    Setup bottom accounts list with avatars.
+     */
     public void updateAccountsList(){
-        accountsJidList.addAll(AccountManager.getInstance().getEnabledAccounts());
+        accountsJidList = new ArrayList<>(AccountManager.getInstance().getEnabledAccounts());
         Collections.sort(accountsJidList);
-
         if (accountsJidList.size() > 1){
             accountShortcutVOArrayList.clear();
             accountShortcutVOArrayList.addAll(AccountShortcutVO.convert(accountsJidList));
