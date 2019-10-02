@@ -767,12 +767,14 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
                 getChatListFragment().showChatListWithState(ChatListFragment.ChatListState.recent);
             else getChatListFragment().showChatListWithState(ChatListFragment.ChatListState.unread);
         }
+        setStatusBarColor();
     }
 
     @Override
     public void onContactsClick() {
         showContactListFragment(null);
         getBottomBarFragment().setChatStateIcon(ChatListFragment.ChatListState.recent);
+        setStatusBarColor();
     }
 
     @Override
@@ -786,12 +788,14 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
     public void onCallsClick() {
         showCallsFragment();
         getBottomBarFragment().setChatStateIcon(ChatListFragment.ChatListState.recent);
+        setStatusBarColor();
     }
 
     @Override
     public void onDiscoverClick() {
         showDiscoverFragment();
         getBottomBarFragment().setChatStateIcon(ChatListFragment.ChatListState.recent);
+        setStatusBarColor();
     }
 
 
