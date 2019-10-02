@@ -5,6 +5,7 @@ import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
@@ -72,7 +73,7 @@ public class AccountAddFragment extends Fragment implements View.OnClickListener
         clearText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                userView.setText("");
+                userView.getText().clear();
             }
         });
 
@@ -173,7 +174,7 @@ public class AccountAddFragment extends Fragment implements View.OnClickListener
                 Toast.makeText(getActivity(), "Scanned = " + result.getContents(), Toast.LENGTH_LONG).show();
                 if(result.getContents().length()>5) {
                     String[] s = result.getContents().split(":");
-                    if (s[0].equals("xmpp") && s.length>=2) {
+                    if ((s[0].equals("xmpp") || s[0].equals("xabber")) && s.length>=2) {
                         userView.setText(s[1]);
                         addAccount();
                         //passwordView.requestFocus();
@@ -183,6 +184,42 @@ public class AccountAddFragment extends Fragment implements View.OnClickListener
         } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
+    }
+
+    private boolean validationSuccess(){
+        String contactString = userView.getText().toString();
+        contactString = contactString.trim();
+
+        if (contactString.contains(" ")) {
+            Toast.makeText(getActivity(), getString(R.string.INCORRECT_USER_NAME), Toast.LENGTH_LONG).show();
+            return false;
+        }
+
+        if (TextUtils.isEmpty(contactString)) {
+            Toast.makeText(getActivity(), getString(R.string.INCORRECT_USER_NAME), Toast.LENGTH_LONG).show();
+            return false;
+        }
+
+        int atChar = contactString.indexOf('@');
+        String domainName = contactString.substring(atChar);
+        String localName = contactString.substring(0, atChar);
+
+        if (atChar<=0) {
+            Toast.makeText(getActivity(), getString(R.string.INCORRECT_USER_NAME), Toast.LENGTH_LONG).show();
+            return false;
+        }
+
+        if (domainName.charAt(domainName.length()-1)=='.' || domainName.charAt(0)=='.'){
+            Toast.makeText(getActivity(), getString(R.string.INCORRECT_USER_NAME), Toast.LENGTH_LONG).show();
+            return false;
+        }
+
+        if (localName.charAt(localName.length()-1)=='.' || localName.charAt(0)=='.'){
+            Toast.makeText(getActivity(), getString(R.string.INCORRECT_USER_NAME), Toast.LENGTH_LONG).show();
+            return false;
+        }
+
+        return true;
     }
 
     public void addAccount() {
@@ -196,6 +233,9 @@ public class AccountAddFragment extends Fragment implements View.OnClickListener
             Toast.makeText(getActivity(), getString(R.string.CONFIRM_PASSWORD), Toast.LENGTH_LONG).show();
             return;
         }
+
+        if(!validationSuccess())
+            return;
 
         AccountJid account;
         try {
