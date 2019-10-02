@@ -12,8 +12,7 @@
 
     <RelativeLayout
         android:layout_width="32dp"
-        android:layout_height="40dp"
-        android:minHeight="32dp"
+        android:layout_height="32dp"
         android:layout_centerInParent="true"
         android:background="@color/transparent">
 

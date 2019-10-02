@@ -223,7 +223,7 @@ public class ContactListFragment extends Fragment implements ContactListView,
             accountShortcutAdapter = new AccountShortcutAdapter(accountShortcutVOArrayList, getActivity(), this);
             accountsRecyclerView.setAdapter(accountShortcutAdapter);
             accountsRecyclerView.setVisibility(View.VISIBLE);
-            accountsRecyclerView.getLayoutParams().width = 132 * accountsJidList.size();
+            accountsRecyclerView.getLayoutParams().width = 164 * accountsJidList.size();
             accountsRecyclerView.setOnClickListener(this);
         }
         else accountsRecyclerView.setVisibility(View.GONE);

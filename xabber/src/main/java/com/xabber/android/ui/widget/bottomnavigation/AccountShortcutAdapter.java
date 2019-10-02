@@ -54,7 +54,7 @@ public class AccountShortcutAdapter extends RecyclerView.Adapter<AccountShortcut
 
     @Override
     public AccountShortcutAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.avatar_view_xsmall, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.avatar_view_small, parent, false);
 
         // set equals view sizes
         if (getItemCount() < 6) {
@@ -80,7 +80,7 @@ public class AccountShortcutAdapter extends RecyclerView.Adapter<AccountShortcut
         //holder.ivStatus.setImageLevel(account.getStatusLevel());
         holder.ivAvatar.setBorderColor(ColorManager.getInstance().getAccountPainter().getAccountMainColor(account.getAccountJid()));
         if (Build.VERSION.SDK_INT > 20){
-            holder.ivAvatar.setElevation(4);
+            holder.ivAvatar.setElevation(6);
             holder.ivAvatarOverlay.setElevation(4);
         }
         if (AccountManager.getInstance().getAccount(account.getAccountJid()).getDisplayStatusMode() != null){
