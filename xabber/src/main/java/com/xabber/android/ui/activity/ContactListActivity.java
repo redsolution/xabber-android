@@ -774,7 +774,6 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
     public void onContactsClick() {
         showContactListFragment(null);
         getBottomBarFragment().setChatStateIcon(ChatListFragment.ChatListState.recent);
-        setStatusBarColor();
     }
 
     @Override
