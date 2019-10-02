@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.LinearLayoutCompat;
@@ -206,7 +207,6 @@ public class ContactListFragment extends Fragment implements ContactListView,
          */
         accountsRecyclerView = view.findViewById(R.id.accounts_list_in_contact_list_recycler);
         accountsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
-        ivAvatarOverlay = view.findViewById(R.id.ivAvatarOverlay);
         updateAccountsList();
         return view;
     }
@@ -290,6 +290,8 @@ public class ContactListFragment extends Fragment implements ContactListView,
             int position = accountsRecyclerView.getChildLayoutPosition(v);
             AccountJid clickedAccountJid = accountsJidList.get(position);
             scrollToAccount(clickedAccountJid);
+            if (Build.VERSION.SDK_INT > 20)
+                ((ContactListActivity)getActivity()).setStatusBarColor(clickedAccountJid);
         }
     }
 

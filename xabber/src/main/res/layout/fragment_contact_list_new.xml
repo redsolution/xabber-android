@@ -49,11 +49,13 @@
         android:id="@+id/accounts_list_in_contact_list_recycler"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:overScrollMode="never"
-        android:layout_gravity="bottom|center_horizontal"
         android:paddingBottom="4dp"
+        android:layout_gravity="bottom|center_horizontal"
+        android:overScrollMode="never"
         android:background="@color/transparent"
-        tools:listitem="@layout/avatar_view_xsmall"/>
+        tools:listitem="@layout/avatar_view_xsmall"
+        android:focusable="false"
+        android:clickable="false"/>
 
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

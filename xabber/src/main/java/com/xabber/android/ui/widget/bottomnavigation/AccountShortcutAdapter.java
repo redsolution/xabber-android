@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.xabber.android.R;
@@ -78,10 +79,10 @@ public class AccountShortcutAdapter extends RecyclerView.Adapter<AccountShortcut
         holder.ivStatus.setVisibility(View.GONE);
         //holder.ivStatus.setImageLevel(account.getStatusLevel());
         holder.ivAvatar.setBorderColor(ColorManager.getInstance().getAccountPainter().getAccountMainColor(account.getAccountJid()));
-//        if (Build.VERSION.SDK_INT > 20){
-//            holder.ivAvatar.setElevation(4);
-//            holder.ivAvatarOverlay.setElevation(4);
-//        }
+        if (Build.VERSION.SDK_INT > 20){
+            holder.ivAvatar.setElevation(4);
+            holder.ivAvatarOverlay.setElevation(4);
+        }
         if (AccountManager.getInstance().getAccount(account.getAccountJid()).getDisplayStatusMode() != null){
             switch (AccountManager.getInstance().getAccount(account.getAccountJid()).getDisplayStatusMode()){
                 case unavailable:
@@ -90,7 +91,7 @@ public class AccountShortcutAdapter extends RecyclerView.Adapter<AccountShortcut
                     break;
                 case connection:
                     holder.ivAvatarOverlay.setVisibility(View.VISIBLE);
-                    //holder.ivAvatarOverlay.startAnimation(AnimationUtils.loadAnimation(context, R.anim.flow));
+                    holder.ivAvatarOverlay.startAnimation(AnimationUtils.loadAnimation(context, R.anim.connection));
                     break;
                 default:
                     holder.ivAvatarOverlay.setVisibility(View.GONE);
