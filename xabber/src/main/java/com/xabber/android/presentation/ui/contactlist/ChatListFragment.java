@@ -328,19 +328,15 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         /*
         Update avatar and status ImageViews via current settings and main user
          */
-        if (SettingsManager.contactsShowAvatars()){
+        if (SettingsManager.contactsShowAvatars() && AccountManager.getInstance().getEnabledAccounts().size() != 0){
             toolbarAvatarIv.setVisibility(View.VISIBLE);
             toolbarStatusIv.setVisibility(View.VISIBLE);
-            ArrayList<AccountJid> allEnabledAccounts = new ArrayList<AccountJid>(AccountManager.getInstance().getEnabledAccounts());
-            if (allEnabledAccounts.size() != 0) {
-                //AccountJid mainAccountJid = allEnabledAccounts.get(0);
-                AccountJid mainAccountJid = AccountPainter.getFirstAccount();
-                AccountItem mainAccountItem = AccountManager.getInstance().getAccount(mainAccountJid);
-                Drawable mainAccountAvatar = AvatarManager.getInstance().getAccountAvatar(mainAccountJid);
-                int mainAccountStatusMode = mainAccountItem.getDisplayStatusMode().getStatusLevel();
-                toolbarAvatarIv.setImageDrawable(mainAccountAvatar);
-                toolbarStatusIv.setImageLevel(mainAccountStatusMode);
-            }
+            AccountJid mainAccountJid = AccountPainter.getFirstAccount();
+            AccountItem mainAccountItem = AccountManager.getInstance().getAccount(mainAccountJid);
+            Drawable mainAccountAvatar = AvatarManager.getInstance().getAccountAvatar(mainAccountJid);
+            int mainAccountStatusMode = mainAccountItem.getDisplayStatusMode().getStatusLevel();
+            toolbarAvatarIv.setImageDrawable(mainAccountAvatar);
+            toolbarStatusIv.setImageLevel(mainAccountStatusMode);
         } else {
             toolbarAvatarIv.setVisibility(View.GONE);
             toolbarStatusIv.setVisibility(View.GONE);
