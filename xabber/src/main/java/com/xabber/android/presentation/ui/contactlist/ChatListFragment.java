@@ -115,7 +115,7 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
     private RecyclerView recyclerView;
     private TextView markAllAsReadButton;
     private Drawable markAllReadBackground;
-
+    private ImageView toolbarSearchIv;
     /*
     Toolbar variables
      */
@@ -304,10 +304,11 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         toolbarTitleTv = (TextView) view.findViewById(R.id.tvTitle);
         toolbarAvatarIv = (ImageView) view.findViewById(R.id.ivAvatar);
         toolbarStatusIv = (ImageView) view.findViewById(R.id.ivStatus);
+        toolbarSearchIv = (ImageView) view.findViewById(R.id.toolbar_search_button);
         toolbarAddIv.setOnClickListener(this);
         toolbarAvatarIv.setOnClickListener(this);
         toolbarTitleTv.setOnClickListener(this);
-
+        toolbarSearchIv.setOnClickListener(this);
         /*
         Initialize and run UpdateBackpressure
          */
@@ -387,10 +388,13 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
                 showToolbarPopup(toolbarAddIv);
                 break;
             case R.id.ivAvatar:
-                this.onSetStatusClick();
+                onSetStatusClick();
                 break;
             case R.id.tvTitle:
                 showTitlePopup(toolbarTitleTv);
+                break;
+            case R.id.toolbar_search_button:
+                Toast.makeText(getContext(), "Coming soon", Toast.LENGTH_SHORT).show();
                 break;
         }
     }
