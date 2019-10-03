@@ -344,7 +344,8 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
             toolbarStatusIv.setVisibility(View.VISIBLE);
             ArrayList<AccountJid> allEnabledAccounts = new ArrayList<AccountJid>(AccountManager.getInstance().getEnabledAccounts());
             if (allEnabledAccounts.size() != 0) {
-                AccountJid mainAccountJid = allEnabledAccounts.get(0);
+                //AccountJid mainAccountJid = allEnabledAccounts.get(0);
+                AccountJid mainAccountJid = AccountPainter.getFirstAccount();
                 AccountItem mainAccountItem = AccountManager.getInstance().getAccount(mainAccountJid);
                 Drawable mainAccountAvatar = AvatarManager.getInstance().getAccountAvatar(mainAccountJid);
                 int mainAccountStatusMode = mainAccountItem.getDisplayStatusMode().getStatusLevel();
