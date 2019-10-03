@@ -115,7 +115,7 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
     private RecyclerView recyclerView;
     private TextView markAllAsReadButton;
     private Drawable markAllReadBackground;
-    private ImageView toolbarSearchIv;
+
     /*
     Toolbar variables
      */
@@ -126,6 +126,7 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
     private TextView toolbarTitleTv;
     private ImageView toolbarAvatarIv;
     private ImageView toolbarStatusIv;
+    private ImageView toolbarSearchIv;
 
     public interface ChatListFragmentListener{
         void onChatClick(AbstractContact contact);
@@ -230,23 +231,10 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         updateBackpressure.run();
         chatListFragmentListener.onChatListStateChanged(state);
         this.closeSnackbar();
-
     }
 
     public ChatListState getCurrentChatsState(){
         return currentChatsState;
-    }
-
-    public void onAddContactClick() {
-        startActivity(ContactAddActivity.createIntent(getActivity()));
-    }
-
-    public void onJoinConferenceClick() {
-        startActivity(ConferenceSelectActivity.createIntent(getActivity()));
-    }
-
-    public void onSetStatusClick() {
-        startActivity(StatusEditActivity.createIntent(getActivity()));
     }
 
     @Override
@@ -388,7 +376,7 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
                 showToolbarPopup(toolbarAddIv);
                 break;
             case R.id.ivAvatar:
-                onSetStatusClick();
+                startActivity(StatusEditActivity.createIntent(getActivity()));
                 break;
             case R.id.tvTitle:
                 showTitlePopup(toolbarTitleTv);
@@ -426,10 +414,10 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
     public boolean onMenuItemClick(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_add_contact:
-                onAddContactClick();
+                startActivity(ContactAddActivity.createIntent(getActivity()));
                 return true;
             case R.id.action_join_conference:
-                onJoinConferenceClick();
+                startActivity(ConferenceSelectActivity.createIntent(getActivity()));
                 return true;
             case R.id.action_recent_chats:
                 onStateSelected(ChatListFragment.ChatListState.recent);
