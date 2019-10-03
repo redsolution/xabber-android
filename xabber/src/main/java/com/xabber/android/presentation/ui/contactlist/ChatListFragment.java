@@ -2,6 +2,7 @@ package com.xabber.android.presentation.ui.contactlist;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -10,11 +11,15 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.TypedValue;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -63,7 +68,6 @@ import com.xabber.android.presentation.ui.contactlist.viewobjects.ChatVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.ContactVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.CrowdfundingChatVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.GroupVO;
-import com.xabber.android.presentation.ui.contactlist.viewobjects.ToolbarVO;
 import com.xabber.android.ui.activity.ConferenceSelectActivity;
 import com.xabber.android.ui.activity.ContactActivity;
 import com.xabber.android.ui.activity.ContactAddActivity;
@@ -73,6 +77,7 @@ import com.xabber.android.ui.adapter.ChatComparator;
 import com.xabber.android.ui.adapter.contactlist.AccountConfiguration;
 import com.xabber.android.ui.adapter.contactlist.ContactListGroupUtils;
 import com.xabber.android.ui.adapter.contactlist.GroupConfiguration;
+import com.xabber.android.ui.color.AccountPainter;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.widget.ShortcutBuilder;
 
@@ -92,9 +97,9 @@ import eu.davidea.flexibleadapter.FlexibleAdapter;
 import eu.davidea.flexibleadapter.items.IFlexible;
 
 public class ChatListFragment extends Fragment implements ContactVO.ContactClickListener,
-        FlexibleAdapter.OnItemClickListener, FlexibleAdapter.OnItemSwipeListener,
-        OnContactChangedListener, OnAccountChangedListener, ToolbarVO.OnClickListener,
-        UpdateBackpressure.UpdatableObject {
+        FlexibleAdapter.OnItemClickListener, FlexibleAdapter.OnItemSwipeListener, View.OnClickListener,
+        OnContactChangedListener, OnAccountChangedListener, UpdateBackpressure.UpdatableObject,
+        PopupMenu.OnMenuItemClickListener {
 
     private UpdateBackpressure updateBackpressure;
     private FlexibleAdapter<IFlexible> adapter;
@@ -110,6 +115,18 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
     private RecyclerView recyclerView;
     private TextView markAllAsReadButton;
     private Drawable markAllReadBackground;
+
+    /*
+    Toolbar variables
+     */
+    private RelativeLayout toolbar;
+    private View toolbarAccountColorIndicator;
+    private View toolbarAccountColorIndicatorBack;
+    private ImageView toolbarAddIv;
+    private TextView toolbarTitleTv;
+    private ImageView toolbarAvatarIv;
+    private ImageView toolbarStatusIv;
+    private ImageView toolbarSearchIv;
 
     public interface ChatListFragmentListener{
         void onChatClick(AbstractContact contact);
@@ -163,11 +180,6 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         updateBackpressure.refreshRequest();
     }
 
-//    @Subscribe(threadMode = ThreadMode.MAIN)
-//    public void onUnreadMessagesCountChanged(ContactListPresenter.UpdateUnreadCountEvent event) {
-//        updateBackpressure.refreshRequest();
-//    }
-
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(MessageUpdateEvent event) {
         updateBackpressure.refreshRequest();
@@ -214,32 +226,15 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         onStateSelected(state);
     }
 
-    @Override
     public void onStateSelected(ChatListState state) {
         this.currentChatsState = state;
         updateBackpressure.run();
         chatListFragmentListener.onChatListStateChanged(state);
         this.closeSnackbar();
-
     }
 
     public ChatListState getCurrentChatsState(){
         return currentChatsState;
-    }
-
-    @Override
-    public void onAddContactClick() {
-        startActivity(ContactAddActivity.createIntent(getActivity()));
-    }
-
-    @Override
-    public void onJoinConferenceClick() {
-        startActivity(ConferenceSelectActivity.createIntent(getActivity()));
-    }
-
-    @Override
-    public void onSetStatusClick() {
-        startActivity(StatusEditActivity.createIntent(getActivity()));
     }
 
     @Override
@@ -283,21 +278,163 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         adapter.setSwipeEnabled(true);
         adapter.expandItemsAtStartUp();
         adapter.setStickyHeaders(true);
-
         adapter.addListener(this);
-        updateBackpressure = new UpdateBackpressure(this);
-        updateBackpressure.run();
         MessageNotificationManager.getInstance().removeAllMessageNotifications();
         chatListFragmentListener.onChatListStateChanged(currentChatsState);
+
+        /*
+        Toolbar variables initialization
+         */
+        toolbar = view.findViewById(R.id.toolbar_chatlist);
+        toolbarAccountColorIndicator = view.findViewById(R.id.accountColorIndicator);
+        toolbarAccountColorIndicatorBack = view.findViewById(R.id.accountColorIndicatorBack);
+        toolbarAddIv = (ImageView) view.findViewById(R.id.ivAdd);
+        toolbarTitleTv = (TextView) view.findViewById(R.id.tvTitle);
+        toolbarAvatarIv = (ImageView) view.findViewById(R.id.ivAvatar);
+        toolbarStatusIv = (ImageView) view.findViewById(R.id.ivStatus);
+        toolbarSearchIv = (ImageView) view.findViewById(R.id.toolbar_search_button);
+        toolbarAddIv.setOnClickListener(this);
+        toolbarAvatarIv.setOnClickListener(this);
+        toolbarTitleTv.setOnClickListener(this);
+        toolbarSearchIv.setOnClickListener(this);
+        /*
+        Initialize and run UpdateBackpressure
+         */
+        updateBackpressure = new UpdateBackpressure(this);
+        updateBackpressure.run();
         return view;
     }
 
+    /** Update toolbar vie current state*/
+    public void updateToolbar(){
+        /*
+        Update ChatState TextView display via current chat state
+         */
+        switch (currentChatsState) {
+            case unread:
+                toolbarTitleTv.setText(R.string.unread_chats);
+                break;
+            case archived:
+                toolbarTitleTv.setText(R.string.archived_chats);
+                break;
+            case all:
+                toolbarTitleTv.setText(R.string.all_chats);
+                break;
+            default:
+                toolbarTitleTv.setText("Xabber");
+                break;
+        }
 
+        /*
+        Update avatar and status ImageViews via current settings and main user
+         */
+        if (SettingsManager.contactsShowAvatars() && AccountManager.getInstance().getEnabledAccounts().size() != 0){
+            toolbarAvatarIv.setVisibility(View.VISIBLE);
+            toolbarStatusIv.setVisibility(View.VISIBLE);
+            AccountJid mainAccountJid = AccountPainter.getFirstAccount();
+            AccountItem mainAccountItem = AccountManager.getInstance().getAccount(mainAccountJid);
+            Drawable mainAccountAvatar = AvatarManager.getInstance().getAccountAvatar(mainAccountJid);
+            int mainAccountStatusMode = mainAccountItem.getDisplayStatusMode().getStatusLevel();
+            toolbarAvatarIv.setImageDrawable(mainAccountAvatar);
+            toolbarStatusIv.setImageLevel(mainAccountStatusMode);
+        } else {
+            toolbarAvatarIv.setVisibility(View.GONE);
+            toolbarStatusIv.setVisibility(View.GONE);
+        }
 
-    // notify adapter to update ui items
+        /*
+        Update background color via current main user;
+         */
+        TypedValue typedValue = new TypedValue();
+        TypedArray a = getContext().obtainStyledAttributes(typedValue.data, new int[] {R.attr.contact_list_account_group_background});
+        final int accountGroupColorsResourceId = a.getResourceId(0, 0);
+        a.recycle();
+        final int[] accountGroupColors = getContext().getResources().getIntArray(accountGroupColorsResourceId);
+        final int level = AccountManager.getInstance().getColorLevel(AccountPainter.getFirstAccount());
+        toolbar.setBackgroundColor(accountGroupColors[level]);
+
+        /*
+        Update left color indicator via current main user
+         */
+        toolbarAccountColorIndicator.setBackgroundColor(
+                ColorManager.getInstance().getAccountPainter().getDefaultMainColor());
+        toolbarAccountColorIndicatorBack.setBackgroundColor(
+                ColorManager.getInstance().getAccountPainter().getDefaultIndicatorBackColor());
+    }
+
+    /**
+    OnClickListener for Toolbar
+     */
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.ivAdd:
+                showToolbarPopup(toolbarAddIv);
+                break;
+            case R.id.ivAvatar:
+                startActivity(StatusEditActivity.createIntent(getActivity()));
+                break;
+            case R.id.tvTitle:
+                showTitlePopup(toolbarTitleTv);
+                break;
+            case R.id.toolbar_search_button:
+                Toast.makeText(getContext(), "Coming soon", Toast.LENGTH_SHORT).show();
+                break;
+        }
+    }
+
+    /**
+    Show menu Add contact / Add conference
+     */
+    private void showToolbarPopup(View v) {
+        PopupMenu popupMenu = new PopupMenu(getContext(), v);
+        popupMenu.setOnMenuItemClickListener(this);
+        popupMenu.inflate(R.menu.menu_add_in_contact_list);
+        popupMenu.show();
+    }
+
+    /**
+    Show menu Chat state
+     */
+    private void showTitlePopup(View v) {
+        PopupMenu popupMenu = new PopupMenu(getContext(), v);
+        popupMenu.setOnMenuItemClickListener(this);
+        popupMenu.inflate(R.menu.menu_chat_list);
+        popupMenu.show();
+    }
+
+    /**
+    Handle toolbar menus clicks
+     */
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_add_contact:
+                startActivity(ContactAddActivity.createIntent(getActivity()));
+                return true;
+            case R.id.action_join_conference:
+                startActivity(ConferenceSelectActivity.createIntent(getActivity()));
+                return true;
+            case R.id.action_recent_chats:
+                onStateSelected(ChatListFragment.ChatListState.recent);
+                return true;
+            case R.id.action_unread_chats:
+                onStateSelected(ChatListFragment.ChatListState.unread);
+                return true;
+            case R.id.action_archived_chats:
+                onStateSelected(ChatListFragment.ChatListState.archived);
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    /**
+    Update chat items in adapter
+     */
     private void updateItems(List<IFlexible> items){
         //check empty state and show placeholder
-        if (items.size() <= 1){
+        if (items.size() == 0){
             if (currentChatsState == ChatListState.unread) showPlaceholder(Application.getInstance().getApplicationContext().getString(R.string.placeholder_no_unread));
             else if (currentChatsState == ChatListState.archived) showPlaceholder(Application.getInstance().getApplicationContext().getString(R.string.placeholder_no_archived));
         } else if (AccountManager.getInstance().getCommonState() != CommonState.online){
@@ -566,16 +703,16 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         // Remove empty groups, sort and apply structure.
         items.clear();
 
-        /** adding toolbar with avatar of main(top) user account) */
-        ArrayList<AccountConfiguration> accountsConfigurationList = new ArrayList<AccountConfiguration>(accounts.values());
-        if (accountsConfigurationList.size() != 0){
-            AccountJid mainAccountJid = accountsConfigurationList.get(0).getAccount();
-            AccountItem mainAccountItem = AccountManager.getInstance().getAccount(mainAccountJid);
-            Drawable mainAccountAvatar = AvatarManager.getInstance().getAccountAvatar(mainAccountJid);
-            int mainAccountStatusMode = mainAccountItem.getDisplayStatusMode().getStatusLevel();
-            items.add(new ToolbarVO(Application.getInstance().getApplicationContext(),
-                    this, currentChatsState, mainAccountAvatar,mainAccountStatusMode));
-        }
+//        /** adding toolbar with avatar of main(top) user account) */
+//        ArrayList<AccountConfiguration> accountsConfigurationList = new ArrayList<AccountConfiguration>(accounts.values());
+//        if (accountsConfigurationList.size() != 0){
+//            AccountJid mainAccountJid = accountsConfigurationList.get(0).getAccount();
+//            AccountItem mainAccountItem = AccountManager.getInstance().getAccount(mainAccountJid);
+//            Drawable mainAccountAvatar = AvatarManager.getInstance().getAccountAvatar(mainAccountJid);
+//            int mainAccountStatusMode = mainAccountItem.getDisplayStatusMode().getStatusLevel();
+//            items.add(new ToolbarVO(Application.getInstance().getApplicationContext(),
+//                    this, currentChatsState, mainAccountAvatar,mainAccountStatusMode));
+//        }
 
         /** adding crowdfunding chat item */
         CrowdfundingMessage message = CrowdfundingManager.getInstance().getLastNotDelayedMessageFromRealm();
@@ -606,11 +743,12 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
 //        if (currentChatsState == ChatListState.unread && getUnreadCount() > 0){
 //            items.add(ButtonVO.convert(null, "Mark all as read", "what"));
 //        }
-        if (currentChatsState == ChatListState.unread && items.size() > 1){
+        if (currentChatsState == ChatListState.unread && items.size() > 0){
             markAllReadBackground.setColorFilter(ColorManager.getInstance().getAccountPainter().getDefaultMainColor(), PorterDuff.Mode.SRC_ATOP);
             markAllAsReadButton.setVisibility(View.VISIBLE);
         }
         else markAllAsReadButton.setVisibility(View.GONE);
+        updateToolbar();
         updateUnreadCount();
         updateItems(items);
 

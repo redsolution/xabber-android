@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    android:id="@+id/toolbar_chatlist"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
@@ -31,14 +33,26 @@
         android:drawableRight="@drawable/ic_chevron_down"
         />
 
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/toolbar_search_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"
+        android:padding="8dp"
+        android:layout_marginRight="8dp"
+        app:srcCompat="@drawable/ic_search"
+        android:tint="?attr/contact_list_account_group_small_right_icon_color"
+        android:alpha="0.5"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:clickable="true"/>
+
     <ImageView
         android:id="@+id/ivAdd"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:layout_alignParentRight="true"
-        android:layout_toLeftOf="@+id/ivSetStatus"
-        android:layout_marginRight="8dp"
+        android:layout_toLeftOf="@+id/toolbar_search_button"
         android:padding="8dp"
         app:srcCompat="@drawable/ic_add_contact"
         android:tint="?attr/contact_list_account_group_small_right_icon_color"
