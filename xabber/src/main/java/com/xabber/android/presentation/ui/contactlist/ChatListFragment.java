@@ -72,6 +72,7 @@ import com.xabber.android.ui.activity.ConferenceSelectActivity;
 import com.xabber.android.ui.activity.ContactActivity;
 import com.xabber.android.ui.activity.ContactAddActivity;
 import com.xabber.android.ui.activity.ContactEditActivity;
+import com.xabber.android.ui.activity.ContactListActivity;
 import com.xabber.android.ui.activity.StatusEditActivity;
 import com.xabber.android.ui.adapter.ChatComparator;
 import com.xabber.android.ui.adapter.contactlist.AccountConfiguration;
@@ -297,6 +298,8 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         toolbarAvatarIv.setOnClickListener(this);
         toolbarTitleTv.setOnClickListener(this);
         toolbarSearchIv.setOnClickListener(this);
+        if (!getActivity().getClass().getSimpleName().equals(ContactListActivity.class.getSimpleName()))
+            view.findViewById(R.id.chatlist_toolbar_root).setVisibility(View.GONE);
         /*
         Initialize and run UpdateBackpressure
          */
@@ -305,7 +308,7 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         return view;
     }
 
-    /** Update toolbar vie current state*/
+    /** Update toolbar via current state*/
     public void updateToolbar(){
         /*
         Update ChatState TextView display via current chat state

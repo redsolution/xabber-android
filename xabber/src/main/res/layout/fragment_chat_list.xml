@@ -7,6 +7,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/chatlist_toolbar_root"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
