@@ -1,26 +1,36 @@
 package com.xabber.android.ui.activity;
 
 import android.content.Context;
+import android.content.res.TypedArray;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.xabber.android.R;
+import com.xabber.android.data.account.AccountManager;
+import com.xabber.android.data.roster.AbstractContact;
+import com.xabber.android.presentation.ui.contactlist.ChatListFragment;
+import com.xabber.android.ui.color.AccountPainter;
+import com.xabber.android.ui.color.ColorManager;
 
-import java.util.ArrayList;
+public class SearchActivity extends ManagedActivity implements View.OnClickListener, ChatListFragment.ChatListFragmentListener {
 
-import eu.davidea.flexibleadapter.FlexibleAdapter;
-import eu.davidea.flexibleadapter.items.IFlexible;
+    /* Constants for Chat List Fragment */
+    private static final String CHAT_LIST_TAG = "CHAT_LIST";
 
-public class SearchActivity extends ManagedActivity implements View.OnClickListener {
+    /* Constants for savind state budle*/
+    private static final String SAVED_ACTION = "com.xabber.android.ui.activity.SearchActivity.SAVED_ACTION";
+    private static final String SAVED_SEND_TEXT = "com.xabber.android.ui.activity.SearchActivity.SAVED_SEND_TEXT";
 
     /* Toolbar variables */
     private RelativeLayout toolbarLayout;           //Toolbar layout
@@ -35,21 +45,23 @@ public class SearchActivity extends ManagedActivity implements View.OnClickListe
     /* InputMethodManager for keyboard management variable */
     private InputMethodManager inputMethodManager;
 
-//    /* Main list variables */
-//    private RecyclerView recyclerView;
-//    private FlexibleAdapter<IFlexible> adapter;
-//    private ArrayList<IFlexible> items;
-
+    /* Variables for intents */
+    private String action;
+    private String sendText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
 
-//        /* Initialize and setup main list */
-//        recyclerView = findViewById(R.id.search_recyclerview);
-//        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
+        /* Check Saved State */
+        if (savedInstanceState != null) {
+            sendText = savedInstanceState.getString(SAVED_SEND_TEXT);
+            action = savedInstanceState.getString(SAVED_ACTION);
+        } else {
+            sendText = null;
+            action = getIntent().getAction();
+        }
 
         /* Initialize InputMethodManager */
         inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -81,23 +93,52 @@ public class SearchActivity extends ManagedActivity implements View.OnClickListe
             }
         });
 
+        showChatListFragment();
+
         //TODO delete this hord invoke GreetingsLayout to test
         toolbarGreetingsLayout.setVisibility(View.VISIBLE);
+
+        /*
+        Update background color via current main user;
+         */
+        TypedValue typedValue = new TypedValue();
+        TypedArray a = this.obtainStyledAttributes(typedValue.data, new int[] {R.attr.contact_list_account_group_background});
+        final int accountGroupColorsResourceId = a.getResourceId(0, 0);
+        a.recycle();
+        final int[] accountGroupColors = this.getResources().getIntArray(accountGroupColorsResourceId);
+        final int level = AccountManager.getInstance().getColorLevel(AccountPainter.getFirstAccount());
+        toolbarLayout.setBackgroundColor(accountGroupColors[level]);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        /* Setup StatusBarColor */   //TODO Doesn't working think about it
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().setStatusBarColor(ColorManager.getInstance().getAccountPainter().getDefaultMainColor());
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putString(SAVED_ACTION, action);
+        outState.putString(SAVED_SEND_TEXT, sendText);
+        super.onSaveInstanceState(outState);
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()){
-            case R.id.toolbar_search_back_button :
+            case R.id.toolbar_search_back_button:
                 finish();
                 break;
-            case R.id.search_toolbar_search_button :
+            case R.id.search_toolbar_search_button:
                 toolbarSearchlayout.setVisibility(View.VISIBLE);
                 toolbarGreetingsLayout.setVisibility(View.GONE);
                 toolbarSearchEt.requestFocus();
                 inputMethodManager.showSoftInput(toolbarSearchEt, InputMethodManager.SHOW_IMPLICIT);
                 break;
-            case R.id.search_toolbar_clear_button :
+            case R.id.search_toolbar_clear_button:
                 if (toolbarSearchEt.getText().toString().isEmpty() || toolbarSearchEt.getText() == null){
                     inputMethodManager.hideSoftInputFromWindow(toolbarSearchEt.getWindowToken(), 0);
                     toolbarSearchlayout.setVisibility(View.GONE);
@@ -107,7 +148,7 @@ public class SearchActivity extends ManagedActivity implements View.OnClickListe
                     toolbarSearchEt.setText("");
                 }
                 break;
-            case R.id.search_activity_container :
+            default:
                 inputMethodManager.hideSoftInputFromWindow(toolbarSearchEt.getWindowToken(), 0);
                 if (toolbarSearchEt.getText().toString().isEmpty() || toolbarSearchEt.getText() == null){
                     inputMethodManager.hideSoftInputFromWindow(toolbarSearchEt.getWindowToken(), 0);
@@ -122,6 +163,34 @@ public class SearchActivity extends ManagedActivity implements View.OnClickListe
     //TODO saving state instance
 
     //TODO Intent-actions
+
+    /**
+     * Shows existing or make new ChatListFragment
+     */
+    private void showChatListFragment() {
+        if (!isFinishing()) {
+            FragmentTransaction fTrans = getSupportFragmentManager().beginTransaction();
+            if (getSupportFragmentManager().findFragmentByTag(CHAT_LIST_TAG) != null)
+            fTrans.replace(R.id.search_activity_container, getSupportFragmentManager().findFragmentByTag(CHAT_LIST_TAG), CHAT_LIST_TAG);
+            else fTrans.replace(R.id.search_activity_container, ChatListFragment.newInstance(null), CHAT_LIST_TAG);
+            fTrans.commit();
+        }
+    }
+
+    @Override
+    public void onChatClick(AbstractContact contact) {
+        Toast.makeText(this, "Chat was clicked", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onChatListStateChanged(ChatListFragment.ChatListState chatListState) {
+        Toast.makeText(this, "ChatList state was changed", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onUnreadChanged(int unread) {
+        Toast.makeText(this, "Unread count was changed", Toast.LENGTH_SHORT).show();
+    }
 
     //TODO decise about necessity
     private enum CurrentToolbarLayout{
