@@ -68,6 +68,8 @@
             android:layout_height="match_parent"
             android:hint="@string/search"
             android:layout_toLeftOf="@id/search_toolbar_clear_button"
+            android:background="@color/transparent"
+
             />
         <ImageView
             android:id="@+id/search_toolbar_clear_button"
@@ -82,6 +84,7 @@
             android:alpha="0.5"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
+            android:visibility="gone"
             />
     </RelativeLayout>
 
