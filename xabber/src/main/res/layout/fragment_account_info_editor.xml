@@ -232,6 +232,13 @@
 
                     </LinearLayout>
 
+                    <Button
+                        android:id="@+id/saveAvatarButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Save Avatar" />
+
                 </LinearLayout>
             </LinearLayout>
 
