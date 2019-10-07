@@ -9,9 +9,6 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -26,32 +23,40 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.soundcloud.android.crop.Crop;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
-import com.xabber.android.data.log.LogManager;
+import com.xabber.android.data.account.AccountItem;
+import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.extension.vcard.OnVCardListener;
 import com.xabber.android.data.extension.vcard.OnVCardSaveListener;
 import com.xabber.android.data.extension.vcard.VCardManager;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.ui.activity.ChatActivity;
 import com.xabber.android.ui.helper.PermissionsRequester;
+import com.xabber.xmpp.avatar.UserAvatarManager;
 import com.xabber.xmpp.vcard.AddressProperty;
 import com.xabber.xmpp.vcard.TelephoneType;
 import com.xabber.xmpp.vcard.VCardProperty;
 
+import org.jivesoftware.smack.SmackException;
+import org.jivesoftware.smack.XMPPException;
+import org.jivesoftware.smackx.pubsub.PubSubException;
 import org.jivesoftware.smackx.vcardtemp.packet.VCard;
 import org.jxmpp.jid.Jid;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -69,6 +74,7 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
     public static final String SAVE_NEW_AVATAR_IMAGE_URI = "com.xabber.android.ui.fragment.AccountInfoEditorFragment.SAVE_NEW_AVATAR_IMAGE_URI";
     public static final String SAVE_PHOTO_FILE_URI = "com.xabber.android.ui.fragment.AccountInfoEditorFragment.SAVE_PHOTO_FILE_URI";
     public static final String SAVE_REMOVE_AVATAR_FLAG = "com.xabber.android.ui.fragment.AccountInfoEditorFragment.SAVE_REMOVE_AVATAR_FLAG";
+    public URL test;
 
     public static final int REQUEST_NEED_VCARD = 2;
     public static final int REQUEST_TAKE_PHOTO = 3;
@@ -80,10 +86,13 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
     public static final int KB_SIZE_IN_BYTES = 1024;
     public static final String DATE_FORMAT = "yyyy-mm-dd";
     public static final String DATE_FORMAT_INT_TO_STRING = "%d-%02d-%02d";
-    public static final int MAX_IMAGE_SIZE = 512;
+    public static int MAX_IMAGE_SIZE = 512;
+    public static final int MAX_TEST = 256;
+    private boolean isAvatarSuccessful = false;
 
     private VCard vCard;
     private AccountJid account;
+    private byte[] avatarData;
     private View progressBar;
     private boolean isSaveSuccess;
     private Listener listener;
@@ -131,6 +140,7 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
     private ImageView avatar;
     private TextView avatarSize;
     private View changeAvatarButton;
+    private View saveAvatarButton;
     private Uri newAvatarImageUri;
     private Uri photoFileUri;
     private boolean removeAvatarFlag = false;
@@ -224,6 +234,14 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
                                                   }
                                               }
         );
+        saveAvatarButton = view.findViewById(R.id.saveAvatarButton);
+        saveAvatarButton.setVisibility(View.GONE);
+        saveAvatarButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                saveAvatar();
+            }
+        });
 
         birthDate = (TextView) view.findViewById(R.id.vcard_birth_date);
         birthDate.setOnClickListener(new View.OnClickListener() {
@@ -466,7 +484,8 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
         if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
             File imageFile = null;
             try {
-                imageFile = FileManager.createTempImageFile(TEMP_FILE_NAME);
+                //imageFile = FileManager.createTempImageFile(TEMP_FILE_NAME);
+                imageFile = FileManager.createTempPNGImageFile(TEMP_FILE_NAME);
             } catch (IOException e) {
                 LogManager.exception(this, e);
             }
@@ -543,6 +562,9 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
         });
     }
 
+
+
+
     private void preprocessAndStartCrop(Uri source) {
         enableProgressMode(getString(R.string.processing_image));
         Glide.with(this).asBitmap().load(source).override(MAX_IMAGE_SIZE, MAX_IMAGE_SIZE)
@@ -554,11 +576,13 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
                             public void run() {
                                 ByteArrayOutputStream stream = new ByteArrayOutputStream();
                                 resource.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                                //resource.compress(Bitmap.CompressFormat.JPEG, 85, stream);
                                 byte[] data = stream.toByteArray();
                                 resource.recycle();
-
                                 final Uri rotatedImage = FileManager.saveImage(data, ROTATE_FILE_NAME);
                                 if (rotatedImage == null) return;
+
+                                //final Uri image = FileManager.saveImageNoRotation(data, "normal");
 
                                 Application.getInstance().runOnUiThread(new Runnable() {
                                     @Override
@@ -591,8 +615,16 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
         }
         Crop.of(srcUri, newAvatarImageUri)
                 .asSquare()
-                .withMaxSize(MAX_AVATAR_SIZE_PIXELS, MAX_AVATAR_SIZE_PIXELS)
+                .withMaxSize(MAX_TEST, MAX_TEST)
                 .start(activity);
+        /*Crop.of(srcUri, newAvatarImageUri)
+                .asSquare()
+                .withMaxSize(MAX_IMAGE_SIZE, MAX_IMAGE_SIZE)
+                .start(activity);*/
+        /*Crop.of(srcUri, newAvatarImageUri)
+                .asSquare()
+                .withMaxSize(MAX_AVATAR_SIZE_PIXELS, MAX_AVATAR_SIZE_PIXELS)
+                .start(activity);*/
     }
 
     private void handleCrop(int resultCode, Intent result) {
@@ -618,6 +650,15 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
 
             File file = new File(newAvatarImageUri.getPath());
             avatarSize.setText(file.length() / KB_SIZE_IN_BYTES + "KB");
+
+            if (file.length() / KB_SIZE_IN_BYTES>35) {
+                preprocessAndStartCrop(newAvatarImageUri);
+                Toast.makeText(getActivity(), "Image is too big, need another crop!", Toast.LENGTH_LONG).show();
+                return;
+            }
+
+            saveAvatarButton.setVisibility(View.VISIBLE);
+
             avatarSize.setVisibility(View.VISIBLE);
             if (listener != null) {
                 listener.enableSave();
@@ -659,15 +700,27 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
             vCard.setField(VCardProperty.FN.name(), formattedNameText);
         }
 
-        if (removeAvatarFlag) {
+        /*if (removeAvatarFlag) {
             vCard.removeAvatar();
         } else if (newAvatarImageUri != null) {
+            //XEP-0084
+            try {
+                avatarData = VCard.getBytes(new URL(newAvatarImageUri.toString()));
+                String sh1 = AvatarManager.getAvatarHash(avatarData);
+                AvatarManager.getInstance().onAvatarReceived(account.getFullJid().asBareJid(),sh1,avatarData, "xep");
+                //vCard.removeAvatar();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            //Vcard:
             try {
                 vCard.setAvatar(new URL(newAvatarImageUri.toString()));
             } catch (MalformedURLException e) {
-                LogManager.exception(this, e);
+                e.printStackTrace();
             }
-        }
+
+        }*/
 
         vCard.setField(VCardProperty.BDAY.name(), getValueFromEditText(birthDate));
 
@@ -707,8 +760,76 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
         ChatActivity.hideKeyboard(getActivity());
         updateVCardFromFields();
         enableProgressMode(getString(R.string.saving));
+        /*Application.getInstance().runInBackground(new Runnable() {
+            @Override
+            public void run() {
+                saveAvatar();
+            }
+        });*/
+        saveAvatar();
         VCardManager.getInstance().saveVCard(account, vCard);
         isSaveSuccess = false;
+    }
+
+    private void saveAvatar(){
+        enableProgressMode(getString(R.string.saving));
+        AccountItem item = AccountManager.getInstance().getAccount(account);
+        final UserAvatarManager mng = UserAvatarManager.getInstanceFor(item.getConnection());
+
+        if (removeAvatarFlag) {
+            vCard.removeAvatar();
+        } else if (newAvatarImageUri != null) {
+            try {
+                if (mng.isSupportedByServer()) { //check if server supports PEP, if true - proceed with saving the avatar as XEP-0084 one
+                    //xep-0084 av
+                    avatarData = VCard.getBytes(new URL(newAvatarImageUri.toString()));
+                    String sh1 = AvatarManager.getAvatarHash(avatarData);
+                    AvatarManager.getInstance().onAvatarReceived(account.getFullJid().asBareJid(), sh1, avatarData, "xep");
+                    //vCard.removeAvatar();
+                } else { //otherwise set the vCard avatar and return, which stops the avatar from being published as a XEP-0084 avatar
+                    //vCard av
+                    vCard.setAvatar(new URL(newAvatarImageUri.toString()));
+                    return;
+                }
+            } catch (IOException | XMPPException.XMPPErrorException | SmackException.NotConnectedException
+                    | InterruptedException | SmackException.NoResponseException e) {
+                e.printStackTrace();
+            }
+        }
+        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
+            @Override
+            public void run() {
+
+                if(avatarData!=null) {
+                    try {
+                        mng.publishAvatar(avatarData, MAX_TEST, MAX_TEST);
+                        isAvatarSuccessful = true;
+                    } catch (XMPPException.XMPPErrorException | PubSubException.NotALeafNodeException |
+                            SmackException.NotConnectedException | InterruptedException | SmackException.NoResponseException e) {
+                        e.printStackTrace();
+                    }
+
+                    final boolean isSuccessfulFinal = isAvatarSuccessful;
+                    Application.getInstance().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            if (isSuccessfulFinal) {
+                                Toast.makeText(getActivity(), "Avatar published!", Toast.LENGTH_LONG).show();
+                                disableProgressMode();
+                                //VCardManager.getInstance().saveVCard(account, vCard);
+                            } else {
+                                Toast.makeText(getActivity(), "Avarar publishing failed", Toast.LENGTH_LONG).show();
+                                disableProgressMode();
+                            }
+                        }
+                    });
+
+                }
+            }
+        });
+
+
     }
 
     public void enableProgressMode(String message) {
