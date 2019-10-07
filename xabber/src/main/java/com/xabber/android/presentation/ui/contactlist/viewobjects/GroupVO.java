@@ -2,16 +2,13 @@ package com.xabber.android.presentation.ui.contactlist.viewobjects;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.ContextMenu;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.xabber.android.R;
-import com.xabber.android.data.account.AccountItem;
-import com.xabber.android.data.account.AccountManager;
-import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.notification.custom_notification.CustomNotifyPrefsManager;
 import com.xabber.android.data.notification.custom_notification.Key;

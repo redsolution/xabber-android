@@ -14,7 +14,7 @@
  */
 package com.xabber.android.ui.adapter.contactlist;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.roster.AbstractContact;

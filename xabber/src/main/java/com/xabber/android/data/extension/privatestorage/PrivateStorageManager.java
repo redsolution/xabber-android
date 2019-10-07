@@ -1,6 +1,6 @@
 package com.xabber.android.data.extension.privatestorage;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
@@ -9,7 +9,7 @@ import com.xabber.android.ui.adapter.XMPPAccountAuthAdapter;
 
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
-import org.jivesoftware.smack.tcp.XMPPTCPConnection;
+import com.xabber.xmpp.smack.XMPPTCPConnection;
 import org.jivesoftware.smackx.iqprivate.PrivateDataManager;
 import org.jivesoftware.smackx.iqprivate.packet.PrivateData;
 

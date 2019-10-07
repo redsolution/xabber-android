@@ -17,15 +17,9 @@ package com.xabber.android.data;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Handler;
-import android.os.StrictMode;
-import android.support.annotation.NonNull;
-import android.support.multidex.MultiDex;
+import androidx.annotation.NonNull;
+import androidx.multidex.MultiDex;
 
-import com.crashlytics.android.Crashlytics;
-import com.crashlytics.android.core.CrashlyticsCore;
-import com.frogermcs.androiddevmetrics.AndroidDevMetrics;
-import com.github.moduth.blockcanary.BlockCanary;
-import com.squareup.leakcanary.LeakCanary;
 import com.xabber.android.BuildConfig;
 import com.xabber.android.R;
 import com.xabber.android.data.account.AccountManager;
@@ -68,7 +62,6 @@ import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.data.xaccount.XMPPAuthManager;
 import com.xabber.android.data.xaccount.XabberAccountManager;
 import com.xabber.android.service.XabberService;
-import com.xabber.android.utils.AppBlockCanaryContext;
 
 import org.jivesoftware.smack.provider.ProviderFileLoader;
 import org.jivesoftware.smack.provider.ProviderManager;
@@ -84,8 +77,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadFactory;
-
-import io.fabric.sdk.android.Fabric;
 
 /**
  * Base entry point.
@@ -317,12 +308,6 @@ public class TestApplication extends android.app.Application {
     @Override
     public void onCreate() {
         super.onCreate();
-
-        /** Crashlytics */
-        CrashlyticsCore crashlyticsCore = new CrashlyticsCore.Builder()
-                .disabled(BuildConfig.DEBUG || BuildConfig.FLAVOR == "open")
-                .build();
-        Fabric.with(this, new Crashlytics.Builder().core(crashlyticsCore).build());
 
         Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
         //addManagers();

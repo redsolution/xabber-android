@@ -24,7 +24,8 @@ public abstract class ReferenceElement implements ExtensionElement {
         markup,
         mention,
         quote,
-        voice
+        voice,
+        groupchat
     }
 
     protected final int begin;

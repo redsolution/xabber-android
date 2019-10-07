@@ -14,7 +14,7 @@
  */
 package com.xabber.android.data.roster;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;

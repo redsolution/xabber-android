@@ -14,10 +14,7 @@
  */
 package com.xabber.android.data.entity;
 
-import android.support.annotation.NonNull;
-
-import com.xabber.android.data.log.LogManager;
-
+import androidx.annotation.NonNull;
 import org.jxmpp.jid.Jid;
 
 /**

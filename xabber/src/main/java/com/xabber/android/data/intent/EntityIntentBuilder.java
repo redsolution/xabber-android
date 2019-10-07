@@ -16,7 +16,7 @@ package com.xabber.android.data.intent;
 
 import android.content.Context;
 import android.content.Intent;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.entity.UserJid;

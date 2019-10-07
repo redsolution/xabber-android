@@ -33,6 +33,7 @@
     <string name="account_sasl_summary">Отключите эту опцию для подключения к очень старому серверу</string>
     <string name="account_store_password">Хранить пароль</string>
     <string name="account_store_password_summary">Отключение приведет к запросу пароля при каждом подключении</string>
+    <string name="account_password_disabled">Отключено потому что вы используете X-Token</string>
     <string name="account_tls_enable">Использовать TLS</string>
     <string name="account_tls_enable_summary">Использовать TLS шифрование если поддерживается сервером</string>
     <string name="account_tls_legacy">Старый SSL</string>
@@ -40,7 +41,7 @@
     <string name="account_tls_mode">Использование TLS/SSL</string>
     <string name="account_tls_require">Требовать TLS</string>
     <string name="account_tls_require_summary">Требовать TLS шифрование при подключении к серверу</string>
-    <string name="account_enable_tls">Включить протокол шифрования TLS</string>
+    <string name="account_enable_tls">Требовать протокол шифрования TLS</string>
     <string name="account_use_tor">Подключаться через анонимную сеть TOR (необходим Orbot proxy)</string>
     <string name="INCORRECT_USER_NAME">Неправильное имя пользователя</string>
     <string name="orbot_required_message">Для использования TOR необходимо установить приложение Orbot и активировать в нём передачу данных. Вы хотите установить его из Google Play?</string>
@@ -67,6 +68,12 @@
     <string name="account_color_name_deep_orange">Темно-оранжевый</string>
     <string name="account_color_name_brown">Коричневый</string>
     <string name="account_connection_settings">Параметры подключения</string>
+    <string name="account_active_sessions">Активные сеансы</string>
+    <string name="account_current_session">Текущий сеанс</string>
+    <string name="account_terminate_all_sessions">Завершить все другие сеансы</string>
+    <string name="account_active_sessions_summary">Управляйте своими сеансами с помощью X-Token</string>
+    <string name="account_active_sessions_disabled">Сервер не поддерживает X-Token</string>
+    <string name="account_active_sessions_error">Не удалось получить список активных сеансов</string>
     <string name="blocked_contacts">Заблокированные контакты</string>
     <string name="blocked_contacts_unknown">Поддержка блокировки контактов ещё не определена.</string>
     <string name="blocked_contacts_not_supported">Блокировка контактов не поддерживается сервером.</string>
@@ -96,4 +103,8 @@
     <string name="account_sync">Синхронизация</string>
     <string name="account_sync_summary">Синхронизация с аккаунтом Xabber</string>
     <string name="bookmark_not_supported">Сервер не поддерживает закладки.</string>
+
+    <string name="terminate_all_sessions_title">Вы точно хотите завершить все другие сеансы?</string>
+    <string name="terminate_session_title">Завершить этот сеанс?</string>
+    <string name="button_terminate">Завершить</string>
 </resources>

@@ -3,21 +3,23 @@ package com.xabber.android.ui.adapter.chat;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
-import android.support.annotation.StyleRes;
-import android.support.v4.graphics.drawable.DrawableCompat;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.StyleRes;
+import androidx.core.graphics.drawable.DrawableCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.amulyakhare.textdrawable.util.ColorGenerator;
 import com.xabber.android.R;
 import com.xabber.android.data.database.MessageDatabaseManager;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.extension.otr.OTRManager;
+import com.xabber.android.data.groupchat.GroupchatUser;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.fragment.ChatFragment;
@@ -88,6 +90,15 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
             messageHeader.setVisibility(View.VISIBLE);
         } else {
             messageHeader.setVisibility(View.GONE);
+        }
+
+        // groupchat
+        if (extraData.getGroupchatUser() != null) {
+            GroupchatUser user = extraData.getGroupchatUser();
+            messageHeader.setText(user.getNickname());
+            messageHeader.setTextColor(ColorManager.changeColor(
+                    ColorGenerator.MATERIAL.getColor(user.getNickname()), 0.8f));
+            messageHeader.setVisibility(View.VISIBLE);
         }
 
         if (messageItem.isEncrypted()) {

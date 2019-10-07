@@ -8,8 +8,8 @@ import android.media.AudioAttributes;
 import android.net.Uri;
 import android.os.Build;
 import android.preference.PreferenceManager;
-import android.support.annotation.RequiresApi;
-import android.support.annotation.StringRes;
+import androidx.annotation.RequiresApi;
+import androidx.annotation.StringRes;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;

@@ -1,6 +1,6 @@
 package com.xabber.android.data.message;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;

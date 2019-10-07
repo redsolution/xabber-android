@@ -1,7 +1,7 @@
 package com.xabber.android.ui.widget;
 
 import android.content.Context;
-import android.support.v7.widget.AppCompatTextView;
+import androidx.appcompat.widget.AppCompatTextView;
 import android.text.Layout;
 import android.text.Selection;
 import android.text.Spannable;

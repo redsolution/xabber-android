@@ -47,6 +47,7 @@ import com.xabber.android.ui.adapter.ChatComparator;
 import com.xabber.android.ui.adapter.contactlist.AccountConfiguration;
 import com.xabber.android.ui.adapter.contactlist.ContactListGroupUtils;
 import com.xabber.android.ui.adapter.contactlist.GroupConfiguration;
+import com.xabber.android.ui.widget.ShortcutBuilder;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -522,6 +523,9 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
                 itemsCount++;
             } else break;
         }
+
+        ShortcutBuilder.updateShortcuts(Application.getInstance(),
+                new ArrayList<>(chatsGroup.getAbstractContacts()));
 
         return chatsGroup;
     }

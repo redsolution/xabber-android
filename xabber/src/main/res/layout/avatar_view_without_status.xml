@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="centerCrop"
-        app:civ_fill_color="@color/white"
+        app:civ_circle_background_color="@color/white"
         tools:src="@tools:sample/avatars"
         />
 

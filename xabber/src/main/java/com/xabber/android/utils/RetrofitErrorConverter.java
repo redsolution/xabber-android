@@ -1,6 +1,6 @@
 package com.xabber.android.utils;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import com.google.gson.JsonSyntaxException;
 import com.xabber.android.data.xaccount.HttpApiManager;

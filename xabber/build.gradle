@@ -1,17 +1,16 @@
 apply plugin: 'com.android.application'
 apply plugin: 'realm-android'
 apply plugin: 'com.frogermcs.androiddevmetrics'
-apply plugin: 'io.fabric'
 
 android {
-    compileSdkVersion 28
-    buildToolsVersion '28.0.3'
+    compileSdkVersion 29
+    buildToolsVersion '29.0.1'
 
     defaultConfig {
         minSdkVersion 15
-        targetSdkVersion 28
-        versionCode 634
-        versionName '2.6.4(634)'
+        targetSdkVersion 29
+        versionCode 644
+        versionName '2.6.6.644'
         manifestPlaceholders = [crashlytics:getLocalProperty("crashlytics.key")]
     }
 
@@ -36,14 +35,16 @@ android {
         }
     }
 
-    flavorDimensions "build"
+    flavorDimensions "destribution", "build"
     productFlavors {
 
         open {
-            dimension "build"
-            applicationId "com.xabber.android.open"
-            resValue 'string', 'application_package', applicationId
-            multiDexEnabled true
+            dimension "destribution"
+            versionNameSuffix "-open"
+        }
+
+        store {
+            dimension "destribution"
         }
 
         dev {
@@ -92,7 +93,6 @@ android {
             enable true
             reset()
             include 'armeabi', 'armeabi-v7a', 'arm64-v8a', 'mips', 'x86', 'x86_64'
-
             universalApk true
         }
     }
@@ -104,51 +104,50 @@ android {
     }
 }
 
-def build_param = "${build}";
-
-if (build_param == "open") {
-    // exclude all flavours except open
-    android.variantFilter { variant ->
-        if (!variant.getFlavors().get(0).name.equals('open')) {
-            variant.setIgnore(true);
-        }
-    }
-}
-
 def getLocalProperty(String propertyName) {
     def propsFile = rootProject.file('local.properties')
     if (propsFile.exists()) {
         def props = new Properties()
         props.load(new FileInputStream(propsFile))
-        return props[propertyName]
+        if (props[propertyName] != null) return props[propertyName]
+        else return ""
     } else {
         return ""
     }
 }
 
+if (getGradle().getStartParameter().getTaskRequests().toString().contains("Store")) {
+    apply plugin: 'com.google.gms.google-services'
+    apply plugin: 'io.fabric'
+}
+
 ext {
-    smackVersion = '4.2.1-SNAPSHOT'
-    supportVersion = '28.0.0'
+    smackVerstion = 'ffb99cc'
 }
 
 dependencies {
     implementation project(path: 'MemorizingTrustManager', configuration: 'default')
     implementation project(path: 'emojicon', configuration: 'default')
 
-    implementation 'com.github.str4tocaster.smack:smack-android-extensions:ffb99cc'
-    implementation 'com.github.str4tocaster.smack:smack-experimental:ffb99cc'
-    implementation 'com.github.str4tocaster.smack:smack-tcp:ffb99cc'
-    implementation 'com.github.str4tocaster.smack:smack-resolver-dnsjava:ffb99cc'
+    // smack
+    implementation "com.github.str4tocaster.smack:smack-android-extensions:$smackVerstion"
+    implementation "com.github.str4tocaster.smack:smack-experimental:$smackVerstion"
+    implementation "com.github.str4tocaster.smack:smack-tcp:$smackVerstion"
+    implementation "com.github.str4tocaster.smack:smack-resolver-dnsjava:$smackVerstion"
 
-    implementation "com.android.support:design:$supportVersion"
-    implementation "com.android.support:support-v13:$supportVersion"
-    implementation "com.android.support:customtabs:$supportVersion"
-    implementation 'com.android.support:multidex:1.0.3'
+    // android support
+    implementation 'com.google.android.material:material:1.0.0'
+    implementation 'androidx.legacy:legacy-support-v13:1.0.0'
+    implementation 'androidx.browser:browser:1.0.0'
+    implementation 'androidx.multidex:multidex:2.0.0'
 
     // firebase
-    implementation 'com.google.firebase:firebase-messaging:17.3.4'
+    storeImplementation "com.google.firebase:firebase-messaging:17.3.4"
 
-    implementation 'com.github.Str4tocaster:otr4j:custom-SNAPSHOT'
+    // otr
+    implementation 'com.github.redsolution:otr4j:custom-SNAPSHOT'
+
+    // barcode scanner
     implementation 'com.google.zxing:android-integration:3.3.0'
 
     // retrofit
@@ -162,33 +161,42 @@ dependencies {
     implementation 'io.reactivex:rxjava:1.1.0'
 
     // social
-    implementation 'com.google.android.gms:play-services-safetynet:16.0.0'
-    implementation 'com.facebook.android:facebook-login:4.36.1'
-    implementation 'com.twitter.sdk.android:twitter:3.0.0'
-    implementation 'com.google.android.gms:play-services-auth:15.0.0'
-    implementation ('com.google.api-client:google-api-client-android:1.22.0') {
+    storeImplementation "com.facebook.android:facebook-login:4.36.1"
+    storeImplementation "com.twitter.sdk.android:twitter:3.0.0"
+
+    // gms
+    storeImplementation "com.google.android.gms:play-services-safetynet:16.0.0"
+    storeImplementation "com.google.android.gms:play-services-auth:15.0.0"
+    storeImplementation ("com.google.api-client:google-api-client-android:1.22.0") {
         exclude module: 'httpclient'
     }
 
-    implementation 'me.relex:circleindicator:1.2.2@aar'
-    implementation 'com.github.bumptech.glide:glide:3.7.0'
+    // okhttp
     implementation 'com.squareup.okhttp3:okhttp:3.5.0'
+
+    // event bus
     implementation 'org.greenrobot:eventbus:3.0.0'
+
+    // commons-io
     implementation 'commons-io:commons-io:2.6'
 
+    // bouncycastle
+    implementation group: 'org.bouncycastle', name: 'bcpkix-jdk15on', version: '1.58'
+
     // ui
+    implementation 'me.relex:circleindicator:1.2.2@aar'
+    implementation 'com.github.bumptech.glide:glide:4.9.0'
     implementation 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1'
     implementation 'ru.egslava:MaskedEditText:1.0.5'
     implementation 'eu.davidea:flexible-adapter:5.0.0-rc4'
     implementation 'com.soundcloud.android:android-crop:1.0.1@aar'
-    implementation 'de.hdodenhof:circleimageview:2.2.0'
+    implementation 'de.hdodenhof:circleimageview:3.0.1'
     implementation 'com.melnykov:floatingactionbutton:1.3.0'
 
-    implementation('com.crashlytics.sdk.android:crashlytics:2.9.5@aar') {
+    // crashlytics
+    storeImplementation("com.crashlytics.sdk.android:crashlytics:2.9.5@aar") {
         transitive = true
     }
-
-    implementation group: 'org.bouncycastle', name: 'bcpkix-jdk15on', version: '1.58'
 
     // leak canary
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.5.4'
@@ -203,7 +211,6 @@ dependencies {
     testImplementation "org.robolectric:robolectric:4.0"
     testImplementation "org.robolectric:shadows-multidex:4.0.1"
 }
-apply plugin: 'com.google.gms.google-services'
 
 configurations {
     all*.exclude group: 'xpp3', module: 'xpp3'

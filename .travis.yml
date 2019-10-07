@@ -3,12 +3,14 @@ android:
   components:
     - platform-tools
     - tools
+    - build-tools-29.0.1
     - build-tools-28.0.3
     - build-tools-28.0.2
     - build-tools-27.0.3
     - build-tools-26.0.2
     - build-tools-25.0.2
     - build-tools-25.0.0
+    - android-29
     - android-28
     - android-27
     - android-26
@@ -27,7 +29,7 @@ install:
 
 script:
   # By default Travis-ci executes './gradlew build connectedCheck' if no 'script:' section found.
-  - ./gradlew clean build -Pbuild=open
+  - ./gradlew assembleOpenProdRelease
 
 
 env:
@@ -35,3 +37,5 @@ env:
 
 jdk:
   - oraclejdk8
+
+dist: trusty

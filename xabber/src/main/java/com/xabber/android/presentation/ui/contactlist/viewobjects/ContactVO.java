@@ -10,7 +10,6 @@ import android.content.res.TypedArray;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
-import android.support.v7.widget.RecyclerView;
 import android.util.TypedValue;
 import android.view.ContextMenu;
 import android.view.View;
@@ -19,18 +18,16 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
-import com.xabber.android.data.account.AccountItem;
-import com.xabber.android.data.account.AccountManager;
-import com.xabber.android.data.connection.ConnectionState;
 import com.xabber.android.data.database.messagerealm.Attachment;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.muc.RoomChat;
-import com.xabber.android.data.filedownload.FileCategory;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.ChatAction;
 import com.xabber.android.data.message.MessageManager;
@@ -40,6 +37,7 @@ import com.xabber.android.data.notification.custom_notification.Key;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.ui.color.ColorManager;
+import com.xabber.android.utils.StringUtils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -80,6 +78,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
     private final boolean isCustomNotification;
     protected boolean archived;
     protected int forwardedCount;
+    private boolean isGroupchat;
 
     protected final ContactClickListener listener;
 
@@ -96,7 +95,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
                         boolean mute, NotificationState.NotificationMode notificationMode, String messageText,
                         boolean isOutgoing, Date time, int messageStatus, String messageOwner,
                         boolean archived, String lastActivity, ContactClickListener listener,
-                        int forwardedCount, boolean isCustomNotification) {
+                        int forwardedCount, boolean isCustomNotification, boolean isGroupchat) {
         this.id = UUID.randomUUID().toString();
         this.accountColorIndicator = accountColorIndicator;
         this.accountColorIndicatorBack = accountColorIndicatorBack;
@@ -121,6 +120,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
         this.listener = listener;
         this.forwardedCount = forwardedCount;
         this.isCustomNotification = isCustomNotification;
+        this.isGroupchat = isGroupchat;
     }
 
     public static ContactVO convert(AbstractContact contact, ContactClickListener listener) {
@@ -171,12 +171,11 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
         } else {
             if (lastMessage.haveAttachments() && lastMessage.getAttachments().size() > 0) {
                 Attachment attachment = lastMessage.getAttachments().get(0);
-                FileCategory category = FileCategory.determineFileCategory(attachment.getMimeType());
-                messageText = FileCategory.getCategoryName(category, true) + attachment.getTitle();
+                messageText = StringUtils.getColoredText(attachment.getTitle().trim(), accountColorIndicator);
             } else if (lastMessage.getFilePath() != null) {
                 messageText = new File(lastMessage.getFilePath()).getName();
             } else if (ChatAction.available.toString().equals(lastMessage.getAction())) {
-                messageText = "<font color='#388E3C'>" + lastMessage.getText().trim() + "</font>";
+                messageText = StringUtils.getColoredText(lastMessage.getText().trim(), accountColorIndicator);
             } else {
                 messageText = lastMessage.getText().trim();
             }
@@ -206,7 +205,13 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
             }
 
             // forwarded
-            if (lastMessage.haveForwardedMessages()) forwardedCount = lastMessage.getForwardedIds().size();
+            if (lastMessage.haveForwardedMessages()) {
+                forwardedCount = lastMessage.getForwardedIds().size();
+                if (messageText.isEmpty()) {
+                    String forwardText = lastMessage.getFirstForwardedMessageText(accountColorIndicator);
+                    if (forwardText != null) messageText = forwardText;
+                }
+            }
         }
 
         if (!isOutgoing) unreadCount = chat.getUnreadMessageCount();
@@ -224,7 +229,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
                 statusLevel, avatar, mucIndicatorLevel, contact.getUser(), contact.getAccount(),
                 unreadCount, !chat.notifyAboutMessage(), mode, messageText, isOutgoing, time,
                 messageStatus, messageOwner, chat.isArchived(), lastActivity, listener, forwardedCount,
-                isCustomNotification);
+                isCustomNotification, chat.isGroupchat() );
     }
 
     public static ArrayList<IFlexible> convert(Collection<AbstractContact> contacts, ContactClickListener listener) {
@@ -309,6 +314,12 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
                         R.attr.contact_list_contact_name_text_color)));
             }
         }
+
+        /** set up GROUPCHAT indicator */
+        if (viewHolder.ivStatus.getVisibility() == View.VISIBLE) {
+            viewHolder.ivStatus.setVisibility(isGroupchat ? View.INVISIBLE : View.VISIBLE);
+            viewHolder.ivStatusGroupchat.setVisibility(isGroupchat ? View.VISIBLE : View.GONE);
+        } else viewHolder.ivStatusGroupchat.setVisibility(View.GONE);
 
         /** set up NOTIFICATION MUTE */
         Resources resources = context.getResources();
@@ -427,6 +438,10 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
         return isCustomNotification;
     }
 
+    public boolean isGroupchat() {
+        return isGroupchat;
+    }
+
     private int getThemeResource(Context context, int themeResourceId) {
         TypedValue typedValue = new TypedValue();
         TypedArray a = context.obtainStyledAttributes(typedValue.data, new int[] {themeResourceId});
@@ -444,6 +459,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
         final ImageView ivAvatar;
         final ImageView ivStatus;
         final ImageView ivOnlyStatus;
+        final ImageView ivStatusGroupchat;
         final TextView tvStatus;
         final TextView tvContactName;
         final TextView tvOutgoingMessage;
@@ -469,6 +485,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
             ivAvatar.setOnClickListener(this);
             ivStatus = (ImageView) view.findViewById(R.id.ivStatus);
             ivOnlyStatus = (ImageView) view.findViewById(R.id.ivOnlyStatus);
+            ivStatusGroupchat = (ImageView) view.findViewById(R.id.ivStatusGroupchat);
             tvStatus = (TextView) view.findViewById(R.id.tvStatus);
             tvContactName = (TextView) view.findViewById(R.id.tvContactName);
             tvOutgoingMessage = (TextView) view.findViewById(R.id.tvOutgoingMessage);

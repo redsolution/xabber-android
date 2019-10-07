@@ -14,10 +14,9 @@
  */
 package com.xabber.android.data.roster;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
@@ -60,7 +59,7 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -168,8 +167,8 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
 
     public Collection<RosterContact> getAllContacts() {
         List<RosterContact> contactsCopy = new ArrayList<>();
-        Set<String> keys = new HashSet<>(rosterContacts.keySet());
-        for (String key : keys) {
+        for (Iterator<String> it = rosterContacts.keySet().iterator(); it.hasNext(); ) {
+            String key = it.next();
             contactsCopy.addAll(rosterContacts.getNested(key).values());
         }
         return Collections.unmodifiableCollection(contactsCopy);

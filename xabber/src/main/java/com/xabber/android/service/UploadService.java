@@ -2,14 +2,11 @@ package com.xabber.android.service;
 
 import android.app.IntentService;
 import android.content.Intent;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.ResultReceiver;
-import android.provider.OpenableColumns;
-import android.support.annotation.Nullable;
-import android.webkit.MimeTypeMap;
+import androidx.annotation.Nullable;
 
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
@@ -25,7 +22,6 @@ import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.utils.HttpClientWithMTM;
 import com.xabber.xmpp.httpfileupload.Slot;
 
-import org.apache.commons.io.FilenameUtils;
 import org.jivesoftware.smack.AbstractXMPPConnection;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.StanzaCollector;
@@ -46,7 +42,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.UUID;
 
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;

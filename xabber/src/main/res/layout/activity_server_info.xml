@@ -9,7 +9,7 @@
 
     <include layout="@layout/toolbar_default" />
 
-    <android.support.v7.widget.RecyclerView
+    <androidx.recyclerview.widget.RecyclerView
         android:padding="16dp"
         android:clipToPadding="false"
         android:id="@+id/server_info_recycler_view"

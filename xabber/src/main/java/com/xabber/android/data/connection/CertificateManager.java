@@ -2,7 +2,7 @@ package com.xabber.android.data.connection;
 
 
 import android.app.Activity;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountItem;

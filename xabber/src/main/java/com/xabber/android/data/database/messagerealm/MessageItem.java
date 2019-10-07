@@ -14,24 +14,29 @@
  */
 package com.xabber.android.data.database.messagerealm;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.TextUtils;
 
+import com.xabber.android.data.database.MessageDatabaseManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.ChatAction;
+import com.xabber.android.data.roster.RosterManager;
+import com.xabber.android.utils.StringUtils;
 
 import org.jxmpp.jid.parts.Resourcepart;
 import org.jxmpp.stringprep.XmppStringprepException;
 
-import java.util.List;
+import java.util.Arrays;
 import java.util.UUID;
 
 import io.realm.RealmList;
 import io.realm.RealmObject;
+import io.realm.RealmResults;
+import io.realm.Sort;
 import io.realm.annotations.Ignore;
 import io.realm.annotations.Index;
 import io.realm.annotations.PrimaryKey;
@@ -78,6 +83,7 @@ public class MessageItem extends RealmObject {
         public static final String FROM_MUC = "fromMUC";
         public static final String PREVIOUS_ID = "previousId";
         public static final String ARCHIVED_ID = "archivedId";
+        public static final String GROUPCHAT_USER_ID = "groupchatUserId";
     }
 
     /**
@@ -218,6 +224,7 @@ public class MessageItem extends RealmObject {
     private String archivedId;
     @Ignore
     private String packetId;
+    private String groupchatUserId;
 
     private RealmList<ForwardId> forwardedIds;
 
@@ -602,5 +609,46 @@ public class MessageItem extends RealmObject {
 
     public void setMarkupText(String markupText) {
         this.markupText = markupText;
+    }
+
+    public String getGroupchatUserId() {
+        return groupchatUserId;
+    }
+
+    public void setGroupchatUserId(String groupchatUserId) {
+        this.groupchatUserId = groupchatUserId;
+    }
+
+    public String getFirstForwardedMessageText() {
+        return getFirstForwardedMessageText(-1);
+    }
+
+    public String getFirstForwardedMessageText(int color) {
+        String text = null;
+        if (haveForwardedMessages()) {
+            String[] forwardedIDs = getForwardedIdsAsArray();
+            if (!Arrays.asList(forwardedIDs).contains(null)) {
+                RealmResults<MessageItem> forwardedMessages =
+                        MessageDatabaseManager.getInstance().getRealmUiThread().where(MessageItem.class)
+                                .in(MessageItem.Fields.UNIQUE_ID, forwardedIDs)
+                                .findAllSorted(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
+
+                if (forwardedMessages.size() > 0) {
+                    MessageItem message = forwardedMessages.last();
+                    String author = RosterManager.getDisplayAuthorName(message);
+                    StringBuilder stringBuilder = new StringBuilder();
+                    if (!author.isEmpty()) {
+                        if (color == -1) {
+                            stringBuilder.append(author);
+                            stringBuilder.append(":");
+                        } else stringBuilder.append(StringUtils.getColoredText(author + ":", color));
+                    }
+                    stringBuilder.append(message.getText().trim());
+                    if (!message.getText().trim().isEmpty())
+                        text = stringBuilder.toString();
+                }
+            }
+        }
+        return text;
     }
 }

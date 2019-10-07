@@ -149,4 +149,5 @@
   <string name="password_reset_success">Запрос на сброс пароля отправлен. Проверьте %1$s</string>
   <string name="password_reset_fail">Не удалось отправить запрос на смену пароля</string>
   <string name="password_reset_need_email">Для сброса пароля необходим подтвержденный адрес email</string>
+  <string name="nostore_restriction">Доступно только в версии приложения для Google Play</string>
 </resources>

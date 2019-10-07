@@ -4,6 +4,7 @@ import android.database.Cursor;
 import android.os.Looper;
 
 import com.xabber.android.data.Application;
+import com.xabber.android.data.database.messagerealm.GroupchatUserRealm;
 import com.xabber.android.data.database.realm.AccountRealm;
 import com.xabber.android.data.database.realm.ChatDataRealm;
 import com.xabber.android.data.database.realm.CrowdfundingMessage;
@@ -18,6 +19,7 @@ import com.xabber.android.data.database.realm.PushLogRecord;
 import com.xabber.android.data.database.realm.SocialBindingRealm;
 import com.xabber.android.data.database.realm.SyncStateRealm;
 import com.xabber.android.data.database.realm.XMPPUserRealm;
+import com.xabber.android.data.database.realm.XTokenRealm;
 import com.xabber.android.data.database.realm.XabberAccountRealm;
 import com.xabber.android.data.database.sqlite.AccountTable;
 import com.xabber.android.data.extension.httpfileupload.UploadServer;
@@ -25,7 +27,6 @@ import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.notification.custom_notification.NotifyPrefsRealm;
 
 import io.realm.DynamicRealm;
-import io.realm.DynamicRealmObject;
 import io.realm.FieldAttribute;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
@@ -36,7 +37,7 @@ import io.realm.annotations.RealmModule;
 
 public class RealmManager {
     private static final String REALM_DATABASE_NAME = "realm_database.realm";
-    private static final int REALM_DATABASE_VERSION = 27;
+    private static final int REALM_DATABASE_VERSION = 29;
     private static final String LOG_TAG = RealmManager.class.getSimpleName();
     private final RealmConfiguration realmConfiguration;
 
@@ -71,7 +72,7 @@ public class RealmManager {
             XMPPUserRealm.class, EmailRealm.class, SocialBindingRealm.class, SyncStateRealm.class,
             PatreonGoalRealm.class, PatreonRealm.class, ChatDataRealm.class, NotificationStateRealm.class,
             CrowdfundingMessage.class, NotifChatRealm.class, NotifMessageRealm.class, NotifyPrefsRealm.class,
-            UploadServer.class, PushLogRecord.class})
+            UploadServer.class, PushLogRecord.class, XTokenRealm.class, GroupchatUserRealm.class})
     static class RealmDatabaseModule {
     }
 
@@ -358,6 +359,32 @@ public class RealmManager {
 
                             oldVersion++;
                         }
+
+                        if (oldVersion == 27) {
+                            schema.create(XTokenRealm.class.getSimpleName())
+                                    .addField(XTokenRealm.Fields.ID, String.class, FieldAttribute.PRIMARY_KEY, FieldAttribute.REQUIRED)
+                                    .addField(XTokenRealm.Fields.TOKEN, String.class)
+                                    .addField(XTokenRealm.Fields.EXPIRE, long.class);
+
+                            schema.get(AccountRealm.class.getSimpleName())
+                                    .addRealmObjectField(AccountRealm.Fields.XTOKEN, schema.get(XTokenRealm.class.getSimpleName()));
+
+                            oldVersion++;
+                        }
+
+                        if (oldVersion == 28) {
+                            schema.create(GroupchatUserRealm.class.getSimpleName())
+                                    .addField(GroupchatUserRealm.Fields.UNIQUE_ID, String.class,
+                                            FieldAttribute.PRIMARY_KEY, FieldAttribute.REQUIRED)
+                                    .addField(GroupchatUserRealm.Fields.NICKNAME, String.class)
+                                    .addField(GroupchatUserRealm.Fields.AVATAR, String.class)
+                                    .addField(GroupchatUserRealm.Fields.BADGE, String.class)
+                                    .addField(GroupchatUserRealm.Fields.JID, String.class)
+                                    .addField(GroupchatUserRealm.Fields.ROLE, String.class)
+                                    .addField(GroupchatUserRealm.Fields.TIMESTAMP, long.class);
+
+                            oldVersion++;
+                        }
                     }
                 })
                 .modules(new RealmDatabaseModule())
@@ -382,7 +409,7 @@ public class RealmManager {
      * Realm should be closed after use.
      *
      * @return new realm instance
-     * @throws IllegalStateException if called from UI (main) thread
+     * @throws 'IllegalStateException' if called from UI (main) thread
      */
     public Realm getNewBackgroundRealm() {
         if (Looper.myLooper() == Looper.getMainLooper()) {
@@ -407,7 +434,7 @@ public class RealmManager {
      * Do not close realm after use!
      *
      * @return realm instance for UI thread
-     * @throws IllegalStateException if called from background thread
+     * @throws 'IllegalStateException' if called from background thread
      */
     public Realm getRealmUiThread() {
         if (Looper.myLooper() != Looper.getMainLooper()) {

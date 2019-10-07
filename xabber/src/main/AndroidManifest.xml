@@ -447,7 +447,7 @@
         <receiver android:name=".receiver.NotificationCancelReceiver" />
 
         <provider
-            android:name="android.support.v4.content.FileProvider"
+            android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"
             android:exported="false"
             android:grantUriPermissions="true">
@@ -578,6 +578,7 @@
                 android:value="com.xabber.android.ui.activity.ChatActivity" />
         </activity>
         <activity android:name=".ui.activity.AccountPushActivity" />
+        <activity android:name=".ui.activity.ActiveSessionsActivity" />
         <activity android:name=".ui.activity.PushLogActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

@@ -1,6 +1,6 @@
 package com.xabber.android.data.xaccount;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 /**
  * Created by valery.miller on 21.07.17.

@@ -1,7 +1,7 @@
 package com.xabber.android.ui.adapter.chat;
 
-import android.support.annotation.StyleRes;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.StyleRes;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
 

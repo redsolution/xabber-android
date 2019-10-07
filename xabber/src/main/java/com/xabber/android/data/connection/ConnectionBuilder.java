@@ -1,18 +1,21 @@
 package com.xabber.android.data.connection;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.util.Patterns;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.log.LogManager;
+import com.xabber.xmpp.smack.SASLXTOKENMechanism;
+import com.xabber.xmpp.smack.XMPPTCPConnection;
+import com.xabber.xmpp.smack.XMPPTCPConnectionConfiguration;
 
 import org.apache.http.conn.ssl.AllowAllHostnameVerifier;
+import org.jivesoftware.smack.SASLAuthentication;
 import org.jivesoftware.smack.proxy.ProxyInfo;
 import org.jivesoftware.smack.sasl.core.SASLXOauth2Mechanism;
-import org.jivesoftware.smack.tcp.XMPPTCPConnection;
-import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
 import org.jivesoftware.smack.util.TLSUtils;
 
 import java.net.InetAddress;
@@ -20,9 +23,7 @@ import java.net.UnknownHostException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 
-import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
 import javax.net.ssl.X509TrustManager;
 
 import de.duenndns.ssl.MemorizingTrustManager;
@@ -77,6 +78,14 @@ class ConnectionBuilder {
 
             // and set token as password
             builder.setUsernameAndPassword(connectionSettings.getUserName(), connectionSettings.getToken());
+        }
+
+        // X-TOKEN
+        if (connectionSettings.getXToken() != null && !connectionSettings.getXToken().isExpired()) {
+            LogManager.d(LOG_TAG, "Authorization with x-token");
+            SASLAuthentication.registerSASLMechanism(new SASLXTOKENMechanism());
+            builder.addEnabledSaslMechanism(SASLXTOKENMechanism.NAME);
+            builder.setUsernameAndPassword(connectionSettings.getUserName(), connectionSettings.getXToken().getToken());
         }
 
         LogManager.i(LOG_TAG, "new XMPPTCPConnection " + connectionSettings.getServerName());

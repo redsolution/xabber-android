@@ -16,7 +16,7 @@ package com.xabber.android.data.extension.otr;
 
 import android.content.Intent;
 import android.database.Cursor;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import com.xabber.android.BuildConfig;
 import com.xabber.android.R;

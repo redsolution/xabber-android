@@ -1,6 +1,6 @@
 package com.xabber.android.data.database.realm;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import org.jivesoftware.smack.util.PacketParserUtils;
 import org.jivesoftware.smackx.disco.packet.DiscoverInfo;

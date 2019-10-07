@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import javax.annotation.Nonnull;
+import androidx.annotation.NonNull;
 
 import io.realm.Realm;
 import io.realm.RealmList;
@@ -54,7 +54,7 @@ public class ForwardManager {
         return null;
     }
 
-    @Nonnull
+    @NonNull
     public static List<Forwarded> getForwardedFromStanza(Stanza packet) {
         List<ExtensionElement> elements = packet.getExtensions(Forwarded.ELEMENT, Forwarded.NAMESPACE);
         if (elements == null || elements.size() == 0) return Collections.emptyList();

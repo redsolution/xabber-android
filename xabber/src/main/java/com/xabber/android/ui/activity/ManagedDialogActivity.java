@@ -15,7 +15,7 @@
 package com.xabber.android.ui.activity;
 
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
+import androidx.appcompat.widget.Toolbar;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;

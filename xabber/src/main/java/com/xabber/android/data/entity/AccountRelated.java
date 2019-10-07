@@ -14,7 +14,7 @@
  */
 package com.xabber.android.data.entity;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 /**
  * Object with relation to the account.

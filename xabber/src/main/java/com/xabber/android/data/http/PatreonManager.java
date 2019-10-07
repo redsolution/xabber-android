@@ -1,6 +1,6 @@
 package com.xabber.android.data.http;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.util.Log;
 
 import com.xabber.android.data.OnLoadListener;

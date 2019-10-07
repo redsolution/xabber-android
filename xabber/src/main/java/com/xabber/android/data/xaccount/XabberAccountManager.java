@@ -1,10 +1,9 @@
 package com.xabber.android.data.xaccount;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import android.util.Log;
 
-import com.google.firebase.iid.FirebaseInstanceId;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.OnLoadListener;
@@ -20,6 +19,7 @@ import com.xabber.android.data.database.realm.XabberAccountRealm;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.ui.color.ColorManager;
+import com.xabber.android.utils.ExternalAPIs;
 import com.xabber.android.utils.RetrofitErrorConverter;
 
 import org.greenrobot.eventbus.EventBus;
@@ -791,8 +791,11 @@ public class XabberAccountManager implements OnLoadListener {
     }
 
     public void registerEndpoint() {
+        String token = ExternalAPIs.getPushEndpointToken();
+        if (token == null) return;
+
         compositeSubscription.add(
-            AuthManager.registerFCMEndpoint(FirebaseInstanceId.getInstance().getToken())
+            AuthManager.registerFCMEndpoint(token)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<ResponseBody>() {
@@ -809,8 +812,11 @@ public class XabberAccountManager implements OnLoadListener {
     }
 
     public void unregisterEndpoint() {
+        String token = ExternalAPIs.getPushEndpointToken();
+        if (token == null) return;
+
         compositeSubscription.add(
-            AuthManager.unregisterFCMEndpoint(FirebaseInstanceId.getInstance().getToken())
+            AuthManager.unregisterFCMEndpoint(token)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<ResponseBody>() {

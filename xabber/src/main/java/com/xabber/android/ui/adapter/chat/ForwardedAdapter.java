@@ -1,7 +1,7 @@
 package com.xabber.android.ui.adapter.chat;
 
-import android.support.annotation.Nullable;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +9,8 @@ import android.view.ViewGroup;
 import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.database.messagerealm.MessageItem;
+import com.xabber.android.data.groupchat.GroupchatUser;
+import com.xabber.android.data.groupchat.GroupchatUserManager;
 import com.xabber.android.data.log.LogManager;
 
 import io.realm.RealmRecyclerViewAdapter;
@@ -93,9 +95,13 @@ public class ForwardedAdapter extends RealmRecyclerViewAdapter<MessageItem, Basi
         if (holder instanceof MessageVH)
             ((MessageVH)holder).messageId = messageItem.getUniqueId();
 
+        // groupchat user
+        GroupchatUser groupchatUser = GroupchatUserManager.getInstance().getGroupchatUser(messageItem.getGroupchatUserId());
+
         MessagesAdapter.MessageExtraData extraData = new MessagesAdapter.MessageExtraData(
                 null, null, null, this.extraData.getContext(), messageItem.getOriginalFrom(),
-                this.extraData.getColorStateList(), this.extraData.getAccountMainColor(), this.extraData.getMentionColor(),
+                this.extraData.getColorStateList(), groupchatUser,
+                this.extraData.getAccountMainColor(), this.extraData.getMentionColor(),
                 false, false, false, false, false, false);
 
         final int viewType = getItemViewType(position);

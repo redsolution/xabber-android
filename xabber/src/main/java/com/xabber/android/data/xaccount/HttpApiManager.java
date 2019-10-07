@@ -21,6 +21,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class HttpApiManager {
 
     public static final String XABBER_FORGOT_PASS_URL = "https://www.xabber.com/account/auth/forgot-password/";
+    public static final String XABBER_SIGNUP_URL      = "https://www.xabber.com/account/auth/signup/";
     private static final String XABBER_EMAIL_CONFIRM_URL = "https://www.xabber.com/account/emails/confirmation/";
     private static final String XABBER_DEV_EMAIL_CONFIRM_URL = "http://dev.xabber.com/account/emails/confirmation/";
 

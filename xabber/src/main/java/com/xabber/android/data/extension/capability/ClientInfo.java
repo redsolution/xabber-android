@@ -14,7 +14,7 @@
  */
 package com.xabber.android.data.extension.capability;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smackx.disco.packet.DiscoverInfo;

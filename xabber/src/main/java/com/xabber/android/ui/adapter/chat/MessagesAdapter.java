@@ -2,11 +2,12 @@ package com.xabber.android.ui.adapter.chat;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
-import android.support.annotation.Nullable;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
@@ -15,6 +16,8 @@ import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.muc.MUCManager;
+import com.xabber.android.data.groupchat.GroupchatUser;
+import com.xabber.android.data.groupchat.GroupchatUserManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.roster.RosterManager;
@@ -194,6 +197,9 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
         // need show original OTR message
         boolean showOriginalOTR = itemsNeedOriginalText.contains(messageItem.getUniqueId());
 
+        // groupchat user
+        GroupchatUser groupchatUser = GroupchatUserManager.getInstance().getGroupchatUser(messageItem.getGroupchatUserId());
+
         // need tail
         boolean needTail = false;
         if (isMUC) {
@@ -201,6 +207,13 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
             if (nextMessage != null)
                 needTail = !messageItem.getResource().equals(nextMessage.getResource());
             else needTail = true;
+        } else if (groupchatUser != null) {
+            MessageItem nextMessage = getMessageItem(position + 1);
+            if (nextMessage != null) {
+                GroupchatUser user2 = GroupchatUserManager.getInstance().getGroupchatUser(nextMessage.getGroupchatUserId());
+                if (user2 != null) needTail = !groupchatUser.getId().equals(user2.getId());
+                else needTail = true;
+            } else needTail = true;
         } else if (viewType != VIEW_TYPE_ACTION_MESSAGE) {
             needTail = getSimpleType(viewType) != getSimpleType(getItemViewType(position + 1));
         }
@@ -213,7 +226,7 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
         } else needDate = true;
 
         MessageExtraData extraData = new MessageExtraData(fileListener, fwdListener, anchorHolder,
-                context, userName, colorStateList, accountMainColor, mentionColor, isMUC,
+                context, userName, colorStateList, groupchatUser, accountMainColor, mentionColor, isMUC,
                 showOriginalOTR, unread, checked, needTail, needDate);
 
         switch (viewType) {
@@ -377,6 +390,7 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
         private ColorStateList colorStateList;
         private int accountMainColor;
         private int mentionColor;
+        private GroupchatUser groupchatUser;
 
         private boolean isMuc;
         private boolean showOriginalOTR;
@@ -389,8 +403,9 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
                                 ForwardedAdapter.ForwardListener fwdListener,
                                 AnchorHolder anchorHolder,
                                 Context context, String username, ColorStateList colorStateList,
-                                int accountMainColor, int mentionColor, boolean isMuc, boolean showOriginalOTR,
-                                boolean unread, boolean checked, boolean needTail, boolean needDate) {
+                                GroupchatUser groupchatUser, int accountMainColor, int mentionColor,
+                                boolean isMuc, boolean showOriginalOTR, boolean unread, boolean checked,
+                                boolean needTail, boolean needDate) {
             this.listener = listener;
             this.fwdListener = fwdListener;
             this.anchorHolder = anchorHolder;
@@ -405,6 +420,7 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
             this.checked = checked;
             this.needTail = needTail;
             this.needDate = needDate;
+            this.groupchatUser = groupchatUser;
         }
 
         public FileMessageVH.FileListener getListener() {
@@ -437,6 +453,10 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
 
         public int getMentionColor() {
             return mentionColor;
+        }
+
+        public GroupchatUser getGroupchatUser() {
+            return groupchatUser;
         }
 
         public boolean isMuc() {

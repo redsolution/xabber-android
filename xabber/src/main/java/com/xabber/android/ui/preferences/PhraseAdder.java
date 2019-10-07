@@ -3,13 +3,12 @@ package com.xabber.android.ui.preferences;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
+import androidx.appcompat.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.xabber.android.R;
 import com.xabber.android.data.intent.SegmentIntentBuilder;
-import com.xabber.android.data.message.phrase.Phrase;
 import com.xabber.android.data.message.phrase.PhraseManager;
 import com.xabber.android.ui.color.BarPainter;
 import com.xabber.android.ui.helper.ToolbarHelper;
