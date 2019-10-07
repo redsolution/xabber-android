@@ -23,4 +23,18 @@
         <className>com.xabber.xmpp.httpfileupload.SlotProvider</className>
     </iqProvider>
 
+    <!-- Avatar Data -->
+    <extensionProvider>
+        <elementName>data</elementName>
+        <namespace>urn:xmpp:avatar:data</namespace>
+        <className>com.xabber.xmpp.avatar.DataProvider</className>
+    </extensionProvider>
+
+    <!-- Avatar Metadata -->
+        <extensionProvider>
+            <elementName>metadata</elementName>
+            <namespace>urn:xmpp:avatar:metadata</namespace>
+            <className>com.xabber.xmpp.avatar.MetadataProvider</className>
+        </extensionProvider>
+
 </smackProviders>

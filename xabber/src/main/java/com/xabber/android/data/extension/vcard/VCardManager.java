@@ -225,7 +225,7 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
             try {
                 String hash = vCard.getAvatarHash();
                 byte[] avatar = vCard.getAvatar();
-                AvatarManager.getInstance().onAvatarReceived(bareAddress, hash, avatar);
+                AvatarManager.getInstance().onAvatarReceived(bareAddress, hash, avatar, "vcard");
                 // "bad base-64" error happen sometimes
             } catch (IllegalArgumentException e) {
                 LogManager.exception(this, e);

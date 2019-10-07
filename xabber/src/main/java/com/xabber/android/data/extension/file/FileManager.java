@@ -6,11 +6,12 @@ import android.content.res.Resources;
 import android.graphics.BitmapFactory;
 import android.media.ExifInterface;
 import android.net.Uri;
-import androidx.annotation.Nullable;
-import androidx.core.content.FileProvider;
 import android.util.Log;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+
+import androidx.annotation.Nullable;
+import androidx.core.content.FileProvider;
 
 import com.bumptech.glide.Glide;
 import com.xabber.android.BuildConfig;
@@ -267,6 +268,15 @@ public class FileManager {
         return File.createTempFile(
                 name,  /* prefix */
                 ".jpg",         /* suffix */
+                Application.getInstance().getExternalFilesDir(null)      /* directory */
+        );
+    }
+
+    public static File createTempPNGImageFile(String name) throws IOException {
+        // Create an image file name
+        return File.createTempFile(
+                name,  /* prefix */
+                ".png",         /* suffix */
                 Application.getInstance().getExternalFilesDir(null)      /* directory */
         );
     }

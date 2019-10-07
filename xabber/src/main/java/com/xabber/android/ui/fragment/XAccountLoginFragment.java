@@ -4,9 +4,8 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.annotation.Nullable;
-
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
@@ -19,6 +18,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
+
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 import com.xabber.android.R;
@@ -28,7 +29,6 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.xaccount.AuthManager;
 import com.xabber.android.data.xaccount.XabberAccountManager;
-import com.xabber.android.ui.activity.AccountAddActivity;
 import com.xabber.android.ui.activity.ContactListActivity;
 import com.xabber.android.ui.activity.QRCodeScannerActivity;
 import com.xabber.android.ui.dialog.OrbotInstallerDialog;
@@ -220,7 +220,7 @@ public class XAccountLoginFragment extends Fragment implements View.OnClickListe
                 Toast.makeText(getActivity(), "Scanned = " + result.getContents(), Toast.LENGTH_LONG).show();
                 if (result.getContents().length() > 5) {
                     String[] s = result.getContents().split(":");
-                    if (s[0].equals("xmpp") && s.length>=2)
+                    if ((s[0].equals("xmpp") || s[0].equals("xabber")) && s.length>=2)
                         edtUsername.setText(s[1]);
                 }
             }
@@ -232,6 +232,10 @@ public class XAccountLoginFragment extends Fragment implements View.OnClickListe
     private void addAccount() {
         if (chkUseTOR.isChecked() && !OrbotHelper.isOrbotInstalled()) {
             OrbotInstallerDialog.newInstance().show(getFragmentManager(), OrbotInstallerDialog.class.getName());
+            return;
+        }
+
+        if (validationIsNotSuccess()) {
             return;
         }
 
@@ -254,6 +258,66 @@ public class XAccountLoginFragment extends Fragment implements View.OnClickListe
 
         startActivity(ContactListActivity.createIntent(getActivity()));
         getActivity().finish();
+    }
+
+    private boolean validationIsNotSuccess(){
+        String contactString = edtUsername.getText().toString();
+        contactString = contactString.trim();
+
+        if (contactString.contains(" ")) {
+            Toast.makeText(getActivity(), getString(R.string.INCORRECT_USER_NAME), Toast.LENGTH_LONG).show();
+            return true;
+        }
+
+        if (TextUtils.isEmpty(contactString)) {
+            Toast.makeText(getActivity(), getString(R.string.INCORRECT_USER_NAME), Toast.LENGTH_LONG).show();
+            return true;
+        }
+
+        int atChar = contactString.indexOf('@');
+        int slashIndex = contactString.indexOf('/');
+
+        String domainName;
+        String localName;
+        //for possible future resource name checks
+        //String resourceName;
+
+        if (slashIndex > 0) {
+            //resourceName = contactString.substring(slashIndex + 1);
+            if (atChar > 0 && atChar < slashIndex) {
+                localName = contactString.substring(0, atChar);
+                domainName = contactString.substring(atChar + 1, slashIndex);
+            } else {
+                localName = "";
+                domainName = contactString.substring(0, slashIndex);
+            }
+        } else {
+            //resourceName = "";
+            if (atChar > 0) {
+                localName = contactString.substring(0, atChar);
+                domainName = contactString.substring(atChar + 1);
+            } else {
+                localName = "";
+                domainName = contactString;
+            }
+        }
+
+        if (domainName.equals("")) {
+            Toast.makeText(getActivity(), getString(R.string.INCORRECT_USER_NAME), Toast.LENGTH_LONG).show();
+            return true;
+        }
+
+        if (domainName.charAt(domainName.length()-1)=='.' || domainName.charAt(0)=='.'){
+            Toast.makeText(getActivity(), getString(R.string.INCORRECT_USER_NAME), Toast.LENGTH_LONG).show();
+            return true;
+        }
+
+        if (localName.charAt(localName.length()-1)=='.' || localName.charAt(0)=='.'){
+            Toast.makeText(getActivity(), getString(R.string.INCORRECT_USER_NAME), Toast.LENGTH_LONG).show();
+            return true;
+        }
+
+        return false;
     }
 
     private void showOptions() {
