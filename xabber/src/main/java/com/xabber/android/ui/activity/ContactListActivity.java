@@ -536,6 +536,9 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
             if (getChatListFragment().getCurrentChatsState() == ChatListFragment.ChatListState.unread)
                 getChatListFragment().showChatListWithState(ChatListFragment.ChatListState.recent);
             else getChatListFragment().showChatListWithState(ChatListFragment.ChatListState.unread);
+        } else if (currentActiveFragment == ActiveFragment.CHATS) {
+
+            getChatListFragment().scrollToTop();
         }
         setStatusBarColor();
     }
@@ -544,6 +547,8 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
     public void onContactsClick() {
         showContactListFragment(null);
         getBottomBarFragment().setChatStateIcon(ChatListFragment.ChatListState.recent);
+        if (currentActiveFragment == ActiveFragment.CONTACTS)
+            getContactListFragment().scrollTo(0);
     }
 
     @Override

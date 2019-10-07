@@ -30,6 +30,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.snackbar.Snackbar;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
@@ -126,6 +127,7 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
     Toolbar variables
      */
     private RelativeLayout toolbar;
+    private AppBarLayout toolbarRootLayout;
     private View toolbarAccountColorIndicator;
     private View toolbarAccountColorIndicatorBack;
     private ImageView toolbarAddIv;
@@ -236,6 +238,7 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         this.currentChatsState = state;
         updateBackpressure.run();
         chatListFragmentListener.onChatListStateChanged(state);
+        toolbarRootLayout.setExpanded(true, true);
         this.closeSnackbar();
     }
 
@@ -247,6 +250,11 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //TODO implement scroll to account if it need;
+    }
+
+    public void scrollToTop(){
+        recyclerView.scrollToPosition(0);
+        toolbarRootLayout.setExpanded(true, true);
     }
 
     @Nullable
@@ -299,12 +307,13 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         toolbarAvatarIv = (ImageView) view.findViewById(R.id.ivAvatar);
         toolbarStatusIv = (ImageView) view.findViewById(R.id.ivStatus);
         toolbarSearchIv = (ImageView) view.findViewById(R.id.toolbar_search_button);
+        toolbarRootLayout = view.findViewById(R.id.chatlist_toolbar_root);
         toolbarAddIv.setOnClickListener(this);
         toolbarAvatarIv.setOnClickListener(this);
         toolbarTitleTv.setOnClickListener(this);
         toolbarSearchIv.setOnClickListener(this);
         if (!getActivity().getClass().getSimpleName().equals(ContactListActivity.class.getSimpleName()))
-            view.findViewById(R.id.chatlist_toolbar_root).setVisibility(View.GONE);
+            toolbarRootLayout.setVisibility(View.GONE);
         /*
         Initialize and run UpdateBackpressure
          */

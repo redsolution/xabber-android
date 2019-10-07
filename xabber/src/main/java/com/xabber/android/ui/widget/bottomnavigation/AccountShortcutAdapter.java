@@ -78,7 +78,7 @@ public class AccountShortcutAdapter extends RecyclerView.Adapter<AccountShortcut
         //holder.ivAvatar.setBorderColor(account.getAccountColorIndicator());
         holder.ivStatus.setVisibility(View.GONE);
         //holder.ivStatus.setImageLevel(account.getStatusLevel());
-        holder.ivAvatar.setBorderColor(ColorManager.getInstance().getAccountPainter().getAccountMainColor(account.getAccountJid()));
+        //holder.ivAvatar.setBorderColor(ColorManager.getInstance().getAccountPainter().getAccountMainColor(account.getAccountJid()));
         if (Build.VERSION.SDK_INT > 20){
             holder.ivAvatar.setElevation(6);
             holder.ivAvatarOverlay.setElevation(6);
