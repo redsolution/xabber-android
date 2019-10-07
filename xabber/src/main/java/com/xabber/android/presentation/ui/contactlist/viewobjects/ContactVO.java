@@ -17,6 +17,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -36,6 +37,8 @@ import com.xabber.android.data.notification.custom_notification.CustomNotifyPref
 import com.xabber.android.data.notification.custom_notification.Key;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.RosterContact;
+import com.xabber.android.presentation.ui.contactlist.ChatListFragment;
+import com.xabber.android.ui.activity.SearchActivity;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.utils.StringUtils;
 
@@ -141,7 +144,6 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
         accountColorIndicatorBack = ColorManager.getInstance().getAccountPainter()
                 .getAccountIndicatorBackColor(contact.getAccount());
         avatar = contact.getAvatar();
-
 
         String name = contact.getName();
 
@@ -298,6 +300,12 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
         if ((getStatusLevel() == 6 || (getMucIndicatorLevel() != 0 && getStatusLevel() != 1))
                 && !getLastActivity().isEmpty())
             if (viewHolder.tvStatus != null) viewHolder.tvStatus.setText(getLastActivity());
+
+        /* Show jid instead of status in SearchActivity */
+        if (listener instanceof ChatListFragment
+                && ((ChatListFragment) listener).getActivity() instanceof SearchActivity
+                && viewHolder.tvStatus != null)
+            viewHolder.tvStatus.setText(userJid.toString());
 
         /** set up CONTACT/MUC NAME */
         viewHolder.tvContactName.setText(getName());
