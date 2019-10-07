@@ -545,7 +545,7 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
             if (abstractChat.notifyAboutMessage() && !abstractChat.isArchived())
                 unreadMessageCount += abstractChat.getUnreadMessageCount();
         }
-        unreadMessageCount += CrowdfundingManager.getInstance().getUnreadMessageCount();
+//        unreadMessageCount += CrowdfundingManager.getInstance().getUnreadMessageCount();
         return unreadMessageCount;
     }
 
@@ -566,12 +566,12 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
             UserJid userJid = ((ContactVO) item).getUserJid();
             chatListFragmentListener.onChatClick(RosterManager.getInstance().getAbstractContact(accountJid, userJid));
         }
-        else if (item instanceof CrowdfundingChatVO) {
-            AccountJid accountJid = CrowdfundingChat.getDefaultAccount();
-            UserJid userJid = CrowdfundingChat.getDefaultUser();
-            if (accountJid != null && userJid != null)
-                chatListFragmentListener.onChatClick(RosterManager.getInstance().getAbstractContact(accountJid, userJid));
-        }
+//        else if (item instanceof CrowdfundingChatVO) {
+//            AccountJid accountJid = CrowdfundingChat.getDefaultAccount();
+//            UserJid userJid = CrowdfundingChat.getDefaultUser();
+//            if (accountJid != null && userJid != null)
+//                chatListFragmentListener.onChatClick(RosterManager.getInstance().getAbstractContact(accountJid, userJid));
+//        }
 //        else if (item instanceof ButtonVO){
 //            chatListFragmentListener.onMarkAllReadButtonClick();
 //        }
@@ -718,25 +718,27 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
             // Remove empty groups, sort and apply structure.
             items.clear();
 
-            /** adding crowdfunding chat item */
-            CrowdfundingMessage message = CrowdfundingManager.getInstance().getLastNotDelayedMessageFromRealm();
-            if (message != null) hasVisibleContacts = true;
+//            /** adding crowdfunding chat item */
+//            CrowdfundingMessage message = CrowdfundingManager.getInstance().getLastNotDelayedMessageFromRealm();
+//            if (message != null) hasVisibleContacts = true;
 
             if (hasVisibleContacts) {
                 if (currentChatsState == ChatListState.recent){
                     int i = 0;
                     for (AbstractContact contact : chatsGroup.getAbstractContacts()) {
-                        if (contact instanceof CrowdfundingContact) {
-                            items.add(CrowdfundingChatVO.convert((CrowdfundingContact) contact));
-                        }
-                        else items.add(ChatVO.convert(contact, this, null));
+//                        if (contact instanceof CrowdfundingContact) {
+//                            items.add(CrowdfundingChatVO.convert((CrowdfundingContact) contact));
+//                        }
+//                        else
+                        items.add(ChatVO.convert(contact, this, null));
                         i++;
                     }
                 } else {
                     for (AbstractContact contact : chatsGroup.getAbstractContacts()) {
-                        if (contact instanceof CrowdfundingContact)
-                            items.add(CrowdfundingChatVO.convert((CrowdfundingContact) contact));
-                        else items.add(ChatVO.convert(contact, this, null));
+//                        if (contact instanceof CrowdfundingContact)
+//                            items.add(CrowdfundingChatVO.convert((CrowdfundingContact) contact));
+//                        else
+                        items.add(ChatVO.convert(contact, this, null));
                     }
                 }
             }
@@ -786,28 +788,28 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
             }
         }
         // crowdfunding chat
-        int unreadCount = CrowdfundingManager.getInstance().getUnreadMessageCount();
-        CrowdfundingMessage message = CrowdfundingManager.getInstance().getLastNotDelayedMessageFromRealm();
-        if (message != null) {
-            switch (state) {
-                case unread:
-                    if (unreadCount > 0) newChats.add(CrowdfundingChat.createCrowdfundingChat(unreadCount, message));
-                    break;
-                case archived:
-                    break;
-                default:
-                    // recent
-                    newChats.add(CrowdfundingChat.createCrowdfundingChat(unreadCount, message));
-                    break;
-            }
-        }
+//        int unreadCount = CrowdfundingManager.getInstance().getUnreadMessageCount();
+//        CrowdfundingMessage message = CrowdfundingManager.getInstance().getLastNotDelayedMessageFromRealm();
+//        if (message != null) {
+//            switch (state) {
+//                case unread:
+//                    if (unreadCount > 0) newChats.add(CrowdfundingChat.createCrowdfundingChat(unreadCount, message));
+//                    break;
+//                case archived:
+//                    break;
+//                default:
+//                    // recent
+//                    newChats.add(CrowdfundingChat.createCrowdfundingChat(unreadCount, message));
+//                    break;
+//            }
+//        }
         Collections.sort(newChats, ChatComparator.CHAT_COMPARATOR);
         chatsGroup.setNotEmpty();
         for (AbstractChat chat : newChats) {
-            if (chat instanceof CrowdfundingChat)
-                chatsGroup.addAbstractContact(new CrowdfundingContact((CrowdfundingChat) chat));
-            else chatsGroup.addAbstractContact(RosterManager.getInstance()
-                    .getBestContact(chat.getAccount(), chat.getUser()));
+//            if (chat instanceof CrowdfundingChat)
+//                chatsGroup.addAbstractContact(new CrowdfundingContact((CrowdfundingChat) chat));
+//            else
+            chatsGroup.addAbstractContact(RosterManager.getInstance() .getBestContact(chat.getAccount(), chat.getUser()));
             chatsGroup.increment(true);
         }
         ShortcutBuilder.updateShortcuts(Application.getInstance(),

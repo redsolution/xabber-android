@@ -91,22 +91,22 @@ public class CrowdfundingManager {
     }
 
     private void requestFeed(int timestamp) {
-        compositeSubscription.add(CrowdfundingClient.getFeed(timestamp)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(new Action1<List<CrowdfundingMessage>>() {
-                @Override
-                public void call(List<CrowdfundingMessage> crowdfundingMessages) {
-                    Log.d("crowd", "ok");
-                    SettingsManager.setLastCrowdfundingLoadTimestamp(getCurrentTime());
-                    EventBus.getDefault().post(new NewMessageEvent());
-                }
-            }, new Action1<Throwable>() {
-                @Override
-                public void call(Throwable throwable) {
-                    Log.d("crowd", throwable.toString());
-                }
-            }));
+//        compositeSubscription.add(CrowdfundingClient.getFeed(timestamp)
+//            .subscribeOn(Schedulers.io())
+//            .observeOn(AndroidSchedulers.mainThread())
+//            .subscribe(new Action1<List<CrowdfundingMessage>>() {
+//                @Override
+//                public void call(List<CrowdfundingMessage> crowdfundingMessages) {
+//                    Log.d("crowd", "ok");
+//                    SettingsManager.setLastCrowdfundingLoadTimestamp(getCurrentTime());
+//                    EventBus.getDefault().post(new NewMessageEvent());
+//                }
+//            }, new Action1<Throwable>() {
+//                @Override
+//                public void call(Throwable throwable) {
+//                    Log.d("crowd", throwable.toString());
+//                }
+//            }));
     }
 
     public Single<List<CrowdfundingMessage>> saveCrowdfundingMessageToRealm(List<CrowdfundingClient.Message> messages) {
