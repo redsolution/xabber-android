@@ -27,7 +27,7 @@
         android:id="@+id/search_toolbar_greetings_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingLeft="16dp"
+        android:paddingLeft="18dp"
         android:layout_toRightOf="@id/toolbar_search_back_button"
         android:visibility="gone">
         <TextView
@@ -60,6 +60,7 @@
         android:id="@+id/search_toolbar_search_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:paddingLeft="18dp"
         android:layout_toRightOf="@+id/toolbar_search_back_button"
         android:visibility="gone">
         <EditText
