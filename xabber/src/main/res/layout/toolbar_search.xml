@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    android:id="@+id/search_toolbar_layout"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white">
+
+    <ImageView
+        android:id="@+id/toolbar_search_back_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_arrow_left"
+        android:padding="8dp"
+        android:layout_centerVertical="true"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="8dp"
+        android:tint="?attr/contact_list_account_group_small_right_icon_color"
+        android:alpha="0.5"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:clickable="true"/>
+
+    <!--View visible then search inactive-->
+    <RelativeLayout
+        android:id="@+id/search_toolbar_greetings_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingLeft="18dp"
+        android:layout_toRightOf="@id/toolbar_search_back_button"
+        android:visibility="gone">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Choose recipient"
+            android:layout_centerVertical="true"
+            android:fontFamily="sans-serif-medium"
+            android:textSize="18sp"
+            android:textColor="?attr/contact_list_contact_name_text_color"
+            />
+        <ImageView
+            android:id="@+id/search_toolbar_search_button"
+            android:src="@drawable/ic_search"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="8dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:layout_centerVertical="true"
+            android:tint="?attr/contact_list_account_group_small_right_icon_color"
+            android:alpha="0.5"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            />
+    </RelativeLayout>
+
+    <!--View visible then search active-->
+    <RelativeLayout
+        android:id="@+id/search_toolbar_search_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingLeft="18dp"
+        android:layout_toRightOf="@+id/toolbar_search_back_button"
+        android:visibility="gone">
+        <EditText
+            android:id="@+id/search_toolbar_edittext"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:hint="@string/search"
+            android:layout_toLeftOf="@id/search_toolbar_clear_button"
+            android:background="@color/transparent"
+
+            />
+        <ImageView
+            android:id="@+id/search_toolbar_clear_button"
+            android:src="@drawable/ic_close"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="8dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:layout_centerVertical="true"
+            android:tint="?attr/contact_list_account_group_small_right_icon_color"
+            android:alpha="0.5"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:visibility="gone"
+            />
+    </RelativeLayout>
+
+</RelativeLayout>

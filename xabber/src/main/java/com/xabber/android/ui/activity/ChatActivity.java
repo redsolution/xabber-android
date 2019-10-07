@@ -736,7 +736,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         if (!Intent.ACTION_SEND.equals(getIntent().getAction())) {
             ActivityManager.getInstance().clearStack(false);
             if (!ActivityManager.getInstance().hasContactList(this)) {
-                startActivity(ContactListActivity.createIntent(this));
+                startActivity(SearchActivity.createIntent(this));
             }
         }
     }
@@ -963,7 +963,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
                 return true;
 
             case R.id.action_invite_to_chat:
-                startActivity(ContactListActivity.createRoomInviteIntent(this, account, user.getBareUserJid()));
+                startActivity(SearchActivity.createRoomInviteIntent(this, account, user.getBareUserJid()));
                 return true;
 
             case R.id.action_leave_conference:
@@ -1056,7 +1056,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     }
 
     public void forwardMessages(ArrayList<String> messagesIds) {
-        Intent sendIntent = ContactListActivity.createIntent(this);
+        Intent sendIntent = SearchActivity.createIntent(this);
         sendIntent.setAction(ACTION_FORWARD);
         sendIntent.putStringArrayListExtra(KEY_MESSAGES_ID, messagesIds);
         finish();
