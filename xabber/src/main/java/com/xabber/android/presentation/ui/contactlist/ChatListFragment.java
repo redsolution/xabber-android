@@ -830,7 +830,8 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
             if (users != null) {
                 users.remove(rosterContact.getUser());
             }
-            if (rosterContact.getName().toLowerCase(Locale.getDefault()).contains(filterString)) {
+            if (rosterContact.getName().toLowerCase(Locale.getDefault()).contains(filterString)
+            || rosterContact.getUser().toString().toLowerCase(Locale.getDefault()).contains(filterString)) {
                 baseEntities.add(rosterContact);
             }
         }
@@ -842,7 +843,8 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
                 } else {
                     abstractContact = new ChatContact(abstractChat);
                 }
-                if (abstractContact.getName().toLowerCase(Locale.getDefault()).contains(filterString)) {
+                if (abstractContact.getName().toLowerCase(Locale.getDefault()).contains(filterString)
+                || abstractContact.getUser().toString().toLowerCase(Locale.getDefault()).contains(filterString)) {
                     baseEntities.add(abstractContact);
                 }
             }
