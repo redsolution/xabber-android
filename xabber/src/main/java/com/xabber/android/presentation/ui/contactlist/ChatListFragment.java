@@ -73,6 +73,7 @@ import com.xabber.android.ui.activity.ContactActivity;
 import com.xabber.android.ui.activity.ContactAddActivity;
 import com.xabber.android.ui.activity.ContactEditActivity;
 import com.xabber.android.ui.activity.ContactListActivity;
+import com.xabber.android.ui.activity.SearchActivity;
 import com.xabber.android.ui.activity.StatusEditActivity;
 import com.xabber.android.ui.adapter.ChatComparator;
 import com.xabber.android.ui.adapter.contactlist.AccountConfiguration;
@@ -381,7 +382,7 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
                 showTitlePopup(toolbarTitleTv);
                 break;
             case R.id.toolbar_search_button:
-                Toast.makeText(getContext(), "Coming soon", Toast.LENGTH_SHORT).show();
+                startActivity(SearchActivity.createSearchIntent(getActivity()));
                 break;
         }
     }
