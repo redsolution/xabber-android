@@ -73,6 +73,7 @@ public class ContactListFragment extends Fragment implements ContactListView,
     private ContactListPresenter presenter;
     private ContactListFragmentListener contactListFragmentListener;
 
+    private RecyclerView recyclerView;
     private FlexibleAdapter<IFlexible> adapter;
     private List<IFlexible> items;
     private CoordinatorLayout coordinatorLayout;
@@ -152,7 +153,7 @@ public class ContactListFragment extends Fragment implements ContactListView,
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_contact_list_new, container, false);
 
-        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
+        recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
         linearLayoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(linearLayoutManager);
         coordinatorLayout = (CoordinatorLayout) view.findViewById(R.id.coordinatorLayout);
@@ -189,6 +190,10 @@ public class ContactListFragment extends Fragment implements ContactListView,
         accountsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
         updateAccountsList();
         return view;
+    }
+
+    public void scrollToTop(){
+        recyclerView.smoothScrollToPosition(0);
     }
 
     /**
