@@ -118,8 +118,13 @@ public class SearchActivity extends ManagedActivity implements View.OnClickListe
             }
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (s.length() != 0) toolbarSearchClearIv.setVisibility(View.VISIBLE);
-                else toolbarSearchClearIv.setVisibility(View.GONE);
+                if (s.length() != 0){
+                    toolbarSearchClearIv.setVisibility(View.VISIBLE);
+                    getChatListFragment().search(s.toString());
+                } else {
+                    getChatListFragment().search(null);
+                    toolbarSearchClearIv.setVisibility(View.GONE);
+                }
             }
             @Override
             public void afterTextChanged(Editable s) {
@@ -128,7 +133,6 @@ public class SearchActivity extends ManagedActivity implements View.OnClickListe
 
         showChatListFragment();
 
-        //TODO delete this hord invoke GreetingsLayout to test
         toolbarGreetingsLayout.setVisibility(View.VISIBLE);
 
         /*
@@ -308,16 +312,21 @@ public class SearchActivity extends ManagedActivity implements View.OnClickListe
     }
 
     /**
+     * @return existing or make new ChatListFragment
+     */
+    private ChatListFragment getChatListFragment(){
+        if ((ChatListFragment) getSupportFragmentManager().findFragmentByTag(CHAT_LIST_TAG) != null){
+            return (ChatListFragment) getSupportFragmentManager().findFragmentByTag(CHAT_LIST_TAG);
+        } else return ChatListFragment.newInstance(null);
+    }
+
+    /**
      * Shows existing or make new ChatListFragment
      */
     private void showChatListFragment() {
         if (!isFinishing()) {
             FragmentTransaction fTrans = getSupportFragmentManager().beginTransaction();
-            if (getSupportFragmentManager().findFragmentByTag(CHAT_LIST_TAG) != null)
-                fTrans.replace(R.id.search_activity_container,
-                        getSupportFragmentManager().findFragmentByTag(CHAT_LIST_TAG), CHAT_LIST_TAG);
-            else fTrans.replace(R.id.search_activity_container,
-                    ChatListFragment.newInstance(null), CHAT_LIST_TAG);
+            fTrans.replace(R.id.search_activity_container, getChatListFragment(), CHAT_LIST_TAG);
             fTrans.commit();
         }
     }

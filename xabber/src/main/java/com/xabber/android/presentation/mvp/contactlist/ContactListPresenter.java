@@ -389,20 +389,6 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
             if (hasVisibleContacts) {
 
                 if (currentChatsState == ChatListState.recent) {
-
-//                    // add recent chats
-//                    int i = 0;
-//                    for (AbstractContact contact : chatsGroup.getAbstractContacts()) {
-//                        if (contact instanceof CrowdfundingContact) {
-//                            items.add(CrowdfundingChatVO.convert((CrowdfundingContact) contact));
-//                        } else if (i == MAX_RECENT_ITEMS - 1) {
-//                            if (getAllChatsSize() > MAX_RECENT_ITEMS)
-//                                items.add(ChatWithButtonVO.convert(contact, this));
-//                            else items.add(ChatVO.convert(contact, this, null));
-//                        } else items.add(ChatVO.convert(contact, this, null));
-//                        i++;
-//                    }
-
                     if (showAccounts) {
                         for (AccountConfiguration rosterAccount : accounts.values()) {
                             if (rosterAccount.getTotal() != 0) {
