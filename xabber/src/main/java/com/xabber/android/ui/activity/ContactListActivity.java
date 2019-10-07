@@ -46,7 +46,6 @@ import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.UserJid;
-import com.xabber.android.data.http.CrowdfundingManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
@@ -313,8 +312,8 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
             showShowcase(true);
         }
 
-        // update crowdfunding info
-        CrowdfundingManager.getInstance().onLoad();
+//        // update crowdfunding info
+//        CrowdfundingManager.getInstance().onLoad();
 
         // remove all message notifications
         MessageNotificationManager.getInstance().removeAllMessageNotifications();

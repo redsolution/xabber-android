@@ -9,14 +9,12 @@ import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.CommonState;
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
-import com.xabber.android.data.database.realm.CrowdfundingMessage;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.muc.RoomChat;
 import com.xabber.android.data.extension.muc.RoomContact;
-import com.xabber.android.data.http.CrowdfundingManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.ChatContact;
 import com.xabber.android.data.message.CrowdfundingChat;
@@ -324,8 +322,8 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
         items.clear();
 
         // set hasVisibleContacts as true if have crowdfunding message
-        CrowdfundingMessage message = CrowdfundingManager.getInstance().getLastNotDelayedMessageFromRealm();
-        if (message != null) hasVisibleContacts = true;
+//        CrowdfundingMessage message = CrowdfundingManager.getInstance().getLastNotDelayedMessageFromRealm();
+//        if (message != null) hasVisibleContacts = true;
 
         if (hasVisibleContacts) {
             if (showAccounts) {
@@ -430,7 +428,7 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
                 unreadMessageCount += abstractChat.getUnreadMessageCount();
         }
 
-        unreadMessageCount += CrowdfundingManager.getInstance().getUnreadMessageCount();
+//        unreadMessageCount += CrowdfundingManager.getInstance().getUnreadMessageCount();
         EventBus.getDefault().post(new UpdateUnreadCountEvent(unreadMessageCount));
     }
 
