@@ -173,6 +173,7 @@ public class ReferencesManager {
                 chars = remove(begin, end, chars);
                 break;
             case groupchat:
+
                 if (begin == end && begin == 0) return chars;
                 chars = remove(begin, end, chars);
                 break;
