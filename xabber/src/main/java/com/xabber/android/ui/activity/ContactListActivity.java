@@ -930,18 +930,6 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
         }
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (contentFragment != null && contentFragment instanceof ContactListFragment ) {
-            ContactListPresenter.ChatListState currentState = ((ContactListFragment) contentFragment).getListState();
-            if (requestCode == CODE_OPEN_CHAT &&
-                    (currentState == (ContactListPresenter.ChatListState.unread)
-                    || currentState == (ContactListPresenter.ChatListState.archived))) {
-            }
-        }
-    }
-
     private boolean isSharedText(String type) {
         return type.contains("text/plain");
     }

@@ -741,6 +741,7 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
                 }
             }
         } else {
+            /* If filterString not epmty, do a search*/
             final ArrayList<AbstractContact> baseEntities = getSearchResults(rosterContacts, comparator, abstractChats);
             items.clear();
 
