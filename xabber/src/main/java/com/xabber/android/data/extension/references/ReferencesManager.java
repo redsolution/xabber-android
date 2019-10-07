@@ -3,6 +3,9 @@ package com.xabber.android.data.extension.references;
 import android.text.Html;
 import android.util.Pair;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.xabber.android.data.database.messagerealm.Attachment;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.ui.text.ClickSpan;
@@ -19,9 +22,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 public class ReferencesManager {
 
@@ -165,7 +165,6 @@ public class ReferencesManager {
         int end = reference.getEnd();
         if (end >= chars.length) end = chars.length - 1;
         if (begin > end) return chars;
-
         switch (reference.getType()) {
             case media:
                 chars = remove(begin, end, chars);
@@ -174,6 +173,7 @@ public class ReferencesManager {
                 chars = remove(begin, end, chars);
                 break;
             case groupchat:
+                if (begin == end && begin == 0) return chars;
                 chars = remove(begin, end, chars);
                 break;
             case markup:
