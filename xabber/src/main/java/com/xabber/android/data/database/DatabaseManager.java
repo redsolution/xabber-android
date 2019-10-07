@@ -26,6 +26,7 @@ import com.xabber.android.data.OnMigrationListener;
 import com.xabber.android.data.database.sqlite.AbstractAccountTable;
 import com.xabber.android.data.database.sqlite.AccountTable;
 import com.xabber.android.data.database.sqlite.AvatarTable;
+import com.xabber.android.data.database.sqlite.AvatarXepTable;
 import com.xabber.android.data.database.sqlite.DatabaseTable;
 import com.xabber.android.data.database.sqlite.GroupTable;
 import com.xabber.android.data.database.sqlite.MessageTable;
@@ -61,7 +62,7 @@ public class DatabaseManager extends SQLiteOpenHelper implements
         OnLoadListener, OnClearListener {
 
     private static final String DATABASE_NAME = "xabber.db";
-    private static final int DATABASE_VERSION = 70;
+    private static final int DATABASE_VERSION = 71;
 
     private static final SQLiteException DOWNGRADE_EXCEPTION = new SQLiteException(
             "Database file was deleted");
@@ -97,6 +98,7 @@ public class DatabaseManager extends SQLiteOpenHelper implements
         addTable(SoundTable.getInstance());
         addTable(VCardTable.getInstance());
         addTable(AvatarTable.getInstance());
+        addTable(AvatarXepTable.getInstance());
         addTable(StatusTable.getInstance());
         addTable(OTRTable.getInstance());
         addTable(VibroTable.getInstance());
