@@ -18,6 +18,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.RelativeLayout;
@@ -121,6 +122,7 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
     private ChatListFragmentListener chatListFragmentListener;
     private ChatListState currentChatsState = ChatListState.recent;
     private RecyclerView recyclerView;
+    private FrameLayout recyclerFrameLayout;
     private TextView markAllAsReadButton;
     private Drawable markAllReadBackground;
     private String filterString;
@@ -274,6 +276,7 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         recyclerView = (RecyclerView) view.findViewById(R.id.chatlist_recyclerview);
         linearLayoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(linearLayoutManager);
+        recyclerFrameLayout = view.findViewById(R.id.chatlist_recycler_view_framelayout);
         coordinatorLayout = (CoordinatorLayout) view.findViewById(R.id.chatlist_coordinator_layout);
         markAllAsReadButton = (TextView) view.findViewById(R.id.mark_all_as_read_button);
         markAllAsReadButton.setOnClickListener(new View.OnClickListener(){
@@ -549,6 +552,19 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         updateBackpressure.refreshRequest();
     }
 
+//    private void setupLayout(){
+//        if (recyclerView != null){
+//            int first = linearLayoutManager.findFirstCompletelyVisibleItemPosition();
+//            int last = linearLayoutManager.findLastCompletelyVisibleItemPosition();
+//            CoordinatorLayout.LayoutParams clp = (CoordinatorLayout.LayoutParams) recyclerFrameLayout.getLayoutParams();
+//            Toast.makeText(getActivity(), clp.toString(), Toast.LENGTH_SHORT).show();
+//            if (last - first <= recyclerView.getAdapter().getItemCount()){
+////                CoordinatorLayout.LayoutParams clp = (CoordinatorLayout.LayoutParams) recyclerFrameLayout.getLayoutParams();
+////                Toast.makeText(getActivity(), clp.toString(), Toast.LENGTH_SHORT).show();
+//            }
+//        }
+//    }
+
     @Override
     public void onAccountsChanged(Collection<AccountJid> accounts) {
         updateBackpressure.refreshRequest();
@@ -633,7 +649,6 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
     }
 
     public void updateUnreadCount() {
-
         EventBus.getDefault().post(new ContactListPresenter.UpdateUnreadCountEvent(getUnreadCount()));
         chatListFragmentListener.onUnreadChanged(getUnreadCount());
     }
