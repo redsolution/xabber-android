@@ -336,7 +336,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
         stubNotify = (ViewStub) view.findViewById(R.id.stubNotify);
         stubJoin = (ViewStub) view.findViewById(R.id.stubJoin);
-
+        NotificationManager.getInstance().removeMessageNotification(account, user);
         setChat(account, user);
 
         if (SettingsManager.chatsShowBackground()) {
