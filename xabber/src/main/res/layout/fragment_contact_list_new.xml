@@ -19,31 +19,6 @@
 
     </FrameLayout>
     <include layout="@layout/contactlist_help"/>
-    <LinearLayout
-        android:id="@+id/placeholderView"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center_vertical"
-        android:visibility="gone">
-
-        <ImageView
-            android:id="@+id/placeholderImage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:src="@drawable/xabber_logo_80dp" />
-
-        <TextView
-            android:id="@+id/tvPlaceholderMessage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="10dp"
-            android:text="@string/placeholder_no_unread"
-            android:textColor="?android:attr/textColorSecondary" />
-
-    </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/accounts_list_in_contact_list_recycler"
@@ -55,6 +30,5 @@
         android:background="@color/transparent"
         android:focusable="false"
         android:clickable="false"/>
-
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

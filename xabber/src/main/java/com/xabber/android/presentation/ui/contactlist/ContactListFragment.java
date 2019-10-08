@@ -78,9 +78,6 @@ public class ContactListFragment extends Fragment implements ContactListView,
     private List<IFlexible> items;
     private CoordinatorLayout coordinatorLayout;
     private LinearLayoutManager linearLayoutManager;
-    private View placeholderView;
-    private TextView tvPlaceholderMessage;
-    private ImageView placeholderImage;
     private AccountShortcutAdapter accountShortcutAdapter;
     private RecyclerView accountsRecyclerView;
     private ArrayList<AccountShortcutVO> accountShortcutVOArrayList = new ArrayList<>();
@@ -157,15 +154,11 @@ public class ContactListFragment extends Fragment implements ContactListView,
         linearLayoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(linearLayoutManager);
         coordinatorLayout = (CoordinatorLayout) view.findViewById(R.id.coordinatorLayout);
-        placeholderView = view.findViewById(R.id.placeholderView);
-        tvPlaceholderMessage = (TextView) view.findViewById(R.id.tvPlaceholderMessage);
-        placeholderImage = view.findViewById(R.id.placeholderImage);
-        ColorManager.setGrayScaleFilter(placeholderImage);
 
         infoView = view.findViewById(R.id.info);
         connectedView = infoView.findViewById(R.id.connected);
         disconnectedView = infoView.findViewById(R.id.disconnected);
-        ColorManager.setGrayScaleFilter(disconnectedView);
+        //ColorManager.setGrayScaleFilter(disconnectedView);
         textView = (TextView) infoView.findViewById(R.id.text);
         buttonView = (Button) infoView.findViewById(R.id.button);
         animation = AnimationUtils.loadAnimation(getActivity(), R.anim.connection);
@@ -235,10 +228,6 @@ public class ContactListFragment extends Fragment implements ContactListView,
 
     @Override
     public void updateItems(List<IFlexible> items) {
-        if (AccountManager.getInstance().getCommonState() != CommonState.online){
-            showPlaceholder(Application.getInstance().getString(R.string.application_state_waiting));
-            items.clear();
-        } else hidePlaceholder();
         this.items.clear();
         this.items.addAll(items);
         adapter.updateDataSet(this.items);
@@ -343,17 +332,6 @@ public class ContactListFragment extends Fragment implements ContactListView,
     }
 
     @Override
-    public void showPlaceholder(String message) {
-        tvPlaceholderMessage.setText(message);
-        placeholderView.setVisibility(View.VISIBLE);
-    }
-
-    @Override
-    public void hidePlaceholder() {
-        placeholderView.setVisibility(View.GONE);
-    }
-
-    @Override
     public void onContactListChanged(CommonState commonState, boolean hasContacts,
                                      boolean hasVisibleContacts, boolean isFilterEnabled) {
 
@@ -425,7 +403,7 @@ public class ContactListFragment extends Fragment implements ContactListView,
         } else if (commonState == CommonState.offline) {
             state = ContactListState.offline;
             text = R.string.application_state_offline;
-            button = R.string.application_action_offline;
+            button = R.string.application_state_offline;
             listener = new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {

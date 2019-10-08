@@ -311,6 +311,11 @@ public class SearchActivity extends ManagedActivity implements View.OnClickListe
         }
     }
 
+    @Override
+    public void onManageAccountsClick() {
+        finish();
+    }
+
     /**
      * @return existing or make new ChatListFragment
      */
