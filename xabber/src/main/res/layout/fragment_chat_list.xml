@@ -52,7 +52,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center_vertical"
-        android:visibility="gone"
+        android:visibility="visible"
         >
 
         <ImageView
@@ -71,6 +71,16 @@
             android:layout_marginTop="10dp"
             android:text="@string/placeholder_no_unread"
             android:textColor="?android:attr/textColorSecondary" />
+
+        <Button
+            android:id="@+id/chatlist_placeholder_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_below="@id/text"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dip"
+            android:text="@string/application_action_waiting" />
 
     </LinearLayout>
 

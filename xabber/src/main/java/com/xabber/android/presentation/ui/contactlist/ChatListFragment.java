@@ -17,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.RelativeLayout;
@@ -38,7 +39,9 @@ import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.CommonState;
+import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
+import com.xabber.android.data.connection.ConnectionManager;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.database.realm.CrowdfundingMessage;
 import com.xabber.android.data.entity.AccountJid;
@@ -71,6 +74,8 @@ import com.xabber.android.presentation.ui.contactlist.viewobjects.ContactVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.CrowdfundingChatVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.ExtContactVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.GroupVO;
+import com.xabber.android.ui.activity.AccountActivity;
+import com.xabber.android.ui.activity.AccountAddActivity;
 import com.xabber.android.ui.activity.ConferenceSelectActivity;
 import com.xabber.android.ui.activity.ContactActivity;
 import com.xabber.android.ui.activity.ContactAddActivity;
@@ -113,9 +118,6 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
     private Snackbar snackbar;
     private CoordinatorLayout coordinatorLayout;
     private LinearLayoutManager linearLayoutManager;
-    private View placeholderView;
-    private TextView placeholderMessage;
-    private ImageView placeholderImage;
     private ChatListFragmentListener chatListFragmentListener;
     private ChatListState currentChatsState = ChatListState.recent;
     private RecyclerView recyclerView;
@@ -123,9 +125,13 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
     private Drawable markAllReadBackground;
     private String filterString;
 
-    /*
-    Toolbar variables
-     */
+    /* Placeholder variables */
+    private View placeholderView;
+    private TextView placeholderMessage;
+    private ImageView placeholderImage;
+    private Button placeholderButton;
+
+    /* Toolbar variables */
     private RelativeLayout toolbar;
     private AppBarLayout toolbarRootLayout;
     private View toolbarAccountColorIndicator;
@@ -140,6 +146,7 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         void onChatClick(AbstractContact contact);
         void onChatListStateChanged(ChatListState chatListState);
         void onUnreadChanged(int unread);
+        void onManageAccountsClick();
     }
 
     @Override
@@ -283,7 +290,8 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         placeholderView = view.findViewById(R.id.chatlist_placeholder_view);
         placeholderMessage = view.findViewById(R.id.chatlist_placeholder_message);
         placeholderImage = view.findViewById(R.id.chatlist_placeholder_image);
-        ColorManager.setGrayScaleFilter(placeholderImage);
+        placeholderButton = view.findViewById(R.id.chatlist_placeholder_button);
+        //ColorManager.setGrayScaleFilter(placeholderImage);
 
         items = new ArrayList<>();
         adapter = new FlexibleAdapter<>(items, null, false);
@@ -456,15 +464,79 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
     Update chat items in adapter
      */
     private void updateItems(List<IFlexible> items){
-        //check empty state and show placeholder
-        if (items.size() == 0){
-            if (currentChatsState == ChatListState.unread) showPlaceholder(Application.getInstance().getApplicationContext().getString(R.string.placeholder_no_unread));
-            else if (currentChatsState == ChatListState.archived) showPlaceholder(Application.getInstance().getApplicationContext().getString(R.string.placeholder_no_archived));
-        } else if (AccountManager.getInstance().getCommonState() != CommonState.online){
-            showPlaceholder(Application.getInstance().getApplicationContext().getString(R.string.application_state_waiting));
-            recyclerView.setVisibility(View.GONE);
+        CommonState commonState = AccountManager.getInstance().getCommonState();
+        /* Show placeholder if necessary*/
+        if (commonState != CommonState.online){
+            switch (commonState){
+                case roster:
+                    showPlaceholder(Application.getInstance().getApplicationContext().getString(R.string.application_state_connecting), null);
+                    break;
+                case connecting:
+                    showPlaceholder(Application.getInstance().getApplicationContext().getString(R.string.application_state_connecting), null);
+                    break;
+                case waiting:
+                    showPlaceholder(Application.getInstance().getApplicationContext().getString(R.string.application_state_waiting)
+                            , Application.getInstance().getApplicationContext().getString(R.string.application_action_waiting));
+                    placeholderButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            ConnectionManager.getInstance().connectAll();
+                        }
+                    });
+                    break;
+                case offline:
+                    showPlaceholder(Application.getInstance().getApplicationContext().getString(R.string.application_state_offline)
+                            , Application.getInstance().getApplicationContext().getString(R.string.application_state_offline));
+                    placeholderButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            AccountManager.getInstance().setStatus(StatusMode.available, null);
+                        }
+                    });
+                    break;
+                case disabled:
+                    showPlaceholder(Application.getInstance().getApplicationContext().getString(R.string.application_state_disabled)
+                            , Application.getInstance().getApplicationContext().getString(R.string.application_action_disabled));
+                    placeholderButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            chatListFragmentListener.onManageAccountsClick();
+                        }
+                    });
+                    break;
+                case empty:
+                    showPlaceholder(Application.getInstance().getApplicationContext().getString(R.string.application_state_empty),
+                            Application.getInstance().getApplicationContext().getString(R.string.application_action_empty));
+                    placeholderButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            startActivity(AccountAddActivity.createIntent(getActivity()));
+                        }
+                    });
+                    break;
+            }
+        } else if (items.size() == 0) {
+            switch (currentChatsState) {
+                case unread:
+                    showPlaceholder(Application.getInstance().getApplicationContext().getString(R.string.placeholder_no_unread), null);
+                    break;
+                case archived:
+                    showPlaceholder(Application.getInstance().getApplicationContext().getString(R.string.placeholder_no_archived), null);
+                    break;
+                default:
+                    showPlaceholder(Application.getInstance().getApplicationContext().getString(R.string.application_state_no_contacts),
+                            Application.getInstance().getApplicationContext().getString(R.string.application_action_no_contacts));
+                    placeholderButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            startActivity(ContactAddActivity.createIntent(getActivity()));
+                        }
+                    });
+                    break;
+            }
         } else hidePlaceholder();
 
+        /* Update items in RecyclerView */
         this.items.clear();
         this.items.addAll(items);
         adapter.updateDataSet(this.items);
@@ -871,14 +943,20 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         archived,
         all
     }
-    private void showPlaceholder(String message){
+
+    private void showPlaceholder(String message, @Nullable String buttonMessage){
         placeholderMessage.setText(message);
+        if (buttonMessage != null){
+            placeholderButton.setVisibility(View.VISIBLE);
+            placeholderButton.setText(buttonMessage);
+        }
         placeholderView.setVisibility(View.VISIBLE);
     }
 
     private void hidePlaceholder(){
         recyclerView.setVisibility(View.VISIBLE);
         placeholderView.setVisibility(View.GONE);
+        placeholderButton.setVisibility(View.GONE);
     }
 
     public void showSnackbar(final ChatVO deletedItem, final int deletedIndex) {

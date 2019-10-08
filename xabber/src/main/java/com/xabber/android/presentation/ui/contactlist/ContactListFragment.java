@@ -160,12 +160,12 @@ public class ContactListFragment extends Fragment implements ContactListView,
         placeholderView = view.findViewById(R.id.placeholderView);
         tvPlaceholderMessage = (TextView) view.findViewById(R.id.tvPlaceholderMessage);
         placeholderImage = view.findViewById(R.id.placeholderImage);
-        ColorManager.setGrayScaleFilter(placeholderImage);
+        //ColorManager.setGrayScaleFilter(placeholderImage);
 
         infoView = view.findViewById(R.id.info);
         connectedView = infoView.findViewById(R.id.connected);
         disconnectedView = infoView.findViewById(R.id.disconnected);
-        ColorManager.setGrayScaleFilter(disconnectedView);
+        //ColorManager.setGrayScaleFilter(disconnectedView);
         textView = (TextView) infoView.findViewById(R.id.text);
         buttonView = (Button) infoView.findViewById(R.id.button);
         animation = AnimationUtils.loadAnimation(getActivity(), R.anim.connection);
@@ -235,10 +235,6 @@ public class ContactListFragment extends Fragment implements ContactListView,
 
     @Override
     public void updateItems(List<IFlexible> items) {
-        if (AccountManager.getInstance().getCommonState() != CommonState.online){
-            showPlaceholder(Application.getInstance().getString(R.string.application_state_waiting));
-            items.clear();
-        } else hidePlaceholder();
         this.items.clear();
         this.items.addAll(items);
         adapter.updateDataSet(this.items);
@@ -425,7 +421,7 @@ public class ContactListFragment extends Fragment implements ContactListView,
         } else if (commonState == CommonState.offline) {
             state = ContactListState.offline;
             text = R.string.application_state_offline;
-            button = R.string.application_action_offline;
+            button = R.string.application_state_offline;
             listener = new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
