@@ -78,9 +78,6 @@ public class ContactListFragment extends Fragment implements ContactListView,
     private List<IFlexible> items;
     private CoordinatorLayout coordinatorLayout;
     private LinearLayoutManager linearLayoutManager;
-    private View placeholderView;
-    private TextView tvPlaceholderMessage;
-    private ImageView placeholderImage;
     private AccountShortcutAdapter accountShortcutAdapter;
     private RecyclerView accountsRecyclerView;
     private ArrayList<AccountShortcutVO> accountShortcutVOArrayList = new ArrayList<>();
@@ -157,10 +154,6 @@ public class ContactListFragment extends Fragment implements ContactListView,
         linearLayoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(linearLayoutManager);
         coordinatorLayout = (CoordinatorLayout) view.findViewById(R.id.coordinatorLayout);
-        placeholderView = view.findViewById(R.id.placeholderView);
-        tvPlaceholderMessage = (TextView) view.findViewById(R.id.tvPlaceholderMessage);
-        placeholderImage = view.findViewById(R.id.placeholderImage);
-        //ColorManager.setGrayScaleFilter(placeholderImage);
 
         infoView = view.findViewById(R.id.info);
         connectedView = infoView.findViewById(R.id.connected);
@@ -336,17 +329,6 @@ public class ContactListFragment extends Fragment implements ContactListView,
         if (buttonVO.getAction().equals(ButtonVO.ACTION_ADD_CONTACT)) {
             getActivity().startActivity(ContactAddActivity.createIntent(getActivity()));
         }
-    }
-
-    @Override
-    public void showPlaceholder(String message) {
-        tvPlaceholderMessage.setText(message);
-        placeholderView.setVisibility(View.VISIBLE);
-    }
-
-    @Override
-    public void hidePlaceholder() {
-        placeholderView.setVisibility(View.GONE);
     }
 
     @Override
