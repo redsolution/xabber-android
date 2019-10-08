@@ -260,8 +260,10 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
     }
 
     public void scrollToTop(){
-        recyclerView.scrollToPosition(0);
-        toolbarRootLayout.setExpanded(true, true);
+        if (recyclerView != null && recyclerView.getAdapter().getItemCount() != 0){
+            recyclerView.scrollToPosition(0);
+            toolbarRootLayout.setExpanded(true, false);
+        }
     }
 
     @Nullable
