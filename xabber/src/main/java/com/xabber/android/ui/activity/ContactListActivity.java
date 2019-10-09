@@ -534,8 +534,8 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
         showChatListFragment();
         if (unreadMessagesCount > 0 && currentActiveFragment == ActiveFragment.CHATS){
             if (getChatListFragment().getCurrentChatsState() == ChatListFragment.ChatListState.unread)
-                getChatListFragment().showChatListWithState(ChatListFragment.ChatListState.recent);
-            else getChatListFragment().showChatListWithState(ChatListFragment.ChatListState.unread);
+                getChatListFragment().onStateSelected(ChatListFragment.ChatListState.recent);
+            else getChatListFragment().onStateSelected(ChatListFragment.ChatListState.unread);
         } else if (currentActiveFragment == ActiveFragment.CHATS) {
 
             getChatListFragment().scrollToTop();

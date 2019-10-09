@@ -11,6 +11,7 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -27,6 +28,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -44,7 +46,6 @@ import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.connection.ConnectionManager;
 import com.xabber.android.data.database.messagerealm.MessageItem;
-import com.xabber.android.data.database.realm.CrowdfundingMessage;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
@@ -52,17 +53,14 @@ import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.muc.RoomChat;
 import com.xabber.android.data.extension.muc.RoomContact;
-import com.xabber.android.data.http.CrowdfundingManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.ChatContact;
-import com.xabber.android.data.message.CrowdfundingChat;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.MessageUpdateEvent;
 import com.xabber.android.data.message.NewIncomingMessageEvent;
 import com.xabber.android.data.message.NewMessageEvent;
 import com.xabber.android.data.notification.MessageNotificationManager;
 import com.xabber.android.data.roster.AbstractContact;
-import com.xabber.android.data.roster.CrowdfundingContact;
 import com.xabber.android.data.roster.GroupManager;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.RosterContact;
@@ -72,10 +70,8 @@ import com.xabber.android.presentation.mvp.contactlist.UpdateBackpressure;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.CategoryVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.ChatVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.ContactVO;
-import com.xabber.android.presentation.ui.contactlist.viewobjects.CrowdfundingChatVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.ExtContactVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.GroupVO;
-import com.xabber.android.ui.activity.AccountActivity;
 import com.xabber.android.ui.activity.AccountAddActivity;
 import com.xabber.android.ui.activity.ConferenceSelectActivity;
 import com.xabber.android.ui.activity.ContactActivity;
@@ -127,6 +123,8 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
     private Drawable markAllReadBackground;
     private String filterString;
 
+    private int maxItemsOnScreen;
+
     /* Placeholder variables */
     private View placeholderView;
     private TextView placeholderMessage;
@@ -134,8 +132,9 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
     private Button placeholderButton;
 
     /* Toolbar variables */
-    private RelativeLayout toolbar;
-    private AppBarLayout toolbarRootLayout;
+    private RelativeLayout toolbarRelativeLayout;
+    private AppBarLayout toolbarAppBarLayout;
+    private Toolbar toolbarToolbarLayout;
     private View toolbarAccountColorIndicator;
     private View toolbarAccountColorIndicatorBack;
     private ImageView toolbarAddIv;
@@ -239,15 +238,11 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         return fragment;
     }
 
-    public void showChatListWithState(ChatListState state){
-        onStateSelected(state);
-    }
-
     public void onStateSelected(ChatListState state) {
         this.currentChatsState = state;
         updateBackpressure.run();
         chatListFragmentListener.onChatListStateChanged(state);
-        toolbarRootLayout.setExpanded(true, true);
+        toolbarAppBarLayout.setExpanded(true, false);
         this.closeSnackbar();
     }
 
@@ -264,7 +259,7 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
     public void scrollToTop(){
         if (recyclerView != null && recyclerView.getAdapter().getItemCount() != 0){
             recyclerView.scrollToPosition(0);
-            toolbarRootLayout.setExpanded(true, false);
+            toolbarAppBarLayout.setExpanded(true, false);
         }
     }
 
@@ -312,7 +307,8 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         /*
         Toolbar variables initialization
          */
-        toolbar = view.findViewById(R.id.toolbar_chatlist);
+        toolbarRelativeLayout = view.findViewById(R.id.toolbar_chatlist);
+        toolbarToolbarLayout = view.findViewById(R.id.chat_list_toolbar);
         toolbarAccountColorIndicator = view.findViewById(R.id.accountColorIndicator);
         toolbarAccountColorIndicatorBack = view.findViewById(R.id.accountColorIndicatorBack);
         toolbarAddIv = (ImageView) view.findViewById(R.id.ivAdd);
@@ -320,13 +316,19 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         toolbarAvatarIv = (ImageView) view.findViewById(R.id.ivAvatar);
         toolbarStatusIv = (ImageView) view.findViewById(R.id.ivStatus);
         toolbarSearchIv = (ImageView) view.findViewById(R.id.toolbar_search_button);
-        toolbarRootLayout = view.findViewById(R.id.chatlist_toolbar_root);
+        toolbarAppBarLayout = view.findViewById(R.id.chatlist_toolbar_root);
         toolbarAddIv.setOnClickListener(this);
         toolbarAvatarIv.setOnClickListener(this);
         toolbarTitleTv.setOnClickListener(this);
         toolbarSearchIv.setOnClickListener(this);
         if (!getActivity().getClass().getSimpleName().equals(ContactListActivity.class.getSimpleName()))
-            toolbarRootLayout.setVisibility(View.GONE);
+            toolbarAppBarLayout.setVisibility(View.GONE);
+
+        /* find possible max recycler items*/
+        DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
+        int dpHeight = Math.round(displayMetrics.heightPixels / displayMetrics.density);
+        maxItemsOnScreen = Math.round((dpHeight - 56 - 56) / 64);
+
         /*
         Initialize and run UpdateBackpressure
          */
@@ -335,7 +337,7 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         return view;
     }
 
-    /** Update toolbar via current state*/
+    /** Update toolbarRelativeLayout via current state*/
     public void updateToolbar(){
         /*
         Update ChatState TextView display via current chat state
@@ -381,7 +383,7 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         a.recycle();
         final int[] accountGroupColors = getContext().getResources().getIntArray(accountGroupColorsResourceId);
         final int level = AccountManager.getInstance().getColorLevel(AccountPainter.getFirstAccount());
-        toolbar.setBackgroundColor(accountGroupColors[level]);
+        toolbarRelativeLayout.setBackgroundColor(accountGroupColors[level]);
 
         /*
         Update left color indicator via current main user
@@ -434,7 +436,7 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
     }
 
     /**
-    Handle toolbar menus clicks
+    Handle toolbarRelativeLayout menus clicks
      */
     @Override
     public boolean onMenuItemClick(MenuItem item) {
@@ -545,6 +547,7 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         this.items.clear();
         this.items.addAll(items);
         adapter.updateDataSet(this.items);
+        adapter.notifyDataSetChanged();
     }
 
     @Override
@@ -552,18 +555,28 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         updateBackpressure.refreshRequest();
     }
 
-//    private void setupLayout(){
-//        if (recyclerView != null){
-//            int first = linearLayoutManager.findFirstCompletelyVisibleItemPosition();
-//            int last = linearLayoutManager.findLastCompletelyVisibleItemPosition();
-//            CoordinatorLayout.LayoutParams clp = (CoordinatorLayout.LayoutParams) recyclerFrameLayout.getLayoutParams();
-//            Toast.makeText(getActivity(), clp.toString(), Toast.LENGTH_SHORT).show();
-//            if (last - first <= recyclerView.getAdapter().getItemCount()){
-////                CoordinatorLayout.LayoutParams clp = (CoordinatorLayout.LayoutParams) recyclerFrameLayout.getLayoutParams();
-////                Toast.makeText(getActivity(), clp.toString(), Toast.LENGTH_SHORT).show();
-//            }
-//        }
-//    }
+    public void setupToolbarLayout(){
+        if (recyclerView != null){
+            int count = items.size();
+            if (count <= maxItemsOnScreen){
+                setToolbarScrollEnabled(false);
+            } else {    setToolbarScrollEnabled(true);  }
+        }
+    }
+
+    private void setToolbarScrollEnabled(boolean enabled){
+        AppBarLayout.LayoutParams toolbarLayoutParams = (AppBarLayout.LayoutParams) toolbarToolbarLayout.getLayoutParams();
+        CoordinatorLayout.LayoutParams appBarLayoutParams = (CoordinatorLayout.LayoutParams) toolbarAppBarLayout.getLayoutParams();
+        if (enabled && toolbarLayoutParams.getScrollFlags() == 0){
+            appBarLayoutParams.setBehavior(new AppBarLayout.Behavior());
+            toolbarLayoutParams.setScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL | AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS);
+        } else if (!enabled && toolbarLayoutParams.getScrollFlags() != 0) {
+            toolbarLayoutParams.setScrollFlags(0);
+            appBarLayoutParams.setBehavior(null);
+        }
+        toolbarToolbarLayout.setLayoutParams(toolbarLayoutParams);
+        toolbarAppBarLayout.setLayoutParams(appBarLayoutParams);
+    }
 
     @Override
     public void onAccountsChanged(Collection<AccountJid> accounts) {
@@ -860,7 +873,7 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         updateToolbar();
         updateUnreadCount();
         updateItems(items);
-
+        setupToolbarLayout();
     }
 
     private GroupConfiguration getChatsGroup(Collection<AbstractChat> chats, ChatListState state) {
