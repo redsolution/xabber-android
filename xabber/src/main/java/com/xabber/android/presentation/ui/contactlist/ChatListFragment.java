@@ -11,6 +11,7 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -121,6 +122,8 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
     private TextView markAllAsReadButton;
     private Drawable markAllReadBackground;
     private String filterString;
+
+    private int maxItemsOnScreen;
 
     /* Placeholder variables */
     private View placeholderView;
@@ -241,7 +244,6 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         chatListFragmentListener.onChatListStateChanged(state);
         toolbarAppBarLayout.setExpanded(true, false);
         this.closeSnackbar();
-        //setupToolbarLayout();
     }
 
     public ChatListState getCurrentChatsState(){
@@ -321,6 +323,12 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         toolbarSearchIv.setOnClickListener(this);
         if (!getActivity().getClass().getSimpleName().equals(ContactListActivity.class.getSimpleName()))
             toolbarAppBarLayout.setVisibility(View.GONE);
+
+        /* find possible max recycler items*/
+        DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
+        int dpHeight = Math.round(displayMetrics.heightPixels / displayMetrics.density);
+        maxItemsOnScreen = Math.round((dpHeight - 56 - 56) / 64);
+
         /*
         Initialize and run UpdateBackpressure
          */
@@ -549,9 +557,8 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
 
     public void setupToolbarLayout(){
         if (recyclerView != null){
-            int last = linearLayoutManager.findLastCompletelyVisibleItemPosition();
-            int count = recyclerView.getAdapter().getItemCount();
-            if (last == count-1){
+            int count = items.size();
+            if (count <= maxItemsOnScreen){
                 setToolbarScrollEnabled(false);
             } else {    setToolbarScrollEnabled(true);  }
         }
@@ -560,10 +567,10 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
     private void setToolbarScrollEnabled(boolean enabled){
         AppBarLayout.LayoutParams toolbarLayoutParams = (AppBarLayout.LayoutParams) toolbarToolbarLayout.getLayoutParams();
         CoordinatorLayout.LayoutParams appBarLayoutParams = (CoordinatorLayout.LayoutParams) toolbarAppBarLayout.getLayoutParams();
-        if (enabled){
+        if (enabled && toolbarLayoutParams.getScrollFlags() == 0){
             appBarLayoutParams.setBehavior(new AppBarLayout.Behavior());
             toolbarLayoutParams.setScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL | AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS);
-        } else {
+        } else if (!enabled && toolbarLayoutParams.getScrollFlags() != 0) {
             toolbarLayoutParams.setScrollFlags(0);
             appBarLayoutParams.setBehavior(null);
         }
@@ -866,7 +873,7 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         updateToolbar();
         updateUnreadCount();
         updateItems(items);
-        //setupToolbarLayout();
+        setupToolbarLayout();
     }
 
     private GroupConfiguration getChatsGroup(Collection<AbstractChat> chats, ChatListState state) {
