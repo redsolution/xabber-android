@@ -247,7 +247,7 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         this.currentChatsState = state;
         updateBackpressure.run();
         chatListFragmentListener.onChatListStateChanged(state);
-        toolbarRootLayout.setExpanded(true, true);
+        toolbarRootLayout.setExpanded(true, false);
         this.closeSnackbar();
     }
 
