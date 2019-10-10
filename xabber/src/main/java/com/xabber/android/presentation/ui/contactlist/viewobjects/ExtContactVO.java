@@ -72,7 +72,8 @@ public class ExtContactVO extends ContactVO {
         /** set up SENDER NAME */
         viewHolder.tvOutgoingMessage.setVisibility(View.GONE);
         if (isOutgoing()) {
-            viewHolder.tvOutgoingMessage.setText(context.getString(R.string.sender_is_you) + ": ");
+            //viewHolder.tvOutgoingMessage.setText(context.getString(R.string.sender_is_you) + ": ");
+            viewHolder.tvOutgoingMessage.setText("");
             viewHolder.tvOutgoingMessage.setVisibility(View.VISIBLE);
             viewHolder.tvOutgoingMessage.setTextColor(getAccountColorIndicator());
         }

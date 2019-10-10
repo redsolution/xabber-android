@@ -14,10 +14,11 @@
  */
 package com.xabber.android.data.database.messagerealm;
 
-import androidx.annotation.Nullable;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.TextUtils;
+
+import androidx.annotation.Nullable;
 
 import com.xabber.android.data.database.MessageDatabaseManager;
 import com.xabber.android.data.entity.AccountJid;
@@ -637,14 +638,20 @@ public class MessageItem extends RealmObject {
                     MessageItem message = forwardedMessages.last();
                     String author = RosterManager.getDisplayAuthorName(message);
                     StringBuilder stringBuilder = new StringBuilder();
-                    if (!author.isEmpty()) {
+                    if (author!=null && !author.isEmpty()) {
                         if (color == -1) {
                             stringBuilder.append(author);
                             stringBuilder.append(":");
                         } else stringBuilder.append(StringUtils.getColoredText(author + ":", color));
                     }
                     stringBuilder.append(message.getText().trim());
-                    if (!message.getText().trim().isEmpty())
+                    String attachmentName = "";
+                    if (message.haveAttachments() && message.getAttachments().size() > 0) {
+                        Attachment attachment = message.getAttachments().get(0);
+                        attachmentName = StringUtils.getColoredText(attachment.getTitle().trim(), color);
+                        stringBuilder.append(attachmentName);
+                    }
+                    if (!message.getText().trim().isEmpty() || !attachmentName.equals(""))
                         text = stringBuilder.toString();
                 }
             }
