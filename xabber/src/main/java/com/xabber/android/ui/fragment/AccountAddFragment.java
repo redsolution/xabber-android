@@ -175,7 +175,13 @@ public class AccountAddFragment extends Fragment implements View.OnClickListener
                     String[] s = result.getContents().split(":");
                     if ((s[0].equals("xmpp") || s[0].equals("xabber")) && s.length>=2) {
                         userView.setText(s[1]);
-                        addAccount();
+                        if(validationSuccess()) {
+                            passwordView.requestFocus();
+                            Toast.makeText(getActivity(), "XMPP ID is valid", Toast.LENGTH_LONG).show();
+                        } else {
+                            Toast.makeText(getActivity(), "XMPP ID is NOT valid", Toast.LENGTH_LONG).show();
+                        }
+                        //addAccount();
                         //passwordView.requestFocus();
                     }
                 }

@@ -144,6 +144,7 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
     private Uri newAvatarImageUri;
     private Uri photoFileUri;
     private boolean removeAvatarFlag = false;
+    //private boolean tt = true;
 
     private TextView birthDate;
     private DatePickerDialog datePicker;
@@ -227,10 +228,19 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
         avatar = (ImageView) view.findViewById(R.id.vcard_avatar);
         avatarSize = (TextView) view.findViewById(R.id.vcard_avatar_size_text_view);
         changeAvatarButton = view.findViewById(R.id.vcard_change_avatar);
+        //AccountItem item = AccountManager.getInstance().getAccount(account);
+        //final UserAvatarManager mng = UserAvatarManager.getInstanceFor(item.getConnection());
         changeAvatarButton.setOnClickListener(new View.OnClickListener() {
                                                   @Override
                                                   public void onClick(View v) {
                                                       changeAvatar();
+                                                      /*if(tt) {mng.disbl(); tt=false;}
+                                                      else {mng.enbl(); tt = true;}
+                                                      try {
+                                                          PresenceManager.getInstance().resendPresence(account);
+                                                      } catch (NetworkException e) {
+                                                          e.printStackTrace();
+                                                      }*/
                                                   }
                                               }
         );
