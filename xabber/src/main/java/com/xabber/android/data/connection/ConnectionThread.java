@@ -34,6 +34,7 @@ import com.xabber.android.data.log.AndroidLoggingHandler;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.xaccount.HttpConfirmIq;
 import com.xabber.android.data.xaccount.HttpConfirmIqProvider;
+import com.xabber.xmpp.avatar.UserAvatarManager;
 import com.xabber.xmpp.smack.SASLXTOKENMechanism;
 import com.xabber.xmpp.smack.XMPPTCPConnection;
 
@@ -150,6 +151,8 @@ class ConnectionThread {
         ProviderManager.addIQProvider(SessionsIQ.ELEMENT,
                 SessionsIQ.NAMESPACE, new SessionsProvider());
 
+        UserAvatarManager mng = UserAvatarManager.getInstanceFor(connection);
+        mng.enable();
         try {
             LogManager.i(this, "Trying to connect and login...");
             if (!connection.isConnected()) {

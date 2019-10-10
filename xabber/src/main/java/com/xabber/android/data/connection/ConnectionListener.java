@@ -43,7 +43,7 @@ class ConnectionListener implements org.jivesoftware.smack.ConnectionListener {
         connectionItem.updateState(ConnectionState.authentication);
 
         //
-        UserAvatarManager.getInstanceFor(connection).enable();
+        //UserAvatarManager.getInstanceFor(connection).enable();
         //
 
         Application.getInstance().runOnUiThread(new Runnable() {
@@ -67,7 +67,7 @@ class ConnectionListener implements org.jivesoftware.smack.ConnectionListener {
         HttpFileUploadManager.getInstance().onAuthorized(connectionItem);
         PresenceManager.getInstance().onAuthorized(connectionItem);
         BookmarksManager.getInstance().onAuthorized(connectionItem.getAccount());
-
+        UserAvatarManager.getInstanceFor(connection).refreshCaps();
         //
         //
 

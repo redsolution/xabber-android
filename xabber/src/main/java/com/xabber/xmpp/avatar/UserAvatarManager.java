@@ -114,6 +114,15 @@ public final class UserAvatarManager extends Manager {
         pepManager.addPEPListener(metadataExtensionListener);
     }
 
+    public void refreshCaps() {
+        disableNotification();
+        enableNotification();
+    }
+
+    public void enableNotification() {serviceDiscoveryManager.addFeature(FEATURE_METADATA);}
+
+    public void disableNotification() {serviceDiscoveryManager.removeFeature(FEATURE_METADATA);}
+
     /**
      * Set an {@link AvatarMetadataStore} which is used to store information about the local availability of avatar
      * data.
@@ -263,6 +272,87 @@ public final class UserAvatarManager extends Manager {
         return extension.getData();
     }
 
+    /*public void discoverAvatar(final BareJid contact, final AccountItem accountItem) {
+        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
+            @Override
+            public void run() {
+
+                try {
+                    //LeafNode data = PubSubManager.getInstance(accountItem.getConnection(), contact).getLeafNode(METADATA_NAMESPACE);
+                    //final List<PayloadItem<MetadataExtension>> e = data.getItems();
+
+                    //DiscoverInfo info = new DiscoverInfo();
+                    //info.setTo(contact);
+
+                    DiscoverItems items = new DiscoverItems();
+                    items.setTo(contact);
+
+                    //DiscoverInfo infoReply = connection().createStanzaCollectorAndSend(info).nextResultOrThrow();
+                    DiscoverItems itemsReply = connection().createStanzaCollectorAndSend(items).nextResultOrThrow();
+                    List<DiscoverItems.Item> list = itemsReply.getItems();
+                    *//*for (DiscoverItems.Item item : list){
+                        if(item.getNode().equals(METADATA_NAMESPACE)){
+                            LeafNode metadata = PubSubManager.getInstance(accountItem.getConnection(), contact).getLeafNode(METADATA_NAMESPACE);
+                            metadata.subscribe(accountItem.getRealJid().toString());
+
+                            SubscribeExtension subEx = new SubscribeExtension(accountItem.getRealJid().asBareJid().toString(), METADATA_NAMESPACE);
+                            PubSub ps = PubSub.createPubsubPacket(contact, IQ.Type.set, subEx, null);
+                            PubSub reply = (PubSub) connection().createStanzaCollectorAndSend(ps).nextResultOrThrow();
+                            Subscription sss = reply.getExtension(PubSubElementType.SUBSCRIPTION);
+
+                            *//**//*LeafNode sutest = PubSubManager.getInstance(accountItem.getConnection(), contact).getLeafNode(METADATA_NAMESPACE);
+                            sutest.unsubscribe(accountItem.getRealJid().asBareJid().toString());
+                            List<Subscription> subsC = new ArrayList<>();
+                            Subscription ssTest = sutest.subscribe(accountItem.getRealJid().asBareJid().toString());
+                            Subscription.State statetest = ssTest.getState();*//**//*
+                        }
+                    }*//*
+                    List<Subscription> sub = new ArrayList<>();
+                    sub = PubSubManager.getInstance(accountItem.getConnection(), contact).getLeafNode(METADATA_NAMESPACE).getSubscriptions();
+
+                    List<Subscription> subs = new ArrayList<>();
+                    subs = PubSubManager.getInstance(accountItem.getConnection(), null).getSubscriptions();
+
+                    *//*if (sub.size()==0) {
+
+                    LeafNode sutest = PubSubManager.getInstance(accountItem.getConnection(), null).getLeafNode(METADATA_NAMESPACE);
+                        sutest.unsubscribe(accountItem.getRealJid().asBareJid().toString());
+                        List<Subscription> subsC = new ArrayList<>();
+                        List<Subscription> subsCTest = new ArrayList<>();
+                        Subscription ss = su.subscribe(accountItem.getRealJid().asBareJid().toString());
+                        Subscription ssTest = sutest.subscribe(accountItem.getRealJid().asBareJid().toString());
+                        Subscription.State state = ss.getState();
+                        Subscription.State statetest = ssTest.getState();
+
+                    }*//*
+                    //DataExtension s = (DataExtension)e.get(0).getPayload();
+                    *//*final byte[] k = s.getData();
+                    Application.getInstance().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (metadataStore != null && !metadataStore.hasAvatarAvailable((EntityBareJid) contact, e.get(0).getId())) {
+                                String id = e.get(0).getId();
+                                metadataStore.setAvatarAvailable((EntityBareJid) contact, e.get(0).getId());
+                            }
+                            String sh1 = AvatarManager.getAvatarHash(k);
+                            AvatarManager.getInstance().onAvatarReceived(contact, sh1, k, "xep");
+                        }
+                    });*//*
+                } catch (PubSubException.NotALeafNodeException e) {
+                    e.printStackTrace();
+                } catch (SmackException.NoResponseException e) {
+                    e.printStackTrace();
+                } catch (SmackException.NotConnectedException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (XMPPException.XMPPErrorException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+*/
 
     public String publishAvatarData(byte[] data)
             throws NoResponseException, NotConnectedException, XMPPErrorException, InterruptedException, PubSubException.NotALeafNodeException {
@@ -448,7 +538,8 @@ public final class UserAvatarManager extends Manager {
                         for (MetadataInfo info : metadataExtension.getInfoElements()){
                             try {
                                 byte[] avatar = fetchAvatarFromPubSub(from, info);
-                                String sh1 = AvatarManager.getAvatarHash(avatar);
+                                String sh1 = info.getId();
+                                //String sh1 = AvatarManager.getAvatarHash(avatar);
                                 AvatarManager.getInstance().onAvatarReceived(from,sh1,avatar, "xep");
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
@@ -462,12 +553,12 @@ public final class UserAvatarManager extends Manager {
                                 e.printStackTrace();
                             }
                         }
-                    } else if (payloadItem.getPayload() instanceof DataExtension){
+                    } /*else if (payloadItem.getPayload() instanceof DataExtension){
                         DataExtension dataExtension = (DataExtension) payloadItem.getPayload();
                         byte[] avatar = dataExtension.getData();
                         String sh1 = AvatarManager.getAvatarHash(avatar);
                         AvatarManager.getInstance().onAvatarReceived(from, sh1, avatar, "xep");
-                    }
+                    }*/
                 }
             }
         }
