@@ -211,7 +211,11 @@ public class ContactAddFragment extends GroupEditorFragment
                     String[] s = result.getContents().split(":");
                     if ((s[0].equals("xmpp") || s[0].equals("xabber")) && s.length >= 2) {
                         userView.setText(s[1]);
-                        nameView.requestFocus();
+                        if (validationIsNotSuccess()) {
+                            ((ContactAddActivity) getActivity()).toolbarSetEnabled(false);
+                            userView.requestFocus();
+                        }
+                        else nameView.requestFocus();
                     }
                 }
             }
@@ -281,7 +285,10 @@ public class ContactAddFragment extends GroupEditorFragment
         String contactString = userView.getText().toString();
         contactString = contactString.trim();
 
-        if (contactString.contains(" ")) {
+        if(validationIsNotSuccess())
+            return;
+
+        /*if (contactString.contains(" ")) {
             setError(getString(R.string.INCORRECT_USER_NAME));
             return;
         }
@@ -309,7 +316,7 @@ public class ContactAddFragment extends GroupEditorFragment
         if (localName.charAt(localName.length()-1)=='.' || localName.charAt(0)=='.'){
             setError(getString(R.string.INCORRECT_USER_NAME));
             return;
-        }
+        }*/
 
         final UserJid user;
         try {
@@ -352,6 +359,66 @@ public class ContactAddFragment extends GroupEditorFragment
                 stopAddContactProcess(true);
             }
         });
+    }
+
+    private boolean validationIsNotSuccess(){
+        String contactString = userView.getText().toString();
+        contactString = contactString.trim();
+
+        if (contactString.contains(" ")) {
+            setError(getString(R.string.INCORRECT_USER_NAME));
+            return true;
+        }
+
+        if (TextUtils.isEmpty(contactString)) {
+            setError(getString(R.string.EMPTY_USER_NAME));
+            return true;
+        }
+
+        int atChar = contactString.indexOf('@');
+        int slashIndex = contactString.indexOf('/');
+
+        String domainName;
+        String localName;
+        //for possible future resource name checks
+        //String resourceName;
+
+        if (slashIndex > 0) {
+            //resourceName = contactString.substring(slashIndex + 1);
+            if (atChar > 0 && atChar < slashIndex) {
+                localName = contactString.substring(0, atChar);
+                domainName = contactString.substring(atChar + 1, slashIndex);
+            } else {
+                localName = "";
+                domainName = contactString.substring(0, slashIndex);
+            }
+        } else {
+            //resourceName = "";
+            if (atChar > 0) {
+                localName = contactString.substring(0, atChar);
+                domainName = contactString.substring(atChar + 1);
+            } else {
+                localName = "";
+                domainName = contactString;
+            }
+        }
+
+        if (domainName.equals("")) {
+            setError("Empty domain!");
+            return true;
+        }
+
+        if (domainName.charAt(domainName.length()-1)=='.' || domainName.charAt(0)=='.'){
+            setError(getString(R.string.INCORRECT_USER_NAME) + ": invalid domain");
+            return true;
+        }
+
+        if (localName.charAt(localName.length()-1)=='.' || localName.charAt(0)=='.'){
+            setError(getString(R.string.INCORRECT_USER_NAME));
+            return true;
+        }
+
+        return false;
     }
 
     private void setError(String error){
