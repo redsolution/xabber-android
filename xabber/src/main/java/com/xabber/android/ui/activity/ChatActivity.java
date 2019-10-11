@@ -324,7 +324,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
                     initChats(false);
                     updateToolbar();
                     //updateToolbarMenuIcon();
-                } else NavUtils.navigateUpFromSameTask(ChatActivity.this);
+                } else close();
             }
         });
 
@@ -390,7 +390,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
             extraText = intent.getStringExtra(Intent.EXTRA_TEXT);
             if (extraText != null) {
                 intent.removeExtra(Intent.EXTRA_TEXT);
-                exitOnSend = true;
+                exitOnSend = false;
             }
 
         } else if (Intent.ACTION_SEND_MULTIPLE.equals(intent.getAction())) {
@@ -418,6 +418,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
             List<String> messages = intent.getStringArrayListExtra(KEY_MESSAGES_ID);
             forwardsIds = (ArrayList<String>) messages;
             intent.removeExtra(KEY_MESSAGES_ID);
+            exitOnSend = false;
         }
 
         insertExtraText();
@@ -479,7 +480,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
 
     @Override
     public void onBackPressed() {
-        NavUtils.navigateUpFromSameTask(this);
+        close();
         super.onBackPressed();
     }
 
@@ -686,7 +687,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     }
 
     private void insertExtraText() {
-        if (extraText == null) {
+        if (extraText == null || extraText.equals("")) {
             return;
         }
 
@@ -726,12 +727,11 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     private void close() {
         update();
         finish();
-        if (!Intent.ACTION_SEND.equals(getIntent().getAction())) {
-            ActivityManager.getInstance().clearStack(false);
-            if (!ActivityManager.getInstance().hasContactList(this)) {
-                startActivity(SearchActivity.createIntent(this));
-            }
-        }
+        ActivityManager.getInstance().clearStack(false);
+        //if (!ActivityManager.getInstance().hasContactList(this)) {
+        startActivity(ContactListActivity.createIntent(this));
+        //}
+
     }
 
     @Override
