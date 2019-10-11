@@ -392,7 +392,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         LogManager.i(this, "onResume");
 
         updateContact();
-        restoreInputState();
+        //restoreInputState();
         restoreScrollState(((ChatActivity)getActivity()).needScrollToUnread());
 
         showHideNotifyIfNeed();
@@ -741,7 +741,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
 
     public void restoreInputState() {
-        if (!inputView.getText().equals("") && inputView.getText() != null) return;
+        //if (!inputView.getText().equals("") && inputView.getText() != null) return;
 
         skipOnTextChanges = true;
 

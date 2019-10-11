@@ -687,7 +687,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     }
 
     private void insertExtraText() {
-        if (extraText == null) {
+        if (extraText == null || extraText.equals("")) {
             return;
         }
 
