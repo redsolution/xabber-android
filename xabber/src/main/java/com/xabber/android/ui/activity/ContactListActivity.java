@@ -31,14 +31,12 @@ import android.view.Menu;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.xabber.android.R;
-import com.xabber.android.data.ActivityManager;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
@@ -48,9 +46,6 @@ import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.UserJid;
-import com.xabber.android.data.extension.muc.MUCManager;
-import com.xabber.android.data.http.CrowdfundingManager;
-import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
@@ -66,10 +61,7 @@ import com.xabber.android.presentation.ui.contactlist.ContactListFragment;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.dialog.AccountChooseDialogFragment;
 import com.xabber.android.ui.dialog.AccountChooseDialogFragment.OnChooseListener;
-import com.xabber.android.ui.dialog.ContactSubscriptionDialog;
 import com.xabber.android.ui.dialog.EnterPassDialog;
-import com.xabber.android.ui.dialog.MucInviteDialog;
-import com.xabber.android.ui.dialog.MucPrivateChatInvitationDialog;
 import com.xabber.android.ui.dialog.TranslationDialog;
 import com.xabber.android.ui.fragment.CallsFragment;
 import com.xabber.android.ui.fragment.ContactListDrawerFragment;
@@ -103,12 +95,6 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
      * Select contact to be invited to the room was requested.
      */
     private static final int CODE_OPEN_CHAT = 301;
-
-    private static final String ACTION_CLEAR_STACK = "com.xabber.android.ui.activity.ContactList.ACTION_CLEAR_STACK";
-    private static final String ACTION_ROOM_INVITE = "com.xabber.android.ui.activity.ContactList.ACTION_ROOM_INVITE";
-    private static final String ACTION_MUC_PRIVATE_CHAT_INVITE = "com.xabber.android.ui.activity.ContactList.ACTION_MUC_PRIVATE_CHAT_INVITE";
-    private static final String ACTION_CONTACT_SUBSCRIPTION = "com.xabber.android.ui.activity.ContactList.ACTION_CONTACT_SUBSCRIPTION";
-    private static final String ACTION_INCOMING_MUC_INVITE = "com.xabber.android.ui.activity.ContactList.ACTION_INCOMING_MUC_INVITE";
 
     private static final long CLOSE_ACTIVITY_AFTER_DELAY = 300;
 
@@ -156,71 +142,12 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
         return new Intent(context, ContactListActivity.class);
     }
 
-    public static Intent createClearStackIntent(Context context) {
-        Intent intent = new Intent(context, ContactListActivity.class);
-        intent.setAction(ACTION_CLEAR_STACK);
-        return intent;
-    }
-
-    public static Intent createRoomInviteIntent(Context context, AccountJid account, UserJid room) {
-        Intent intent = new EntityIntentBuilder(context, ContactListActivity.class)
-                .setAccount(account).setUser(room).build();
-        intent.setAction(ACTION_ROOM_INVITE);
-        return intent;
-    }
-
-    public static Intent createMucPrivateChatInviteIntent(Context context, AccountJid account, UserJid user) {
-        Intent intent = new EntityIntentBuilder(context, ContactListActivity.class)
-                .setAccount(account).setUser(user).build();
-        intent.setAction(ACTION_MUC_PRIVATE_CHAT_INVITE);
-        return intent;
-    }
-
-    public static Intent createContactSubscriptionIntent(Context context, AccountJid account, UserJid user) {
-        Intent intent = new EntityIntentBuilder(context, ContactListActivity.class)
-                .setAccount(account).setUser(user).build();
-        intent.setAction(ACTION_CONTACT_SUBSCRIPTION);
-        return intent;
-    }
-
-    public static Intent createMucInviteIntent(Context context, AccountJid account, UserJid user) {
-        Intent intent = new EntityIntentBuilder(context, ContactListActivity.class)
-                .setAccount(account).setUser(user).build();
-        intent.setAction(ACTION_INCOMING_MUC_INVITE);
-        return intent;
-    }
-
-    private static AccountJid getRoomInviteAccount(Intent intent) {
-        return EntityIntentBuilder.getAccount(intent);
-    }
-
-    private static UserJid getRoomInviteUser(Intent intent) {
-        return EntityIntentBuilder.getUser(intent);
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        if (Intent.ACTION_VIEW.equals(getIntent().getAction())
-                || Intent.ACTION_SEND.equals(getIntent().getAction())
-                || Intent.ACTION_SEND_MULTIPLE.equals(getIntent().getAction())
-                || Intent.ACTION_SENDTO.equals(getIntent().getAction())
-                || Intent.ACTION_CREATE_SHORTCUT.equals(getIntent().getAction())) {
-            ActivityManager.getInstance().startNewTask(this);
-        }
-
-        if (ACTION_CLEAR_STACK.equals(getIntent().getAction())) {
-            ActivityManager.getInstance().clearStack(false);
-        }
 
         super.onCreate(savedInstanceState);
 
         if (isFinishing()) {
-            return;
-        }
-
-        if (!isTaskRoot() && !ACTION_ROOM_INVITE.equals(getIntent().getAction())
-            && !Intent.ACTION_CREATE_SHORTCUT.equals(getIntent().getAction())) {
-            finish();
             return;
         }
 
@@ -253,21 +180,6 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
     protected void onDestroy() {
         super.onDestroy();
         compositeSubscription.clear();
-    }
-
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        setIntent(intent);
-        action = getIntent().getAction();
-        getIntent().setAction(null);
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        outState.putString(SAVED_ACTION, action);
-        outState.putString(SAVED_SEND_TEXT, sendText);
-        super.onSaveInstanceState(outState);
     }
 
     /**
@@ -346,22 +258,11 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
             return;
         }
 
-        //rebuildAccountToggle();
         setStatusBarColor();
         Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
 
         if (action != null) {
             switch (action) {
-                case ContactListActivity.ACTION_ROOM_INVITE:
-                case Intent.ACTION_SEND:
-                case Intent.ACTION_SEND_MULTIPLE:
-                case ChatActivity.ACTION_FORWARD:
-                case Intent.ACTION_CREATE_SHORTCUT:
-                    if (Intent.ACTION_SEND.equals(action)) {
-                        sendText = getIntent().getStringExtra(Intent.EXTRA_TEXT);
-                    }
-                    Toast.makeText(this, getString(R.string.select_contact), Toast.LENGTH_LONG).show();
-                    break;
                 case Intent.ACTION_VIEW: {
                     action = null;
                     Uri data = getIntent().getData();
@@ -393,36 +294,6 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
                     }
                     break;
                 }
-                case Intent.ACTION_SENDTO: {
-                    action = null;
-                    Uri data = getIntent().getData();
-                    if (data != null) {
-                        String path = data.getPath();
-                        if (path != null && path.startsWith("/")) {
-                            try {
-                                UserJid user = UserJid.from(path.substring(1));
-                                openChat(user, null);
-                            } catch (UserJid.UserJidCreateException e) {
-                                LogManager.exception(this, e);
-                            }
-                        }
-                    }
-                    break;
-                }
-                case ContactListActivity.ACTION_MUC_PRIVATE_CHAT_INVITE:
-                    action = null;
-                    showMucPrivateChatDialog();
-                    break;
-
-                case ContactListActivity.ACTION_CONTACT_SUBSCRIPTION:
-                    action = null;
-                    showContactSubscriptionDialog();
-                    break;
-
-                case ContactListActivity.ACTION_INCOMING_MUC_INVITE:
-                    action = null;
-                    showMucInviteDialog();
-                    break;
             }
         }
 
@@ -441,8 +312,8 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
             showShowcase(true);
         }
 
-        // update crowdfunding info
-        CrowdfundingManager.getInstance().onLoad();
+//        // update crowdfunding info
+//        CrowdfundingManager.getInstance().onLoad();
 
         // remove all message notifications
         MessageNotificationManager.getInstance().removeAllMessageNotifications();
@@ -480,33 +351,6 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
                 }
             }
             XabberAccountManager.getInstance().clearXmppAccountsForCreate();
-        }
-    }
-
-    private void showMucInviteDialog() {
-        Intent intent = getIntent();
-        AccountJid account = getRoomInviteAccount(intent);
-        UserJid user = getRoomInviteUser(intent);
-        if (account != null && user != null) {
-            MucInviteDialog.newInstance(account, user).show(getFragmentManager(), MucInviteDialog.class.getName());
-        }
-    }
-
-    private void showContactSubscriptionDialog() {
-        Intent intent = getIntent();
-        AccountJid account = getRoomInviteAccount(intent);
-        UserJid user = getRoomInviteUser(intent);
-        if (account != null && user != null) {
-            ContactSubscriptionDialog.newInstance(account, user).show(getFragmentManager(), ContactSubscriptionDialog.class.getName());
-        }
-    }
-
-    private void showMucPrivateChatDialog() {
-        Intent intent = getIntent();
-        AccountJid account = getRoomInviteAccount(intent);
-        UserJid user = getRoomInviteUser(intent);
-        if (account != null && user != null) {
-            MucPrivateChatInvitationDialog.newInstance(account, user).show(getFragmentManager(), MucPrivateChatInvitationDialog.class.getName());
         }
     }
 
@@ -554,7 +398,6 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
     private void exit() {
         Application.getInstance().requestToClose();
         showDialog(DIALOG_CLOSE_APPLICATION_ID);
-        //getContactListFragment().unregisterListeners();
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -604,82 +447,15 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
         onContactClick(contact);
     }
 
-//    @Override
-//    public void onMarkAllReadButtonClick() {
-//        for (AbstractChat chat : MessageManager.getInstance().getChatsOfEnabledAccount()){
-//            chat.markAsReadAll(true);
-//        }
-//        getChatListFragment().onStateSelected(ChatListFragment.ChatListState.recent);
-//        Toast.makeText(this, "All messages was marked as read.", Toast.LENGTH_SHORT).show();
-//    }
-
     @Override
     public void onContactClick(AbstractContact abstractContact) {
-        //if (contentFragment != null)
-            //((ContactListFragment) contentFragment).filterContactList("");
-        //if (bottomBar != null) bottomBar.closeSearch(); need for old menu
-
         if (action == null) {
             startActivityForResult(ChatActivity.createSendIntent(this, abstractContact.getAccount(),
                     abstractContact.getUser(), null), CODE_OPEN_CHAT);
             return;
         }
-        switch (action) {
-            case ACTION_ROOM_INVITE: {
-                action = null;
-                Intent intent = getIntent();
-                AccountJid account = getRoomInviteAccount(intent);
-                UserJid user = getRoomInviteUser(intent);
-                if (account != null && user != null) {
-                    try {
-                        MUCManager.getInstance().invite(account, user.getJid().asEntityBareJidIfPossible(), abstractContact.getUser());
-                    } catch (NetworkException e) {
-                        Application.getInstance().onError(e);
-                    }
-                }
-                finish();
-                break;
-            }
-            case Intent.ACTION_SEND:
-                if (!isSharedText(getIntent().getType())) {
-                    // share file
-                    if (getIntent().getExtras() != null) {
-                        action = null;
-                        startActivity(ChatActivity.createSendUriIntent(this,
-                                abstractContact.getAccount(), abstractContact.getUser(),
-                                (Uri)getIntent().getParcelableExtra(Intent.EXTRA_STREAM)));
-                        finish();
-                    }
-                } else {
-                    action = null;
-                    startActivity(ChatActivity.createSendIntent(this,
-                            abstractContact.getAccount(), abstractContact.getUser(), sendText));
-                    finish();
-                }
-                break;
-            case Intent.ACTION_SEND_MULTIPLE:
-                if (getIntent().getExtras() != null) {
-                    action = null;
-                    startActivity(ChatActivity.createSendUrisIntent(this,
-                            abstractContact.getAccount(), abstractContact.getUser(),
-                            getIntent().<Uri>getParcelableArrayListExtra(Intent.EXTRA_STREAM)));
-                    finish();
-                }
-                break;
-            case Intent.ACTION_CREATE_SHORTCUT: {
-                createShortcut(abstractContact);
-                finish();
-                break;
-            }
-            case ChatActivity.ACTION_FORWARD: {
-                forwardMessages(abstractContact, getIntent());
-                break;
-            }
-            default:
                 startActivityForResult(ChatActivity.createSpecificChatIntent(this, abstractContact.getAccount(),
                         abstractContact.getUser()), CODE_OPEN_CHAT);
-                break;
-        }
     }
 
     @Override
@@ -724,12 +500,6 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
         openChat(account, user, text);
     }
 
-//    private void rebuildAccountToggle() {
-//        BottomBar bottomBar = ((BottomBar)getSupportFragmentManager().findFragmentById(R.id.containerBottomNavigation));
-//        if (bottomBar != null)
-//            bottomBar.update();
-//    }
-
     @Override
     public void onContactListDrawerListener(int viewId) {
         switch (viewId) {
@@ -764,8 +534,11 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
         showChatListFragment();
         if (unreadMessagesCount > 0 && currentActiveFragment == ActiveFragment.CHATS){
             if (getChatListFragment().getCurrentChatsState() == ChatListFragment.ChatListState.unread)
-                getChatListFragment().showChatListWithState(ChatListFragment.ChatListState.recent);
-            else getChatListFragment().showChatListWithState(ChatListFragment.ChatListState.unread);
+                getChatListFragment().onStateSelected(ChatListFragment.ChatListState.recent);
+            else getChatListFragment().onStateSelected(ChatListFragment.ChatListState.unread);
+        } else if (currentActiveFragment == ActiveFragment.CHATS) {
+
+            getChatListFragment().scrollToTop();
         }
         setStatusBarColor();
     }
@@ -774,6 +547,8 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
     public void onContactsClick() {
         showContactListFragment(null);
         getBottomBarFragment().setChatStateIcon(ChatListFragment.ChatListState.recent);
+        if (currentActiveFragment == ActiveFragment.CONTACTS)
+            getContactListFragment().scrollTo(0);
     }
 
     @Override
@@ -796,30 +571,6 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
         getBottomBarFragment().setChatStateIcon(ChatListFragment.ChatListState.recent);
         setStatusBarColor();
     }
-
-
-    //    @Override             need for old menu
-//    public void onAccountShortcutClick(AccountJid jid) {
-//        if (contentFragment != null && contentFragment instanceof ContactListFragment) {
-//            //((ContactListFragment) contentFragment).showRecent();
-//            ((ContactListFragment) contentFragment).scrollToAccount(jid);
-//            ((ContactListFragment) contentFragment).closeSnackbar();
-//        } else showContactListFragment(jid);
-//    }
-
-//    @Override           for old menu
-//    public void onSearch(String filter) {
-//        if (contentFragment != null && contentFragment instanceof ContactListFragment)
-//            ((ContactListFragment) contentFragment).filterContactList(filter);
-//        else showContactListFragment(null);
-//    }
-
-//    @Override               for old menu
-//    public void onSearchClick() {
-//        if (contentFragment != null && contentFragment instanceof ContactListFragment) {
-//            ((ContactListFragment) contentFragment).closeSnackbar();
-//        } else showContactListFragment(null);
-//    }
 
     private void onXabberAccountClick() {
         startActivity(XabberAccountActivity.createIntent(this));
@@ -928,22 +679,6 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             getWindow().setStatusBarColor(ColorManager.getInstance().getAccountPainter().getDefaultMainColor());
         }
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (contentFragment != null && contentFragment instanceof ContactListFragment ) {
-            ContactListPresenter.ChatListState currentState = ((ContactListFragment) contentFragment).getListState();
-            if (requestCode == CODE_OPEN_CHAT &&
-                    (currentState == (ContactListPresenter.ChatListState.unread)
-                    || currentState == (ContactListPresenter.ChatListState.archived))) {
-            }
-        }
-    }
-
-    private boolean isSharedText(String type) {
-        return type.contains("text/plain");
     }
 
     public void showShowcase(boolean show) {

@@ -3,18 +3,8 @@ package com.xabber.android.presentation.ui.contactlist;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-import androidx.annotation.Nullable;
-import androidx.appcompat.widget.LinearLayoutCompat;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
-import com.google.android.material.snackbar.Snackbar;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.appcompat.widget.PopupMenu;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.recyclerview.widget.SimpleItemAnimator;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,6 +14,14 @@ import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.PopupMenu;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.SimpleItemAnimator;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
@@ -35,26 +33,20 @@ import com.xabber.android.data.connection.ConnectionManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.muc.MUCManager;
-import com.xabber.android.data.message.AbstractChat;
-import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.presentation.mvp.contactlist.ContactListPresenter;
 import com.xabber.android.presentation.mvp.contactlist.ContactListView;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.AccountVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.ButtonVO;
-import com.xabber.android.presentation.ui.contactlist.viewobjects.ChatVO;
-import com.xabber.android.presentation.ui.contactlist.viewobjects.ChatWithButtonVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.ContactVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.GroupVO;
 import com.xabber.android.ui.activity.AccountActivity;
 import com.xabber.android.ui.activity.AccountAddActivity;
-import com.xabber.android.ui.activity.ConferenceSelectActivity;
 import com.xabber.android.ui.activity.ContactActivity;
 import com.xabber.android.ui.activity.ContactAddActivity;
 import com.xabber.android.ui.activity.ContactEditActivity;
 import com.xabber.android.ui.activity.ContactListActivity;
-import com.xabber.android.ui.activity.StatusEditActivity;
 import com.xabber.android.ui.adapter.contactlist.ContactListState;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.helper.ContextMenuHelper;
@@ -65,7 +57,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import de.hdodenhof.circleimageview.CircleImageView;
 import eu.davidea.flexibleadapter.FlexibleAdapter;
 import eu.davidea.flexibleadapter.items.IFlexible;
 
@@ -75,29 +66,22 @@ import eu.davidea.flexibleadapter.items.IFlexible;
 
 public class ContactListFragment extends Fragment implements ContactListView,
         FlexibleAdapter.OnStickyHeaderChangeListener, FlexibleAdapter.OnItemClickListener,
-        FlexibleAdapter.OnItemSwipeListener, View.OnClickListener {
+        View.OnClickListener {
 
     public static final String ACCOUNT_JID = "account_jid";
 
-    private static final int MAX_RECENT_ITEMS = 12;
-
-    private AccountJid scrollToAccountJid;
     private ContactListPresenter presenter;
     private ContactListFragmentListener contactListFragmentListener;
 
+    private RecyclerView recyclerView;
     private FlexibleAdapter<IFlexible> adapter;
     private List<IFlexible> items;
-    private Snackbar snackbar;
     private CoordinatorLayout coordinatorLayout;
     private LinearLayoutManager linearLayoutManager;
-    private View placeholderView;
-    private TextView tvPlaceholderMessage;
-    private ImageView placeholderImage;
     private AccountShortcutAdapter accountShortcutAdapter;
     private RecyclerView accountsRecyclerView;
     private ArrayList<AccountShortcutVO> accountShortcutVOArrayList = new ArrayList<>();
     private ArrayList<AccountJid> accountsJidList;
-    private CircleImageView ivAvatarOverlay;
     /**
      * View with information shown on empty contact list.
      */
@@ -161,30 +145,20 @@ public class ContactListFragment extends Fragment implements ContactListView,
         contactListFragmentListener = null;
     }
 
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        this.scrollToAccountJid = (AccountJid) getArguments().getSerializable(ACCOUNT_JID);
-    }
-
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_contact_list_new, container, false);
 
-        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
+        recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
         linearLayoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(linearLayoutManager);
         coordinatorLayout = (CoordinatorLayout) view.findViewById(R.id.coordinatorLayout);
-        placeholderView = view.findViewById(R.id.placeholderView);
-        tvPlaceholderMessage = (TextView) view.findViewById(R.id.tvPlaceholderMessage);
-        placeholderImage = view.findViewById(R.id.placeholderImage);
-        ColorManager.setGrayScaleFilter(placeholderImage);
 
         infoView = view.findViewById(R.id.info);
         connectedView = infoView.findViewById(R.id.connected);
         disconnectedView = infoView.findViewById(R.id.disconnected);
-        ColorManager.setGrayScaleFilter(disconnectedView);
+        //ColorManager.setGrayScaleFilter(disconnectedView);
         textView = (TextView) infoView.findViewById(R.id.text);
         buttonView = (Button) infoView.findViewById(R.id.button);
         animation = AnimationUtils.loadAnimation(getActivity(), R.anim.connection);
@@ -209,6 +183,10 @@ public class ContactListFragment extends Fragment implements ContactListView,
         accountsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
         updateAccountsList();
         return view;
+    }
+
+    public void scrollToTop(){
+        recyclerView.smoothScrollToPosition(0);
     }
 
     /**
@@ -240,11 +218,6 @@ public class ContactListFragment extends Fragment implements ContactListView,
     public void onResume() {
         super.onResume();
         presenter.bindView(this);
-
-//        if (scrollToAccountJid != null) {
-//            scrollToAccount(scrollToAccountJid);
-//            scrollToAccountJid = null;
-//        }
     }
 
     @Override
@@ -255,10 +228,6 @@ public class ContactListFragment extends Fragment implements ContactListView,
 
     @Override
     public void updateItems(List<IFlexible> items) {
-        if (AccountManager.getInstance().getCommonState() != CommonState.online){
-            showPlaceholder(Application.getInstance().getString(R.string.application_state_waiting));
-            items.clear();
-        } else hidePlaceholder();
         this.items.clear();
         this.items.addAll(items);
         adapter.updateDataSet(this.items);
@@ -293,42 +262,6 @@ public class ContactListFragment extends Fragment implements ContactListView,
             if (Build.VERSION.SDK_INT > 20)
                 ((ContactListActivity)getActivity()).setStatusBarColor(clickedAccountJid);
         }
-    }
-
-    @Override
-    public void onItemSwipe(int position, int direction) {
-        Object itemAtPosition = adapter.getItem(position);
-        if (itemAtPosition != null && itemAtPosition instanceof ChatVO) {
-
-            // backup of removed item for undo purpose
-            final ChatVO deletedItem = (ChatVO) itemAtPosition;
-
-            // update value
-            setChatArchived(deletedItem, !(deletedItem).isArchived());
-
-            // remove the item from recycler view
-            adapter.removeItem(position);
-
-            // update end of list
-            if (presenter.getCurrentChatsState() == ContactListPresenter.ChatListState.recent) {
-                ArrayList<IFlexible> items = presenter.getTwoNextRecentChat();
-                if (items != null && items.size() == 2) {
-                    adapter.addItem(MAX_RECENT_ITEMS - 1, items.get(0));
-                    adapter.updateItem(MAX_RECENT_ITEMS, items.get(1), null);
-                }
-            }
-
-            // showing snackbar with Undo option
-            showSnackbar(deletedItem, position);
-
-            // update unread count
-            presenter.updateUnreadCount();
-        }
-    }
-
-    @Override
-    public void onActionStateChanged(RecyclerView.ViewHolder viewHolder, int actionState) {
-
     }
 
     @Override
@@ -396,74 +329,6 @@ public class ContactListFragment extends Fragment implements ContactListView,
         if (buttonVO.getAction().equals(ButtonVO.ACTION_ADD_CONTACT)) {
             getActivity().startActivity(ContactAddActivity.createIntent(getActivity()));
         }
-    }
-
-    @Override
-    public void startAddContactActivity() {
-        startActivity(ContactAddActivity.createIntent(getActivity()));
-    }
-
-    @Override
-    public void startJoinConferenceActivity() {
-        startActivity(ConferenceSelectActivity.createIntent(getActivity()));
-    }
-
-    @Override
-    public void startSetStatusActivity() {
-        startActivity(StatusEditActivity.createIntent(getActivity()));
-    }
-
-    public void showSnackbar(final ChatVO deletedItem, final int deletedIndex) {
-        if (snackbar != null) snackbar.dismiss();
-        final boolean archived = (deletedItem).isArchived();
-        snackbar = Snackbar.make(coordinatorLayout, archived ? R.string.chat_was_unarchived
-                : R.string.chat_was_archived, Snackbar.LENGTH_LONG);
-        snackbar.setAction(R.string.undo, new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                // update value
-                setChatArchived((ChatVO) deletedItem, archived);
-
-                // update end of list
-                if (presenter.getCurrentChatsState() == ContactListPresenter.ChatListState.recent
-                        && presenter.getAllChatsSize() > MAX_RECENT_ITEMS) {
-                    ChatWithButtonVO lastChat = ChatWithButtonVO.convert((ChatVO)
-                            adapter.getItem(MAX_RECENT_ITEMS - 1));
-                    adapter.removeItem(MAX_RECENT_ITEMS - 1);
-                    adapter.updateItem(MAX_RECENT_ITEMS - 1, lastChat, null);
-                }
-
-                // undo is selected, restore the deleted item
-                adapter.addItem(deletedIndex, deletedItem);
-
-                // update unread count
-                presenter.updateUnreadCount();
-            }
-        });
-        snackbar.setActionTextColor(Color.YELLOW);
-        snackbar.show();
-    }
-
-    @Override
-    public void closeSnackbar() {
-        if (snackbar != null) snackbar.dismiss();
-    }
-
-    @Override
-    public void closeSearch() {
-        //((ContactListActivity)getActivity()).closeSearch();
-    }
-
-    @Override
-    public void showPlaceholder(String message) {
-        tvPlaceholderMessage.setText(message);
-        placeholderView.setVisibility(View.VISIBLE);
-    }
-
-    @Override
-    public void hidePlaceholder() {
-        placeholderView.setVisibility(View.GONE);
     }
 
     @Override
@@ -538,7 +403,7 @@ public class ContactListFragment extends Fragment implements ContactListView,
         } else if (commonState == CommonState.offline) {
             state = ContactListState.offline;
             text = R.string.application_state_offline;
-            button = R.string.application_action_offline;
+            button = R.string.application_state_offline;
             listener = new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -600,13 +465,6 @@ public class ContactListFragment extends Fragment implements ContactListView,
         buttonView.setOnClickListener(listener);
     }
 
-//    public void showRecent() {
-//        if (presenter != null) {
-//            presenter.onStateSelected(ContactListPresenter.ChatListState.recent);
-//            ((ContactListActivity)getActivity()).setStatusBarColor();
-//        }
-//    }
-
     /**
      * Scroll contact list to specified account.
      *
@@ -631,18 +489,5 @@ public class ContactListFragment extends Fragment implements ContactListView,
     public void scrollTo(int position) {
         if (linearLayoutManager != null)
             linearLayoutManager.scrollToPositionWithOffset(position, 0);
-    }
-
-    public void setChatArchived(ChatVO chatVO, boolean archived) {
-        AbstractChat chat = MessageManager.getInstance().getChat(chatVO.getAccountJid(), chatVO.getUserJid());
-        if (chat != null) chat.setArchived(archived, true);
-    }
-
-    public void filterContactList(String filter) {
-        if (presenter != null) presenter.setFilterString(filter);
-    }
-
-    public ContactListPresenter.ChatListState getListState() {
-        return presenter.getCurrentChatsState();
     }
 }

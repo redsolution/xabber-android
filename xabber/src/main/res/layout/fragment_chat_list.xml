@@ -7,6 +7,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/chatlist_toolbar_root"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -31,6 +32,7 @@
     </com.google.android.material.appbar.AppBarLayout>
 
     <FrameLayout
+        android:id="@+id/chatlist_recycler_view_framelayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
@@ -70,6 +72,16 @@
             android:layout_marginTop="10dp"
             android:text="@string/placeholder_no_unread"
             android:textColor="?android:attr/textColorSecondary" />
+
+        <Button
+            android:id="@+id/chatlist_placeholder_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_below="@id/text"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dip"
+            android:text="@string/application_action_waiting" />
 
     </LinearLayout>
 

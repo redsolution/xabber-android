@@ -24,14 +24,7 @@ public interface ContactListView {
     void onAccountAvatarClick(int adapterPosition);
     void onAccountMenuClick(int adapterPosition, View view);
     void onButtonItemClick(ButtonVO buttonVO);
-    void closeSnackbar();
-    void closeSearch();
-    void showPlaceholder(String message);
-    void hidePlaceholder();
     void onContactListChanged(CommonState commonState, boolean hasContacts,
                               boolean hasVisibleContacts, boolean isFilterEnabled);
-    void startAddContactActivity();
-    void startJoinConferenceActivity();
-    void startSetStatusActivity();
     void updateAccountsList();
 }

@@ -11,12 +11,15 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.RelativeLayout;
@@ -25,11 +28,13 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.snackbar.Snackbar;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
@@ -37,9 +42,10 @@ import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.CommonState;
+import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
+import com.xabber.android.data.connection.ConnectionManager;
 import com.xabber.android.data.database.messagerealm.MessageItem;
-import com.xabber.android.data.database.realm.CrowdfundingMessage;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
@@ -47,31 +53,32 @@ import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.muc.RoomChat;
 import com.xabber.android.data.extension.muc.RoomContact;
-import com.xabber.android.data.http.CrowdfundingManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.ChatContact;
-import com.xabber.android.data.message.CrowdfundingChat;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.MessageUpdateEvent;
 import com.xabber.android.data.message.NewIncomingMessageEvent;
 import com.xabber.android.data.message.NewMessageEvent;
 import com.xabber.android.data.notification.MessageNotificationManager;
 import com.xabber.android.data.roster.AbstractContact;
-import com.xabber.android.data.roster.CrowdfundingContact;
 import com.xabber.android.data.roster.GroupManager;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.presentation.mvp.contactlist.ContactListPresenter;
 import com.xabber.android.presentation.mvp.contactlist.UpdateBackpressure;
+import com.xabber.android.presentation.ui.contactlist.viewobjects.CategoryVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.ChatVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.ContactVO;
-import com.xabber.android.presentation.ui.contactlist.viewobjects.CrowdfundingChatVO;
+import com.xabber.android.presentation.ui.contactlist.viewobjects.ExtContactVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.GroupVO;
+import com.xabber.android.ui.activity.AccountAddActivity;
 import com.xabber.android.ui.activity.ConferenceSelectActivity;
 import com.xabber.android.ui.activity.ContactActivity;
 import com.xabber.android.ui.activity.ContactAddActivity;
 import com.xabber.android.ui.activity.ContactEditActivity;
+import com.xabber.android.ui.activity.ContactListActivity;
+import com.xabber.android.ui.activity.SearchActivity;
 import com.xabber.android.ui.activity.StatusEditActivity;
 import com.xabber.android.ui.adapter.ChatComparator;
 import com.xabber.android.ui.adapter.contactlist.AccountConfiguration;
@@ -90,6 +97,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -107,19 +115,26 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
     private Snackbar snackbar;
     private CoordinatorLayout coordinatorLayout;
     private LinearLayoutManager linearLayoutManager;
-    private View placeholderView;
-    private TextView placeholderMessage;
-    private ImageView placeholderImage;
     private ChatListFragmentListener chatListFragmentListener;
     private ChatListState currentChatsState = ChatListState.recent;
     private RecyclerView recyclerView;
+    private FrameLayout recyclerFrameLayout;
     private TextView markAllAsReadButton;
     private Drawable markAllReadBackground;
+    private String filterString;
 
-    /*
-    Toolbar variables
-     */
-    private RelativeLayout toolbar;
+    private int maxItemsOnScreen;
+
+    /* Placeholder variables */
+    private View placeholderView;
+    private TextView placeholderMessage;
+    private ImageView placeholderImage;
+    private Button placeholderButton;
+
+    /* Toolbar variables */
+    private RelativeLayout toolbarRelativeLayout;
+    private AppBarLayout toolbarAppBarLayout;
+    private Toolbar toolbarToolbarLayout;
     private View toolbarAccountColorIndicator;
     private View toolbarAccountColorIndicatorBack;
     private ImageView toolbarAddIv;
@@ -132,6 +147,7 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         void onChatClick(AbstractContact contact);
         void onChatListStateChanged(ChatListState chatListState);
         void onUnreadChanged(int unread);
+        void onManageAccountsClick();
     }
 
     @Override
@@ -222,14 +238,11 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         return fragment;
     }
 
-    public void showChatListWithState(ChatListState state){
-        onStateSelected(state);
-    }
-
     public void onStateSelected(ChatListState state) {
         this.currentChatsState = state;
         updateBackpressure.run();
         chatListFragmentListener.onChatListStateChanged(state);
+        toolbarAppBarLayout.setExpanded(true, false);
         this.closeSnackbar();
     }
 
@@ -243,6 +256,13 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         //TODO implement scroll to account if it need;
     }
 
+    public void scrollToTop(){
+        if (recyclerView != null && recyclerView.getAdapter().getItemCount() != 0){
+            recyclerView.scrollToPosition(0);
+            toolbarAppBarLayout.setExpanded(true, false);
+        }
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -251,6 +271,7 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         recyclerView = (RecyclerView) view.findViewById(R.id.chatlist_recyclerview);
         linearLayoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(linearLayoutManager);
+        recyclerFrameLayout = view.findViewById(R.id.chatlist_recycler_view_framelayout);
         coordinatorLayout = (CoordinatorLayout) view.findViewById(R.id.chatlist_coordinator_layout);
         markAllAsReadButton = (TextView) view.findViewById(R.id.mark_all_as_read_button);
         markAllAsReadButton.setOnClickListener(new View.OnClickListener(){
@@ -269,7 +290,8 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         placeholderView = view.findViewById(R.id.chatlist_placeholder_view);
         placeholderMessage = view.findViewById(R.id.chatlist_placeholder_message);
         placeholderImage = view.findViewById(R.id.chatlist_placeholder_image);
-        ColorManager.setGrayScaleFilter(placeholderImage);
+        placeholderButton = view.findViewById(R.id.chatlist_placeholder_button);
+        //ColorManager.setGrayScaleFilter(placeholderImage);
 
         items = new ArrayList<>();
         adapter = new FlexibleAdapter<>(items, null, false);
@@ -285,7 +307,8 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         /*
         Toolbar variables initialization
          */
-        toolbar = view.findViewById(R.id.toolbar_chatlist);
+        toolbarRelativeLayout = view.findViewById(R.id.toolbar_chatlist);
+        toolbarToolbarLayout = view.findViewById(R.id.chat_list_toolbar);
         toolbarAccountColorIndicator = view.findViewById(R.id.accountColorIndicator);
         toolbarAccountColorIndicatorBack = view.findViewById(R.id.accountColorIndicatorBack);
         toolbarAddIv = (ImageView) view.findViewById(R.id.ivAdd);
@@ -293,10 +316,19 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         toolbarAvatarIv = (ImageView) view.findViewById(R.id.ivAvatar);
         toolbarStatusIv = (ImageView) view.findViewById(R.id.ivStatus);
         toolbarSearchIv = (ImageView) view.findViewById(R.id.toolbar_search_button);
+        toolbarAppBarLayout = view.findViewById(R.id.chatlist_toolbar_root);
         toolbarAddIv.setOnClickListener(this);
         toolbarAvatarIv.setOnClickListener(this);
         toolbarTitleTv.setOnClickListener(this);
         toolbarSearchIv.setOnClickListener(this);
+        if (!getActivity().getClass().getSimpleName().equals(ContactListActivity.class.getSimpleName()))
+            toolbarAppBarLayout.setVisibility(View.GONE);
+
+        /* find possible max recycler items*/
+        DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
+        int dpHeight = Math.round(displayMetrics.heightPixels / displayMetrics.density);
+        maxItemsOnScreen = Math.round((dpHeight - 56 - 56) / 64);
+
         /*
         Initialize and run UpdateBackpressure
          */
@@ -305,7 +337,7 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         return view;
     }
 
-    /** Update toolbar vie current state*/
+    /** Update toolbarRelativeLayout via current state*/
     public void updateToolbar(){
         /*
         Update ChatState TextView display via current chat state
@@ -351,7 +383,7 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         a.recycle();
         final int[] accountGroupColors = getContext().getResources().getIntArray(accountGroupColorsResourceId);
         final int level = AccountManager.getInstance().getColorLevel(AccountPainter.getFirstAccount());
-        toolbar.setBackgroundColor(accountGroupColors[level]);
+        toolbarRelativeLayout.setBackgroundColor(accountGroupColors[level]);
 
         /*
         Update left color indicator via current main user
@@ -378,7 +410,7 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
                 showTitlePopup(toolbarTitleTv);
                 break;
             case R.id.toolbar_search_button:
-                Toast.makeText(getContext(), "Coming soon", Toast.LENGTH_SHORT).show();
+                startActivity(SearchActivity.createSearchIntent(getActivity()));
                 break;
         }
     }
@@ -404,7 +436,7 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
     }
 
     /**
-    Handle toolbar menus clicks
+    Handle toolbarRelativeLayout menus clicks
      */
     @Override
     public boolean onMenuItemClick(MenuItem item) {
@@ -429,27 +461,121 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         }
     }
 
+    /** Show contacts filtered by filterString */
+    public void search(String filterString){
+        this.filterString = filterString;
+        updateBackpressure.refreshRequest();
+    }
+
     /**
     Update chat items in adapter
      */
     private void updateItems(List<IFlexible> items){
-        //check empty state and show placeholder
-        if (items.size() == 0){
-            if (currentChatsState == ChatListState.unread) showPlaceholder(Application.getInstance().getApplicationContext().getString(R.string.placeholder_no_unread));
-            else if (currentChatsState == ChatListState.archived) showPlaceholder(Application.getInstance().getApplicationContext().getString(R.string.placeholder_no_archived));
-        } else if (AccountManager.getInstance().getCommonState() != CommonState.online){
-            showPlaceholder(Application.getInstance().getApplicationContext().getString(R.string.application_state_waiting));
-            recyclerView.setVisibility(View.GONE);
+        CommonState commonState = AccountManager.getInstance().getCommonState();
+        /* Show placeholder if necessary*/
+        if (commonState != CommonState.online){
+            switch (commonState){
+                case roster:
+                    showPlaceholder(Application.getInstance().getApplicationContext().getString(R.string.application_state_connecting), null);
+                    break;
+                case connecting:
+                    showPlaceholder(Application.getInstance().getApplicationContext().getString(R.string.application_state_connecting), null);
+                    break;
+                case waiting:
+                    showPlaceholder(Application.getInstance().getApplicationContext().getString(R.string.application_state_waiting)
+                            , Application.getInstance().getApplicationContext().getString(R.string.application_action_waiting));
+                    placeholderButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            ConnectionManager.getInstance().connectAll();
+                        }
+                    });
+                    break;
+                case offline:
+                    showPlaceholder(Application.getInstance().getApplicationContext().getString(R.string.application_state_offline)
+                            , Application.getInstance().getApplicationContext().getString(R.string.application_state_offline));
+                    placeholderButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            AccountManager.getInstance().setStatus(StatusMode.available, null);
+                        }
+                    });
+                    break;
+                case disabled:
+                    showPlaceholder(Application.getInstance().getApplicationContext().getString(R.string.application_state_disabled)
+                            , Application.getInstance().getApplicationContext().getString(R.string.application_action_disabled));
+                    placeholderButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            chatListFragmentListener.onManageAccountsClick();
+                        }
+                    });
+                    break;
+                case empty:
+                    showPlaceholder(Application.getInstance().getApplicationContext().getString(R.string.application_state_empty),
+                            Application.getInstance().getApplicationContext().getString(R.string.application_action_empty));
+                    placeholderButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            startActivity(AccountAddActivity.createIntent(getActivity()));
+                        }
+                    });
+                    break;
+            }
+        } else if (items.size() == 0) {
+            switch (currentChatsState) {
+                case unread:
+                    showPlaceholder(Application.getInstance().getApplicationContext().getString(R.string.placeholder_no_unread), null);
+                    break;
+                case archived:
+                    showPlaceholder(Application.getInstance().getApplicationContext().getString(R.string.placeholder_no_archived), null);
+                    break;
+                default:
+                    showPlaceholder(Application.getInstance().getApplicationContext().getString(R.string.application_state_no_contacts),
+                            Application.getInstance().getApplicationContext().getString(R.string.application_action_no_contacts));
+                    placeholderButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            startActivity(ContactAddActivity.createIntent(getActivity()));
+                        }
+                    });
+                    break;
+            }
         } else hidePlaceholder();
 
+        /* Update items in RecyclerView */
         this.items.clear();
         this.items.addAll(items);
         adapter.updateDataSet(this.items);
+        adapter.notifyDataSetChanged();
     }
 
     @Override
     public void onContactsChanged(Collection<RosterContact> entities) {
         updateBackpressure.refreshRequest();
+    }
+
+    public void setupToolbarLayout(){
+        if (recyclerView != null){
+            int count = items.size();
+            if (count <= maxItemsOnScreen){
+                setToolbarScrollEnabled(false);
+            } else {    setToolbarScrollEnabled(true);  }
+        }
+    }
+
+    private void setToolbarScrollEnabled(boolean enabled){
+        AppBarLayout.LayoutParams toolbarLayoutParams = (AppBarLayout.LayoutParams) toolbarToolbarLayout.getLayoutParams();
+        CoordinatorLayout.LayoutParams appBarLayoutParams = (CoordinatorLayout.LayoutParams) toolbarAppBarLayout.getLayoutParams();
+        if (enabled && toolbarLayoutParams.getScrollFlags() == 0){
+            appBarLayoutParams.setBehavior(new AppBarLayout.Behavior());
+            toolbarLayoutParams.setScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL | AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS);
+        } else if (!enabled && toolbarLayoutParams.getScrollFlags() != 0) {
+            toolbarLayoutParams.setScrollFlags(0);
+            appBarLayoutParams.setBehavior(null);
+        }
+        toolbarToolbarLayout.setLayoutParams(toolbarLayoutParams);
+        toolbarAppBarLayout.setLayoutParams(appBarLayoutParams);
     }
 
     @Override
@@ -531,12 +657,11 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
             if (abstractChat.notifyAboutMessage() && !abstractChat.isArchived())
                 unreadMessageCount += abstractChat.getUnreadMessageCount();
         }
-        unreadMessageCount += CrowdfundingManager.getInstance().getUnreadMessageCount();
+//        unreadMessageCount += CrowdfundingManager.getInstance().getUnreadMessageCount();
         return unreadMessageCount;
     }
 
     public void updateUnreadCount() {
-
         EventBus.getDefault().post(new ContactListPresenter.UpdateUnreadCountEvent(getUnreadCount()));
         chatListFragmentListener.onUnreadChanged(getUnreadCount());
     }
@@ -552,12 +677,12 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
             UserJid userJid = ((ContactVO) item).getUserJid();
             chatListFragmentListener.onChatClick(RosterManager.getInstance().getAbstractContact(accountJid, userJid));
         }
-        else if (item instanceof CrowdfundingChatVO) {
-            AccountJid accountJid = CrowdfundingChat.getDefaultAccount();
-            UserJid userJid = CrowdfundingChat.getDefaultUser();
-            if (accountJid != null && userJid != null)
-                chatListFragmentListener.onChatClick(RosterManager.getInstance().getAbstractContact(accountJid, userJid));
-        }
+//        else if (item instanceof CrowdfundingChatVO) {
+//            AccountJid accountJid = CrowdfundingChat.getDefaultAccount();
+//            UserJid userJid = CrowdfundingChat.getDefaultUser();
+//            if (accountJid != null && userJid != null)
+//                chatListFragmentListener.onChatClick(RosterManager.getInstance().getAbstractContact(accountJid, userJid));
+//        }
 //        else if (item instanceof ButtonVO){
 //            chatListFragmentListener.onMarkAllReadButtonClick();
 //        }
@@ -621,128 +746,125 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
             }
         }
 
-        // BUILD STRUCTURE //
+        if (filterString == null || filterString.equals("")){
+            // BUILD STRUCTURE //
 
-        // Create arrays.
-        if (showAccounts) {
-            groups = null;
-            contacts = null;
-            for (Map.Entry<AccountJid, AccountConfiguration> entry : accounts.entrySet()) {
-                entry.setValue(new AccountConfiguration(entry.getKey(),
-                        GroupManager.IS_ACCOUNT, GroupManager.getInstance()));
-            }
-        } else {
-            if (showGroups) {
-                groups = new TreeMap<>();
-                contacts = null;
-            } else {
+            // Create arrays.
+            if (showAccounts) {
                 groups = null;
-                contacts = new ArrayList<>();
-            }
-        }
-
-        // chats on top
-        Collection<AbstractChat> chats = MessageManager.getInstance().getChatsOfEnabledAccount();
-        chatsGroup = getChatsGroup(chats, currentChatsState);
-        if (!chatsGroup.isEmpty()) hasVisibleContacts = true;
-
-        // Build structure.
-        for (RosterContact rosterContact : rosterContacts) {
-            if (!rosterContact.isEnabled()) {
-                continue;
-            }
-            hasContacts = true;
-            final boolean online = rosterContact.getStatusMode().isOnline();
-            final AccountJid account = rosterContact.getAccount();
-            final Map<UserJid, AbstractChat> users = abstractChats.get(account);
-            final AbstractChat abstractChat;
-            if (users == null) {
-                abstractChat = null;
-            } else {
-                abstractChat = users.remove(rosterContact.getUser());
-            }
-
-            if (selectedAccount != null && !selectedAccount.equals(account)) {
-                continue;
-            }
-            if (ContactListGroupUtils.addContact(rosterContact, online, accounts, groups,
-                    contacts, showAccounts, showGroups, showOffline)) {
-                hasVisibleContacts = true;
-            }
-        }
-        for (Map<UserJid, AbstractChat> users : abstractChats.values())
-            for (AbstractChat abstractChat : users.values()) {
-                final AbstractContact abstractContact;
-                if (abstractChat instanceof RoomChat) {
-                    abstractContact = new RoomContact((RoomChat) abstractChat);
-                } else {
-                    abstractContact = new ChatContact(abstractChat);
+                contacts = null;
+                for (Map.Entry<AccountJid, AccountConfiguration> entry : accounts.entrySet()) {
+                    entry.setValue(new AccountConfiguration(entry.getKey(),
+                            GroupManager.IS_ACCOUNT, GroupManager.getInstance()));
                 }
-                if (selectedAccount != null && !selectedAccount.equals(abstractChat.getAccount())) {
+            } else {
+                if (showGroups) {
+                    groups = new TreeMap<>();
+                    contacts = null;
+                } else {
+                    groups = null;
+                    contacts = new ArrayList<>();
+                }
+            }
+
+            // chats on top
+            Collection<AbstractChat> chats = MessageManager.getInstance().getChatsOfEnabledAccount();
+            chatsGroup = getChatsGroup(chats, currentChatsState);
+            if (!chatsGroup.isEmpty()) hasVisibleContacts = true;
+
+            // Build structure.
+            for (RosterContact rosterContact : rosterContacts) {
+                if (!rosterContact.isEnabled()) {
                     continue;
                 }
-                final String group;
-                final boolean online;
-                if (abstractChat instanceof RoomChat) {
-                    group = GroupManager.IS_ROOM;
-                    online = abstractContact.getStatusMode().isOnline();
-                } else if (MUCManager.getInstance().isMucPrivateChat(abstractChat.getAccount(), abstractChat.getUser())) {
-                    group = GroupManager.IS_ROOM;
-                    online = abstractContact.getStatusMode().isOnline();
+                hasContacts = true;
+                final boolean online = rosterContact.getStatusMode().isOnline();
+                final AccountJid account = rosterContact.getAccount();
+                final Map<UserJid, AbstractChat> users = abstractChats.get(account);
+                final AbstractChat abstractChat;
+                if (users == null) {
+                    abstractChat = null;
                 } else {
-                    group = GroupManager.NO_GROUP;
-                    online = false;
+                    abstractChat = users.remove(rosterContact.getUser());
                 }
-                hasVisibleContacts = true;
-                ContactListGroupUtils.addContact(abstractContact, group, online, accounts, groups, contacts,
-                        showAccounts, showGroups);
+
+                if (selectedAccount != null && !selectedAccount.equals(account)) {
+                    continue;
+                }
+                if (ContactListGroupUtils.addContact(rosterContact, online, accounts, groups,
+                        contacts, showAccounts, showGroups, showOffline)) {
+                    hasVisibleContacts = true;
+                }
             }
-
-        // BUILD STRUCTURE //
-
-        // Remove empty groups, sort and apply structure.
-        items.clear();
-
-//        /** adding toolbar with avatar of main(top) user account) */
-//        ArrayList<AccountConfiguration> accountsConfigurationList = new ArrayList<AccountConfiguration>(accounts.values());
-//        if (accountsConfigurationList.size() != 0){
-//            AccountJid mainAccountJid = accountsConfigurationList.get(0).getAccount();
-//            AccountItem mainAccountItem = AccountManager.getInstance().getAccount(mainAccountJid);
-//            Drawable mainAccountAvatar = AvatarManager.getInstance().getAccountAvatar(mainAccountJid);
-//            int mainAccountStatusMode = mainAccountItem.getDisplayStatusMode().getStatusLevel();
-//            items.add(new ToolbarVO(Application.getInstance().getApplicationContext(),
-//                    this, currentChatsState, mainAccountAvatar,mainAccountStatusMode));
-//        }
-
-        /** adding crowdfunding chat item */
-        CrowdfundingMessage message = CrowdfundingManager.getInstance().getLastNotDelayedMessageFromRealm();
-        if (message != null) hasVisibleContacts = true;
-
-        if (hasVisibleContacts) {
-            if (currentChatsState == ChatListState.recent){
-                int i = 0;
-                for (AbstractContact contact : chatsGroup.getAbstractContacts()) {
-                    if (contact instanceof CrowdfundingContact) {
-                        items.add(CrowdfundingChatVO.convert((CrowdfundingContact) contact));
+            for (Map<UserJid, AbstractChat> users : abstractChats.values())
+                for (AbstractChat abstractChat : users.values()) {
+                    final AbstractContact abstractContact;
+                    if (abstractChat instanceof RoomChat) {
+                        abstractContact = new RoomContact((RoomChat) abstractChat);
+                    } else {
+                        abstractContact = new ChatContact(abstractChat);
                     }
-                    else items.add(ChatVO.convert(contact, this, null));
-                    i++;
+                    if (selectedAccount != null && !selectedAccount.equals(abstractChat.getAccount())) {
+                        continue;
+                    }
+                    final String group;
+                    final boolean online;
+                    if (abstractChat instanceof RoomChat) {
+                        group = GroupManager.IS_ROOM;
+                        online = abstractContact.getStatusMode().isOnline();
+                    } else if (MUCManager.getInstance().isMucPrivateChat(abstractChat.getAccount(), abstractChat.getUser())) {
+                        group = GroupManager.IS_ROOM;
+                        online = abstractContact.getStatusMode().isOnline();
+                    } else {
+                        group = GroupManager.NO_GROUP;
+                        online = false;
+                    }
+                    hasVisibleContacts = true;
+                    ContactListGroupUtils.addContact(abstractContact, group, online, accounts, groups, contacts,
+                            showAccounts, showGroups);
                 }
-            } else {
-                for (AbstractContact contact : chatsGroup.getAbstractContacts()) {
-                    if (contact instanceof CrowdfundingContact)
-                        items.add(CrowdfundingChatVO.convert((CrowdfundingContact) contact));
-                    else items.add(ChatVO.convert(contact, this, null));
+
+            // BUILD STRUCTURE //
+
+            // Remove empty groups, sort and apply structure.
+            items.clear();
+
+//            /** adding crowdfunding chat item */
+//            CrowdfundingMessage message = CrowdfundingManager.getInstance().getLastNotDelayedMessageFromRealm();
+//            if (message != null) hasVisibleContacts = true;
+
+            if (hasVisibleContacts) {
+                if (currentChatsState == ChatListState.recent){
+                    int i = 0;
+                    for (AbstractContact contact : chatsGroup.getAbstractContacts()) {
+//                        if (contact instanceof CrowdfundingContact) {
+//                            items.add(CrowdfundingChatVO.convert((CrowdfundingContact) contact));
+//                        }
+//                        else
+                        items.add(ChatVO.convert(contact, this, null));
+                        i++;
+                    }
+                } else {
+                    for (AbstractContact contact : chatsGroup.getAbstractContacts()) {
+//                        if (contact instanceof CrowdfundingContact)
+//                            items.add(CrowdfundingChatVO.convert((CrowdfundingContact) contact));
+//                        else
+                        items.add(ChatVO.convert(contact, this, null));
+                    }
                 }
             }
+        } else {
+            /* If filterString not epmty, do a search*/
+            final ArrayList<AbstractContact> baseEntities = getSearchResults(rosterContacts, comparator, abstractChats);
+            items.clear();
+
+            items.add(new CategoryVO(Application.getInstance().getApplicationContext().getString(R.string.category_title_contacts)));
+            items.addAll(SettingsManager.contactsShowMessages()
+                    ? ExtContactVO.convert(baseEntities, this)
+                    : ContactVO.convert(baseEntities, this));
+            hasVisibleContacts = baseEntities.size() > 0;
         }
 
-//        /*
-//        Adding at the end of list "Mark all as read button as need"
-//         */
-//        if (currentChatsState == ChatListState.unread && getUnreadCount() > 0){
-//            items.add(ButtonVO.convert(null, "Mark all as read", "what"));
-//        }
         if (currentChatsState == ChatListState.unread && items.size() > 0){
             markAllReadBackground.setColorFilter(ColorManager.getInstance().getAccountPainter().getDefaultMainColor(), PorterDuff.Mode.SRC_ATOP);
             markAllAsReadButton.setVisibility(View.VISIBLE);
@@ -751,15 +873,13 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         updateToolbar();
         updateUnreadCount();
         updateItems(items);
-
+        setupToolbarLayout();
     }
 
     private GroupConfiguration getChatsGroup(Collection<AbstractChat> chats, ChatListState state) {
         GroupConfiguration chatsGroup = new GroupConfiguration(GroupManager.NO_ACCOUNT,
                 GroupVO.RECENT_CHATS_TITLE, GroupManager.getInstance());
-
         List<AbstractChat> newChats = new ArrayList<>();
-
         for (AbstractChat abstractChat : chats) {
             MessageItem lastMessage = abstractChat.getLastMessage();
             if (lastMessage != null) {
@@ -778,44 +898,73 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
                 }
             }
         }
-
-
         // crowdfunding chat
-        int unreadCount = CrowdfundingManager.getInstance().getUnreadMessageCount();
-        CrowdfundingMessage message = CrowdfundingManager.getInstance().getLastNotDelayedMessageFromRealm();
-        if (message != null) {
-            switch (state) {
-                case unread:
-                    if (unreadCount > 0) newChats.add(CrowdfundingChat.createCrowdfundingChat(unreadCount, message));
-                    break;
-                case archived:
-                    break;
-                default:
-                    // recent
-                    newChats.add(CrowdfundingChat.createCrowdfundingChat(unreadCount, message));
-                    break;
-            }
-        }
-
+//        int unreadCount = CrowdfundingManager.getInstance().getUnreadMessageCount();
+//        CrowdfundingMessage message = CrowdfundingManager.getInstance().getLastNotDelayedMessageFromRealm();
+//        if (message != null) {
+//            switch (state) {
+//                case unread:
+//                    if (unreadCount > 0) newChats.add(CrowdfundingChat.createCrowdfundingChat(unreadCount, message));
+//                    break;
+//                case archived:
+//                    break;
+//                default:
+//                    // recent
+//                    newChats.add(CrowdfundingChat.createCrowdfundingChat(unreadCount, message));
+//                    break;
+//            }
+//        }
         Collections.sort(newChats, ChatComparator.CHAT_COMPARATOR);
         chatsGroup.setNotEmpty();
-
-//        int itemsCount = 0;
         for (AbstractChat chat : newChats) {
-//            if (itemsCount < 50 || state != ChatListState.recent) {
-                if (chat instanceof CrowdfundingChat)
-                    chatsGroup.addAbstractContact(new CrowdfundingContact((CrowdfundingChat) chat));
-                else chatsGroup.addAbstractContact(RosterManager.getInstance()
-                        .getBestContact(chat.getAccount(), chat.getUser()));
-                chatsGroup.increment(true);
-//                itemsCount++;
-//            } else break;
+//            if (chat instanceof CrowdfundingChat)
+//                chatsGroup.addAbstractContact(new CrowdfundingContact((CrowdfundingChat) chat));
+//            else
+            chatsGroup.addAbstractContact(RosterManager.getInstance() .getBestContact(chat.getAccount(), chat.getUser()));
+            chatsGroup.increment(true);
         }
-
         ShortcutBuilder.updateShortcuts(Application.getInstance(),
                 new ArrayList<>(chatsGroup.getAbstractContacts()));
-
         return chatsGroup;
+    }
+
+    /** Returns an ArrayList of Contacts filtered by filterString **/
+    private ArrayList<AbstractContact> getSearchResults(Collection<RosterContact> rosterContacts,
+                                                        Comparator<AbstractContact> comparator,
+                                                        Map<AccountJid, Map<UserJid, AbstractChat>> abstractChats) {
+        final ArrayList<AbstractContact> baseEntities = new ArrayList<>();
+
+        // Build structure.
+        for (RosterContact rosterContact : rosterContacts) {
+            if (!rosterContact.isEnabled()) {
+                continue;
+            }
+            final AccountJid account = rosterContact.getAccount();
+            final Map<UserJid, AbstractChat> users = abstractChats.get(account);
+            if (users != null) {
+                users.remove(rosterContact.getUser());
+            }
+            if (rosterContact.getName().toLowerCase(Locale.getDefault()).contains(filterString)
+            || rosterContact.getUser().toString().toLowerCase(Locale.getDefault()).contains(filterString)) {
+                baseEntities.add(rosterContact);
+            }
+        }
+        for (Map<UserJid, AbstractChat> users : abstractChats.values()) {
+            for (AbstractChat abstractChat : users.values()) {
+                final AbstractContact abstractContact;
+                if (abstractChat instanceof RoomChat) {
+                    abstractContact = new RoomContact((RoomChat) abstractChat);
+                } else {
+                    abstractContact = new ChatContact(abstractChat);
+                }
+                if (abstractContact.getName().toLowerCase(Locale.getDefault()).contains(filterString)
+                || abstractContact.getUser().toString().toLowerCase(Locale.getDefault()).contains(filterString)) {
+                    baseEntities.add(abstractContact);
+                }
+            }
+        }
+        Collections.sort(baseEntities, comparator);
+        return baseEntities;
     }
 
     public enum ChatListState {
@@ -824,14 +973,20 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         archived,
         all
     }
-    private void showPlaceholder(String message){
+
+    private void showPlaceholder(String message, @Nullable String buttonMessage){
         placeholderMessage.setText(message);
+        if (buttonMessage != null){
+            placeholderButton.setVisibility(View.VISIBLE);
+            placeholderButton.setText(buttonMessage);
+        }
         placeholderView.setVisibility(View.VISIBLE);
     }
 
     private void hidePlaceholder(){
         recyclerView.setVisibility(View.VISIBLE);
         placeholderView.setVisibility(View.GONE);
+        placeholderButton.setVisibility(View.GONE);
     }
 
     public void showSnackbar(final ChatVO deletedItem, final int deletedIndex) {

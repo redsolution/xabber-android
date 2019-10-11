@@ -9,15 +9,12 @@ import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.CommonState;
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
-import com.xabber.android.data.database.messagerealm.MessageItem;
-import com.xabber.android.data.database.realm.CrowdfundingMessage;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.muc.RoomChat;
 import com.xabber.android.data.extension.muc.RoomContact;
-import com.xabber.android.data.http.CrowdfundingManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.ChatContact;
 import com.xabber.android.data.message.CrowdfundingChat;
@@ -25,7 +22,6 @@ import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.MessageUpdateEvent;
 import com.xabber.android.data.message.NewMessageEvent;
 import com.xabber.android.data.roster.AbstractContact;
-import com.xabber.android.data.roster.CrowdfundingContact;
 import com.xabber.android.data.roster.GroupManager;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.RosterContact;
@@ -35,18 +31,13 @@ import com.xabber.android.presentation.ui.contactlist.viewobjects.AccountWithBut
 import com.xabber.android.presentation.ui.contactlist.viewobjects.AccountWithContactsVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.AccountWithGroupsVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.ButtonVO;
-import com.xabber.android.presentation.ui.contactlist.viewobjects.CategoryVO;
-import com.xabber.android.presentation.ui.contactlist.viewobjects.ChatVO;
-import com.xabber.android.presentation.ui.contactlist.viewobjects.ChatWithButtonVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.ContactVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.CrowdfundingChatVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.ExtContactVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.GroupVO;
-import com.xabber.android.ui.adapter.ChatComparator;
 import com.xabber.android.ui.adapter.contactlist.AccountConfiguration;
 import com.xabber.android.ui.adapter.contactlist.ContactListGroupUtils;
 import com.xabber.android.ui.adapter.contactlist.GroupConfiguration;
-import com.xabber.android.ui.widget.ShortcutBuilder;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -57,7 +48,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -68,10 +58,8 @@ import eu.davidea.flexibleadapter.items.IFlexible;
  */
 
 public class ContactListPresenter implements OnContactChangedListener, OnAccountChangedListener,
-        ContactVO.ContactClickListener, AccountVO.AccountClickListener,// ToolbarVO.OnClickListener,
+        ContactVO.ContactClickListener, AccountVO.AccountClickListener,
         GroupVO.GroupClickListener, UpdateBackpressure.UpdatableObject {
-
-    private static final int MAX_RECENT_ITEMS = 12;
 
     private static ContactListPresenter instance;
     private ContactListView view;
@@ -79,8 +67,6 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
     private UpdateBackpressure updateBackpressure;
 
     private String filterString = null;
-    protected Locale locale = Locale.getDefault();
-    private ChatListState currentChatsState = ChatListState.recent;
 
     public static ContactListPresenter getInstance() {
         if (instance == null) instance = new ContactListPresenter();
@@ -150,7 +136,6 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
 
     @Override
     public void onContactButtonClick(int adapterPosition) {
-        //onStateSelected(ChatListState.all);
     }
 
     @Override
@@ -161,36 +146,6 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
     @Override
     public void onAccountMenuClick(int adapterPosition, View view) {
         if (this.view != null) this.view.onAccountMenuClick(adapterPosition, view);
-    }
-
-//    @Override
-//    public void onStateSelected(ChatListState state) {
-//        this.currentChatsState = state;
-//        updateBackpressure.build();
-//        if (view != null) {
-//            view.closeSnackbar();
-//            view.closeSearch();
-//        }
-//    }
-
-//    @Override
-//    public void onAddContactClick() {
-//        if (view != null) view.startAddContactActivity();
-//    }
-//
-//    @Override
-//    public void onJoinConferenceClick() {
-//        if (view != null) view.startJoinConferenceActivity();
-//    }
-//
-//    @Override
-//    public void onSetStatusClick() {
-//        if (view != null) view.startSetStatusActivity();
-//    }
-
-    public void setFilterString(String filter) {
-        filterString = filter;
-        updateBackpressure.build();
     }
 
     @Override
@@ -240,13 +195,10 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
         final boolean showOffline = SettingsManager.contactsShowOffline();
         final boolean showGroups = SettingsManager.contactsShowGroups();
         final boolean showEmptyGroups = SettingsManager.contactsShowEmptyGroups();
-        final boolean showActiveChats = false;
-        final boolean stayActiveChats = true;
         final boolean showAccounts = SettingsManager.contactsShowAccounts();
         final Comparator<AbstractContact> comparator = SettingsManager.contactsOrder();
         final CommonState commonState = AccountManager.getInstance().getCommonState();
         final AccountJid selectedAccount = AccountManager.getInstance().getSelectedAccount();
-
 
         /**
          * Groups.
@@ -257,11 +209,6 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
          * Contacts.
          */
         final List<AbstractContact> contacts;
-
-        /**
-         * Chat list on top of contact list.
-         */
-        final GroupConfiguration chatsGroup;
 
         /**
          * Whether there is at least one contact.
@@ -297,237 +244,119 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
             }
         }
 
-        if (filterString == null || filterString.isEmpty()) {
+        // BUILD STRUCTURE //
 
-            // BUILD STRUCTURE //
-
-            // Create arrays.
-            if (showAccounts) {
-                groups = null;
+        // Create arrays.
+        if (showAccounts) {
+            groups = null;
+            contacts = null;
+            for (Map.Entry<AccountJid, AccountConfiguration> entry : accounts.entrySet()) {
+                entry.setValue(new AccountConfiguration(entry.getKey(),
+                        GroupManager.IS_ACCOUNT, GroupManager.getInstance()));
+            }
+        } else {
+            if (showGroups) {
+                groups = new TreeMap<>();
                 contacts = null;
-                for (Map.Entry<AccountJid, AccountConfiguration> entry : accounts.entrySet()) {
-                    entry.setValue(new AccountConfiguration(entry.getKey(),
-                            GroupManager.IS_ACCOUNT, GroupManager.getInstance()));
+            } else {
+                groups = null;
+                contacts = new ArrayList<>();
+            }
+        }
+
+        // Build structure.
+        for (RosterContact rosterContact : rosterContacts) {
+            if (!rosterContact.isEnabled()) {
+                continue;
+            }
+            hasContacts = true;
+            final boolean online = rosterContact.getStatusMode().isOnline();
+            final AccountJid account = rosterContact.getAccount();
+            final Map<UserJid, AbstractChat> users = abstractChats.get(account);
+            final AbstractChat abstractChat;
+            if (users == null) {
+                abstractChat = null;
+            } else {
+                abstractChat = users.remove(rosterContact.getUser());
+            }
+
+            if (selectedAccount != null && !selectedAccount.equals(account)) {
+                continue;
+            }
+            if (ContactListGroupUtils.addContact(rosterContact, online, accounts, groups,
+                    contacts, showAccounts, showGroups, showOffline)) {
+                hasVisibleContacts = true;
+            }
+        }
+        for (Map<UserJid, AbstractChat> users : abstractChats.values())
+            for (AbstractChat abstractChat : users.values()) {
+                final AbstractContact abstractContact;
+                if (abstractChat instanceof RoomChat) {
+                    abstractContact = new RoomContact((RoomChat) abstractChat);
+                } else {
+                    abstractContact = new ChatContact(abstractChat);
+                }
+                if (selectedAccount != null && !selectedAccount.equals(abstractChat.getAccount())) {
+                    continue;
+                }
+                final String group;
+                final boolean online;
+                if (abstractChat instanceof RoomChat) {
+                    group = GroupManager.IS_ROOM;
+                    online = abstractContact.getStatusMode().isOnline();
+                } else if (MUCManager.getInstance().isMucPrivateChat(abstractChat.getAccount(), abstractChat.getUser())) {
+                    group = GroupManager.IS_ROOM;
+                    online = abstractContact.getStatusMode().isOnline();
+                } else {
+                    group = GroupManager.NO_GROUP;
+                    online = false;
+                }
+                hasVisibleContacts = true;
+                ContactListGroupUtils.addContact(abstractContact, group, online, accounts, groups, contacts,
+                        showAccounts, showGroups);
+            }
+
+        // BUILD STRUCTURE //
+
+        // Remove empty groups, sort and apply structure.
+        items.clear();
+
+        // set hasVisibleContacts as true if have crowdfunding message
+//        CrowdfundingMessage message = CrowdfundingManager.getInstance().getLastNotDelayedMessageFromRealm();
+//        if (message != null) hasVisibleContacts = true;
+
+        if (hasVisibleContacts) {
+            if (showAccounts) {
+                for (AccountConfiguration rosterAccount : accounts.values()) {
+                    if (rosterAccount.getTotal() != 0) {
+                        if (showGroups) {
+                            createContactListWithAccountsAndGroups(items, rosterAccount, showEmptyGroups, comparator);
+                        } else {
+                            createContactListWithAccounts(items, rosterAccount, comparator);
+                        }
+                    } else {
+                        AccountWithButtonsVO account = AccountWithButtonsVO.convert(rosterAccount, this);
+                        ButtonVO button = ButtonVO.convert(rosterAccount,
+                                Application.getInstance().getApplicationContext().getString(R.string.contact_add), ButtonVO.ACTION_ADD_CONTACT);
+                        account.addSubItem(button);
+                        items.add(account);
+                    }
                 }
             } else {
                 if (showGroups) {
-                    groups = new TreeMap<>();
-                    contacts = null;
+                    createContactListWithGroups(items, showEmptyGroups, groups, comparator);
                 } else {
-                    groups = null;
-                    contacts = new ArrayList<>();
+                    createContactList(items, contacts, comparator);
                 }
             }
-
-            // chats on top
-            Collection<AbstractChat> chats = MessageManager.getInstance().getChatsOfEnabledAccount();
-            chatsGroup = getChatsGroup(chats, currentChatsState);
-            if (!chatsGroup.isEmpty()) hasVisibleContacts = true;
-
-            // Build structure.
-            for (RosterContact rosterContact : rosterContacts) {
-                if (!rosterContact.isEnabled()) {
-                    continue;
-                }
-                hasContacts = true;
-                final boolean online = rosterContact.getStatusMode().isOnline();
-                final AccountJid account = rosterContact.getAccount();
-                final Map<UserJid, AbstractChat> users = abstractChats.get(account);
-                final AbstractChat abstractChat;
-                if (users == null) {
-                    abstractChat = null;
-                } else {
-                    abstractChat = users.remove(rosterContact.getUser());
-                }
-
-                if (selectedAccount != null && !selectedAccount.equals(account)) {
-                    continue;
-                }
-                if (ContactListGroupUtils.addContact(rosterContact, online, accounts, groups,
-                        contacts, showAccounts, showGroups, showOffline)) {
-                    hasVisibleContacts = true;
-                }
-            }
-            for (Map<UserJid, AbstractChat> users : abstractChats.values())
-                for (AbstractChat abstractChat : users.values()) {
-                    final AbstractContact abstractContact;
-                    if (abstractChat instanceof RoomChat) {
-                        abstractContact = new RoomContact((RoomChat) abstractChat);
-                    } else {
-                        abstractContact = new ChatContact(abstractChat);
-                    }
-                    if (selectedAccount != null && !selectedAccount.equals(abstractChat.getAccount())) {
-                        continue;
-                    }
-                    final String group;
-                    final boolean online;
-                    if (abstractChat instanceof RoomChat) {
-                        group = GroupManager.IS_ROOM;
-                        online = abstractContact.getStatusMode().isOnline();
-                    } else if (MUCManager.getInstance().isMucPrivateChat(abstractChat.getAccount(), abstractChat.getUser())) {
-                        group = GroupManager.IS_ROOM;
-                        online = abstractContact.getStatusMode().isOnline();
-                    } else {
-                        group = GroupManager.NO_GROUP;
-                        online = false;
-                    }
-                    hasVisibleContacts = true;
-                    ContactListGroupUtils.addContact(abstractContact, group, online, accounts, groups, contacts,
-                            showAccounts, showGroups);
-                }
-
-            // BUILD STRUCTURE //
-
-            // Remove empty groups, sort and apply structure.
-            items.clear();
-            //items.add(new ToolbarVO(Application.getInstance().getApplicationContext(), this, currentChatsState));
-
-            // set hasVisibleContacts as true if have crowdfunding message
-            CrowdfundingMessage message = CrowdfundingManager.getInstance().getLastNotDelayedMessageFromRealm();
-            if (message != null) hasVisibleContacts = true;
-
-            if (hasVisibleContacts) {
-
-                if (currentChatsState == ChatListState.recent) {
-
-//                    // add recent chats
-//                    int i = 0;
-//                    for (AbstractContact contact : chatsGroup.getAbstractContacts()) {
-//                        if (contact instanceof CrowdfundingContact) {
-//                            items.add(CrowdfundingChatVO.convert((CrowdfundingContact) contact));
-//                        } else if (i == MAX_RECENT_ITEMS - 1) {
-//                            if (getAllChatsSize() > MAX_RECENT_ITEMS)
-//                                items.add(ChatWithButtonVO.convert(contact, this));
-//                            else items.add(ChatVO.convert(contact, this, null));
-//                        } else items.add(ChatVO.convert(contact, this, null));
-//                        i++;
-//                    }
-
-                    if (showAccounts) {
-                        for (AccountConfiguration rosterAccount : accounts.values()) {
-                            if (rosterAccount.getTotal() != 0) {
-                                if (showGroups) {
-                                    createContactListWithAccountsAndGroups(items, rosterAccount, showEmptyGroups, comparator);
-                                } else {
-                                    createContactListWithAccounts(items, rosterAccount, comparator);
-                                }
-                            } else {
-                                AccountWithButtonsVO account = AccountWithButtonsVO.convert(rosterAccount, this);
-                                ButtonVO button = ButtonVO.convert(rosterAccount,
-                                        Application.getInstance().getApplicationContext().getString(R.string.contact_add), ButtonVO.ACTION_ADD_CONTACT);
-                                account.addSubItem(button);
-                                items.add(account);
-                            }
-                        }
-                    } else {
-                        if (showGroups) {
-                            createContactListWithGroups(items, showEmptyGroups, groups, comparator);
-                        } else {
-                            createContactList(items, contacts, comparator);
-                        }
-                    }
-                } else {
-                    for (AbstractContact contact : chatsGroup.getAbstractContacts()) {
-                        if (contact instanceof CrowdfundingContact)
-                            items.add(CrowdfundingChatVO.convert((CrowdfundingContact) contact));
-                        else items.add(ChatVO.convert(contact, this, null));
-                    }
-                }
-            }
-        } else { // Search
-            final ArrayList<AbstractContact> baseEntities = getSearchResults(rosterContacts, comparator, abstractChats);
-            items.clear();
-
-            items.add(new CategoryVO(Application.getInstance().getApplicationContext().getString(R.string.category_title_contacts)));
-            items.addAll(SettingsManager.contactsShowMessages()
-                    ? ExtContactVO.convert(baseEntities, this)
-                    : ContactVO.convert(baseEntities, this));
-            hasVisibleContacts = baseEntities.size() > 0;
         }
 
         if (view != null) view.onContactListChanged(commonState, hasContacts, hasVisibleContacts,
                     filterString != null);
 
-        if (view != null) {
-            if (items.size() == 1 && (filterString == null || filterString.isEmpty())) {
-                if (currentChatsState == ChatListState.unread)
-                    view.showPlaceholder(Application.getInstance().getApplicationContext().getString(R.string.placeholder_no_unread));
-                if (currentChatsState == ChatListState.archived)
-                    view.showPlaceholder(Application.getInstance().getApplicationContext().getString(R.string.placeholder_no_archived));
-            } else view.hidePlaceholder();
-            view.updateItems(items);
-        }
+        view.updateItems(items);
         view.updateAccountsList();
         updateUnreadCount();
-    }
-
-    /**
-     * @param chats which must be filtered
-     * @param state for which you want to filter
-     * @return GroupConfiguration that may contains recent, unread or archived chats.
-     */
-    private GroupConfiguration getChatsGroup(Collection<AbstractChat> chats, ChatListState state) {
-        GroupConfiguration chatsGroup = new GroupConfiguration(GroupManager.NO_ACCOUNT,
-                GroupVO.RECENT_CHATS_TITLE, GroupManager.getInstance());
-
-        List<AbstractChat> newChats = new ArrayList<>();
-
-        for (AbstractChat abstractChat : chats) {
-            MessageItem lastMessage = abstractChat.getLastMessage();
-            if (lastMessage != null) {
-                switch (state) {
-                    case unread:
-                        if (!abstractChat.isArchived() && abstractChat.getUnreadMessageCount() > 0)
-                            newChats.add(abstractChat);
-                        break;
-                    case archived:
-                        if (abstractChat.isArchived()) newChats.add(abstractChat);
-                        break;
-                    default:
-                        // recent
-                        if (!abstractChat.isArchived()) newChats.add(abstractChat);
-                        break;
-                }
-            }
-        }
-
-
-        // crowdfunding chat
-        int unreadCount = CrowdfundingManager.getInstance().getUnreadMessageCount();
-        CrowdfundingMessage message = CrowdfundingManager.getInstance().getLastNotDelayedMessageFromRealm();
-        if (message != null) {
-            switch (state) {
-                case unread:
-                    if (unreadCount > 0) newChats.add(CrowdfundingChat.createCrowdfundingChat(unreadCount, message));
-                    break;
-                case archived:
-                    break;
-                default:
-                    // recent
-                    newChats.add(CrowdfundingChat.createCrowdfundingChat(unreadCount, message));
-                    break;
-            }
-        }
-
-        Collections.sort(newChats, ChatComparator.CHAT_COMPARATOR);
-        chatsGroup.setNotEmpty();
-
-        int itemsCount = 0;
-        for (AbstractChat chat : newChats) {
-            if (itemsCount < MAX_RECENT_ITEMS || state != ChatListState.recent) {
-                if (chat instanceof CrowdfundingChat)
-                    chatsGroup.addAbstractContact(new CrowdfundingContact((CrowdfundingChat) chat));
-                else chatsGroup.addAbstractContact(RosterManager.getInstance()
-                        .getBestContact(chat.getAccount(), chat.getUser()));
-                chatsGroup.increment(true);
-                itemsCount++;
-            } else break;
-        }
-
-        ShortcutBuilder.updateShortcuts(Application.getInstance(),
-                new ArrayList<>(chatsGroup.getAbstractContacts()));
-
-        return chatsGroup;
     }
 
     private void createContactListWithAccountsAndGroups(List<IFlexible> items, AccountConfiguration rosterAccount,
@@ -591,68 +420,6 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
                 : ContactVO.convert(contacts, this));
     }
 
-    private ArrayList<AbstractContact> getSearchResults(Collection<RosterContact> rosterContacts,
-                                                        Comparator<AbstractContact> comparator,
-                                                        Map<AccountJid, Map<UserJid, AbstractChat>> abstractChats) {
-        final ArrayList<AbstractContact> baseEntities = new ArrayList<>();
-
-        // Build structure.
-        for (RosterContact rosterContact : rosterContacts) {
-            if (!rosterContact.isEnabled()) {
-                continue;
-            }
-            final AccountJid account = rosterContact.getAccount();
-            final Map<UserJid, AbstractChat> users = abstractChats.get(account);
-            if (users != null) {
-                users.remove(rosterContact.getUser());
-            }
-            if (rosterContact.getName().toLowerCase(locale).contains(filterString)) {
-                baseEntities.add(rosterContact);
-            }
-        }
-        for (Map<UserJid, AbstractChat> users : abstractChats.values()) {
-            for (AbstractChat abstractChat : users.values()) {
-                final AbstractContact abstractContact;
-                if (abstractChat instanceof RoomChat) {
-                    abstractContact = new RoomContact((RoomChat) abstractChat);
-                } else {
-                    abstractContact = new ChatContact(abstractChat);
-                }
-                if (abstractContact.getName().toLowerCase(locale).contains(filterString)) {
-                    baseEntities.add(abstractContact);
-                }
-            }
-        }
-        Collections.sort(baseEntities, comparator);
-        return baseEntities;
-    }
-
-    public ChatListState getCurrentChatsState() {
-        return currentChatsState;
-    }
-
-    public int getAllChatsSize() {
-        Collection<AbstractChat> chats = MessageManager.getInstance().getChatsOfEnabledAccount();
-        GroupConfiguration chatsGroup = getChatsGroup(chats, ChatListState.all);
-        return chatsGroup.getTotal();
-    }
-
-    public ArrayList<IFlexible> getTwoNextRecentChat() {
-        Collection<AbstractChat> chats = MessageManager.getInstance().getChatsOfEnabledAccount();
-
-        GroupConfiguration chatsGroup = getChatsGroup(chats, currentChatsState);
-        ArrayList<AbstractContact> contacts = (ArrayList<AbstractContact>) chatsGroup.getAbstractContacts();
-
-        ArrayList<IFlexible> items = new ArrayList<>();
-        if (contacts != null && contacts.size() >= MAX_RECENT_ITEMS) {
-            items.add(ChatVO.convert(contacts.get(MAX_RECENT_ITEMS - 2), this, null));
-            if (getAllChatsSize() > MAX_RECENT_ITEMS)
-                items.add(ChatWithButtonVO.convert(contacts.get(MAX_RECENT_ITEMS - 1), this));
-            else items.add(ChatVO.convert(contacts.get(MAX_RECENT_ITEMS - 1), this));
-        }
-        return items;
-    }
-
     public void updateUnreadCount() {
         int unreadMessageCount = 0;
 
@@ -661,15 +428,8 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
                 unreadMessageCount += abstractChat.getUnreadMessageCount();
         }
 
-        unreadMessageCount += CrowdfundingManager.getInstance().getUnreadMessageCount();
+//        unreadMessageCount += CrowdfundingManager.getInstance().getUnreadMessageCount();
         EventBus.getDefault().post(new UpdateUnreadCountEvent(unreadMessageCount));
-    }
-
-    public enum ChatListState {
-        recent,
-        unread,
-        archived,
-        all
     }
 
     public static class UpdateUnreadCountEvent {

@@ -20,14 +20,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import androidx.annotation.Nullable;
-import androidx.core.app.NavUtils;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.viewpager.widget.ViewPager;
-import androidx.appcompat.widget.Toolbar;
 import android.text.InputType;
 import android.view.GestureDetector;
 import android.view.Menu;
@@ -45,6 +38,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.NavUtils;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
+
 import com.xabber.android.R;
 import com.xabber.android.data.ActivityManager;
 import com.xabber.android.data.Application;
@@ -52,7 +51,6 @@ import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.attention.AttentionManager;
 import com.xabber.android.data.extension.blocking.BlockingManager;
@@ -77,7 +75,6 @@ import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.presentation.mvp.contactlist.UpdateBackpressure;
-import com.xabber.android.ui.adapter.ChatViewerAdapter;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.color.StatusBarPainter;
 import com.xabber.android.ui.dialog.AttachDialog;
@@ -86,7 +83,6 @@ import com.xabber.android.ui.dialog.ContactDeleteDialogFragment;
 import com.xabber.android.ui.dialog.SnoozeDialog;
 import com.xabber.android.ui.fragment.ChatFragment;
 import com.xabber.android.ui.fragment.ContactVcardViewerFragment;
-import com.xabber.android.ui.fragment.CrowdfundingChatFragment;
 import com.xabber.android.ui.fragment.OccupantListFragment;
 import com.xabber.android.ui.helper.NewContactTitleInflater;
 import com.xabber.android.ui.helper.PermissionsRequester;
@@ -108,8 +104,6 @@ import java.util.List;
  */
 public class ChatActivity extends ManagedActivity implements OnContactChangedListener,
         OnAccountChangedListener, OnChatStateListener, ChatFragment.ChatViewerFragmentListener, OnBlockedListChangedListener,
-        //RecentChatFragment.Listener,
-        ChatViewerAdapter.FinishUpdateListener,
         ContactVcardViewerFragment.Listener, Toolbar.OnMenuItemClickListener,
         UpdateBackpressure.UpdatableObject, OccupantListFragment.Listener, SnoozeDialog.OnSnoozeListener {
 
@@ -147,8 +141,6 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     private static final String SAVE_EXIT_ON_SEND = "com.xabber.android.ui.activity.ChatActivity.SAVE_EXIT_ON_SEND";
 
     private UpdateBackpressure updateBackpressure;
-
-    ChatViewerAdapter chatViewerAdapter;
     private String extraText = null;
     private ArrayList<String> forwardsIds;
 
@@ -493,9 +485,10 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
 
     private void initChats(boolean animated) {
         Fragment fragment;
-        if (CrowdfundingChat.USER.equals(user.getBareJid().toString()))
-            fragment = CrowdfundingChatFragment.newInstance();
-        else fragment = ChatFragment.newInstance(account, user);
+//        if (CrowdfundingChat.USER.equals(user.getBareJid().toString()))
+//            fragment = CrowdfundingChatFragment.newInstance();
+//        else
+        fragment = ChatFragment.newInstance(account, user);
 
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         if (animated) fragmentTransaction.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right);
@@ -680,11 +673,11 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
 //    public void onPageScrollStateChanged(int state) {
 //    }
 
-    @Override
-    public void onChatViewAdapterFinishUpdate() {
-        insertExtraText();
-        setForwardMessages();
-    }
+//    @Override
+//    public void onChatViewAdapterFinishUpdate() {
+//        insertExtraText();
+//        setForwardMessages();
+//    }
 
     private void setForwardMessages() {
         if (forwardsIds == null || chatFragment == null) return;
@@ -736,7 +729,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         if (!Intent.ACTION_SEND.equals(getIntent().getAction())) {
             ActivityManager.getInstance().clearStack(false);
             if (!ActivityManager.getInstance().hasContactList(this)) {
-                startActivity(ContactListActivity.createIntent(this));
+                startActivity(SearchActivity.createIntent(this));
             }
         }
     }
@@ -963,7 +956,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
                 return true;
 
             case R.id.action_invite_to_chat:
-                startActivity(ContactListActivity.createRoomInviteIntent(this, account, user.getBareUserJid()));
+                startActivity(SearchActivity.createRoomInviteIntent(this, account, user.getBareUserJid()));
                 return true;
 
             case R.id.action_leave_conference:
@@ -1056,7 +1049,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     }
 
     public void forwardMessages(ArrayList<String> messagesIds) {
-        Intent sendIntent = ContactListActivity.createIntent(this);
+        Intent sendIntent = SearchActivity.createIntent(this);
         sendIntent.setAction(ACTION_FORWARD);
         sendIntent.putStringArrayListExtra(KEY_MESSAGES_ID, messagesIds);
         finish();
