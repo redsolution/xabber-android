@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 import androidx.core.content.FileProvider;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.xabber.android.BuildConfig;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
@@ -88,6 +89,7 @@ public class FileManager {
         imageView.setLayoutParams(layoutParams);
         Glide.with(context)
                 .load(path)
+                .transform(new RoundedCorners(10))
                 .into(imageView);
 
         return true;
@@ -239,6 +241,32 @@ public class FileManager {
         BufferedOutputStream bos = null;
         try {
             rotateImageFile = createTempImageFile(fileName);
+            bos = new BufferedOutputStream(new FileOutputStream(rotateImageFile));
+            bos.write(data);
+
+
+        } catch (IOException e) {
+            LogManager.exception(LOG_TAG, e);
+            return null;
+        } finally {
+            if (bos != null) {
+                try {
+                    bos.flush();
+                    bos.close();
+                } catch (IOException e) {
+                    LogManager.exception(LOG_TAG, e);
+                }
+            }
+        }
+        return FileManager.getFileUri(rotateImageFile);
+    }
+
+    @Nullable
+    public static Uri savePNGImage(byte[] data, String fileName) {
+        final File rotateImageFile;
+        BufferedOutputStream bos = null;
+        try {
+            rotateImageFile = createTempPNGImageFile(fileName);
             bos = new BufferedOutputStream(new FileOutputStream(rotateImageFile));
             bos.write(data);
 

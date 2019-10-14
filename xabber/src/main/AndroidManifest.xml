@@ -600,6 +600,9 @@
         <activity android:name=".ui.activity.QRCodeScannerActivity"
             android:screenOrientation="portrait"/>
         <activity android:name=".ui.activity.QRCodeActivity" />
+
+        <activity android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
+            android:theme="@style/Base.Theme.AppCompat"/>
     </application>
 
 </manifest>
