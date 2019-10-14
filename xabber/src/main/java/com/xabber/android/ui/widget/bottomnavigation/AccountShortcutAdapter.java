@@ -75,6 +75,8 @@ public class AccountShortcutAdapter extends RecyclerView.Adapter<AccountShortcut
     public void onBindViewHolder(AccountShortcutAdapter.ViewHolder holder, int position) {
         AccountShortcutVO account = items.get(position);
         holder.ivAvatar.setImageDrawable(account.getAvatar());
+        holder.ivAvatar.setCircleBackgroundColor(account.getAccountColorIndicator());
+        //holder.ivAvatar.setBackgroundColor(account.getAccountColorIndicator());
         //holder.ivAvatar.setBorderColor(account.getAccountColorIndicator());
         holder.ivStatus.setVisibility(View.GONE);
         //holder.ivStatus.setImageLevel(account.getStatusLevel());
