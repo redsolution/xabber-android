@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.Editable;
@@ -30,6 +31,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.soundcloud.android.crop.Crop;
+import com.theartofdev.edmodo.cropper.CropImage;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountItem;
@@ -81,7 +83,7 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
     private static final int REQUEST_PERMISSION_GALLERY = 4;
 
     public static final int MAX_AVATAR_SIZE_PIXELS = 192;
-    public static final String TEMP_FILE_NAME = "cropped";
+    public static final String TEMP_FILE_NAME = "cropped.png";
     public static final String ROTATE_FILE_NAME = "rotated";
     public static final int KB_SIZE_IN_BYTES = 1024;
     public static final String DATE_FORMAT = "yyyy-mm-dd";
@@ -539,14 +541,28 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent result) {
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == Crop.REQUEST_PICK && resultCode == Activity.RESULT_OK) {
-            beginCrop(result.getData());
+            beginCrop(data.getData());
+        }else if (requestCode == REQUEST_TAKE_PHOTO && resultCode == Activity.RESULT_OK) {
+            beginCrop(photoFileUri);
+        } else if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+            CropImage.ActivityResult result = CropImage.getActivityResult(data);
+            if (resultCode == Activity.RESULT_OK) {
+                newAvatarImageUri = result.getUri();
+                handleCrop(resultCode, data);
+            } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
+                Exception error = result.getError();
+            }
+        }
+
+        /*if (requestCode == Crop.REQUEST_PICK && resultCode == Activity.RESULT_OK) {
+            beginCrop(data.getData());
         } else if (requestCode == REQUEST_TAKE_PHOTO && resultCode == Activity.RESULT_OK) {
             beginCrop(photoFileUri);
         } else if (requestCode == Crop.REQUEST_CROP) {
-            handleCrop(resultCode, result);
-        }
+            handleCrop(resultCode, data);
+        }*/
     }
 
     private void beginCrop(final Uri source) {
@@ -589,7 +605,8 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
                                 //resource.compress(Bitmap.CompressFormat.JPEG, 85, stream);
                                 byte[] data = stream.toByteArray();
                                 resource.recycle();
-                                final Uri rotatedImage = FileManager.saveImage(data, ROTATE_FILE_NAME);
+                                //final Uri rotatedImage = FileManager.saveImage(data, ROTATE_FILE_NAME);
+                                final Uri rotatedImage = FileManager.savePNGImage(data, ROTATE_FILE_NAME);
                                 if (rotatedImage == null) return;
 
                                 //final Uri image = FileManager.saveImageNoRotation(data, "normal");
@@ -623,10 +640,14 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
         if (activity == null) {
             return;
         }
-        Crop.of(srcUri, newAvatarImageUri)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            CropImage.activity(srcUri).setAspectRatio(1,1).setOutputCompressFormat(Bitmap.CompressFormat.PNG).setMaxCropResultSize(MAX_TEST, MAX_TEST)
+                    .start(getContext(), this);
+        }
+        /*Crop.of(srcUri, newAvatarImageUri)
                 .asSquare()
                 .withMaxSize(MAX_TEST, MAX_TEST)
-                .start(activity);
+                .start(activity);*/
         /*Crop.of(srcUri, newAvatarImageUri)
                 .asSquare()
                 .withMaxSize(MAX_IMAGE_SIZE, MAX_IMAGE_SIZE)
@@ -662,8 +683,8 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
             avatarSize.setText(file.length() / KB_SIZE_IN_BYTES + "KB");
 
             if (file.length() / KB_SIZE_IN_BYTES>35) {
-                preprocessAndStartCrop(newAvatarImageUri);
                 Toast.makeText(getActivity(), "Image is too big, need another crop!", Toast.LENGTH_LONG).show();
+                preprocessAndStartCrop(newAvatarImageUri);
                 return;
             }
 
