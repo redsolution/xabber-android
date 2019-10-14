@@ -603,7 +603,6 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
                                 ByteArrayOutputStream stream = new ByteArrayOutputStream();
                                 resource.compress(Bitmap.CompressFormat.PNG, 100, stream);
                                 //resource.compress(Bitmap.CompressFormat.JPEG, 85, stream);
-                                Bitmap bitmap = resource;
                                 byte[] data = stream.toByteArray();
                                 resource.recycle();
                                 //final Uri rotatedImage = FileManager.saveImage(data, ROTATE_FILE_NAME);
@@ -615,12 +614,6 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
                                 Application.getInstance().runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
-                                        Bitmap bitmap;
-                                        try {
-                                            bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), rotatedImage);
-                                        } catch (IOException e) {
-                                            e.printStackTrace();
-                                        }
                                         startImageCropActivity(rotatedImage);
                                         disableProgressMode();
                                     }
@@ -685,13 +678,6 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
             avatar.setImageURI(null);
             avatar.setImageURI(newAvatarImageUri);
             removeAvatarFlag = false;
-
-            Bitmap bitmap;
-            try {
-                bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), newAvatarImageUri);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
 
             File file = new File(newAvatarImageUri.getPath());
             avatarSize.setText(file.length() / KB_SIZE_IN_BYTES + "KB");
