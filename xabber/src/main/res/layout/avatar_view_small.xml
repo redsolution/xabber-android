@@ -54,6 +54,7 @@
         android:layout_width="40dp"
         android:src="@drawable/ic_stripes"
         android:layout_height="40dp"
+        app:civ_circle_background_color="@color/transparent"
         android:visibility="gone"/>
 
 </RelativeLayout>
