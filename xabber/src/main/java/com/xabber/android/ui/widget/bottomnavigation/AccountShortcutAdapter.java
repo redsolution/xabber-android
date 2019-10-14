@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.xabber.android.R;
 import com.xabber.android.data.account.AccountManager;
+import com.xabber.android.ui.color.ColorManager;
 
 import java.util.ArrayList;
 
@@ -61,6 +62,8 @@ public class AccountShortcutAdapter extends RecyclerView.Adapter<AccountShortcut
         AccountShortcutVO account = items.get(position);
         holder.ivAvatar.setImageDrawable(account.getAvatar());
         holder.ivAvatar.setCircleBackgroundColor(account.getAccountColorIndicator());
+        holder.ivAvatar.setBorderColor(ColorManager.getInstance().getUnreadMessageBackground(account.getAccountJid()));
+        holder.ivAvatar.setBorderWidth(1);
         holder.ivStatus.setVisibility(View.GONE);
         if (Build.VERSION.SDK_INT > 20){
             holder.ivAvatar.setElevation(4);
