@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout
-    android:id="@+id/coordinatorLayout"
+<androidx.coordinatorlayout.widget.CoordinatorLayout android:id="@+id/coordinatorLayout"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?attr/contact_list_background"
-    xmlns:tools="http://schemas.android.com/tools"
     android:clipToPadding="false">
 
     <FrameLayout
@@ -22,10 +20,10 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/accounts_list_in_contact_list_recycler"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
+        android:paddingBottom="8dp"
         android:layout_height="wrap_content"
-        android:paddingBottom="4dp"
-        android:layout_gravity="bottom|center_horizontal"
+        android:layout_gravity="bottom|end"
         android:overScrollMode="never"
         android:background="@color/transparent"
         android:focusable="false"
