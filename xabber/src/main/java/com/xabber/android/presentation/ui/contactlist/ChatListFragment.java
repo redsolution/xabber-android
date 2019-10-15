@@ -19,7 +19,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.RelativeLayout;
@@ -118,7 +117,6 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
     private ChatListFragmentListener chatListFragmentListener;
     private ChatListState currentChatsState = ChatListState.recent;
     private RecyclerView recyclerView;
-    private FrameLayout recyclerFrameLayout;
     private TextView markAllAsReadButton;
     private Drawable markAllReadBackground;
     private String filterString;
@@ -128,7 +126,6 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
     /* Placeholder variables */
     private View placeholderView;
     private TextView placeholderMessage;
-    private ImageView placeholderImage;
     private Button placeholderButton;
 
     /* Toolbar variables */
@@ -271,7 +268,6 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         recyclerView = (RecyclerView) view.findViewById(R.id.chatlist_recyclerview);
         linearLayoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(linearLayoutManager);
-        recyclerFrameLayout = view.findViewById(R.id.chatlist_recycler_view_framelayout);
         coordinatorLayout = (CoordinatorLayout) view.findViewById(R.id.chatlist_coordinator_layout);
         markAllAsReadButton = (TextView) view.findViewById(R.id.mark_all_as_read_button);
         markAllAsReadButton.setOnClickListener(new View.OnClickListener(){
@@ -289,9 +285,7 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         if (Build.VERSION.SDK_INT >= 16) markAllAsReadButton.setBackground(markAllReadBackground);
         placeholderView = view.findViewById(R.id.chatlist_placeholder_view);
         placeholderMessage = view.findViewById(R.id.chatlist_placeholder_message);
-        placeholderImage = view.findViewById(R.id.chatlist_placeholder_image);
         placeholderButton = view.findViewById(R.id.chatlist_placeholder_button);
-        //ColorManager.setGrayScaleFilter(placeholderImage);
 
         items = new ArrayList<>();
         adapter = new FlexibleAdapter<>(items, null, false);
@@ -304,9 +298,7 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         MessageNotificationManager.getInstance().removeAllMessageNotifications();
         chatListFragmentListener.onChatListStateChanged(currentChatsState);
 
-        /*
-        Toolbar variables initialization
-         */
+        /* Toolbar variables initialization */
         toolbarRelativeLayout = view.findViewById(R.id.toolbar_chatlist);
         toolbarToolbarLayout = view.findViewById(R.id.chat_list_toolbar);
         toolbarAccountColorIndicator = view.findViewById(R.id.accountColorIndicator);
@@ -324,24 +316,20 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         if (!getActivity().getClass().getSimpleName().equals(ContactListActivity.class.getSimpleName()))
             toolbarAppBarLayout.setVisibility(View.GONE);
 
-        /* find possible max recycler items*/
+        /* Find possible max recycler items*/
         DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
         int dpHeight = Math.round(displayMetrics.heightPixels / displayMetrics.density);
         maxItemsOnScreen = Math.round((dpHeight - 56 - 56) / 64);
 
-        /*
-        Initialize and run UpdateBackpressure
-         */
+        /* Initialize and run UpdateBackpressure */
         updateBackpressure = new UpdateBackpressure(this);
         updateBackpressure.run();
         return view;
     }
 
-    /** Update toolbarRelativeLayout via current state*/
+    /** Update toolbarRelativeLayout via current state */
     public void updateToolbar(){
-        /*
-        Update ChatState TextView display via current chat state
-         */
+        /* Update ChatState TextView display via current chat state */
         switch (currentChatsState) {
             case unread:
                 toolbarTitleTv.setText(R.string.unread_chats);
@@ -357,9 +345,7 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
                 break;
         }
 
-        /*
-        Update avatar and status ImageViews via current settings and main user
-         */
+        /* Update avatar and status ImageViews via current settings and main user */
         if (SettingsManager.contactsShowAvatars() && AccountManager.getInstance().getEnabledAccounts().size() != 0){
             toolbarAvatarIv.setVisibility(View.VISIBLE);
             toolbarStatusIv.setVisibility(View.VISIBLE);
@@ -374,9 +360,7 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
             toolbarStatusIv.setVisibility(View.GONE);
         }
 
-        /*
-        Update background color via current main user;
-         */
+        /* Update background color via current main user; */
         TypedValue typedValue = new TypedValue();
         TypedArray a = getContext().obtainStyledAttributes(typedValue.data, new int[] {R.attr.contact_list_account_group_background});
         final int accountGroupColorsResourceId = a.getResourceId(0, 0);
@@ -385,18 +369,14 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         final int level = AccountManager.getInstance().getColorLevel(AccountPainter.getFirstAccount());
         toolbarRelativeLayout.setBackgroundColor(accountGroupColors[level]);
 
-        /*
-        Update left color indicator via current main user
-         */
+        /* Update left color indicator via current main user */
         toolbarAccountColorIndicator.setBackgroundColor(
                 ColorManager.getInstance().getAccountPainter().getDefaultMainColor());
         toolbarAccountColorIndicatorBack.setBackgroundColor(
                 ColorManager.getInstance().getAccountPainter().getDefaultIndicatorBackColor());
     }
 
-    /**
-    OnClickListener for Toolbar
-     */
+    /** OnClickListener for Toolbar */
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -415,9 +395,7 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         }
     }
 
-    /**
-    Show menu Add contact / Add conference
-     */
+    /** Show menu Add contact / Add conference */
     private void showToolbarPopup(View v) {
         PopupMenu popupMenu = new PopupMenu(getContext(), v);
         popupMenu.setOnMenuItemClickListener(this);
@@ -425,9 +403,7 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         popupMenu.show();
     }
 
-    /**
-    Show menu Chat state
-     */
+    /** Show menu Chat state */
     private void showTitlePopup(View v) {
         PopupMenu popupMenu = new PopupMenu(getContext(), v);
         popupMenu.setOnMenuItemClickListener(this);
@@ -435,9 +411,7 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         popupMenu.show();
     }
 
-    /**
-    Handle toolbarRelativeLayout menus clicks
-     */
+    /** Handle toolbarRelativeLayout menus clicks */
     @Override
     public boolean onMenuItemClick(MenuItem item) {
         switch (item.getItemId()) {
@@ -472,7 +446,7 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
      */
     private void updateItems(List<IFlexible> items){
         CommonState commonState = AccountManager.getInstance().getCommonState();
-        /* Show placeholder if necessary*/
+        /* Show placeholder if necessary */
         if (commonState != CommonState.online){
             switch (commonState){
                 case roster:
@@ -657,7 +631,6 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
             if (abstractChat.notifyAboutMessage() && !abstractChat.isArchived())
                 unreadMessageCount += abstractChat.getUnreadMessageCount();
         }
-//        unreadMessageCount += CrowdfundingManager.getInstance().getUnreadMessageCount();
         return unreadMessageCount;
     }
 
@@ -677,16 +650,6 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
             UserJid userJid = ((ContactVO) item).getUserJid();
             chatListFragmentListener.onChatClick(RosterManager.getInstance().getAbstractContact(accountJid, userJid));
         }
-//        else if (item instanceof CrowdfundingChatVO) {
-//            AccountJid accountJid = CrowdfundingChat.getDefaultAccount();
-//            UserJid userJid = CrowdfundingChat.getDefaultUser();
-//            if (accountJid != null && userJid != null)
-//                chatListFragmentListener.onChatClick(RosterManager.getInstance().getAbstractContact(accountJid, userJid));
-//        }
-//        else if (item instanceof ButtonVO){
-//            chatListFragmentListener.onMarkAllReadButtonClick();
-//        }
-
         return true;
     }
 
@@ -713,14 +676,8 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
 
         final boolean showOffline = SettingsManager.contactsShowOffline();
         final boolean showGroups = SettingsManager.contactsShowGroups();
-        final boolean showEmptyGroups = SettingsManager.contactsShowEmptyGroups();
-        final boolean showActiveChats = false;
-        final boolean stayActiveChats = true;
         final boolean showAccounts = SettingsManager.contactsShowAccounts();
-        boolean hasContacts = false;
         boolean hasVisibleContacts = false;
-
-        final CommonState commonState = AccountManager.getInstance().getCommonState();
         final AccountJid selectedAccount = AccountManager.getInstance().getSelectedAccount();
         final Map<String, GroupConfiguration> groups;
         final List<AbstractContact> contacts;
@@ -776,17 +733,9 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
                 if (!rosterContact.isEnabled()) {
                     continue;
                 }
-                hasContacts = true;
                 final boolean online = rosterContact.getStatusMode().isOnline();
                 final AccountJid account = rosterContact.getAccount();
                 final Map<UserJid, AbstractChat> users = abstractChats.get(account);
-                final AbstractChat abstractChat;
-                if (users == null) {
-                    abstractChat = null;
-                } else {
-                    abstractChat = users.remove(rosterContact.getUser());
-                }
-
                 if (selectedAccount != null && !selectedAccount.equals(account)) {
                     continue;
                 }
@@ -828,40 +777,28 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
             // Remove empty groups, sort and apply structure.
             items.clear();
 
-//            /** adding crowdfunding chat item */
-//            CrowdfundingMessage message = CrowdfundingManager.getInstance().getLastNotDelayedMessageFromRealm();
-//            if (message != null) hasVisibleContacts = true;
-
             if (hasVisibleContacts) {
                 if (currentChatsState == ChatListState.recent){
                     int i = 0;
                     for (AbstractContact contact : chatsGroup.getAbstractContacts()) {
-//                        if (contact instanceof CrowdfundingContact) {
-//                            items.add(CrowdfundingChatVO.convert((CrowdfundingContact) contact));
-//                        }
-//                        else
                         items.add(ChatVO.convert(contact, this, null));
                         i++;
                     }
                 } else {
                     for (AbstractContact contact : chatsGroup.getAbstractContacts()) {
-//                        if (contact instanceof CrowdfundingContact)
-//                            items.add(CrowdfundingChatVO.convert((CrowdfundingContact) contact));
-//                        else
                         items.add(ChatVO.convert(contact, this, null));
                     }
                 }
             }
         } else {
+
             /* If filterString not epmty, do a search*/
             final ArrayList<AbstractContact> baseEntities = getSearchResults(rosterContacts, abstractChats);
             items.clear();
-
             items.add(new CategoryVO(Application.getInstance().getApplicationContext().getString(R.string.category_title_contacts)));
             items.addAll(SettingsManager.contactsShowMessages()
                     ? ExtContactVO.convert(baseEntities, this)
                     : ContactVO.convert(baseEntities, this));
-            hasVisibleContacts = baseEntities.size() > 0;
         }
 
         if (currentChatsState == ChatListState.unread && items.size() > 0){
@@ -897,28 +834,9 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
                 }
             }
         }
-        // crowdfunding chat
-//        int unreadCount = CrowdfundingManager.getInstance().getUnreadMessageCount();
-//        CrowdfundingMessage message = CrowdfundingManager.getInstance().getLastNotDelayedMessageFromRealm();
-//        if (message != null) {
-//            switch (state) {
-//                case unread:
-//                    if (unreadCount > 0) newChats.add(CrowdfundingChat.createCrowdfundingChat(unreadCount, message));
-//                    break;
-//                case archived:
-//                    break;
-//                default:
-//                    // recent
-//                    newChats.add(CrowdfundingChat.createCrowdfundingChat(unreadCount, message));
-//                    break;
-//            }
-//        }
         Collections.sort(newChats, ChatComparator.CHAT_COMPARATOR);
         chatsGroup.setNotEmpty();
         for (AbstractChat chat : newChats) {
-//            if (chat instanceof CrowdfundingChat)
-//                chatsGroup.addAbstractContact(new CrowdfundingContact((CrowdfundingChat) chat));
-//            else
             chatsGroup.addAbstractContact(RosterManager.getInstance() .getBestContact(chat.getAccount(), chat.getUser()));
             chatsGroup.increment(true);
         }
