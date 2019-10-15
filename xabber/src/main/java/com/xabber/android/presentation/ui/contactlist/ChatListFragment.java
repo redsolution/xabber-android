@@ -720,7 +720,6 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         boolean hasContacts = false;
         boolean hasVisibleContacts = false;
 
-        final Comparator<AbstractContact> comparator = SettingsManager.contactsOrder();
         final CommonState commonState = AccountManager.getInstance().getCommonState();
         final AccountJid selectedAccount = AccountManager.getInstance().getSelectedAccount();
         final Map<String, GroupConfiguration> groups;
@@ -855,7 +854,7 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
             }
         } else {
             /* If filterString not epmty, do a search*/
-            final ArrayList<AbstractContact> baseEntities = getSearchResults(rosterContacts, comparator, abstractChats);
+            final ArrayList<AbstractContact> baseEntities = getSearchResults(rosterContacts, abstractChats);
             items.clear();
 
             items.add(new CategoryVO(Application.getInstance().getApplicationContext().getString(R.string.category_title_contacts)));
@@ -930,7 +929,6 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
 
     /** Returns an ArrayList of Contacts filtered by filterString **/
     private ArrayList<AbstractContact> getSearchResults(Collection<RosterContact> rosterContacts,
-                                                        Comparator<AbstractContact> comparator,
                                                         Map<AccountJid, Map<UserJid, AbstractChat>> abstractChats) {
         final ArrayList<AbstractContact> baseEntities = new ArrayList<>();
 
@@ -963,8 +961,29 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
                 }
             }
         }
-        Collections.sort(baseEntities, comparator);
+        Collections.sort(baseEntities, new ComparatorBySubstringPosition(filterString));
         return baseEntities;
+    }@
+
+    private class ComparatorBySubstringPosition implements Comparator<AbstractContact>{
+        String substring;
+
+        ComparatorBySubstringPosition(String substring){ this.substring = substring; }
+
+        ComparatorBySubstringPosition(){ this.substring = null; }
+
+        @Override
+        public int compare(AbstractContact o1, AbstractContact o2) {
+            String firstString = (o1.getName() + o1.getUser().toString()).toLowerCase();
+            String secondString = (o2.getName() + o2.getUser().toString()).toLowerCase();
+            int statusComparing = o1.getStatusMode().compareTo(o2.getStatusMode());
+            int firstPosintion = firstString.indexOf(substring);
+            int secondPosition = secondString.indexOf(substring);
+            if (firstPosintion > secondPosition) return 1;
+            if (firstPosintion < secondPosition) return -1;
+            else if (statusComparing != 0) return statusComparing;
+            else return (firstString.compareTo(secondString));
+        }
     }
 
     public enum ChatListState {
