@@ -963,7 +963,7 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         }
         Collections.sort(baseEntities, new ComparatorBySubstringPosition(filterString));
         return baseEntities;
-    }@
+    }
 
     private class ComparatorBySubstringPosition implements Comparator<AbstractContact>{
         String substring;
