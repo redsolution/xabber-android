@@ -529,6 +529,9 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         updateBackpressure.refreshRequest();
     }
 
+    /**
+     * Setup Toolbar scroll behavior according to count of visible chat items
+     */
     public void setupToolbarLayout(){
         if (recyclerView != null){
             int count = items.size();
@@ -538,6 +541,10 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         }
     }
 
+    /**
+     * Enable or disable Toolbar scroll behavior
+     * @param enabled
+     */
     private void setToolbarScrollEnabled(boolean enabled){
         AppBarLayout.LayoutParams toolbarLayoutParams = (AppBarLayout.LayoutParams) toolbarToolbarLayout.getLayoutParams();
         CoordinatorLayout.LayoutParams appBarLayoutParams = (CoordinatorLayout.LayoutParams) toolbarAppBarLayout.getLayoutParams();
@@ -639,8 +646,6 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         chatListFragmentListener.onUnreadChanged(getUnreadCount());
     }
 
-
-
     @Override
     public boolean onItemClick(int position) {
         adapter.notifyItemChanged(position);
@@ -655,134 +660,24 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
 
     @Override
     public void update(){
+        /* List for store final method result */
         List<IFlexible> items = new ArrayList<>();
 
-        final Collection<RosterContact> allRosterContacts = RosterManager.getInstance().getAllContacts(); // Получаем все контакты
-        Map<AccountJid, Collection<UserJid>> blockedContacts = new TreeMap<>();
-        for (AccountJid account : AccountManager.getInstance().getEnabledAccounts()) {
-            blockedContacts.put(account, BlockingManager.getInstance().getCachedBlockedContacts(account));
-        } // получаем map с заблокированными контактами
-
-        final Collection<RosterContact> rosterContacts = new ArrayList<>();
-        for (RosterContact contact : allRosterContacts) {
-            if (blockedContacts.containsKey(contact.getAccount())) {
-                Collection<UserJid> blockedUsers = blockedContacts.get(contact.getAccount());
-                if (blockedUsers != null) {
-                    if (!blockedUsers.contains(contact.getUser()))
-                        rosterContacts.add(contact);
-                } else rosterContacts.add(contact);
-            } else rosterContacts.add(contact);
-        } // фильтруем среди всех контактов убираем заблокированные
-
-        final boolean showOffline = SettingsManager.contactsShowOffline();
-        final boolean showGroups = SettingsManager.contactsShowGroups();
-        final boolean showAccounts = SettingsManager.contactsShowAccounts();
-        boolean hasVisibleContacts = false;
-        final AccountJid selectedAccount = AccountManager.getInstance().getSelectedAccount();
-        final Map<String, GroupConfiguration> groups;
-        final List<AbstractContact> contacts;
-        final GroupConfiguration chatsGroup;
+        /* Map of accounts*/
         final Map<AccountJid, AccountConfiguration> accounts = new TreeMap<>();
         for (AccountJid account : AccountManager.getInstance().getEnabledAccounts()) {
             accounts.put(account, null);
         }
-        //List of rooms and active chats grouped by users inside accounts.
-        final Map<AccountJid, Map<UserJid, AbstractChat>> abstractChats = new TreeMap<>();
 
-        for (AbstractChat abstractChat : MessageManager.getInstance().getChats()) {
-            if ((abstractChat instanceof RoomChat || abstractChat.isActive())
-                    && accounts.containsKey(abstractChat.getAccount())) {
-                final AccountJid account = abstractChat.getAccount();
-                Map<UserJid, AbstractChat> users = abstractChats.get(account);
-                if (users == null) {
-                    users = new TreeMap<>();
-                    abstractChats.put(account, users);
-                }
-                users.put(abstractChat.getUser(), abstractChat);
-            }
-        }
-
+        /* If filterString is empty, build regular chat list */
         if (filterString == null || filterString.equals("")){
-            // BUILD STRUCTURE //
-
-            // Create arrays.
-            if (showAccounts) {
-                groups = null;
-                contacts = null;
-                for (Map.Entry<AccountJid, AccountConfiguration> entry : accounts.entrySet()) {
-                    entry.setValue(new AccountConfiguration(entry.getKey(),
-                            GroupManager.IS_ACCOUNT, GroupManager.getInstance()));
-                }
-            } else {
-                if (showGroups) {
-                    groups = new TreeMap<>();
-                    contacts = null;
-                } else {
-                    groups = null;
-                    contacts = new ArrayList<>();
-                }
-            }
-
-            // chats on top
             Collection<AbstractChat> chats = MessageManager.getInstance().getChatsOfEnabledAccount();
-            chatsGroup = getChatsGroup(chats, currentChatsState);
-            if (!chatsGroup.isEmpty()) hasVisibleContacts = true;
-
-            // Build structure.
-            for (RosterContact rosterContact : rosterContacts) {
-                if (!rosterContact.isEnabled()) {
-                    continue;
-                }
-                final boolean online = rosterContact.getStatusMode().isOnline();
-                final AccountJid account = rosterContact.getAccount();
-                final Map<UserJid, AbstractChat> users = abstractChats.get(account);
-                if (selectedAccount != null && !selectedAccount.equals(account)) {
-                    continue;
-                }
-                if (ContactListGroupUtils.addContact(rosterContact, online, accounts, groups,
-                        contacts, showAccounts, showGroups, showOffline)) {
-                    hasVisibleContacts = true;
-                }
-            }
-            for (Map<UserJid, AbstractChat> users : abstractChats.values())
-                for (AbstractChat abstractChat : users.values()) {
-                    final AbstractContact abstractContact;
-                    if (abstractChat instanceof RoomChat) {
-                        abstractContact = new RoomContact((RoomChat) abstractChat);
-                    } else {
-                        abstractContact = new ChatContact(abstractChat);
-                    }
-                    if (selectedAccount != null && !selectedAccount.equals(abstractChat.getAccount())) {
-                        continue;
-                    }
-                    final String group;
-                    final boolean online;
-                    if (abstractChat instanceof RoomChat) {
-                        group = GroupManager.IS_ROOM;
-                        online = abstractContact.getStatusMode().isOnline();
-                    } else if (MUCManager.getInstance().isMucPrivateChat(abstractChat.getAccount(), abstractChat.getUser())) {
-                        group = GroupManager.IS_ROOM;
-                        online = abstractContact.getStatusMode().isOnline();
-                    } else {
-                        group = GroupManager.NO_GROUP;
-                        online = false;
-                    }
-                    hasVisibleContacts = true;
-                    ContactListGroupUtils.addContact(abstractContact, group, online, accounts, groups, contacts,
-                            showAccounts, showGroups);
-                }
-
-            // BUILD STRUCTURE //
-
-            // Remove empty groups, sort and apply structure.
+            final GroupConfiguration chatsGroup = getChatsGroup(chats, currentChatsState);
             items.clear();
-
-            if (hasVisibleContacts) {
+            if (!chatsGroup.isEmpty()) {
                 if (currentChatsState == ChatListState.recent){
-                    int i = 0;
                     for (AbstractContact contact : chatsGroup.getAbstractContacts()) {
                         items.add(ChatVO.convert(contact, this, null));
-                        i++;
                     }
                 } else {
                     for (AbstractContact contact : chatsGroup.getAbstractContacts()) {
@@ -791,8 +686,40 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
                 }
             }
         } else {
+            /* If filterString not empty, perform a search */
 
-            /* If filterString not epmty, do a search*/
+            /*  Make list of rooms and active chats grouped by users inside accounts */
+            final Map<AccountJid, Map<UserJid, AbstractChat>> abstractChats = new TreeMap<>();
+            for (AbstractChat abstractChat : MessageManager.getInstance().getChats()) {
+                if ((abstractChat instanceof RoomChat || abstractChat.isActive())
+                        && accounts.containsKey(abstractChat.getAccount())) {
+                    final AccountJid account = abstractChat.getAccount();
+                    Map<UserJid, AbstractChat> users = abstractChats.get(account);
+                    if (users == null) {
+                        users = new TreeMap<>();
+                        abstractChats.put(account, users);
+                    }
+                    users.put(abstractChat.getUser(), abstractChat);
+                }
+            }
+            /* All roster contact collection */
+            final Collection<RosterContact> allRosterContacts = RosterManager.getInstance().getAllContacts();
+            /* Map with blocked contacts for accounts */
+            Map<AccountJid, Collection<UserJid>> blockedContacts = new TreeMap<>();
+            for (AccountJid account : AccountManager.getInstance().getEnabledAccounts()) {
+                blockedContacts.put(account, BlockingManager.getInstance().getCachedBlockedContacts(account));
+            }
+            /* Filter all blocked contacts from allRosterContacts and save result to rosterContacts*/
+            final Collection<RosterContact> rosterContacts = new ArrayList<>();
+            for (RosterContact contact : allRosterContacts) {
+                if (blockedContacts.containsKey(contact.getAccount())) {
+                    Collection<UserJid> blockedUsers = blockedContacts.get(contact.getAccount());
+                    if (blockedUsers != null) {
+                        if (!blockedUsers.contains(contact.getUser()))
+                            rosterContacts.add(contact);
+                    } else rosterContacts.add(contact);
+                } else rosterContacts.add(contact);
+            }
             final ArrayList<AbstractContact> baseEntities = getSearchResults(rosterContacts, abstractChats);
             items.clear();
             items.add(new CategoryVO(Application.getInstance().getApplicationContext().getString(R.string.category_title_contacts)));
@@ -801,11 +728,14 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
                     : ContactVO.convert(baseEntities, this));
         }
 
+        /* Mark all the read button showing */
         if (currentChatsState == ChatListState.unread && items.size() > 0){
             markAllReadBackground.setColorFilter(ColorManager.getInstance().getAccountPainter().getDefaultMainColor(), PorterDuff.Mode.SRC_ATOP);
             markAllAsReadButton.setVisibility(View.VISIBLE);
         }
         else markAllAsReadButton.setVisibility(View.GONE);
+
+        /* Update another elements */
         updateToolbar();
         updateUnreadCount();
         updateItems(items);
