@@ -14,7 +14,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import androidx.fragment.app.FragmentTransaction;
 
@@ -494,6 +493,7 @@ public class SearchActivity extends ManagedActivity implements View.OnClickListe
             }
             case ChatActivity.ACTION_FORWARD: {
                 forwardMessages(abstractContact, getIntent());
+                finish();
                 break;
             }
             default:
