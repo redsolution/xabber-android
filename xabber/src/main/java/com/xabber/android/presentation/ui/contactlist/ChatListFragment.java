@@ -127,6 +127,7 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
     private View placeholderView;
     private TextView placeholderMessage;
     private Button placeholderButton;
+    private int showPlaceholders;
 
     /* Toolbar variables */
     private RelativeLayout toolbarRelativeLayout;
@@ -320,6 +321,7 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
         int dpHeight = Math.round(displayMetrics.heightPixels / displayMetrics.density);
         maxItemsOnScreen = Math.round((dpHeight - 56 - 56) / 64);
+        showPlaceholders = 0;
 
         /* Initialize and run UpdateBackpressure */
         updateBackpressure = new UpdateBackpressure(this);
@@ -447,7 +449,7 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
     private void updateItems(List<IFlexible> items){
         CommonState commonState = AccountManager.getInstance().getCommonState();
         /* Show placeholder if necessary */
-        if (commonState != CommonState.online){
+        if (commonState != CommonState.online && items.size() == 0){
             switch (commonState){
                 case roster:
                     showPlaceholder(Application.getInstance().getApplicationContext().getString(R.string.application_state_connecting), null);
@@ -496,7 +498,7 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
                     });
                     break;
             }
-        } else if (items.size() == 0) {
+        } else if (items.size() == 0 && showPlaceholders >= 3) {
             switch (currentChatsState) {
                 case unread:
                     showPlaceholder(Application.getInstance().getApplicationContext().getString(R.string.placeholder_no_unread), null);
@@ -662,7 +664,7 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
     public void update(){
         /* List for store final method result */
         List<IFlexible> items = new ArrayList<>();
-
+        showPlaceholders++;
         /* Map of accounts*/
         final Map<AccountJid, AccountConfiguration> accounts = new TreeMap<>();
         for (AccountJid account : AccountManager.getInstance().getEnabledAccounts()) {

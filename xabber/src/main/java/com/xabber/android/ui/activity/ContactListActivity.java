@@ -154,15 +154,15 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
         setContentView(R.layout.activity_contact_list);
         getWindow().setBackgroundDrawable(null);
 
-        if (savedInstanceState != null) {
-            sendText = savedInstanceState.getString(SAVED_SEND_TEXT);
-            action = savedInstanceState.getString(SAVED_ACTION);
-        } else {
-            showBottomNavigation();
-            showChatListFragment();
-            sendText = null;
-            action = getIntent().getAction();
-        }
+//        if (savedInstanceState != null) {
+//            sendText = savedInstanceState.getString(SAVED_SEND_TEXT);
+//            action = savedInstanceState.getString(SAVED_ACTION);
+//        } else {
+//            showBottomNavigation();
+//            showChatListFragment();
+//            sendText = null;
+//            action = getIntent().getAction();
+//        }
         getIntent().setAction(null);
 
         showcaseView = findViewById(R.id.showcaseView);
@@ -258,7 +258,6 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
             return;
         }
 
-        setStatusBarColor();
         Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
 
         if (action != null) {
@@ -317,6 +316,9 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
 
         // remove all message notifications
         MessageNotificationManager.getInstance().removeAllMessageNotifications();
+        showBottomNavigation();
+        showChatListFragment();
+        setStatusBarColor();
     }
 
     @Override
