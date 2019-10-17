@@ -91,3 +91,6 @@
 
 # retrofit
 -dontwarn retrofit2.Platform$Java8
+
+# Android Image Cropper
+-keep class androidx.appcompat.widget.** { *; }

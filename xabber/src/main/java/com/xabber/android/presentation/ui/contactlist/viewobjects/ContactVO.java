@@ -301,11 +301,13 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
                 && !getLastActivity().isEmpty())
             if (viewHolder.tvStatus != null) viewHolder.tvStatus.setText(getLastActivity());
 
-        /* Show jid instead of status in SearchActivity */
+        /* Show grey jid instead of status in SearchActivity */
         if (listener instanceof ChatListFragment
                 && ((ChatListFragment) listener).getActivity() instanceof SearchActivity
-                && viewHolder.tvStatus != null)
+                && viewHolder.tvStatus != null){
+            viewHolder.tvStatus.setTextColor(ColorManager.getInstance().getColorContactSecondLine());
             viewHolder.tvStatus.setText(userJid.toString());
+        }
 
         /** set up CONTACT/MUC NAME */
         viewHolder.tvContactName.setText(getName());

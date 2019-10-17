@@ -24,7 +24,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
 
 import com.xabber.android.R;
-import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.CommonState;
@@ -48,7 +47,6 @@ import com.xabber.android.ui.activity.ContactAddActivity;
 import com.xabber.android.ui.activity.ContactEditActivity;
 import com.xabber.android.ui.activity.ContactListActivity;
 import com.xabber.android.ui.adapter.contactlist.ContactListState;
-import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.helper.ContextMenuHelper;
 import com.xabber.android.ui.widget.bottomnavigation.AccountShortcutAdapter;
 import com.xabber.android.ui.widget.bottomnavigation.AccountShortcutVO;
@@ -180,7 +178,7 @@ public class ContactListFragment extends Fragment implements ContactListView,
         Setting accounts buttons-avatars-list
          */
         accountsRecyclerView = view.findViewById(R.id.accounts_list_in_contact_list_recycler);
-        accountsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
+        accountsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
         updateAccountsList();
         return view;
     }
@@ -201,7 +199,6 @@ public class ContactListFragment extends Fragment implements ContactListView,
             accountShortcutAdapter = new AccountShortcutAdapter(accountShortcutVOArrayList, getActivity(), this);
             accountsRecyclerView.setAdapter(accountShortcutAdapter);
             accountsRecyclerView.setVisibility(View.VISIBLE);
-            accountsRecyclerView.getLayoutParams().width = 164 * accountsJidList.size();
             accountsRecyclerView.setOnClickListener(this);
         }
         else accountsRecyclerView.setVisibility(View.GONE);

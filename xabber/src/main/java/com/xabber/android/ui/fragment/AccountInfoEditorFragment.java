@@ -147,7 +147,6 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
     private View changeAvatarButton;
     private View saveAvatarButton;
     private Uri newAvatarImageUri;
-    private Uri newAvatarImageUriDummy;
     private Uri photoFileUri;
     private boolean removeAvatarFlag = false;
     //private boolean tt = true;
@@ -571,7 +570,6 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
 
     private void beginCrop(final Uri source) {
         newAvatarImageUri = Uri.fromFile(new File(getActivity().getCacheDir(), TEMP_FILE_NAME));
-        newAvatarImageUriDummy = Uri.fromFile(new File(getActivity().getCacheDir(), "dummy.png"));
 
         Application.getInstance().runInBackgroundUserRequest(new Runnable() {
             @Override
@@ -639,7 +637,6 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
                     public void onLoadCleared(@Nullable Drawable placeholder) { }
                 });
     }
-
 
     private void startImageCropActivity(Uri srcUri) {
         final Activity activity = getActivity();
