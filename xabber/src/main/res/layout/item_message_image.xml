@@ -15,10 +15,10 @@
         android:layout_height="wrap_content"
         android:background="@drawable/msg"
         android:backgroundTint="?attr/message_background"
-        android:paddingLeft="4dp"
-        android:paddingTop="4dp"
-        android:paddingRight="4dp"
-        android:paddingBottom="4dp">
+        android:paddingLeft="3dp"
+        android:paddingTop="3dp"
+        android:paddingRight="3dp"
+        android:paddingBottom="3dp">
 
 
         <TextView
