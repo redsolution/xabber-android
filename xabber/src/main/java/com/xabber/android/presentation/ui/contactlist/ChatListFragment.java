@@ -314,6 +314,7 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         toolbarAvatarIv.setOnClickListener(this);
         toolbarTitleTv.setOnClickListener(this);
         toolbarSearchIv.setOnClickListener(this);
+        toolbarTitleTv.setText(Application.getInstance().getApplicationContext().getString(R.string.account_state_connecting));
         if (!getActivity().getClass().getSimpleName().equals(ContactListActivity.class.getSimpleName()))
             toolbarAppBarLayout.setVisibility(View.GONE);
 
@@ -331,8 +332,10 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
 
     /** Update toolbarRelativeLayout via current state */
     public void updateToolbar(){
-        /* Update ChatState TextView display via current chat state */
-        switch (currentChatsState) {
+        /* Update ChatState TextView display via current chat and connection state */
+        if (AccountManager.getInstance().getCommonState() == CommonState.connecting)
+            toolbarTitleTv.setText(Application.getInstance().getApplicationContext().getString(R.string.account_state_connecting));
+        else switch (currentChatsState) {
             case unread:
                 toolbarTitleTv.setText(R.string.unread_chats);
                 break;
@@ -447,58 +450,57 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
     Update chat items in adapter
      */
     private void updateItems(List<IFlexible> items){
-        CommonState commonState = AccountManager.getInstance().getCommonState();
         /* Show placeholder if necessary */
-        if (commonState != CommonState.online && items.size() == 0){
-            switch (commonState){
-                case roster:
-                    showPlaceholder(Application.getInstance().getApplicationContext().getString(R.string.application_state_connecting), null);
-                    break;
-                case connecting:
-                    showPlaceholder(Application.getInstance().getApplicationContext().getString(R.string.application_state_connecting), null);
-                    break;
-                case waiting:
-                    showPlaceholder(Application.getInstance().getApplicationContext().getString(R.string.application_state_waiting)
-                            , Application.getInstance().getApplicationContext().getString(R.string.application_action_waiting));
-                    placeholderButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            ConnectionManager.getInstance().connectAll();
-                        }
-                    });
-                    break;
-                case offline:
-                    showPlaceholder(Application.getInstance().getApplicationContext().getString(R.string.application_state_offline)
-                            , Application.getInstance().getApplicationContext().getString(R.string.application_state_offline));
-                    placeholderButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            AccountManager.getInstance().setStatus(StatusMode.available, null);
-                        }
-                    });
-                    break;
-                case disabled:
-                    showPlaceholder(Application.getInstance().getApplicationContext().getString(R.string.application_state_disabled)
-                            , Application.getInstance().getApplicationContext().getString(R.string.application_action_disabled));
-                    placeholderButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            chatListFragmentListener.onManageAccountsClick();
-                        }
-                    });
-                    break;
-                case empty:
-                    showPlaceholder(Application.getInstance().getApplicationContext().getString(R.string.application_state_empty),
-                            Application.getInstance().getApplicationContext().getString(R.string.application_action_empty));
-                    placeholderButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            startActivity(AccountAddActivity.createIntent(getActivity()));
-                        }
-                    });
-                    break;
-            }
-        } else if (items.size() == 0 && showPlaceholders >= 3) {
+//        if (commonState != CommonState.online && items.size() == 0){
+//            switch (commonState){
+//                case roster:
+//                    showPlaceholder(Application.getInstance().getApplicationContext().getString(R.string.application_state_connecting), null);
+//                    break;
+//                case connecting:
+//                    showPlaceholder(Application.getInstance().getApplicationContext().getString(R.string.application_state_connecting), null);
+//                    break;
+//                case waiting:
+//                    showPlaceholder(Application.getInstance().getApplicationContext().getString(R.string.application_state_waiting)
+//                            , Application.getInstance().getApplicationContext().getString(R.string.application_action_waiting));
+//                    placeholderButton.setOnClickListener(new View.OnClickListener() {
+//                        @Override
+//                        public void onClick(View v) {
+//                            ConnectionManager.getInstance().connectAll();
+//                        }
+//                    });
+//                    break;
+//                case offline:
+//                    showPlaceholder(Application.getInstance().getApplicationContext().getString(R.string.application_state_offline)
+//                            , Application.getInstance().getApplicationContext().getString(R.string.application_state_offline));
+//                    placeholderButton.setOnClickListener(new View.OnClickListener() {
+//                        @Override
+//                        public void onClick(View v) {
+//                            AccountManager.getInstance().setStatus(StatusMode.available, null);
+//                        }
+//                    });
+//                    break;
+//                case disabled:
+//                    showPlaceholder(Application.getInstance().getApplicationContext().getString(R.string.application_state_disabled)
+//                            , Application.getInstance().getApplicationContext().getString(R.string.application_action_disabled));
+//                    placeholderButton.setOnClickListener(new View.OnClickListener() {
+//                        @Override
+//                        public void onClick(View v) {
+//                            chatListFragmentListener.onManageAccountsClick();
+//                        }
+//                    });
+//                    break;
+//                case empty:
+//                    showPlaceholder(Application.getInstance().getApplicationContext().getString(R.string.application_state_empty),
+//                            Application.getInstance().getApplicationContext().getString(R.string.application_action_empty));
+//                    placeholderButton.setOnClickListener(new View.OnClickListener() {
+//                        @Override
+//                        public void onClick(View v) {
+//                            startActivity(AccountAddActivity.createIntent(getActivity()));
+//                        }
+//                    });
+//                    break;
+//            }
+         if (items.size() == 0 && showPlaceholders >= 3) {
             switch (currentChatsState) {
                 case unread:
                     showPlaceholder(Application.getInstance().getApplicationContext().getString(R.string.placeholder_no_unread), null);
