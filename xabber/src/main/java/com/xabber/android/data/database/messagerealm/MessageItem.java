@@ -644,7 +644,7 @@ public class MessageItem extends RealmObject {
                             stringBuilder.append(":");
                         } else stringBuilder.append(StringUtils.getColoredText(author + ":", color));
                     }
-                    stringBuilder.append(message.getText().trim());
+                    stringBuilder.append(message.getText().trim()).append(" ");
                     String attachmentName = "";
                     if (message.haveAttachments() && message.getAttachments().size() > 0) {
                         Attachment attachment = message.getAttachments().get(0);
@@ -657,5 +657,27 @@ public class MessageItem extends RealmObject {
             }
         }
         return text;
+    }
+
+    public boolean isAttachmentImageOnly(){
+        if(attachments!=null && attachments.size()>0) {
+            for (Attachment a : attachments) {
+                if (!a.isImage()) {
+                    return false;
+                }
+            } return true;
+        }
+        return false;
+    }
+
+    public boolean hasImage(){
+        if(attachments!=null && attachments.size()>0) {
+            for (Attachment a : attachments) {
+                if (a.isImage()) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

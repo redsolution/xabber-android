@@ -3,11 +3,12 @@ package com.xabber.android.ui.adapter.chat;
 import android.content.Context;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
-import androidx.annotation.StyleRes;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+
+import androidx.annotation.StyleRes;
 
 import com.xabber.android.R;
 import com.xabber.android.data.database.messagerealm.MessageItem;
@@ -47,8 +48,15 @@ public class OutgoingMessageVH extends FileMessageVH {
                     Utils.dipToPx(0f, context));
 
             forwardLayout.setLayoutParams(forwardedParams);
-        } else forwardLayout.setVisibility(View.GONE);
+        } else if (forwardLayout != null) forwardLayout.setVisibility(View.GONE);
 
+        boolean imageAttached = false;
+        if(messageItem.haveAttachments()) {
+            if (messageItem.getAttachments().get(0).isImage()) {
+                imageAttached = true;
+                needTail = false;
+            }
+        }
         // setup BACKGROUND
         Drawable shadowDrawable = context.getResources().getDrawable(
                 haveForwarded ? (needTail ? R.drawable.fwd_out_shadow : R.drawable.fwd_shadow)
@@ -77,6 +85,27 @@ public class OutgoingMessageVH extends FileMessageVH {
                 Utils.dipToPx(needTail ? 20f : 12f, context),
                 Utils.dipToPx(8f, context));
 
+        float border = 3.5f;
+        if(messageItem.haveAttachments()) {
+            if(messageItem.isAttachmentImageOnly()) {
+                messageBalloon.setPadding(
+                        Utils.dipToPx(border, context),
+                        Utils.dipToPx(border, context),
+                        Utils.dipToPx(border, context),
+                        Utils.dipToPx(border, context));
+                /*messageBalloon.setPadding(
+                        Utils.dipToPx(3f, context),
+                        Utils.dipToPx(-2f, context),
+                        Utils.dipToPx(3f, context),
+                        Utils.dipToPx(-15f, context));*/
+                /*messageInfo.setPadding(
+                        Utils.dipToPx(0f, context),
+                        Utils.dipToPx(-7f, context),
+                        Utils.dipToPx(0f, context),
+                        Utils.dipToPx(0f, context));*/
+                messageTime.setTextColor(context.getResources().getColor(R.color.white));
+            }
+        }
         // setup BACKGROUND COLOR
         TypedValue typedValue = new TypedValue();
         context.getTheme().resolveAttribute(R.attr.message_background, typedValue, true);
@@ -110,9 +139,13 @@ public class OutgoingMessageVH extends FileMessageVH {
         if (!isFileUploadInProgress && !messageItem.isSent()) {
             messageIcon = R.drawable.ic_message_not_sent_14dp;
         } else if (messageItem.isDisplayed() || messageItem.isReceivedFromMessageArchive()) {
-            messageIcon = R.drawable.ic_message_displayed;
+            if(messageItem.isAttachmentImageOnly())
+                messageIcon = R.drawable.ic_message_displayed_image;
+            else messageIcon = R.drawable.ic_message_displayed;
         } else if (messageItem.isDelivered() || messageItem.isForwarded()) {
-            messageIcon = R.drawable.ic_message_delivered_14dp;
+            if(messageItem.isAttachmentImageOnly())
+                messageIcon = R.drawable.ic_message_delivered_image_14dp;
+            else messageIcon = R.drawable.ic_message_delivered_14dp;
         } else if (messageItem.isError()) {
             messageIcon = R.drawable.ic_message_has_error_14dp;
         } else if (messageItem.isAcknowledged()) {

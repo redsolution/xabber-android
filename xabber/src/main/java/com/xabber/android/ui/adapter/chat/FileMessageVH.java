@@ -3,10 +3,6 @@ package com.xabber.android.ui.adapter.chat;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -15,14 +11,23 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.MultiTransformation;
 import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.load.resource.bitmap.CenterCrop;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.target.Target;
 import com.bumptech.glide.request.transition.Transition;
 import com.xabber.android.R;
+import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.database.MessageDatabaseManager;
 import com.xabber.android.data.database.messagerealm.Attachment;
@@ -31,6 +36,7 @@ import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.ui.adapter.FilesAdapter;
+import com.xabber.android.ui.helper.RoundedBorders;
 import com.xabber.android.ui.widget.ImageGridBuilder;
 
 import io.realm.Realm;
@@ -42,6 +48,13 @@ public class FileMessageVH extends MessageVH
         implements FilesAdapter.FileListListener, View.OnClickListener {
 
     private static final String LOG_TAG = FileMessageVH.class.getSimpleName();
+    //public static final int IMAGE_ROUNDED_CORNERS = 8;
+    public static final int IMAGE_ROUNDED_CORNERS = Application.getInstance().getResources().getDimensionPixelSize(R.dimen.chat_image_corner_radius);
+    public static final int IMAGE_ROUNDED_BORDER_CORNERS = Application.getInstance().getResources().getDimensionPixelSize(R.dimen.chat_image_border_radius);
+    public static final int IMAGE_ROUNDED_BORDER_WIDTH = Application.getInstance().getResources().getDimensionPixelSize(R.dimen.chat_image_border_width);
+
+    //public static final int IMAGE_ROUNDED_BORDER_CORNERS = 5;
+    //public static final int IMAGE_ROUNDED_BORDER_WIDTH = 2;
 
     private CompositeSubscription subscriptions = new CompositeSubscription();
     private FileListener listener;
@@ -176,6 +189,7 @@ public class FileMessageVH extends MessageVH
                 FileManager.scaleImage(layoutParams, imageHeight, imageWidth);
                 Glide.with(context)
                         .load(imageUrl)
+                        .transform(new MultiTransformation<>(new CenterCrop(), new RoundedCorners(IMAGE_ROUNDED_CORNERS), new RoundedBorders(IMAGE_ROUNDED_BORDER_CORNERS,2)))
                         .listener(new RequestListener<Drawable>() {
                             @Override
                             public boolean onLoadFailed(@Nullable GlideException e, Object model,
@@ -198,6 +212,7 @@ public class FileMessageVH extends MessageVH
                 Glide.with(context)
                         .asBitmap()
                         .load(imageUrl)
+                        .transform(new MultiTransformation<>(new CenterCrop(), new RoundedCorners(IMAGE_ROUNDED_CORNERS), new RoundedBorders(IMAGE_ROUNDED_BORDER_CORNERS, IMAGE_ROUNDED_BORDER_WIDTH)))
                         .placeholder(R.drawable.ic_recent_image_placeholder)
                         .error(R.drawable.ic_recent_image_placeholder)
                         .into(new CustomTarget<Bitmap>() {

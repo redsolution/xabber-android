@@ -2,12 +2,18 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
-    android:layout_width="280dp"
+    android:layout_width="wrap_content"
+    android:maxWidth="280dp"
     android:layout_height="58dp"
     android:paddingLeft="8dp"
     android:paddingRight="8dp"
     android:background="?android:attr/selectableItemBackground"
     >
+    <!--
+    prev attributes of ^^^^^^^^^
+    android:layout_width="280dp"
+    android:maxWidth was not specified
+    -->
 
     <RelativeLayout
         android:id="@+id/iconLayout"

@@ -1,5 +1,6 @@
 package com.xabber.android.ui.widget;
 
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
@@ -12,20 +13,31 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.MultiTransformation;
+import com.bumptech.glide.load.resource.bitmap.CenterCrop;
+import com.bumptech.glide.load.resource.bitmap.CenterInside;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.xabber.android.R;
+import com.xabber.android.data.Application;
 import com.xabber.android.data.database.MessageDatabaseManager;
 import com.xabber.android.data.database.messagerealm.Attachment;
 import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.message.MessageManager;
+import com.xabber.android.ui.helper.RoundedBorders;
 
 import io.realm.Realm;
 import io.realm.RealmList;
 
+import static com.xabber.android.ui.adapter.chat.FileMessageVH.IMAGE_ROUNDED_BORDER_CORNERS;
+import static com.xabber.android.ui.adapter.chat.FileMessageVH.IMAGE_ROUNDED_BORDER_WIDTH;
+import static com.xabber.android.ui.adapter.chat.FileMessageVH.IMAGE_ROUNDED_CORNERS;
+
 public class ImageGridBuilder {
 
     private static final int MAX_IMAGE_IN_GRID = 5;
+    private static int maxImageSize;
 
     public View inflateView(ViewGroup parent, int imageCount) {
         return LayoutInflater.from(parent.getContext()).inflate(getLayoutResource(imageCount), parent, false);
@@ -33,6 +45,8 @@ public class ImageGridBuilder {
 
     public void bindView(View view, RealmList<Attachment> attachments, View.OnClickListener clickListener) {
 
+        Resources resources = Application.getInstance().getResources();
+        maxImageSize = resources.getDimensionPixelSize(R.dimen.max_chat_image_size);
         if (attachments.size() == 1) {
             ImageView imageView = getImageView(view, 0);
             bindOneImage(attachments.get(0), view, imageView);
@@ -49,6 +63,11 @@ public class ImageGridBuilder {
                 if (imageView != null) {
                     bindImage(attachment, view, imageView);
                     imageView.setOnClickListener(clickListener);
+                    int r = imageView.getPaddingRight();
+                    int l = imageView.getPaddingLeft();
+                    int t = imageView.getPaddingTop();
+                    ViewGroup.LayoutParams lp = imageView.getLayoutParams();
+
                 }
                 index++;
             }
@@ -69,7 +88,7 @@ public class ImageGridBuilder {
 
         Glide.with(parent.getContext())
                 .load(uri)
-                .centerCrop()
+                .transform(new MultiTransformation<>(new CenterCrop(), new RoundedCorners(IMAGE_ROUNDED_CORNERS), new RoundedBorders(IMAGE_ROUNDED_BORDER_CORNERS,IMAGE_ROUNDED_BORDER_WIDTH)))
                 .placeholder(R.drawable.ic_recent_image_placeholder)
                 .error(R.drawable.ic_recent_image_placeholder)
                 .into(imageView);
@@ -82,6 +101,8 @@ public class ImageGridBuilder {
         Integer imageHeight = attachment.getImageHeight();
         final String uniqId = attachment.getUniqueId();
 
+        //boolean rotation = FileManager.isImageNeededDimensionsFlip(Uri.fromFile(new File(imagePath)));
+
         if (imagePath != null) {
             boolean result = FileManager.loadImageFromFile(parent.getContext(), imagePath, imageView);
 
@@ -90,17 +111,25 @@ public class ImageGridBuilder {
             }
         } else {
             final ViewGroup.LayoutParams layoutParams = imageView.getLayoutParams();
-
+            //boolean rotation = FileManager.isImageNeededDimensionsFlip(Uri.parse(imageUrl));
             if (imageWidth != null && imageHeight != null) {
                 FileManager.scaleImage(layoutParams, imageHeight, imageWidth);
+/*
+                imageView.setMaxHeight(maxImageSize);
+                imageView.setMaxWidth(maxImageSize);
+                imageView.setAdjustViewBounds(true);
+*/
+                //imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
                 Glide.with(parent.getContext())
                         .load(imageUrl)
+                        .transform(new MultiTransformation<>(new CenterInside(), new RoundedCorners(IMAGE_ROUNDED_CORNERS), new RoundedBorders(IMAGE_ROUNDED_BORDER_CORNERS,IMAGE_ROUNDED_BORDER_WIDTH)))
                         .into(imageView);
             } else {
 
                 Glide.with(parent.getContext())
                         .asBitmap()
                         .load(imageUrl)
+                        .transform(new MultiTransformation<>(new RoundedCorners(IMAGE_ROUNDED_CORNERS), new RoundedBorders(IMAGE_ROUNDED_BORDER_CORNERS,IMAGE_ROUNDED_BORDER_WIDTH)))
                         .into(new CustomTarget<Bitmap>() {
                             @Override
                             public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {

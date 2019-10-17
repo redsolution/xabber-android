@@ -1,10 +1,11 @@
 package com.xabber.android.ui.adapter.chat;
 
-import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
@@ -23,6 +24,8 @@ public class ForwardedAdapter extends RealmRecyclerViewAdapter<MessageItem, Basi
 
     private static final int VIEW_TYPE_MESSAGE = 1;
     private static final int VIEW_TYPE_MESSAGE_NOFLEX = 2;
+    private static final int VIEW_TYPE_IMAGE = 3;
+    private static final int VIEW_TYPE_IMAGE_TEXT = 4;
 
     private final int appearanceStyle = SettingsManager.chatsAppearanceStyle();
     private MessagesAdapter.MessageExtraData extraData;
@@ -47,9 +50,14 @@ public class ForwardedAdapter extends RealmRecyclerViewAdapter<MessageItem, Basi
         if (messageItem == null) return 0;
 
         // if have forwarded-messages or attachments should use special layout without flexbox-style text
-        if (messageItem.haveForwardedMessages() || messageItem.haveAttachments() || messageItem.isImage())
-            return VIEW_TYPE_MESSAGE_NOFLEX;
-        else return VIEW_TYPE_MESSAGE;
+        if (messageItem.haveForwardedMessages() || messageItem.haveAttachments() || messageItem.isImage()) {
+            if(messageItem.haveAttachments() && messageItem.isAttachmentImageOnly())
+                return VIEW_TYPE_IMAGE;
+            else if (messageItem.isImage() || !messageItem.isAttachmentImageOnly())
+                return VIEW_TYPE_IMAGE_TEXT;
+            else
+                return VIEW_TYPE_MESSAGE_NOFLEX;
+        }else return VIEW_TYPE_MESSAGE;
     }
 
     @Override
@@ -71,9 +79,17 @@ public class ForwardedAdapter extends RealmRecyclerViewAdapter<MessageItem, Basi
     @Override
     public BasicMessageVH onCreateViewHolder(ViewGroup parent, int viewType) {
         switch (viewType) {
+            case VIEW_TYPE_IMAGE:
+                return new NoFlexForwardedVH(LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.item_message_forwarded_image, parent, false),
+                        this, this, listener, appearanceStyle);
             case VIEW_TYPE_MESSAGE_NOFLEX:
                 return new NoFlexForwardedVH(LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.item_message_forwarded_noflex, parent, false),
+                        this, this, listener, appearanceStyle);
+            case VIEW_TYPE_IMAGE_TEXT:
+                return new NoFlexForwardedVH(LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.item_message_forwarded_image_text, parent, false),
                         this, this, listener, appearanceStyle);
             default:
                 return new ForwardedVH(LayoutInflater.from(parent.getContext())
@@ -106,6 +122,8 @@ public class ForwardedAdapter extends RealmRecyclerViewAdapter<MessageItem, Basi
 
         final int viewType = getItemViewType(position);
         switch (viewType) {
+            case VIEW_TYPE_IMAGE:
+            case VIEW_TYPE_IMAGE_TEXT:
             case VIEW_TYPE_MESSAGE_NOFLEX:
                 ((NoFlexForwardedVH)holder).bind(messageItem, extraData,
                         messageItem.getAccount().getFullJid().asBareJid().toString());
