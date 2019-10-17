@@ -11,7 +11,6 @@ import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.roster.PresenceManager;
-import com.xabber.xmpp.avatar.UserAvatarManager;
 
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
@@ -67,7 +66,7 @@ class ConnectionListener implements org.jivesoftware.smack.ConnectionListener {
         HttpFileUploadManager.getInstance().onAuthorized(connectionItem);
         PresenceManager.getInstance().onAuthorized(connectionItem);
         BookmarksManager.getInstance().onAuthorized(connectionItem.getAccount());
-        UserAvatarManager.getInstanceFor(connection).refreshCaps();
+        //UserAvatarManager.getInstanceFor(connection).refreshCaps();
         //
         //
 
