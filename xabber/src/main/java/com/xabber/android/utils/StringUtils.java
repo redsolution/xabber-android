@@ -24,6 +24,7 @@ import com.xabber.android.data.roster.RosterCacheManager;
 import java.text.DateFormat;
 import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -166,25 +167,35 @@ public class StringUtils {
     }
 
     public static String getSmartTimeTextForRoster(Context context, Date timeStamp) {
-        if (timeStamp == null) {
+        if (timeStamp == null)
             return "";
-        }
 
-        // today
-        Calendar midnight = new GregorianCalendar();
-        // reset hour, minutes, seconds and millis
-        midnight.set(Calendar.HOUR_OF_DAY, 0);
-        midnight.set(Calendar.MINUTE, 0);
-        midnight.set(Calendar.SECOND, 0);
-        midnight.set(Calendar.MILLISECOND, 0);
+        Calendar day = GregorianCalendar.getInstance();
+        day.set(Calendar.HOUR_OF_DAY, 0);
+        day.set(Calendar.MINUTE, 0);
+        day.set(Calendar.SECOND, 0);
+        day.set(Calendar.MILLISECOND, 0);
 
-        if (timeStamp.getTime() > midnight.getTimeInMillis()) {
-            return timeFormat.format(timeStamp);
-        } else {
-            SimpleDateFormat dateFormat = new SimpleDateFormat("d MMM",
-                    context.getResources().getConfiguration().locale);
-            return dateFormat.format(timeStamp);
-        }
+        Calendar hours = GregorianCalendar.getInstance();
+        hours.add(Calendar.HOUR, -12);
+
+        Calendar week = GregorianCalendar.getInstance();
+        week.add(Calendar.HOUR, -168);
+
+        Calendar year = GregorianCalendar.getInstance();
+        year.add(Calendar.YEAR, -1);
+
+        if (year.getTimeInMillis() > timeStamp.getTime())
+            return new SimpleDateFormat("dd MMM yyyy", context.getResources().getConfiguration().locale).format(timeStamp);
+        else if (week.getTimeInMillis() > timeStamp.getTime())
+            return new SimpleDateFormat("MMM d", context.getResources().getConfiguration().locale).format(timeStamp);
+        else if (hours.getTimeInMillis() > timeStamp.getTime())
+            return new SimpleDateFormat("E", context.getResources().getConfiguration().locale).format(timeStamp);
+        else if (day.getTimeInMillis() > timeStamp.getTime() && hours.getTimeInMillis() < timeStamp.getTime())
+            return new SimpleDateFormat("HH:mm:ss", context.getResources().getConfiguration().locale).format(timeStamp);
+        else if (day.getTimeInMillis() < timeStamp.getTime())
+            return new SimpleDateFormat("HH:mm:ss", context.getResources().getConfiguration().locale).format(timeStamp);
+        else return new SimpleDateFormat("dd MM yyyy HH:mm:ss", context.getResources().getConfiguration().locale).format(timeStamp);
     }
 
     public static SimpleDateFormat getLogDateTimeFormat() {
