@@ -122,9 +122,9 @@ public class IncomingMessageVH  extends FileMessageVH {
         float border = 3.5f;
             messageBalloon.setPadding(
                     Utils.dipToPx(needTail ? border + 8f : border, context),
-                    Utils.dipToPx(border-0.2f, context),
                     Utils.dipToPx(border, context),
-                    Utils.dipToPx(border-0.2f, context));
+                    Utils.dipToPx(border, context),
+                    Utils.dipToPx(border, context));
 
             if(messageText.getText().toString().trim().isEmpty() && messageItem.isAttachmentImageOnly())
                 messageTime.setTextColor(context.getResources().getColor(R.color.white));

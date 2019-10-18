@@ -2,80 +2,74 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/message_shadow"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="right"
     android:background="@drawable/msg_shadow"
     android:backgroundTint="@color/black"
-    android:gravity="right">
+    android:gravity="right"
+    android:orientation="horizontal">
 
 
-    <RelativeLayout
+    <LinearLayout
         android:id="@+id/message_balloon"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/msg"
         android:backgroundTint="?attr/message_background"
+        android:orientation="vertical"
         android:paddingLeft="3dp"
         android:paddingTop="3dp"
         android:paddingRight="3dp"
         android:paddingBottom="3dp">
 
 
-        <LinearLayout
+        <TextView
+            android:id="@+id/message_header"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:paddingLeft="8dp"
+            android:paddingTop="1dp"
+            android:paddingBottom="3dp"
+            android:textSize="12sp"
+            tools:text="nickname@example.com" />
 
-            <TextView
-                android:id="@+id/message_header"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingLeft="4dp"
-                android:paddingBottom="3dp"
-                android:textSize="12sp"
-                tools:text="nickname@example.com" />
+        <FrameLayout
+            android:id="@+id/imageFrame"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
 
             <FrameLayout
-                android:id="@+id/imageFrame"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
-
-                <FrameLayout
-                    android:id="@+id/imageGridContainer"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:visibility="gone">
-
-
-                </FrameLayout>
-
-
-                <ImageView
-                    android:id="@+id/message_image"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:adjustViewBounds="true"
-                    android:visibility="gone"
-                    tools:srcCompat="@tools:sample/avatars[0]"
-                    tools:visibility="visible" />
-            </FrameLayout>
-
-            <include
-                android:id="@+id/fileLayout"
-                layout="@layout/file_list_layout"
+                android:id="@+id/imageGridContainer"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:visibility="gone" />
-
-            <include
-                layout="@layout/item_message_element_text_noflex" />
-
-        </LinearLayout>
+                android:visibility="gone">
 
 
+            </FrameLayout>
 
-<!--
+
+            <ImageView
+                android:id="@+id/message_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:visibility="gone"
+                tools:srcCompat="@tools:sample/avatars[0]"
+                tools:visibility="visible" />
+        </FrameLayout>
+
+        <include
+            android:id="@+id/fileLayout"
+            layout="@layout/file_list_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone" />
+
+        <include layout="@layout/item_message_element_text_noflex" />
+
+
+        <!--
         <com.xabber.android.ui.widget.CustomFlexboxLayout
             android:id="@+id/custom_flexbox_full"
             android:layout_width="match_parent"
@@ -178,8 +172,6 @@
             android:layout_height="wrap_content"
             android:minWidth="160dp"
             android:visibility="gone" />
-
-
-    </RelativeLayout>
+    </LinearLayout>
 
 </LinearLayout>

@@ -25,7 +25,6 @@ public class ForwardedAdapter extends RealmRecyclerViewAdapter<MessageItem, Basi
     private static final int VIEW_TYPE_MESSAGE = 1;
     private static final int VIEW_TYPE_MESSAGE_NOFLEX = 2;
     private static final int VIEW_TYPE_IMAGE = 3;
-    private static final int VIEW_TYPE_IMAGE_TEXT = 4;
 
     private final int appearanceStyle = SettingsManager.chatsAppearanceStyle();
     private MessagesAdapter.MessageExtraData extraData;
@@ -51,10 +50,8 @@ public class ForwardedAdapter extends RealmRecyclerViewAdapter<MessageItem, Basi
 
         // if have forwarded-messages or attachments should use special layout without flexbox-style text
         if (messageItem.haveForwardedMessages() || messageItem.haveAttachments() || messageItem.isImage()) {
-            if(messageItem.haveAttachments() && messageItem.isAttachmentImageOnly())
+            if(messageItem.haveAttachments() && messageItem.isAttachmentImageOnly() && messageItem.getText().trim().isEmpty())
                 return VIEW_TYPE_IMAGE;
-            else if (messageItem.isImage() || !messageItem.isAttachmentImageOnly())
-                return VIEW_TYPE_IMAGE_TEXT;
             else
                 return VIEW_TYPE_MESSAGE_NOFLEX;
         }else return VIEW_TYPE_MESSAGE;
@@ -86,10 +83,6 @@ public class ForwardedAdapter extends RealmRecyclerViewAdapter<MessageItem, Basi
             case VIEW_TYPE_MESSAGE_NOFLEX:
                 return new NoFlexForwardedVH(LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.item_message_forwarded_noflex, parent, false),
-                        this, this, listener, appearanceStyle);
-            case VIEW_TYPE_IMAGE_TEXT:
-                return new NoFlexForwardedVH(LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_message_forwarded_image_text, parent, false),
                         this, this, listener, appearanceStyle);
             default:
                 return new ForwardedVH(LayoutInflater.from(parent.getContext())
@@ -123,7 +116,6 @@ public class ForwardedAdapter extends RealmRecyclerViewAdapter<MessageItem, Basi
         final int viewType = getItemViewType(position);
         switch (viewType) {
             case VIEW_TYPE_IMAGE:
-            case VIEW_TYPE_IMAGE_TEXT:
             case VIEW_TYPE_MESSAGE_NOFLEX:
                 ((NoFlexForwardedVH)holder).bind(messageItem, extraData,
                         messageItem.getAccount().getFullJid().asBareJid().toString());
