@@ -41,9 +41,7 @@ import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.CommonState;
-import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
-import com.xabber.android.data.connection.ConnectionManager;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
@@ -71,7 +69,6 @@ import com.xabber.android.presentation.ui.contactlist.viewobjects.ChatVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.ContactVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.ExtContactVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.GroupVO;
-import com.xabber.android.ui.activity.AccountAddActivity;
 import com.xabber.android.ui.activity.ConferenceSelectActivity;
 import com.xabber.android.ui.activity.ContactActivity;
 import com.xabber.android.ui.activity.ContactAddActivity;
@@ -81,7 +78,6 @@ import com.xabber.android.ui.activity.SearchActivity;
 import com.xabber.android.ui.activity.StatusEditActivity;
 import com.xabber.android.ui.adapter.ChatComparator;
 import com.xabber.android.ui.adapter.contactlist.AccountConfiguration;
-import com.xabber.android.ui.adapter.contactlist.ContactListGroupUtils;
 import com.xabber.android.ui.adapter.contactlist.GroupConfiguration;
 import com.xabber.android.ui.color.AccountPainter;
 import com.xabber.android.ui.color.ColorManager;
@@ -271,16 +267,6 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         recyclerView.setLayoutManager(linearLayoutManager);
         coordinatorLayout = (CoordinatorLayout) view.findViewById(R.id.chatlist_coordinator_layout);
         markAllAsReadButton = (TextView) view.findViewById(R.id.mark_all_as_read_button);
-        markAllAsReadButton.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                for (AbstractChat chat : MessageManager.getInstance().getChatsOfEnabledAccount()){
-                    chat.markAsReadAll(true);
-                }
-                onStateSelected(ChatListFragment.ChatListState.recent);
-                Toast.makeText(getActivity(), "All mesages were marked as read", Toast.LENGTH_SHORT).show();
-            }
-        });
         markAllReadBackground = view.getResources().getDrawable(R.drawable.unread_button_background);
         if (Build.VERSION.SDK_INT >= 21) markAllAsReadButton.setElevation(2);
         if (Build.VERSION.SDK_INT >= 16) markAllAsReadButton.setBackground(markAllReadBackground);
@@ -675,19 +661,13 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
 
         /* If filterString is empty, build regular chat list */
         if (filterString == null || filterString.equals("")){
-            Collection<AbstractChat> chats = MessageManager.getInstance().getChatsOfEnabledAccount();
-            final GroupConfiguration chatsGroup = getChatsGroup(chats, currentChatsState);
+            final GroupConfiguration chatsGroup = getChatsGroup(currentChatsState);
             items.clear();
             if (!chatsGroup.isEmpty()) {
-                if (currentChatsState == ChatListState.recent){
-                    for (AbstractContact contact : chatsGroup.getAbstractContacts()) {
-                        items.add(ChatVO.convert(contact, this, null));
-                    }
-                } else {
-                    for (AbstractContact contact : chatsGroup.getAbstractContacts()) {
-                        items.add(ChatVO.convert(contact, this, null));
-                    }
+                for (AbstractContact contact : chatsGroup.getAbstractContacts()) {
+                    items.add(ChatVO.convert(contact, this, null));
                 }
+
             }
         } else {
             /* If filterString not empty, perform a search */
@@ -732,10 +712,20 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
                     : ContactVO.convert(baseEntities, this));
         }
 
-        /* Mark all the read button showing */
+        /* Mark all the read button setup */
         if (currentChatsState == ChatListState.unread && items.size() > 0){
             markAllReadBackground.setColorFilter(ColorManager.getInstance().getAccountPainter().getDefaultMainColor(), PorterDuff.Mode.SRC_ATOP);
             markAllAsReadButton.setVisibility(View.VISIBLE);
+            markAllAsReadButton.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View v) {
+                    for (AbstractContact abstractContact : getChatsGroup(ChatListState.recent).getAbstractContacts()){
+                        MessageManager.getInstance().getChat(abstractContact.getAccount(), abstractContact.getUser()).markAsReadAll(true);
+                    }
+                    onStateSelected(ChatListFragment.ChatListState.recent);
+                    Toast.makeText(getActivity(), "All mesages were marked as read", Toast.LENGTH_SHORT).show();
+                }
+            });
         }
         else markAllAsReadButton.setVisibility(View.GONE);
 
@@ -746,7 +736,8 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         setupToolbarLayout();
     }
 
-    private GroupConfiguration getChatsGroup(Collection<AbstractChat> chats, ChatListState state) {
+    private GroupConfiguration getChatsGroup(ChatListState state) {
+        Collection<AbstractChat> chats = MessageManager.getInstance().getChatsOfEnabledAccount();
         GroupConfiguration chatsGroup = new GroupConfiguration(GroupManager.NO_ACCOUNT,
                 GroupVO.RECENT_CHATS_TITLE, GroupManager.getInstance());
         List<AbstractChat> newChats = new ArrayList<>();
