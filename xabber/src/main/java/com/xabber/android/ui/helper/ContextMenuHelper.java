@@ -65,10 +65,14 @@ import com.xabber.android.ui.preferences.CustomNotifySettings;
  */
 public class ContextMenuHelper {
 
+    public interface ListPresenter{
+        void updateContactList();
+    }
+
     private ContextMenuHelper() {
     }
 
-    public static void createContactContextMenu(final Activity activity, ContactListPresenter presenter,
+    public static void createContactContextMenu(final Activity activity, ListPresenter presenter,
                                                 AbstractContact abstractContact, ContextMenu menu) {
         final AccountJid account = abstractContact.getAccount();
         final UserJid user = abstractContact.getUser();
@@ -81,7 +85,7 @@ public class ContextMenuHelper {
     }
 
     private static void setContactContextMenuActions(final Activity activity,
-                                                     final ContactListPresenter presenter, ContextMenu menu,
+                                                     final ListPresenter presenter, ContextMenu menu,
                                                      final AccountJid account, final UserJid user) {
 
         menu.findItem(R.id.action_edit_conference).setIntent(
@@ -280,7 +284,7 @@ public class ContextMenuHelper {
     }
 
     public static void createGroupContextMenu(final Activity activity,
-              final ContactListPresenter presenter, final AccountJid account, final String group, ContextMenu menu) {
+              final ListPresenter presenter, final AccountJid account, final String group, ContextMenu menu) {
         menu.setHeaderTitle(GroupManager.getInstance().getGroupName(account, group));
         if (!group.equals(GroupManager.ACTIVE_CHATS) && !group.equals(GroupManager.IS_ROOM)) {
             menu.add(R.string.group_rename).setOnMenuItemClickListener(
@@ -332,7 +336,7 @@ public class ContextMenuHelper {
         }
     }
 
-    public static void createAccountContextMenu( final Activity activity, final ContactListPresenter presenter,
+    public static void createAccountContextMenu( final Activity activity, final ListPresenter presenter,
                                                  final AccountJid account, ContextMenu menu) {
         activity.getMenuInflater().inflate(R.menu.item_account_group, menu);
         menu.setHeaderTitle(AccountManager.getInstance().getVerboseName(account));
@@ -340,7 +344,7 @@ public class ContextMenuHelper {
         setUpAccountMenu(activity, presenter, account, menu);
     }
 
-    public static void setUpAccountMenu(final Activity activity, final ContactListPresenter presenter, final AccountJid account, Menu menu) {
+    public static void setUpAccountMenu(final Activity activity, final ListPresenter presenter, final AccountJid account, Menu menu) {
         final AccountItem accountItem = AccountManager.getInstance().getAccount(account);
         if (accountItem == null) {
             return;
@@ -391,7 +395,7 @@ public class ContextMenuHelper {
         }
     }
 
-    public static AlertDialog createOfflineContactsDialog(Context context, final ContactListPresenter presenter,
+    public static AlertDialog createOfflineContactsDialog(Context context, final ListPresenter presenter,
                                                           final AccountJid account, final String group) {
         return new AlertDialog.Builder(context)
                 .setTitle(R.string.show_offline_settings)
@@ -409,7 +413,7 @@ public class ContextMenuHelper {
                         }).create();
     }
 
-    private static void showSnoozeDialog(AppCompatActivity activity, AbstractChat chat, final ContactListPresenter presenter) {
+    private static void showSnoozeDialog(AppCompatActivity activity, AbstractChat chat, final ListPresenter presenter) {
         SnoozeDialog dialog = SnoozeDialog.newInstance(chat, new SnoozeDialog.OnSnoozeListener() {
             @Override
             public void onSnoozed() {

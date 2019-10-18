@@ -85,6 +85,7 @@ import com.xabber.android.ui.adapter.contactlist.ContactListGroupUtils;
 import com.xabber.android.ui.adapter.contactlist.GroupConfiguration;
 import com.xabber.android.ui.color.AccountPainter;
 import com.xabber.android.ui.color.ColorManager;
+import com.xabber.android.ui.helper.ContextMenuHelper;
 import com.xabber.android.ui.widget.ShortcutBuilder;
 
 import org.greenrobot.eventbus.EventBus;
@@ -106,7 +107,7 @@ import eu.davidea.flexibleadapter.items.IFlexible;
 public class ChatListFragment extends Fragment implements ContactVO.ContactClickListener,
         FlexibleAdapter.OnItemClickListener, FlexibleAdapter.OnItemSwipeListener, View.OnClickListener,
         OnContactChangedListener, OnAccountChangedListener, UpdateBackpressure.UpdatableObject,
-        PopupMenu.OnMenuItemClickListener {
+        PopupMenu.OnMenuItemClickListener, ContextMenuHelper.ListPresenter {
 
     private UpdateBackpressure updateBackpressure;
     private FlexibleAdapter<IFlexible> adapter;
@@ -259,6 +260,12 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
             recyclerView.scrollToPosition(0);
             toolbarAppBarLayout.setExpanded(true, false);
         }
+    }
+
+    // TEMPORARY to use context menu with ContactList
+    @Override
+    public void updateContactList() {
+        updateBackpressure.refreshRequest();
     }
 
     @Nullable
@@ -614,15 +621,11 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
     public void onItemContextMenu(int adapterPosition, ContextMenu menu){
         IFlexible item = adapter.getItem(adapterPosition);
         if (item != null && item instanceof ContactVO) {
-            Intent intent;
             AccountJid accountJid = ((ContactVO) item).getAccountJid();
             UserJid userJid = ((ContactVO) item).getUserJid();
-            if (MUCManager.getInstance().hasRoom(accountJid, userJid)) {
-                intent = ContactActivity.createIntent(getActivity(), accountJid, userJid);
-            } else {
-                intent = ContactEditActivity.createIntent(getActivity(), accountJid, userJid);
-            }
-            getActivity().startActivity(intent);
+            AbstractContact abstractContact = RosterManager.getInstance().getAbstractContact(accountJid, userJid);
+            ContextMenuHelper.createContactContextMenu(getActivity(), this, abstractContact, menu);
+            return;
         }
     }
 
