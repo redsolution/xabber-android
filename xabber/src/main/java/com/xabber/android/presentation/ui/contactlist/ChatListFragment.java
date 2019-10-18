@@ -565,21 +565,20 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
     public void onItemSwipe(int position, int direction) {
         Object itemAtPosition = adapter.getItem(position);
         if (itemAtPosition != null && itemAtPosition instanceof ChatVO) {
-
             // backup of removed item for undo purpose
             final ChatVO deletedItem = (ChatVO) itemAtPosition;
-
             // update value
             setChatArchived(deletedItem, !(deletedItem).isArchived());
-
             // remove the item from recycler view
             adapter.removeItem(position);
-
-            // showing snackbar with Undo option
-            showSnackbar(deletedItem, position);
-
             // update unread count
             updateUnreadCount();
+            items.remove(itemAtPosition);
+            ChatListState previousChatListState = currentChatsState;
+            if (currentChatsState != ChatListState.recent && items.size() == 0)
+                onStateSelected(ChatListState.recent);
+            // showing snackbar with Undo option
+            showSnackbar(deletedItem, position, previousChatListState);
         }
     }
 
@@ -854,7 +853,7 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         placeholderButton.setVisibility(View.GONE);
     }
 
-    public void showSnackbar(final ChatVO deletedItem, final int deletedIndex) {
+    public void showSnackbar(final ChatVO deletedItem, final int deletedIndex, final ChatListState previoustState) {
         if (snackbar != null) snackbar.dismiss();
         final boolean archived = (deletedItem).isArchived();
         snackbar = Snackbar.make(coordinatorLayout, archived ? R.string.chat_was_unarchived
@@ -871,6 +870,8 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
 
                 // update unread count
                 updateUnreadCount();
+
+                onStateSelected(previoustState);
             }
         });
         snackbar.setActionTextColor(Color.YELLOW);
