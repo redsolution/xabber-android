@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 import androidx.core.content.FileProvider;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.MultiTransformation;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.xabber.android.BuildConfig;
 import com.xabber.android.R;
@@ -21,6 +22,7 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.log.LogManager;
+import com.xabber.android.ui.helper.RoundedBorders;
 
 import org.apache.commons.io.FilenameUtils;
 
@@ -34,6 +36,10 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.UUID;
+
+import static com.xabber.android.ui.adapter.chat.FileMessageVH.IMAGE_ROUNDED_BORDER_CORNERS;
+import static com.xabber.android.ui.adapter.chat.FileMessageVH.IMAGE_ROUNDED_BORDER_WIDTH;
+import static com.xabber.android.ui.adapter.chat.FileMessageVH.IMAGE_ROUNDED_CORNERS;
 
 public class FileManager {
 
@@ -86,10 +92,16 @@ public class FileManager {
             return false;
         }
 
+        if(FileManager.isImageNeededDimensionsFlip(Uri.fromFile(new File(path)))) {
+                int tempWidth = layoutParams.height;
+                int tempHeight = layoutParams.width;
+                layoutParams.width = tempWidth;
+                layoutParams.height = tempHeight;
+        }
         imageView.setLayoutParams(layoutParams);
         Glide.with(context)
                 .load(path)
-                .transform(new RoundedCorners(10))
+                .transform(new MultiTransformation<>(new RoundedCorners(IMAGE_ROUNDED_CORNERS), new RoundedBorders(IMAGE_ROUNDED_BORDER_CORNERS,IMAGE_ROUNDED_BORDER_WIDTH)))
                 .into(imageView);
 
         return true;
@@ -228,6 +240,38 @@ public class FileManager {
             case ExifInterface.ORIENTATION_ROTATE_270:
                 return true;
 
+            case ExifInterface.ORIENTATION_NORMAL:
+            case ExifInterface.ORIENTATION_UNDEFINED:
+            default:
+                return false;
+        }
+    }
+
+    public static boolean isImageNeededDimensionsFlip(Uri srcUri) {
+        final String srcPath = FileUtils.getPath(Application.getInstance(), srcUri);
+        if (srcPath == null) {
+            return false;
+        }
+
+        ExifInterface exif;
+        try {
+            exif = new ExifInterface(srcPath);
+        } catch (IOException e) {
+            LogManager.exception(LOG_TAG, e);
+            return false;
+        }
+
+        int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
+        switch (orientation) {
+            case ExifInterface.ORIENTATION_TRANSPOSE:
+            case ExifInterface.ORIENTATION_ROTATE_90:
+            case ExifInterface.ORIENTATION_TRANSVERSE:
+            case ExifInterface.ORIENTATION_ROTATE_270:
+                return true;
+
+            case ExifInterface.ORIENTATION_FLIP_HORIZONTAL:
+            case ExifInterface.ORIENTATION_ROTATE_180:
+            case ExifInterface.ORIENTATION_FLIP_VERTICAL:
             case ExifInterface.ORIENTATION_NORMAL:
             case ExifInterface.ORIENTATION_UNDEFINED:
             default:

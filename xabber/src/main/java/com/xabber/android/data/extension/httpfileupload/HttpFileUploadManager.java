@@ -8,8 +8,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
 import android.os.ResultReceiver;
-import androidx.annotation.Nullable;
 import android.webkit.MimeTypeMap;
+
+import androidx.annotation.Nullable;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.OnLoadListener;
@@ -193,8 +194,17 @@ public class HttpFileUploadManager implements OnLoadListener, OnAccountRemovedLi
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         BitmapFactory.decodeFile(new File(filePath).getAbsolutePath(), options);
-        int imageHeight = options.outHeight;
-        int imageWidth = options.outWidth;
+        int imageHeight;
+        int imageWidth;
+        if (FileManager.isImageNeededDimensionsFlip(Uri.fromFile(new File(filePath)))){
+            //image is sent as-is, but the BitmapFactory gets dimension sizes without respecting exif orientation,
+            //resulting in flipped dimension data between photos themselves and data in the stanza
+            imageHeight = options.outWidth;
+            imageWidth = options.outHeight;
+        } else {
+            imageHeight = options.outHeight;
+            imageWidth = options.outWidth;
+        }
         return new ImageSize(imageHeight, imageWidth);
     }
 

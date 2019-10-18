@@ -50,6 +50,7 @@ import com.xabber.xmpp.vcard.AddressProperty;
 import com.xabber.xmpp.vcard.TelephoneType;
 import com.xabber.xmpp.vcard.VCardProperty;
 
+import org.apache.commons.io.FileUtils;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smackx.pubsub.PubSubException;
@@ -88,8 +89,10 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
     public static final int KB_SIZE_IN_BYTES = 1024;
     public static final String DATE_FORMAT = "yyyy-mm-dd";
     public static final String DATE_FORMAT_INT_TO_STRING = "%d-%02d-%02d";
-    public static int MAX_IMAGE_SIZE = 512;
+    public static int MAX_IMAGE_SIZE = 256;
     public static final int MAX_TEST = 256;
+    public static int quality = 100;
+    public static int MAX_IMAGE_RESIZE = 256;
     private boolean isAvatarSuccessful = false;
 
     private VCard vCard;
@@ -544,7 +547,7 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == Crop.REQUEST_PICK && resultCode == Activity.RESULT_OK) {
             beginCrop(data.getData());
-        }else if (requestCode == REQUEST_TAKE_PHOTO && resultCode == Activity.RESULT_OK) {
+        } else if (requestCode == REQUEST_TAKE_PHOTO && resultCode == Activity.RESULT_OK) {
             beginCrop(photoFileUri);
         } else if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
             CropImage.ActivityResult result = CropImage.getActivityResult(data);
@@ -641,7 +644,9 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
             return;
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            CropImage.activity(srcUri).setAspectRatio(1,1).setOutputCompressFormat(Bitmap.CompressFormat.PNG).setMaxCropResultSize(MAX_TEST, MAX_TEST)
+            CropImage.activity(srcUri).setAspectRatio(1,1).setOutputCompressFormat(Bitmap.CompressFormat.PNG)
+                    .setMaxCropResultSize(MAX_TEST, MAX_TEST)
+                    .setOutputUri(newAvatarImageUri)
                     .start(getContext(), this);
         }
         /*Crop.of(srcUri, newAvatarImageUri)
@@ -672,6 +677,63 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
         }
     }
 
+    private void resize(final Uri src){
+        Glide.with(this).asBitmap().load(src).override(MAX_IMAGE_RESIZE, MAX_IMAGE_RESIZE)
+                .into(new CustomTarget<Bitmap>() {
+                    @Override
+                    public void onResourceReady(@NonNull final Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+                        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
+                            @Override
+                            public void run() {
+                                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                                resource.compress(Bitmap.CompressFormat.PNG, quality, stream);
+                                byte[] data = stream.toByteArray();
+                                if (data.length>36000) {
+                                    MAX_IMAGE_RESIZE = MAX_IMAGE_RESIZE - MAX_IMAGE_RESIZE/8;
+                                    //quality = quality - 10;
+                                    if(MAX_IMAGE_RESIZE == 0) {
+                                        Toast.makeText(getActivity(), "Error with resizing", Toast.LENGTH_LONG).show();
+                                        return;
+                                    }
+                                    resize(src);
+                                    return;
+                                }
+                                resource.recycle();
+                                //final Uri rotatedImage = FileManager.saveImage(data, ROTATE_FILE_NAME);
+                                final Uri rotatedImage = FileManager.savePNGImage(data, "resize");
+                                if (rotatedImage == null) return;
+                                try {
+                                    FileUtils.writeByteArrayToFile(new File(newAvatarImageUri.getPath()), data);
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+
+                                //final Uri image = FileManager.saveImageNoRotation(data, "normal");
+
+                                Application.getInstance().runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        //startImageCropActivity(rotatedImage);
+                                        setUpAvatarView();
+                                    }
+                                });
+
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onLoadFailed(@Nullable Drawable errorDrawable) {
+                        super.onLoadFailed(errorDrawable);
+                        disableProgressMode();
+                        Toast.makeText(getActivity(), R.string.error_during_image_processing, Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onLoadCleared(@Nullable Drawable placeholder) { }
+                });
+    }
+
     private void setUpAvatarView() {
         if (newAvatarImageUri != null) {
             // null prompts image view to reload file.
@@ -683,10 +745,12 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
             avatarSize.setText(file.length() / KB_SIZE_IN_BYTES + "KB");
 
             if (file.length() / KB_SIZE_IN_BYTES>35) {
-                Toast.makeText(getActivity(), "Image is too big, need another crop!", Toast.LENGTH_LONG).show();
-                preprocessAndStartCrop(newAvatarImageUri);
+                Toast.makeText(getActivity(), "Image is too big, commencing additional processing!", Toast.LENGTH_LONG).show();
+                resize(newAvatarImageUri);
+                //preprocessAndStartCrop(newAvatarImageUri);
                 return;
             }
+            MAX_IMAGE_RESIZE = MAX_TEST;
 
             saveAvatarButton.setVisibility(View.VISIBLE);
 

@@ -43,6 +43,10 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
     public static final int VIEW_TYPE_OUTGOING_MESSAGE = 3;
     private static final int VIEW_TYPE_ACTION_MESSAGE = 4;
     public static final int VIEW_TYPE_OUTGOING_MESSAGE_NOFLEX = 6;
+    public static final int VIEW_TYPE_OUTGOING_MESSAGE_IMAGE = 7;
+    public static final int VIEW_TYPE_INCOMING_MESSAGE_IMAGE = 8;
+    public static final int VIEW_TYPE_OUTGOING_MESSAGE_IMAGE_TEXT = 9;
+    public static final int VIEW_TYPE_INCOMING_MESSAGE_IMAGE_TEXT = 10;
 
     private final Context context;
     private final MessageVH.MessageClickListener messageListener;
@@ -131,14 +135,21 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
             return VIEW_TYPE_ACTION_MESSAGE;
 
         // if noFlex is true, should use special layout without flexbox-style text
-        boolean noFlex = messageItem.haveForwardedMessages() || messageItem.haveAttachments() || messageItem.isImage();
+        boolean noFlex = messageItem.haveForwardedMessages() || messageItem.haveAttachments() /*|| messageItem.isImage()*/;
+        boolean isImage = messageItem.hasImage() || messageItem.isImage();
+        boolean notJustImage = (!messageItem.getText().trim().isEmpty()) || (!messageItem.isAttachmentImageOnly());
 
         if (messageItem.isIncoming()) {
             if (isMUC && messageItem.getResource().equals(mucNickname)) {
-                return noFlex ? VIEW_TYPE_OUTGOING_MESSAGE_NOFLEX : VIEW_TYPE_OUTGOING_MESSAGE;
+                if(isImage) return notJustImage? VIEW_TYPE_OUTGOING_MESSAGE_IMAGE_TEXT : VIEW_TYPE_OUTGOING_MESSAGE_IMAGE;
+                else return noFlex ? VIEW_TYPE_OUTGOING_MESSAGE_NOFLEX : VIEW_TYPE_OUTGOING_MESSAGE;
             }
-            return noFlex ? VIEW_TYPE_INCOMING_MESSAGE_NOFLEX : VIEW_TYPE_INCOMING_MESSAGE;
-        } else return noFlex ? VIEW_TYPE_OUTGOING_MESSAGE_NOFLEX : VIEW_TYPE_OUTGOING_MESSAGE;
+            if(isImage) {
+                return notJustImage? VIEW_TYPE_INCOMING_MESSAGE_IMAGE_TEXT : VIEW_TYPE_INCOMING_MESSAGE_IMAGE;
+            }else return noFlex ? VIEW_TYPE_INCOMING_MESSAGE_NOFLEX : VIEW_TYPE_INCOMING_MESSAGE;
+
+        } else if(isImage) return notJustImage? VIEW_TYPE_OUTGOING_MESSAGE_IMAGE_TEXT : VIEW_TYPE_OUTGOING_MESSAGE_IMAGE;
+        else return noFlex ? VIEW_TYPE_OUTGOING_MESSAGE_NOFLEX : VIEW_TYPE_OUTGOING_MESSAGE;
     }
 
     @Override
@@ -168,6 +179,25 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
                         .inflate(R.layout.item_message_outgoing_noflex, parent, false),
                         this, this, this, appearanceStyle);
 
+            case VIEW_TYPE_OUTGOING_MESSAGE_IMAGE:
+                return new NoFlexOutgoingMsgVH(LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.item_message_outgoing_image, parent, false),
+                        this, this, this, appearanceStyle);
+
+            case VIEW_TYPE_INCOMING_MESSAGE_IMAGE:
+                return new NoFlexIncomingMsgVH(LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.item_message_incoming_image, parent, false),
+                        this, this, this, bindListener, appearanceStyle);
+
+            case VIEW_TYPE_INCOMING_MESSAGE_IMAGE_TEXT:
+                return new NoFlexIncomingMsgVH(LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.item_message_incoming_image_text, parent, false),
+                        this, this, this, bindListener, appearanceStyle);
+
+            case VIEW_TYPE_OUTGOING_MESSAGE_IMAGE_TEXT:
+                return new NoFlexOutgoingMsgVH(LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.item_message_outgoing_image_text, parent, false),
+                        this, this, this, appearanceStyle);
             default:
                 return null;
         }
@@ -238,6 +268,8 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
                 ((IncomingMessageVH)holder).bind(messageItem, extraData);
                 break;
 
+            case VIEW_TYPE_INCOMING_MESSAGE_IMAGE_TEXT:
+            case VIEW_TYPE_INCOMING_MESSAGE_IMAGE:
             case VIEW_TYPE_INCOMING_MESSAGE_NOFLEX:
                 ((NoFlexIncomingMsgVH)holder).bind(messageItem, extraData);
                 break;
@@ -246,9 +278,12 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
                 ((OutgoingMessageVH)holder).bind(messageItem, extraData);
                 break;
 
+            case VIEW_TYPE_OUTGOING_MESSAGE_IMAGE_TEXT:
+            case VIEW_TYPE_OUTGOING_MESSAGE_IMAGE:
             case VIEW_TYPE_OUTGOING_MESSAGE_NOFLEX:
                 ((NoFlexOutgoingMsgVH)holder).bind(messageItem, extraData);
                 break;
+
         }
     }
 
@@ -487,15 +522,20 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
     private int getSimpleType(int type) {
         switch (type) {
             case VIEW_TYPE_INCOMING_MESSAGE:
-                return 1;
             case VIEW_TYPE_INCOMING_MESSAGE_NOFLEX:
+            case VIEW_TYPE_INCOMING_MESSAGE_IMAGE:
+            case VIEW_TYPE_INCOMING_MESSAGE_IMAGE_TEXT:
                 return 1;
+
             case VIEW_TYPE_OUTGOING_MESSAGE:
-                return 2;
             case VIEW_TYPE_OUTGOING_MESSAGE_NOFLEX:
+            case VIEW_TYPE_OUTGOING_MESSAGE_IMAGE:
+            case VIEW_TYPE_OUTGOING_MESSAGE_IMAGE_TEXT:
                 return 2;
+
             case VIEW_TYPE_ACTION_MESSAGE:
                 return 3;
+
             default:
                 return 0;
         }

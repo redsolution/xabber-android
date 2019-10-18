@@ -13,6 +13,7 @@ import androidx.annotation.StyleRes;
 import com.bumptech.glide.Glide;
 import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
+import com.xabber.android.data.database.messagerealm.Attachment;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
@@ -70,7 +71,25 @@ public class IncomingMessageVH  extends FileMessageVH {
             forwardLayout.setLayoutParams(forwardedParams);
         } else forwardLayout.setVisibility(View.GONE);
 
-        // setup BACKGROUND
+        boolean imageAttached = false;
+        boolean imageOnly = true;
+        if(messageItem.haveAttachments()) {
+            for (Attachment a : messageItem.getAttachments()){
+                if (a.isImage()) {
+                    imageAttached = true;
+                } else {
+                    imageOnly = false;
+                }
+                if(imageOnly) needTail = false;
+            }
+        } else if (messageItem.isImage()) {
+            if (messageText.getText().toString().trim().isEmpty()) {
+                imageAttached = true;
+                needTail = false; //not using the tail for messages with *only* images
+            } else imageAttached = true;
+        }
+
+            // setup BACKGROUND
         Drawable balloonDrawable = context.getResources().getDrawable(
                 haveForwarded ? (needTail ? R.drawable.fwd_in : R.drawable.fwd)
                             : (needTail ? R.drawable.msg_in : R.drawable.msg));
@@ -98,6 +117,20 @@ public class IncomingMessageVH  extends FileMessageVH {
                 Utils.dipToPx(8f, context),
                 Utils.dipToPx(12f, context),
                 Utils.dipToPx(8f, context));
+
+        if(imageAttached) {
+        float border = 3.5f;
+            messageBalloon.setPadding(
+                    Utils.dipToPx(needTail ? border + 8f : border, context),
+                    Utils.dipToPx(border-0.2f, context),
+                    Utils.dipToPx(border, context),
+                    Utils.dipToPx(border-0.2f, context));
+
+            if(messageText.getText().toString().trim().isEmpty() && messageItem.isAttachmentImageOnly())
+                messageTime.setTextColor(context.getResources().getColor(R.color.white));
+        }
+
+        needTail = extraData.isNeedTail(); //restoring the original tail value for the interaction with avatars
 
         // setup BACKGROUND COLOR
         setUpMessageBalloonBackground(messageBalloon, extraData.getColorStateList());

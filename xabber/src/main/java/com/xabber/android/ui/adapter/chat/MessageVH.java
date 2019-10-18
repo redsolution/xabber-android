@@ -49,6 +49,7 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
     ImageView statusIcon;
     ImageView ivEncrypted;
     String messageId;
+    View messageInfo;
     View forwardLayout;
     View forwardLeftBorder;
 
@@ -68,6 +69,7 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
 
         tvFirstUnread = itemView.findViewById(R.id.tvFirstUnread);
         tvDate = itemView.findViewById(R.id.tvDate);
+        messageInfo = itemView.findViewById(R.id.message_info);
         messageTime = itemView.findViewById(R.id.message_time);
         messageHeader = itemView.findViewById(R.id.message_header);
         messageNotDecrypted = itemView.findViewById(R.id.message_not_decrypted);
@@ -115,6 +117,7 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
                     null, new ClickTagHandler(extraData.getContext(),
                     extraData.getMentionColor())), TextView.BufferType.SPANNABLE);
         else messageText.setText(messageItem.getText().concat(String.valueOf(Character.MIN_VALUE)));
+        messageText.setText(messageText.getText().toString().trim());
         if (OTRManager.getInstance().isEncrypted(messageItem.getText())) {
             if (extraData.isShowOriginalOTR())
                 messageText.setVisibility(View.VISIBLE);
