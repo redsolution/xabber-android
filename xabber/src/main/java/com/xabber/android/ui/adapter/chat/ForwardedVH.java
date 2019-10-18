@@ -14,6 +14,7 @@ import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.color.ColorManager;
+import com.xabber.android.utils.Utils;
 
 public class ForwardedVH extends FileMessageVH {
 
@@ -70,6 +71,28 @@ public class ForwardedVH extends FileMessageVH {
         shadowDrawable.setColorFilter(context.getResources().getColor(R.color.black), PorterDuff.Mode.MULTIPLY);
         messageBalloon.setBackgroundDrawable(balloonDrawable);
         messageShadow.setBackgroundDrawable(shadowDrawable);
+
+
+        float border = 3.5f;
+        if(messageItem.haveAttachments()) {
+            if(messageItem.isAttachmentImageOnly()) {
+                messageBalloon.setPadding(
+                        Utils.dipToPx(border, context),
+                        Utils.dipToPx(border, context),
+                        Utils.dipToPx(border, context),
+                        Utils.dipToPx(border, context));
+                /*messageBalloon.setPadding(
+                        Utils.dipToPx(3f, context),
+                        Utils.dipToPx(-2f, context),
+                        Utils.dipToPx(3f, context),
+                        Utils.dipToPx(-15f, context));*/
+                /*messageInfo.setPadding(
+                        Utils.dipToPx(0f, context),
+                        Utils.dipToPx(-7f, context),
+                        Utils.dipToPx(0f, context),
+                        Utils.dipToPx(0f, context));*/
+            }
+        }
 
         // setup BACKGROUND COLOR
         if (jid != null && !accountJid.equals(jid.getBareJid().toString()))

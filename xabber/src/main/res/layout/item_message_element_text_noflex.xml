@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/text_noflex"
     android:layout_width="match_parent"
@@ -42,6 +43,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="right"
+            android:gravity="right"
             android:orientation="horizontal">
 
             <TextView
@@ -78,7 +80,7 @@
                 android:id="@+id/message_status_icon"
                 android:layout_width="14dp"
                 android:layout_height="14dp"
-                android:src="@drawable/ic_message_synced_14dp" />
+                app:srcCompat="@drawable/ic_message_synced_14dp" />
 
             <ImageView
                 android:id="@+id/message_encrypted_icon"
@@ -86,7 +88,7 @@
                 android:layout_height="14dp"
                 android:layout_marginStart="4dp"
                 android:layout_marginLeft="4dp"
-                android:src="@drawable/ic_lock" />
+                app:srcCompat="@drawable/ic_lock" />
 
         </LinearLayout>
 
