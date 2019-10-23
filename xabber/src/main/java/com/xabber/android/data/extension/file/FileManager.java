@@ -50,6 +50,7 @@ public class FileManager {
     private final static FileManager instance;
 
     private static int maxImageSize;
+    private static int maxImageHeightSize;
     private static int minImageSize;
 
 
@@ -58,6 +59,7 @@ public class FileManager {
 
         Resources resources = Application.getInstance().getResources();
         maxImageSize = resources.getDimensionPixelSize(R.dimen.max_chat_image_size);
+        maxImageHeightSize = resources.getDimensionPixelSize(R.dimen.max_chat_image_height_size);
         minImageSize = resources.getDimensionPixelSize(R.dimen.min_chat_image_size);
     }
 
@@ -86,18 +88,21 @@ public class FileManager {
         BitmapFactory.decodeFile(path, options);
 
         ViewGroup.LayoutParams layoutParams = imageView.getLayoutParams();
-        scaleImage(layoutParams, options.outHeight, options.outWidth);
+        if(FileManager.isImageNeededDimensionsFlip(Uri.fromFile(new File(path)))) {
+            scaleImage(layoutParams, options.outWidth, options.outHeight);
+        } else
+            scaleImage(layoutParams, options.outHeight, options.outWidth);
 
         if (options.outHeight == 0 || options.outWidth == 0) {
             return false;
         }
 
-        if(FileManager.isImageNeededDimensionsFlip(Uri.fromFile(new File(path)))) {
+        /*if(FileManager.isImageNeededDimensionsFlip(Uri.fromFile(new File(path)))) {
                 int tempWidth = layoutParams.height;
                 int tempHeight = layoutParams.width;
                 layoutParams.width = tempWidth;
                 layoutParams.height = tempHeight;
-        }
+        }*/
         imageView.setLayoutParams(layoutParams);
         Glide.with(context)
                 .load(path)
@@ -156,14 +161,14 @@ public class FileManager {
         int scaledHeight;
 
         if (width <= height) {
-            if (height > maxImageSize) {
-                scaledWidth = (int) (width / ((double) height / maxImageSize));
-                scaledHeight = maxImageSize;
+            if (height > maxImageHeightSize) {
+                scaledWidth = (int) (width / ((double) height / maxImageHeightSize));
+                scaledHeight = maxImageHeightSize;
             } else if (width < minImageSize) {
                 scaledWidth = minImageSize;
                 scaledHeight = (int) (height / ((double) width / minImageSize));
-                if (scaledHeight > maxImageSize) {
-                    scaledHeight = maxImageSize;
+                if (scaledHeight > maxImageHeightSize) {
+                    scaledHeight = maxImageHeightSize;
                 }
             } else {
                 scaledWidth = width;

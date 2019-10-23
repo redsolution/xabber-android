@@ -4,14 +4,16 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Configuration;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
-import androidx.appcompat.widget.Toolbar;
 import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.EditText;
-import android.widget.ImageView;
+
+import androidx.appcompat.widget.Toolbar;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
@@ -31,7 +33,7 @@ import com.xabber.android.ui.helper.PermissionsRequester;
 public class ContactEditActivity extends ContactActivity implements Toolbar.OnMenuItemClickListener {
 
     private static final int PERMISSIONS_REQUEST_EXPORT_CHAT = 27;
-    private ImageView qrImage;
+    //private ImageView qrImage;
 
     public static Intent createIntent(Context context, AccountJid account, UserJid user) {
         return new EntityIntentBuilder(context, ContactEditActivity.class)
@@ -49,16 +51,22 @@ public class ContactEditActivity extends ContactActivity implements Toolbar.OnMe
             toolbar.inflateMenu(R.menu.toolbar_contact);
             toolbar.setOnMenuItemClickListener(this);
             toolbar.setOverflowIcon(getResources().getDrawable(R.drawable.ic_overflow_menu_white_24dp));
+            int orientation = getResources().getConfiguration().orientation;
+            if (toolbar.getOverflowIcon() != null)
+            if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                toolbar.getOverflowIcon().setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_ATOP);
+            }
             onCreateOptionsMenu(toolbar.getMenu());
         }
 
-        qrImage = (ImageView) findViewById(R.id.imgQRcode);
-        qrImage.setOnClickListener(new View.OnClickListener() {
+        //qrImage = (ImageView) findViewById(R.id.imgQRcode);
+        //qrImage = (ImageView) findViewById(R.id.generate_qrcode);
+        /*qrImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 generateQR();
             }
-        });
+        });*/
 
     }
 
@@ -170,14 +178,5 @@ public class ContactEditActivity extends ContactActivity implements Toolbar.OnMe
         startActivity(Intent.createChooser(sendIntent, getResources().getText(R.string.send_to)));
     }
 
-    private void  generateQR(){
-        RosterContact rosterContact = RosterManager.getInstance().getRosterContact(getAccount(), getUser());
-        Intent intent = QRCodeActivity.createIntent(this, getAccount());
-        String textName = rosterContact != null ? rosterContact.getName() : "";
-        intent.putExtra("account_name", textName);
-        String textAddress = getUser().toString();
-        intent.putExtra("account_address", textAddress);
-        intent.putExtra("caller", "ContactEditActivity");
-        startActivity(intent);
-    }
+
 }
