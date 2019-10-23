@@ -393,6 +393,14 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         }
     }
 
+    /** @return  Return true when first element on the top of list*/
+    public boolean isOnTop(){
+        return adapter.getFlexibleLayoutManager().findFirstCompletelyVisibleItemPosition() == 0;
+    }
+
+    /** @return Size of list */
+    public int getListSize(){ return items.size(); }
+
     /** Show menu Add contact / Add conference */
     private void showToolbarPopup(View v) {
         PopupMenu popupMenu = new PopupMenu(getContext(), v);
