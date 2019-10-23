@@ -3,6 +3,7 @@ package com.xabber.android.ui.fragment;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Fragment;
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
@@ -84,7 +85,7 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
     private static final int REQUEST_PERMISSION_GALLERY = 4;
 
     public static final int MAX_AVATAR_SIZE_PIXELS = 192;
-    public static final String TEMP_FILE_NAME = "cropped.png";
+    public static final String TEMP_FILE_NAME = "cropped";
     public static final String ROTATE_FILE_NAME = "rotated";
     public static final int KB_SIZE_IN_BYTES = 1024;
     public static final String DATE_FORMAT = "yyyy-mm-dd";
@@ -94,6 +95,7 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
     public static int quality = 100;
     public static int MAX_IMAGE_RESIZE = 256;
     private boolean isAvatarSuccessful = false;
+    private String imageFileType;
 
     private VCard vCard;
     private AccountJid account;
@@ -499,8 +501,8 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
         if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
             File imageFile = null;
             try {
-                //imageFile = FileManager.createTempImageFile(TEMP_FILE_NAME);
-                imageFile = FileManager.createTempPNGImageFile(TEMP_FILE_NAME);
+                imageFile = FileManager.createTempImageFile(TEMP_FILE_NAME);
+                //imageFile = FileManager.createTempPNGImageFile(TEMP_FILE_NAME);
             } catch (IOException e) {
                 LogManager.exception(this, e);
             }
@@ -594,30 +596,38 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
 
 
 
-    private void preprocessAndStartCrop(Uri source) {
+    private void preprocessAndStartCrop(final Uri source) {
         enableProgressMode(getString(R.string.processing_image));
-        Glide.with(this).asBitmap().load(source).override(MAX_IMAGE_SIZE, MAX_IMAGE_SIZE)
+        Glide.with(this).asBitmap().load(source)//.override(MAX_IMAGE_SIZE, MAX_IMAGE_SIZE)
                 .into(new CustomTarget<Bitmap>() {
                     @Override
                     public void onResourceReady(@NonNull final Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
                         Application.getInstance().runInBackgroundUserRequest(new Runnable() {
                             @Override
                             public void run() {
+                                ContentResolver cR = Application.getInstance().getApplicationContext().getContentResolver();
+                                String imageType = cR.getType(source);
+                                imageFileType = imageType;
+
                                 ByteArrayOutputStream stream = new ByteArrayOutputStream();
                                 resource.compress(Bitmap.CompressFormat.PNG, 100, stream);
                                 //resource.compress(Bitmap.CompressFormat.JPEG, 85, stream);
                                 byte[] data = stream.toByteArray();
                                 resource.recycle();
-                                //final Uri rotatedImage = FileManager.saveImage(data, ROTATE_FILE_NAME);
-                                final Uri rotatedImage = FileManager.savePNGImage(data, ROTATE_FILE_NAME);
+                                Uri rotatedImage;
+                                if (imageType.equals("image/png")) {
+                                    rotatedImage = FileManager.savePNGImage(data, ROTATE_FILE_NAME);
+                                } else {
+                                    rotatedImage = FileManager.saveImage(data, ROTATE_FILE_NAME);
+                                }
                                 if (rotatedImage == null) return;
-
+                                final Uri rotategImg = rotatedImage;
                                 //final Uri image = FileManager.saveImageNoRotation(data, "normal");
 
                                 Application.getInstance().runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
-                                        startImageCropActivity(rotatedImage);
+                                        startImageCropActivity(rotategImg);
                                         disableProgressMode();
                                     }
                                 });
@@ -643,11 +653,25 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
         if (activity == null) {
             return;
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            CropImage.activity(srcUri).setAspectRatio(1,1).setOutputCompressFormat(Bitmap.CompressFormat.PNG)
-                    .setMaxCropResultSize(MAX_TEST, MAX_TEST)
-                    .setOutputUri(newAvatarImageUri)
-                    .start(getContext(), this);
+        ContentResolver cR = Application.getInstance().getApplicationContext().getContentResolver();
+
+        imageFileType = cR.getType(srcUri);
+        if(cR.getType(srcUri)!=null) {
+            if (cR.getType(srcUri).equals("image/png")) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    CropImage.activity(srcUri).setAspectRatio(1, 1).setOutputCompressFormat(Bitmap.CompressFormat.PNG)
+                            //.setMaxCropResultSize(MAX_TEST, MAX_TEST)
+                            .setOutputUri(newAvatarImageUri)
+                            .start(getContext(), this);
+                }
+            } else {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    CropImage.activity(srcUri).setAspectRatio(1, 1).setOutputCompressFormat(Bitmap.CompressFormat.JPEG)
+                            //.setMaxCropResultSize(MAX_TEST, MAX_TEST)
+                            .setOutputUri(newAvatarImageUri)
+                            .start(getContext(), this);
+                }
+            }
         }
         /*Crop.of(srcUri, newAvatarImageUri)
                 .asSquare()
@@ -699,8 +723,14 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
                                     return;
                                 }
                                 resource.recycle();
-                                //final Uri rotatedImage = FileManager.saveImage(data, ROTATE_FILE_NAME);
-                                final Uri rotatedImage = FileManager.savePNGImage(data, "resize");
+                                Uri rotatedImage = null;
+                                if(imageFileType!=null) {
+                                    if (imageFileType.equals("image/png")) {
+                                        rotatedImage = FileManager.savePNGImage(data, "resize");
+                                    } else {
+                                        rotatedImage = FileManager.saveImage(data, "resize");
+                                    }
+                                }
                                 if (rotatedImage == null) return;
                                 try {
                                     FileUtils.writeByteArrayToFile(new File(newAvatarImageUri.getPath()), data);
@@ -737,9 +767,6 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
     private void setUpAvatarView() {
         if (newAvatarImageUri != null) {
             // null prompts image view to reload file.
-            avatar.setImageURI(null);
-            avatar.setImageURI(newAvatarImageUri);
-            removeAvatarFlag = false;
 
             File file = new File(newAvatarImageUri.getPath());
             avatarSize.setText(file.length() / KB_SIZE_IN_BYTES + "KB");
@@ -750,6 +777,12 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
                 //preprocessAndStartCrop(newAvatarImageUri);
                 return;
             }
+
+            avatar.setImageURI(null);
+            avatar.setImageURI(newAvatarImageUri);
+            removeAvatarFlag = false;
+
+
             MAX_IMAGE_RESIZE = MAX_TEST;
 
             saveAvatarButton.setVisibility(View.VISIBLE);
@@ -897,7 +930,9 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
 
                 if(avatarData!=null) {
                     try {
-                        mng.publishAvatar(avatarData, MAX_TEST, MAX_TEST);
+                        if(imageFileType.equals("image/png")) {
+                            mng.publishAvatar(avatarData, MAX_TEST, MAX_TEST);
+                        } else mng.publishAvatarJPG(avatarData, MAX_TEST, MAX_TEST);
                         isAvatarSuccessful = true;
                     } catch (XMPPException.XMPPErrorException | PubSubException.NotALeafNodeException |
                             SmackException.NotConnectedException | InterruptedException | SmackException.NoResponseException e) {
