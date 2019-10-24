@@ -537,15 +537,15 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
             showChatListFragment();
             return;
         }
-        if (!getChatListFragment().isOnTop() && getChatListFragment().getListSize() != 0){
+        if (!getChatListFragment().isOnTop()
+                && getChatListFragment().getListSize() != 0
+                && unreadMessagesCount == 0){
             getChatListFragment().scrollToTop();
             return;
         }
-        if (unreadMessagesCount > 0){
-            if (getChatListFragment().getCurrentChatsState() == ChatListFragment.ChatListState.recent)
-                getChatListFragment().onStateSelected(ChatListFragment.ChatListState.unread);
-            else getChatListFragment().onStateSelected(ChatListFragment.ChatListState.recent);
-        } else getChatListFragment().onStateSelected(ChatListFragment.ChatListState.recent);
+        if (unreadMessagesCount > 0 && getChatListFragment().getCurrentChatsState() != ChatListFragment.ChatListState.unread)
+            getChatListFragment().onStateSelected(ChatListFragment.ChatListState.unread);
+        else getChatListFragment().onStateSelected(ChatListFragment.ChatListState.recent);
     }
 
     @Override
