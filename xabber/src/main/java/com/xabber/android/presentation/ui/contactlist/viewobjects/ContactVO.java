@@ -203,7 +203,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
                     messageStatus = 4;
                 } else if (lastMessage.isAcknowledged()) {
                     messageStatus = 3;
-                }
+                } else messageStatus = 5;
             }
 
             // forwarded

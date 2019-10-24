@@ -38,6 +38,7 @@ import com.xabber.android.presentation.ui.contactlist.viewobjects.GroupVO;
 import com.xabber.android.ui.adapter.contactlist.AccountConfiguration;
 import com.xabber.android.ui.adapter.contactlist.ContactListGroupUtils;
 import com.xabber.android.ui.adapter.contactlist.GroupConfiguration;
+import com.xabber.android.ui.helper.ContextMenuHelper;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -58,7 +59,7 @@ import eu.davidea.flexibleadapter.items.IFlexible;
  */
 
 public class ContactListPresenter implements OnContactChangedListener, OnAccountChangedListener,
-        ContactVO.ContactClickListener, AccountVO.AccountClickListener,
+        ContactVO.ContactClickListener, AccountVO.AccountClickListener, ContextMenuHelper.ListPresenter,
         GroupVO.GroupClickListener, UpdateBackpressure.UpdatableObject {
 
     private static ContactListPresenter instance;

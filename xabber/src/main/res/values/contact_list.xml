@@ -112,4 +112,6 @@
     <string name="last_seen_yesterday">last seen yesterday at %1$s</string>
     <string name="last_seen_on_week">last seen on %1$s at %2$s</string>
     <string name="last_seen_date">last seen %1$s</string>
+    <string name="mark_all_as_read_button">Mark all as read</string>
+    <string name="all_chats_were_market_as_read_toast">All messages were marked as read</string>
 </resources>
