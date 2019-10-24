@@ -733,7 +733,7 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
                         MessageManager.getInstance().getChat(abstractContact.getAccount(), abstractContact.getUser()).markAsReadAll(true);
                     }
                     onStateSelected(ChatListFragment.ChatListState.recent);
-                    Toast.makeText(getActivity(), "All mesages were marked as read", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), R.string.all_chats_were_market_as_read_toast, Toast.LENGTH_SHORT).show();
                 }
             });
         }
