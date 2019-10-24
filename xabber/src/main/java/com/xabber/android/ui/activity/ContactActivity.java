@@ -288,13 +288,13 @@ public class ContactActivity extends ManagedActivity implements
                     contactNameView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                 }
                 else contactNameView.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-                int topPadding = Utils.dipToPx(33f, Application.getInstance().getApplicationContext()) + (contactNameView.getHeight() - actionBarSize);
+                int topPadding = Utils.dipToPx(33f, Application.getInstance().getApplicationContext()) + (contactNameView.getHeight()/* - actionBarSize*/);
                 ll.setPadding(0,topPadding,0,0);
             }
         });
 
-        final View divider = findViewById(R.id.divider);
-        if (scrollView != null) {
+        //final View divider = findViewById(R.id.divider);
+        /*if (scrollView != null) {
             scrollView.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
                 @Override
                 public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
@@ -308,7 +308,7 @@ public class ContactActivity extends ManagedActivity implements
                     }
                 }
             });
-        }
+        }*/
     }
 
     private void setColoredButton(int color){
