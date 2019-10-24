@@ -40,7 +40,6 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.app.NavUtils;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
@@ -303,11 +302,12 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
             @Override
             public void onClick(View v) {
                 if (!CrowdfundingChat.USER.equals(user.getBareJid().toString())){
-                    FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+                    /*FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
                     fragmentTransaction.replace(R.id.chat_container,
                             ContactVcardViewerFragment.newInstance(account, user), CONTACT_INFO_FRAGMENT_TAG);
                     fragmentTransaction.commit();
-                    updateToolbar();
+                    updateToolbar();*/
+                    startActivity(ContactEditActivity.createIntent(Application.getInstance().getApplicationContext(), account,user));
                     //updateToolbarMenuIcon();
                 }
             }
