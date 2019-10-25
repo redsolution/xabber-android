@@ -19,9 +19,11 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.TypedArray;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.InputType;
+import android.util.TypedValue;
 import android.view.GestureDetector;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -48,6 +50,7 @@ import com.xabber.android.data.ActivityManager;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
+import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
@@ -74,6 +77,7 @@ import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.presentation.mvp.contactlist.UpdateBackpressure;
+import com.xabber.android.ui.color.AccountPainter;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.color.StatusBarPainter;
 import com.xabber.android.ui.dialog.AttachDialog;
@@ -617,14 +621,19 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     }
 
     private void updateToolbar() {
-        if (CrowdfundingChat.USER.equals(user.getBareJid().toString())) setCrowdfundingToolbar();
-        else {
-            NewContactTitleInflater.updateTitle(contactTitleView, this,
-                    RosterManager.getInstance().getBestContact(account, user), getNotifMode());
-            toolbar.setBackgroundColor(ColorManager.getInstance().getAccountPainter().getAccountMainColor(account));
-            updateToolbarMenuIcon();
-        }
+        NewContactTitleInflater.updateTitle(contactTitleView, this,
+                RosterManager.getInstance().getBestContact(account, user), getNotifMode());
+        updateToolbarMenuIcon();
         setUpOptionsMenu(toolbar.getMenu());
+
+        /* Update background color via current main user; */
+        TypedValue typedValue = new TypedValue();
+        TypedArray a = obtainStyledAttributes(typedValue.data, new int[] {R.attr.contact_list_account_group_background});
+        final int accountGroupColorsResourceId = a.getResourceId(0, 0);
+        a.recycle();
+        final int[] accountGroupColors = getResources().getIntArray(accountGroupColorsResourceId);
+        final int level = AccountManager.getInstance().getColorLevel(account);
+        toolbar.setBackgroundColor(accountGroupColors[level]);
     }
 
     private void updateToolbarMenuIcon(){
@@ -632,19 +641,6 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
             toolbar.setOverflowIcon(getResources().getDrawable(R.drawable.ic_overflow_menu_white_24dp));
         else if (currentFragment.equals(CONTACT_INFO_FRAGMENT_TAG))
             toolbar.setOverflowIcon(getResources().getDrawable(R.drawable.ic_settings_white_24dp));
-    }
-
-    private void setCrowdfundingToolbar() {
-        toolbar.setBackgroundColor(ColorManager.getInstance().getAccountPainter().getDefaultMainColor());
-        final TextView nameView = (TextView) contactTitleView.findViewById(R.id.name);
-        final ImageView avatarView = (ImageView) contactTitleView.findViewById(R.id.ivAvatar);
-        final TextView statusTextView = (TextView) contactTitleView.findViewById(R.id.status_text);
-        final ImageView statusModeView = (ImageView) contactTitleView.findViewById(R.id.ivStatus);
-
-        nameView.setText(R.string.xabber_chat_title);
-        statusTextView.setText(R.string.xabber_chat_description);
-        avatarView.setImageDrawable(getResources().getDrawable(R.drawable.xabber_logo_80dp));
-        statusModeView.setVisibility(View.GONE);
     }
 
     private void updateStatusBar() {
