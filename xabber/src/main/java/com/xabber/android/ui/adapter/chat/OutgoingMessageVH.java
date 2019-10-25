@@ -149,7 +149,9 @@ public class OutgoingMessageVH extends FileMessageVH {
         } else if (messageItem.isError()) {
             messageIcon = R.drawable.ic_message_has_error_14dp;
         } else if (messageItem.isAcknowledged()) {
-            messageIcon = R.drawable.ic_message_acknowledged_14dp;
+            if(messageItem.isAttachmentImageOnly())
+                messageIcon = R.drawable.ic_message_acknowledged_image_14dp;
+            else messageIcon = R.drawable.ic_message_acknowledged_14dp;
         }
 
         if (messageIcon != 0) statusIcon.setImageResource(messageIcon);
