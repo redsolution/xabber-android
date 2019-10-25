@@ -143,13 +143,8 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     private String extraText = null;
     private ArrayList<String> forwardsIds;
 
-    private StatusBarPainter statusBarPainter;
-
-    private boolean isVisible;
-
     private AccountJid account;
     private UserJid user;
-    private int selectedPagePosition;
     private boolean exitOnSend;
 
     private Animation shakeAnimation = null;
@@ -330,7 +325,6 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
 
         showcaseView = findViewById(R.id.showcaseView);
 
-        statusBarPainter = new StatusBarPainter(this);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
         Intent intent = getIntent();
@@ -362,8 +356,6 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
 
         updateToolbar();
         updateStatusBar();
-
-        isVisible = true;
 
         Application.getInstance().addUIListener(OnChatStateListener.class, this);
         Application.getInstance().addUIListener(OnContactChangedListener.class, this);
@@ -541,14 +533,12 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     private void restoreInstanceState(Bundle savedInstanceState) {
         account = savedInstanceState.getParcelable(SAVE_SELECTED_ACCOUNT);
         user = savedInstanceState.getParcelable(SAVE_SELECTED_USER);
-        //selectedPagePosition = savedInstanceState.getInt(SAVE_SELECTED_PAGE);
         exitOnSend = savedInstanceState.getBoolean(SAVE_EXIT_ON_SEND);
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        //outState.putInt(SAVE_SELECTED_PAGE, selectedPagePosition);
         outState.putParcelable(SAVE_SELECTED_ACCOUNT, account);
         outState.putParcelable(SAVE_SELECTED_USER, user);
         outState.putBoolean(SAVE_EXIT_ON_SEND, exitOnSend);
@@ -563,7 +553,6 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         Application.getInstance().removeUIListener(OnAccountChangedListener.class, this);
         Application.getInstance().removeUIListener(OnBlockedListChangedListener.class, this);
         MessageManager.getInstance().removeVisibleChat();
-        isVisible = false;
     }
 
     @Override
@@ -659,9 +648,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     }
 
     private void updateStatusBar() {
-        if (CrowdfundingChat.USER.equals(user.getBareJid().toString()))
-            statusBarPainter.updateWithDefaultColor();
-        else statusBarPainter.updateWithAccountName(account);
+        StatusBarPainter.instanceUpdateWithAccountName(this, account);
     }
 
     private void updateChat() {
@@ -669,16 +656,6 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
             chatFragment.updateContact();
         }
     }
-
-//    @Override
-//    public void onPageScrollStateChanged(int state) {
-//    }
-
-//    @Override
-//    public void onChatViewAdapterFinishUpdate() {
-//        insertExtraText();
-//        setForwardMessages();
-//    }
 
     private void setForwardMessages() {
         if (forwardsIds == null || chatFragment == null) return;
