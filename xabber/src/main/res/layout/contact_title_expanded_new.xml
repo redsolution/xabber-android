@@ -12,7 +12,9 @@
     android:paddingBottom="@dimen/contact_title_padding_bottom"
     tools:showIn="@layout/activity_contact_new">
 
-    <include layout="@layout/avatar_view_extra_large" />
+    <include
+        layout="@layout/avatar_view_extra_large"
+        tools:visibility="visible" />
 
     <LinearLayout
         android:id="@+id/name_holder"

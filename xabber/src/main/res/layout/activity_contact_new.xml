@@ -24,7 +24,7 @@
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appbar"
         android:layout_width="match_parent"
-        android:layout_height="380dp"
+        android:layout_height="wrap_content"
         android:fitsSystemWindows="true"
 
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
@@ -36,19 +36,18 @@
             android:elevation="8dp"
             android:fitsSystemWindows="true"
 
-            app:statusBarScrim="@color/transparent"
             app:expandedTitleMarginBottom="50dp"
             app:expandedTitleMarginEnd="64dp"
             app:expandedTitleMarginStart="88dp"
             app:expandedTitleTextAppearance="@style/ContactViewCollapsingToolbar"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed">
+            app:layout_scrollFlags="scroll|exitUntilCollapsed"
+            app:statusBarScrim="@color/transparent">
 
 
             <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:fitsSystemWindows="true"
-                >
+                android:fitsSystemWindows="true">
 
                 <ImageView
                     android:id="@+id/backgroundView"
@@ -66,11 +65,12 @@
                     tools:visibility="visible" />
 
                 <include
-                        layout="@layout/contact_title_expanded_new"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="bottom"
+                    layout="@layout/contact_title_expanded_new"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
 
+                    android:layout_marginTop="?attr/actionBarSize"
                     app:layout_collapseMode="none" />
             </FrameLayout>
 
@@ -78,11 +78,11 @@
                 android:id="@+id/backgroundTintUpper"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                app:srcCompat="@drawable/contact_image_gradient_dark_tint_down"
-                tools:visibility="visible"
                 android:fitsSystemWindows="true"
                 app:layout_collapseMode="parallax"
-                app:layout_collapseParallaxMultiplier="1"/>
+                app:layout_collapseParallaxMultiplier="1"
+                app:srcCompat="@drawable/contact_image_gradient_dark_tint_down"
+                tools:visibility="visible" />
 
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/toolbar_default"
@@ -102,7 +102,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        app:layout_behavior="com.xabber.android.ui.helper.CustomScrollingViewBehavior">
 
         <include layout="@layout/view_contact_bar" />
 
@@ -110,7 +110,7 @@
             android:id="@+id/scrollable_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            >
+            android:background="?attr/contact_list_background">
             <!--app:layout_behavior="@string/appbar_scrolling_view_behavior"-->
         </FrameLayout>
     </LinearLayout>

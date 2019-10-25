@@ -21,7 +21,9 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:background="@color/transparent"
+            android:background="@drawable/test_ripple"
+            android:contentDescription="Chat"
+            android:hapticFeedbackEnabled="true"
             android:src="@drawable/ic_chats_list_new" />
 
         <ImageButton
@@ -29,7 +31,9 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:background="@color/transparent"
+            android:background="@drawable/test_ripple"
+            android:contentDescription="Call"
+            android:hapticFeedbackEnabled="true"
             android:src="@drawable/ic_calls_list_new" />
 
         <ImageButton
@@ -37,7 +41,9 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:background="@color/transparent"
+            android:background="@drawable/test_ripple"
+            android:contentDescription="Video Call"
+            android:hapticFeedbackEnabled="true"
             android:src="@drawable/ic_video_call" />
 
         <ImageButton
@@ -45,7 +51,9 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:background="@color/transparent"
+            android:background="@drawable/test_ripple"
+            android:contentDescription="@string/category_message_notifications"
+            android:hapticFeedbackEnabled="true"
             android:src="@drawable/ic_bell" />
     </LinearLayout>
 
