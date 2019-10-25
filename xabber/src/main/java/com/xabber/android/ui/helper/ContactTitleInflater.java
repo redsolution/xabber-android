@@ -15,10 +15,14 @@
 package com.xabber.android.ui.helper;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.WriterException;
+import com.journeyapps.barcodescanner.BarcodeEncoder;
 import com.xabber.android.R;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.cs.ChatStateManager;
@@ -32,21 +36,57 @@ import org.jivesoftware.smackx.chatstates.ChatState;
 public class ContactTitleInflater {
 
     public static void updateTitle(View titleView, final Context context, AbstractContact abstractContact) {
+        updateTitle(titleView, context, abstractContact, false);
+    }
+
+    public static void updateTitle(View titleView, final Context context, AbstractContact abstractContact, boolean isForVcard) {
         final TextView nameView = (TextView) titleView.findViewById(R.id.name);
         final ImageView avatarView = (ImageView) titleView.findViewById(R.id.ivAvatar);
 
         nameView.setText(abstractContact.getName());
+        if (isForVcard){
+            // if it is account, not simple user contact
+            if (abstractContact.getUser().getJid().asBareJid().equals(abstractContact.getAccount().getFullJid().asBareJid())) {
+                avatarView.setImageDrawable(AvatarManager.getInstance().getAccountAvatarNoDefault(abstractContact.getAccount()));
+            } else {
+                avatarView.setImageDrawable(abstractContact.getAvatar(false));
+            }
 
-        // if it is account, not simple user contact
-        if (abstractContact.getUser().getJid().asBareJid().equals(abstractContact.getAccount().getFullJid().asBareJid())) {
-            avatarView.setImageDrawable(AvatarManager.getInstance().getAccountAvatar(abstractContact.getAccount()));
-        } else {
-            avatarView.setImageDrawable(abstractContact.getAvatar());
+            /*in case qrcode-avatars will be needed, probably should migrate it into avatar manager
+*/
+            if (avatarView.getDrawable() == null) {
+                ImageView avatarQRView = (ImageView) titleView.findViewById(R.id.ivAvatarQR);
+                BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
+                Bitmap bitmap;
+                try {
+                    bitmap = barcodeEncoder.encodeBitmap("xmpp:" + abstractContact.getUser().getBareJid().toString(), BarcodeFormat.QR_CODE, 600, 600);
+                    Bitmap cropped = Bitmap.createBitmap(bitmap, 50,50,500,500);
+                    if (cropped != null) {
+                        avatarQRView.setImageBitmap(cropped);
+                        avatarQRView.setVisibility(View.VISIBLE);
+                    }
+                } catch (WriterException e) {
+                    e.printStackTrace();
+                }
+            }
+            setStatus(context, titleView, abstractContact, true);
         }
-        setStatus(context, titleView, abstractContact);
+        else {
+            // if it is account, not simple user contact
+            if (abstractContact.getUser().getJid().asBareJid().equals(abstractContact.getAccount().getFullJid().asBareJid())) {
+                avatarView.setImageDrawable(AvatarManager.getInstance().getAccountAvatar(abstractContact.getAccount()));
+            } else {
+                avatarView.setImageDrawable(abstractContact.getAvatar());
+            }
+            setStatus(context, titleView, abstractContact);
+        }
     }
 
     private static void setStatus(Context context, View titleView, AbstractContact abstractContact) {
+        setStatus(context, titleView, abstractContact, false);
+    }
+
+    private static void setStatus(Context context, View titleView, AbstractContact abstractContact, boolean isForVcard) {
         final ImageView statusModeView = (ImageView) titleView.findViewById(R.id.ivStatus);
         ImageView statusModeGroupView = (ImageView) titleView.findViewById(R.id.ivStatusGroupchat);
 
@@ -57,7 +97,8 @@ public class ContactTitleInflater {
         int statusLevel = abstractContact.getStatusMode().getStatusLevel();
         statusModeView.setVisibility(View.GONE);
         if (chat.isGroupchat()){
-            statusModeGroupView.setVisibility(View.VISIBLE);
+            if (isForVcard) statusModeGroupView.setVisibility(View.GONE);
+            else statusModeGroupView.setVisibility(View.VISIBLE);
         }else {
             if (isContactOffline(statusLevel)) {
                 statusModeView.setVisibility(View.GONE);

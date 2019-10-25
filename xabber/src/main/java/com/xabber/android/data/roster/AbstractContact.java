@@ -116,7 +116,14 @@ public class AbstractContact extends BaseEntity {
     }
 
     public Drawable getAvatar() {
-        return AvatarManager.getInstance().getUserAvatarForContactList(user, getName());
+        return getAvatar(true);
+    }
+
+    public Drawable getAvatar(boolean isDefaultAvatarAccepted) {
+        if (isDefaultAvatarAccepted)
+            return AvatarManager.getInstance().getUserAvatarForContactList(user, getName());
+        else
+            return AvatarManager.getInstance().getUserAvatarForVcard(user);
     }
 
     /**

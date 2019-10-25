@@ -428,6 +428,14 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
         }
     }
 
+    public Drawable getAccountAvatarNoDefault(AccountJid account) {
+        Bitmap value = getBitmap(account.getFullJid().asBareJid());
+        if (value != null) {
+            return new BitmapDrawable(application.getResources(), value);
+        }
+        return null;
+    }
+
     public Drawable getAccountAvatarForSync(AccountJid account, int color) {
         Bitmap value = getBitmap(account.getFullJid().asBareJid());
         if (value != null) {
@@ -462,6 +470,19 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
                 return drawable;
             } else {
                 return getDefaultAvatar(user, name);
+            }
+        }
+        return drawable;
+    }
+
+    public Drawable getUserAvatarForVcard(UserJid user) {
+        Drawable drawable = contactListDrawables.get(user.getJid());
+        if(drawable == null) {
+            drawable = getUserAvatar(user);
+            if (drawable != null) {
+                contactListDrawables.put(user.getJid(), drawable);
+                contactListDefaultDrawables.remove(user.getJid());
+                return drawable;
             }
         }
         return drawable;

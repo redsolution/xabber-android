@@ -22,6 +22,7 @@ import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
@@ -64,12 +65,11 @@ import com.xabber.android.ui.fragment.ConferenceInfoFragment;
 import com.xabber.android.ui.fragment.ContactVcardViewerFragment;
 import com.xabber.android.ui.helper.BlurTransformation;
 import com.xabber.android.ui.helper.ContactTitleInflater;
-import com.xabber.android.utils.Utils;
 
 import java.util.Collection;
 
 public class ContactActivity extends ManagedActivity implements
-        OnContactChangedListener, OnAccountChangedListener, ContactVcardViewerFragment.Listener, View.OnClickListener {
+        OnContactChangedListener, OnAccountChangedListener, ContactVcardViewerFragment.Listener, View.OnClickListener, View.OnLongClickListener {
 
     private static final String LOG_TAG = ContactActivity.class.getSimpleName();
     private AccountJid account;
@@ -92,6 +92,7 @@ public class ContactActivity extends ManagedActivity implements
     private TextView notifyButtonText;
     private Context context;
     private Window window;
+    private int orientation;
 
     public static Intent createIntent(Context context, AccountJid account, UserJid user) {
         return new EntityIntentBuilder(context, ContactActivity.class)
@@ -184,37 +185,43 @@ public class ContactActivity extends ManagedActivity implements
 
         chatButton = findViewById(R.id.chat_button);
         chatButton.setOnClickListener(this);
+        chatButton.setOnLongClickListener(this);
         chatButtonText = findViewById(R.id.chat_button_text);
         callsButton = findViewById(R.id.call_button);
         callsButton.setOnClickListener(this);
+        callsButton.setOnLongClickListener(this);
         callsButtonText = findViewById(R.id.call_button_text);
         videoButton = findViewById(R.id.video_button);
         videoButton.setOnClickListener(this);
+        videoButton.setOnLongClickListener(this);
         videoButtonText = findViewById(R.id.video_call_text);
         notifyButton = findViewById(R.id.notify_button);
         notifyButton.setOnClickListener(this);
+        notifyButton.setOnLongClickListener(this);
         notifyButtonText = findViewById(R.id.notification_text);
 
         accountMainColor = ColorManager.getInstance().getAccountPainter().getAccountMainColor(account);
         final int accountDarkColor = ColorManager.getInstance().getAccountPainter().getAccountDarkColor(account);
-        setColoredButton(accountMainColor);
 
         contactTitleView = findViewById(R.id.contact_title_expanded_new);
         TextView contactAddressView = (TextView) findViewById(R.id.address_text);
         contactAddressView.setText(user.getBareJid().toString());
 
 
-        int orientation = getResources().getConfiguration().orientation;
+        orientation = getResources().getConfiguration().orientation;
+        setContactBar(accountMainColor, orientation);
         if (orientation == Configuration.ORIENTATION_PORTRAIT) {
             orientationPortrait();
         } else {
             orientationLandscape();
         }
 
-
         background = findViewById(R.id.backgroundView);
+        Drawable backgroundSource = bestContact.getAvatar(false);
+        if (backgroundSource == null)
+            backgroundSource = getResources().getDrawable(R.drawable.about_backdrop);
         Glide.with(this)
-                .load(bestContact.getAvatar())
+                .load(backgroundSource)
                 .transform(new MultiTransformation<Bitmap>(new CenterCrop(), new BlurTransformation(25, 8, /*this,*/ accountMainColor)))
                 .into(background);
 
@@ -225,8 +232,9 @@ public class ContactActivity extends ManagedActivity implements
         super.onResume();
         Application.getInstance().addUIListener(OnContactChangedListener.class, this);
         Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
-        ContactTitleInflater.updateTitle(contactTitleView, this, bestContact);
+        ContactTitleInflater.updateTitle(contactTitleView, this, bestContact, true);
         updateName();
+        appBarResize();
     }
 
     @Override
@@ -234,6 +242,17 @@ public class ContactActivity extends ManagedActivity implements
         super.onPause();
         Application.getInstance().removeUIListener(OnContactChangedListener.class, this);
         Application.getInstance().removeUIListener(OnAccountChangedListener.class, this);
+    }
+
+    private void appBarResize() {
+        ImageView avatar = findViewById(R.id.ivAvatar);
+        ImageView avatarQR = findViewById(R.id.ivAvatarQR);
+        if (avatar.getDrawable() == null) {
+            if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+                avatar.setVisibility(View.GONE);
+                avatarQR.setVisibility(View.GONE);
+            } else QRgen.setVisibility(View.GONE);
+        }
     }
 
     private void orientationPortrait() {
@@ -264,6 +283,7 @@ public class ContactActivity extends ManagedActivity implements
 
     private void orientationLandscape() {
         final TextView contactNameView = (TextView) findViewById(R.id.name);
+        final LinearLayout nameHolderView = (LinearLayout) findViewById(R.id.name_holder);
 
         toolbar.setBackgroundColor(Color.TRANSPARENT);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -279,16 +299,16 @@ public class ContactActivity extends ManagedActivity implements
 
         final NestedScrollView scrollView = findViewById(R.id.scroll_v_card);
         final LinearLayout ll = findViewById(R.id.scroll_v_card_child);
-        final int actionBarSize = getActionBarSize();
+        //final int actionBarSize = getActionBarSize();
 
-        contactNameView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+        nameHolderView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                    contactNameView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    nameHolderView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                 }
-                else contactNameView.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-                int topPadding = Utils.dipToPx(33f, Application.getInstance().getApplicationContext()) + (contactNameView.getHeight()/* - actionBarSize*/);
+                else nameHolderView.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                int topPadding = /*Utils.dipToPx(33f, Application.getInstance().getApplicationContext()) +*/ (nameHolderView.getHeight());
                 ll.setPadding(0,topPadding,0,0);
             }
         });
@@ -311,15 +331,22 @@ public class ContactActivity extends ManagedActivity implements
         }*/
     }
 
-    private void setColoredButton(int color){
+    private void setContactBar(int color, int orientation){
         callsButton.setColorFilter(color);
         chatButton.setColorFilter(color);
         videoButton.setColorFilter(color);
         notifyButton.setColorFilter(color);
-        /*chatButtonText.setTextColor(color);
-        callsButtonText.setTextColor(color);
-        videoButtonText.setTextColor(color);
-        notifyButtonText.setTextColor(color);*/
+        if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            chatButtonText.setVisibility(View.GONE);
+            callsButtonText.setVisibility(View.GONE);
+            videoButtonText.setVisibility(View.GONE);
+            notifyButtonText.setVisibility(View.GONE);
+        } else {
+            chatButtonText.setVisibility(View.VISIBLE);
+            callsButtonText.setVisibility(View.VISIBLE);
+            videoButtonText.setVisibility(View.VISIBLE);
+            notifyButtonText.setVisibility(View.VISIBLE);
+        }
     }
 
     public int getActionBarSize() {
@@ -381,7 +408,7 @@ public class ContactActivity extends ManagedActivity implements
 
     @Override
     public void onVCardReceived() {
-        ContactTitleInflater.updateTitle(contactTitleView, this, bestContact);
+        ContactTitleInflater.updateTitle(contactTitleView, this, bestContact, true);
     }
 
     @Override
@@ -405,4 +432,48 @@ public class ContactActivity extends ManagedActivity implements
         }
 
     }
+
+    @Override
+    public boolean onLongClick(View view) {
+        /*int[] location = new int[2];
+        LayoutInflater inflater = getLayoutInflater();
+        View layout = inflater.inflate(R.layout.toast_message_square, (ViewGroup) findViewById(R.id.message));
+        TextView description = (TextView) layout.findViewById(R.id.description);
+        String desc = "";
+        if (view.getContentDescription()!=null)
+             desc = view.getContentDescription().toString();
+        description.setText(desc);
+        switch (view.getId()) {
+            case R.id.chat_button:
+            case R.id.call_button:
+            case R.id.video_button:
+            case R.id.notify_button:
+                view.getLocationOnScreen(location);
+                final Toast toast = new Toast(getApplicationContext());
+                int offset = calculateOffset(view, layout, description);
+                toast.setGravity(Gravity.START|Gravity.TOP , location[0] + offset, location[1]);
+                toast.setDuration(Toast.LENGTH_SHORT);
+                toast.setView(layout);
+                toast.show();
+
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        toast.cancel();
+                    }
+                }, 500);
+                break;
+        }*/
+        return true;
+    }
+
+    /*private int calculateOffset(View buttonView, View toastView, TextView desc) {
+        *//*int I = desc.getWidth();
+        int II = desc.getMeasuredWidth();
+        Rect rect = new Rect();
+        desc.getWindowVisibleDisplayFrame(rect);
+        int III = rect.right - rect.left;*//*
+        return (buttonView.getWidth()  / 4);
+    }*/
 }
