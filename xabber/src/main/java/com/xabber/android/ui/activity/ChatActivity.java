@@ -36,8 +36,6 @@ import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -77,8 +75,6 @@ import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.presentation.mvp.contactlist.UpdateBackpressure;
-import com.xabber.android.ui.color.AccountPainter;
-import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.color.StatusBarPainter;
 import com.xabber.android.ui.dialog.AttachDialog;
 import com.xabber.android.ui.dialog.BlockContactDialog;
@@ -301,28 +297,21 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
             @Override
             public void onClick(View v) {
                 if (!CrowdfundingChat.USER.equals(user.getBareJid().toString())){
-                    /*FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-                    fragmentTransaction.replace(R.id.chat_container,
-                            ContactVcardViewerFragment.newInstance(account, user), CONTACT_INFO_FRAGMENT_TAG);
-                    fragmentTransaction.commit();
-                    updateToolbar();*/
                     startActivity(ContactEditActivity.createIntent(Application.getInstance().getApplicationContext(), account,user));
-                    //updateToolbarMenuIcon();
                 }
             }
         });
 
         toolbar = (Toolbar) findViewById(R.id.toolbar_default);
-        toolbar.setOverflowIcon(getResources().getDrawable(R.drawable.ic_overflow_menu_white_24dp));
+        toolbar.setOverflowIcon(getResources().getDrawable(R.drawable.ic_more_vert_black_24dp));
         toolbar.setOnMenuItemClickListener(this);
-        toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
+        toolbar.setNavigationIcon(getResources().getDrawable(R.drawable.ic_arrow_left));
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (currentFragment.equals(CONTACT_INFO_FRAGMENT_TAG)){
                     initChats(false);
                     updateToolbar();
-                    //updateToolbarMenuIcon();
                 } else close();
             }
         });
@@ -404,11 +393,6 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
             handleOtrIntent(intent);
         }
 
-        //showcase
-//        if (!SettingsManager.chatShowcaseSuggested()) {
-//            showShowcase(true);
-//        }
-
         // forward
         if (ACTION_FORWARD.equals(intent.getAction())) {
             List<String> messages = intent.getStringArrayListExtra(KEY_MESSAGES_ID);
@@ -482,9 +466,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
 
     private void initChats(boolean animated) {
         Fragment fragment;
-//        if (CrowdfundingChat.USER.equals(user.getBareJid().toString()))
-//            fragment = CrowdfundingChatFragment.newInstance();
-//        else
+
         fragment = ChatFragment.newInstance(account, user);
 
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
@@ -507,32 +489,6 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         initChats(false);
         LogManager.i(LOG_TAG, "getInitialChatFromIntent " + this.user);
     }
-
-//    private void getSelectedPageDataFromIntent() {
-//        Intent intent = getIntent();
-//
-//        if (intent.getAction() == null) {
-//            return;
-//        }
-//
-//        switch (intent.getAction()) {
-//            case ACTION_RECENT_CHATS:
-//                selectedPagePosition = PAGE_POSITION_RECENT_CHATS;
-//                break;
-//
-//            case ACTION_SPECIFIC_CHAT:
-//            case ACTION_ATTENTION:
-//            case Intent.ACTION_SEND:
-//                selectedPagePosition = ChatViewerAdapter.PAGE_POSITION_CHAT;
-//                break;
-//            case Intent.ACTION_SEND_MULTIPLE:
-//                selectedPagePosition = ChatViewerAdapter.PAGE_POSITION_CHAT;
-//                break;
-//            case ACTION_FORWARD:
-//                selectedPagePosition = ChatViewerAdapter.PAGE_POSITION_CHAT;
-//                break;
-//        }
-//    }
 
     private void restoreInstanceState(Bundle savedInstanceState) {
         account = savedInstanceState.getParcelable(SAVE_SELECTED_ACCOUNT);
@@ -563,30 +519,6 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     protected void onStop() {
         super.onStop();
     }
-
-//    private void selectChatPage(BaseEntity chat, boolean smoothScroll) {
-//        account = chat.getAccount();
-//        user = chat.getUser();
-//
-//        if (chatFragment != null) {
-//            chatFragment.saveInputState();
-//            chatFragment.setChat(chat.getAccount(), chat.getUser());
-//        }
-//
-//        chatViewerAdapter.selectChat(account, user);
-//
-//        //selectPage(ChatViewerAdapter.PAGE_POSITION_CHAT, smoothScroll);
-//
-//        if (contactVcardViewerFragment != null) {
-//            contactVcardViewerFragment.updateContact(account, user);
-//            contactVcardViewerFragment.requestVCard();
-//        }
-//    }
-
-//    public void selectPage(int position, boolean smoothScroll) {
-//        onPageSelected(position);
-//        //viewPager.setCurrentItem(position, smoothScroll);
-//    }
 
     @Override
     public void update() {
