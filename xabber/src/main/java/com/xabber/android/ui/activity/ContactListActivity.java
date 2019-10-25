@@ -22,7 +22,6 @@ import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.ContextMenu;
@@ -59,6 +58,7 @@ import com.xabber.android.presentation.mvp.contactlist.ContactListPresenter;
 import com.xabber.android.presentation.ui.contactlist.ChatListFragment;
 import com.xabber.android.presentation.ui.contactlist.ContactListFragment;
 import com.xabber.android.ui.color.ColorManager;
+import com.xabber.android.ui.color.StatusBarPainter;
 import com.xabber.android.ui.dialog.AccountChooseDialogFragment;
 import com.xabber.android.ui.dialog.AccountChooseDialogFragment.OnChooseListener;
 import com.xabber.android.ui.dialog.EnterPassDialog;
@@ -121,6 +121,7 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
      */
     private String sendText;
     private int unreadMessagesCount;
+
     private Fragment contentFragment;
     private ActiveFragment currentActiveFragment = ActiveFragment.CHATS;
     private ChatListFragment.ChatListState currentChatListState;
@@ -154,15 +155,6 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
         setContentView(R.layout.activity_contact_list);
         getWindow().setBackgroundDrawable(null);
 
-//        if (savedInstanceState != null) {
-//            sendText = savedInstanceState.getString(SAVED_SEND_TEXT);
-//            action = savedInstanceState.getString(SAVED_ACTION);
-//        } else {
-//            showBottomNavigation();
-//            showChatListFragment();
-//            sendText = null;
-//            action = getIntent().getAction();
-//        }
         getIntent().setAction(null);
 
         showcaseView = findViewById(R.id.showcaseView);
@@ -531,18 +523,27 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
         startActivity(AccountActivity.createIntent(this, account));
     }
 
+    /** Bottom Bar Chats click handler */
     @Override
     public void onChatsClick() {
+        /* Show ChatsList fragment if another fragment on top */
         if (currentActiveFragment != ActiveFragment.CHATS){
             showChatListFragment();
             return;
         }
+        /* Scroll to top if has no unread */
         if (!getChatListFragment().isOnTop()
                 && getChatListFragment().getListSize() != 0
                 && unreadMessagesCount == 0){
             getChatListFragment().scrollToTop();
             return;
         }
+        /* Show recent if archived displayed */
+        if (currentChatListState == ChatListFragment.ChatListState.archived){
+            getChatListFragment().onStateSelected(ChatListFragment.ChatListState.recent);
+            return;
+        }
+        /* Toggle between recent and unread when has unread */
         if (unreadMessagesCount > 0 && getChatListFragment().getCurrentChatsState() != ChatListFragment.ChatListState.unread)
             getChatListFragment().onStateSelected(ChatListFragment.ChatListState.unread);
         else getChatListFragment().onStateSelected(ChatListFragment.ChatListState.recent);
@@ -675,15 +676,11 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
     }
 
     public void setStatusBarColor(AccountJid account) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            getWindow().setStatusBarColor(ColorManager.getInstance().getAccountPainter().getAccountMainColor(account));
-        }
+        StatusBarPainter.instanceUpdateWithAccountName(this, account);
     }
 
     public void setStatusBarColor() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            getWindow().setStatusBarColor(ColorManager.getInstance().getAccountPainter().getDefaultMainColor());
-        }
+        StatusBarPainter.instanceUpdateWithDefaultColor(this);
     }
 
     public void showShowcase(boolean show) {
