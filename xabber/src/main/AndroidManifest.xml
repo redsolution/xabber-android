@@ -49,7 +49,7 @@
         android:label="@string/application_title_full"
         android:theme="@style/Theme"
         tools:replace="label, icon, allowBackup"
-
+        android:requestLegacyExternalStorage="true"
         android:hardwareAccelerated="true">
 
         <meta-data
