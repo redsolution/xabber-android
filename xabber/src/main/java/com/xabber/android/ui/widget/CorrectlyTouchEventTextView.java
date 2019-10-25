@@ -1,7 +1,11 @@
 package com.xabber.android.ui.widget;
 
 import android.content.Context;
+
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.AppCompatTextView;
+
+import android.content.DialogInterface;
 import android.text.Layout;
 import android.text.Selection;
 import android.text.Spannable;
@@ -67,11 +71,27 @@ public class CorrectlyTouchEventTextView extends AppCompatTextView {
                 int line = layout.getLineForVertical(y);
                 int off = layout.getOffsetForHorizontal(line, x);
 
-                ClickableSpan[] link = buffer.getSpans(off, off, ClickableSpan.class);
+                final ClickableSpan[] link = buffer.getSpans(off, off, ClickableSpan.class);
 
                 if (link.length != 0) {
                     if (action == MotionEvent.ACTION_UP) {
-                        link[0].onClick(widget);
+                        final TextView tv = widget;
+                        AlertDialog alertDialog = new AlertDialog.Builder(tv.getContext()).create();
+                        alertDialog.setTitle(R.string.open_this_link);
+                        alertDialog.setMessage(buffer.toString());
+                        alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                link[0].onClick(tv);
+                            }
+                        });
+                        alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, tv.getContext().getString(R.string.cancel), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        });
+                        alertDialog.show();
                         removeUrlHighlightColor(widget);
                     } else if (action == MotionEvent.ACTION_DOWN) {
                         Selection.setSelection(buffer,
