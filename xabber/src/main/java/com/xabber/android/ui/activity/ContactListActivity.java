@@ -531,18 +531,27 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
         startActivity(AccountActivity.createIntent(this, account));
     }
 
+    /** Bottom Bar Chats click handler */
     @Override
     public void onChatsClick() {
+        /* Show ChatsList fragment if another fragment on top */
         if (currentActiveFragment != ActiveFragment.CHATS){
             showChatListFragment();
             return;
         }
+        /* Scroll to top if has no unread */
         if (!getChatListFragment().isOnTop()
                 && getChatListFragment().getListSize() != 0
                 && unreadMessagesCount == 0){
             getChatListFragment().scrollToTop();
             return;
         }
+        /* Show recent if archived displayed */
+        if (currentChatListState == ChatListFragment.ChatListState.archived){
+            getChatListFragment().onStateSelected(ChatListFragment.ChatListState.recent);
+            return;
+        }
+        /* Toggle between recent and unread when has unread */
         if (unreadMessagesCount > 0 && getChatListFragment().getCurrentChatsState() != ChatListFragment.ChatListState.unread)
             getChatListFragment().onStateSelected(ChatListFragment.ChatListState.unread);
         else getChatListFragment().onStateSelected(ChatListFragment.ChatListState.recent);
