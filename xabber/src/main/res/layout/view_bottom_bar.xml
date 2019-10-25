@@ -28,9 +28,12 @@
             android:id="@+id/unread_count_textview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/show_chats_image"
+            android:layout_alignStart="@id/show_chats_image"
             android:layout_alignParentBottom="true"
             android:layout_marginBottom="8dp"
-            android:layout_marginLeft="40dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
             android:paddingTop="1dp"
             android:paddingBottom="2dp"
             android:paddingRight="6dp"
@@ -41,7 +44,7 @@
             android:textStyle="bold"
             android:text="1"
             android:visibility="gone"
-            />
+             />
 
     </RelativeLayout>
 
