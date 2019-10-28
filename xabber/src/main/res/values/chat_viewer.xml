@@ -136,4 +136,5 @@
     <string name="xabber_join_button">Support Xabber</string>
     <string name="action_new_contact">New contact</string>
     <string name="open_this_link">Open this link?</string>
+    <string name="open">Open</string>
 </resources>
