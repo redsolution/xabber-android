@@ -101,6 +101,11 @@
 
     <style name="ThemeDark" parent="Base.ThemeDark"></style>
 
+    <style name="ThemeBorderlessVcard" parent="Theme">
+        <item name="toolbarNavigationButtonStyle">@style/Widget.AppCompat.Toolbar.Button.Navigation</item>
+        <item name="android:actionOverflowButtonStyle">@style/Widget.AppCompat.ActionButton.Overflow</item>
+    </style>
+
     <style name="Base.ThemeDark" parent="Theme.AppCompat">
         <item name="android:actionOverflowButtonStyle">@style/OverflowButtonStyle.Grey</item>
         <item name="toolbarNavigationButtonStyle">@style/Base.Widget.AppCompat.Toolbar.Button.Navigation.Grey</item>

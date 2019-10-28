@@ -57,7 +57,7 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="@color/transparent"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        android:theme="@style/ThemeBorderlessVcard"
         app:popupTheme="?attr/toolbar_popup_theme">
 
         <RelativeLayout
