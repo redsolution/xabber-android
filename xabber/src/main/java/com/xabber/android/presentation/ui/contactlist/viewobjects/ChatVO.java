@@ -7,6 +7,7 @@ package com.xabber.android.presentation.ui.contactlist.viewobjects;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.util.TypedValue;
 
 import com.xabber.android.R;
@@ -17,6 +18,8 @@ import com.xabber.android.data.message.NotificationState;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.ui.color.ColorManager;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -55,12 +58,20 @@ public class ChatVO extends ExtContactVO {
     public static ChatVO convert(AbstractContact contact, ContactClickListener listener,
                                  @Nullable IsCurrentChatListener currentChatListener) {
         ExtContactVO contactVO = ExtContactVO.convert(contact, listener);
+
+        /* decode message text to beautify cyrillic URLs */
+        String messageText = contactVO.getMessageText();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT){
+            try{ messageText = URLDecoder.decode(messageText, StandardCharsets.UTF_8.name());
+            } catch (Exception e) { e.printStackTrace(); }
+        }
+
         return new ChatVO(
                 contactVO.getAccountColorIndicator(), contactVO.getAccountColorIndicatorBack(),
                 contactVO.getName(), contactVO.getStatus(), contactVO.getStatusId(),
                 contactVO.getStatusLevel(), contactVO.getAvatar(), contactVO.getMucIndicatorLevel(),
                 contactVO.getUserJid(), contactVO.getAccountJid(), contactVO.getUnreadCount(),
-                contactVO.isMute(), contactVO.getNotificationMode(), contactVO.getMessageText(),
+                contactVO.isMute(), contactVO.getNotificationMode(), messageText,
                 contactVO.isOutgoing(), contactVO.getTime(), contactVO.getMessageStatus(),
                 contactVO.getMessageOwner(), contactVO.isArchived(), contactVO.getLastActivity(),
                 contactVO.listener, currentChatListener, contactVO.forwardedCount,
