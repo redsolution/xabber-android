@@ -297,7 +297,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
             @Override
             public void onClick(View v) {
                 if (!CrowdfundingChat.USER.equals(user.getBareJid().toString())){
-                    startActivity(ContactEditActivity.createIntent(Application.getInstance().getApplicationContext(), account,user));
+                    startActivity(ContactEditActivity.createIntent(ChatActivity.this, account,user));
                 }
             }
         });
@@ -326,9 +326,9 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
 
         if (savedInstanceState != null) {
             restoreInstanceState(savedInstanceState);
-        }
+        } else initChats(false);
         gestureDetector = new GestureDetector(new SwipeDetector());
-        initChats(false);
+        //initChats(false);
     }
 
     @Override
