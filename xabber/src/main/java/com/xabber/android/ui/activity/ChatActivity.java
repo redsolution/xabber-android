@@ -145,7 +145,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
 
     private AccountJid account;
     private UserJid user;
-    private boolean exitOnSend;
+    private boolean exitOnSend = false;
 
     private Animation shakeAnimation = null;
 
@@ -375,7 +375,6 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
             extraText = intent.getStringExtra(Intent.EXTRA_TEXT);
             if (extraText != null) {
                 intent.removeExtra(Intent.EXTRA_TEXT);
-                exitOnSend = false;
             }
 
         } else if (Intent.ACTION_SEND_MULTIPLE.equals(intent.getAction())) {
@@ -398,7 +397,6 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
             List<String> messages = intent.getStringArrayListExtra(KEY_MESSAGES_ID);
             forwardsIds = (ArrayList<String>) messages;
             intent.removeExtra(KEY_MESSAGES_ID);
-            exitOnSend = false;
         }
 
         insertExtraText();
@@ -513,6 +511,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         Application.getInstance().removeUIListener(OnAccountChangedListener.class, this);
         Application.getInstance().removeUIListener(OnBlockedListChangedListener.class, this);
         MessageManager.getInstance().removeVisibleChat();
+        if (exitOnSend) ActivityManager.getInstance().cancelTask(this);
     }
 
     @Override
@@ -595,10 +594,10 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         if (extraText == null || extraText.equals("")) {
             return;
         }
-
         if (chatFragment != null) {
             chatFragment.setInputText(extraText);
             extraText = null;
+            exitOnSend = true;
         }
     }
 
@@ -614,9 +613,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
 
     @Override
     public void onMessageSent() {
-        if (exitOnSend) {
-            close();
-        }
+
     }
 
     @Override

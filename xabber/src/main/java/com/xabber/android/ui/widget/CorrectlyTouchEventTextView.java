@@ -1,11 +1,8 @@
 package com.xabber.android.ui.widget;
 
 import android.content.Context;
-
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.widget.AppCompatTextView;
-
 import android.content.DialogInterface;
+import android.os.Build;
 import android.text.Layout;
 import android.text.Selection;
 import android.text.Spannable;
@@ -13,11 +10,18 @@ import android.text.method.LinkMovementMethod;
 import android.text.method.Touch;
 import android.text.style.BackgroundColorSpan;
 import android.text.style.ClickableSpan;
+import android.text.style.URLSpan;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.AppCompatTextView;
+
 import com.xabber.android.R;
+
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 
 public class CorrectlyTouchEventTextView extends AppCompatTextView {
     boolean clickableSpanClicked;
@@ -28,6 +32,17 @@ public class CorrectlyTouchEventTextView extends AppCompatTextView {
 
     public CorrectlyTouchEventTextView(Context context, AttributeSet attrs) {
         super(context, attrs);
+    }
+
+    @Override
+    public void setText(CharSequence text, BufferType type) {
+        /* decode message text to beautify cyrillic URLs */
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT){
+            try {
+                text = URLDecoder.decode(text.toString(), StandardCharsets.UTF_8.name());
+            } catch (Exception e){ e.printStackTrace(); }
+        }
+        super.setText(text, type);
     }
 
     public CorrectlyTouchEventTextView(
@@ -71,15 +86,15 @@ public class CorrectlyTouchEventTextView extends AppCompatTextView {
                 int line = layout.getLineForVertical(y);
                 int off = layout.getOffsetForHorizontal(line, x);
 
-                final ClickableSpan[] link = buffer.getSpans(off, off, ClickableSpan.class);
+                final URLSpan[] link = buffer.getSpans(off, off, URLSpan.class);
 
                 if (link.length != 0) {
                     if (action == MotionEvent.ACTION_UP) {
                         final TextView tv = widget;
                         AlertDialog alertDialog = new AlertDialog.Builder(tv.getContext()).create();
                         alertDialog.setTitle(R.string.open_this_link);
-                        alertDialog.setMessage(buffer.toString());
-                        alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener() {
+                        alertDialog.setMessage(link[0].getURL());
+                        alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, tv.getContext().getString(R.string.open), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 link[0].onClick(tv);
