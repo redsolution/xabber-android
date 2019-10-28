@@ -63,7 +63,7 @@ public class ContactTitleInflater {
                     Bitmap cropped = Bitmap.createBitmap(bitmap, 50,50,500,500);
                     if (cropped != null) {
                         avatarQRView.setImageBitmap(cropped);
-                        avatarQRView.setVisibility(View.VISIBLE);
+                        //avatarQRView.setVisibility(View.VISIBLE);
                     }
                 } catch (WriterException e) {
                     e.printStackTrace();

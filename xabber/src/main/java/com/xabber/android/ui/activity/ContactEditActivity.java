@@ -52,9 +52,10 @@ public class ContactEditActivity extends ContactActivity implements Toolbar.OnMe
             toolbar.setOnMenuItemClickListener(this);
             toolbar.setOverflowIcon(getResources().getDrawable(R.drawable.ic_overflow_menu_white_24dp));
             int orientation = getResources().getConfiguration().orientation;
-            if (toolbar.getOverflowIcon() != null)
-            if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                toolbar.getOverflowIcon().setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_ATOP);
+            if (toolbar.getOverflowIcon() != null) {
+                if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                    toolbar.getOverflowIcon().setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_ATOP);
+                }
             }
             onCreateOptionsMenu(toolbar.getMenu());
         }

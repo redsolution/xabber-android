@@ -90,8 +90,6 @@ public class ContactActivity extends ManagedActivity implements
     private TextView callsButtonText;
     private TextView videoButtonText;
     private TextView notifyButtonText;
-    private Context context;
-    private Window window;
     private int orientation;
 
     public static Intent createIntent(Context context, AccountJid account, UserJid user) {
@@ -114,7 +112,6 @@ public class ContactActivity extends ManagedActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
 
         account = getAccount(getIntent());
         user = getUser(getIntent());
@@ -251,7 +248,10 @@ public class ContactActivity extends ManagedActivity implements
             if (orientation == Configuration.ORIENTATION_PORTRAIT) {
                 avatar.setVisibility(View.GONE);
                 avatarQR.setVisibility(View.GONE);
-            } else QRgen.setVisibility(View.GONE);
+            } else {
+                QRgen.setVisibility(View.GONE);
+                avatarQR.setVisibility(View.VISIBLE);
+            }
         }
     }
 
