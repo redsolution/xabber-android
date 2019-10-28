@@ -157,23 +157,18 @@ public class SearchActivity extends ManagedActivity implements View.OnClickListe
         /* Handle intents if not null */
         action = getIntent().getAction();
         getIntent().setAction(null);
-        if (Intent.ACTION_VIEW.equals(getIntent().getAction())
-                || Intent.ACTION_SEND.equals(getIntent().getAction())
-                || Intent.ACTION_SEND_MULTIPLE.equals(getIntent().getAction())
-                || Intent.ACTION_SENDTO.equals(getIntent().getAction())
-                || Intent.ACTION_CREATE_SHORTCUT.equals(getIntent().getAction())) {
+        if (Intent.ACTION_VIEW.equals(action)
+                || Intent.ACTION_SEND.equals(action)
+                || Intent.ACTION_SEND_MULTIPLE.equals(action)
+                || Intent.ACTION_SENDTO.equals(action)
+                || Intent.ACTION_CREATE_SHORTCUT.equals(action)) {
             ActivityManager.getInstance().startNewTask(this);
         }
 
         if (isFinishing()) {
             return;
         }
-            //TODO THINK ABOUT IT
-//        if (!isTaskRoot() && !ACTION_ROOM_INVITE.equals(action)
-//                && !Intent.ACTION_CREATE_SHORTCUT.equals(action)) {
-//            finish();
-//            return;
-//        }
+
         if (ACTION_CLEAR_STACK.equals(getIntent().getAction())) {
             ActivityManager.getInstance().clearStack(false);
         }
@@ -188,7 +183,6 @@ public class SearchActivity extends ManagedActivity implements View.OnClickListe
                     if (Intent.ACTION_SEND.equals(action)) {
                         sendText = getIntent().getStringExtra(Intent.EXTRA_TEXT);
                     }
-                    //Toast.makeText(this, getString(R.string.select_contact), Toast.LENGTH_LONG).show();
                     break;
                 case Intent.ACTION_VIEW: {
                     action = null;
@@ -468,14 +462,13 @@ public class SearchActivity extends ManagedActivity implements View.OnClickListe
                         startActivity(ChatActivity.createSendUriIntent(this,
                                 abstractContact.getAccount(), abstractContact.getUser(),
                                 (Uri)getIntent().getParcelableExtra(Intent.EXTRA_STREAM)));
-                        finish();
                     }
                 } else {
                     action = null;
                     startActivity(ChatActivity.createSendIntent(this,
                             abstractContact.getAccount(), abstractContact.getUser(), sendText));
-                    finish();
                 }
+                finish();
                 break;
             case Intent.ACTION_SEND_MULTIPLE:
                 if (getIntent().getExtras() != null) {
@@ -483,8 +476,8 @@ public class SearchActivity extends ManagedActivity implements View.OnClickListe
                     startActivity(ChatActivity.createSendUrisIntent(this,
                             abstractContact.getAccount(), abstractContact.getUser(),
                             getIntent().<Uri>getParcelableArrayListExtra(Intent.EXTRA_STREAM)));
-                    finish();
                 }
+                finish();
                 break;
             case Intent.ACTION_CREATE_SHORTCUT: {
                 createShortcut(abstractContact);
