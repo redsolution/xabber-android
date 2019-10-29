@@ -2,6 +2,7 @@ package com.xabber.android.presentation.ui.contactlist;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -325,6 +326,7 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
 
     /** Update toolbarRelativeLayout via current state */
     public void updateToolbar(){
+        setupToolbarLayout();
         /* Update ChatState TextView display via current chat and connection state */
         if (AccountManager.getInstance().getCommonState() == CommonState.connecting)
             toolbarTitleTv.setText(Application.getInstance().getApplicationContext().getString(R.string.account_state_connecting));
@@ -358,14 +360,20 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
             toolbarStatusIv.setVisibility(View.GONE);
         }
 
-        /* Update background color via current main user; */
+        /* Update background color via current main user and theme; */
         TypedValue typedValue = new TypedValue();
-        TypedArray a = getContext().obtainStyledAttributes(typedValue.data, new int[] {R.attr.contact_list_account_group_background});
-        final int accountGroupColorsResourceId = a.getResourceId(0, 0);
-        a.recycle();
-        final int[] accountGroupColors = getContext().getResources().getIntArray(accountGroupColorsResourceId);
-        final int level = AccountManager.getInstance().getColorLevel(AccountPainter.getFirstAccount());
-        toolbarRelativeLayout.setBackgroundColor(accountGroupColors[level]);
+        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light){
+            TypedArray a = getContext().obtainStyledAttributes(typedValue.data, new int[] {R.attr.contact_list_account_group_background});
+            final int accountGroupColorsResourceId = a.getResourceId(0, 0);
+            a.recycle();
+            final int[] accountGroupColors = getContext().getResources().getIntArray(accountGroupColorsResourceId);
+            final int level = AccountManager.getInstance().getColorLevel(AccountPainter.getFirstAccount());
+            toolbarRelativeLayout.setBackgroundColor(accountGroupColors[level]);
+        } else {
+            Resources.Theme theme = getContext().getTheme();
+            theme.resolveAttribute(R.attr.bars_color, typedValue, true);
+            toolbarRelativeLayout.setBackgroundColor(typedValue.data);
+        }
 
         /* Update left color indicator via current main user */
         toolbarAccountColorIndicator.setBackgroundColor(
@@ -743,7 +751,6 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         updateToolbar();
         updateUnreadCount();
         updateItems(items);
-        setupToolbarLayout();
     }
 
     private GroupConfiguration getChatsGroup(ChatListState state) {

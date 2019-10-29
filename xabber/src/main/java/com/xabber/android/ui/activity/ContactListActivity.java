@@ -21,9 +21,12 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.content.res.Resources;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.TypedValue;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
@@ -157,15 +160,15 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
 
         getIntent().setAction(null);
 
-        showcaseView = findViewById(R.id.showcaseView);
-        btnShowcaseGotIt = (Button) findViewById(R.id.btnGotIt);
-        btnShowcaseGotIt.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                SettingsManager.setContactShowcaseSuggested();
-                showShowcase(false);
-            }
-        });
+//        showcaseView = findViewById(R.id.showcaseView);
+//        btnShowcaseGotIt = (Button) findViewById(R.id.btnGotIt);
+//        btnShowcaseGotIt.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                SettingsManager.setContactShowcaseSuggested();
+//                showShowcase(false);
+//            }
+//        });
     }
 
     @Override
@@ -298,10 +301,10 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
         }
         showPassDialogs();
 
-        //showcase
-        if (!SettingsManager.contactShowcaseSuggested()) {
-            showShowcase(true);
-        }
+//        //showcase
+//        if (!SettingsManager.contactShowcaseSuggested()) {
+//            showShowcase(true);
+//        }
 
 //        // update crowdfunding info
 //        CrowdfundingManager.getInstance().onLoad();
@@ -673,6 +676,7 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
             case "CallsFragment" : currentActiveFragment = ActiveFragment.CALLS; break;
         }
         getBottomBarFragment().setColoredButton(currentActiveFragment);
+        setStatusBarColor();
     }
 
     public void setStatusBarColor(AccountJid account) {
@@ -681,11 +685,19 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
 
     public void setStatusBarColor() {
         StatusBarPainter.instanceUpdateWithDefaultColor(this);
+        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light)
+            StatusBarPainter.instanceUpdateWithDefaultColor(this);
+        else {
+            TypedValue typedValue = new TypedValue();
+            getApplicationContext().getTheme().resolveAttribute(R.attr.bars_color, typedValue, true);
+            StatusBarPainter.instanceUpdateWIthColor(this, typedValue.data);
+        }
+
     }
 
-    public void showShowcase(boolean show) {
-        showcaseView.setVisibility(show ? View.VISIBLE : View.INVISIBLE);
-    }
+//    public void showShowcase(boolean show) {
+//        showcaseView.setVisibility(show ? View.VISIBLE : View.INVISIBLE);
+//    }
 
     public enum ActiveFragment {
         CHATS,
