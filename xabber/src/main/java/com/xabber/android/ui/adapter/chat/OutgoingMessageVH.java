@@ -52,7 +52,7 @@ public class OutgoingMessageVH extends FileMessageVH {
 
         boolean imageAttached = false;
         if(messageItem.haveAttachments()) {
-            if (messageItem.getAttachments().get(0).isImage()) {
+            if (messageItem.hasImage()) {
                 imageAttached = true;
                 needTail = false;
             }
@@ -74,7 +74,7 @@ public class OutgoingMessageVH extends FileMessageVH {
         layoutParams.setMargins(
                 Utils.dipToPx(0f, context),
                 Utils.dipToPx(haveForwarded ? 0f : 2f, context),
-                Utils.dipToPx(needTail ? 2f : 11f, context),
+                Utils.dipToPx(needTail ? 3f : 11f, context),
                 Utils.dipToPx(2f, context));
         messageShadow.setLayoutParams(layoutParams);
 
@@ -82,17 +82,20 @@ public class OutgoingMessageVH extends FileMessageVH {
         messageBalloon.setPadding(
                 Utils.dipToPx(12f, context),
                 Utils.dipToPx(8f, context),
-                Utils.dipToPx(needTail ? 20f : 12f, context),
+                //Utils.dipToPx(needTail ? 20f : 12f, context),
+                Utils.dipToPx(needTail ? 14.5f : 6.5f, context),
                 Utils.dipToPx(8f, context));
 
         float border = 3.5f;
         if(messageItem.haveAttachments()) {
-            if(messageItem.isAttachmentImageOnly()) {
+            if(messageItem.hasImage()) {
                 messageBalloon.setPadding(
                         Utils.dipToPx(border, context),
-                        Utils.dipToPx(border, context),
+                        Utils.dipToPx(border-0.05f, context),
                         Utils.dipToPx(border, context),
                         Utils.dipToPx(border, context));
+                if (messageItem.isAttachmentImageOnly()) {
+                    messageTime.setTextColor(context.getResources().getColor(R.color.white));
                 /*messageBalloon.setPadding(
                         Utils.dipToPx(3f, context),
                         Utils.dipToPx(-2f, context),
@@ -103,7 +106,7 @@ public class OutgoingMessageVH extends FileMessageVH {
                         Utils.dipToPx(-7f, context),
                         Utils.dipToPx(0f, context),
                         Utils.dipToPx(0f, context));*/
-                messageTime.setTextColor(context.getResources().getColor(R.color.white));
+                } else messageInfo.setPadding(0, 0, Utils.dipToPx(border+1.5f, context), Utils.dipToPx(4.7f, context));
             }
         }
         // setup BACKGROUND COLOR
@@ -131,10 +134,15 @@ public class OutgoingMessageVH extends FileMessageVH {
 
         boolean isFileUploadInProgress = MessageItem.isUploadFileMessage(messageItem);
 
-        if (isFileUploadInProgress)
-            progressBar.setVisibility(View.VISIBLE);
+        //if (isFileUploadInProgress)
+        //    progressBar.setVisibility(View.VISIBLE);
 
         int messageIcon = R.drawable.ic_message_not_sent_14dp;
+
+        if (messageItem.getText().equals(UPLOAD_TAG)) {
+            messageIcon = 0;
+            messageText.setText("");
+        }
 
         if (!isFileUploadInProgress && !messageItem.isSent()) {
             messageIcon = R.drawable.ic_message_not_sent_14dp;
@@ -155,6 +163,6 @@ public class OutgoingMessageVH extends FileMessageVH {
         }
 
         if (messageIcon != 0) statusIcon.setImageResource(messageIcon);
-        else statusIcon.setVisibility(View.INVISIBLE);
+        else statusIcon.setVisibility(View.GONE);
     }
 }

@@ -15,6 +15,7 @@
 package com.xabber.android.data.message;
 
 import android.net.Uri;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -44,6 +45,7 @@ import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.notification.MessageNotificationManager;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.RosterCacheManager;
+import com.xabber.android.ui.adapter.chat.FileMessageVH;
 import com.xabber.android.utils.Utils;
 import com.xabber.xmpp.sid.OriginIdElement;
 import com.xabber.xmpp.sid.UniqStanzaHelper;
@@ -458,7 +460,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
                 MessageItem messageItem = new MessageItem(messageId);
                 messageItem.setAccount(account);
                 messageItem.setUser(user);
-                messageItem.setText("Sending files..");
+                messageItem.setText(FileMessageVH.UPLOAD_TAG);
                 messageItem.setAttachments(attachments);
                 messageItem.setTimestamp(System.currentTimeMillis());
                 messageItem.setRead(true);

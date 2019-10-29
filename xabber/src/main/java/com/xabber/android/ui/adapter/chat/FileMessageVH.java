@@ -51,13 +51,20 @@ public class FileMessageVH extends MessageVH
     //public static final int IMAGE_ROUNDED_CORNERS = 8;
     public static final int IMAGE_ROUNDED_CORNERS = Application.getInstance().getResources().getDimensionPixelSize(R.dimen.chat_image_corner_radius);
     public static final int IMAGE_ROUNDED_BORDER_CORNERS = Application.getInstance().getResources().getDimensionPixelSize(R.dimen.chat_image_border_radius);
-    public static final int IMAGE_ROUNDED_BORDER_WIDTH = Application.getInstance().getResources().getDimensionPixelSize(R.dimen.chat_image_border_width);
+    //public static final int IMAGE_ROUNDED_BORDER_WIDTH = Application.getInstance().getResources().getDimensionPixelSize(R.dimen.chat_image_border_width);
+    public static final int IMAGE_ROUNDED_BORDER_WIDTH = 1;
+
+    public static final String UPLOAD_TAG = "TAG: com.xabber.android.data.message.abstractChat$newFileMessage";
 
     //public static final int IMAGE_ROUNDED_BORDER_CORNERS = 5;
     //public static final int IMAGE_ROUNDED_BORDER_WIDTH = 2;
 
     private CompositeSubscription subscriptions = new CompositeSubscription();
     private FileListener listener;
+    private int imageCounter;
+    private int imageCount;
+    private int fileCounter;
+    private int fileCount;
 
     final TextView messageFileInfo;
     final ProgressBar progressBar;
@@ -131,9 +138,13 @@ public class FileMessageVH extends MessageVH
 
         RealmList<Attachment> imageAttachments = new RealmList<>();
         for (Attachment attachment : attachments) {
-            if (attachment.isImage()) imageAttachments.add(attachment);
+            if (attachment.isImage()) {
+                imageAttachments.add(attachment);
+                imageCounter++;
+            }
         }
-
+        imageCount = imageCounter;
+        imageCounter = 0;
         if (imageAttachments.size() > 0) {
             View imageGridView = gridBuilder.inflateView(imageGridContainer, imageAttachments.size());
             gridBuilder.bindView(imageGridView, imageAttachments, this);
@@ -146,9 +157,13 @@ public class FileMessageVH extends MessageVH
     private void setUpFile(RealmList<Attachment> attachments, Context context) {
         RealmList<Attachment> fileAttachments = new RealmList<>();
         for (Attachment attachment : attachments) {
-            if (!attachment.isImage()) fileAttachments.add(attachment);
+            if (!attachment.isImage()) {
+                fileAttachments.add(attachment);
+                fileCounter++;
+            }
         }
-
+        fileCount = fileCounter;
+        fileCounter = 0;
         if (fileAttachments.size() > 0) {
             RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(context);
             rvFileList.setLayoutManager(layoutManager);
@@ -351,22 +366,119 @@ public class FileMessageVH extends MessageVH
         if (progressData != null && messageId.equals(progressData.getMessageId())) {
             if (progressData.isCompleted()) {
                 showProgress(false);
+                showFileProgressModified(rvFileList, fileCount, fileCount);
+                showProgressModified(false, 0,imageCount);
             } else if (progressData.getError() != null) {
                 showProgress(false);
+                showFileProgressModified(rvFileList, fileCount, fileCount);
+                showProgressModified(false, 0,imageCount);
                 listener.onDownloadError(progressData.getError());
             } else {
-                if (uploadProgressBar != null) uploadProgressBar.setProgress(progressData.getProgress());
-                if (messageFileInfo != null)
-                    messageFileInfo.setText(context.getString(R.string.uploaded_files_count,
-                            progressData.getProgress() + "/" + progressData.getFileCount()));
                 showProgress(true);
+                if (messageFileInfo != null) {
+                    /*messageFileInfo.setText(context.getString(R.string.uploaded_files_count,
+                            progressData.getProgress() + "/" + progressData.getFileCount()));*/
+                    messageFileInfo.setText("Uploading..");
+                }
+                if (progressData.getProgress()<=imageCount) {
+                    if (imageGridContainer != null)
+                        showProgressModified(true, progressData.getProgress() - 1, imageCount);
+                }
+                if (progressData.getProgress() - imageCount <= fileCount) {
+                    showFileProgressModified(rvFileList, (progressData.getProgress() - imageCount),
+                            progressData.getFileCount()-imageCount);
+                }
             }
-        } else showProgress(false);
+        } else {
+            showProgress(false);
+            showFileProgressModified(rvFileList, fileCount, fileCount);
+            showProgressModified(false, 0,imageCount);
+        }
     }
 
     private void showProgress(boolean show) {
-        if (uploadProgressBar != null) uploadProgressBar.setVisibility(show ? View.VISIBLE : View.GONE);
-        if (ivCancelUpload != null) ivCancelUpload.setVisibility(show ? View.VISIBLE : View.GONE);
-        if (messageFileInfo != null) messageFileInfo.setVisibility(show ? View.VISIBLE : View.GONE);
+        //if (ivCancelUpload != null) ivCancelUpload.setVisibility(show ? View.VISIBLE : View.GONE);
+        if (messageFileInfo != null) {
+            messageFileInfo.setVisibility(show ? View.VISIBLE : View.GONE);
+        }
+        if (messageTime != null) {
+            messageTime.setVisibility(show ? View.GONE : View.VISIBLE);
+        }
+
+    }
+
+    private void showFileProgressModified(RecyclerView view, int startAt, int endAt) {
+        for (int i = 0;i<startAt;i++) {
+            showFileUploadProgress(view.getChildAt(i), false);
+        }
+        for (int j = (startAt>=0) ? startAt : 0; j<endAt; j++) {
+            showFileUploadProgress(view.getChildAt(j), true);
+        }
+    }
+
+    private void showFileUploadProgress(View view, boolean show) {
+        ProgressBar upload = view.findViewById(R.id.uploadProgressBar);
+        if (upload != null) upload.setVisibility(show? View.VISIBLE : View.GONE);
+    }
+
+    private void showProgressModified(boolean show, int current, int last) {
+        if(show) {
+            for (int i = 0; i < current; i++) {
+                ProgressBar progressBar = getProgressView(imageGridContainer, i);
+                ImageView imageShadow = getImageShadow(imageGridContainer, i);
+
+                if (progressBar!=null) progressBar.setVisibility(View.GONE);
+                if (imageShadow != null) imageShadow.setVisibility(View.GONE);
+            }
+            for (int j = current; j < last; j++) {
+                ProgressBar progressBar = getProgressView(imageGridContainer, j);
+                ImageView imageShadow = getImageShadow(imageGridContainer, j);
+
+                if (progressBar!=null) progressBar.setVisibility(View.VISIBLE);
+                if (imageShadow != null) imageShadow.setVisibility(View.VISIBLE);
+            }
+        } else {
+            for (int i=0;i<last;i++) {
+                ProgressBar progressBar = getProgressView(imageGridContainer, i);
+                ImageView imageShadow = getImageShadow(imageGridContainer, i);
+
+                if (progressBar!=null) progressBar.setVisibility(View.GONE);
+                if (imageShadow != null) imageShadow.setVisibility(View.GONE);
+            }
+        }
+    }
+
+    private ProgressBar getProgressView(View view, int index) {
+        switch (index) {
+            case 1:
+                return view.findViewById(R.id.uploadProgressBar1);
+            case 2:
+                return view.findViewById(R.id.uploadProgressBar2);
+            case 3:
+                return view.findViewById(R.id.uploadProgressBar3);
+            case 4:
+                return view.findViewById(R.id.uploadProgressBar4);
+            case 5:
+                return view.findViewById(R.id.uploadProgressBar5);
+            default:
+                return view.findViewById(R.id.uploadProgressBar0);
+        }
+    }
+
+    private ImageView getImageShadow(View view, int index) {
+        switch (index) {
+            case 1:
+                return view.findViewById(R.id.ivImage1Shadow);
+            case 2:
+                return view.findViewById(R.id.ivImage2Shadow);
+            case 3:
+                return view.findViewById(R.id.ivImage3Shadow);
+            case 4:
+                return view.findViewById(R.id.ivImage4Shadow);
+            case 5:
+                return view.findViewById(R.id.ivImage5Shadow);
+            default:
+                return view.findViewById(R.id.ivImage0Shadow);
+        }
     }
 }

@@ -135,9 +135,10 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
             return VIEW_TYPE_ACTION_MESSAGE;
 
         // if noFlex is true, should use special layout without flexbox-style text
+        boolean isUploadMessage = messageItem.getText().equals(FileMessageVH.UPLOAD_TAG);
         boolean noFlex = messageItem.haveForwardedMessages() || messageItem.haveAttachments() /*|| messageItem.isImage()*/;
         boolean isImage = messageItem.hasImage() || messageItem.isImage();
-        boolean notJustImage = (!messageItem.getText().trim().isEmpty()) || (!messageItem.isAttachmentImageOnly());
+        boolean notJustImage = (!messageItem.getText().trim().isEmpty() && !isUploadMessage) || (!messageItem.isAttachmentImageOnly());
 
         if (messageItem.isIncoming()) {
             if (isMUC && messageItem.getResource().equals(mucNickname)) {

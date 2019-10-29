@@ -67,11 +67,11 @@
             android:id="@+id/custom_flexbox_lite"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignEnd="@+id/imageFrame"
             android:layout_alignRight="@+id/imageFrame"
             android:layout_alignBottom="@id/imageFrame"
-            android:layout_marginEnd="0dp"
-            android:layout_marginRight="3dp"
-            android:layout_marginBottom="2dp"
+            android:layout_marginEnd="3dp"
+            android:layout_marginRight="2dp"
             android:paddingBottom="2dp">
 
             <com.xabber.android.ui.widget.CorrectlyMeasuringTextView
@@ -90,50 +90,57 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/rounded_background_dark_transparent_time"
+                android:gravity="right"
                 android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/message_file_info"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="4dp"
-                    android:layout_marginRight="4dp"
+                    android:textColor="@color/white"
                     android:textSize="10sp"
                     android:visibility="gone"
-                    tools:text="Uploading.. 1/3" />
-
-                <ProgressBar
-                    android:id="@+id/message_progress_bar"
-                    style="?android:attr/progressBarStyleSmall"
-                    android:layout_width="12dp"
-                    android:layout_height="12dp"
-                    android:layout_marginEnd="4dp"
-                    android:layout_marginRight="4dp"
-                    android:visibility="gone" />
+                    tools:text="Uploading.. " />
 
                 <TextView
                     android:id="@+id/message_time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="4dp"
-                    android:layout_marginRight="4dp"
+                    android:gravity="right"
                     android:singleLine="true"
                     android:textColor="@color/white"
                     android:textSize="10sp"
+                    android:visibility="visible"
                     tools:text="11:40" />
 
                 <ImageView
                     android:id="@+id/message_status_icon"
                     android:layout_width="14dp"
                     android:layout_height="14dp"
-                    android:src="@drawable/ic_message_synced_14dp" />
+                    android:layout_marginLeft="4dp"
+                    android:layout_marginRight="1dp"
+                    android:src="@drawable/ic_message_synced_14dp"
+                    tools:visibility="visible" />
+
+                <ProgressBar
+                    android:id="@+id/message_progress_bar"
+                    style="?android:attr/progressBarStyleSmall"
+                    android:layout_width="12dp"
+                    android:layout_height="12dp"
+                    android:layout_gravity="center|right"
+                    android:layout_marginLeft="4dp"
+                    android:layout_marginTop="0dp"
+                    android:layout_marginEnd="4dp"
+                    android:layout_marginRight="1dp"
+                    android:indeterminateTint="@color/teal_A400"
+                    android:visibility="gone" />
 
                 <ImageView
                     android:id="@+id/message_encrypted_icon"
                     android:layout_width="14dp"
                     android:layout_height="14dp"
                     android:layout_marginStart="4dp"
-                    android:layout_marginLeft="4dp"
+                    android:layout_marginLeft="3dp"
                     android:src="@drawable/ic_lock" />
 
             </LinearLayout>

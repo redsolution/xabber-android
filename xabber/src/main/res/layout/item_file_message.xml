@@ -1,14 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="wrap_content"
     android:maxWidth="280dp"
     android:layout_height="58dp"
     android:paddingLeft="8dp"
     android:paddingRight="8dp"
-    android:background="?android:attr/selectableItemBackground"
-    >
+    android:background="?android:attr/selectableItemBackground">
     <!--
     prev attributes of ^^^^^^^^^
     android:layout_width="280dp"
@@ -33,6 +31,19 @@
             android:paddingLeft="11dp"
             android:tint="@color/grey_700"
             />
+
+
+        <ProgressBar
+            android:id="@+id/uploadProgressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/round_shape_transparent"
+            android:elevation="1dp"
+            android:indeterminate="true"
+            android:max="100"
+            android:progress="50"
+            android:visibility="gone" />
+
 
         <ProgressBar
             android:id="@+id/progressBar"
@@ -76,13 +87,13 @@
             android:id="@+id/tvFileName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:singleLine="true"
-            android:ellipsize="middle"
-            android:text="Undefined file"
             android:layout_marginLeft="4dp"
+            android:ellipsize="middle"
+            android:maxWidth="196dp"
+            android:singleLine="true"
+            android:text="Undefined file"
             android:textColor="@color/grey_700"
-            android:textStyle="bold"
-            />
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/tvFileSize"
