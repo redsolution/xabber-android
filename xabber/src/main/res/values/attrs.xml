@@ -13,6 +13,8 @@
 
         <attr name="contact_list_background" format="reference" />
 
+        <attr name="bars_color" format="reference|color"/>
+
         <attr name="current_chat_background" format="reference" />
         <attr name="contact_list_account_group_background" format="reference" />
         <attr name="contact_list_account_group_separator" format="reference" />
