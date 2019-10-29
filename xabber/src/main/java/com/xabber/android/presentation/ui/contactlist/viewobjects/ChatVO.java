@@ -61,10 +61,10 @@ public class ChatVO extends ExtContactVO {
 
         /* decode message text to beautify cyrillic URLs */
         String messageText = contactVO.getMessageText();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT){
-            try{ messageText = URLDecoder.decode(messageText, StandardCharsets.UTF_8.name());
-            } catch (Exception e) { e.printStackTrace(); }
-        }
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT){
+//            try{ messageText = URLDecoder.decode(messageText, StandardCharsets.UTF_8.name());
+//            } catch (Exception e) { e.printStackTrace(); }
+//        }
 
         return new ChatVO(
                 contactVO.getAccountColorIndicator(), contactVO.getAccountColorIndicatorBack(),
