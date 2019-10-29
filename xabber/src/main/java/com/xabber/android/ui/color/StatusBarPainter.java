@@ -1,5 +1,7 @@
 package com.xabber.android.ui.color;
 
+import android.app.Activity;
+import android.graphics.Color;
 import android.os.Build;
 import android.view.Window;
 import android.view.WindowManager;
@@ -38,6 +40,14 @@ public class StatusBarPainter {
      * @param accountJid Status bar will be colorized with Main Color of this account*/
     static public void instanceUpdateWithAccountName(FragmentActivity activity, AccountJid accountJid){
         new StatusBarPainter(activity).updateWithAccountName(accountJid);
+    }
+
+    /** Static colorize status bar with color
+     * @param activity at most cases should be "this"
+     * @param color colorize into this color
+     */
+    static public void instanceUpdateWIthColor(FragmentActivity activity, int color){
+        new StatusBarPainter(activity).updateWithColor(color);
     }
 
     /** Colorize status bat into custom color
