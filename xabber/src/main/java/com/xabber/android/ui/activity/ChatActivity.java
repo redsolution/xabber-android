@@ -555,7 +555,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     private void updateToolbar() {
         NewContactTitleInflater.updateTitle(contactTitleView, this,
                 RosterManager.getInstance().getBestContact(account, user), getNotifMode());
-        updateToolbarMenuIcon();
+//        updateToolbarMenuIcon();
         setUpOptionsMenu(toolbar.getMenu());
 
         /* Update background color via current main user; */
@@ -574,12 +574,12 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
 
     }
 
-    private void updateToolbarMenuIcon(){
-        if (currentFragment.equals(CHAT_FRAGMENT_TAG))
-            toolbar.setOverflowIcon(getResources().getDrawable(R.drawable.ic_overflow_menu_white_24dp));
-        else if (currentFragment.equals(CONTACT_INFO_FRAGMENT_TAG))
-            toolbar.setOverflowIcon(getResources().getDrawable(R.drawable.ic_settings_white_24dp));
-    }
+//    private void updateToolbarMenuIcon(){
+//        if (currentFragment.equals(CHAT_FRAGMENT_TAG))
+//            toolbar.setOverflowIcon(getResources().getDrawable(R.drawable.ic_overflow_menu_white_24dp));
+//        else if (currentFragment.equals(CONTACT_INFO_FRAGMENT_TAG))
+//            toolbar.setOverflowIcon(getResources().getDrawable(R.drawable.ic_settings_white_24dp));
+//    }
 
     private void updateStatusBar() {
         if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light)

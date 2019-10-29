@@ -49,10 +49,14 @@ public class NewContactTitleInflater {
         Drawable drawable = null;
         if (resID != 0){
             drawable = resources.getDrawable(resID);
-            if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light)
+            if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light){
                 drawable.setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_ATOP);
-            else drawable.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP);
-            drawable.setAlpha(64);
+                drawable.setAlpha(64);
+            }
+            else {
+                drawable.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP);
+                drawable.setAlpha(128);
+            }
         }
         nameView.setCompoundDrawablesWithIntrinsicBounds(null, null,
                 drawable, null);
@@ -99,7 +103,8 @@ public class NewContactTitleInflater {
         }
 
         final TextView statusTextView = (TextView) titleView.findViewById(R.id.status_text);
-
+        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.dark)
+            statusTextView.setTextColor(ColorManager.getInstance().getAccountPainter().getAccountRippleColor(abstractContact.getAccount()));
 
         ChatState chatState = ChatStateManager.getInstance().getChatState(
                 abstractContact.getAccount(), abstractContact.getUser());
