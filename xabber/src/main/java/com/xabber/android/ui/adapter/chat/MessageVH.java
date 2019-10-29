@@ -117,7 +117,6 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
                     null, new ClickTagHandler(extraData.getContext(),
                     extraData.getMentionColor())), TextView.BufferType.SPANNABLE);
         else messageText.setText(messageItem.getText().concat(String.valueOf(Character.MIN_VALUE)));
-        messageText.setText(messageText.getText().toString().trim());
         if (OTRManager.getInstance().isEncrypted(messageItem.getText())) {
             if (extraData.isShowOriginalOTR())
                 messageText.setVisibility(View.VISIBLE);
