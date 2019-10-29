@@ -20,6 +20,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.TypedArray;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.InputType;
@@ -303,9 +304,9 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         });
 
         toolbar = (Toolbar) findViewById(R.id.toolbar_default);
-        toolbar.setOverflowIcon(getResources().getDrawable(R.drawable.ic_more_vert_black_24dp));
+        toolbar.setOverflowIcon(getResources().getDrawable(R.drawable.ic_overflow_menu_white_24dp));
         toolbar.setOnMenuItemClickListener(this);
-        toolbar.setNavigationIcon(getResources().getDrawable(R.drawable.ic_arrow_left));
+        toolbar.setNavigationIcon(getResources().getDrawable(R.drawable.ic_arrow_left_white_24dp));
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -559,12 +560,18 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
 
         /* Update background color via current main user; */
         TypedValue typedValue = new TypedValue();
-        TypedArray a = obtainStyledAttributes(typedValue.data, new int[] {R.attr.contact_list_account_group_background});
-        final int accountGroupColorsResourceId = a.getResourceId(0, 0);
-        a.recycle();
-        final int[] accountGroupColors = getResources().getIntArray(accountGroupColorsResourceId);
-        final int level = AccountManager.getInstance().getColorLevel(account);
-        toolbar.setBackgroundColor(accountGroupColors[level]);
+        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light){
+            TypedArray a = obtainStyledAttributes(typedValue.data, new int[] {R.attr.contact_list_account_group_background});
+            final int accountGroupColorsResourceId = a.getResourceId(0, 0);
+            a.recycle();
+            final int[] accountGroupColors = getResources().getIntArray(accountGroupColorsResourceId);
+            final int level = AccountManager.getInstance().getColorLevel(account);
+            toolbar.setBackgroundColor(accountGroupColors[level]);
+        } else {
+            this.getTheme().resolveAttribute(R.attr.bars_color, typedValue, true);
+            toolbar.setBackgroundColor(typedValue.data);
+        }
+
     }
 
     private void updateToolbarMenuIcon(){
@@ -575,7 +582,13 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     }
 
     private void updateStatusBar() {
-        StatusBarPainter.instanceUpdateWithAccountName(this, account);
+        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light)
+            StatusBarPainter.instanceUpdateWithAccountName(this, account);
+        else {
+            TypedValue typedValue = new TypedValue();
+            this.getTheme().resolveAttribute(R.attr.bars_color, typedValue, true);
+            StatusBarPainter.instanceUpdateWIthColor(this, typedValue.data);
+        }
     }
 
     private void updateChat() {

@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.xabber.android.R;
+import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.cs.ChatStateManager;
@@ -20,6 +21,7 @@ import com.xabber.android.data.notification.custom_notification.CustomNotifyPref
 import com.xabber.android.data.notification.custom_notification.Key;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.RosterContact;
+import com.xabber.android.ui.color.ColorManager;
 
 import org.jivesoftware.smackx.chatstates.ChatState;
 
@@ -35,6 +37,8 @@ public class NewContactTitleInflater {
         final ImageView avatarView = (ImageView) titleView.findViewById(R.id.ivAvatar);
 
         nameView.setText(abstractContact.getName());
+        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.dark)
+            nameView.setTextColor(ColorManager.getInstance().getAccountPainter().getAccountMainColor(abstractContact.getAccount()));
 
         // notification mute
         Resources resources = context.getResources();
@@ -45,8 +49,10 @@ public class NewContactTitleInflater {
         Drawable drawable = null;
         if (resID != 0){
             drawable = resources.getDrawable(resID);
-            drawable.setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_ATOP);
-            drawable.setAlpha(128);
+            if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light)
+                drawable.setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_ATOP);
+            else drawable.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP);
+            drawable.setAlpha(64);
         }
         nameView.setCompoundDrawablesWithIntrinsicBounds(null, null,
                 drawable, null);

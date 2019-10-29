@@ -9,7 +9,8 @@
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/chatlist_toolbar_root"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="?attr/bars_color">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/chat_list_toolbar"
