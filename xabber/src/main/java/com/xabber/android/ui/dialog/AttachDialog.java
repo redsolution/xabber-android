@@ -1,11 +1,6 @@
 package com.xabber.android.ui.dialog;
 
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +8,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.xabber.android.R;
 import com.xabber.android.ui.adapter.RecentImagesAdapter;
 
@@ -27,6 +29,7 @@ public class AttachDialog extends BottomSheetDialogFragment implements RecentIma
     private RecentImagesAdapter recentImagesAdapter;
     private TextView attachSendButtonText;
     private ImageView attachSendButtonIcon;
+    private View view;
 
     private Listener listener;
 
@@ -52,7 +55,7 @@ public class AttachDialog extends BottomSheetDialogFragment implements RecentIma
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.attach_dialog, container, false);
+        view = inflater.inflate(R.layout.attach_dialog, container, false);
 
         view.findViewById(R.id.attach_send_button).setOnClickListener(this);
         view.findViewById(R.id.attach_file_button).setOnClickListener(this);
@@ -71,6 +74,13 @@ public class AttachDialog extends BottomSheetDialogFragment implements RecentIma
         recyclerView.setAdapter(recentImagesAdapter);
 
         return view;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        BottomSheetBehavior bottomSheetBehavior = BottomSheetBehavior.from((View) view.getParent());
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
     }
 
     @Override
