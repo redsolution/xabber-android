@@ -113,10 +113,10 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
         // to avoid click by empty space after ClickableSpan
         if (messageItem.getMarkupText() != null && !messageItem.getMarkupText().isEmpty())
             messageText.setText(Html.fromHtml(
-                    messageItem.getMarkupText().replace("\n", "<br/>").concat("&zwj;"),
+                    messageItem.getMarkupText().trim().replace("\n", "<br/>").concat("&zwj;"),
                     null, new ClickTagHandler(extraData.getContext(),
                     extraData.getMentionColor())), TextView.BufferType.SPANNABLE);
-        else messageText.setText(messageItem.getText().concat(String.valueOf(Character.MIN_VALUE)));
+        else messageText.setText(messageItem.getText().trim().concat(String.valueOf(Character.MIN_VALUE)));
         if (OTRManager.getInstance().isEncrypted(messageItem.getText())) {
             if (extraData.isShowOriginalOTR())
                 messageText.setVisibility(View.VISIBLE);
