@@ -237,9 +237,12 @@ public class ContactListFragment extends Fragment implements ContactListView,
     public void onStickyHeaderChange(int newPosition, int oldPosition) {
         if (newPosition > -1 && adapter.getItemCount() > newPosition) {
             IFlexible item = adapter.getItem(newPosition);
-            if (item instanceof AccountVO && SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light)
-                ((ContactListActivity)getActivity()).setStatusBarColor(((AccountVO)item).getAccountJid()); // account color
-            else ((ContactListActivity)getActivity()).setStatusBarColor(); // main color
+            if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light){
+                if (item instanceof AccountVO)
+                    ((ContactListActivity)getActivity()).setStatusBarColor(((AccountVO)item).getAccountJid()); // account color
+                else ((ContactListActivity)getActivity()).setStatusBarColor(); // main color
+            }
+
         }
     }
 
@@ -256,8 +259,10 @@ public class ContactListFragment extends Fragment implements ContactListView,
             int position = accountsRecyclerView.getChildLayoutPosition(v);
             AccountJid clickedAccountJid = accountsJidList.get(position);
             scrollToAccount(clickedAccountJid);
-            if (Build.VERSION.SDK_INT > 20)
-                ((ContactListActivity)getActivity()).setStatusBarColor(clickedAccountJid);
+            if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light){
+                if (Build.VERSION.SDK_INT > 20)
+                    ((ContactListActivity)getActivity()).setStatusBarColor(clickedAccountJid);
+            }
         }
     }
 

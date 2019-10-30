@@ -96,7 +96,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
 
 import eu.davidea.flexibleadapter.FlexibleAdapter;
@@ -741,7 +740,14 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
 
         /* Mark all the read button setup */
         if (currentChatsState == ChatListState.unread && items.size() > 0){
-            markAllReadBackground.setColorFilter(ColorManager.getInstance().getAccountPainter().getDefaultMainColor(), PorterDuff.Mode.SRC_ATOP);
+            if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light){
+                markAllReadBackground.setColorFilter(ColorManager.getInstance().getAccountPainter().getDefaultMainColor(), PorterDuff.Mode.SRC_ATOP);
+                markAllAsReadButton.setTextColor(getContext().getResources().getColor(R.color.white));
+            } else {
+                markAllReadBackground.setColorFilter(getContext().getResources().getColor(R.color.grey_900), PorterDuff.Mode.SRC_ATOP);
+                markAllAsReadButton.setTextColor(ColorManager.getInstance().getAccountPainter().getDefaultMainColor());
+            }
+
             markAllAsReadButton.setVisibility(View.VISIBLE);
             markAllAsReadButton.setOnClickListener(new View.OnClickListener(){
                 @Override

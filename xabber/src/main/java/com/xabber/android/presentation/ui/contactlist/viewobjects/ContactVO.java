@@ -17,7 +17,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -358,6 +357,16 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
             viewHolder.tvUnreadCount.setText(String.valueOf(getUnreadCount()));
             viewHolder.tvUnreadCount.setVisibility(View.VISIBLE);
         } else viewHolder.tvUnreadCount.setVisibility(View.GONE);
+
+//        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light){
+//            Drawable drawable = context.getResources().getDrawable(R.drawable.rounded_background_green);
+//            viewHolder.tvUnreadCount.setBackground(drawable);
+//            viewHolder.tvUnreadCount.setTextColor(context.getResources().getColor(R.color.white));
+//        } else {
+//            Drawable drawable = context.getResources().getDrawable(R.drawable.rounded_background_grey);
+//            viewHolder.tvUnreadCount.setBackground(drawable);
+//            viewHolder.tvUnreadCount.setTextColor(context.getResources().getColor(R.color.black));
+//        }
 
         if (isMute())
             viewHolder.tvUnreadCount.getBackground().mutate().setColorFilter(

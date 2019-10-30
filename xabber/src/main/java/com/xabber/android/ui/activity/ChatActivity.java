@@ -21,6 +21,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.TypedArray;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.InputType;
@@ -304,9 +306,22 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         });
 
         toolbar = (Toolbar) findViewById(R.id.toolbar_default);
-        toolbar.setOverflowIcon(getResources().getDrawable(R.drawable.ic_overflow_menu_white_24dp));
+        Drawable overflow = getResources().getDrawable(R.drawable.ic_overflow_menu_white_24dp);
+        Drawable navigation = getResources().getDrawable(R.drawable.ic_arrow_left_white_24dp);
+        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.dark){
+            overflow.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP);
+            overflow.setAlpha(128);
+            navigation.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP);
+            navigation.setAlpha(128);
+        } else {
+            overflow.setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_ATOP);
+            overflow.setAlpha(128);
+            navigation.setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_ATOP);
+            navigation.setAlpha(128);
+        }
+        toolbar.setOverflowIcon(overflow);
         toolbar.setOnMenuItemClickListener(this);
-        toolbar.setNavigationIcon(getResources().getDrawable(R.drawable.ic_arrow_left_white_24dp));
+        toolbar.setNavigationIcon(navigation);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

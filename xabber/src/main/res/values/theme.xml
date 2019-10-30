@@ -87,8 +87,8 @@
         <item name="action_with_chat_background">@color/grey_400</item>
         <item name="transparent_rounded_background">@drawable/rounded_background_grey_transparent</item>
         <item name="message_background">@color/message_color_state</item>
-        <item name="android:actionOverflowButtonStyle">@style/OverflowButtonStyle.Grey</item>
-        <item name="toolbarNavigationButtonStyle">@style/Base.Widget.AppCompat.Toolbar.Button.Navigation.Grey</item>
+<!--        <item name="android:actionOverflowButtonStyle">@style/OverflowButtonStyle.Grey</item>-->
+<!--        <item name="toolbarNavigationButtonStyle">@style/Base.Widget.AppCompat.Toolbar.Button.Navigation.Grey</item>-->
     </style>
 
     <style name="ThemeDark" parent="Base.ThemeDark"></style>
@@ -165,9 +165,11 @@
         <item name="action_with_chat_background">@color/grey_950</item>
         <item name="transparent_rounded_background">@drawable/rounded_background_grey_transparent_dark</item>
         <item name="message_background">@color/message_color_state_dark</item>
+        <item name="android:navigationBarColor">?attr/bars_color</item>
+        <item name="unread_counter_text_color">@color/black</item>
 
-        <item name="android:actionOverflowButtonStyle">@style/OverflowButtonStyle.Grey</item>
-        <item name="toolbarNavigationButtonStyle">@style/Base.Widget.AppCompat.Toolbar.Button.Navigation.Grey</item>
+<!--        <item name="android:actionOverflowButtonStyle">@style/OverflowButtonStyle.Grey</item>-->
+<!--        <item name="toolbarNavigationButtonStyle">@style/Base.Widget.AppCompat.Toolbar.Button.Navigation.Grey</item>-->
     </style>
 
     <style name="ToolbarTitle" parent="@style/TextAppearance.Widget.AppCompat.Toolbar.Title">
@@ -202,15 +204,15 @@
         <item name="android:background">?android:attr/listDivider</item>
     </style>
 
-    <style name="OverflowButtonStyle.Grey" parent="OverflowButtonStyle">
-        <item name="android:alpha">0.5</item>
-        <item name="android:textColorSecondary">@color/black</item>
-    </style>
+<!--    <style name="OverflowButtonStyle.Grey" parent="OverflowButtonStyle">-->
+<!--        <item name="android:alpha">0.5</item>-->
+<!--        <item name="android:textColorSecondary">@color/black</item>-->
+<!--    </style>-->
 
-    <style name="Base.Widget.AppCompat.Toolbar.Button.Navigation.Grey" parent="Base.Widget.AppCompat.Toolbar.Button.Navigation">
-        <item name="android:alpha">0.5</item>
-        <item name="android:textColorSecondary">@color/black</item>
-    </style>
+<!--    <style name="Base.Widget.AppCompat.Toolbar.Button.Navigation.Grey" parent="Base.Widget.AppCompat.Toolbar.Button.Navigation">-->
+<!--        <item name="android:alpha">0.5</item>-->
+<!--        <item name="android:textColorSecondary">@color/black</item>-->
+<!--    </style>-->
 
 
 </resources>
