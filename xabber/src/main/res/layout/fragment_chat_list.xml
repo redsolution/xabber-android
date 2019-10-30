@@ -9,8 +9,7 @@
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/chatlist_toolbar_root"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="?attr/bars_color">
+        android:layout_height="wrap_content">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/chat_list_toolbar"
@@ -24,7 +23,8 @@
             android:contentInsetRight="0dp"
             android:contentInsetEnd="0dp"
             app:contentInsetRight="0dp"
-            app:contentInsetEnd="0dp">
+            app:contentInsetEnd="0dp"
+            android:background="?attr/bars_color">
 
             <include layout="@layout/item_main_title_in_contact_list"/>
 

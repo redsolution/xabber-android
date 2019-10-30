@@ -237,7 +237,7 @@ public class ContactListFragment extends Fragment implements ContactListView,
     public void onStickyHeaderChange(int newPosition, int oldPosition) {
         if (newPosition > -1 && adapter.getItemCount() > newPosition) {
             IFlexible item = adapter.getItem(newPosition);
-            if (item instanceof AccountVO)
+            if (item instanceof AccountVO && SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light)
                 ((ContactListActivity)getActivity()).setStatusBarColor(((AccountVO)item).getAccountJid()); // account color
             else ((ContactListActivity)getActivity()).setStatusBarColor(); // main color
         }

@@ -23,6 +23,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
+import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.database.messagerealm.Attachment;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
@@ -266,8 +267,14 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
         Context context = viewHolder.itemView.getContext();
 
         /** set up ACCOUNT COLOR indicator */
-        viewHolder.accountColorIndicator.setBackgroundColor(getAccountColorIndicator());
-        viewHolder.accountColorIndicatorBack.setBackgroundColor(getAccountColorIndicatorBack());
+        if (AccountManager.getInstance().getEnabledAccounts().size() > 1
+            && SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light){
+            viewHolder.accountColorIndicator.setBackgroundColor(getAccountColorIndicator());
+            viewHolder.accountColorIndicatorBack.setBackgroundColor(getAccountColorIndicatorBack());
+        } else {
+            viewHolder.accountColorIndicator.setBackgroundColor(context.getResources().getColor(R.color.transparent));
+            viewHolder.accountColorIndicatorBack.setBackgroundColor(context.getResources().getColor(R.color.transparent));
+        }
 
         /** set up AVATAR */
         boolean showAvatars = SettingsManager.contactsShowAvatars();

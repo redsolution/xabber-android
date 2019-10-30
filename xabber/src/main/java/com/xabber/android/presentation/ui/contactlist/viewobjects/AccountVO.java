@@ -106,14 +106,27 @@ public class AccountVO extends AbstractHeaderItem<AccountVO.ViewHolder> {
         Context context = viewHolder.itemView.getContext();
 
         /** set up ACCOUNT COLOR indicator */
-        viewHolder.accountColorIndicator.setBackgroundColor(getAccountColorIndicator());
-        viewHolder.accountColorIndicatorBack.setBackgroundColor(getAccountColorIndicatorBack());
+        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light
+            && AccountManager.getInstance().getEnabledAccounts().size() > 1){
+            viewHolder.accountColorIndicator.setBackgroundColor(getAccountColorIndicator());
+            viewHolder.accountColorIndicatorBack.setBackgroundColor(getAccountColorIndicatorBack());
+        } else {
+            viewHolder.accountColorIndicator.setBackgroundColor(context.getResources().getColor(R.color.transparent));
+            viewHolder.accountColorIndicatorBack.setBackgroundColor(context.getResources().getColor(R.color.transparent));
+        }
 
-        /** bind ACCOUNT BACKGROUND color */
-        final int[] accountGroupColors = context.getResources().getIntArray(
-                getThemeResource(context, R.attr.contact_list_account_group_background));
-        final int level = AccountManager.getInstance().getColorLevel(getAccountJid());
-        viewHolder.backgroundView.setBackgroundColor(accountGroupColors[level]);
+
+        /** bind ACCOUNT BACKGROUND and account name colors according to theme */
+        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light){
+            viewHolder.backgroundView.setBackgroundColor(
+                    ColorManager.getInstance().getAccountPainter().getAccountRippleColor(accountJid));
+        } else {
+            TypedValue typedValue = new TypedValue();
+            context.getTheme().resolveAttribute(R.attr.bars_color, typedValue, true);
+            viewHolder.backgroundView.setBackgroundColor(typedValue.data);
+            viewHolder.tvAccountName.setTextColor(ColorManager.getInstance().getAccountPainter().getAccountMainColor(accountJid));
+        }
+
 
         /** bind ACCOUNT NAME */
         viewHolder.tvAccountName.setText(getName());

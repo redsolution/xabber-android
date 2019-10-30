@@ -7,7 +7,6 @@
     android:layout_width="match_parent"
     android:layout_height="56dp"
     android:clickable="true"
-    android:background="?attr/bars_color"
     android:elevation="2dp">
 
     <include layout="@layout/account_color_indicator" />
@@ -30,7 +29,6 @@
         android:clickable="true"
         android:layout_toRightOf="@+id/avatarView"
         android:layout_marginLeft="16dp"
-        android:drawableRight="@drawable/ic_chevron_down"
         />
 
     <androidx.appcompat.widget.AppCompatImageView

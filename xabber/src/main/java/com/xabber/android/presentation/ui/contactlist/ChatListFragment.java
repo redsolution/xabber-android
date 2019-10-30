@@ -96,6 +96,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 import eu.davidea.flexibleadapter.FlexibleAdapter;
@@ -376,10 +377,18 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         }
 
         /* Update left color indicator via current main user */
-        toolbarAccountColorIndicator.setBackgroundColor(
-                ColorManager.getInstance().getAccountPainter().getDefaultMainColor());
-        toolbarAccountColorIndicatorBack.setBackgroundColor(
-                ColorManager.getInstance().getAccountPainter().getDefaultIndicatorBackColor());
+        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light
+            && AccountManager.getInstance().getEnabledAccounts().size() > 1){
+            toolbarAccountColorIndicator.setBackgroundColor(
+                    ColorManager.getInstance().getAccountPainter().getDefaultMainColor());
+            toolbarAccountColorIndicatorBack.setBackgroundColor(
+                    ColorManager.getInstance().getAccountPainter().getDefaultIndicatorBackColor());
+        } else {
+            toolbarAccountColorIndicator.setBackgroundColor(
+                    getResources().getColor(R.color.transparent));
+            toolbarAccountColorIndicatorBack.setBackgroundColor(
+                    getResources().getColor(R.color.transparent));
+        }
     }
 
     /** OnClickListener for Toolbar */
