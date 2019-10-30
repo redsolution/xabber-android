@@ -143,6 +143,7 @@ public class IncomingMessageVH  extends FileMessageVH {
                 && !messageItem.haveForwardedMessages()
                 && !messageItem.haveAttachments()) {
             messageBalloon.setVisibility(View.GONE);
+            messageShadow.setVisibility(View.GONE);
             messageTime.setVisibility(View.GONE);
             avatar.setVisibility(View.GONE);
             avatarBackground.setVisibility(View.GONE);
