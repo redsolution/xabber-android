@@ -102,8 +102,7 @@ public class GroupVO extends AbstractFlexibleItem<GroupVO.ViewHolder>
     public void bindViewHolder(FlexibleAdapter adapter, ViewHolder viewHolder, int position, List<Object> payloads) {
         Context context = viewHolder.itemView.getContext();
         /** set up ACCOUNT COLOR indicator */
-        if (AccountManager.getInstance().getEnabledAccounts().size() > 1
-            && SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light){
+        if (AccountManager.getInstance().getEnabledAccounts().size() > 1){
             viewHolder.accountColorIndicator.setBackgroundColor(getAccountColorIndicator());
             viewHolder.accountColorIndicatorBack.setBackgroundColor(getAccountColorIndicatorBack());
         } else {
