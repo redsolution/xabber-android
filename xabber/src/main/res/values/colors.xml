@@ -377,7 +377,7 @@
 
     <color name="recent_chats_background">@color/grey_300</color>
 
-    <color name="contact_list_separator_dark">#11FFFFFF</color>
+    <color name="contact_list_separator_dark">@color/grey_900</color>
 
     <color name="bookmark_list_separator">#24000000</color>
 

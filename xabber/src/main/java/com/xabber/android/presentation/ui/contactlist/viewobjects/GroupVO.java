@@ -9,6 +9,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.xabber.android.R;
+import com.xabber.android.data.SettingsManager;
+import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.notification.custom_notification.CustomNotifyPrefsManager;
 import com.xabber.android.data.notification.custom_notification.Key;
@@ -98,10 +100,16 @@ public class GroupVO extends AbstractFlexibleItem<GroupVO.ViewHolder>
 
     @Override
     public void bindViewHolder(FlexibleAdapter adapter, ViewHolder viewHolder, int position, List<Object> payloads) {
-
+        Context context = viewHolder.itemView.getContext();
         /** set up ACCOUNT COLOR indicator */
-        viewHolder.accountColorIndicator.setBackgroundColor(getAccountColorIndicator());
-        viewHolder.accountColorIndicatorBack.setBackgroundColor(getAccountColorIndicatorBack());
+        if (AccountManager.getInstance().getEnabledAccounts().size() > 1){
+            viewHolder.accountColorIndicator.setBackgroundColor(getAccountColorIndicator());
+            viewHolder.accountColorIndicatorBack.setBackgroundColor(getAccountColorIndicatorBack());
+        } else {
+            viewHolder.accountColorIndicator.setBackgroundColor(context.getResources().getColor(R.color.transparent));
+            viewHolder.accountColorIndicatorBack.setBackgroundColor(context.getResources().getColor(R.color.transparent));
+        }
+
 
         /** set up EXPAND indicator */
         //viewHolder.indicator.setImageLevel(getExpandIndicatorLevel());
@@ -123,7 +131,6 @@ public class GroupVO extends AbstractFlexibleItem<GroupVO.ViewHolder>
         viewHolder.line.setVisibility(firstInAccount ? View.INVISIBLE : View.VISIBLE);
 
         /** set up CUSTOM NOTIFICATION */
-        Context context = viewHolder.itemView.getContext();
         Resources resources = context.getResources();
         viewHolder.name.setCompoundDrawablesWithIntrinsicBounds(null, null,
                 isCustomNotification() ? resources.getDrawable(R.drawable.ic_notif_custom)
