@@ -70,7 +70,7 @@
             android:layout_alignEnd="@+id/imageFrame"
             android:layout_alignRight="@+id/imageFrame"
             android:layout_alignBottom="@id/imageFrame"
-            android:layout_marginEnd="3dp"
+            android:layout_marginEnd="2dp"
             android:layout_marginRight="2dp"
             android:paddingBottom="2dp">
 
