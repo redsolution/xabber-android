@@ -26,7 +26,7 @@ public class RoundedBorders extends BitmapTransformation {
 
     public RoundedBorders(int roundingRadius, int borderThickness){
         Preconditions.checkArgument(roundingRadius > 0, "roundingRadius must be greater than 0.");
-        Preconditions.checkArgument(borderThickness > 0, "borderThickness must be greater than 0.");
+        Preconditions.checkArgument(borderThickness >= 0, "borderThickness must be greater than or equal to 0");
         this.roundingRadius = roundingRadius;
         this.borderThickness = borderThickness;
     }
@@ -35,17 +35,12 @@ public class RoundedBorders extends BitmapTransformation {
     protected Bitmap transform(@NonNull BitmapPool pool, @NonNull Bitmap toTransform, int outWidth, int outHeight) {
         Preconditions.checkArgument(roundingRadius > 0, "roundingRadius must be greater than 0.");
 
-        //BitmapShader shader = new BitmapShader(toTransform, Shader.TileMode.CLAMP,
-        //        Shader.TileMode.CLAMP);
         Paint paint = new Paint();
         paint.setAntiAlias(true);
         paint.setStyle(Paint.Style.STROKE);
-
         paint.setColor(Color.parseColor("#40979797"));
-        //paint.setColor(Color.MAGENTA);
-        //paint.setShader(shader);
         paint.setStrokeWidth(borderThickness);
-        RectF rect = new RectF(1, 1, toTransform.getWidth()-1, toTransform.getHeight()-1);
+        RectF rect = new RectF(0, 0, toTransform.getWidth(), toTransform.getHeight());
 
         Canvas canvas = new Canvas(toTransform);
         //canvas.drawColor(Color.MAGENTA);

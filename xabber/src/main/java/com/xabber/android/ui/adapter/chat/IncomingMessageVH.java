@@ -64,7 +64,7 @@ public class IncomingMessageVH  extends FileMessageVH {
 
             forwardedParams.setMargins(
                     Utils.dipToPx(needTail ? 11f : 12f, context),
-                    Utils.dipToPx(2f, context),
+                    Utils.dipToPx(3f, context),
                     Utils.dipToPx(1f, context),
                     Utils.dipToPx(0f, context));
 
@@ -106,9 +106,9 @@ public class IncomingMessageVH  extends FileMessageVH {
 
         layoutParams.setMargins(
                 Utils.dipToPx(needTail ? 2f : 11f, context),
-                Utils.dipToPx(haveForwarded ? 0f : 2f, context),
+                Utils.dipToPx(haveForwarded ? 0f : 3f, context),
                 Utils.dipToPx(0f, context),
-                Utils.dipToPx(2f, context));
+                Utils.dipToPx(3f, context));
         messageShadow.setLayoutParams(layoutParams);
 
         // setup MESSAGE padding
@@ -125,7 +125,6 @@ public class IncomingMessageVH  extends FileMessageVH {
                     Utils.dipToPx(border, context),
                     Utils.dipToPx(border, context),
                     Utils.dipToPx(border, context));
-
             if(messageText.getText().toString().trim().isEmpty() && messageItem.isAttachmentImageOnly())
                 messageTime.setTextColor(context.getResources().getColor(R.color.white));
         }
