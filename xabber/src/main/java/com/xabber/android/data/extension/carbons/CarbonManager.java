@@ -1,5 +1,7 @@
 package com.xabber.android.data.extension.carbons;
 
+import android.util.Log;
+
 import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.SettingsManager.SecurityOtrMode;
@@ -66,7 +68,8 @@ public class CarbonManager {
                     // Smack CarbonManager still thinks, that carbons enabled and does not sent IQ
                     // it drops flag to false when on authorized listener, but it happens after this listener
                     // so it is problem of unordered authorized listeners
-                    carbonManager.setCarbonsEnabled(false);
+                    //carbonManager.setCarbonsEnabled(false);
+                    LogManager.d(this, "There was a strange disabling carbons request");
                 }
                 carbonManager.setCarbonsEnabled(SettingsManager.connectionUseCarbons());
 
