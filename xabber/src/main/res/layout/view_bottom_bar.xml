@@ -5,7 +5,7 @@
     android:layout_height="56dp"
     android:orientation="horizontal"
     android:useDefaultMargins="true"
-    android:background="?attr/bottom_navigation_background">
+    android:background="?attr/bars_color">
 
 
     <RelativeLayout

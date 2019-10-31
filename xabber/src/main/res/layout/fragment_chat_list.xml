@@ -23,7 +23,8 @@
             android:contentInsetRight="0dp"
             android:contentInsetEnd="0dp"
             app:contentInsetRight="0dp"
-            app:contentInsetEnd="0dp">
+            app:contentInsetEnd="0dp"
+            android:background="?attr/bars_color">
 
             <include layout="@layout/item_main_title_in_contact_list"/>
 

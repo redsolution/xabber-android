@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.amulyakhare.textdrawable.util.ColorGenerator;
 import com.xabber.android.R;
+import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.database.MessageDatabaseManager;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.extension.otr.OTRManager;
@@ -216,7 +217,9 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
         final Drawable originalBackgroundDrawable = view.getBackground();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            originalBackgroundDrawable.setTintList(colorList);
+            if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light)
+                originalBackgroundDrawable.setTintList(colorList);
+            else originalBackgroundDrawable.setTintList(colorList.withAlpha(128));
 
         } else {
             Drawable wrapDrawable = DrawableCompat.wrap(originalBackgroundDrawable);

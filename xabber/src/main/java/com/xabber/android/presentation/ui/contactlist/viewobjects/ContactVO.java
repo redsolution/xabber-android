@@ -17,12 +17,12 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
+import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.database.messagerealm.Attachment;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
@@ -266,8 +266,13 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
         Context context = viewHolder.itemView.getContext();
 
         /** set up ACCOUNT COLOR indicator */
-        viewHolder.accountColorIndicator.setBackgroundColor(getAccountColorIndicator());
-        viewHolder.accountColorIndicatorBack.setBackgroundColor(getAccountColorIndicatorBack());
+        if (AccountManager.getInstance().getEnabledAccounts().size() > 1){
+            viewHolder.accountColorIndicator.setBackgroundColor(getAccountColorIndicator());
+            viewHolder.accountColorIndicatorBack.setBackgroundColor(getAccountColorIndicatorBack());
+        } else {
+            viewHolder.accountColorIndicator.setBackgroundColor(context.getResources().getColor(R.color.transparent));
+            viewHolder.accountColorIndicatorBack.setBackgroundColor(context.getResources().getColor(R.color.transparent));
+        }
 
         /** set up AVATAR */
         boolean showAvatars = SettingsManager.contactsShowAvatars();
@@ -352,6 +357,16 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
             viewHolder.tvUnreadCount.setText(String.valueOf(getUnreadCount()));
             viewHolder.tvUnreadCount.setVisibility(View.VISIBLE);
         } else viewHolder.tvUnreadCount.setVisibility(View.GONE);
+
+//        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light){
+//            Drawable drawable = context.getResources().getDrawable(R.drawable.rounded_background_green);
+//            viewHolder.tvUnreadCount.setBackground(drawable);
+//            viewHolder.tvUnreadCount.setTextColor(context.getResources().getColor(R.color.white));
+//        } else {
+//            Drawable drawable = context.getResources().getDrawable(R.drawable.rounded_background_grey);
+//            viewHolder.tvUnreadCount.setBackground(drawable);
+//            viewHolder.tvUnreadCount.setTextColor(context.getResources().getColor(R.color.black));
+//        }
 
         if (isMute())
             viewHolder.tvUnreadCount.getBackground().mutate().setColorFilter(

@@ -22,6 +22,8 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
 
+        <item name="bars_color">#eeeeee</item>
+
         <!--for text selection toolbar to be above usual toolbar -->
         <item name="windowActionModeOverlay">true</item>
 
@@ -85,18 +87,8 @@
         <item name="action_with_chat_background">@color/grey_400</item>
         <item name="transparent_rounded_background">@drawable/rounded_background_grey_transparent</item>
         <item name="message_background">@color/message_color_state</item>
-        <item name="android:actionOverflowButtonStyle">@style/OverflowButtonStyle.Grey</item>
-        <item name="toolbarNavigationButtonStyle">@style/Base.Widget.AppCompat.Toolbar.Button.Navigation.Grey</item>
-    </style>
-    
-    <style name="OverflowButtonStyle.Grey" parent="OverflowButtonStyle">
-        <item name="android:alpha">0.5</item>
-        <item name="android:textColorSecondary">@color/black</item>
-    </style>
-
-    <style name="Base.Widget.AppCompat.Toolbar.Button.Navigation.Grey" parent="Base.Widget.AppCompat.Toolbar.Button.Navigation">
-        <item name="android:alpha">0.5</item>
-        <item name="android:textColorSecondary">@color/black</item>
+<!--        <item name="android:actionOverflowButtonStyle">@style/OverflowButtonStyle.Grey</item>-->
+<!--        <item name="toolbarNavigationButtonStyle">@style/Base.Widget.AppCompat.Toolbar.Button.Navigation.Grey</item>-->
     </style>
 
     <style name="ThemeDark" parent="Base.ThemeDark"></style>
@@ -107,8 +99,8 @@
     </style>
 
     <style name="Base.ThemeDark" parent="Theme.AppCompat">
-        <item name="android:actionOverflowButtonStyle">@style/OverflowButtonStyle.Grey</item>
-        <item name="toolbarNavigationButtonStyle">@style/Base.Widget.AppCompat.Toolbar.Button.Navigation.Grey</item>
+        <item name="bars_color">@color/grey_900</item>
+
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
 
@@ -130,23 +122,23 @@
         <item name="chat_incoming_balloon_pressed">@array/account_contact_list_subgroup_background_dark</item>
         <item name="chat_unread_messages_background">@array/account_200</item>
 
-        <item name="contact_list_background">@color/grey_800</item>
+        <item name="contact_list_background">@color/grey_950</item>
 
         <item name="current_chat_background">@array/account_contact_list_subgroup_background_dark</item>
-        <item name="contact_list_contact_archived_background">@color/grey_900</item>
+        <item name="contact_list_contact_archived_background">@color/black</item>
         <item name="contact_list_account_group_background">@array/account_900</item>
         <item name="contact_list_account_group_separator">@color/contact_list_separator_dark</item>
         <item name="contact_list_account_group_second_line_text_color">@color/grey_400</item>
         <item name="contact_list_account_group_small_right_icon_color">@color/white</item>
         <item name="contact_list_account_group_small_right_text_color">@color/white</item>
-        <item name="contact_list_account_group_status_icon_separator_color">@color/white</item>
+        <item name="contact_list_account_group_status_icon_separator_color">@color/contact_list_separator_dark</item>
 
         <item name="contact_list_subgroup_background">@array/account_contact_list_subgroup_background_dark</item>
         <item name="contact_list_subgroup_separator">@color/contact_list_separator_dark</item>
         <item name="contact_list_subgroup_offline_indicator_color">@color/white</item>
         <item name="contact_list_subgroup_expander_color">@color/white</item>
 
-        <item name="contact_list_contact_background">@color/grey_950</item>
+        <item name="contact_list_contact_background">@color/black</item>
         <item name="contact_list_contact_separator">@color/contact_list_separator_dark</item>
         <item name="contact_list_contact_name_text_color">@color/grey_300</item>
         <item name="contact_list_contact_muc_private_chat_name_text_color">@color/grey_600</item>
@@ -158,7 +150,7 @@
         <item name="contact_list_active_chat_subgroup_background">@color/contact_list_active_chat_background_dark</item>
         <item name="contact_list_active_chat_background">@color/grey_200</item>
         <item name="contact_list_active_chat_text_color">@color/black</item>
-        <item name="contact_list_active_chat_separator">@color/grey_500</item>
+        <item name="contact_list_active_chat_separator">@color/contact_list_separator_dark</item>
         <item name="contact_list_active_chat_client_large_icon_color">@color/grey_400</item>
 
         <item name="account_main_color">@array/account_800</item>
@@ -173,11 +165,16 @@
         <item name="settings_background_color">@color/grey_900</item>
         <item name="settings_separator_background_color">@color/grey_600</item>
 
-        <item name="bottom_navigation_background">@color/black</item>
+        <item name="bottom_navigation_background">@color/grey_900</item>
         <item name="half_transparent_background">@drawable/half_transparent_background_dark</item>
-        <item name="action_with_chat_background">@color/grey_800</item>
+        <item name="action_with_chat_background">@color/grey_950</item>
         <item name="transparent_rounded_background">@drawable/rounded_background_grey_transparent_dark</item>
         <item name="message_background">@color/message_color_state_dark</item>
+        <item name="android:navigationBarColor">?attr/bars_color</item>
+        <item name="unread_counter_text_color">@color/black</item>
+
+<!--        <item name="android:actionOverflowButtonStyle">@style/OverflowButtonStyle.Grey</item>-->
+<!--        <item name="toolbarNavigationButtonStyle">@style/Base.Widget.AppCompat.Toolbar.Button.Navigation.Grey</item>-->
     </style>
 
     <style name="ToolbarTitle" parent="@style/TextAppearance.Widget.AppCompat.Toolbar.Title">
@@ -211,5 +208,16 @@
         <item name="android:layout_height">1dp</item>
         <item name="android:background">?android:attr/listDivider</item>
     </style>
+
+<!--    <style name="OverflowButtonStyle.Grey" parent="OverflowButtonStyle">-->
+<!--        <item name="android:alpha">0.5</item>-->
+<!--        <item name="android:textColorSecondary">@color/black</item>-->
+<!--    </style>-->
+
+<!--    <style name="Base.Widget.AppCompat.Toolbar.Button.Navigation.Grey" parent="Base.Widget.AppCompat.Toolbar.Button.Navigation">-->
+<!--        <item name="android:alpha">0.5</item>-->
+<!--        <item name="android:textColorSecondary">@color/black</item>-->
+<!--    </style>-->
+
 
 </resources>

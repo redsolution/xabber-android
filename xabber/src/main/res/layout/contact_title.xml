@@ -38,6 +38,7 @@
             android:textColor="?attr/contact_list_contact_name_text_color"
             android:text="Lorem ipsum dolor sit amet"
             android:layout_marginLeft="6dp"
+            android:alpha="0.7"
             />
     </LinearLayout>
 

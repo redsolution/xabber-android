@@ -2,11 +2,15 @@ package com.xabber.android.ui.helper;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.xabber.android.R;
+import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.cs.ChatStateManager;
@@ -17,6 +21,7 @@ import com.xabber.android.data.notification.custom_notification.CustomNotifyPref
 import com.xabber.android.data.notification.custom_notification.Key;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.RosterContact;
+import com.xabber.android.ui.color.ColorManager;
 
 import org.jivesoftware.smackx.chatstates.ChatState;
 
@@ -32,6 +37,8 @@ public class NewContactTitleInflater {
         final ImageView avatarView = (ImageView) titleView.findViewById(R.id.ivAvatar);
 
         nameView.setText(abstractContact.getName());
+        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.dark)
+            nameView.setTextColor(ColorManager.getInstance().getAccountPainter().getAccountMainColor(abstractContact.getAccount()));
 
         // notification mute
         Resources resources = context.getResources();
@@ -39,8 +46,20 @@ public class NewContactTitleInflater {
         if (mode == NotificationState.NotificationMode.enabled) resID = R.drawable.ic_unmute_large;
         else if (mode == NotificationState.NotificationMode.disabled) resID = R.drawable.ic_mute_large;
         else if (mode != NotificationState.NotificationMode.bydefault) resID = R.drawable.ic_snooze_toolbar;
+        Drawable drawable = null;
+        if (resID != 0){
+            drawable = resources.getDrawable(resID);
+            if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light){
+                drawable.setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_ATOP);
+                drawable.setAlpha(64);
+            }
+            else {
+                drawable.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP);
+                drawable.setAlpha(128);
+            }
+        }
         nameView.setCompoundDrawablesWithIntrinsicBounds(null, null,
-                resID != 0 ? resources.getDrawable(resID) : null, null);
+                drawable, null);
 
         // custom notification
         boolean isCustomNotification = CustomNotifyPrefsManager.getInstance().
@@ -84,7 +103,8 @@ public class NewContactTitleInflater {
         }
 
         final TextView statusTextView = (TextView) titleView.findViewById(R.id.status_text);
-
+        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.dark)
+            statusTextView.setTextColor(ColorManager.getInstance().getAccountPainter().getAccountRippleColor(abstractContact.getAccount()));
 
         ChatState chatState = ChatStateManager.getInstance().getChatState(
                 abstractContact.getAccount(), abstractContact.getUser());

@@ -21,6 +21,7 @@ import com.xabber.android.R;
 import com.xabber.android.data.ActivityManager;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
+import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
@@ -36,6 +37,7 @@ import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.presentation.ui.contactlist.ChatListFragment;
 import com.xabber.android.ui.color.AccountPainter;
 import com.xabber.android.ui.color.ColorManager;
+import com.xabber.android.ui.color.StatusBarPainter;
 import com.xabber.android.ui.dialog.AccountChooseDialogFragment;
 import com.xabber.android.ui.dialog.ContactSubscriptionDialog;
 import com.xabber.android.ui.dialog.MucInviteDialog;
@@ -135,24 +137,28 @@ public class SearchActivity extends ManagedActivity implements View.OnClickListe
         toolbarGreetingsLayout.setVisibility(View.VISIBLE);
 
         /*
-        Update background color via current main user;
+        Update toolbar and statusbar background color via current main user and theme;
          */
         TypedValue typedValue = new TypedValue();
-        TypedArray a = this.obtainStyledAttributes(typedValue.data, new int[] {R.attr.contact_list_account_group_background});
-        final int accountGroupColorsResourceId = a.getResourceId(0, 0);
-        a.recycle();
-        final int[] accountGroupColors = this.getResources().getIntArray(accountGroupColorsResourceId);
-        final int level = AccountManager.getInstance().getColorLevel(AccountPainter.getFirstAccount());
-        toolbarLayout.setBackgroundColor(accountGroupColors[level]);
+        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light){
+            TypedArray a = this.obtainStyledAttributes(typedValue.data, new int[] {R.attr.contact_list_account_group_background});
+            final int accountGroupColorsResourceId = a.getResourceId(0, 0);
+            a.recycle();
+            final int[] accountGroupColors = this.getResources().getIntArray(accountGroupColorsResourceId);
+            final int level = AccountManager.getInstance().getColorLevel(AccountPainter.getFirstAccount());
+            toolbarLayout.setBackgroundColor(accountGroupColors[level]);
+            StatusBarPainter.instanceUpdateWithDefaultColor(this);
+        } else {
+            this.getTheme().resolveAttribute(R.attr.bars_color, typedValue, true);
+            toolbarLayout.setBackgroundColor(typedValue.data);
+            StatusBarPainter.instanceUpdateWIthColor(this, typedValue.data);
+        }
+
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        /* Setup StatusBarColor */   //TODO Doesn't working think about it
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            getWindow().setStatusBarColor(ColorManager.getInstance().getAccountPainter().getDefaultMainColor());
-        }
 
         /* Handle intents if not null */
         action = getIntent().getAction();
