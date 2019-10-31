@@ -31,7 +31,17 @@ public class OutgoingMessageVH extends FileMessageVH {
         setStatusIcon(messageItem);
 
         // setup PROGRESS
-        progressBar.setVisibility(messageItem.isInProgress() ? View.VISIBLE : View.GONE);
+        if (messageItem.isInProgress()) {
+            progressBar.setVisibility(View.VISIBLE);
+            messageFileInfo.setText(R.string.message_status_uploading);
+            messageFileInfo.setVisibility(View.VISIBLE);
+            messageTime.setVisibility(View.GONE);
+        } else {
+            progressBar.setVisibility(View.GONE);
+            messageFileInfo.setText("");
+            messageFileInfo.setVisibility(View.GONE);
+            messageTime.setVisibility(View.VISIBLE);
+        }
 
         // setup FORWARDED
         boolean haveForwarded = messageItem.haveForwardedMessages();
@@ -43,7 +53,7 @@ public class OutgoingMessageVH extends FileMessageVH {
 
             forwardedParams.setMargins(
                     Utils.dipToPx(1f, context),
-                    Utils.dipToPx(2f, context),
+                    Utils.dipToPx(3f, context),
                     Utils.dipToPx(needTail ? 11f : 12f, context),
                     Utils.dipToPx(0f, context));
 
@@ -73,9 +83,9 @@ public class OutgoingMessageVH extends FileMessageVH {
 
         layoutParams.setMargins(
                 Utils.dipToPx(0f, context),
-                Utils.dipToPx(haveForwarded ? 0f : 2f, context),
+                Utils.dipToPx(haveForwarded ? 0f : 3f, context),
                 Utils.dipToPx(needTail ? 3f : 11f, context),
-                Utils.dipToPx(2f, context));
+                Utils.dipToPx(3f, context));
         messageShadow.setLayoutParams(layoutParams);
 
         // setup MESSAGE padding
@@ -96,16 +106,6 @@ public class OutgoingMessageVH extends FileMessageVH {
                         Utils.dipToPx(border, context));
                 if (messageItem.isAttachmentImageOnly()) {
                     messageTime.setTextColor(context.getResources().getColor(R.color.white));
-                /*messageBalloon.setPadding(
-                        Utils.dipToPx(3f, context),
-                        Utils.dipToPx(-2f, context),
-                        Utils.dipToPx(3f, context),
-                        Utils.dipToPx(-15f, context));*/
-                /*messageInfo.setPadding(
-                        Utils.dipToPx(0f, context),
-                        Utils.dipToPx(-7f, context),
-                        Utils.dipToPx(0f, context),
-                        Utils.dipToPx(0f, context));*/
                 } else messageInfo.setPadding(0, 0, Utils.dipToPx(border+1.5f, context), Utils.dipToPx(4.7f, context));
             }
         }

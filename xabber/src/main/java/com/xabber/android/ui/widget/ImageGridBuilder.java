@@ -36,7 +36,7 @@ import static com.xabber.android.ui.adapter.chat.FileMessageVH.IMAGE_ROUNDED_COR
 
 public class ImageGridBuilder {
 
-    private static final int MAX_IMAGE_IN_GRID = 5;
+    private static final int MAX_IMAGE_IN_GRID = 6;
     private static int maxImageSize;
 
     public View inflateView(ViewGroup parent, int imageCount) {

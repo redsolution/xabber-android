@@ -97,16 +97,20 @@
                     android:id="@+id/message_file_info"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:paddingLeft="2dp"
+                    android:paddingRight="2dp"
                     android:textColor="@color/white"
                     android:textSize="10sp"
                     android:visibility="gone"
-                    tools:text="Uploading.. " />
+                    tools:text="@string/message_status_uploading" />
 
                 <TextView
                     android:id="@+id/message_time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="right"
+                    android:paddingLeft="2dp"
+                    android:paddingRight="2dp"
                     android:singleLine="true"
                     android:textColor="@color/white"
                     android:textSize="10sp"
@@ -117,10 +121,9 @@
                     android:id="@+id/message_status_icon"
                     android:layout_width="14dp"
                     android:layout_height="14dp"
-                    android:layout_marginLeft="4dp"
+                    android:layout_marginLeft="2dp"
                     android:layout_marginRight="1dp"
-                    android:src="@drawable/ic_message_synced_14dp"
-                    tools:visibility="visible" />
+                    android:src="@drawable/ic_message_synced_14dp" />
 
                 <ProgressBar
                     android:id="@+id/message_progress_bar"
@@ -128,9 +131,8 @@
                     android:layout_width="12dp"
                     android:layout_height="12dp"
                     android:layout_gravity="center|right"
-                    android:layout_marginLeft="4dp"
+                    android:layout_marginLeft="2dp"
                     android:layout_marginTop="0dp"
-                    android:layout_marginEnd="4dp"
                     android:layout_marginRight="1dp"
                     android:indeterminateTint="@color/teal_A400"
                     android:visibility="gone" />
@@ -139,7 +141,7 @@
                     android:id="@+id/message_encrypted_icon"
                     android:layout_width="14dp"
                     android:layout_height="14dp"
-                    android:layout_marginStart="4dp"
+                    android:layout_marginStart="3dp"
                     android:layout_marginLeft="3dp"
                     android:src="@drawable/ic_lock" />
 

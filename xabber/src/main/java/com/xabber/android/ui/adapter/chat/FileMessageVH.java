@@ -52,7 +52,7 @@ public class FileMessageVH extends MessageVH
     public static final int IMAGE_ROUNDED_CORNERS = Application.getInstance().getResources().getDimensionPixelSize(R.dimen.chat_image_corner_radius);
     public static final int IMAGE_ROUNDED_BORDER_CORNERS = Application.getInstance().getResources().getDimensionPixelSize(R.dimen.chat_image_border_radius);
     //public static final int IMAGE_ROUNDED_BORDER_WIDTH = Application.getInstance().getResources().getDimensionPixelSize(R.dimen.chat_image_border_width);
-    public static final int IMAGE_ROUNDED_BORDER_WIDTH = 1;
+    public static final int IMAGE_ROUNDED_BORDER_WIDTH = 0;
 
     public static final String UPLOAD_TAG = "TAG: com.xabber.android.data.message.abstractChat$newFileMessage";
 
@@ -204,7 +204,7 @@ public class FileMessageVH extends MessageVH
                 FileManager.scaleImage(layoutParams, imageHeight, imageWidth);
                 Glide.with(context)
                         .load(imageUrl)
-                        .transform(new MultiTransformation<>(new CenterCrop(), new RoundedCorners(IMAGE_ROUNDED_CORNERS), new RoundedBorders(IMAGE_ROUNDED_BORDER_CORNERS,2)))
+                        .transform(new MultiTransformation<>(new CenterCrop(), new RoundedCorners(IMAGE_ROUNDED_CORNERS), new RoundedBorders(IMAGE_ROUNDED_BORDER_CORNERS,IMAGE_ROUNDED_BORDER_WIDTH)))
                         .listener(new RequestListener<Drawable>() {
                             @Override
                             public boolean onLoadFailed(@Nullable GlideException e, Object model,
@@ -378,7 +378,7 @@ public class FileMessageVH extends MessageVH
                 if (messageFileInfo != null) {
                     /*messageFileInfo.setText(context.getString(R.string.uploaded_files_count,
                             progressData.getProgress() + "/" + progressData.getFileCount()));*/
-                    messageFileInfo.setText("Uploading..");
+                    messageFileInfo.setText(R.string.message_status_uploading);
                 }
                 if (progressData.getProgress()<=imageCount) {
                     if (imageGridContainer != null)
