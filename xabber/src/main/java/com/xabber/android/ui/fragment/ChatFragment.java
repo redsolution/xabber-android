@@ -341,7 +341,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
         if (SettingsManager.chatsShowBackground()) {
             if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.dark) {
-                view.setBackgroundResource(R.drawable.chat_background_repeat_dark);
+                view.setBackgroundResource(R.color.black);
             } else {
                 view.setBackgroundResource(R.drawable.chat_background_repeat);
             }

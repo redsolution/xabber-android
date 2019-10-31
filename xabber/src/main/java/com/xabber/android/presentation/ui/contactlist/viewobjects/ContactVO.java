@@ -352,27 +352,27 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
             viewHolder.tvContactName.setCompoundDrawablesWithIntrinsicBounds(mucIndicator, null,
                     resources.getDrawable(R.drawable.ic_notif_custom), null);
 
+        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light){
+            viewHolder.tvUnreadCount.getBackground().mutate().clearColorFilter();
+            viewHolder.tvUnreadCount.setTextColor(context.getResources().getColor(R.color.white));
+        } else {
+            viewHolder.tvUnreadCount.getBackground().mutate().setColorFilter(
+                    resources.getColor(R.color.grey_700), PorterDuff.Mode.SRC_IN);
+            viewHolder.tvUnreadCount.setTextColor(context.getResources().getColor(R.color.black));
+        }
+
         /** set up UNREAD COUNT */
         if (getUnreadCount() > 0) {
             viewHolder.tvUnreadCount.setText(String.valueOf(getUnreadCount()));
             viewHolder.tvUnreadCount.setVisibility(View.VISIBLE);
         } else viewHolder.tvUnreadCount.setVisibility(View.GONE);
 
-//        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light){
-//            Drawable drawable = context.getResources().getDrawable(R.drawable.rounded_background_green);
-//            viewHolder.tvUnreadCount.setBackground(drawable);
-//            viewHolder.tvUnreadCount.setTextColor(context.getResources().getColor(R.color.white));
-//        } else {
-//            Drawable drawable = context.getResources().getDrawable(R.drawable.rounded_background_grey);
-//            viewHolder.tvUnreadCount.setBackground(drawable);
-//            viewHolder.tvUnreadCount.setTextColor(context.getResources().getColor(R.color.black));
-//        }
-
         if (isMute())
             viewHolder.tvUnreadCount.getBackground().mutate().setColorFilter(
                     resources.getColor(R.color.grey_500),
                     PorterDuff.Mode.SRC_IN);
-        else viewHolder.tvUnreadCount.getBackground().mutate().clearColorFilter();
+        else if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light)
+            viewHolder.tvUnreadCount.getBackground().mutate().clearColorFilter();
     }
 
     public String getId() {
