@@ -464,13 +464,19 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
 
     private void initChats(boolean animated) {
         Fragment fragment;
+        Fragment oldFragment = getSupportFragmentManager().findFragmentByTag(CHAT_FRAGMENT_TAG);
 
         fragment = ChatFragment.newInstance(account, user);
 
-        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        if (animated) fragmentTransaction.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right);
-        fragmentTransaction.replace(R.id.chat_container, fragment, CHAT_FRAGMENT_TAG);
-        fragmentTransaction.commit();
+        if (oldFragment != null) {
+            FragmentTransaction fragmentTransactionOld = getSupportFragmentManager().beginTransaction();
+            fragmentTransactionOld.remove(oldFragment);
+            fragmentTransactionOld.commit();
+        }
+        FragmentTransaction fragmentTransactionNew = getSupportFragmentManager().beginTransaction();
+        if (animated) fragmentTransactionNew.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right);
+        fragmentTransactionNew.add(R.id.chat_container, fragment, CHAT_FRAGMENT_TAG);
+        fragmentTransactionNew.commit();
     }
 
     private void getInitialChatFromIntent() {

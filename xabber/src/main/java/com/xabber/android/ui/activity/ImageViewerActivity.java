@@ -16,6 +16,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.NavUtils;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.PagerAdapter;
@@ -104,8 +105,7 @@ public class ImageViewerActivity extends AppCompatActivity implements Toolbar.On
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //NavUtils.navigateUpFromSameTask(ImageViewerActivity.this);
-                finish();
+                NavUtils.navigateUpFromSameTask(ImageViewerActivity.this);
             }
         });
 
