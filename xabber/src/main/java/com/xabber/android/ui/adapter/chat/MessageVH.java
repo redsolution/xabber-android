@@ -4,6 +4,7 @@ import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.text.Html;
+import android.text.Spanned;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.ImageView;
@@ -28,6 +29,8 @@ import com.xabber.android.ui.text.ClickTagHandler;
 import com.xabber.android.ui.widget.CorrectlyMeasuringTextView;
 import com.xabber.android.utils.StringUtils;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Date;
 
@@ -112,12 +115,18 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
 
         // Added .concat("&zwj;") and .concat(String.valueOf(Character.MIN_VALUE)
         // to avoid click by empty space after ClickableSpan
-        if (messageItem.getMarkupText() != null && !messageItem.getMarkupText().isEmpty())
-            messageText.setText(Html.fromHtml(
-                    messageItem.getMarkupText().trim().replace("\n", "<br/>").concat("&zwj;"),
-                    null, new ClickTagHandler(extraData.getContext(),
-                    extraData.getMentionColor())), TextView.BufferType.SPANNABLE);
-        else messageText.setText(messageItem.getText().trim().concat(String.valueOf(Character.MIN_VALUE)));
+        // Try to decode to avoid ugly non-english links
+        try {
+            if (messageItem.getMarkupText() != null && !messageItem.getMarkupText().isEmpty()){
+                Spanned markupText = Html.fromHtml(messageItem.getMarkupText().trim()
+                                .replace("\n", "<br/>").concat("&zwj;"), null,
+                        new ClickTagHandler(extraData.getContext(), extraData.getMentionColor()));
+            messageText.setText(markupText, TextView.BufferType.SPANNABLE);
+            } else if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT){
+                messageText.setText(URLDecoder.decode(messageItem.getText().trim()
+                        .concat(String.valueOf(Character.MIN_VALUE)), StandardCharsets.UTF_8.name()));
+            } else messageText.setText(messageItem.getText().trim().concat(String.valueOf(Character.MIN_VALUE)));
+        } catch (Exception e) {LogManager.exception(this, e); }
         if (OTRManager.getInstance().isEncrypted(messageItem.getText())) {
             if (extraData.isShowOriginalOTR())
                 messageText.setVisibility(View.VISIBLE);
