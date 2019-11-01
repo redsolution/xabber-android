@@ -352,14 +352,14 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
             viewHolder.tvContactName.setCompoundDrawablesWithIntrinsicBounds(mucIndicator, null,
                     resources.getDrawable(R.drawable.ic_notif_custom), null);
 
-        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light){
-            viewHolder.tvUnreadCount.getBackground().mutate().clearColorFilter();
-            viewHolder.tvUnreadCount.setTextColor(context.getResources().getColor(R.color.white));
-        } else {
-            viewHolder.tvUnreadCount.getBackground().mutate().setColorFilter(
-                    resources.getColor(R.color.grey_700), PorterDuff.Mode.SRC_IN);
-            viewHolder.tvUnreadCount.setTextColor(context.getResources().getColor(R.color.black));
-        }
+        //if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light){
+        viewHolder.tvUnreadCount.getBackground().mutate().clearColorFilter();
+        viewHolder.tvUnreadCount.setTextColor(context.getResources().getColor(R.color.white));
+//        } else {
+//            viewHolder.tvUnreadCount.getBackground().mutate().setColorFilter(
+//                    resources.getColor(R.color.grey_700), PorterDuff.Mode.SRC_IN);
+//            viewHolder.tvUnreadCount.setTextColor(context.getResources().getColor(R.color.black));
+//        }
 
         /** set up UNREAD COUNT */
         if (getUnreadCount() > 0) {
@@ -368,9 +368,17 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
         } else viewHolder.tvUnreadCount.setVisibility(View.GONE);
 
         if (isMute())
-            viewHolder.tvUnreadCount.getBackground().mutate().setColorFilter(
-                    resources.getColor(R.color.grey_500),
-                    PorterDuff.Mode.SRC_IN);
+            if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light){
+                viewHolder.tvUnreadCount.getBackground().mutate().setColorFilter(
+                        resources.getColor(R.color.grey_500),
+                        PorterDuff.Mode.SRC_IN);
+                viewHolder.tvUnreadCount.setTextColor(context.getResources().getColor(R.color.grey_100));
+            } else {
+                viewHolder.tvUnreadCount.getBackground().mutate().setColorFilter(
+                        resources.getColor(R.color.grey_700),
+                        PorterDuff.Mode.SRC_IN);
+                viewHolder.tvUnreadCount.setTextColor(context.getResources().getColor(R.color.black));
+            }
         else if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light)
             viewHolder.tvUnreadCount.getBackground().mutate().clearColorFilter();
     }
