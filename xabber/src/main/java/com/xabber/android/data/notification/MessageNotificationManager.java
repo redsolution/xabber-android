@@ -24,6 +24,8 @@ import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -568,6 +570,9 @@ public class MessageNotificationManager implements OnLoadListener {
         }
 
         public CharSequence getMessageText() {
+            try {
+                messageText = URLDecoder.decode(messageText.toString(), StandardCharsets.UTF_8.name());
+            } catch (Exception e) {e.printStackTrace();}
             return messageText;
         }
 
