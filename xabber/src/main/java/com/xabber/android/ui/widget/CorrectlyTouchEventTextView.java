@@ -38,23 +38,22 @@ public class CorrectlyTouchEventTextView extends AppCompatTextView {
         super(context, attrs);
     }
 
-    @Override
-    public void setText(CharSequence text, BufferType type) {
-        SpannableStringBuilder result = new SpannableStringBuilder(text.toString());
-        try {
-            Spannable spannable = new Spannable.Factory().newSpannable(text);
-            URLSpan[] clickSpans = spannable.getSpans(0, spannable.length(), URLSpan.class);
-            for (URLSpan clickSpan : clickSpans){
-                clickSpan = new URLSpan(URLDecoder.decode(clickSpan.getURL(), StandardCharsets.UTF_8.name()));
-                int start = spannable.getSpanStart(clickSpan);
-                result.removeSpan(clickSpan);
-                result.insert(start, clickSpan.toString());
-            }
-        } catch (Exception e) {e.printStackTrace(); }
-
-        super.setText(result, type);
-
-    }
+//    @Override
+//    public void setText(CharSequence text, BufferType type) {
+//        SpannableStringBuilder result = new SpannableStringBuilder(text.toString());
+//        try {
+//            Spannable spannable = new Spannable.Factory().newSpannable(text);
+//            URLSpan[] clickSpans = spannable.getSpans(0, spannable.length(), URLSpan.class);
+//            for (URLSpan clickSpan : clickSpans){
+//                clickSpan = new URLSpan(URLDecoder.decode(clickSpan.getURL(), StandardCharsets.UTF_8.name()));
+//                int start = spannable.getSpanStart(clickSpan);
+//                result.removeSpan(clickSpan);
+//                result.insert(start, clickSpan.toString());
+//            }
+//        } catch (Exception e) {e.printStackTrace(); }
+//
+//        super.setText(result, type);
+//    }
 
 
     public CorrectlyTouchEventTextView(
