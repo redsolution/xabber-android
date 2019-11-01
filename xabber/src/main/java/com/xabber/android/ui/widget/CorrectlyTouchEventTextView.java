@@ -2,7 +2,6 @@ package com.xabber.android.ui.widget;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.os.Build;
 import android.text.Layout;
 import android.text.Selection;
 import android.text.Spannable;
@@ -20,9 +19,6 @@ import androidx.appcompat.widget.AppCompatTextView;
 
 import com.xabber.android.R;
 
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
-
 public class CorrectlyTouchEventTextView extends AppCompatTextView {
     boolean clickableSpanClicked;
 
@@ -33,17 +29,6 @@ public class CorrectlyTouchEventTextView extends AppCompatTextView {
     public CorrectlyTouchEventTextView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
-
-//    @Override
-//    public void setText(CharSequence text, BufferType type) {
-//        /* decode message text to beautify cyrillic URLs */
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT){
-//            try {
-//                text = URLDecoder.decode(text.toString(), StandardCharsets.UTF_8.name());
-//            } catch (Exception e){ e.printStackTrace(); }
-//        }
-//        super.setText(text, type);
-//    }
 
     public CorrectlyTouchEventTextView(
             Context context, AttributeSet attrs, int defStyle) {

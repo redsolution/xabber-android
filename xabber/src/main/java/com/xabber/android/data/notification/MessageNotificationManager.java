@@ -17,6 +17,7 @@ import com.xabber.android.data.database.realm.NotifMessageRealm;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.filedownload.FileCategory;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.NotificationState;
@@ -24,6 +25,8 @@ import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -568,6 +571,11 @@ public class MessageNotificationManager implements OnLoadListener {
         }
 
         public CharSequence getMessageText() {
+            try {
+                if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT)
+                    messageText = URLDecoder.decode(messageText.toString(), StandardCharsets.UTF_8.name());
+            } catch (Exception e) {
+                LogManager.exception(this, e); }
             return messageText;
         }
 
