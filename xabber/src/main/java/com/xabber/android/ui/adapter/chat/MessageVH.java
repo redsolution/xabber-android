@@ -7,6 +7,7 @@ import android.text.Html;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
+import android.text.style.ClickableSpan;
 import android.text.style.URLSpan;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -118,23 +119,15 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
 
         // Added .concat("&zwj;") and .concat(String.valueOf(Character.MIN_VALUE)
         // to avoid click by empty space after ClickableSpan
-        if (messageItem.getMarkupText() != null && !messageItem.getMarkupText().isEmpty()){
-
-            Spanned markupText = Html.fromHtml(
-                    messageItem.getMarkupText().trim().replace("\n", "<br/>").concat("&zwj;"),
-                    null, new ClickTagHandler(extraData.getContext(), extraData.getMentionColor()));
-            SpannableStringBuilder result = new SpannableStringBuilder(markupText);
-            try {
-                URLSpan[] clickSpans = markupText.getSpans(0, markupText.length(), URLSpan.class);
-                for (URLSpan clickSpan : clickSpans){
-                    clickSpan = new URLSpan(URLDecoder.decode(clickSpan.getURL(), StandardCharsets.UTF_8.name()));
-                    int start = markupText.getSpanStart(clickSpan);
-                    result.removeSpan(clickSpan);
-                    result.insert(start, clickSpan.toString());
-                }
-            } catch (Exception e) {e.printStackTrace(); }
-            messageText.setText(result, TextView.BufferType.SPANNABLE);
-        } else messageText.setText(messageItem.getText().trim().concat(String.valueOf(Character.MIN_VALUE)));
+        try {
+            if (messageItem.getMarkupText() != null && !messageItem.getMarkupText().isEmpty()){
+                Spanned markupText = Html.fromHtml(messageItem.getMarkupText().trim()
+                                .replace("\n", "<br/>").concat("&zwj;"), null,
+                        new ClickTagHandler(extraData.getContext(), extraData.getMentionColor()));
+            messageText.setText(markupText, TextView.BufferType.SPANNABLE);
+            } else messageText.setText(URLDecoder.decode(messageItem.getText().trim()
+                    .concat(String.valueOf(Character.MIN_VALUE)), StandardCharsets.UTF_8.name()));
+        } catch (Exception e) {e.printStackTrace(); }
         if (OTRManager.getInstance().isEncrypted(messageItem.getText())) {
             if (extraData.isShowOriginalOTR())
                 messageText.setVisibility(View.VISIBLE);
