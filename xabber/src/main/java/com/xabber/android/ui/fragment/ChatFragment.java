@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.Spannable;
@@ -20,6 +21,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
+import android.view.ViewTreeObserver;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.EditText;
@@ -353,6 +355,16 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         placeholder.setOnClickListener(this);
 
         tvTopDate = view.findViewById(R.id.tvTopDate);
+        tvTopDate.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                    tvTopDate.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                }
+                else tvTopDate.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                updateTopDateIfNeed();
+            }
+        });
 
         return view;
     }
@@ -1057,7 +1069,11 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         if (itemViewType == MessagesAdapter.VIEW_TYPE_INCOMING_MESSAGE
                 || itemViewType == MessagesAdapter.VIEW_TYPE_OUTGOING_MESSAGE
                 || itemViewType == MessagesAdapter.VIEW_TYPE_INCOMING_MESSAGE_NOFLEX
-                || itemViewType== MessagesAdapter.VIEW_TYPE_OUTGOING_MESSAGE_NOFLEX) {
+                || itemViewType == MessagesAdapter.VIEW_TYPE_OUTGOING_MESSAGE_NOFLEX
+                || itemViewType == MessagesAdapter.VIEW_TYPE_OUTGOING_MESSAGE_IMAGE
+                || itemViewType == MessagesAdapter.VIEW_TYPE_INCOMING_MESSAGE_IMAGE
+                || itemViewType == MessagesAdapter.VIEW_TYPE_OUTGOING_MESSAGE_IMAGE_TEXT
+                || itemViewType == MessagesAdapter.VIEW_TYPE_INCOMING_MESSAGE_IMAGE_TEXT) {
 
             clickedMessageItem = chatMessageAdapter.getMessageItem(position);
             if (clickedMessageItem == null) {
@@ -1339,8 +1355,10 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     private void updateTopDateIfNeed() {
         int position = layoutManager.findFirstVisibleItemPosition();
         MessageItem message = chatMessageAdapter.getMessageItem(position);
-        if (message != null)
+        if (message != null) {
+            tvTopDate.setSingleLine(true);
             tvTopDate.setText(StringUtils.getDateStringForMessage(message.getTimestamp()));
+        }
     }
 
     @Override
