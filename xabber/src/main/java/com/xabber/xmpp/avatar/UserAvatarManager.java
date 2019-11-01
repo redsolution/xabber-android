@@ -12,17 +12,21 @@ import org.jivesoftware.smack.SmackException.NotConnectedException;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException.XMPPErrorException;
 import org.jivesoftware.smack.packet.ExtensionElement;
+import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
 import org.jivesoftware.smackx.pep.PEPListener;
 import org.jivesoftware.smackx.pep.PEPManager;
 import org.jivesoftware.smackx.pubsub.EventElement;
 import org.jivesoftware.smackx.pubsub.EventElementType;
+import org.jivesoftware.smackx.pubsub.Item;
 import org.jivesoftware.smackx.pubsub.ItemsExtension;
 import org.jivesoftware.smackx.pubsub.LeafNode;
 import org.jivesoftware.smackx.pubsub.PayloadItem;
+import org.jivesoftware.smackx.pubsub.PubSubElementType;
 import org.jivesoftware.smackx.pubsub.PubSubException;
 import org.jivesoftware.smackx.pubsub.PubSubManager;
+import org.jivesoftware.smackx.pubsub.packet.PubSub;
 import org.jxmpp.jid.EntityBareJid;
 
 import java.io.BufferedInputStream;
@@ -32,7 +36,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -253,23 +256,24 @@ public final class UserAvatarManager extends Manager {
     public byte[] fetchAvatarFromPubSub(EntityBareJid from, MetadataInfo metadataInfo)
             throws InterruptedException, PubSubException.NotALeafNodeException, NoResponseException,
             NotConnectedException, XMPPErrorException {
-        //LeafNode dataNode = PubSubManager.getInstance(connection(), null)
-        //        .getLeafNode(DATA_NAMESPACE);
 
+        ItemsExtension items = new ItemsExtension(ItemsExtension.ItemsElementType.items, DATA_NAMESPACE, Collections.singletonList(new Item(metadataInfo.getId())));
+        PubSub avatarRequest = PubSub.createPubsubPacket(from, IQ.Type.get, items, null);
+        PubSub reply = connection().createStanzaCollectorAndSend(avatarRequest).nextResultOrThrow();
+        ItemsExtension receivedItems = reply.getExtension(PubSubElementType.ITEMS);
+        for (ExtensionElement itm : (receivedItems).getExtensions()) {
+            if (!(itm instanceof PayloadItem<?>)) {
+                continue;
+            }
+            PayloadItem<?> payloadItem = (PayloadItem<?>) itm;
+            if ((payloadItem.getPayload() instanceof DataExtension)) {
 
-        LeafNode dataNode = PubSubManager.getInstance(connection(), from)
-                .getLeafNode(DATA_NAMESPACE);
-        List<String> id = new ArrayList<>();
-        id.add(metadataInfo.getId());
-        //List<PayloadItem<DataExtension>> dataItems = dataNode.getItems(1, metadataInfo.getId());
-        //List<PayloadItem<DataExtension>> dataItems = dataNode.getItems(-1, metadataInfo.getId());
-        List<PayloadItem<DataExtension>> dataItems = dataNode.getItems(id);
-
-        DataExtension extension = dataItems.get(0).getPayload();
-        if (metadataStore != null) {
-            metadataStore.setAvatarAvailable(from, metadataInfo.getId());
+                DataExtension data = (DataExtension) payloadItem.getPayload();
+                return data.getData();
+            }
         }
-        return extension.getData();
+
+        return null;
     }
 
     /*public void discoverAvatar(final BareJid contact, final AccountItem accountItem) {
@@ -538,8 +542,11 @@ public final class UserAvatarManager extends Manager {
                         for (MetadataInfo info : metadataExtension.getInfoElements()){
                             try {
                                 byte[] avatar = fetchAvatarFromPubSub(from, info);
-                                String sh1 = info.getId();
-                                //String sh1 = AvatarManager.getAvatarHash(avatar);
+                                if (avatar == null) continue;
+                                String sh1 = ((PayloadItem<?>) item).getId();
+                                if (metadataStore != null) {
+                                    metadataStore.setAvatarAvailable(from, ((PayloadItem<?>) item).getId());
+                                }
                                 AvatarManager.getInstance().onAvatarReceived(from,sh1,avatar, "xep");
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
