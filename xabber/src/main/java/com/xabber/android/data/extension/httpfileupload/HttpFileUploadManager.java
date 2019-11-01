@@ -253,7 +253,8 @@ public class HttpFileUploadManager implements OnLoadListener, OnAccountRemovedLi
             for (FormField field : fields) {
                 if (field instanceof ExtendedFormField) {
                     ExtendedFormField.Media media = ((ExtendedFormField)field).getMedia();
-                    attachments.add(mediaToAttachment(media, field.getLabel()));
+                    if (media!=null)
+                        attachments.add(mediaToAttachment(media, field.getLabel()));
                 }
             }
         }
