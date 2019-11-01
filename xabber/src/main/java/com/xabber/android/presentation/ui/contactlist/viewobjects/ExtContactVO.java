@@ -7,6 +7,7 @@ package com.xabber.android.presentation.ui.contactlist.viewobjects;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.text.Html;
 import android.view.View;
 
@@ -14,6 +15,7 @@ import com.xabber.android.R;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.otr.OTRManager;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.NotificationState;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.utils.StringUtils;
@@ -104,8 +106,10 @@ public class ExtContactVO extends ContactVO {
                         setTypeface(viewHolder.tvMessageText.getTypeface(), Typeface.ITALIC);
             } else {
                 try{
-                    viewHolder.tvMessageText.setText(Html.fromHtml(URLDecoder.decode(text, StandardCharsets.UTF_8.name())));
-                } catch (Exception e) { e.printStackTrace(); }
+                    if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT){
+                        viewHolder.tvMessageText.setText(Html.fromHtml(URLDecoder.decode(text, StandardCharsets.UTF_8.name())));
+                    } else viewHolder.tvMessageText.setText(text);
+                } catch (Exception e) { LogManager.exception(this, e); }
                 viewHolder.tvMessageText.setTypeface(Typeface.DEFAULT);
             }
         }

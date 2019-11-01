@@ -2,13 +2,9 @@ package com.xabber.android.ui.widget;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.os.Build;
 import android.text.Layout;
 import android.text.Selection;
 import android.text.Spannable;
-import android.text.SpannableString;
-import android.text.SpannableStringBuilder;
-import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
 import android.text.method.Touch;
 import android.text.style.BackgroundColorSpan;
@@ -22,10 +18,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.AppCompatTextView;
 
 import com.xabber.android.R;
-import com.xabber.android.ui.text.ClickSpan;
-
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 
 public class CorrectlyTouchEventTextView extends AppCompatTextView {
     boolean clickableSpanClicked;
@@ -37,24 +29,6 @@ public class CorrectlyTouchEventTextView extends AppCompatTextView {
     public CorrectlyTouchEventTextView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
-
-//    @Override
-//    public void setText(CharSequence text, BufferType type) {
-//        SpannableStringBuilder result = new SpannableStringBuilder(text.toString());
-//        try {
-//            Spannable spannable = new Spannable.Factory().newSpannable(text);
-//            URLSpan[] clickSpans = spannable.getSpans(0, spannable.length(), URLSpan.class);
-//            for (URLSpan clickSpan : clickSpans){
-//                clickSpan = new URLSpan(URLDecoder.decode(clickSpan.getURL(), StandardCharsets.UTF_8.name()));
-//                int start = spannable.getSpanStart(clickSpan);
-//                result.removeSpan(clickSpan);
-//                result.insert(start, clickSpan.toString());
-//            }
-//        } catch (Exception e) {e.printStackTrace(); }
-//
-//        super.setText(result, type);
-//    }
-
 
     public CorrectlyTouchEventTextView(
             Context context, AttributeSet attrs, int defStyle) {
