@@ -18,6 +18,8 @@ import com.xabber.android.data.message.NotificationState;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.utils.StringUtils;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.List;
 
@@ -101,7 +103,9 @@ public class ExtContactVO extends ContactVO {
                 viewHolder.tvMessageText.
                         setTypeface(viewHolder.tvMessageText.getTypeface(), Typeface.ITALIC);
             } else {
-                viewHolder.tvMessageText.setText(Html.fromHtml(text));
+                try{
+                    viewHolder.tvMessageText.setText(Html.fromHtml(URLDecoder.decode(text, StandardCharsets.UTF_8.name())));
+                } catch (Exception e) { e.printStackTrace(); }
                 viewHolder.tvMessageText.setTypeface(Typeface.DEFAULT);
             }
         }
