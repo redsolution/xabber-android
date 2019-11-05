@@ -129,7 +129,7 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_down_circle"
+                android:src="?attr/attachment_close_button_icon"
                 android:id="@+id/attach_send_button_icon"
                 android:background="@color/transparent"
                 />

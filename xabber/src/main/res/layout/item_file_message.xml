@@ -28,10 +28,10 @@
             android:layout_height="match_parent"
             android:layout_centerVertical="true"
             android:src="@drawable/ic_file"
-            android:background="@drawable/round_shape"
+            android:background="?attr/round_background"
             android:paddingRight="11dp"
             android:paddingLeft="11dp"
-            android:tint="@color/grey_700"
+            android:tint="?attr/shevron_file_icons_color"
             />
 
         <ProgressBar
@@ -80,7 +80,7 @@
             android:ellipsize="middle"
             android:text="Undefined file"
             android:layout_marginLeft="4dp"
-            android:textColor="@color/grey_700"
+            android:textColor="?attr/file_message_text_color"
             android:textStyle="bold"
             />
 
@@ -90,7 +90,7 @@
             android:layout_height="wrap_content"
             android:text="0 bytes"
             android:layout_marginLeft="4dp"
-            android:textColor="@color/grey_700"
+            android:textColor="?attr/file_message_text_color"
             />
 
     </LinearLayout>

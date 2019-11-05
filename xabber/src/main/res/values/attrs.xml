@@ -48,6 +48,7 @@
         <attr name="account_main_color" format="reference" />
         <attr name="account_status_bar_color" format="reference" />
         <attr name="account_text_color" format="reference" />
+        <attr name="attachment_close_button_icon" format="reference"/>
 
         <attr name="navigation_drawer_background" format="reference" />
 
@@ -65,6 +66,9 @@
         <attr name="contact_list_contact_archived_background" format="reference|color" />
         <attr name="transparent_rounded_background" format="reference|color" />
         <attr name="message_background" format="color|reference" />
+        <attr name="round_background" format="reference"/>
+        <attr name="shevron_file_icons_color" format="reference"/>
+        <attr name="file_message_text_color" format="reference"/>
     </declare-styleable>
     <declare-styleable name="ImFlexboxLayout">
         <attr name="viewPartMain" format="reference"></attr>

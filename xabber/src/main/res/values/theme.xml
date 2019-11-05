@@ -87,6 +87,10 @@
         <item name="action_with_chat_background">@color/grey_400</item>
         <item name="transparent_rounded_background">@drawable/rounded_background_grey_transparent</item>
         <item name="message_background">@color/message_color_state</item>
+        <item name="attachment_close_button_icon">@drawable/ic_down_circle</item>
+        <item name="round_background">@drawable/round_shape</item>
+        <item name="file_message_text_color">@color/grey_700</item>
+        <item name="shevron_file_icons_color">@color/grey_700</item>
 <!--        <item name="android:actionOverflowButtonStyle">@style/OverflowButtonStyle.Grey</item>-->
 <!--        <item name="toolbarNavigationButtonStyle">@style/Base.Widget.AppCompat.Toolbar.Button.Navigation.Grey</item>-->
     </style>
@@ -164,10 +168,13 @@
         <item name="half_transparent_background">@drawable/half_transparent_background_dark</item>
         <item name="action_with_chat_background">@color/grey_950</item>
         <item name="transparent_rounded_background">@drawable/rounded_background_grey_transparent_dark</item>
+        <item name="round_background">@drawable/round_shape_dark</item>
         <item name="message_background">@color/message_color_state_dark</item>
         <item name="android:navigationBarColor">?attr/bars_color</item>
         <item name="unread_counter_text_color">@color/black</item>
-
+        <item name="attachment_close_button_icon">@drawable/ic_down_circle_dark</item>
+        <item name="file_message_text_color">@color/grey_400</item>
+        <item name="shevron_file_icons_color">@color/grey_300</item>
 <!--        <item name="android:actionOverflowButtonStyle">@style/OverflowButtonStyle.Grey</item>-->
 <!--        <item name="toolbarNavigationButtonStyle">@style/Base.Widget.AppCompat.Toolbar.Button.Navigation.Grey</item>-->
     </style>
