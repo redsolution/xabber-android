@@ -120,7 +120,7 @@ public class ChatMarkerManager implements OnPacketListener {
                 }
                 AbstractChat chat = MessageManager.getInstance().getOrCreateChat(account, companion);
                 if (chat != null) {
-                    chat.markAsRead(extension.getId(), false);
+                    chat.markAsRead(extension.getId()/*, account*/, false);
                     MessageNotificationManager.getInstance().removeChatWithTimer(account, companion);
 
                     // start grace period
@@ -189,6 +189,7 @@ public class ChatMarkerManager implements OnPacketListener {
                     .equalTo(MessageItem.Fields.USER, first.getUser().toString())
                     .equalTo(MessageItem.Fields.INCOMING, false)
                     .equalTo(MessageItem.Fields.DISPLAYED, false)
+                    .equalTo(MessageItem.Fields.IS_IN_PROGRESS, false)
                     .lessThanOrEqualTo(MessageItem.Fields.TIMESTAMP, first.getTimestamp())
                     .findAll();
 
@@ -214,6 +215,7 @@ public class ChatMarkerManager implements OnPacketListener {
                     .equalTo(MessageItem.Fields.USER, first.getUser().toString())
                     .equalTo(MessageItem.Fields.INCOMING, false)
                     .equalTo(MessageItem.Fields.DELIVERED, false)
+                    .equalTo(MessageItem.Fields.IS_IN_PROGRESS, false)
                     .lessThanOrEqualTo(MessageItem.Fields.TIMESTAMP, first.getTimestamp())
                     .findAll();
 
