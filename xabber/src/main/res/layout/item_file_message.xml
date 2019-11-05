@@ -26,10 +26,10 @@
             android:layout_height="match_parent"
             android:layout_centerVertical="true"
             android:src="@drawable/ic_file"
-            android:background="@drawable/round_shape"
+            android:background="?attr/round_background"
             android:paddingRight="11dp"
             android:paddingLeft="11dp"
-            android:tint="@color/grey_700"
+            android:tint="?attr/shevron_file_icons_color"
             />
 
 
@@ -92,8 +92,10 @@
             android:maxWidth="196dp"
             android:singleLine="true"
             android:text="Undefined file"
-            android:textColor="@color/grey_700"
-            android:textStyle="bold" />
+            android:textColor="?attr/file_message_text_color"
+            android:textStyle="bold"
+            />
+
 
         <TextView
             android:id="@+id/tvFileSize"
@@ -101,7 +103,7 @@
             android:layout_height="wrap_content"
             android:text="0 bytes"
             android:layout_marginLeft="4dp"
-            android:textColor="@color/grey_700"
+            android:textColor="?attr/file_message_text_color"
             />
 
     </LinearLayout>
