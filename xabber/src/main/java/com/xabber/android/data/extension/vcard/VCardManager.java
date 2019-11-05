@@ -49,7 +49,6 @@ import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smackx.vcardtemp.packet.VCard;
 import org.jxmpp.jid.BareJid;
-import org.jxmpp.jid.EntityBareJid;
 import org.jxmpp.jid.Jid;
 import org.jxmpp.jid.impl.JidCreate;
 import org.jxmpp.stringprep.XmppStringprepException;
@@ -351,9 +350,10 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
             }
         }
 
-        final EntityBareJid entityBareJid = srcUser.asEntityBareJidIfPossible();
+        //final EntityBareJid entityBareJid = srcUser.asEntityBareJidIfPossible();
+        final BareJid bareJid = srcUser.asBareJid();
 
-        if (entityBareJid != null) {
+        if (bareJid != null) {
             vCardRequests.add(srcUser);
             try {
                 vCardManager.sendVCardRequest(srcUser);
