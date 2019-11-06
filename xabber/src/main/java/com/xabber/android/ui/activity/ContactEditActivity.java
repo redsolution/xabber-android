@@ -18,6 +18,7 @@ import androidx.appcompat.widget.Toolbar;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
+import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.intent.EntityIntentBuilder;
@@ -53,9 +54,10 @@ public class ContactEditActivity extends ContactActivity implements Toolbar.OnMe
             toolbar.setOverflowIcon(getResources().getDrawable(R.drawable.ic_overflow_menu_white_24dp));
             int orientation = getResources().getConfiguration().orientation;
             if (toolbar.getOverflowIcon() != null)
-            if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            if (orientation == Configuration.ORIENTATION_LANDSCAPE
+                    && SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light)
                 toolbar.getOverflowIcon().setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_ATOP);
-            }
+
             onCreateOptionsMenu(toolbar.getMenu());
         }
 
