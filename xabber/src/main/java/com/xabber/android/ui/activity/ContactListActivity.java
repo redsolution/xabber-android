@@ -563,6 +563,7 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
         //drawerLayout.openDrawer(Gravity.START);
         showMenuFragment();
         getBottomBarFragment().setChatStateIcon(ChatListFragment.ChatListState.recent);
+        setStatusBarColor();
     }
 
     @Override

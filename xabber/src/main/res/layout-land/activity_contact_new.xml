@@ -58,6 +58,7 @@
         android:layout_height="?attr/actionBarSize"
         android:background="@color/transparent"
         android:theme="@style/ThemeBorderlessVcard"
+
         app:popupTheme="?attr/toolbar_popup_theme">
 
         <RelativeLayout
@@ -111,7 +112,7 @@
                     android:paddingTop="3dp"
                     android:paddingBottom="4dp"
                     android:text="Lorem Ipsum"
-                    android:textColor="@color/black"
+                    android:textColor="?attr/contact_list_contact_name_text_color"
                     android:textSize="30sp" />
 
                 <FrameLayout

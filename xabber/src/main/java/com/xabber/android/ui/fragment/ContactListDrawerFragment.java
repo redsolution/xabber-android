@@ -150,9 +150,6 @@ public class ContactListDrawerFragment extends Fragment implements View.OnClickL
     public void onResume() {
         super.onResume();
         Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            getActivity().getWindow().setStatusBarColor(ColorManager.getInstance().getAccountPainter().getDefaultMainColor());
-        }
         update();
         subscribeForXabberAccount();
     }

@@ -39,7 +39,7 @@
             app:expandedTitleMarginBottom="50dp"
             app:expandedTitleMarginEnd="64dp"
             app:expandedTitleMarginStart="88dp"
-            app:expandedTitleTextAppearance="@style/ContactViewCollapsingToolbar"
+            app:expandedTitleTextAppearance="@style/ContactViewCollapsingToolbarNew"
             app:layout_scrollFlags="scroll|exitUntilCollapsed"
             app:statusBarScrim="@color/transparent">
 

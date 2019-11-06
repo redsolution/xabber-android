@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.amulyakhare.textdrawable.util.ColorGenerator;
 import com.xabber.android.R;
+import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.roster.RosterManager;
@@ -60,7 +61,17 @@ public class ForwardedVH extends FileMessageVH {
                     .getResources().getString(R.string.forwarded_messages_count), messageItem.getForwardedIds().size()));
             tvForwardedCount.setPaintFlags(tvForwardedCount.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
             forwardLayout.setBackgroundColor(ColorManager.getColorWithAlpha(R.color.forwarded_background_color, 0.2f));
-            forwardLeftBorder.setBackgroundColor(extraData.getAccountMainColor());
+            if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light){
+                forwardLeftBorder.setBackgroundColor(extraData.getAccountMainColor());
+                forwardLeftBorder.setAlpha(1);
+                tvForwardedCount.setAlpha(1);
+            }
+            else{
+                forwardLeftBorder.setBackgroundColor(ColorManager.getInstance()
+                        .getAccountPainter().getAccountColorWithTint(messageItem.getAccount(), 900));
+                forwardLeftBorder.setAlpha(0.6f);
+                tvForwardedCount.setAlpha(0.6f);
+            }
         } else forwardLayout.setVisibility(View.GONE);
 
         // setup BACKGROUND

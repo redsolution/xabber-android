@@ -91,8 +91,6 @@
         <item name="round_background">@drawable/round_shape</item>
         <item name="file_message_text_color">@color/grey_700</item>
         <item name="shevron_file_icons_color">@color/grey_700</item>
-<!--        <item name="android:actionOverflowButtonStyle">@style/OverflowButtonStyle.Grey</item>-->
-<!--        <item name="toolbarNavigationButtonStyle">@style/Base.Widget.AppCompat.Toolbar.Button.Navigation.Grey</item>-->
     </style>
 
     <style name="ThemeDark" parent="Base.ThemeDark"></style>
@@ -180,12 +178,12 @@
         <item name="attachment_close_button_icon">@drawable/ic_down_circle_dark</item>
         <item name="file_message_text_color">@color/grey_400</item>
         <item name="shevron_file_icons_color">@color/grey_300</item>
-<!--        <item name="android:actionOverflowButtonStyle">@style/OverflowButtonStyle.Grey</item>-->
-<!--        <item name="toolbarNavigationButtonStyle">@style/Base.Widget.AppCompat.Toolbar.Button.Navigation.Grey</item>-->
     </style>
 
     <style name="ToolbarTitle" parent="@style/TextAppearance.Widget.AppCompat.Toolbar.Title">
         <item name="android:textSize">20sp</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textColorSecondary">@color/grey_500</item>
     </style>
 
     <style name="AboutViewCollapsingToolbar" parent="@style/TextAppearance.Widget.AppCompat.Toolbar.Title">
@@ -205,26 +203,19 @@
 
     <style name="ContactViewCollapsingToolbarNew" parent="@style/TextAppearance.Widget.AppCompat.Toolbar.Title">
         <item name="android:textSize">40sp</item>
-<!--
-        <item name="android:fontFamily">sans-serif-condensed-light</item>
--->
+        <item name="android:textColorSecondary">@color/white</item>
         <item name="android:textColor">@color/white</item>
     </style>
+
+    <style name="ToolbarDefault" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
+        <item name="colorControlNormal">@color/grey_500</item>
+        <item name="android:textColorSecondary">@color/grey_500</item>
+    </style>
+
     <style name="Divider">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">1dp</item>
         <item name="android:background">?android:attr/listDivider</item>
     </style>
-
-<!--    <style name="OverflowButtonStyle.Grey" parent="OverflowButtonStyle">-->
-<!--        <item name="android:alpha">0.5</item>-->
-<!--        <item name="android:textColorSecondary">@color/black</item>-->
-<!--    </style>-->
-
-<!--    <style name="Base.Widget.AppCompat.Toolbar.Button.Navigation.Grey" parent="Base.Widget.AppCompat.Toolbar.Button.Navigation">-->
-<!--        <item name="android:alpha">0.5</item>-->
-<!--        <item name="android:textColorSecondary">@color/black</item>-->
-<!--    </style>-->
-
 
 </resources>
