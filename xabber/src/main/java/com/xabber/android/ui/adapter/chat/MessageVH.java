@@ -107,6 +107,11 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
             messageHeader.setVisibility(View.VISIBLE);
         }
 
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M)
+            if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.dark)
+                messageText.setTextColor(itemView.getContext().getColor(R.color.grey_300));
+            else messageText.setTextColor(itemView.getContext().getColor(R.color.black));
+
         if (messageItem.isEncrypted()) {
             ivEncrypted.setVisibility(View.VISIBLE);
         } else {
@@ -222,15 +227,13 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
         return true;
     }
 
+
     protected void setUpMessageBalloonBackground(View view, ColorStateList colorList) {
         final Drawable originalBackgroundDrawable = view.getBackground();
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light)
-                originalBackgroundDrawable.setTintList(colorList);
-            else originalBackgroundDrawable.setTintList(colorList.withAlpha(128));
-
-        } else {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+            originalBackgroundDrawable.setTintList(colorList);
+        else {
             Drawable wrapDrawable = DrawableCompat.wrap(originalBackgroundDrawable);
             DrawableCompat.setTintList(wrapDrawable, colorList);
 

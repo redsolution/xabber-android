@@ -38,7 +38,7 @@ public class NewContactTitleInflater {
 
         nameView.setText(abstractContact.getName());
         if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.dark)
-            nameView.setTextColor(ColorManager.getInstance().getAccountPainter().getAccountTextColor(abstractContact.getAccount()));
+            nameView.setTextColor(ColorManager.getInstance().getAccountPainter().getAccountColorWithTint(abstractContact.getAccount(), 500));
 
         // notification mute
         Resources resources = context.getResources();
@@ -103,8 +103,10 @@ public class NewContactTitleInflater {
         }
 
         final TextView statusTextView = (TextView) titleView.findViewById(R.id.status_text);
-        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.dark)
-            statusTextView.setTextColor(ColorManager.getInstance().getAccountPainter().getAccountTextColor(abstractContact.getAccount()));
+        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.dark){
+            statusTextView.setTextColor(ColorManager.getInstance().getAccountPainter().getAccountColorWithTint(abstractContact.getAccount(), 700));
+            statusTextView.setAlpha(1);
+        }
 
         ChatState chatState = ChatStateManager.getInstance().getChatState(
                 abstractContact.getAccount(), abstractContact.getUser());
