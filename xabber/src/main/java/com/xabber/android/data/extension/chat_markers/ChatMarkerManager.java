@@ -120,7 +120,8 @@ public class ChatMarkerManager implements OnPacketListener {
                 }
                 AbstractChat chat = MessageManager.getInstance().getOrCreateChat(account, companion);
                 if (chat != null) {
-                    chat.markAsRead(extension.getId()/*, account*/, false);
+                    chat.markAsReadTest(extension.getId(), false);
+                    //chat.markAsRead(extension.getId(), false);
                     MessageNotificationManager.getInstance().removeChatWithTimer(account, companion);
 
                     // start grace period
