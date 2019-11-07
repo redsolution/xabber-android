@@ -210,6 +210,13 @@
     <style name="ToolbarDefault" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
         <item name="colorControlNormal">@color/grey_500</item>
         <item name="android:textColorSecondary">@color/grey_500</item>
+        <item name="android:actionOverflowButtonStyle">@style/OverflowButtonStyle.Grey</item>
+        <item name="android:actionOverflowMenuStyle">@style/OverflowButtonStyle.Grey</item>
+        <item name="android:actionMenuTextColor">@color/grey_600</item>
+    </style>
+
+    <style name="OverflowButtonStyle.Grey" parent="OverflowButtonStyle">
+        <item name="android:textColorSecondary">@color/grey_500</item>
     </style>
 
     <style name="Divider">

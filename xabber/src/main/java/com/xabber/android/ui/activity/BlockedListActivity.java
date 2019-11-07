@@ -58,7 +58,7 @@ public class BlockedListActivity extends ManagedActivity implements BlockedListA
         setContentView(R.layout.activity_with_toolbar_and_container);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar_default);
-        toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_left_grey_24dp);
         toolbar.inflateMenu(R.menu.toolbar_block_list);
         toolbar.setOnMenuItemClickListener(this);
 
@@ -175,7 +175,7 @@ public class BlockedListActivity extends ManagedActivity implements BlockedListA
 
         if (currentSize == 0) {
             toolbar.setTitle(getString(R.string.block_list));
-            toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
+            toolbar.setNavigationIcon(R.drawable.ic_arrow_left_grey_24dp);
             LogManager.i(this, "toolbar.setTitle " + toolbar.getTitle());
             barPainter.updateWithAccountName(account);
 
@@ -188,7 +188,7 @@ public class BlockedListActivity extends ManagedActivity implements BlockedListA
 
         } else {
             toolbar.setTitle(String.valueOf(currentSize));
-            toolbar.setNavigationIcon(R.drawable.ic_clear_white_24dp);
+            toolbar.setNavigationIcon(R.drawable.ic_clear_grey_24dp);
             LogManager.i(this, "toolbar.setTitle " + toolbar.getTitle());
 
             barPainter.setGrey();

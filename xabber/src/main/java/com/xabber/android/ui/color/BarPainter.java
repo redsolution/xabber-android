@@ -2,6 +2,7 @@ package com.xabber.android.ui.color;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.util.TypedValue;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -19,7 +20,7 @@ public class BarPainter {
     private StatusBarPainter statusBarPainter;
     private TypedValue typedValue = new TypedValue();
     private Resources.Theme theme;
-    int color;
+    int standartColor;
     private AccountPainter accountPainter;
     Context context;
 
@@ -28,18 +29,20 @@ public class BarPainter {
         statusBarPainter = new StatusBarPainter(activity);
         accountPainter = new AccountPainter(activity);
         theme = activity.getTheme();
-        color = typedValue.data;
+        standartColor = typedValue.data;
         context = toolbar.getContext();
         theme.resolveAttribute(R.attr.bars_color, typedValue, true);
     }
 
     public void updateWithAccountName(AccountJid account) {
         if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light){
-            toolbar.setBackgroundColor(accountPainter.getAccountRippleColor(accountPainter.getFirstAccount()));
+            toolbar.setBackgroundColor(accountPainter.getAccountRippleColor(account));
+            toolbar.setTitleTextColor(Color.BLACK);
             statusBarPainter.updateWithAccountName(account);
         } else {
-            toolbar.setBackgroundColor(color);
-            statusBarPainter.updateWithColor(color);
+            toolbar.setBackgroundColor(standartColor);
+            toolbar.setTitleTextColor(Color.WHITE);
+            statusBarPainter.updateWithColor(standartColor);
         }
 
     }
@@ -47,10 +50,12 @@ public class BarPainter {
     public void setDefaultColor() {
         if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light){
             toolbar.setBackgroundColor(accountPainter.getAccountRippleColor(accountPainter.getFirstAccount()));
+            toolbar.setTitleTextColor(Color.BLACK);
             statusBarPainter.updateWithDefaultColor();
         } else {
-            toolbar.setBackgroundColor(color);
-            statusBarPainter.updateWithColor(color);
+            toolbar.setBackgroundColor(standartColor);
+            toolbar.setTitleTextColor(Color.WHITE);
+            statusBarPainter.updateWithColor(standartColor);
         }
 
     }

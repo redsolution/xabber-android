@@ -16,6 +16,7 @@ package com.xabber.android.ui.helper;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -24,11 +25,15 @@ import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
 import com.xabber.android.R;
+import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.cs.ChatStateManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.roster.AbstractContact;
+import com.xabber.android.data.xaccount.AuthManager;
+import com.xabber.android.ui.activity.AccountActivity;
+import com.xabber.android.ui.color.ColorManager;
 
 import org.jivesoftware.smackx.chatstates.ChatState;
 
@@ -37,6 +42,10 @@ public class ContactTitleInflater {
 
     public static void updateTitle(View titleView, final Context context, AbstractContact abstractContact) {
         updateTitle(titleView, context, abstractContact, false);
+    }
+
+    public static void updateTitleWithNameColorizing(){
+
     }
 
     public static void updateTitle(View titleView, final Context context, AbstractContact abstractContact, boolean isForVcard) {
@@ -80,6 +89,13 @@ public class ContactTitleInflater {
             }
             setStatus(context, titleView, abstractContact);
         }
+        /* Colorize name accordingly to color theme */
+        if (titleView.getParent().getClass().toString() == AccountActivity.class.toString()){
+            if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light)
+                nameView.setTextColor(Color.BLACK);
+            else nameView.setTextColor(ColorManager.getInstance().getAccountPainter().getAccountMainColor(abstractContact.getAccount()));
+        }
+
     }
 
     private static void setStatus(Context context, View titleView, AbstractContact abstractContact) {
@@ -126,6 +142,12 @@ public class ContactTitleInflater {
             }
         }
         statusTextView.setText(statusText);
+        /* Colorize status accordingly to color theme */
+        if (titleView.getParent().getClass().toString() == AccountActivity.class.toString()){
+            if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light)
+                statusTextView.setTextColor(Color.BLACK);
+            else statusTextView.setTextColor(ColorManager.getInstance().getAccountPainter().getAccountMainColor(abstractContact.getAccount()));
+        }
     }
 
     private static boolean isContactOffline(int statusLevel) {

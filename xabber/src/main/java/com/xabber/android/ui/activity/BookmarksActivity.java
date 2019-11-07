@@ -79,7 +79,7 @@ public class BookmarksActivity extends ManagedActivity implements Toolbar.OnMenu
         }
 
         toolbar = (Toolbar) findViewById(R.id.toolbar_default);
-        toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_left_grey_24dp);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -214,7 +214,7 @@ public class BookmarksActivity extends ManagedActivity implements Toolbar.OnMenu
 
         if (currentSize == 0) {
             toolbar.setTitle(getString(R.string.account_bookmarks));
-            toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
+            toolbar.setNavigationIcon(R.drawable.ic_arrow_left_grey_24dp);
             barPainter.updateWithAccountName(accountItem.getAccount());
 
             toolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -226,7 +226,7 @@ public class BookmarksActivity extends ManagedActivity implements Toolbar.OnMenu
 
         } else {
             toolbar.setTitle(String.valueOf(currentSize));
-            toolbar.setNavigationIcon(R.drawable.ic_clear_white_24dp);
+            toolbar.setNavigationIcon(R.drawable.ic_clear_grey_24dp);
             barPainter.setGrey();
 
             toolbar.setNavigationOnClickListener(new View.OnClickListener() {
