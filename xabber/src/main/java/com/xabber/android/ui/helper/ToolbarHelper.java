@@ -13,7 +13,7 @@ import com.xabber.android.ui.activity.ManagedActivity;
 public class ToolbarHelper {
 
 
-    public static final int NAVIGATION_ICON = R.drawable.ic_arrow_left_white_24dp;
+    public static final int NAVIGATION_ICON = R.drawable.ic_arrow_left_grey_24dp;
 
     public static Toolbar setUpDefaultToolbar(@NonNull final ManagedActivity activity, @Nullable CharSequence title,
                                               @DrawableRes int navigationIconResource) {

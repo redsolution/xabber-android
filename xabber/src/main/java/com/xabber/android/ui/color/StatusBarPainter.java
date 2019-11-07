@@ -42,15 +42,15 @@ public class StatusBarPainter {
         new StatusBarPainter(activity).updateWithAccountName(accountJid);
     }
 
-    /** Static colorize status bar with color
+    /** Static colorize status bar with standartColor
      * @param activity at most cases should be "this"
-     * @param color colorize into this color
+     * @param color colorize into this standartColor
      */
     static public void instanceUpdateWIthColor(FragmentActivity activity, int color){
         new StatusBarPainter(activity).updateWithColor(color);
     }
 
-    /** Colorize status bat into custom color
+    /** Colorize status bat into custom standartColor
      * @param color use for colorizing
      */
     public void updateWithColor(int color) {

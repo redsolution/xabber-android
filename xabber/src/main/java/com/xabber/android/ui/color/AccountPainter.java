@@ -131,10 +131,10 @@ public class AccountPainter {
     }
 
     /**
-     * Returns the specified tint of the color of the account.
+     * Returns the specified tint of the standartColor of the account.
      * @param account
      * @param tint may be 50, 100, 200.. 900; else will return 0
-     * @return account color with tint
+     * @return account standartColor with tint
      */
     public int getAccountColorWithTint(AccountJid account, int tint){
         switch (tint){
@@ -153,9 +153,9 @@ public class AccountPainter {
     }
 
     /**
-     * Returns the specified tint of the default color
+     * Returns the specified tint of the default standartColor
      * @param tint may be 50, 100, 200.. 900; else will return 0
-     * @return default color with tint
+     * @return default standartColor with tint
      */
     public int getDeafultColorWithTint(int tint){
         return getAccountColorWithTint(getFirstAccount(), tint);
