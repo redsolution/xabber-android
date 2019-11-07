@@ -129,6 +129,17 @@ public class ChatMarkerManager implements OnPacketListener {
                 }
             }
         }
+        else if (direction == CarbonExtension.Direction.received) {
+            if (ChatMarkersElements.ReceivedExtension.from(message) != null) {
+                // received
+                BackpressureMessageMarker.getInstance().markMessage(ChatMarkersElements.ReceivedExtension.from(message).getId(),
+                        ChatMarkersState.received, account);
+            } else if (ChatMarkersElements.DisplayedExtension.from(message) != null) {
+                // displayed
+                BackpressureMessageMarker.getInstance().markMessage(ChatMarkersElements.DisplayedExtension.from(message).getId(),
+                        ChatMarkersState.displayed, account);
+            }
+        }
     }
 
     private boolean isClientSupportChatMarkers(AccountJid account, UserJid user) {

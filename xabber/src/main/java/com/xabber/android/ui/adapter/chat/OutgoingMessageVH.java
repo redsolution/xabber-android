@@ -150,13 +150,13 @@ public class OutgoingMessageVH extends FileMessageVH {
             if(messageItem.isAttachmentImageOnly())
                 messageIcon = R.drawable.ic_message_displayed_image;
             else messageIcon = R.drawable.ic_message_displayed;
-        } else if (messageItem.isDelivered() || messageItem.isForwarded()) {
+        } else if (messageItem.isDelivered()) {
             if(messageItem.isAttachmentImageOnly())
                 messageIcon = R.drawable.ic_message_delivered_image_14dp;
             else messageIcon = R.drawable.ic_message_delivered_14dp;
         } else if (messageItem.isError()) {
             messageIcon = R.drawable.ic_message_has_error_14dp;
-        } else if (messageItem.isAcknowledged()) {
+        } else if (messageItem.isAcknowledged() || messageItem.isForwarded()) {
             if(messageItem.isAttachmentImageOnly())
                 messageIcon = R.drawable.ic_message_acknowledged_image_14dp;
             else messageIcon = R.drawable.ic_message_acknowledged_14dp;

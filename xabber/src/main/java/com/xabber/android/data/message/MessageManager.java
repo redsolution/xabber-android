@@ -17,8 +17,9 @@ package com.xabber.android.data.message;
 import android.net.Uri;
 import android.os.Environment;
 import android.os.Looper;
-import androidx.annotation.Nullable;
 import android.util.Pair;
+
+import androidx.annotation.Nullable;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
@@ -804,6 +805,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
 
             MessageItem newMessageItem = finalChat.createNewMessageItem(text);
             newMessageItem.setStanzaId(AbstractChat.getStanzaId(message));
+            newMessageItem.setAcknowledged(true);
             newMessageItem.setSent(true);
             newMessageItem.setForwarded(true);
             if (markupText != null) newMessageItem.setMarkupText(markupText);

@@ -197,11 +197,11 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
                     messageStatus = 5;
                 } else if (lastMessage.isDisplayed() || lastMessage.isReceivedFromMessageArchive()) {
                     messageStatus = 1;
-                } else if (lastMessage.isDelivered() || lastMessage.isForwarded()) {
+                } else if (lastMessage.isDelivered()) {
                     messageStatus = 2;
                 } else if (lastMessage.isError()) {
                     messageStatus = 4;
-                } else if (lastMessage.isAcknowledged()) {
+                } else if (lastMessage.isAcknowledged() || lastMessage.isForwarded()) {
                     messageStatus = 3;
                 } else messageStatus = 5;
             }
