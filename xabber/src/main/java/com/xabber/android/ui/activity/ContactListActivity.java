@@ -688,7 +688,7 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
             StatusBarPainter.instanceUpdateWithDefaultColor(this);
         else {
             TypedValue typedValue = new TypedValue();
-            getApplicationContext().getTheme().resolveAttribute(R.attr.bars_color, typedValue, true);
+            this.getTheme().resolveAttribute(R.attr.bars_color, typedValue, true);
             StatusBarPainter.instanceUpdateWIthColor(this, typedValue.data);
         }
 

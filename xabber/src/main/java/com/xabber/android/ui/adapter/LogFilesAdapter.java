@@ -2,13 +2,15 @@ package com.xabber.android.ui.adapter;
 
 import android.content.Context;
 import android.content.Intent;
-import androidx.recyclerview.widget.RecyclerView;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.PopupMenu;
 import android.widget.TextView;
+
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.xabber.android.R;
 import com.xabber.android.data.extension.file.FileManager;
@@ -46,6 +48,10 @@ public class LogFilesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         final File file = files[position];
 
         fileHolder.fileName.setText(file.getName());
+
+        TypedValue typedValue = new TypedValue();
+        holder.itemView.getContext().getTheme().resolveAttribute(R.attr.contact_list_background, typedValue, true);
+        holder.itemView.setBackgroundColor(typedValue.data);
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override

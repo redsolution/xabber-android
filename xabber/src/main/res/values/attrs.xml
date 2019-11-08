@@ -69,6 +69,9 @@
         <attr name="round_background" format="reference"/>
         <attr name="shevron_file_icons_color" format="reference"/>
         <attr name="file_message_text_color" format="reference"/>
+
+        <attr name="standard_text_color" format="reference|color"/>
+        <attr name="standard_background_color" format="reference|color"/>
     </declare-styleable>
     <declare-styleable name="ImFlexboxLayout">
         <attr name="viewPartMain" format="reference"></attr>
