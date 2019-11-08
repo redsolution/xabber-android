@@ -4,22 +4,24 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentPagerAdapter;
-import androidx.core.app.NavUtils;
-import androidx.viewpager.widget.PagerAdapter;
-import androidx.viewpager.widget.ViewPager;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.NavUtils;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.viewpager.widget.PagerAdapter;
+import androidx.viewpager.widget.ViewPager;
 
 import com.xabber.android.R;
 import com.xabber.android.data.database.MessageDatabaseManager;
@@ -98,7 +100,7 @@ public class ImageViewerActivity extends AppCompatActivity implements Toolbar.On
 
         // setup toolbar
         toolbar = (Toolbar) findViewById(R.id.toolbar_default);
-        toolbar.setNavigationIcon(R.drawable.ic_arrow_left_grey_24dp);
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
         toolbar.inflateMenu(R.menu.menu_image_viewer);
         toolbar.setOnMenuItemClickListener(this);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -224,6 +226,7 @@ public class ImageViewerActivity extends AppCompatActivity implements Toolbar.On
         if (viewPager != null) current = viewPager.getCurrentItem() + 1;
         if (imageAttachments != null) total = imageAttachments.size();
         toolbar.setTitle(current + " of " + total);
+        toolbar.setTitleTextColor(Color.WHITE);
         setUpMenuOptions(toolbar.getMenu());
     }
 
