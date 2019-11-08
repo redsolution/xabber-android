@@ -338,39 +338,39 @@
 
     <array name="account_chat_incoming_balloon">
         <!--green-->
-        <item>#0c110b</item>
+        <item>#1b2618</item>
         <!--orange-->
-        <item>#1b1007</item>
+        <item>#311d0c</item>
         <!--red-->
-        <item>#231313</item>
+        <item>#311a1a</item>
         <!--blue-->
-        <item>#212633</item>
+        <item>#1d222e</item>
         <!--indigo-->
-        <item>#101320</item>
+        <item>#1b2138</item>
         <!--blue grey-->
-        <item>#1c2428</item>
+        <item>#1b2427</item>
         <!--cyan-->
-        <item>#142221</item>
+        <item>#162625</item>
         <!--teal-->
-        <item>#0a1712</item>
+        <item>#122a21</item>
         <!--purple-->
-        <item>#0f0a26</item>
+        <item>#221657</item>
         <!--deep purple-->
-        <item>#1d134b</item>
+        <item>#23165b</item>
         <!--lime-->
-        <item>#272300</item>
+        <item>#292500</item>
         <!--pink-->
-        <item>#2c0018</item>
+        <item>#5e0033</item>
         <!--light blue -->
-        <item>#001b30</item>
+        <item>#002a4c</item>
         <!--light green-->
-        <item>#0f2c04</item>
+        <item>#103103</item>
         <!--deep orange-->
-        <item>#3d0e00</item>
+        <item>#4e1200</item>
         <!--brown-->
-        <item>#130c0b</item>
+        <item>#2e1d1a</item>
         <!--amber-->
-        <item>#4b2100</item>
+        <item>#3d1a00</item>
     </array>
 
     <color name="contact_item_text_second">#99616161</color>

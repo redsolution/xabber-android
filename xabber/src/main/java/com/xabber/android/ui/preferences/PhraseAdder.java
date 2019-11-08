@@ -23,7 +23,7 @@ public class PhraseAdder extends BasePhrasePreferences {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Toolbar toolbar = ToolbarHelper.setUpDefaultToolbar(this, getString(R.string.phrase_add), R.drawable.ic_clear_white_24dp);
+        Toolbar toolbar = ToolbarHelper.setUpDefaultToolbar(this, getString(R.string.phrase_add), R.drawable.ic_clear_grey_24dp);
         toolbar.inflateMenu(R.menu.toolbar_save);
         toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override

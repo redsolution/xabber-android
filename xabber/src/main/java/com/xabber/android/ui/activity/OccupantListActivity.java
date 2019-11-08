@@ -85,7 +85,7 @@ public class OccupantListActivity extends ManagedListActivity implements
         }
         setContentView(R.layout.list);
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_default);
-        toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_left_grey_24dp);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

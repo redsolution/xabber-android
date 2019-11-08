@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.core.app.NavUtils;
@@ -11,6 +12,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.appcompat.widget.Toolbar;
+
+import android.util.TypedValue;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CompoundButton;
@@ -22,6 +25,7 @@ import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountErrorEvent;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
@@ -117,7 +121,7 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
         setContentView(R.layout.activity_account);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_default);
-        toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_left_grey_24dp);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -291,7 +295,15 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
         statusIcon.setVisibility(View.GONE);
         statusText.setText(account.getFullJid().asBareJid().toString());
 
-        contactTitleView.setBackgroundColor(barPainter.getAccountPainter().getAccountMainColor(account));
+        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light){
+            contactTitleView.setBackgroundColor(barPainter.getAccountPainter().getAccountRippleColor(account));
+
+        }
+        else {
+            TypedValue typedValue = new TypedValue();
+            getTheme().resolveAttribute(R.attr.bars_color, typedValue, true);
+            contactTitleView.setBackgroundColor(Color.TRANSPARENT);
+        }
         barPainter.updateWithAccountName(account);
 
         switchCompat.setChecked(accountItem.isEnabled());

@@ -99,7 +99,7 @@ public class ImageViewerActivity extends AppCompatActivity implements Toolbar.On
 
         // setup toolbar
         toolbar = (Toolbar) findViewById(R.id.toolbar_default);
-        toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_left_grey_24dp);
         toolbar.inflateMenu(R.menu.menu_image_viewer);
         toolbar.setOnMenuItemClickListener(this);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {

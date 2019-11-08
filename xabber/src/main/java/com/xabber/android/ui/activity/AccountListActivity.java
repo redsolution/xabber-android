@@ -64,7 +64,7 @@ public class AccountListActivity extends ManagedActivity implements OnAccountCha
         setContentView(R.layout.activity_account_list);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar_default);
-        toolbar.setNavigationIcon(R.drawable.ic_clear_white_24dp);
+        toolbar.setNavigationIcon(R.drawable.ic_clear_grey_24dp);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

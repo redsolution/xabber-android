@@ -58,7 +58,7 @@ public class AccountSettingsActivity extends ManagedActivity
         }
 
         toolbar = (Toolbar) findViewById(R.id.toolbar_default);
-        toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_left_grey_24dp);
         toolbar.setTitle(R.string.account_connection_settings);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override

@@ -72,7 +72,7 @@ public class ContactAddActivity extends ManagedActivity implements ContactAddFra
 
         setContentView(R.layout.activity_with_toolbar_progress_and_container);
 
-        toolbar = ToolbarHelper.setUpDefaultToolbar(this, null, R.drawable.ic_clear_white_24dp);
+        toolbar = ToolbarHelper.setUpDefaultToolbar(this, null, R.drawable.ic_clear_grey_24dp);
         toolbar.inflateMenu(R.menu.toolbar_add_contact);
         toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
