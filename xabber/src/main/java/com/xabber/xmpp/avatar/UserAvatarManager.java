@@ -530,34 +530,35 @@ public final class UserAvatarManager extends Manager {
                     if ((payloadItem.getPayload() instanceof MetadataExtension)) {
 
                         MetadataExtension metadataExtension = (MetadataExtension) payloadItem.getPayload();
-                        if (metadataStore!=null && metadataStore.hasAvatarAvailable(from, ((PayloadItem<?>) item).getId())) {
-                            // The metadata store implies that we have a local copy of the published image already. Skip.
-                            continue;
-                        }
-
-                        for (AvatarListener listener : avatarListeners) {
-                            listener.onAvatarUpdateReceived(from, metadataExtension);
-                        }
 
                         for (MetadataInfo info : metadataExtension.getInfoElements()){
-                            try {
-                                byte[] avatar = fetchAvatarFromPubSub(from, info);
-                                if (avatar == null) continue;
-                                String sh1 = ((PayloadItem<?>) item).getId();
-                                if (metadataStore != null) {
-                                    metadataStore.setAvatarAvailable(from, ((PayloadItem<?>) item).getId());
+                            if (info.getType().equals("image/jpeg") || info.getType().equals("image/png")) {
+                                if (metadataStore != null && metadataStore.hasAvatarAvailable(from, info.getId())) {
+                                    // The metadata store implies that we have a local copy of the published image already. Skip.
+                                    continue;
                                 }
-                                AvatarManager.getInstance().onAvatarReceived(from,sh1,avatar, "xep");
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            } catch (PubSubException.NotALeafNodeException e) {
-                                e.printStackTrace();
-                            } catch (NoResponseException e) {
-                                e.printStackTrace();
-                            } catch (NotConnectedException e) {
-                                e.printStackTrace();
-                            } catch (XMPPErrorException e) {
-                                e.printStackTrace();
+                                for (AvatarListener listener : avatarListeners) {
+                                    listener.onAvatarUpdateReceived(from, metadataExtension);
+                                }
+                                try {
+                                    byte[] avatar = fetchAvatarFromPubSub(from, info);
+                                    if (avatar == null) continue;
+                                    String sh1 = info.getId();
+                                    if (metadataStore != null) {
+                                        metadataStore.setAvatarAvailable(from, info.getId());
+                                    }
+                                    AvatarManager.getInstance().onAvatarReceived(from, sh1, avatar, "xep");
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                } catch (PubSubException.NotALeafNodeException e) {
+                                    e.printStackTrace();
+                                } catch (NoResponseException e) {
+                                    e.printStackTrace();
+                                } catch (NotConnectedException e) {
+                                    e.printStackTrace();
+                                } catch (XMPPErrorException e) {
+                                    e.printStackTrace();
+                                }
                             }
                         }
                     } /*else if (payloadItem.getPayload() instanceof DataExtension){

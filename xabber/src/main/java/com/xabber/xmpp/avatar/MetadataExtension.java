@@ -64,9 +64,9 @@ public class MetadataExtension implements ExtensionElement {
                 xml.attribute("bytes", info.getBytes());
                 xml.attribute("type", info.getType());
                 if (info.getUrl()!=null) xml.optAttribute("url", info.getUrl().toString());
-                /*xml.attribute("height", info.getHeight());
+                xml.attribute("height", info.getHeight());
                 xml.attribute("width", info.getWidth());
-                */xml.closeEmptyElement();
+                xml.closeEmptyElement();
             }
         }
     }
