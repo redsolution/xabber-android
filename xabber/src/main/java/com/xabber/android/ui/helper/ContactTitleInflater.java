@@ -91,15 +91,23 @@ public class ContactTitleInflater {
         ImageView statusModeGroupView = (ImageView) titleView.findViewById(R.id.ivStatusGroupchat);
 
         MessageManager messageManager = MessageManager.getInstance();
+        boolean isServer = false;
+        boolean isGroupchat = false;
         AbstractChat chat = messageManager.getOrCreateChat(abstractContact.getAccount(), abstractContact.getUser());
-
-
+        if (chat != null) {
+            isServer = abstractContact.getUser().getJid().isDomainBareJid();
+            isGroupchat = chat.isGroupchat();
+        }
         int statusLevel = abstractContact.getStatusMode().getStatusLevel();
         statusModeView.setVisibility(View.GONE);
-        if (chat.isGroupchat()){
+        if (isServer) {
+            statusModeGroupView.setImageResource(R.drawable.ic_server_16_new);
             if (isForVcard) statusModeGroupView.setVisibility(View.GONE);
             else statusModeGroupView.setVisibility(View.VISIBLE);
-        }else {
+        } else if (isGroupchat) {
+            if (isForVcard) statusModeGroupView.setVisibility(View.GONE);
+            else statusModeGroupView.setVisibility(View.VISIBLE);
+        } else {
             if (isContactOffline(statusLevel)) {
                 statusModeView.setVisibility(View.GONE);
             } else {
@@ -115,7 +123,8 @@ public class ContactTitleInflater {
                 abstractContact.getAccount(), abstractContact.getUser());
 
         CharSequence statusText;
-        if (chatState == ChatState.composing) {
+        if (isServer) statusText = "Server";
+        else if (chatState == ChatState.composing) {
             statusText = context.getString(R.string.chat_state_composing);
         } else if (chatState == ChatState.paused) {
             statusText = context.getString(R.string.chat_state_paused);

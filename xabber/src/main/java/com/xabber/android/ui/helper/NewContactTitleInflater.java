@@ -83,12 +83,18 @@ public class NewContactTitleInflater {
         final ImageView groupchatStatusView = (ImageView) titleView.findViewById(R.id.ivStatusGroupchat);
 
         boolean isGroupchat = false;
+        boolean isServer = false;
         AbstractChat chat = MessageManager.getInstance().getOrCreateChat(abstractContact.getAccount(), abstractContact.getUser());
-        if (chat != null) isGroupchat = chat.isGroupchat();
-
+        if (chat != null) {
+            isGroupchat = chat.isGroupchat();
+            isServer = abstractContact.getUser().getJid().isDomainBareJid();
+        }
         int statusLevel = abstractContact.getStatusMode().getStatusLevel();
         statusModeView.setVisibility(View.GONE);
-        if (isContactOffline(statusLevel)) {
+        if (isServer) {
+            groupchatStatusView.setImageResource(R.drawable.ic_server_16_new);
+            groupchatStatusView.setVisibility(View.VISIBLE);
+        } else if (isContactOffline(statusLevel)) {
             statusModeView.setVisibility(View.GONE);
             groupchatStatusView.setVisibility(View.GONE);
         } else {
@@ -112,7 +118,8 @@ public class NewContactTitleInflater {
                 abstractContact.getAccount(), abstractContact.getUser());
 
         CharSequence statusText;
-        if (chatState == ChatState.composing) {
+        if (isServer) statusText = "Server";
+        else if (chatState == ChatState.composing) {
             statusText = context.getString(R.string.chat_state_composing);
         } else if (chatState == ChatState.paused) {
             statusText = context.getString(R.string.chat_state_paused);

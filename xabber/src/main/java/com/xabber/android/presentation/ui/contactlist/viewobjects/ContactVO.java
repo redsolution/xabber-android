@@ -82,6 +82,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
     protected boolean archived;
     protected int forwardedCount;
     private boolean isGroupchat;
+    private boolean isServer;
 
     protected final ContactClickListener listener;
 
@@ -98,7 +99,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
                         boolean mute, NotificationState.NotificationMode notificationMode, String messageText,
                         boolean isOutgoing, Date time, int messageStatus, String messageOwner,
                         boolean archived, String lastActivity, ContactClickListener listener,
-                        int forwardedCount, boolean isCustomNotification, boolean isGroupchat) {
+                        int forwardedCount, boolean isCustomNotification, boolean isGroupchat, boolean isServer) {
         this.id = UUID.randomUUID().toString();
         this.accountColorIndicator = accountColorIndicator;
         this.accountColorIndicatorBack = accountColorIndicatorBack;
@@ -124,6 +125,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
         this.forwardedCount = forwardedCount;
         this.isCustomNotification = isCustomNotification;
         this.isGroupchat = isGroupchat;
+        this.isServer = isServer;
     }
 
     public static ContactVO convert(AbstractContact contact, ContactClickListener listener) {
@@ -231,7 +233,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
                 statusLevel, avatar, mucIndicatorLevel, contact.getUser(), contact.getAccount(),
                 unreadCount, !chat.notifyAboutMessage(), mode, messageText, isOutgoing, time,
                 messageStatus, messageOwner, chat.isArchived(), lastActivity, listener, forwardedCount,
-                isCustomNotification, chat.isGroupchat() );
+                isCustomNotification, chat.isGroupchat(), contact.getUser().getJid().isDomainBareJid());
     }
 
     public static ArrayList<IFlexible> convert(Collection<AbstractContact> contacts, ContactClickListener listener) {
@@ -287,7 +289,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
         }
 
         /** set up ROSTER STATUS */
-        if (getStatusLevel() == 6 ||
+        if ((getStatusLevel() == 6 && !isServer) ||
                 (getMucIndicatorLevel() != 0 && getStatusLevel() != 1)) {
             if (viewHolder.tvStatus != null)
                 viewHolder.tvStatus.setTextColor(ColorManager.getInstance().getColorContactSecondLine());
@@ -305,7 +307,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
         if ((getStatusLevel() == 6 || (getMucIndicatorLevel() != 0 && getStatusLevel() != 1))
                 && !getLastActivity().isEmpty())
             if (viewHolder.tvStatus != null) viewHolder.tvStatus.setText(getLastActivity());
-
+        if (viewHolder.tvStatus != null && isServer) viewHolder.tvStatus.setText("Server");
         /* Show grey jid instead of status in SearchActivity */
         if (listener instanceof ChatListFragment
                 && ((ChatListFragment) listener).getActivity() instanceof SearchActivity
@@ -332,8 +334,9 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
 
         /** set up GROUPCHAT indicator */
         if (viewHolder.ivStatus.getVisibility() == View.VISIBLE) {
-            viewHolder.ivStatus.setVisibility(isGroupchat ? View.INVISIBLE : View.VISIBLE);
-            viewHolder.ivStatusGroupchat.setVisibility(isGroupchat ? View.VISIBLE : View.GONE);
+            viewHolder.ivStatus.setVisibility(isGroupchat || isServer ? View.INVISIBLE : View.VISIBLE);
+            viewHolder.ivStatusGroupchat.setVisibility(isGroupchat || isServer ? View.VISIBLE : View.GONE);
+            if (isServer) viewHolder.ivStatusGroupchat.setImageResource(R.drawable.ic_server_16_new);
         } else viewHolder.ivStatusGroupchat.setVisibility(View.GONE);
 
         /** set up NOTIFICATION MUTE */
@@ -473,6 +476,10 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
 
     public boolean isGroupchat() {
         return isGroupchat;
+    }
+
+    public boolean isServer() {
+        return isServer;
     }
 
     private int getThemeResource(Context context, int themeResourceId) {

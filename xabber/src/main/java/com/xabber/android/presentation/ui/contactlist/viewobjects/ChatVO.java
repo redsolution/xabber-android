@@ -7,8 +7,9 @@ package com.xabber.android.presentation.ui.contactlist.viewobjects;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.util.TypedValue;
+
+import androidx.annotation.Nullable;
 
 import com.xabber.android.R;
 import com.xabber.android.data.account.AccountManager;
@@ -18,14 +19,10 @@ import com.xabber.android.data.message.NotificationState;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.ui.color.ColorManager;
 
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-
-import androidx.annotation.Nullable;
 
 import eu.davidea.flexibleadapter.FlexibleAdapter;
 import eu.davidea.flexibleadapter.items.IFlexible;
@@ -45,12 +42,12 @@ public class ChatVO extends ExtContactVO {
                   boolean isOutgoing, Date time, int messageStatus, String messageOwner,
                   boolean archived, String lastActivity, ContactClickListener listener,
                   @Nullable IsCurrentChatListener currentChatListener, int forwardedCount,
-                  boolean isCustomNotification, boolean isGroupchat) {
+                  boolean isCustomNotification, boolean isGroupchat, boolean isServer) {
 
         super(accountColorIndicator, accountColorIndicatorBack, name, status,
                 statusId, statusLevel, avatar, mucIndicatorLevel, userJid, accountJid,
                 unreadCount, mute, notificationMode, messageText, isOutgoing, time, messageStatus,
-                messageOwner, archived, lastActivity, listener, forwardedCount, isCustomNotification, isGroupchat);
+                messageOwner, archived, lastActivity, listener, forwardedCount, isCustomNotification, isGroupchat, isServer);
 
         this.currentChatListener = currentChatListener;
     }
@@ -75,7 +72,7 @@ public class ChatVO extends ExtContactVO {
                 contactVO.isOutgoing(), contactVO.getTime(), contactVO.getMessageStatus(),
                 contactVO.getMessageOwner(), contactVO.isArchived(), contactVO.getLastActivity(),
                 contactVO.listener, currentChatListener, contactVO.forwardedCount,
-                contactVO.isCustomNotification(), contactVO.isGroupchat());
+                contactVO.isCustomNotification(), contactVO.isGroupchat(), contactVO.isServer());
     }
 
     public static ArrayList<IFlexible> convert(Collection<AbstractContact> contacts,
