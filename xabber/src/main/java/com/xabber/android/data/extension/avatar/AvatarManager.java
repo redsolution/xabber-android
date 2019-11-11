@@ -368,6 +368,14 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
         }
     }
 
+    public String getCurrentXEPHash(Jid jid) {
+        return getXEPHash(jid);
+    }
+
+    public void setXEPHashAsCurrent(Jid jid, String hash) {
+        setXEPHash(jid, hash);
+    }
+
     @Nullable
     public String getHash(Jid bareAddress) {
         return hashes.get(bareAddress);

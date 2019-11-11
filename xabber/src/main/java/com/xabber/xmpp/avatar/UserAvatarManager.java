@@ -534,8 +534,15 @@ public final class UserAvatarManager extends Manager {
                         for (MetadataInfo info : metadataExtension.getInfoElements()){
                             if (info.getType().equals("image/jpeg") || info.getType().equals("image/png")) {
                                 if (metadataStore != null && metadataStore.hasAvatarAvailable(from, info.getId())) {
-                                    // The metadata store implies that we have a local copy of the published image already. Skip.
-                                    continue;
+                                    AvatarManager am = AvatarManager.getInstance();
+                                    // If we have a locally saved copy of the avatar, check if its hash
+                                    // matches the hash of the current PEP-avatar(XEP-0084)
+                                    // and if not, set it as the current one.
+                                    if(am.getCurrentXEPHash(from) != null) {
+                                        if (am.getCurrentXEPHash(from).equals(info.getId()))
+                                            continue;
+                                        am.setXEPHashAsCurrent(from, info.getId());
+                                    }
                                 }
                                 for (AvatarListener listener : avatarListeners) {
                                     listener.onAvatarUpdateReceived(from, metadataExtension);
