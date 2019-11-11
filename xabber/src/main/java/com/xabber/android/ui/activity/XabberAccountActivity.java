@@ -70,7 +70,7 @@ public class XabberAccountActivity extends BaseLoginActivity
 
         toolbar = (Toolbar) findViewById(R.id.toolbar_default);
         toolbar.setOnMenuItemClickListener(this);
-        toolbar.setNavigationIcon(R.drawable.ic_arrow_left);
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_left_black_24dp);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

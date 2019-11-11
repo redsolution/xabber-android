@@ -58,7 +58,7 @@
             <ImageButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_search_grey600_24dp"
+                android:src="?attr/standard_search_icon"
                 android:paddingLeft="16dp"
                 android:paddingRight="8dp"
                 android:paddingTop="16dp"

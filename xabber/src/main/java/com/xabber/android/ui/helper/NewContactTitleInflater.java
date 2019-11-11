@@ -38,7 +38,8 @@ public class NewContactTitleInflater {
 
         nameView.setText(abstractContact.getName());
         if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.dark)
-            nameView.setTextColor(ColorManager.getInstance().getAccountPainter().getAccountColorWithTint(abstractContact.getAccount(), 500));
+            nameView.setTextColor(Color.WHITE);
+            //nameView.setTextColor(ColorManager.getInstance().getAccountPainter().getAccountColorWithTint(abstractContact.getAccount(), 500));
 
         // notification mute
         Resources resources = context.getResources();

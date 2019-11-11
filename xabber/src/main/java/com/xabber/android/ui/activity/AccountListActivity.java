@@ -29,6 +29,7 @@ import android.widget.TextView;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
@@ -64,7 +65,9 @@ public class AccountListActivity extends ManagedActivity implements OnAccountCha
         setContentView(R.layout.activity_account_list);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar_default);
-        toolbar.setNavigationIcon(R.drawable.ic_clear_grey_24dp);
+        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light)
+            toolbar.setNavigationIcon(R.drawable.ic_clear_grey_24dp);
+        else toolbar.setNavigationIcon(R.drawable.ic_clear_white_24dp);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

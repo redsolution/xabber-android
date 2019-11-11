@@ -90,9 +90,7 @@
             android:layout_centerVertical="true"
             android:layout_marginRight="6dp"
             android:padding="8dp"
-            android:src="@drawable/ic_overflow_menu_white_24dp"
-            android:tint="?attr/contact_list_account_group_small_right_icon_color"
-            android:alpha="0.5"
+            android:src="?attr/standard_overflow_icon"
             android:clickable="true" />
 
     </RelativeLayout>

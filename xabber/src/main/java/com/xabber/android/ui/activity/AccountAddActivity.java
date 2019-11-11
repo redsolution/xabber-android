@@ -16,15 +16,18 @@ package com.xabber.android.ui.activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import androidx.appcompat.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.xabber.android.R;
+import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.ui.color.BarPainter;
@@ -51,12 +54,14 @@ public class AccountAddActivity extends ManagedActivity implements Toolbar.OnMen
 
         setContentView(R.layout.activity_with_toolbar_and_container);
 
+        toolbar = (Toolbar) findViewById(R.id.toolbar_default);
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction().add(R.id.fragment_container, AccountAddFragment.newInstance()).commit();
         }
-
-        toolbar = (Toolbar) findViewById(R.id.toolbar_default);
-        toolbar.setNavigationIcon(R.drawable.ic_clear_grey_24dp);
+        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light)
+            toolbar.setNavigationIcon(R.drawable.ic_clear_grey_24dp);
+        else
+            toolbar.setNavigationIcon(R.drawable.ic_clear_white_24dp);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -68,7 +73,11 @@ public class AccountAddActivity extends ManagedActivity implements Toolbar.OnMen
         toolbar.getMenu().findItem(R.id.action_add_account).setIcon(null);
 
         toolbar.getMenu().findItem(R.id.action_add_account).setEnabled(false);
-
+        View view = toolbar.findViewById(R.id.action_add_account);
+        if (view != null && view instanceof TextView)
+            if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light)
+                ((TextView)view).setTextColor(getResources().getColor(R.color.grey_600));
+            else ((TextView)view).setTextColor(Color.WHITE);
         toolbar.setOnMenuItemClickListener(this);
 
 

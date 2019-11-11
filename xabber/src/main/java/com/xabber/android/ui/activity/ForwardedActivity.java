@@ -12,6 +12,7 @@ import androidx.appcompat.widget.Toolbar;
 import android.view.View;
 
 import com.xabber.android.R;
+import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.ui.color.ColorManager;
@@ -54,7 +55,9 @@ public class ForwardedActivity extends ManagedActivity {
         }
 
         toolbar = (Toolbar) findViewById(R.id.toolbar_default);
-        toolbar.setNavigationIcon(R.drawable.ic_arrow_left_grey_24dp);
+        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light)
+            toolbar.setNavigationIcon(R.drawable.ic_arrow_left_grey_24dp);
+        else toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
         toolbar.setBackgroundColor(ColorManager.getInstance().getAccountPainter().getAccountMainColor(account));
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override

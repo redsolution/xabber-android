@@ -305,22 +305,14 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         });
 
         toolbar = (Toolbar) findViewById(R.id.toolbar_default);
-        Drawable overflow = getResources().getDrawable(R.drawable.ic_overflow_menu_grey_24dp);
-        Drawable navigation = getResources().getDrawable(R.drawable.ic_arrow_left_grey_24dp);
-        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.dark){
-            overflow.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP);
-            overflow.setAlpha(128);
-            navigation.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP);
-            navigation.setAlpha(128);
+        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light){
+            toolbar.setNavigationIcon(R.drawable.ic_arrow_left_grey_24dp);
+            toolbar.setOverflowIcon(getResources().getDrawable(R.drawable.ic_overflow_menu_grey_24dp));
         } else {
-            overflow.setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_ATOP);
-            overflow.setAlpha(128);
-            navigation.setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_ATOP);
-            navigation.setAlpha(128);
+            toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
+            toolbar.setOverflowIcon(getResources().getDrawable(R.drawable.ic_overflow_menu_white_24dp));
         }
-        toolbar.setOverflowIcon(overflow);
         toolbar.setOnMenuItemClickListener(this);
-        toolbar.setNavigationIcon(navigation);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

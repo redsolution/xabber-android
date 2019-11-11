@@ -13,6 +13,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import com.xabber.android.R;
+import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.ui.adapter.LogFilesAdapter;
 import com.xabber.android.ui.color.BarPainter;
@@ -42,7 +43,9 @@ public class LogActivity extends ManagedActivity implements Toolbar.OnMenuItemCl
 
         toolbar.inflateMenu(LOG_MENU);
         toolbar.setOnMenuItemClickListener(this);
-
+        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light)
+            toolbar.setOverflowIcon(getResources().getDrawable(R.drawable.ic_overflow_menu_grey_24dp));
+        else toolbar.setOverflowIcon(getResources().getDrawable(R.drawable.ic_overflow_menu_white_24dp));
         recyclerView = (RecyclerView) findViewById(R.id.activity_log_recycler_view);
         logFilesAdapter = new LogFilesAdapter();
         recyclerView.setAdapter(logFilesAdapter);

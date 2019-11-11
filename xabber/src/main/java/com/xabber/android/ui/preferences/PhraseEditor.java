@@ -66,6 +66,7 @@ public class PhraseEditor extends BasePhrasePreferences implements ConfirmDialog
 
         Toolbar toolbar = ToolbarHelper.setUpDefaultToolbar(this, title);
         toolbar.inflateMenu(R.menu.toolbar_delete);
+
         toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
