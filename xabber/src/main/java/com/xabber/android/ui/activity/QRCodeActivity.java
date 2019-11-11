@@ -5,12 +5,13 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.TypedValue;
 import android.view.View;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import com.xabber.android.R;
+import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.data.intent.EntityIntentBuilder;
@@ -19,7 +20,7 @@ import com.xabber.android.ui.fragment.QRCodeFragment;
 
 
 
-public class QRCodeActivity extends AppCompatActivity {
+public class QRCodeActivity extends ManagedActivity {
 
     private Toolbar toolbar;
     private AccountJid account;
@@ -78,15 +79,24 @@ public class QRCodeActivity extends AppCompatActivity {
 
 
         //ImageView qrCode = findViewById(R.id.qrCode);
-
-        findViewById(R.id.fragment_container).setBackgroundColor(Color.WHITE);
+        TypedValue typedValue = new TypedValue();
         setColors(account);
     }
 
     public void setColors(AccountJid account){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            getWindow().setStatusBarColor(ColorManager.getInstance().getAccountPainter().getAccountDarkColor(account));
-            toolbar.setBackgroundColor(ColorManager.getInstance().getAccountPainter().getAccountMainColor(account));
+            if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light){
+                getWindow().setStatusBarColor(ColorManager.getInstance().getAccountPainter().getAccountMainColor(account));
+                toolbar.setBackgroundColor(ColorManager.getInstance().getAccountPainter().getAccountRippleColor(account));
+                findViewById(R.id.fragment_container).setBackgroundColor(Color.WHITE);
+            } else {
+                TypedValue typedValue = new TypedValue();
+                getTheme().resolveAttribute(R.attr.bars_color, typedValue, true);
+                toolbar.setBackgroundColor(typedValue.data);
+                toolbar.setTitleTextColor(Color.WHITE);
+                getWindow().setStatusBarColor(typedValue.data);
+                findViewById(R.id.fragment_container).setBackgroundColor(Color.BLACK);
+            }
         }
     }
 

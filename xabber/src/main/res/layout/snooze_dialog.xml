@@ -6,6 +6,7 @@
     android:layout_height="wrap_content"
     android:paddingTop="8dp"
     android:paddingBottom="8dp"
+    android:background="?attr/standard_background_color"
     >
 
     <LinearLayout
@@ -22,7 +23,7 @@
             android:layout_gravity="center_vertical"
             android:layout_marginLeft="16dp"
             android:src="@drawable/ic_snooze_15min"
-            android:tint="@color/grey_600"
+            android:tint="@color/grey_500"
             />
 
         <TextView
@@ -32,6 +33,7 @@
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
             android:textAppearance="?android:attr/textAppearanceListItem"
+            android:textColor="?attr/standard_text_color"
             android:text="@string/mute_15_min"
             />
 
@@ -51,7 +53,7 @@
             android:layout_gravity="center_vertical"
             android:layout_marginLeft="16dp"
             android:src="@drawable/ic_snooze_1hour"
-            android:tint="@color/grey_600"
+            android:tint="@color/grey_500"
             />
 
         <TextView
@@ -61,6 +63,7 @@
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
             android:textAppearance="?android:attr/textAppearanceListItem"
+            android:textColor="?attr/standard_text_color"
             android:text="@string/mute_1_hour"
             />
 
@@ -80,7 +83,7 @@
             android:layout_gravity="center_vertical"
             android:layout_marginLeft="16dp"
             android:src="@drawable/ic_snooze_2hours"
-            android:tint="@color/grey_600"
+            android:tint="@color/grey_500"
             />
 
         <TextView
@@ -90,6 +93,7 @@
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
             android:textAppearance="?android:attr/textAppearanceListItem"
+            android:textColor="?attr/standard_text_color"
             android:text="@string/mute_2_hours"
             />
 
@@ -109,7 +113,7 @@
             android:layout_gravity="center_vertical"
             android:layout_marginLeft="16dp"
             android:src="@drawable/ic_snooze_1day"
-            android:tint="@color/grey_600"
+            android:tint="@color/grey_500"
             />
 
         <TextView
@@ -119,6 +123,7 @@
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
             android:textAppearance="?android:attr/textAppearanceListItem"
+            android:textColor="?attr/standard_text_color"
             android:text="@string/mute_1_day"
             />
 
@@ -138,7 +143,7 @@
             android:layout_gravity="center_vertical"
             android:layout_marginLeft="16dp"
             android:src="@drawable/ic_snooze_forever"
-            android:tint="@color/grey_600"
+            android:tint="@color/grey_500"
             />
 
         <TextView
@@ -148,6 +153,7 @@
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
             android:textAppearance="?android:attr/textAppearanceListItem"
+            android:textColor="?attr/standard_text_color"
             android:text="@string/mute_forever"
             />
 

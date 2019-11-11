@@ -6,4 +6,5 @@
     android:id="@+id/fragment_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:showIn="@layout/activity_with_toolbar_and_container" />
+    tools:showIn="@layout/activity_with_toolbar_and_container"
+    android:background="?attr/contact_list_contact_background"/>

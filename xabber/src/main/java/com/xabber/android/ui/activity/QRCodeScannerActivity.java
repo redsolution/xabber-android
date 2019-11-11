@@ -17,7 +17,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.app.NavUtils;
 
 import com.journeyapps.barcodescanner.CaptureManager;
 import com.journeyapps.barcodescanner.DecoratedBarcodeView;
@@ -45,7 +44,7 @@ public class QRCodeScannerActivity extends AppCompatActivity implements Decorate
         qrScannerView.setTorchListener(this);
 
         toolbar = (Toolbar) findViewById(R.id.scanner_toolbar);
-        toolbar.setNavigationIcon(R.drawable.ic_arrow_left_grey_24dp);
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

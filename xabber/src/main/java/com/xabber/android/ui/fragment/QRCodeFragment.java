@@ -1,19 +1,17 @@
 package com.xabber.android.ui.fragment;
 
+import android.app.Fragment;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-
-import android.app.Fragment;
 import android.widget.TextView;
 
 import com.google.zxing.BarcodeFormat;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
 import com.xabber.android.R;
-
 
 
 public class QRCodeFragment extends Fragment {

@@ -1,7 +1,6 @@
 package com.xabber.android.ui.color;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Color;
 import android.util.TypedValue;
 
@@ -19,7 +18,6 @@ public class BarPainter {
     private final Toolbar toolbar;
     private StatusBarPainter statusBarPainter;
     private TypedValue typedValue = new TypedValue();
-    private Resources.Theme theme;
     int standartColor;
     private AccountPainter accountPainter;
     Context context;
@@ -28,10 +26,9 @@ public class BarPainter {
         this.toolbar = toolbar;
         statusBarPainter = new StatusBarPainter(activity);
         accountPainter = new AccountPainter(activity);
-        theme = activity.getTheme();
-        standartColor = typedValue.data;
         context = toolbar.getContext();
-        theme.resolveAttribute(R.attr.bars_color, typedValue, true);
+        activity.getTheme().resolveAttribute(R.attr.bars_color, typedValue, true);
+        standartColor = typedValue.data;
     }
 
     public void updateWithAccountName(AccountJid account) {
