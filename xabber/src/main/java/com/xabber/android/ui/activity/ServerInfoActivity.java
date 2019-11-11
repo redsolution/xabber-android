@@ -11,6 +11,7 @@ import android.view.View;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
@@ -77,7 +78,9 @@ public class ServerInfoActivity extends ManagedActivity {
         }
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_default);
-        toolbar.setNavigationIcon(R.drawable.ic_arrow_left_grey_24dp);
+        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light)
+            toolbar.setNavigationIcon(R.drawable.ic_arrow_left_grey_24dp);
+        else toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

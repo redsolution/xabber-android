@@ -34,6 +34,7 @@ import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountErrorEvent;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
@@ -142,8 +143,12 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
 
         setContentView(R.layout.activity_account);
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar_default);
-        toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_default);
+        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light)
+            toolbar.setNavigationIcon(R.drawable.ic_arrow_left_grey_24dp);
+        else toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
+
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

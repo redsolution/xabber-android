@@ -21,7 +21,7 @@
         android:layout_width="32dp"
         android:layout_height="32dp"
         android:id="@+id/ivReload"
-        android:src="@drawable/ic_sync"
+        android:src="@drawable/ic_sync_white_24dp"
         android:tint="@color/black"
         android:layout_below="@id/toolbar_default"
         android:layout_alignParentRight="true"

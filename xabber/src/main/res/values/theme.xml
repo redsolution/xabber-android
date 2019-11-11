@@ -94,6 +94,18 @@
 
         <item name="standard_text_color">@color/black</item>
         <item name="standard_background_color">@color/white</item>
+
+        <item name="standard_icons_color">@color/grey_600</item>
+        <item name="standard_arrow_left_icon">@drawable/ic_arrow_left_grey_24dp</item>
+        <item name="standard_search_icon">@drawable/ic_search_grey_24dp</item>
+        <item name="standard_clear_icon">@drawable/ic_clear_grey_24dp</item>
+        <item name="standard_add_icon">@drawable/ic_add_grey_24dp</item>
+        <item name="standard_overflow_icon">@drawable/ic_overflow_menu_grey_24dp</item>
+        <item name="standard_delete_icon">@drawable/ic_delete_grey_24dp</item>
+        <item name="standard_sync_icon">@drawable/ic_sync_grey_24dp</item>
+
+        <item name="standard_show_password_icon">@drawable/ic_show_grey_24dp</item>
+        <item name="standard_hide_password_icon">@drawable/ic_hide_grey_24dp</item>
     </style>
 
     <style name="ThemeDark" parent="Base.ThemeDark"></style>
@@ -185,9 +197,19 @@
 
         <item name="standard_text_color">@color/grey_500</item>
         <item name="standard_background_color">@color/black</item>
+
+        <item name="standard_icons_color">@color/white</item>
+        <item name="standard_arrow_left_icon">@drawable/ic_arrow_left_white_24dp</item>
+        <item name="standard_search_icon">@drawable/ic_search_white_24dp</item>
+        <item name="standard_clear_icon">@drawable/ic_clear_white_24dp</item>
+        <item name="standard_add_icon">@drawable/ic_add_white_24dp</item>
+        <item name="standard_overflow_icon">@drawable/ic_overflow_menu_white_24dp</item>
+        <item name="standard_delete_icon">@drawable/ic_delete_white_24dp</item>
+        <item name="standard_sync_icon">@drawable/ic_sync_white_24dp</item>
+
+        <item name="standard_show_password_icon">@drawable/ic_show_white_24dp</item>
+        <item name="standard_hide_password_icon">@drawable/ic_hide_white_24dp</item>
     </style>
-
-
 
     <style name="ToolbarTitle" parent="@style/TextAppearance.Widget.AppCompat.Toolbar.Title">
         <item name="android:textSize">20sp</item>
@@ -214,18 +236,6 @@
         <item name="android:textSize">40sp</item>
         <item name="android:textColorSecondary">@color/white</item>
         <item name="android:textColor">@color/white</item>
-    </style>
-
-    <style name="ToolbarDefault" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
-        <item name="colorControlNormal">@color/grey_500</item>
-        <item name="android:textColorSecondary">@color/grey_500</item>
-        <item name="android:actionOverflowButtonStyle">@style/OverflowButtonStyle.Grey</item>
-        <item name="android:actionOverflowMenuStyle">@style/OverflowButtonStyle.Grey</item>
-        <item name="android:actionMenuTextColor">@color/grey_600</item>
-    </style>
-
-    <style name="OverflowButtonStyle.Grey" parent="OverflowButtonStyle">
-        <item name="android:textColorSecondary">@color/grey_500</item>
     </style>
 
     <style name="Divider">

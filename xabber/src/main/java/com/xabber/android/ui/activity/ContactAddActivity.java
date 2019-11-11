@@ -16,15 +16,19 @@ package com.xabber.android.ui.activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
-import androidx.appcompat.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.TextView;
+
+import androidx.appcompat.widget.Toolbar;
 
 import com.xabber.android.R;
+import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.intent.EntityIntentBuilder;
@@ -72,8 +76,16 @@ public class ContactAddActivity extends ManagedActivity implements ContactAddFra
 
         setContentView(R.layout.activity_with_toolbar_progress_and_container);
 
-        toolbar = ToolbarHelper.setUpDefaultToolbar(this, null, R.drawable.ic_clear_grey_24dp);
+        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light)
+            toolbar = ToolbarHelper.setUpDefaultToolbar(this, null, R.drawable.ic_clear_grey_24dp);
+        else toolbar = ToolbarHelper.setUpDefaultToolbar(this, null, R.drawable.ic_clear_white_24dp);
         toolbar.inflateMenu(R.menu.toolbar_add_contact);
+        toolbar.setOverflowIcon(getResources().getDrawable(R.drawable.ic_overflow_menu_white_24dp));
+        View view = findViewById(R.id.action_add_contact);
+        if (view != null && view instanceof TextView)
+            if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light)
+                ((TextView) view).setTextColor(getResources().getColor(R.color.grey_600));
+            else ((TextView) view).setTextColor(getResources().getColor(R.color.white));
         toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {

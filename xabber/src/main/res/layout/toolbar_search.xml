@@ -11,13 +11,11 @@
         android:id="@+id/toolbar_search_back_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_arrow_left"
+        android:src="?attr/standard_arrow_left_icon"
         android:padding="8dp"
         android:layout_centerVertical="true"
         android:layout_alignParentLeft="true"
         android:layout_marginLeft="8dp"
-        android:tint="?attr/contact_list_account_group_small_right_icon_color"
-        android:alpha="0.5"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:clickable="true"/>
 
@@ -40,15 +38,13 @@
             />
         <ImageView
             android:id="@+id/search_toolbar_search_button"
-            android:src="@drawable/ic_search"
+            android:src="?attr/standard_search_icon"
             android:layout_alignParentRight="true"
             android:layout_marginRight="8dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="8dp"
             android:layout_centerVertical="true"
-            android:tint="?attr/contact_list_account_group_small_right_icon_color"
-            android:alpha="0.5"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
             />
@@ -73,15 +69,13 @@
             />
         <ImageView
             android:id="@+id/search_toolbar_clear_button"
-            android:src="@drawable/ic_close"
+            android:src="?attr/standard_clear_icon"
             android:layout_alignParentRight="true"
             android:layout_marginRight="8dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="8dp"
             android:layout_centerVertical="true"
-            android:tint="?attr/contact_list_account_group_small_right_icon_color"
-            android:alpha="0.5"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
             android:visibility="gone"

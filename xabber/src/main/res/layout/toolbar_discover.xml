@@ -33,7 +33,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        app:srcCompat="@drawable/ic_search"
+        app:srcCompat="?attr/standard_search_icon"
         android:layout_marginRight="6dp"
         android:layout_alignParentRight="true"
         android:padding="8dp"/>

@@ -52,7 +52,7 @@
             android:clickable="true"
             android:focusable="true"
             android:visibility="gone"
-            app:srcCompat="@drawable/ic_close"
+            app:srcCompat="?attr/standard_clear_icon"
             />
     </RelativeLayout>
 

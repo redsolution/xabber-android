@@ -69,7 +69,7 @@
                 android:clickable="true"
                 android:focusable="true"
                 android:background="@drawable/test_ripple"
-                app:srcCompat="@drawable/ic_close"
+                app:srcCompat="?attr/standard_clear_icon"
                 android:visibility="gone"/>
 
         </RelativeLayout>

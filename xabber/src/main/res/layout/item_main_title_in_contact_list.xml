@@ -39,9 +39,7 @@
         android:layout_alignParentRight="true"
         android:padding="8dp"
         android:layout_marginRight="8dp"
-        app:srcCompat="@drawable/ic_search"
-        android:tint="?attr/contact_list_account_group_small_right_icon_color"
-        android:alpha="0.5"
+        app:srcCompat="?attr/standard_search_icon"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:clickable="true"/>
 
@@ -52,9 +50,7 @@
         android:layout_centerVertical="true"
         android:layout_toLeftOf="@+id/toolbar_search_button"
         android:padding="8dp"
-        app:srcCompat="@drawable/ic_add_contact"
-        android:tint="?attr/contact_list_account_group_small_right_icon_color"
-        android:alpha="0.5"
+        app:srcCompat="?attr/standard_add_icon"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:clickable="true"
         />

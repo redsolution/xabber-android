@@ -16,6 +16,7 @@ package com.xabber.android.ui.activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import androidx.appcompat.widget.Toolbar;
 import android.view.ContextMenu;
@@ -31,6 +32,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
@@ -81,8 +83,10 @@ public class StatusEditActivity extends ManagedListActivity implements OnItemCli
         actionWithItem = null;
 
         setContentView(R.layout.activity_status);
-
-        Toolbar toolbar = ToolbarHelper.setUpDefaultToolbar(this, null, R.drawable.ic_clear_grey_24dp);
+        Toolbar toolbar;
+        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light)
+            toolbar = ToolbarHelper.setUpDefaultToolbar(this, null, R.drawable.ic_clear_grey_24dp);
+        else toolbar = ToolbarHelper.setUpDefaultToolbar(this, null, R.drawable.ic_clear_white_24dp);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
              public void onClick(View v) {
@@ -96,7 +100,11 @@ public class StatusEditActivity extends ManagedListActivity implements OnItemCli
                 return onOptionsItemSelected(item);
             }
         });
-
+        View view = toolbar.findViewById(R.id.action_change_status);
+        if (view != null && view instanceof TextView)
+            if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light)
+                ((TextView) view).setTextColor(getResources().getColor(R.color.grey_600));
+            else ((TextView) view).setTextColor(Color.WHITE);
         Intent intent = getIntent();
         account = StatusEditActivity.getAccount(intent);
 
