@@ -1,31 +1,39 @@
 package com.xabber.android.ui.activity;
 
 import android.app.AlertDialog;
-import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
+import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewTreeObserver;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.CompoundButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.SwitchCompat;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.NavUtils;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.appcompat.widget.SwitchCompat;
-import androidx.appcompat.widget.Toolbar;
 
-import android.util.TypedValue;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.CompoundButton;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
-
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.MultiTransformation;
+import com.bumptech.glide.load.resource.bitmap.CenterCrop;
+import com.google.android.material.appbar.AppBarLayout;
+import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.zxing.integration.android.IntentIntegrator;
-import com.google.zxing.integration.android.IntentResult;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
-import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountErrorEvent;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
@@ -42,10 +50,10 @@ import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.data.xaccount.XabberAccountManager;
 import com.xabber.android.ui.adapter.accountoptions.AccountOption;
 import com.xabber.android.ui.adapter.accountoptions.AccountOptionsAdapter;
-import com.xabber.android.ui.color.BarPainter;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.dialog.AccountColorDialog;
 import com.xabber.android.ui.fragment.ContactVcardViewerFragment;
+import com.xabber.android.ui.helper.BlurTransformation;
 import com.xabber.android.ui.helper.ContactTitleInflater;
 
 import org.greenrobot.eventbus.Subscribe;
@@ -53,23 +61,35 @@ import org.greenrobot.eventbus.Subscribe;
 import java.util.Collection;
 
 public class AccountActivity extends ManagedActivity implements AccountOptionsAdapter.Listener,
-        OnAccountChangedListener, OnBlockedListChangedListener, ContactVcardViewerFragment.Listener {
+        OnAccountChangedListener, OnBlockedListChangedListener, ContactVcardViewerFragment.Listener, MenuItem.OnMenuItemClickListener, View.OnClickListener, Toolbar.OnMenuItemClickListener {
 
     private static final String LOG_TAG = AccountActivity.class.getSimpleName();
     private static final String ACTION_CONNECTION_SETTINGS = AccountActivity.class.getName() + "ACTION_CONNECTION_SETTINGS";
 
     private AccountJid account;
-    private View contactTitleView;
+    private UserJid fakeAccountUser;
     private AbstractContact bestContact;
-    private View statusIcon;
-    private TextView statusText;
-    private AccountOptionsAdapter accountOptionsAdapter;
-    private BarPainter barPainter;
-    private SwitchCompat switchCompat;
     private AccountItem accountItem;
-    private boolean isConnectionSettingsAction;
-    private ImageView qrImage;
+
+    private View contactTitleView;
+    private View statusIcon;
+    private View statusGroupIcon;
+    private ImageView background;
+    private ImageView qrCodeLand;
+    private ImageView colorPickerLand;
+    private MenuItem qrCodePortrait;
+    private MenuItem colorPickerPortrait;
+    private SwitchCompat switchCompat;
+    private CollapsingToolbarLayout collapsingToolbar;
+    private AppBarLayout appBarLayout;
+    private Toolbar toolbar;
+    private RecyclerView recyclerView;
+
+    private AccountOptionsAdapter accountOptionsAdapter;
     private IntentIntegrator integrator;
+    private boolean isConnectionSettingsAction;
+    private int accountMainColor;
+    private int orientation;
 
     public AccountActivity() {
     }
@@ -118,10 +138,12 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
             setIntent(null);
         }
 
+        setScreenWindowSettings();
+
         setContentView(R.layout.activity_account);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_default);
-        toolbar.setNavigationIcon(R.drawable.ic_arrow_left_grey_24dp);
+        toolbar = (Toolbar) findViewById(R.id.toolbar_default);
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -129,12 +151,10 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
             }
         });
 
-        toolbar.setTitle(R.string.contact_account);
         toolbar.inflateMenu(R.menu.toolbar_account);
 
         MenuItem item = toolbar.getMenu().findItem(R.id.action_account_switch);
         switchCompat = (SwitchCompat) item.getActionView().findViewById(R.id.account_switch_view);
-
         switchCompat.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -142,9 +162,6 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
             }
         });
 
-        barPainter = new BarPainter(this, toolbar);
-
-        final UserJid fakeAccountUser;
         try {
             fakeAccountUser = UserJid.from(account.getFullJid().asBareJid());
         } catch (UserJid.UserJidCreateException e) {
@@ -153,71 +170,145 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
 
         bestContact = RosterManager.getInstance().getBestContact(account, fakeAccountUser);
 
-        contactTitleView = findViewById(R.id.contact_title_expanded);
+        accountMainColor = ColorManager.getInstance().getAccountPainter().getAccountMainColor(account);
+
+        contactTitleView = findViewById(R.id.contact_title_expanded_new);
+        TextView contactAddressView = (TextView) findViewById(R.id.address_text);
+        contactAddressView.setText(account.getFullJid().asBareJid().toString());
+
         statusIcon = findViewById(R.id.ivStatus);
-        statusText = (TextView) findViewById(R.id.status_text);
+        statusGroupIcon = findViewById(R.id.ivStatusGroupchat);
+        //statusText = (TextView) findViewById(R.id.status_text);
 
-        qrImage = (ImageView) findViewById(R.id.imgQRcode);
-        qrImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                RosterContact rosterContact = RosterManager.getInstance().getRosterContact(account, fakeAccountUser);
-                Intent intent = QRCodeActivity.createIntent(AccountActivity.this, account);
-                String textName = rosterContact != null ? rosterContact.getName() : "";
-                intent.putExtra("account_name", textName);
-                String textAddress =  account.getFullJid().asBareJid().toString();
-                intent.putExtra("account_address", textAddress);
-                intent.putExtra("caller", "AccountActivity");
-
-                //integrator.setOrientationLocked(true)
-                //        .setBeepEnabled(false)
-                //        .setCameraId(0)
-                //        .setPrompt("")
-                //        .addExtra("account_name", textName)
-                //        .addExtra("account_address", textAddress)
-                //        .setCaptureActivity(QRCodeScannerActivity.class)
-                //        .initiateScan(Collections.unmodifiableList(Collections.singletonList(IntentIntegrator.QR_CODE)));
-
-                startActivity(intent);
-            }
-        });
-
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.account_options_recycler_view);
-
-
+        //
+        toolbar.setOnMenuItemClickListener(this);
+        qrCodePortrait = toolbar.getMenu().findItem(R.id.action_generate_qrcode);
+        colorPickerPortrait = toolbar.getMenu().findItem(R.id.action_account_color);
+        //qrCodePortrait.setOnMenuItemClickListener(this);
+        //
+        recyclerView = (RecyclerView) findViewById(R.id.account_options_recycler_view);
         accountOptionsAdapter = new AccountOptionsAdapter(AccountOption.getValues(), this, accountItem);
-
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(accountOptionsAdapter);
         recyclerView.setNestedScrollingEnabled(false);
 
-        Fragment fragmentById = getFragmentManager().findFragmentById(R.id.account_fragment_container);
-
-        if (fragmentById == null) {
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.account_fragment_container, ContactVcardViewerFragment.newInstance(account))
-                    .commit();
+        orientation = getResources().getConfiguration().orientation;
+        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+            orientationPortrait();
+        } else {
+            orientationLandscape();
         }
+
     }
 
-    public void onActivityResult(int requestCode, int resultCode, Intent data){
-        IntentResult result = IntentIntegrator.parseActivityResult(requestCode,resultCode, data);
-        if(result!=null){
-            if(result.getContents()==null){
-                Toast.makeText(AccountActivity.this, "no-go", Toast.LENGTH_LONG).show();
-            } else {
-                Toast.makeText(AccountActivity.this, "Scanned = " + result.getContents(), Toast.LENGTH_LONG).show();
-                if(result.getContents().length()>5)
-                    if(result.getContents().substring(0,5).equals("xmpp:")) {
-                        Intent intent = ContactAddActivity.createIntent(this, account);
-                        intent.putExtra("contact",result.getContents().substring(5));
-                        startActivity(intent);
-                        //startActivity(intent);
-                    }
+    private void orientationPortrait() {
+        collapsingToolbar = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
+        appBarLayout = (AppBarLayout) findViewById(R.id.appbar);
+        appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
+            boolean isShow = true;
+            int scrollRange = -1;
+            @Override
+            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+                if (scrollRange == -1) {
+                    scrollRange = appBarLayout.getTotalScrollRange();
+                }
+                if (scrollRange + verticalOffset == 0) {
+                    collapsingToolbar.setTitle(bestContact.getName());
+                    contactTitleView.setVisibility(View.INVISIBLE);
+                    isShow = true;
+                } else if (isShow) {
+                    collapsingToolbar.setTitle(" ");
+                    contactTitleView.setVisibility(View.VISIBLE);
+                    isShow = false;
+                }
             }
-        } else {
-            super.onActivityResult(requestCode, resultCode, data);
+        });
+        collapsingToolbar.setContentScrimColor(accountMainColor);
+    }
+
+    private void orientationLandscape() {
+        final LinearLayout nameHolderView = (LinearLayout) findViewById(R.id.name_holder);
+        toolbar.setBackgroundColor(Color.TRANSPARENT);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Window win = getWindow();
+            win.setStatusBarColor(accountMainColor);
         }
+
+        qrCodePortrait.setVisible(false);
+        qrCodeLand = findViewById(R.id.generate_qrcode);
+        qrCodeLand.setOnClickListener(this);
+
+        colorPickerPortrait.setVisible(false);
+        colorPickerLand = findViewById(R.id.change_color);
+        colorPickerLand.setOnClickListener(this);
+
+        final LinearLayout ll = findViewById(R.id.scroll_view_child);
+        nameHolderView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                    nameHolderView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                }
+                else nameHolderView.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                int topPadding = (nameHolderView.getHeight());
+                ll.setPadding(0,topPadding,0,0);
+            }
+        });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (AccountManager.getInstance().getAccount(account) == null) {
+            // in case if account was removed
+            finish();
+            return;
+        }
+        updateTitle();
+        updateOptions();
+        Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
+        Application.getInstance().addUIListener(OnBlockedListChangedListener.class, this);
+    }
+
+    @Override
+    protected void onPause() {
+        Application.getInstance().removeUIListener(OnBlockedListChangedListener.class, this);
+        Application.getInstance().removeUIListener(OnAccountChangedListener.class, this);
+
+        isConnectionSettingsAction = false;
+        super.onPause();
+    }
+
+    private void updateTitle() {
+        ContactTitleInflater.updateTitle(contactTitleView, this, bestContact);
+        statusIcon.setVisibility(View.GONE);
+        statusGroupIcon.setVisibility(View.GONE);
+        updateAccountColor();
+        //statusText.setText(account.getFullJid().asBareJid().toString());
+        switchCompat.setChecked(accountItem.isEnabled());
+    }
+
+    private void updateAccountColor() {
+        accountMainColor = ColorManager.getInstance().getAccountPainter().getAccountMainColor(account);
+
+        if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                Window win = getWindow();
+                win.setStatusBarColor(accountMainColor);
+            }
+        }
+
+        if (collapsingToolbar != null)
+            collapsingToolbar.setContentScrimColor(accountMainColor);
+
+        background = findViewById(R.id.backgroundView);
+        Drawable backgroundSource = bestContact.getAvatar(false);
+        if (backgroundSource == null)
+            backgroundSource = getResources().getDrawable(R.drawable.about_backdrop);
+        Glide.with(this)
+                .load(backgroundSource)
+                .transform(new MultiTransformation<Bitmap>(new CenterCrop(), new BlurTransformation(25, 8, /*this,*/ accountMainColor)))
+                .into(background);
     }
 
     private void updateOptions() {
@@ -225,10 +316,12 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
 
         AccountOption.CONNECTION_SETTINGS.setDescription(account.getFullJid().asBareJid().toString());
 
+        AccountOption.VCARD.setDescription(getString(R.string.account_vcard_summary));
+
         AccountOption.PUSH_NOTIFICATIONS.setDescription(getString(accountItem.isPushWasEnabled()
                 ? R.string.account_push_state_enabled : R.string.account_push_state_disabled));
 
-        AccountOption.COLOR.setDescription(ColorManager.getInstance().getAccountPainter().getAccountColorName(account));
+        //AccountOption.COLOR.setDescription(ColorManager.getInstance().getAccountPainter().getAccountColorName(account));
 
         updateBlockListOption();
 
@@ -265,63 +358,21 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-
-        if (AccountManager.getInstance().getAccount(account) == null) {
-            // in case if account was removed
-            finish();
-            return;
-        }
-
-        updateTitle();
-        updateOptions();
-
-        Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
-        Application.getInstance().addUIListener(OnBlockedListChangedListener.class, this);
-    }
-
-    @Override
-    protected void onPause() {
-        Application.getInstance().removeUIListener(OnBlockedListChangedListener.class, this);
-        Application.getInstance().removeUIListener(OnAccountChangedListener.class, this);
-
-        isConnectionSettingsAction = false;
-        super.onPause();
-    }
-
-    private void updateTitle() {
-        ContactTitleInflater.updateTitle(contactTitleView, this, bestContact);
-        statusIcon.setVisibility(View.GONE);
-        statusText.setText(account.getFullJid().asBareJid().toString());
-
-        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light){
-            contactTitleView.setBackgroundColor(barPainter.getAccountPainter().getAccountRippleColor(account));
-
-        }
-        else {
-            TypedValue typedValue = new TypedValue();
-            getTheme().resolveAttribute(R.attr.bars_color, typedValue, true);
-            contactTitleView.setBackgroundColor(Color.TRANSPARENT);
-        }
-        barPainter.updateWithAccountName(account);
-
-        switchCompat.setChecked(accountItem.isEnabled());
-    }
-
-    @Override
     public void onAccountOptionClick(AccountOption option) {
         switch (option) {
             case CONNECTION_SETTINGS:
                 startAccountSettingsActivity();
                 break;
+            case VCARD:
+                startActivity(AccountInfoEditActivity.createIntent(this, account));
+                break;
             case PUSH_NOTIFICATIONS:
                 startActivity(AccountPushActivity.createIntent(this, account));
                 break;
-            case COLOR:
-                AccountColorDialog.newInstance(account).show(getFragmentManager(),
-                        AccountColorDialog.class.getSimpleName());
-                break;
+            //case COLOR:
+            //    AccountColorDialog.newInstance(account).show(getFragmentManager(),
+            //            AccountColorDialog.class.getSimpleName());
+            //   break;
             case BLOCK_LIST:
                 startActivity(BlockedListActivity.createIntent(this, account));
                 break;
@@ -394,4 +445,75 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
         }
     }
 
+    private void setScreenWindowSettings() {
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT &&
+                Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            Window win = getWindow();
+            WindowManager.LayoutParams winParams = win.getAttributes();
+            winParams.flags |= WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS;
+            win.setAttributes(winParams);
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Window win = getWindow();
+            WindowManager.LayoutParams winParams = win.getAttributes();
+            winParams.flags &= ~WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS;
+            win.setAttributes(winParams);
+            win.setStatusBarColor(Color.TRANSPARENT);
+        }
+    }
+
+    private void generateQR() {
+        RosterContact rosterContact = RosterManager.getInstance().getRosterContact(account, fakeAccountUser);
+        Intent intent = QRCodeActivity.createIntent(AccountActivity.this, account);
+        String textName = rosterContact != null ? rosterContact.getName() : "";
+        intent.putExtra("account_name", textName);
+        String textAddress =  account.getFullJid().asBareJid().toString();
+        intent.putExtra("account_address", textAddress);
+        intent.putExtra("caller", "AccountActivity");
+        startActivity(intent);
+    }
+
+    private void runColorPickerDialog() {
+        AccountColorDialog.newInstance(account).show(getFragmentManager(),
+                AccountColorDialog.class.getSimpleName());
+        return;
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.generate_qrcode:
+                generateQR();
+                break;
+            case R.id.change_color:
+                runColorPickerDialog();
+                break;
+            default:
+                break;
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem menuItem) {
+        switch(menuItem.getItemId()) {
+            case R.id.action_generate_qrcode:
+                generateQR();
+                return true;
+            case R.id.action_account_color:
+                runColorPickerDialog();
+                return true;
+            default:
+                return super.onOptionsItemSelected(menuItem);
+        }
+    }
+    @Override
+    public boolean onMenuItemClick(MenuItem menuItem) {
+        return onOptionsItemSelected(menuItem);
+    }
 }

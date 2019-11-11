@@ -8,6 +8,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.widget.NestedScrollView;
 
+
+//Custom Scroll View that stops Child Element's padding from blocking
+//Touch Events targeted to Views under the Scroll View
 public class CustomNestedScrollView extends NestedScrollView {
     private boolean topPadding = false;
 

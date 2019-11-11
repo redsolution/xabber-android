@@ -111,6 +111,9 @@
     <string name="account_sync">Synchronization</string>
     <string name="account_sync_summary">Synchronization with Xabber Account</string>
 
+    <string name="account_vcard">Profile picture, vCard</string>
+    <string name="account_vcard_summary">Edit your Avatar and vCard info</string>
+
     <string name="account_push">Push notifications</string>
     <string name="account_push_enable">Enable push notifications</string>
 
