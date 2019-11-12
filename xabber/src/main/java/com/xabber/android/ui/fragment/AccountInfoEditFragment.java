@@ -111,7 +111,7 @@ public class AccountInfoEditFragment extends Fragment implements OnVCardSaveList
     private LinearLayout fields;
 
     private EditText formattedName;
-    private EditText prefixName;
+    //private EditText prefixName;
     private EditText givenName;
     private EditText middleName;
     private EditText familyName;
@@ -147,8 +147,8 @@ public class AccountInfoEditFragment extends Fragment implements OnVCardSaveList
     private EditText addressWorkPostalCode;
 
     private ImageView avatar;
-    private TextView avatarSize;
-    private View changeAvatarButton;
+    //private TextView avatarSize;
+    //private View changeAvatarButton;
     private View saveAvatarButton;
     private Uri newAvatarImageUri;
     private Uri photoFileUri;
@@ -220,24 +220,21 @@ public class AccountInfoEditFragment extends Fragment implements OnVCardSaveList
 
         account_jid = (TextView) view.findViewById(R.id.vcard_jid);
 
-        prefixName = setUpInputField(view, R.id.vcard_prefix_name);
+        //prefixName = setUpInputField(view, R.id.vcard_prefix_name);
         formattedName = setUpInputField(view, R.id.vcard_formatted_name);
         givenName = setUpInputField(view, R.id.vcard_given_name);
         middleName = setUpInputField(view, R.id.vcard_middle_name);
         familyName = setUpInputField(view, R.id.vcard_family_name);
-        suffixName = setUpInputField(view, R.id.vcard_suffix_name);
+        //suffixName = setUpInputField(view, R.id.vcard_suffix_name);
         nickName = setUpInputField(view, R.id.vcard_nickname);
 
         avatar = (ImageView) view.findViewById(R.id.vcard_avatar);
-        avatarSize = (TextView) view.findViewById(R.id.vcard_avatar_size_text_view);
-        changeAvatarButton = view.findViewById(R.id.vcard_change_avatar);
-        changeAvatarButton.setOnClickListener(new View.OnClickListener() {
-                                                  @Override
-                                                  public void onClick(View v) {
-                                                      changeAvatar();
-                                                  }
-                                              }
-        );
+        avatar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                changeAvatar();
+            }
+        });
         saveAvatarButton = view.findViewById(R.id.saveAvatarButton);
         saveAvatarButton.setVisibility(View.GONE);
         saveAvatarButton.setOnClickListener(new View.OnClickListener() {
@@ -365,11 +362,11 @@ public class AccountInfoEditFragment extends Fragment implements OnVCardSaveList
         account_jid.setText(account.getFullJid().asBareJid().toString());
 
         formattedName.setText(vCard.getField(VCardProperty.FN.name()));
-        prefixName.setText(vCard.getPrefix());
+        //prefixName.setText(vCard.getPrefix());
         givenName.setText(vCard.getFirstName());
         middleName.setText(vCard.getMiddleName());
         familyName.setText(vCard.getLastName());
-        suffixName.setText(vCard.getSuffix());
+        //suffixName.setText(vCard.getSuffix());
         nickName.setText(vCard.getNickName());
 
         setUpAvatarView();
@@ -454,7 +451,7 @@ public class AccountInfoEditFragment extends Fragment implements OnVCardSaveList
     }
 
     private void changeAvatar() {
-        PopupMenu menu = new PopupMenu(getActivity(), changeAvatarButton);
+        PopupMenu menu = new PopupMenu(getActivity(), avatar);
         menu.inflate(R.menu.change_avatar);
         menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
@@ -560,6 +557,8 @@ public class AccountInfoEditFragment extends Fragment implements OnVCardSaveList
             } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
                 Exception error = result.getError();
             }
+        }  else if (requestCode == Crop.REQUEST_CROP) {
+            handleCrop(resultCode, data);
         }
 
         /*if (requestCode == Crop.REQUEST_PICK && resultCode == Activity.RESULT_OK) {
@@ -609,7 +608,6 @@ public class AccountInfoEditFragment extends Fragment implements OnVCardSaveList
 
                                 ByteArrayOutputStream stream = new ByteArrayOutputStream();
                                 resource.compress(Bitmap.CompressFormat.PNG, 100, stream);
-                                //resource.compress(Bitmap.CompressFormat.JPEG, 85, stream);
                                 byte[] data = stream.toByteArray();
                                 resource.recycle();
                                 Uri rotatedImage;
@@ -657,17 +655,21 @@ public class AccountInfoEditFragment extends Fragment implements OnVCardSaveList
             if (cR.getType(srcUri).equals("image/png")) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     CropImage.activity(srcUri).setAspectRatio(1, 1).setOutputCompressFormat(Bitmap.CompressFormat.PNG)
-                            //.setMaxCropResultSize(MAX_TEST, MAX_TEST)
                             .setOutputUri(newAvatarImageUri)
                             .start(getContext(), this);
-                }
+                } else
+                    Crop.of(srcUri, newAvatarImageUri)
+                            .asSquare()
+                            .start(activity);
             } else {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     CropImage.activity(srcUri).setAspectRatio(1, 1).setOutputCompressFormat(Bitmap.CompressFormat.JPEG)
-                            //.setMaxCropResultSize(MAX_TEST, MAX_TEST)
                             .setOutputUri(newAvatarImageUri)
                             .start(getContext(), this);
-                }
+                } else
+                    Crop.of(srcUri, newAvatarImageUri)
+                            .asSquare()
+                            .start(activity);
             }
         }
     }
@@ -678,7 +680,7 @@ public class AccountInfoEditFragment extends Fragment implements OnVCardSaveList
                 setUpAvatarView();
                 break;
             case Crop.RESULT_ERROR:
-                avatarSize.setVisibility(View.INVISIBLE);
+                //avatarSize.setVisibility(View.INVISIBLE);
                 Toast.makeText(getActivity(), R.string.error_during_crop, Toast.LENGTH_SHORT).show();
                 // no break!
             default:
@@ -686,6 +688,8 @@ public class AccountInfoEditFragment extends Fragment implements OnVCardSaveList
         }
     }
 
+
+    //Resizing of the image when it's too big for a normal stanza size-limit
     private void resize(final Uri src){
         Glide.with(this).asBitmap().load(src).override(MAX_IMAGE_RESIZE, MAX_IMAGE_RESIZE)
                 .into(new CustomTarget<Bitmap>() {
@@ -750,7 +754,7 @@ public class AccountInfoEditFragment extends Fragment implements OnVCardSaveList
             // null prompts image view to reload file.
 
             File file = new File(newAvatarImageUri.getPath());
-            avatarSize.setText(file.length() / KB_SIZE_IN_BYTES + "KB");
+            //avatarSize.setText(file.length() / KB_SIZE_IN_BYTES + "KB");
 
             if (file.length() / KB_SIZE_IN_BYTES>35) {
                 Toast.makeText(getActivity(), "Image is too big, commencing additional processing!", Toast.LENGTH_LONG).show();
@@ -766,16 +770,16 @@ public class AccountInfoEditFragment extends Fragment implements OnVCardSaveList
 
             saveAvatarButton.setVisibility(View.VISIBLE);
 
-            avatarSize.setVisibility(View.VISIBLE);
+            //avatarSize.setVisibility(View.VISIBLE);
             if (listener != null) {
                 listener.enableSave();
             }
         } else if (removeAvatarFlag) {
             avatar.setImageDrawable(AvatarManager.getInstance().getDefaultAccountAvatar(account));
-            avatarSize.setVisibility(View.INVISIBLE);
+            //avatarSize.setVisibility(View.INVISIBLE);
         } else {
             avatar.setImageDrawable(AvatarManager.getInstance().getAccountAvatar(account));
-            avatarSize.setVisibility(View.INVISIBLE);
+            //avatarSize.setVisibility(View.INVISIBLE);
         }
     }
 
@@ -795,11 +799,11 @@ public class AccountInfoEditFragment extends Fragment implements OnVCardSaveList
 
     private void updateVCardFromFields() {
 
-        vCard.setPrefix(getValueFromEditText(prefixName));
+        //vCard.setPrefix(getValueFromEditText(prefixName));
         vCard.setFirstName(getValueFromEditText(givenName));
         vCard.setMiddleName(getValueFromEditText(middleName));
         vCard.setLastName(getValueFromEditText(familyName));
-        vCard.setSuffix(getValueFromEditText(suffixName));
+        //vCard.setSuffix(getValueFromEditText(suffixName));
         vCard.setNickName(getValueFromEditText(nickName));
 
         String formattedNameText = getValueFromEditText(formattedName);

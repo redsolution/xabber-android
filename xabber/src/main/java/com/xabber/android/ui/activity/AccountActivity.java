@@ -1,14 +1,20 @@
 package com.xabber.android.ui.activity;
 
+import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.view.ContextThemeWrapper;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -17,21 +23,30 @@ import android.view.WindowManager;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupMenu;
+import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.NavUtils;
+import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.MultiTransformation;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
+import com.bumptech.glide.request.target.CustomTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.zxing.integration.android.IntentIntegrator;
+import com.soundcloud.android.crop.Crop;
+import com.theartofdev.edmodo.cropper.CropImage;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
@@ -41,8 +56,10 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.blocking.OnBlockedListChangedListener;
+import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.roster.AbstractContact;
@@ -56,16 +73,35 @@ import com.xabber.android.ui.dialog.AccountColorDialog;
 import com.xabber.android.ui.fragment.ContactVcardViewerFragment;
 import com.xabber.android.ui.helper.BlurTransformation;
 import com.xabber.android.ui.helper.ContactTitleInflater;
+import com.xabber.android.ui.helper.PermissionsRequester;
+import com.xabber.xmpp.avatar.UserAvatarManager;
 
+import org.apache.commons.io.FileUtils;
 import org.greenrobot.eventbus.Subscribe;
+import org.jivesoftware.smack.SmackException;
+import org.jivesoftware.smack.XMPPException;
+import org.jivesoftware.smackx.pubsub.PubSubException;
+import org.jivesoftware.smackx.vcardtemp.packet.VCard;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
 import java.util.Collection;
+
+import static com.xabber.android.ui.fragment.AccountInfoEditFragment.REQUEST_TAKE_PHOTO;
 
 public class AccountActivity extends ManagedActivity implements AccountOptionsAdapter.Listener,
         OnAccountChangedListener, OnBlockedListChangedListener, ContactVcardViewerFragment.Listener, MenuItem.OnMenuItemClickListener, View.OnClickListener, Toolbar.OnMenuItemClickListener {
 
     private static final String LOG_TAG = AccountActivity.class.getSimpleName();
     private static final String ACTION_CONNECTION_SETTINGS = AccountActivity.class.getName() + "ACTION_CONNECTION_SETTINGS";
+    private static final int REQUEST_PERMISSION_GALLERY = 4;
+    public static final String TEMP_FILE_NAME = "cropped";
+    public static final String ROTATE_FILE_NAME = "rotated";
+    public static final int KB_SIZE_IN_BYTES = 1024;
+    public static int MAX_IMAGE_RESIZE = 256;
+    public static int FINAL_IMAGE_SIZE;
 
     private AccountJid account;
     private UserJid fakeAccountUser;
@@ -75,6 +111,7 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
     private View contactTitleView;
     private View statusIcon;
     private View statusGroupIcon;
+    private ImageView avatar;
     private ImageView background;
     private ImageView qrCodeLand;
     private ImageView colorPickerLand;
@@ -85,9 +122,15 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
     private AppBarLayout appBarLayout;
     private Toolbar toolbar;
     private RecyclerView recyclerView;
+    private ProgressBar progressBar;
 
     private AccountOptionsAdapter accountOptionsAdapter;
     private IntentIntegrator integrator;
+    private Uri newAvatarImageUri;
+    private Uri photoFileUri;
+    private String imageFileType;
+    private byte[] avatarData;
+    private boolean isAvatarSuccessful = false;
     private boolean isConnectionSettingsAction;
     private int accountMainColor;
     private int orientation;
@@ -145,9 +188,7 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
 
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_default);
-        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light)
-            toolbar.setNavigationIcon(R.drawable.ic_arrow_left_grey_24dp);
-        else toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
 
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -181,10 +222,17 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
         TextView contactAddressView = (TextView) findViewById(R.id.address_text);
         contactAddressView.setText(account.getFullJid().asBareJid().toString());
 
+        avatar = (ImageView) findViewById(R.id.ivAvatar);
+        avatar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                changeAvatar();
+            }
+        });
         statusIcon = findViewById(R.id.ivStatus);
         statusGroupIcon = findViewById(R.id.ivStatusGroupchat);
         //statusText = (TextView) findViewById(R.id.status_text);
-
+        progressBar = findViewById(R.id.avatar_publishing_progress);
         //
         toolbar.setOnMenuItemClickListener(this);
         qrCodePortrait = toolbar.getMenu().findItem(R.id.action_generate_qrcode);
@@ -233,12 +281,14 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
 
     private void orientationLandscape() {
         final LinearLayout nameHolderView = (LinearLayout) findViewById(R.id.name_holder);
-        toolbar.setBackgroundColor(Color.TRANSPARENT);
+        //toolbar.setBackgroundColor(Color.TRANSPARENT);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Window win = getWindow();
             win.setStatusBarColor(accountMainColor);
         }
-
+        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light) {
+            setSwitchColor();
+        }
         qrCodePortrait.setVisible(false);
         qrCodeLand = findViewById(R.id.generate_qrcode);
         qrCodeLand.setOnClickListener(this);
@@ -306,6 +356,11 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
         if (collapsingToolbar != null)
             collapsingToolbar.setContentScrimColor(accountMainColor);
 
+        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light) {
+            if (orientation == Configuration.ORIENTATION_LANDSCAPE)
+                setSwitchColor();
+        }
+
         background = findViewById(R.id.backgroundView);
         Drawable backgroundSource = bestContact.getAvatar(false);
         if (backgroundSource == null)
@@ -314,6 +369,19 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
                 .load(backgroundSource)
                 .transform(new MultiTransformation<Bitmap>(new CenterCrop(), new BlurTransformation(25, 8, /*this,*/ accountMainColor)))
                 .into(background);
+    }
+
+    private void setSwitchColor() {
+        DrawableCompat.setTintList(switchCompat.getTrackDrawable(), new ColorStateList(
+                new int[][]{
+                        new int[]{android.R.attr.state_checked},
+                        new int[]{}
+                },
+                new int[]{
+                        accountMainColor,
+                        getResources().getColor(R.color.grey_500)
+                }
+        ));
     }
 
     private void updateOptions() {
@@ -520,5 +588,355 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
     @Override
     public boolean onMenuItemClick(MenuItem menuItem) {
         return onOptionsItemSelected(menuItem);
+    }
+
+    private void changeAvatar() {
+        ContextThemeWrapper contextThemeWrapper = new ContextThemeWrapper(this, R.style.PopupMenuOverlapAnchor);
+        PopupMenu menu = new PopupMenu(contextThemeWrapper, avatar);
+
+        menu.inflate(R.menu.change_avatar);
+        menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.action_choose_from_gallery:
+                        onChooseFromGalleryClick();
+                        return true;
+                    case R.id.action_take_photo:
+                        onTakePhotoClick();
+                        return true;
+                    case R.id.action_remove_avatar:
+                        return true;
+
+                    default:
+                        return false;
+                }
+
+            }
+        });
+        menu.show();
+    }
+
+    /*public PopupWindow popupMenu() {
+        final PopupWindow popupWindow = new PopupWindow(this);
+        View view;
+
+        LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        view = inflater.inflate(R.layout)
+    }*/
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        switch (requestCode) {
+            case REQUEST_PERMISSION_GALLERY:
+                if (PermissionsRequester.isPermissionGranted(grantResults)) {
+                    chooseFromGallery();
+                } else {
+                    Toast.makeText(this, R.string.no_permission_to_read_files, Toast.LENGTH_SHORT).show();
+                }
+                break;
+            case PermissionsRequester.REQUEST_PERMISSION_CAMERA:
+                if (PermissionsRequester.isPermissionGranted(grantResults)) {
+                    takePhoto();
+                } else {
+                    Toast.makeText(this, R.string.no_permission_to_camera, Toast.LENGTH_SHORT).show();
+                }
+                break;
+        }
+    }
+
+    private void onChooseFromGalleryClick() {
+        if (PermissionsRequester.requestFileReadPermissionIfNeeded(
+                this, REQUEST_PERMISSION_GALLERY)) {
+            chooseFromGallery();
+        }
+    }
+
+    private void chooseFromGallery() {
+        Crop.pickImage(this);
+    }
+
+    private void onTakePhotoClick() {
+        if (PermissionsRequester.requestCameraPermissionIfNeeded(this, PermissionsRequester.REQUEST_PERMISSION_CAMERA)) {
+            takePhoto();
+        }
+    }
+
+    private void takePhoto() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (takePictureIntent.resolveActivity(this.getPackageManager()) != null) {
+            File imageFile = null;
+            try {
+                imageFile = FileManager.createTempImageFile(TEMP_FILE_NAME);
+            } catch (IOException e) {
+                LogManager.exception(this, e);
+            }
+
+            if (imageFile != null) {
+                photoFileUri = FileManager.getFileUri(imageFile);
+
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoFileUri);
+                startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
+            }
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == Crop.REQUEST_PICK && resultCode == Activity.RESULT_OK) {
+            //picked gallery
+            beginCropProcess(data.getData());
+        } else if (requestCode == REQUEST_TAKE_PHOTO && resultCode == Activity.RESULT_OK) {
+            //picked camera
+            beginCropProcess(photoFileUri);
+        } else if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+            //processing data after initial crop with CropImage
+            CropImage.ActivityResult result = CropImage.getActivityResult(data);
+            if (resultCode == Activity.RESULT_OK) {
+                newAvatarImageUri = result.getUri();
+                handleCrop(resultCode, data);
+            } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
+                Exception error = result.getError();
+            }
+        }  else if (requestCode == Crop.REQUEST_CROP) {
+            //processing data after initial crop with Crop
+            handleCrop(resultCode, data);
+        }
+    }
+
+    private void beginCropProcess(final Uri source) {
+        newAvatarImageUri = Uri.fromFile(new File(this.getCacheDir(), TEMP_FILE_NAME));
+
+        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
+            @Override
+            public void run() {
+                final boolean isImageNeedPreprocess = FileManager.isImageSizeGreater(source, 256)
+                        || FileManager.isImageNeedRotation(source);
+
+                Application.getInstance().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (isImageNeedPreprocess) {
+                            preprocessAndStartCrop(source);
+                        } else {
+                            startCrop(source);
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    private void preprocessAndStartCrop(final Uri source) {
+        Glide.with(this).asBitmap().load(source)
+                .into(new CustomTarget<Bitmap>() {
+                    @Override
+                    public void onResourceReady(@NonNull final Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+                        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
+                            @Override
+                            public void run() {
+                                ContentResolver cR = Application.getInstance().getApplicationContext().getContentResolver();
+                                String imageType = cR.getType(source);
+                                imageFileType = imageType;
+
+                                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                                resource.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                                byte[] data = stream.toByteArray();
+                                resource.recycle();
+                                Uri rotatedImage;
+                                if (imageType.equals("image/png")) {
+                                    rotatedImage = FileManager.savePNGImage(data, ROTATE_FILE_NAME);
+                                } else {
+                                    rotatedImage = FileManager.saveImage(data, ROTATE_FILE_NAME);
+                                }
+                                if (rotatedImage == null) return;
+                                final Uri rotategImg = rotatedImage;
+
+                                Application.getInstance().runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        startCrop(rotategImg);
+                                    }
+                                });
+
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onLoadFailed(@Nullable Drawable errorDrawable) {
+                        super.onLoadFailed(errorDrawable);
+                        Toast.makeText(getBaseContext(), R.string.error_during_image_processing, Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onLoadCleared(@Nullable Drawable placeholder) { }
+                });
+    }
+
+    private void startCrop(Uri srcUri) {
+        ContentResolver cR = Application.getInstance().getApplicationContext().getContentResolver();
+
+        imageFileType = cR.getType(srcUri);
+        if(cR.getType(srcUri)!=null) {
+            if (cR.getType(srcUri).equals("image/png")) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    CropImage.activity(srcUri).setAspectRatio(1, 1).setOutputCompressFormat(Bitmap.CompressFormat.PNG)
+                            .setOutputUri(newAvatarImageUri)
+                            .start(this);
+                } else
+                    Crop.of(srcUri, newAvatarImageUri)
+                            .asSquare()
+                            .start(this);
+            } else {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    CropImage.activity(srcUri).setAspectRatio(1, 1).setOutputCompressFormat(Bitmap.CompressFormat.JPEG)
+                            .setOutputUri(newAvatarImageUri)
+                            .start(this);
+                } else
+                    Crop.of(srcUri, newAvatarImageUri)
+                            .asSquare()
+                            .start(this);
+            }
+        }
+    }
+
+    private void handleCrop(int resultCode, Intent result) {
+        switch (resultCode) {
+            case Activity.RESULT_OK:
+                checkAvatarSizeAndPublish();
+                break;
+            case Crop.RESULT_ERROR:
+                Toast.makeText(this, R.string.error_during_crop, Toast.LENGTH_SHORT).show();
+                // no break!
+            default:
+                newAvatarImageUri = null;
+        }
+    }
+
+    private void checkAvatarSizeAndPublish() {
+        if (newAvatarImageUri != null) {
+            File file = new File(newAvatarImageUri.getPath());
+
+            if (file.length() / KB_SIZE_IN_BYTES>35) {
+                Toast.makeText(this, "Image is too big, commencing additional processing!", Toast.LENGTH_LONG).show();
+                resize(newAvatarImageUri);
+                return;
+            }
+            Toast.makeText(this, "Started Avatar Publishing!", Toast.LENGTH_LONG).show();
+            progressBar.setVisibility(View.VISIBLE);
+            FINAL_IMAGE_SIZE = MAX_IMAGE_RESIZE;
+            MAX_IMAGE_RESIZE = 256;
+            saveAvatar();
+        }
+    }
+
+    private void resize(final Uri src){
+        Glide.with(this).asBitmap().load(src).override(MAX_IMAGE_RESIZE, MAX_IMAGE_RESIZE)
+                .into(new CustomTarget<Bitmap>() {
+                    @Override
+                    public void onResourceReady(@NonNull final Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+                        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
+                            @Override
+                            public void run() {
+                                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                                resource.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                                byte[] data = stream.toByteArray();
+                                if (data.length>36000) {
+                                    MAX_IMAGE_RESIZE = MAX_IMAGE_RESIZE - MAX_IMAGE_RESIZE/8;
+                                    if(MAX_IMAGE_RESIZE == 0) {
+                                        Toast.makeText(getBaseContext(), "Error with resizing", Toast.LENGTH_LONG).show();
+                                        return;
+                                    }
+                                    resize(src);
+                                    return;
+                                }
+                                resource.recycle();
+                                Uri rotatedImage = null;
+                                if(imageFileType!=null) {
+                                    if (imageFileType.equals("image/png")) {
+                                        rotatedImage = FileManager.savePNGImage(data, "resize");
+                                    } else {
+                                        rotatedImage = FileManager.saveImage(data, "resize");
+                                    }
+                                }
+                                if (rotatedImage == null) return;
+                                try {
+                                    FileUtils.writeByteArrayToFile(new File(newAvatarImageUri.getPath()), data);
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+
+                                Application.getInstance().runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        checkAvatarSizeAndPublish();
+                                    }
+                                });
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onLoadFailed(@Nullable Drawable errorDrawable) {
+                        super.onLoadFailed(errorDrawable);
+                        Toast.makeText(getBaseContext(), R.string.error_during_image_processing, Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onLoadCleared(@Nullable Drawable placeholder) { }
+                });
+    }
+
+    private void saveAvatar(){
+        AccountItem item = AccountManager.getInstance().getAccount(account);
+        final UserAvatarManager mng = UserAvatarManager.getInstanceFor(item.getConnection());
+        if (newAvatarImageUri != null) {
+            try {
+                if (mng.isSupportedByServer()) { //check if server supports PEP, if true - proceed with saving the avatar as XEP-0084 one
+                    //xep-0084 av
+                    avatarData = VCard.getBytes(new URL(newAvatarImageUri.toString()));
+                    String sh1 = AvatarManager.getAvatarHash(avatarData);
+                    AvatarManager.getInstance().onAvatarReceived(account.getFullJid().asBareJid(), sh1, avatarData, "xep");
+                }
+            } catch (IOException | XMPPException.XMPPErrorException | SmackException.NotConnectedException
+                    | InterruptedException | SmackException.NoResponseException e) {
+                e.printStackTrace();
+                progressBar.setVisibility(View.GONE);
+            }
+        }
+        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
+            @Override
+            public void run() {
+
+                if(avatarData!=null) {
+                    try {
+                        if(imageFileType.equals("image/png")) {
+                            mng.publishAvatar(avatarData, FINAL_IMAGE_SIZE, FINAL_IMAGE_SIZE);
+                        } else mng.publishAvatarJPG(avatarData, FINAL_IMAGE_SIZE, FINAL_IMAGE_SIZE);
+                        isAvatarSuccessful = true;
+                    } catch (XMPPException.XMPPErrorException | PubSubException.NotALeafNodeException |
+                            SmackException.NotConnectedException | InterruptedException | SmackException.NoResponseException e) {
+                        e.printStackTrace();
+                    }
+
+                    final boolean isSuccessfulFinal = isAvatarSuccessful;
+                    Application.getInstance().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            if (isSuccessfulFinal) {
+                                Toast.makeText(getBaseContext(), "Avatar published!", Toast.LENGTH_LONG).show();
+                            } else {
+                                Toast.makeText(getBaseContext(), "Avarar publishing failed", Toast.LENGTH_LONG).show();
+                            }
+                            progressBar.setVisibility(View.GONE);
+                        }
+                    });
+                }
+            }
+        });
     }
 }

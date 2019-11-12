@@ -8,6 +8,8 @@
         android:id="@+id/color_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
         tools:listitem="@layout/dialog_color_picker_item" />
 
 </LinearLayout>

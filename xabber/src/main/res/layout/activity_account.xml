@@ -102,8 +102,18 @@
             tools:listitem="@layout/item_account_option"
             />
     </androidx.core.widget.NestedScrollView>
-<!--
-    </LinearLayout>
--->
+
+    <ProgressBar
+        android:id="@+id/avatar_publishing_progress"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:foregroundGravity="center"
+        android:visibility="gone"
+        app:layout_anchorGravity="center" />
+    <!--
+        </LinearLayout>
+    -->
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

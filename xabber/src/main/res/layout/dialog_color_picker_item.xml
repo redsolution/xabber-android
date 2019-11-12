@@ -12,16 +12,18 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:clickable="false"
+        android:ellipsize="end"
+        android:maxLines="1"
         android:paddingLeft="15dp"
         android:paddingTop="10dp"
         android:paddingBottom="10dp"
-        android:text="random color"
+        android:text="Color EX"
         android:textSize="18dp" />
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="1">
+        android:layout_weight="5">
 
         <ImageView
             android:id="@+id/color_item_visual"
