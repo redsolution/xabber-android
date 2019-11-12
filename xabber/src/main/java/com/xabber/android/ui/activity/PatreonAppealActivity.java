@@ -2,6 +2,7 @@ package com.xabber.android.ui.activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import androidx.core.app.NavUtils;
 import androidx.appcompat.widget.Toolbar;
@@ -32,11 +33,12 @@ public class PatreonAppealActivity extends ManagedActivity implements Toolbar.On
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_default);
         toolbar.setTitle(R.string.patreon_title);
+        toolbar.setTitleTextColor(Color.WHITE);
 
         toolbar.inflateMenu(R.menu.toolbar_patreon_activity);
         toolbar.setOnMenuItemClickListener(this);
 
-        toolbar.setNavigationIcon(R.drawable.ic_arrow_left_grey_24dp);
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
