@@ -145,9 +145,7 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
 
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_default);
-        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light)
-            toolbar.setNavigationIcon(R.drawable.ic_arrow_left_grey_24dp);
-        else toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
 
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
