@@ -157,7 +157,7 @@
 
         <item name="contact_list_contact_background">@color/black</item>
         <item name="contact_list_contact_separator">@color/contact_list_separator_dark</item>
-        <item name="contact_list_contact_name_text_color">@color/grey_300</item>
+        <item name="contact_list_contact_name_text_color">@color/grey_100</item>
         <item name="contact_list_contact_muc_private_chat_name_text_color">@color/grey_600</item>
         <item name="contact_list_contact_second_line_text_color">@color/contact_item_text_second_dark</item>
         <item name="contact_list_contact_client_large_icon_color">@color/grey_900</item>

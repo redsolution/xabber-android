@@ -109,7 +109,7 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
 
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M)
             if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.dark)
-                messageText.setTextColor(itemView.getContext().getColor(R.color.grey_300));
+                messageText.setTextColor(itemView.getContext().getColor(R.color.grey_200));
             else messageText.setTextColor(itemView.getContext().getColor(R.color.black));
 
         if (messageItem.isEncrypted()) {

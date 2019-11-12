@@ -5,6 +5,7 @@ import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.util.TypedValue;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -37,9 +38,9 @@ public class NewContactTitleInflater {
         final ImageView avatarView = (ImageView) titleView.findViewById(R.id.ivAvatar);
 
         nameView.setText(abstractContact.getName());
-        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.dark)
-            nameView.setTextColor(Color.WHITE);
-            //nameView.setTextColor(ColorManager.getInstance().getAccountPainter().getAccountColorWithTint(abstractContact.getAccount(), 500));
+        TypedValue typedValue = new TypedValue();
+        context.getTheme().resolveAttribute(R.attr.contact_list_contact_name_text_color, typedValue, true);
+        nameView.setTextColor(typedValue.data);
 
         // notification mute
         Resources resources = context.getResources();
@@ -111,8 +112,10 @@ public class NewContactTitleInflater {
 
         final TextView statusTextView = (TextView) titleView.findViewById(R.id.status_text);
         if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.dark){
-            statusTextView.setTextColor(ColorManager.getInstance().getAccountPainter().getAccountColorWithTint(abstractContact.getAccount(), 700));
             statusTextView.setAlpha(1);
+            if (statusLevel == 0 || statusLevel == 1 || statusLevel == 2 || statusLevel == 3 || statusLevel == 4)
+                statusTextView.setTextColor(ColorManager.getInstance().getAccountPainter().getAccountColorWithTint(abstractContact.getAccount(), 700));
+            else statusTextView.setTextColor(ColorManager.getInstance().getAccountPainter().getAccountColorWithTint(abstractContact.getAccount(), 900));
         }
 
         ChatState chatState = ChatStateManager.getInstance().getChatState(
