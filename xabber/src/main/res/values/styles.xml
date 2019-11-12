@@ -120,4 +120,7 @@
         <item name="colorControlHighlight">@color/red_700</item>
     </style>
 
+    <style name="PopupMenuOverlapAnchor" parent="@style/Theme">
+    </style>
+
 </resources>

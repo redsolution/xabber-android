@@ -5,6 +5,7 @@
     <dimen name="contact_title_padding_right">16dp</dimen>
     <dimen name="contact_title_padding_bottom">10dp</dimen>
 
+    <dimen name="avatar_extra_large_size">108dp</dimen>
     <dimen name="avatar_large_size">72dp</dimen>
     <dimen name="avatar_normal_size">48dp</dimen>
     <dimen name="avatar_radius">56dp</dimen>

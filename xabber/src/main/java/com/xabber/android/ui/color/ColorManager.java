@@ -212,9 +212,6 @@ public class ColorManager {
         final Context context = Application.getInstance().getApplicationContext();
 
         HashMap<String, Integer> colors = new HashMap<>();
-        colors.put("deep-purple", R.color.dark_purple_500);
-        colors.put("purple", R.color.purple_500);
-        colors.put("pink", R.color.pink_500);
         colors.put("red", R.color.red_500);
         colors.put("deep-orange", R.color.deep_orange_500);
         colors.put("orange", R.color.orange_500);
@@ -227,6 +224,9 @@ public class ColorManager {
         colors.put("light-blue", R.color.light_blue_500);
         colors.put("blue", R.color.blue_500);
         colors.put("indigo", R.color.indigo_500);
+        colors.put("deep-purple", R.color.dark_purple_500);
+        colors.put("purple", R.color.purple_500);
+        colors.put("pink", R.color.pink_500);
         colors.put("blue-grey", R.color.blue_grey_500);
         colors.put("brown", R.color.brown_500);
 
@@ -238,21 +238,21 @@ public class ColorManager {
 
     public int convertColorNameToIndex(String colorName) {
         HashMap<String, Integer> colors = new HashMap<>();
-        colors.put("deep-purple", 0);
-        colors.put("purple", 1);
-        colors.put("pink", 2);
-        colors.put("red", 3);
-        colors.put("deep-orange", 4);
-        colors.put("orange", 5);
-        colors.put("amber", 6);
-        colors.put("lime", 7);
-        colors.put("light-green", 8);
-        colors.put("green", 9);
-        colors.put("teal", 10);
-        colors.put("cyan", 11);
-        colors.put("light-blue", 12);
-        colors.put("blue", 13);
-        colors.put("indigo", 14);
+        colors.put("red", 0);
+        colors.put("deep-orange", 1);
+        colors.put("orange", 2);
+        colors.put("amber", 3);
+        colors.put("lime", 4);
+        colors.put("light-green", 5);
+        colors.put("green", 6);
+        colors.put("teal", 7);
+        colors.put("cyan", 8);
+        colors.put("light-blue", 9);
+        colors.put("blue", 10);
+        colors.put("indigo", 11);
+        colors.put("deep-purple", 12);
+        colors.put("purple", 13);
+        colors.put("pink", 14);
         colors.put("blue-grey", 15);
         colors.put("brown", 16);
 
@@ -263,21 +263,21 @@ public class ColorManager {
 
     public String convertIndexToColorName(int colorIndex) {
         SparseArray<String> colors = new SparseArray<>();
-        colors.put(0, "deep-purple");
-        colors.put(1, "purple");
-        colors.put(2, "pink");
-        colors.put(3, "red");
-        colors.put(4, "deep-orange");
-        colors.put(5, "orange");
-        colors.put(6, "amber");
-        colors.put(7, "lime");
-        colors.put(8, "light-green");
-        colors.put(9, "green");
-        colors.put(10, "teal");
-        colors.put(11, "cyan");
-        colors.put(12, "light-blue");
-        colors.put(13, "blue");
-        colors.put(14, "indigo");
+        colors.put(0, "red");
+        colors.put(1, "deep-orange");
+        colors.put(2, "orange");
+        colors.put(3, "amber");
+        colors.put(4, "lime");
+        colors.put(5, "light-green");
+        colors.put(6, "green");
+        colors.put(7, "teal");
+        colors.put(8, "cyan");
+        colors.put(9, "light-blue");
+        colors.put(10, "blue");
+        colors.put(11, "indigo");
+        colors.put(12, "deep-purple");
+        colors.put(13, "purple");
+        colors.put(14, "pink");
         colors.put(15, "blue-grey");
         colors.put(16, "brown");
 
