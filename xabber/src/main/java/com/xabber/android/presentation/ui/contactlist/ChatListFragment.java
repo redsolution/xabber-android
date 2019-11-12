@@ -361,15 +361,13 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         }
 
         /* Update background color via current main user and theme; */
-        TypedValue typedValue = new TypedValue();
-        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light){
-            TypedArray a = getContext().obtainStyledAttributes(typedValue.data, new int[] {R.attr.contact_list_account_group_background});
-            final int accountGroupColorsResourceId = a.getResourceId(0, 0);
-            a.recycle();
-            final int[] accountGroupColors = getContext().getResources().getIntArray(accountGroupColorsResourceId);
-            final int level = AccountManager.getInstance().getColorLevel(AccountPainter.getFirstAccount());
-            toolbarRelativeLayout.setBackgroundColor(accountGroupColors[level]);
-        } else {
+
+        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light &&
+                AccountPainter.getFirstAccount() != null)
+            toolbarRelativeLayout.setBackgroundColor(ColorManager.getInstance().getAccountPainter().
+                    getAccountRippleColor(AccountPainter.getFirstAccount()));
+        else {
+            TypedValue typedValue = new TypedValue();
             Resources.Theme theme = getContext().getTheme();
             theme.resolveAttribute(R.attr.bars_color, typedValue, true);
             toolbarRelativeLayout.setBackgroundColor(typedValue.data);
