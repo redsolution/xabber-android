@@ -49,11 +49,6 @@
         />
 
     <Preference
-        android:key="@string/debug_fetch_crowdfunding_feed_key"
-        android:title="@string/debug_fetch_crowdfunding_feed_title">
-    </Preference>
-
-    <Preference
         android:key="@string/push_log_activity_key"
         android:title="@string/push_log_title">
         <intent

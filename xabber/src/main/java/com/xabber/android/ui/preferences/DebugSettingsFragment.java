@@ -43,17 +43,17 @@ public class DebugSettingsFragment extends android.preference.PreferenceFragment
             }
         });
 
-        Preference prefFetchCrowdfundingFeed = preferenceScreen.findPreference(getString(R.string.debug_fetch_crowdfunding_feed_key));
-        if (prefFetchCrowdfundingFeed != null) {
-            prefFetchCrowdfundingFeed.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                @Override
-                public boolean onPreferenceClick(Preference preference) {
-                    CrowdfundingManager.getInstance().fetchFeedForDebug();
-                    Toast.makeText(getActivity(), "Crowdfunding feed updated", Toast.LENGTH_SHORT).show();
-                    return true;
-                }
-            });
-        }
+//        Preference prefFetchCrowdfundingFeed = preferenceScreen.findPreference(getString(R.string.debug_fetch_crowdfunding_feed_key));
+//        if (prefFetchCrowdfundingFeed != null) {
+//            prefFetchCrowdfundingFeed.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+//                @Override
+//                public boolean onPreferenceClick(Preference preference) {
+//                    CrowdfundingManager.getInstance().fetchFeedForDebug();
+//                    Toast.makeText(getActivity(), "Crowdfunding feed updated", Toast.LENGTH_SHORT).show();
+//                    return true;
+//                }
+//            });
+//        }
 
         if (!BuildConfig.DEBUG) {
             preferenceScreen.removePreference(prefDownloadArchive);
