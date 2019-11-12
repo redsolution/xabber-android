@@ -337,6 +337,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
             viewHolder.ivStatus.setVisibility(isGroupchat || isServer ? View.INVISIBLE : View.VISIBLE);
             viewHolder.ivStatusGroupchat.setVisibility(isGroupchat || isServer ? View.VISIBLE : View.GONE);
             if (isServer) viewHolder.ivStatusGroupchat.setImageResource(R.drawable.ic_server_16_new);
+            else viewHolder.ivStatusGroupchat.setImageResource(R.drawable.ic_groupchat_16_new);
         } else viewHolder.ivStatusGroupchat.setVisibility(View.GONE);
 
         /** set up NOTIFICATION MUTE */
