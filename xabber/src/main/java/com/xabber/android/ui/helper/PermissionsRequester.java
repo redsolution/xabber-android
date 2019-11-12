@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.content.pm.PackageManager;
 import android.os.Build;
+
 import androidx.core.content.ContextCompat;
 
 import com.xabber.android.data.Application;
@@ -43,6 +44,10 @@ public class PermissionsRequester {
 
     public static boolean requestCameraPermissionIfNeeded(androidx.fragment.app.Fragment  fragment, int requestCode) {
         return checkAndRequestPermission(Manifest.permission.CAMERA, fragment, requestCode);
+    }
+
+    public static boolean requestCameraPermissionIfNeeded(Activity activity, int requestCode) {
+        return checkAndRequestPermission(Manifest.permission.CAMERA, activity, requestCode);
     }
 
     public static boolean hasFileReadPermission() {
