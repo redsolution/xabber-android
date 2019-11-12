@@ -385,6 +385,9 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
             }
         else if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light)
             viewHolder.tvUnreadCount.getBackground().mutate().clearColorFilter();
+
+        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.dark)
+            viewHolder.tvContactName.setTextColor(context.getResources().getColor(R.color.grey_200));
     }
 
     public String getId() {

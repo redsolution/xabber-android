@@ -2,16 +2,19 @@ package com.xabber.android.ui.activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.TextView;
 
 import androidx.appcompat.widget.Toolbar;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.intent.EntityIntentBuilder;
@@ -49,7 +52,18 @@ public class AccountInfoEditActivity extends ManagedActivity implements Toolbar.
         }
 
         toolbar = (Toolbar) findViewById(R.id.toolbar_default);
-        toolbar.setNavigationIcon(R.drawable.ic_clear_white_24dp);
+        toolbar.inflateMenu(SAVE_MENU);
+        toolbar.setOnMenuItemClickListener(this);
+        View view = toolbar.findViewById(R.id.action_save);
+        if (view != null && view instanceof TextView)
+            if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light)
+                ((TextView) view).setTextColor(getResources().getColor(R.color.grey_600));
+            else ((TextView) view).setTextColor(Color.WHITE);
+        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light){
+            toolbar.setNavigationIcon(R.drawable.ic_clear_grey_24dp);
+        } else {
+            toolbar.setNavigationIcon(R.drawable.ic_clear_white_24dp);
+        }
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -60,9 +74,6 @@ public class AccountInfoEditActivity extends ManagedActivity implements Toolbar.
 
         BarPainter barPainter = new BarPainter(this, toolbar);
         barPainter.updateWithAccountName(account);
-
-        toolbar.inflateMenu(SAVE_MENU);
-        toolbar.setOnMenuItemClickListener(this);
 
         boolean isSaveButtonEnabled = false;
         if (savedInstanceState == null) {
