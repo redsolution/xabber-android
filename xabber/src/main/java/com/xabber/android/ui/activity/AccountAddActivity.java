@@ -76,7 +76,7 @@ public class AccountAddActivity extends ManagedActivity implements Toolbar.OnMen
         View view = toolbar.findViewById(R.id.action_add_account);
         if (view != null && view instanceof TextView)
             if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light)
-                ((TextView)view).setTextColor(getResources().getColor(R.color.grey_600));
+                ((TextView)view).setTextColor(getResources().getColor(R.color.grey_900));
             else ((TextView)view).setTextColor(Color.WHITE);
         toolbar.setOnMenuItemClickListener(this);
 
