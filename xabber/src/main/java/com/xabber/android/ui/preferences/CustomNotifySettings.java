@@ -3,9 +3,10 @@ package com.xabber.android.ui.preferences;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.core.app.NavUtils;
-import androidx.appcompat.widget.Toolbar;
 import android.view.View;
+
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.NavUtils;
 
 import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
@@ -14,6 +15,7 @@ import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.data.notification.custom_notification.Key;
 import com.xabber.android.ui.activity.ManagedActivity;
+import com.xabber.android.ui.color.AccountPainter;
 import com.xabber.android.ui.color.BarPainter;
 
 public class CustomNotifySettings extends ManagedActivity {
@@ -69,7 +71,7 @@ public class CustomNotifySettings extends ManagedActivity {
         });
 
         BarPainter barPainter = new BarPainter(this, toolbar);
-        barPainter.updateWithAccountName(account);
+        barPainter.updateWithAccountName(AccountPainter.getFirstAccount());
 
         if (savedInstanceState == null) {
             Key key = Key.createKey(account, user, group, phraseID);
