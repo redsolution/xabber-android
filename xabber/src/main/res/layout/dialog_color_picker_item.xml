@@ -32,8 +32,8 @@
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:layout_marginEnd="206dp"
             android:layout_marginRight="15dp"
+            android:layout_marginEnd="15dp"
             android:visibility="visible"
             app:srcCompat="@color/account_register_blue" />
 
