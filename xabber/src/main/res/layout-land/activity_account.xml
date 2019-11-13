@@ -155,7 +155,7 @@
                         android:layout_marginEnd="3dp"
                         android:layout_marginBottom="15dp"
                         android:visibility="gone"
-                        app:srcCompat="@drawable/ic_groupchat_16_new"
+                        app:srcCompat="@drawable/ic_groupchat_14_border"
                         tools:visibility="visible" />
                 </FrameLayout>
             </LinearLayout>
@@ -210,13 +210,5 @@
         </com.xabber.android.ui.widget.CustomNestedScrollView>
 -->
     </RelativeLayout>
-
-    <ProgressBar
-        android:id="@+id/avatar_publishing_progress"
-        style="?android:attr/progressBarStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:visibility="gone" />
 
 </RelativeLayout>

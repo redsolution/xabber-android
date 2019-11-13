@@ -34,7 +34,7 @@
         android:layout_alignBaseline="@+id/imageView"
         android:layout_alignParentRight="true"
         android:layout_alignParentBottom="true"
-        app:srcCompat="@drawable/ic_groupchat_16_new"
+        app:srcCompat="@drawable/ic_groupchat_14_border"
         android:visibility="invisible" />
 
 </RelativeLayout>

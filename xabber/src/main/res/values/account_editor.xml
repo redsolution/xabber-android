@@ -119,6 +119,8 @@
 
     <string name="bookmark_not_supported">Server does not support bookmarks</string>
 
+    <string name="account_delete_summary">Remove this account from your device</string>
+
     <string name="terminate_all_sessions_title">Are you sure you want to terminate all other sessions?</string>
     <string name="terminate_session_title">Terminate this session?</string>
     <string name="button_terminate">Terminate</string>

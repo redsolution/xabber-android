@@ -94,7 +94,7 @@ public class NewContactTitleInflater {
         int statusLevel = abstractContact.getStatusMode().getStatusLevel();
         statusModeView.setVisibility(View.GONE);
         if (isServer) {
-            groupchatStatusView.setImageResource(R.drawable.ic_server_16_new);
+            groupchatStatusView.setImageResource(R.drawable.ic_server_14_border);
             groupchatStatusView.setVisibility(View.VISIBLE);
         } else if (isContactOffline(statusLevel)) {
             statusModeView.setVisibility(View.GONE);

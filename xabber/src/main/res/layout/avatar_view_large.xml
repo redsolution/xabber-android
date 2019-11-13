@@ -37,7 +37,7 @@
         android:layout_margin="3dp"
 
         android:visibility="gone"
-        app:srcCompat="@drawable/ic_groupchat_16_new"
+        app:srcCompat="@drawable/ic_groupchat_14_border"
         tools:visibility="visible" />
 
 </RelativeLayout>

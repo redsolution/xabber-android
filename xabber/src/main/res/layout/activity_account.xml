@@ -103,15 +103,6 @@
             />
     </androidx.core.widget.NestedScrollView>
 
-    <ProgressBar
-        android:id="@+id/avatar_publishing_progress"
-        style="?android:attr/progressBarStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:foregroundGravity="center"
-        android:visibility="gone"
-        app:layout_anchorGravity="center" />
     <!--
         </LinearLayout>
     -->
