@@ -57,7 +57,7 @@ public class AccountInfoEditActivity extends ManagedActivity implements Toolbar.
         View view = toolbar.findViewById(R.id.action_save);
         if (view != null && view instanceof TextView)
             if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light)
-                ((TextView) view).setTextColor(getResources().getColor(R.color.grey_600));
+                ((TextView) view).setTextColor(getResources().getColor(R.color.grey_900));
             else ((TextView) view).setTextColor(Color.WHITE);
         if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light){
             toolbar.setNavigationIcon(R.drawable.ic_clear_grey_24dp);
