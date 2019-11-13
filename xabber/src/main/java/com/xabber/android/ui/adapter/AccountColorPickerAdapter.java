@@ -17,19 +17,16 @@ public class AccountColorPickerAdapter extends RecyclerView.Adapter<AccountColor
 
     private final Listener listener;
     private final String[] nameList;
-    //private final int[] colorList;
     private final int checked;
-    //private final TypedArray darkColors;
     private final TypedArray colors;
 
     public interface Listener {
         void onColorClickListener(int position);
     }
 
-    public AccountColorPickerAdapter(String[] nameList, TypedArray colors, /*TypedArray darkColors,*/ int checked, Listener listener) {
+    public AccountColorPickerAdapter(String[] nameList, TypedArray colors, int checked, Listener listener) {
         this.nameList = nameList;
         this.colors = colors;
-        //this.darkColors = darkColors;
         this.checked = checked;
         this.listener = listener;
     }
@@ -46,10 +43,9 @@ public class AccountColorPickerAdapter extends RecyclerView.Adapter<AccountColor
     public void onBindViewHolder(AccountColorPickerViewHolder holder, int position) {
         String colorName = nameList[position];
         int color = colors.getResourceId(position, 0);
-        //int darkColor = darkColors.getResourceId(position, 0);
+
         holder.colorItem.setText(colorName);
         holder.colorVisual.setImageResource(color);
-        //holder.colorVisualDark.setImageResource(darkColor);
         if (position == checked) {
             holder.colorItem.setChecked(true);
         } else holder.colorItem.setChecked(false);
@@ -70,7 +66,6 @@ public class AccountColorPickerAdapter extends RecyclerView.Adapter<AccountColor
         private final AccountColorPickerListener listener;
         private RadioButton colorItem;
         private ImageView colorVisual;
-        //private ImageView colorVisualDark;
 
         public AccountColorPickerViewHolder(View itemView, AccountColorPickerListener listener) {
             super(itemView);
@@ -78,7 +73,6 @@ public class AccountColorPickerAdapter extends RecyclerView.Adapter<AccountColor
 
             colorItem = (RadioButton) itemView.findViewById(R.id.color_item);
             colorVisual = (ImageView) itemView.findViewById(R.id.color_item_visual);
-            //colorVisualDark = (ImageView) itemView.findViewById(R.id.color_item_visual_dark);
             itemView.setOnClickListener(this);
         }
 

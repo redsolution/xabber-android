@@ -61,8 +61,6 @@ public class AccountColorDialog extends DialogFragment implements AccountColorPi
         return dialogEntity;
     }
 
-
-
     @Override
     public void onColorClickListener(int position) {
         AccountManager.getInstance().setColor(accountJid, position);
