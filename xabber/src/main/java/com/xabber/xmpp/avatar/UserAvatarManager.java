@@ -26,6 +26,7 @@ import org.jivesoftware.smackx.pubsub.PayloadItem;
 import org.jivesoftware.smackx.pubsub.PubSubElementType;
 import org.jivesoftware.smackx.pubsub.PubSubException;
 import org.jivesoftware.smackx.pubsub.PubSubManager;
+import org.jivesoftware.smackx.pubsub.PublishItem;
 import org.jivesoftware.smackx.pubsub.packet.PubSub;
 import org.jxmpp.jid.EntityBareJid;
 
@@ -99,6 +100,21 @@ public final class UserAvatarManager extends Manager {
     public boolean isSupportedByServer()
             throws NoResponseException, XMPPErrorException, NotConnectedException, InterruptedException {
         return pepManager.isSupported();
+    }
+
+    public void onAuthorized() {
+        try {
+            if (isSupportedByServer())
+                enable();
+        } catch (NoResponseException e) {
+            e.printStackTrace();
+        } catch (XMPPErrorException e) {
+            e.printStackTrace();
+        } catch (NotConnectedException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -276,135 +292,24 @@ public final class UserAvatarManager extends Manager {
         return null;
     }
 
-    /*public void discoverAvatar(final BareJid contact, final AccountItem accountItem) {
-        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
-            @Override
-            public void run() {
-
-                try {
-                    //LeafNode data = PubSubManager.getInstance(accountItem.getConnection(), contact).getLeafNode(METADATA_NAMESPACE);
-                    //final List<PayloadItem<MetadataExtension>> e = data.getItems();
-
-                    //DiscoverInfo info = new DiscoverInfo();
-                    //info.setTo(contact);
-
-                    DiscoverItems items = new DiscoverItems();
-                    items.setTo(contact);
-
-                    //DiscoverInfo infoReply = connection().createStanzaCollectorAndSend(info).nextResultOrThrow();
-                    DiscoverItems itemsReply = connection().createStanzaCollectorAndSend(items).nextResultOrThrow();
-                    List<DiscoverItems.Item> list = itemsReply.getItems();
-                    *//*for (DiscoverItems.Item item : list){
-                        if(item.getNode().equals(METADATA_NAMESPACE)){
-                            LeafNode metadata = PubSubManager.getInstance(accountItem.getConnection(), contact).getLeafNode(METADATA_NAMESPACE);
-                            metadata.subscribe(accountItem.getRealJid().toString());
-
-                            SubscribeExtension subEx = new SubscribeExtension(accountItem.getRealJid().asBareJid().toString(), METADATA_NAMESPACE);
-                            PubSub ps = PubSub.createPubsubPacket(contact, IQ.Type.set, subEx, null);
-                            PubSub reply = (PubSub) connection().createStanzaCollectorAndSend(ps).nextResultOrThrow();
-                            Subscription sss = reply.getExtension(PubSubElementType.SUBSCRIPTION);
-
-                            *//**//*LeafNode sutest = PubSubManager.getInstance(accountItem.getConnection(), contact).getLeafNode(METADATA_NAMESPACE);
-                            sutest.unsubscribe(accountItem.getRealJid().asBareJid().toString());
-                            List<Subscription> subsC = new ArrayList<>();
-                            Subscription ssTest = sutest.subscribe(accountItem.getRealJid().asBareJid().toString());
-                            Subscription.State statetest = ssTest.getState();*//**//*
-                        }
-                    }*//*
-                    List<Subscription> sub = new ArrayList<>();
-                    sub = PubSubManager.getInstance(accountItem.getConnection(), contact).getLeafNode(METADATA_NAMESPACE).getSubscriptions();
-
-                    List<Subscription> subs = new ArrayList<>();
-                    subs = PubSubManager.getInstance(accountItem.getConnection(), null).getSubscriptions();
-
-                    *//*if (sub.size()==0) {
-
-                    LeafNode sutest = PubSubManager.getInstance(accountItem.getConnection(), null).getLeafNode(METADATA_NAMESPACE);
-                        sutest.unsubscribe(accountItem.getRealJid().asBareJid().toString());
-                        List<Subscription> subsC = new ArrayList<>();
-                        List<Subscription> subsCTest = new ArrayList<>();
-                        Subscription ss = su.subscribe(accountItem.getRealJid().asBareJid().toString());
-                        Subscription ssTest = sutest.subscribe(accountItem.getRealJid().asBareJid().toString());
-                        Subscription.State state = ss.getState();
-                        Subscription.State statetest = ssTest.getState();
-
-                    }*//*
-                    //DataExtension s = (DataExtension)e.get(0).getPayload();
-                    *//*final byte[] k = s.getData();
-                    Application.getInstance().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (metadataStore != null && !metadataStore.hasAvatarAvailable((EntityBareJid) contact, e.get(0).getId())) {
-                                String id = e.get(0).getId();
-                                metadataStore.setAvatarAvailable((EntityBareJid) contact, e.get(0).getId());
-                            }
-                            String sh1 = AvatarManager.getAvatarHash(k);
-                            AvatarManager.getInstance().onAvatarReceived(contact, sh1, k, "xep");
-                        }
-                    });*//*
-                } catch (PubSubException.NotALeafNodeException e) {
-                    e.printStackTrace();
-                } catch (SmackException.NoResponseException e) {
-                    e.printStackTrace();
-                } catch (SmackException.NotConnectedException e) {
-                    e.printStackTrace();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (XMPPException.XMPPErrorException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-    }
-*/
-
     public String publishAvatarData(byte[] data)
             throws NoResponseException, NotConnectedException, XMPPErrorException, InterruptedException, PubSubException.NotALeafNodeException {
-        //String itemId = Base64.encodeToString(SHA1.bytes(data));
-        //String s = Base64.encodeToString(data);
-        //String test = encryptThisByte(data);
         String itemId = AvatarManager.getAvatarHash(data);
-        //itemId = itemId.toLowerCase();
         publishAvatarData(data, itemId);
         return itemId;
     }
 
-    /*public static String encryptThisByte(byte[] input)
-    {
-        try {
-            // getInstance() method is called with algorithm SHA-1
-            MessageDigest md = MessageDigest.getInstance("SHA-1");
-
-            // digest() method is called
-            // to calculate message digest of the input string
-            // returned as array of byte
-            byte[] messageDigest = md.digest(input);
-
-            // Convert byte array into signum representation
-            BigInteger no = new BigInteger(1, messageDigest);
-
-            // Convert message digest into hex value
-            String hashtext = no.toString(16);
-
-            // Add preceding 0s to make it 32 bit
-            while (hashtext.length() < 32) {
-                hashtext = "0" + hashtext;
-            }
-
-            // return the HashText
-            return hashtext;
-        }
-
-        // For specifying wrong message digest algorithms
-        catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        }
-    }*/
 
     private void publishAvatarData(byte[] data, String itemId)
             throws NoResponseException, NotConnectedException, XMPPErrorException, InterruptedException, PubSubException.NotALeafNodeException {
         DataExtension dataExtension = new DataExtension(data);
-        getOrCreateDataNode().publish(new PayloadItem<>(itemId, dataExtension));
+
+        //getOrCreateDataNode().publish(new PayloadItem<>(itemId, dataExtension));
+
+        PayloadItem item = new PayloadItem<>(itemId, dataExtension);
+        PublishItem publishItem = new PublishItem<>(DATA_NAMESPACE, item);
+        PubSub packet = PubSub.createPubsubPacket(null, IQ.Type.set, publishItem, null);
+        connection().createStanzaCollectorAndSend(packet).nextResultOrThrow(60000);
     }
 
     /**
@@ -439,7 +344,12 @@ public final class UserAvatarManager extends Manager {
     public void publishAvatarMetadata(String itemId, List<MetadataInfo> infos, List<MetadataPointer> pointers)
             throws NoResponseException, XMPPErrorException, NotConnectedException, InterruptedException, PubSubException.NotALeafNodeException {
         MetadataExtension metadataExtension = new MetadataExtension(infos, pointers);
-        getOrCreateMetadataNode().publish(new PayloadItem<>(itemId, metadataExtension));
+        //getOrCreateMetadataNode().publish(new PayloadItem<>(itemId, metadataExtension));
+
+        PayloadItem item = new PayloadItem<>(itemId, metadataExtension);
+        PublishItem publishItem = new PublishItem<>(METADATA_NAMESPACE, item);
+        PubSub packet = PubSub.createPubsubPacket(null, IQ.Type.set, publishItem, null);
+        connection().createStanzaCollectorAndSend(packet).nextResultOrThrow(45000);
 
         if (metadataStore == null) {
             return;
