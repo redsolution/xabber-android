@@ -287,7 +287,7 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
             win.setStatusBarColor(accountMainColor);
         }
         if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light) {
-            setSwitchColor();
+            setSwitchButtonColor();
         }
         qrCodePortrait.setVisible(false);
         qrCodeLand = findViewById(R.id.generate_qrcode);
@@ -358,7 +358,7 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
 
         if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light) {
             if (orientation == Configuration.ORIENTATION_LANDSCAPE)
-                setSwitchColor();
+                setSwitchButtonColor();
         }
 
         background = findViewById(R.id.backgroundView);
@@ -371,7 +371,7 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
                 .into(background);
     }
 
-    private void setSwitchColor() {
+    private void setSwitchButtonColor() {
         DrawableCompat.setTintList(switchCompat.getTrackDrawable(), new ColorStateList(
                 new int[][]{
                         new int[]{android.R.attr.state_checked},
@@ -403,6 +403,8 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
         AccountOption.CHAT_HISTORY.setDescription(getString(R.string.account_history_options_summary));
 
         AccountOption.BOOKMARKS.setDescription(getString(R.string.account_bookmarks_summary));
+
+        AccountOption.DELETE_ACCOUNT.setDescription(getString(R.string.account_delete_summary));
 
         accountOptionsAdapter.notifyDataSetChanged();
     }
@@ -457,6 +459,9 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
                 break;
             case BOOKMARKS:
                 startActivity(BookmarksActivity.createIntent(this, account));
+                break;
+            case DELETE_ACCOUNT:
+                startActivity(AccountDeleteActivity.createIntent(this, account));
                 break;
             case SYNCHRONIZATION:
                 if (XabberAccountManager.getInstance().getAccount() != null) {
@@ -595,6 +600,8 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
         PopupMenu menu = new PopupMenu(contextThemeWrapper, avatar);
 
         menu.inflate(R.menu.change_avatar);
+        MenuItem removeAvatar = menu.getMenu().findItem(R.id.action_remove_avatar);
+        removeAvatar.setVisible(false);
         menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
@@ -611,19 +618,10 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
                     default:
                         return false;
                 }
-
             }
         });
         menu.show();
     }
-
-    /*public PopupWindow popupMenu() {
-        final PopupWindow popupWindow = new PopupWindow(this);
-        View view;
-
-        LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        view = inflater.inflate(R.layout)
-    }*/
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
@@ -826,7 +824,6 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
                 return;
             }
             Toast.makeText(this, "Started Avatar Publishing!", Toast.LENGTH_LONG).show();
-            progressBar.setVisibility(View.VISIBLE);
             FINAL_IMAGE_SIZE = MAX_IMAGE_RESIZE;
             MAX_IMAGE_RESIZE = 256;
             saveAvatar();
@@ -891,6 +888,7 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
     }
 
     private void saveAvatar(){
+        progressBar.setVisibility(View.VISIBLE);
         AccountItem item = AccountManager.getInstance().getAccount(account);
         final UserAvatarManager mng = UserAvatarManager.getInstanceFor(item.getConnection());
         if (newAvatarImageUri != null) {
@@ -933,6 +931,7 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
                                 Toast.makeText(getBaseContext(), "Avarar publishing failed", Toast.LENGTH_LONG).show();
                             }
                             progressBar.setVisibility(View.GONE);
+                            updateTitle();
                         }
                     });
                 }
