@@ -871,7 +871,7 @@ public class AccountInfoEditFragment extends Fragment implements OnVCardSaveList
                     //vCard.removeAvatar();
                 } else { //otherwise set the vCard avatar and return, which stops the avatar from being published as a XEP-0084 avatar
                     //vCard av
-                    vCard.setAvatar(new URL(newAvatarImageUri.toString()));
+                    //vCard.setAvatar(new URL(newAvatarImageUri.toString()));
                     return;
                 }
             } catch (IOException | XMPPException.XMPPErrorException | SmackException.NotConnectedException
