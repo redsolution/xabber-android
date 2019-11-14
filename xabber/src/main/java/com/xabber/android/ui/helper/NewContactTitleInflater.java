@@ -114,7 +114,7 @@ public class NewContactTitleInflater {
         if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.dark){
             statusTextView.setAlpha(1);
             if (statusLevel == 0 || statusLevel == 1 || statusLevel == 2 || statusLevel == 3 || statusLevel == 4)
-                statusTextView.setTextColor(ColorManager.getInstance().getAccountPainter().getAccountColorWithTint(abstractContact.getAccount(), 900));
+                statusTextView.setTextColor(ColorManager.getInstance().getAccountPainter().getAccountColorWithTint(abstractContact.getAccount(), 800));
             else statusTextView.setTextColor(context.getResources().getColor(R.color.contact_item_text_second_dark));
         }
 
