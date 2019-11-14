@@ -4,14 +4,12 @@ import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceScreen;
-import android.widget.Toast;
 
 import com.xabber.android.BuildConfig;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.extension.mam.NextMamManager;
-import com.xabber.android.data.http.CrowdfundingManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.ui.activity.PreferenceSummaryHelperActivity;
@@ -44,6 +42,9 @@ public class DebugSettingsFragment extends android.preference.PreferenceFragment
         });
 
         Preference prefFetchCrowdfundingFeed = preferenceScreen.findPreference(getString(R.string.debug_fetch_crowdfunding_feed_key));
+        if (prefFetchCrowdfundingFeed != null)
+            preferenceScreen.removePreference(prefFetchCrowdfundingFeed);
+        /*
         if (prefFetchCrowdfundingFeed != null) {
             prefFetchCrowdfundingFeed.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
@@ -54,6 +55,7 @@ public class DebugSettingsFragment extends android.preference.PreferenceFragment
                 }
             });
         }
+        */
 
         if (!BuildConfig.DEBUG) {
             preferenceScreen.removePreference(prefDownloadArchive);
