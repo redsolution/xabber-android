@@ -106,8 +106,7 @@ public class AccountVO extends AbstractHeaderItem<AccountVO.ViewHolder> {
         Context context = viewHolder.itemView.getContext();
 
         /** set up ACCOUNT COLOR indicator */
-        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light
-            && AccountManager.getInstance().getEnabledAccounts().size() > 1){
+        if (AccountManager.getInstance().getEnabledAccounts().size() > 1){
             viewHolder.accountColorIndicator.setBackgroundColor(getAccountColorIndicator());
             viewHolder.accountColorIndicatorBack.setBackgroundColor(getAccountColorIndicatorBack());
         } else {
