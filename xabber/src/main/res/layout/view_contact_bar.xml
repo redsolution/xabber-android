@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="?attr/bottom_navigation_background"
@@ -11,93 +10,127 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
+        android:layout_marginBottom="8dp"
         android:layout_weight="1"
         android:orientation="horizontal">
 
-        <ImageButton
-            android:id="@+id/chat_button"
+
+        <LinearLayout
+            android:id="@+id/chat_button_layout"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="@drawable/test_ripple"
-            android:contentDescription="Chat"
             android:hapticFeedbackEnabled="true"
-            android:src="@drawable/ic_chats_list_new" />
+            android:orientation="vertical">
 
-        <ImageButton
-            android:id="@+id/call_button"
+            <ImageButton
+                android:id="@+id/chat_button"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:background="@color/transparent"
+                android:contentDescription="Chat"
+                android:clickable="false"
+                android:src="@drawable/ic_chats_list_new" />
+
+            <TextView
+                android:id="@+id/chat_button_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="Chat" />
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:id="@+id/call_button_layout"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="@drawable/test_ripple"
-            android:contentDescription="Call"
             android:hapticFeedbackEnabled="true"
-            android:src="@drawable/ic_calls_list_new" />
+            android:orientation="vertical">
 
-        <ImageButton
-            android:id="@+id/video_button"
+            <ImageButton
+                android:id="@+id/call_button"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:contentDescription="Call"
+                android:clickable="false"
+                android:background="@color/transparent"
+                android:src="@drawable/ic_calls_list_new" />
+
+            <TextView
+                android:id="@+id/call_button_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="Call" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/video_button_layout"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="@drawable/test_ripple"
-            android:contentDescription="Video Call"
             android:hapticFeedbackEnabled="true"
-            android:src="@drawable/ic_video_call" />
+            android:orientation="vertical">
 
-        <ImageButton
-            android:id="@+id/notify_button"
+            <ImageButton
+                android:id="@+id/video_button"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:contentDescription="Video Call"
+                android:clickable="false"
+                android:background="@color/transparent"
+                android:src="@drawable/ic_video_call" />
+
+            <TextView
+                android:id="@+id/video_call_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="Video Call" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/notify_button_layout"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="@drawable/test_ripple"
-            android:contentDescription="@string/category_message_notifications"
             android:hapticFeedbackEnabled="true"
-            android:src="@drawable/ic_bell" />
-    </LinearLayout>
+            android:orientation="vertical">
 
-    <LinearLayout
-        android:id="@+id/contact_bar_text"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="2"
-        android:gravity="bottom"
-        android:orientation="horizontal"
-        android:paddingBottom="8dp"
-        tools:visibility="visible">
+            <ImageButton
+                android:id="@+id/notify_button"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:clickable="false"
+                android:background="@color/transparent"
+                android:contentDescription="@string/category_message_notifications"
+                android:src="@drawable/ic_bell" />
 
-        <TextView
-            android:id="@+id/chat_button_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="Chat" />
 
-        <TextView
-            android:id="@+id/call_button_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="Call" />
+            <TextView
+                android:id="@+id/notification_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="Notifications" />
+        </LinearLayout>
 
-        <TextView
-            android:id="@+id/video_call_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="Video Call" />
-
-        <TextView
-            android:id="@+id/notification_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="Notifications" />
     </LinearLayout>
 
     <View style="@style/Divider"/>

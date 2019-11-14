@@ -56,11 +56,15 @@ import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.data.log.LogManager;
+import com.xabber.android.data.message.AbstractChat;
+import com.xabber.android.data.message.MessageManager;
+import com.xabber.android.data.message.NotificationState;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.color.ColorManager;
+import com.xabber.android.ui.dialog.SnoozeDialog;
 import com.xabber.android.ui.fragment.ConferenceInfoFragment;
 import com.xabber.android.ui.fragment.ContactVcardViewerFragment;
 import com.xabber.android.ui.helper.BlurTransformation;
@@ -69,11 +73,12 @@ import com.xabber.android.ui.helper.ContactTitleInflater;
 import java.util.Collection;
 
 public class ContactActivity extends ManagedActivity implements
-        OnContactChangedListener, OnAccountChangedListener, ContactVcardViewerFragment.Listener, View.OnClickListener, View.OnLongClickListener {
+        OnContactChangedListener, OnAccountChangedListener, ContactVcardViewerFragment.Listener, View.OnClickListener, View.OnLongClickListener, SnoozeDialog.OnSnoozeListener {
 
     private static final String LOG_TAG = ContactActivity.class.getSimpleName();
     private AccountJid account;
     private UserJid user;
+    private AbstractChat chat;
     private Toolbar toolbar;
     private View contactTitleView;
     private AbstractContact bestContact;
@@ -90,6 +95,11 @@ public class ContactActivity extends ManagedActivity implements
     private TextView callsButtonText;
     private TextView videoButtonText;
     private TextView notifyButtonText;
+    private LinearLayout chatButtonLayout;
+    private LinearLayout callsButtonLayout;
+    private LinearLayout videoButtonLayout;
+    private LinearLayout notifyButtonLayout;
+
     private int orientation;
 
     public static Intent createIntent(Context context, AccountJid account, UserJid user) {
@@ -181,21 +191,28 @@ public class ContactActivity extends ManagedActivity implements
         });
 
         chatButton = findViewById(R.id.chat_button);
-        chatButton.setOnClickListener(this);
-        chatButton.setOnLongClickListener(this);
         chatButtonText = findViewById(R.id.chat_button_text);
+        chatButtonLayout = findViewById(R.id.chat_button_layout);
+        chatButtonLayout.setOnClickListener(this);
+        chatButtonLayout.setOnLongClickListener(this);
+
         callsButton = findViewById(R.id.call_button);
-        callsButton.setOnClickListener(this);
-        callsButton.setOnLongClickListener(this);
         callsButtonText = findViewById(R.id.call_button_text);
+        callsButtonLayout = findViewById(R.id.call_button_layout);
+        callsButtonLayout.setOnClickListener(this);
+        callsButtonLayout.setOnLongClickListener(this);
+
         videoButton = findViewById(R.id.video_button);
-        videoButton.setOnClickListener(this);
-        videoButton.setOnLongClickListener(this);
         videoButtonText = findViewById(R.id.video_call_text);
+        videoButtonLayout = findViewById(R.id.video_button_layout);
+        videoButtonLayout.setOnClickListener(this);
+        videoButtonLayout.setOnLongClickListener(this);
+
         notifyButton = findViewById(R.id.notify_button);
-        notifyButton.setOnClickListener(this);
-        notifyButton.setOnLongClickListener(this);
         notifyButtonText = findViewById(R.id.notification_text);
+        notifyButtonLayout = findViewById(R.id.notify_button_layout);
+        notifyButtonLayout.setOnClickListener(this);
+        notifyButtonLayout.setOnLongClickListener(this);
 
         accountMainColor = ColorManager.getInstance().getAccountPainter().getAccountMainColor(account);
         final int accountDarkColor = ColorManager.getInstance().getAccountPainter().getAccountDarkColor(account);
@@ -204,6 +221,7 @@ public class ContactActivity extends ManagedActivity implements
         TextView contactAddressView = (TextView) findViewById(R.id.address_text);
         contactAddressView.setText(user.getBareJid().toString());
 
+        chat = MessageManager.getInstance().getOrCreateChat(account, user);
 
         orientation = getResources().getConfiguration().orientation;
         setContactBar(accountMainColor, orientation);
@@ -239,6 +257,12 @@ public class ContactActivity extends ManagedActivity implements
         super.onPause();
         Application.getInstance().removeUIListener(OnContactChangedListener.class, this);
         Application.getInstance().removeUIListener(OnAccountChangedListener.class, this);
+    }
+
+    @Override
+    protected void onDestroy() {
+        findViewById(R.id.notify_button_layout).setOnClickListener(null);
+        super.onDestroy();
     }
 
     private void appBarResize() {
@@ -332,6 +356,11 @@ public class ContactActivity extends ManagedActivity implements
     }
 
     private void setContactBar(int color, int orientation){
+        if (chat != null) {
+            if (chat.notifyAboutMessage())
+                notifyButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_bell));
+            else notifyButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_snooze));
+        }
         callsButton.setColorFilter(color);
         chatButton.setColorFilter(color);
         videoButton.setColorFilter(color);
@@ -417,20 +446,43 @@ public class ContactActivity extends ManagedActivity implements
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.chat_button:
+            case R.id.chat_button_layout:
                 startActivity(ChatActivity.createSpecificChatIntent(this, account, user));
                 finish();
                 break;
-            case R.id.call_button:
-            case R.id.video_button:
+            case R.id.call_button_layout:
+            case R.id.video_button_layout:
                 Snackbar.make(view, "Feature is coming in future updates!", Snackbar.LENGTH_LONG).show();
+                break;
+            case R.id.notify_button_layout:
+                if (chat.notifyAboutMessage())
+                    showSnoozeDialog(chat);
+                else
+                    removeSnooze(chat);
                 break;
             case R.id.generate_qrcode:
                 generateQR();
                 break;
             default:
         }
+    }
 
+    public void showSnoozeDialog(AbstractChat chat) {
+        SnoozeDialog dialog = SnoozeDialog.newInstance(chat, this);
+        dialog.show(getSupportFragmentManager(), "snooze_fragment");
+    }
+
+    public void removeSnooze(AbstractChat chat) {
+        if (chat != null)
+            chat.setNotificationStateOrDefault(
+                    new NotificationState(NotificationState.NotificationMode.enabled,
+                            0), true);
+        onSnoozed();
+    }
+
+    @Override
+    public void onSnoozed() {
+        setContactBar(accountMainColor, orientation);
     }
 
     @Override
