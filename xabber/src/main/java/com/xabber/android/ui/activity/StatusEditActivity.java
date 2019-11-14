@@ -103,7 +103,7 @@ public class StatusEditActivity extends ManagedListActivity implements OnItemCli
         View view = toolbar.findViewById(R.id.action_change_status);
         if (view != null && view instanceof TextView)
             if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light)
-                ((TextView) view).setTextColor(getResources().getColor(R.color.grey_600));
+                ((TextView) view).setTextColor(getResources().getColor(R.color.grey_900));
             else ((TextView) view).setTextColor(Color.WHITE);
         Intent intent = getIntent();
         account = StatusEditActivity.getAccount(intent);
