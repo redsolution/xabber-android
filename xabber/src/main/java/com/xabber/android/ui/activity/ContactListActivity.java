@@ -605,13 +605,13 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
     private DiscoverFragment getDiscoverFragment(){
         if (getSupportFragmentManager().findFragmentByTag(DISCOVER_TAG) != null){
             return (DiscoverFragment) getSupportFragmentManager().findFragmentByTag(DISCOVER_TAG);
-        } else return DiscoverFragment.Companion.newInstance();
+        } else return DiscoverFragment.newInstance();
     }
 
     private CallsFragment getCallsFragment(){
         if (getSupportFragmentManager().findFragmentByTag(CALLS_TAG) != null){
             return (CallsFragment) getSupportFragmentManager().findFragmentByTag(CALLS_TAG);
-        } else  return CallsFragment.Companion.newInstance();
+        } else  return CallsFragment.newInstance();
     }
 
     private void showBottomNavigation() {
