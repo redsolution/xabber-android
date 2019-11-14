@@ -16,7 +16,6 @@ package com.xabber.android.ui.adapter.contactlist;
 
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.roster.GroupStateProvider;
-import com.xabber.android.ui.adapter.contactlist.GroupConfiguration;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -61,4 +60,8 @@ public class AccountConfiguration extends GroupConfiguration {
         return Collections.unmodifiableCollection(groups);
     }
 
+    public Collection<GroupConfiguration> getNotSortedGroupConfigurations() {
+        ArrayList<GroupConfiguration> groups = new ArrayList<>(this.groups.values());
+        return Collections.unmodifiableCollection(groups);
+    }
 }

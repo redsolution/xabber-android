@@ -365,7 +365,8 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
         AccountWithGroupsVO account = AccountWithGroupsVO.convert(rosterAccount, this);
         boolean firstGroupInAccount = true;
         for (GroupConfiguration rosterConfiguration : rosterAccount
-                .getSortedGroupConfigurations()) {
+                //.getSortedGroupConfigurations()) {
+                .getNotSortedGroupConfigurations()) {
             if (showEmptyGroups || !rosterConfiguration.isEmpty()) {
                 GroupVO group = GroupVO.convert(rosterConfiguration, firstGroupInAccount, this);
                 firstGroupInAccount = false;
