@@ -53,7 +53,7 @@ public class NewContactTitleInflater {
             drawable = resources.getDrawable(resID);
             if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light){
                 drawable.setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_ATOP);
-                drawable.setAlpha(64);
+                drawable.setAlpha(144);
             }
             else {
                 drawable.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP);
