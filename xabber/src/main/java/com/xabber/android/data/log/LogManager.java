@@ -54,6 +54,10 @@ public class LogManager {
         onSettingsChanged();
     }
 
+    public void startNewLogFile(){
+        new FileLog();
+    }
+
     public void onSettingsChanged() {
         fileLog = SettingsManager.fileLog();
 

@@ -10,6 +10,10 @@ import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.extension.mam.NextMamManager;
+<<<<<<< HEAD
+=======
+import com.xabber.android.data.log.LogManager;
+>>>>>>> feature/logging-enhancement
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.ui.activity.PreferenceSummaryHelperActivity;
@@ -28,7 +32,7 @@ public class DebugSettingsFragment extends android.preference.PreferenceFragment
 
         PreferenceScreen preferenceScreen = getPreferenceScreen();
 
-        preferenceScreen.removePreference(preferenceScreen.findPreference(getString(R.string.debug_log_key)));
+        //preferenceScreen.removePreference(preferenceScreen.findPreference(getString(R.string.debug_log_key)));
         preferenceScreen.removePreference(preferenceScreen.findPreference(getString(R.string.cache_clear_key)));
         preferenceScreen.removePreference(preferenceScreen.findPreference(getString(R.string.debug_connection_errors_key)));
 
@@ -41,21 +45,14 @@ public class DebugSettingsFragment extends android.preference.PreferenceFragment
             }
         });
 
-        Preference prefFetchCrowdfundingFeed = preferenceScreen.findPreference(getString(R.string.debug_fetch_crowdfunding_feed_key));
-        if (prefFetchCrowdfundingFeed != null)
-            preferenceScreen.removePreference(prefFetchCrowdfundingFeed);
-        /*
-        if (prefFetchCrowdfundingFeed != null) {
-            prefFetchCrowdfundingFeed.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                @Override
-                public boolean onPreferenceClick(Preference preference) {
-                    CrowdfundingManager.getInstance().fetchFeedForDebug();
-                    Toast.makeText(getActivity(), "Crowdfunding feed updated", Toast.LENGTH_SHORT).show();
-                    return true;
-                }
-            });
-        }
-        */
+        Preference prefWriteFile = preferenceScreen.findPreference(getString(R.string.debug_file_log_key));
+        prefWriteFile.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                if (SettingsManager.fileLog()) LogManager.getInstance().startNewLogFile();
+                return false;
+            }
+        });
 
         if (!BuildConfig.DEBUG) {
             preferenceScreen.removePreference(prefDownloadArchive);

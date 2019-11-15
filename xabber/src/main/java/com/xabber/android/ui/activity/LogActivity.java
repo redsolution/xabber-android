@@ -73,8 +73,8 @@ public class LogActivity extends ManagedActivity implements Toolbar.OnMenuItemCl
         switch (item.getItemId()) {
             case R.id.action_clear_log:
                 new AlertDialog.Builder(this)
-                        .setTitle("Clear old logs")
-                        .setMessage("Are you sure you want to delete all old log file (current log file will remain)?")
+                        .setTitle("Clear logs")
+                        .setMessage("Are you sure you want to delete all log files?")
                         .setPositiveButton("Clear", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
                                 clearLog();

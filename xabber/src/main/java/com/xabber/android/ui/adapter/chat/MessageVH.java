@@ -125,7 +125,7 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
             if (messageItem.getMarkupText() != null && !messageItem.getMarkupText().isEmpty()){
                 Spanned markupText = Html.fromHtml(messageItem.getMarkupText().trim()
                                 .replace("\n", "<br/>").concat("&zwj;"), null,
-                        new ClickTagHandler(extraData.getContext(), extraData.getMentionColor()));
+                        new ClickTagHandler(extraData.getContext(), messageItem.getAccount()));
             messageText.setText(markupText, TextView.BufferType.SPANNABLE);
             } else if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT){
                 messageText.setText(URLDecoder.decode(messageItem.getText().trim()

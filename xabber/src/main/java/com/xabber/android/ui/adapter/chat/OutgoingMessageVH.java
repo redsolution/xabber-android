@@ -11,6 +11,7 @@ import android.widget.LinearLayout;
 import androidx.annotation.StyleRes;
 
 import com.xabber.android.R;
+import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.utils.Utils;
 
@@ -159,7 +160,12 @@ public class OutgoingMessageVH extends FileMessageVH {
         } else if (messageItem.isAcknowledged() || messageItem.isForwarded()) {
             if(messageItem.isAttachmentImageOnly())
                 messageIcon = R.drawable.ic_message_acknowledged_image_14dp;
-            else messageIcon = R.drawable.ic_message_acknowledged_14dp;
+            else{
+
+                if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light)
+                    messageIcon = R.drawable.ic_message_acknowledged_14dp;
+                else messageIcon = R.drawable.ic_message_acknowledged_dark_14dp;
+            }
         }
 
         if (messageIcon != 0) statusIcon.setImageResource(messageIcon);

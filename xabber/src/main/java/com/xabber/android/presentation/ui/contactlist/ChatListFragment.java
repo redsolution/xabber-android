@@ -374,8 +374,7 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         }
 
         /* Update left color indicator via current main user */
-        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light
-            && AccountManager.getInstance().getEnabledAccounts().size() > 1){
+        if (AccountManager.getInstance().getEnabledAccounts().size() > 1){
             toolbarAccountColorIndicator.setBackgroundColor(
                     ColorManager.getInstance().getAccountPainter().getDefaultMainColor());
             toolbarAccountColorIndicatorBack.setBackgroundColor(

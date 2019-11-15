@@ -1,5 +1,7 @@
 package com.xabber.android.data.log;
 
+import com.xabber.android.data.SettingsManager;
+
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.debugger.AbstractDebugger;
 
@@ -27,17 +29,19 @@ public class SmackDebugger extends AbstractDebugger {
      * Replace body of message with ***.
      */
     private static String replaceMessageBody(String sourceMsg) {
-        if (sourceMsg.contains("</message>")) {
-            try {
-                int s = sourceMsg.indexOf("<body>");
-                int f = sourceMsg.indexOf("</body>");
-                if (s != -1 && f != -1)
-                    return sourceMsg.substring(0, s + 6) + "***" + sourceMsg.substring(f);
-                else return sourceMsg;
-            } catch (Exception e) {
-                return sourceMsg;
-            }
-        } else return sourceMsg;
+        if (!SettingsManager.debugLog())
+            if (sourceMsg.contains("</message>")) {
+                try {
+                    int s = sourceMsg.indexOf("<body>");
+                    int f = sourceMsg.indexOf("</body>");
+                    if (s != -1 && f != -1)
+                        return sourceMsg.substring(0, s + 6) + "***" + sourceMsg.substring(f);
+                    else return sourceMsg;
+                } catch (Exception e) {
+                    return sourceMsg;
+                }
+            } else return sourceMsg;
+        else return sourceMsg;
     }
 
 }
