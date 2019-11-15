@@ -413,7 +413,11 @@ public final class UserAvatarManager extends Manager {
      */
     public void unpublishAvatar()
             throws NoResponseException, XMPPErrorException, NotConnectedException, InterruptedException, PubSubException.NotALeafNodeException {
-        getOrCreateMetadataNode().publish(new PayloadItem<>(new MetadataExtension(null)));
+        //getOrCreateMetadataNode().publish(new PayloadItem<>(new MetadataExtension(null)));
+        PayloadItem item = new PayloadItem<>(null, new MetadataExtension(null));
+        PublishItem publishItem = new PublishItem<>(METADATA_NAMESPACE, item);
+        PubSub packet = PubSub.createPubsubPacket(null, IQ.Type.set, publishItem, null);
+        connection().createStanzaCollectorAndSend(packet).nextResultOrThrow(45000);
     }
 
 
@@ -440,8 +444,15 @@ public final class UserAvatarManager extends Manager {
                     if ((payloadItem.getPayload() instanceof MetadataExtension)) {
 
                         MetadataExtension metadataExtension = (MetadataExtension) payloadItem.getPayload();
+                        if (metadataExtension.getInfoElements() == null) {
+                            //contact published an empty metadata to remove avatar
+                            for (AvatarListener listener : avatarListeners) {
+                                listener.onAvatarUpdateReceived(from, metadataExtension);
+                            }
+                            //save as empty bitmap
+                            AvatarManager.getInstance().onAvatarReceived(from, "", null, "xep");
 
-                        for (MetadataInfo info : metadataExtension.getInfoElements()){
+                        } else for (MetadataInfo info : metadataExtension.getInfoElements()){
                             if (info.getType().equals("image/jpeg") || info.getType().equals("image/png")) {
                                 if (metadataStore != null && metadataStore.hasAvatarAvailable(from, info.getId())) {
                                     AvatarManager am = AvatarManager.getInstance();
