@@ -1,7 +1,5 @@
 package com.xabber.xmpp.avatar;
 
-import android.annotation.SuppressLint;
-
 import org.jivesoftware.smack.util.StringUtils;
 
 import java.net.URL;
@@ -34,12 +32,11 @@ public class MetadataInfo {
      * @param pixelsHeight height of the image in pixels
      * @param pixelsWidth width of the image in pixels
      */
-    @SuppressLint("NewApi")
     public MetadataInfo(String id, URL url, long bytes, String type, int pixelsHeight, int pixelsWidth) {
         /*this.id = StringUtils.requireNotNullNorEmpty(id, "ID is required.")*/;
         this.id = StringUtils.requireNotNullOrEmpty(id, "ID is required.");
         this.url = url;
-        this.bytes = Math.toIntExact(bytes);
+        this.bytes = longToIntConverter(bytes);
         this.type = StringUtils.requireNotNullOrEmpty(type, "Content Type is required.");
         //if (pixelsHeight < 0 || pixelsHeight > MAX_HEIGHT) {
         //    throw new IllegalArgumentException("Image height value must be between 0 and 65536.");
@@ -49,6 +46,14 @@ public class MetadataInfo {
         //}
         this.height = (short) pixelsHeight;
         this.width = (short) pixelsWidth;
+    }
+
+    public Integer longToIntConverter(long bytes) {
+        if (bytes <= Integer.MAX_VALUE && bytes > 0)
+            return (int) bytes;
+        else if (bytes > Integer.MAX_VALUE)
+            return Integer.MAX_VALUE;
+        else return 0;
     }
 
     /**

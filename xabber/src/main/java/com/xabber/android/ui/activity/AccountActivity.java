@@ -5,17 +5,22 @@ import android.app.AlertDialog;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.Point;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.ContextThemeWrapper;
+import android.view.Display;
 import android.view.MenuItem;
+import android.view.Surface;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.Window;
@@ -130,6 +135,8 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
     private Uri photoFileUri;
     private String imageFileType;
     private byte[] avatarData;
+    private boolean defaultAvatar = false;
+    private boolean removeAvatarFlag;
     private boolean isAvatarSuccessful = false;
     private boolean isConnectionSettingsAction;
     private int accountMainColor;
@@ -320,6 +327,7 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
             return;
         }
         updateTitle();
+        updateAccountColor();
         updateOptions();
         Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
         Application.getInstance().addUIListener(OnBlockedListChangedListener.class, this);
@@ -335,10 +343,19 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
     }
 
     private void updateTitle() {
-        ContactTitleInflater.updateTitle(contactTitleView, this, bestContact);
+        ContactTitleInflater.updateTitle(contactTitleView, this, bestContact, true, false);
         statusIcon.setVisibility(View.GONE);
         statusGroupIcon.setVisibility(View.GONE);
-        updateAccountColor();
+        if (avatar.getDrawable() == null) {
+            defaultAvatar = true;
+            avatar.setImageDrawable(new ColorDrawable(ColorManager.getInstance().getAccountPainter().getAccountMainColor(account)));
+            findViewById(R.id.ivSetAvatar).setVisibility(View.VISIBLE);
+        } else {
+            defaultAvatar = false;
+            findViewById(R.id.ivSetAvatar).setVisibility(View.GONE);
+        }
+        if (accountMainColor != ColorManager.getInstance().getAccountPainter().getAccountMainColor(account))
+            updateAccountColor();
         //statusText.setText(account.getFullJid().asBareJid().toString());
         switchCompat.setChecked(accountItem.isEnabled());
     }
@@ -600,27 +617,35 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
         PopupMenu menu = new PopupMenu(contextThemeWrapper, avatar);
 
         menu.inflate(R.menu.change_avatar);
-        MenuItem removeAvatar = menu.getMenu().findItem(R.id.action_remove_avatar);
-        removeAvatar.setVisible(false);
+        final MenuItem removeAvatar = menu.getMenu().findItem(R.id.action_remove_avatar);
+        removeAvatar.setVisible(!defaultAvatar);
         menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.action_choose_from_gallery:
                         onChooseFromGalleryClick();
+                        removeAvatarFlag = false;
                         return true;
                     case R.id.action_take_photo:
                         onTakePhotoClick();
+                        removeAvatarFlag = false;
                         return true;
                     case R.id.action_remove_avatar:
+                        removeAvatar();
+                        saveAvatar();
                         return true;
-
                     default:
                         return false;
                 }
             }
         });
         menu.show();
+    }
+
+    private void removeAvatar() {
+        newAvatarImageUri = null;
+        removeAvatarFlag = true;
     }
 
     @Override
@@ -740,7 +765,13 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
                                 imageFileType = imageType;
 
                                 ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                                resource.compress(Bitmap.CompressFormat.PNG, 100, stream);
+
+                                if (imageFileType.equals("image/png")) {
+                                    resource.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                                } else {
+                                    resource.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+                                }
+                                //resource.compress(Bitmap.CompressFormat.PNG, 100, stream);
                                 byte[] data = stream.toByteArray();
                                 resource.recycle();
                                 Uri rotatedImage;
@@ -839,11 +870,18 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
                             @Override
                             public void run() {
                                 ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                                resource.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                                if (imageFileType != null) {
+                                    if (imageFileType.equals("image/png")) {
+                                        resource.compress(Bitmap.CompressFormat.PNG, 75, stream);
+                                    } else {
+                                        resource.compress(Bitmap.CompressFormat.JPEG, 75, stream);
+                                    }
+                                    //resource.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                                }
                                 byte[] data = stream.toByteArray();
-                                if (data.length>36000) {
-                                    MAX_IMAGE_RESIZE = MAX_IMAGE_RESIZE - MAX_IMAGE_RESIZE/8;
-                                    if(MAX_IMAGE_RESIZE == 0) {
+                                if (data.length > 35 * KB_SIZE_IN_BYTES) {
+                                    MAX_IMAGE_RESIZE = MAX_IMAGE_RESIZE - MAX_IMAGE_RESIZE / 8;
+                                    if (MAX_IMAGE_RESIZE == 0) {
                                         Toast.makeText(getBaseContext(), "Error with resizing", Toast.LENGTH_LONG).show();
                                         return;
                                     }
@@ -851,8 +889,9 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
                                     return;
                                 }
                                 resource.recycle();
+
                                 Uri rotatedImage = null;
-                                if(imageFileType!=null) {
+                                if (imageFileType != null) {
                                     if (imageFileType.equals("image/png")) {
                                         rotatedImage = FileManager.savePNGImage(data, "resize");
                                     } else {
@@ -888,10 +927,21 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
     }
 
     private void saveAvatar(){
-        progressBar.setVisibility(View.VISIBLE);
+        showProgressBar(true);
         AccountItem item = AccountManager.getInstance().getAccount(account);
         final UserAvatarManager mng = UserAvatarManager.getInstanceFor(item.getConnection());
-        if (newAvatarImageUri != null) {
+        if (removeAvatarFlag) {
+            try {
+                if (mng.isSupportedByServer()) {
+                    //saving empty avatar
+                    AvatarManager.getInstance().onAvatarReceived(account.getFullJid().asBareJid(), "", null, "xep");
+                }
+            } catch (XMPPException.XMPPErrorException | SmackException.NotConnectedException
+                    | InterruptedException | SmackException.NoResponseException e) {
+                e.printStackTrace();
+                showProgressBar(false);
+            }
+        } else if (newAvatarImageUri != null) {
             try {
                 if (mng.isSupportedByServer()) { //check if server supports PEP, if true - proceed with saving the avatar as XEP-0084 one
                     //xep-0084 av
@@ -902,14 +952,38 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
             } catch (IOException | XMPPException.XMPPErrorException | SmackException.NotConnectedException
                     | InterruptedException | SmackException.NoResponseException e) {
                 e.printStackTrace();
-                progressBar.setVisibility(View.GONE);
+                showProgressBar(false);
             }
         }
         Application.getInstance().runInBackgroundUserRequest(new Runnable() {
             @Override
             public void run() {
 
-                if(avatarData!=null) {
+                if (removeAvatarFlag) {
+                    try {
+                        //publishing empty (avatar) metadata
+                        mng.unpublishAvatar();
+                        isAvatarSuccessful = true;
+                    } catch (XMPPException.XMPPErrorException | PubSubException.NotALeafNodeException |
+                            SmackException.NotConnectedException | InterruptedException | SmackException.NoResponseException e) {
+                        e.printStackTrace();
+                    }
+
+                    final boolean isSuccessfulFinal = isAvatarSuccessful;
+                    Application.getInstance().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            if (isSuccessfulFinal) {
+                                Toast.makeText(getBaseContext(), "Avatar published!", Toast.LENGTH_LONG).show();
+                            } else {
+                                Toast.makeText(getBaseContext(), "Avarar publishing failed", Toast.LENGTH_LONG).show();
+                            }
+                            showProgressBar(false);
+                            updateTitle();
+                        }
+                    });
+                } else if(avatarData!=null) {
                     try {
                         if(imageFileType.equals("image/png")) {
                             mng.publishAvatar(avatarData, FINAL_IMAGE_SIZE, FINAL_IMAGE_SIZE);
@@ -930,12 +1004,67 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
                             } else {
                                 Toast.makeText(getBaseContext(), "Avarar publishing failed", Toast.LENGTH_LONG).show();
                             }
-                            progressBar.setVisibility(View.GONE);
+                            showProgressBar(false);
                             updateTitle();
                         }
                     });
                 }
             }
         });
+    }
+
+    public void showProgressBar(boolean show) {
+        progressBar.setVisibility(show ? View.VISIBLE : View.GONE);
+        lockScreenRotation(show);
+    }
+
+    public void lockScreenRotation(boolean lockOrientation) {
+        int lock = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
+        if (lockOrientation) {
+            Display display = getWindowManager().getDefaultDisplay();
+            int rotation = display.getRotation();
+
+            Point size = new Point();
+            display.getSize(size);
+
+            if (rotation == Surface.ROTATION_0 || rotation == Surface.ROTATION_180) {
+                if (size.x > size.y) {
+                    //rotation is 0 or 180 deg, and the size of x is greater than y,
+                    //so we have a tablet
+                    if (rotation == Surface.ROTATION_0) {
+                        lock = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+                    } else {
+                        lock = ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE;
+                    }
+                } else {
+                    //rotation is 0 or 180 deg, and the size of y is greater than x,
+                    //so we have a phone
+                    if (rotation == Surface.ROTATION_0) {
+                        lock = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+                    } else {
+                        lock = ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT;
+                    }
+                }
+            } else {
+                if (size.x > size.y) {
+                    //rotation is 90 or 270, and the size of x is greater than y,
+                    //so we have a phone
+                    if (rotation == Surface.ROTATION_90) {
+                        lock = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+                    } else {
+                        lock = ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE;
+                    }
+                } else {
+                    //rotation is 90 or 270, and the size of y is greater than x,
+                    //so we have a tablet
+                    if (rotation == Surface.ROTATION_90) {
+                        lock = ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT;
+                    } else {
+                        lock = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+                    }
+                }
+            }
+        }
+        setRequestedOrientation(lock);
     }
 }

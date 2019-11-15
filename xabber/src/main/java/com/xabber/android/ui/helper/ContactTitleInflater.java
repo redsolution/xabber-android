@@ -48,6 +48,10 @@ public class ContactTitleInflater {
     }
 
     public static void updateTitle(View titleView, final Context context, AbstractContact abstractContact, boolean isForVcard) {
+        updateTitle(titleView, context, abstractContact, isForVcard, true);
+    }
+
+    public static void updateTitle(View titleView, final Context context, AbstractContact abstractContact, boolean isForVcard, boolean qrAvatarNeeded) {
         final TextView nameView = (TextView) titleView.findViewById(R.id.name);
         final ImageView avatarView = (ImageView) titleView.findViewById(R.id.ivAvatar);
 
@@ -62,7 +66,7 @@ public class ContactTitleInflater {
 
             /*in case qrcode-avatars will be needed, probably should migrate it into avatar manager
 */
-            if (avatarView.getDrawable() == null) {
+            if (avatarView.getDrawable() == null && qrAvatarNeeded) {
                 ImageView avatarQRView = (ImageView) titleView.findViewById(R.id.ivAvatarQR);
                 BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
                 Bitmap bitmap;
@@ -117,11 +121,15 @@ public class ContactTitleInflater {
         statusModeView.setVisibility(View.GONE);
         if (isServer) {
             statusModeGroupView.setImageResource(R.drawable.ic_server_14_border);
-            if (isForVcard) statusModeGroupView.setVisibility(View.GONE);
-            else statusModeGroupView.setVisibility(View.VISIBLE);
+            if (isForVcard) {
+                statusModeGroupView.setVisibility(View.GONE);
+                statusModeView.setVisibility(View.GONE);
+            } else statusModeGroupView.setVisibility(View.VISIBLE);
         } else if (isGroupchat) {
-            if (isForVcard) statusModeGroupView.setVisibility(View.GONE);
-            else statusModeGroupView.setVisibility(View.VISIBLE);
+            if (isForVcard) {
+                statusModeGroupView.setVisibility(View.GONE);
+                statusModeView.setVisibility(View.GONE);
+            } else statusModeGroupView.setVisibility(View.VISIBLE);
         } else {
             if (isContactOffline(statusLevel)) {
                 statusModeView.setVisibility(View.GONE);

@@ -28,7 +28,7 @@ public class MetadataExtension implements ExtensionElement {
     }
 
     public List<MetadataInfo> getInfoElements() {
-        return Collections.unmodifiableList(infos);
+        return infos == null ? null : Collections.unmodifiableList(infos);
     }
 
     public List<MetadataPointer> getPointerElements() {

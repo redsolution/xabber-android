@@ -463,7 +463,6 @@ public class AccountInfoEditFragment extends Fragment implements OnVCardSaveList
                     case R.id.action_take_photo:
                         onTakePhotoClick();
                         return true;
-
                     case R.id.action_remove_avatar:
                         removeAvatar();
                         return true;
@@ -776,6 +775,7 @@ public class AccountInfoEditFragment extends Fragment implements OnVCardSaveList
             }
         } else if (removeAvatarFlag) {
             avatar.setImageDrawable(AvatarManager.getInstance().getDefaultAccountAvatar(account));
+            saveAvatarButton.setVisibility(View.VISIBLE);
             //avatarSize.setVisibility(View.INVISIBLE);
         } else {
             avatar.setImageDrawable(AvatarManager.getInstance().getAccountAvatar(account));
@@ -861,6 +861,17 @@ public class AccountInfoEditFragment extends Fragment implements OnVCardSaveList
 
         if (removeAvatarFlag) {
             vCard.removeAvatar();
+            try {
+                if (mng.isSupportedByServer()) {
+                    //setting empty avatar
+                    AvatarManager.getInstance().onAvatarReceived(account.getFullJid().asBareJid(), "", null, "xep");
+                } else {
+                    return;
+                }
+            } catch (XMPPException.XMPPErrorException | SmackException.NotConnectedException
+                    | InterruptedException | SmackException.NoResponseException e) {
+                e.printStackTrace();
+            }
         } else if (newAvatarImageUri != null) {
             try {
                 if (mng.isSupportedByServer()) { //check if server supports PEP, if true - proceed with saving the avatar as XEP-0084 one
@@ -871,7 +882,7 @@ public class AccountInfoEditFragment extends Fragment implements OnVCardSaveList
                     //vCard.removeAvatar();
                 } else { //otherwise set the vCard avatar and return, which stops the avatar from being published as a XEP-0084 avatar
                     //vCard av
-                    vCard.setAvatar(new URL(newAvatarImageUri.toString()));
+                    //vCard.setAvatar(new URL(newAvatarImageUri.toString()));
                     return;
                 }
             } catch (IOException | XMPPException.XMPPErrorException | SmackException.NotConnectedException
@@ -883,7 +894,29 @@ public class AccountInfoEditFragment extends Fragment implements OnVCardSaveList
             @Override
             public void run() {
 
-                if(avatarData!=null) {
+                if (removeAvatarFlag) {
+                    try {
+                        mng.unpublishAvatar();
+                        isAvatarSuccessful = true;
+                    } catch (XMPPException.XMPPErrorException | PubSubException.NotALeafNodeException |
+                            SmackException.NotConnectedException | InterruptedException | SmackException.NoResponseException e) {
+                        e.printStackTrace();
+                    }
+
+                    final boolean isSuccessfulFinal = isAvatarSuccessful;
+                    Application.getInstance().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (isSuccessfulFinal) {
+                                Toast.makeText(getActivity(), "Avatar published!", Toast.LENGTH_LONG).show();
+                                disableProgressMode();
+                            } else {
+                                Toast.makeText(getActivity(), "Avarar publishing failed", Toast.LENGTH_LONG).show();
+                                disableProgressMode();
+                            }
+                        }
+                    });
+                } else if(avatarData!=null) {
                     try {
                         if(imageFileType.equals("image/png")) {
                             mng.publishAvatar(avatarData, MAX_TEST, MAX_TEST);
@@ -912,8 +945,6 @@ public class AccountInfoEditFragment extends Fragment implements OnVCardSaveList
                 }
             }
         });
-
-
     }
 
     public void enableProgressMode(String message) {
