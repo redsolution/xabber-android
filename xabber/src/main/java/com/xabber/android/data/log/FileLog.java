@@ -48,7 +48,7 @@ class FileLog {
     }
 
     public FileLog() {
-        dateFormat = FastDateFormat.getInstance("yyyy-MM-dd_HH-mm-ss", Locale.US);
+        dateFormat = FastDateFormat.getInstance("yyyy-MM-dd_HH-mm-ss.SSS", Locale.US);
         try {
             logQueue = new DispatchQueue("logQueue");
             currentFile = createLogFile();
