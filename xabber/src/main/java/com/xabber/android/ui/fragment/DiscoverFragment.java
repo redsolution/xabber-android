@@ -1,8 +1,10 @@
 package com.xabber.android.ui.fragment;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -32,7 +34,6 @@ import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.ui.activity.ConferenceSelectActivity;
-import com.xabber.android.ui.activity.ContactAddActivity;
 import com.xabber.android.ui.activity.SearchActivity;
 import com.xabber.android.ui.activity.StatusEditActivity;
 import com.xabber.android.ui.color.AccountPainter;
@@ -87,6 +88,10 @@ public class DiscoverFragment extends Fragment implements View.OnClickListener, 
         toolbarSearchIv.setOnClickListener(this);
         toolbarTitleTv.setText("Discover");
 
+        view.findViewById(R.id.about_github).setOnClickListener(this);
+        view.findViewById(R.id.about_twitter).setOnClickListener(this);
+        view.findViewById(R.id.about_redsolution).setOnClickListener(this);
+
         return view;
     }
 
@@ -113,7 +118,7 @@ public class DiscoverFragment extends Fragment implements View.OnClickListener, 
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.ivAdd:
-                showToolbarPopup(toolbarAddIv);
+                //showToolbarPopup(toolbarAddIv);
                 break;
             case R.id.ivAvatar:
                 startActivity(StatusEditActivity.createIntent(getActivity()));
@@ -124,23 +129,38 @@ public class DiscoverFragment extends Fragment implements View.OnClickListener, 
             case R.id.toolbar_search_button:
                 startActivity(SearchActivity.createSearchIntent(getActivity()));
                 break;
+            case R.id.about_redsolution:
+                sendUrlViewIntent(getString(R.string.about_redsolution_url));
+                break;
+            case R.id.about_github:
+                sendUrlViewIntent(getString(R.string.about_xabber_github_url));
+                break;
+            case R.id.about_twitter:
+                sendUrlViewIntent(getString(R.string.about_xabber_twitter_url));
+                break;
         }
     }
 
-    /** Show menu Add contact / Add conference */
-    private void showToolbarPopup(View v) {
-        PopupMenu popupMenu = new PopupMenu(getContext(), v);
-        popupMenu.setOnMenuItemClickListener(this);
-        popupMenu.inflate(R.menu.menu_add_in_contact_list);
-        popupMenu.show();
+    private void sendUrlViewIntent(String url) {
+        Intent i = new Intent(Intent.ACTION_VIEW);
+        i.setData(Uri.parse(url));
+        startActivity(i);
     }
+
+    /** Show menu Add contact / Add conference */
+    //private void showToolbarPopup(View v) {
+    //    PopupMenu popupMenu = new PopupMenu(getContext(), v);
+    //    popupMenu.setOnMenuItemClickListener(this);
+    //    popupMenu.inflate(R.menu.menu_add_in_contact_list);
+    //    popupMenu.show();
+    //}
 
     /** Handle toolbarRelativeLayout menus clicks */
     @Override
     public boolean onMenuItemClick(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_add_contact:
-                startActivity(ContactAddActivity.createIntent(getActivity()));
+                //startActivity(ContactAddActivity.createIntent(getActivity()));
                 return true;
             case R.id.action_join_conference:
                 startActivity(ConferenceSelectActivity.createIntent(getActivity()));

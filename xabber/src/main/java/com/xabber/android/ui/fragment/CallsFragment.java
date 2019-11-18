@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.text.method.LinkMovementMethod;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -77,16 +78,20 @@ public class CallsFragment extends Fragment implements View.OnClickListener, Pop
         toolbarAccountColorIndicator = view.findViewById(R.id.accountColorIndicator);
         toolbarAccountColorIndicatorBack = view.findViewById(R.id.accountColorIndicatorBack);
         toolbarAddIv = (ImageView) view.findViewById(R.id.ivAdd);
+        toolbarAddIv.setVisibility(View.GONE);
         toolbarTitleTv = (TextView) view.findViewById(R.id.tvTitle);
         toolbarAvatarIv = (ImageView) view.findViewById(R.id.ivAvatar);
         toolbarStatusIv = (ImageView) view.findViewById(R.id.ivStatus);
         toolbarSearchIv = (ImageView) view.findViewById(R.id.toolbar_search_button);
         toolbarAppBarLayout = view.findViewById(R.id.chatlist_toolbar_root);
-        toolbarAddIv.setOnClickListener(this);
+        //toolbarAddIv.setOnClickListener(this);
         toolbarAvatarIv.setOnClickListener(this);
         //toolbarTitleTv.setOnClickListener(this);
         toolbarSearchIv.setOnClickListener(this);
         toolbarTitleTv.setText("Calls");
+
+        ((TextView) view.findViewById(R.id.calls_text_explanation))
+                .setMovementMethod(LinkMovementMethod.getInstance());
 
         return view;
     }
@@ -114,7 +119,7 @@ public class CallsFragment extends Fragment implements View.OnClickListener, Pop
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.ivAdd:
-                showToolbarPopup(toolbarAddIv);
+                //showToolbarPopup(toolbarAddIv);
                 break;
             case R.id.ivAvatar:
                 startActivity(StatusEditActivity.createIntent(getActivity()));
@@ -129,12 +134,12 @@ public class CallsFragment extends Fragment implements View.OnClickListener, Pop
     }
 
     /** Show menu Add contact / Add conference */
-    private void showToolbarPopup(View v) {
-        PopupMenu popupMenu = new PopupMenu(getContext(), v);
-        popupMenu.setOnMenuItemClickListener(this);
-        popupMenu.inflate(R.menu.menu_add_in_contact_list);
-        popupMenu.show();
-    }
+    //private void showToolbarPopup(View v) {
+    //    PopupMenu popupMenu = new PopupMenu(getContext(), v);
+    //    popupMenu.setOnMenuItemClickListener(this);
+    //    popupMenu.inflate(R.menu.menu_add_in_contact_list);
+    //    popupMenu.show();
+    //}
 
     /** Handle toolbarRelativeLayout menus clicks */
     @Override
