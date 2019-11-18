@@ -16,6 +16,8 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import androidx.core.app.NavUtils;
+
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 import com.xabber.android.R;
@@ -69,6 +71,7 @@ public class ContactAddFragment extends GroupEditorFragment
         return fragment;
     }
 
+/*
     public static ContactAddFragment newInstance(AccountJid account, UserJid user, String contact){
         ContactAddFragment fragment = new ContactAddFragment();
         Bundle args = new Bundle();
@@ -78,6 +81,7 @@ public class ContactAddFragment extends GroupEditorFragment
         fragment.setArguments(args);
         return fragment;
     }
+*/
 
     @Override
     public void onAttach(Activity activity) {
@@ -155,10 +159,11 @@ public class ContactAddFragment extends GroupEditorFragment
         if (error != null) {
             setError(error);
         }
-
+/*
         if(getArguments()!=null){
             userView.setText(getArguments().getString("contact"));
         }
+*/
 
         return view;
     }
@@ -434,7 +439,7 @@ public class ContactAddFragment extends GroupEditorFragment
             public void run() {
                 if (listenerActivity != null)
                     listenerActivity.showProgress(false);
-                if (success) getActivity().finish();
+                if (success) NavUtils.navigateUpFromSameTask(getActivity());
             }
         });
     }

@@ -16,7 +16,6 @@ package com.xabber.android.ui.activity;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -63,12 +62,14 @@ public class ContactAddActivity extends ManagedActivity implements ContactAddFra
         return EntityIntentBuilder.getUser(intent);
     }
 
+/*
     private static String getContact(Intent intent){
         String contact;
         Bundle bundle = intent.getExtras();
         contact = bundle.get("contact").toString();
         return contact;
     }
+*/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,6 +100,7 @@ public class ContactAddActivity extends ManagedActivity implements ContactAddFra
 
         Intent intent = getIntent();
 
+        /*
         if(intent.hasExtra("contact")) {
             if (savedInstanceState == null) {
                 getFragmentManager()
@@ -106,7 +108,9 @@ public class ContactAddActivity extends ManagedActivity implements ContactAddFra
                         .add(R.id.fragment_container, ContactAddFragment.newInstance(getAccount(intent), getUser(intent), getContact(intent)))
                         .commit();
             }
-        }else if (savedInstanceState == null) {
+        }else
+        */
+        if (savedInstanceState == null) {
             getFragmentManager()
                     .beginTransaction()
                     .add(R.id.fragment_container, ContactAddFragment.newInstance(getAccount(intent), getUser(intent)))
