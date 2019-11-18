@@ -18,7 +18,6 @@ import android.database.Cursor;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
-import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
@@ -27,6 +26,7 @@ import com.xabber.android.data.database.sqlite.GroupTable;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.NestedMap;
 import com.xabber.android.data.entity.NestedMap.Entry;
+import com.xabber.android.data.log.LogManager;
 
 import org.jxmpp.stringprep.XmppStringprepException;
 
@@ -129,7 +129,7 @@ public class GroupManager implements OnLoadListener, OnAccountRemovedListener,
      */
     public String getGroupName(AccountJid account, String group) {
         if (GroupManager.NO_GROUP.equals(group)) {
-            return Application.getInstance().getString(R.string.group_none);
+            return Application.getInstance().getString(R.string.no_group_contacts);
         } else if (GroupManager.IS_ROOM.equals(group)) {
             return Application.getInstance().getString(R.string.group_room);
         } else if (GroupManager.ACTIVE_CHATS.equals(group)) {
