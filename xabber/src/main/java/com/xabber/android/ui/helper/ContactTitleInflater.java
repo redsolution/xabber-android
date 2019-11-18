@@ -131,7 +131,7 @@ public class ContactTitleInflater {
                 statusModeView.setVisibility(View.GONE);
             } else statusModeGroupView.setVisibility(View.VISIBLE);
         } else {
-            if (isContactOffline(statusLevel)) {
+            if (isContactOffline(statusLevel) || isForVcard) {
                 statusModeView.setVisibility(View.GONE);
             } else {
                 statusModeView.setVisibility(View.VISIBLE);
