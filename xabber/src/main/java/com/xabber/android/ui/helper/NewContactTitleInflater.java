@@ -116,6 +116,14 @@ public class NewContactTitleInflater {
             if (statusLevel == 0 || statusLevel == 1 || statusLevel == 2 || statusLevel == 3 || statusLevel == 4)
                 statusTextView.setTextColor(ColorManager.getInstance().getAccountPainter().getAccountColorWithTint(abstractContact.getAccount(), 800));
             else statusTextView.setTextColor(context.getResources().getColor(R.color.contact_item_text_second_dark));
+        } else {
+            statusTextView.setTextColor(context.getResources().getColor(R.color.grey_800));
+            if (statusLevel == 0 || statusLevel == 1 || statusLevel == 2 || statusLevel == 3 || statusLevel == 4){
+                statusTextView.setAlpha(0.8f);
+            }
+            else {
+                statusTextView.setAlpha(0.5f);
+            }
         }
 
         ChatState chatState = ChatStateManager.getInstance().getChatState(
