@@ -326,7 +326,6 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
 
     /** Update toolbarRelativeLayout via current state */
     public void updateToolbar(){
-        setupToolbarLayout();
         /* Update ChatState TextView display via current chat and connection state */
         if (AccountManager.getInstance().getCommonState() == CommonState.connecting)
             toolbarTitleTv.setText(Application.getInstance().getApplicationContext().getString(R.string.account_state_connecting));
@@ -385,6 +384,7 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
             toolbarAccountColorIndicatorBack.setBackgroundColor(
                     getResources().getColor(R.color.transparent));
         }
+        setupToolbarLayout();
     }
 
     /** OnClickListener for Toolbar */
@@ -760,9 +760,9 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         else markAllAsReadButton.setVisibility(View.GONE);
 
         /* Update another elements */
-        updateToolbar();
         updateUnreadCount();
         updateItems(items);
+        updateToolbar();
     }
 
     private GroupConfiguration getChatsGroup(ChatListState state) {
