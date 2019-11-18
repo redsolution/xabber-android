@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="fragment_calls_message">Calls are coming to Xabber for Android! Not this release, and probably not this year, but they are on our roadmap.\n\nReally impatient users can test working VoIP right now in <a href="http://www.xabber.com/web/">Web</a> and <a href="http://www.xabber.com/ios/">iOS</a> versions of Xabber.\n\nIf you want to keep Xabber strong and speed up Xabber development, take part in our <a href="http://patreon.com/xabber/">crowdfunding campaign on Patreon!</a></string>
+
+</resources>

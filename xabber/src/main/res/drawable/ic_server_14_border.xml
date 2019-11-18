@@ -2,10 +2,11 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item>
         <shape android:shape="ring"
-            android:innerRadius="6dp"
             android:useLevel="false"
-            android:thickness="2dp"
-            >
+            android:thickness="2dp">
+            <size
+                android:width="17dp"
+                android:height="17dp"/>
             <solid android:color="?attr/contact_list_contact_background"/>
         </shape>
     </item>

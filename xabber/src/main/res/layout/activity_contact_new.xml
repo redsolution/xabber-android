@@ -18,6 +18,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main_content"
     android:fitsSystemWindows="true"
+    android:background="?attr/bottom_navigation_background"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -26,7 +27,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fitsSystemWindows="true"
-
+        android:background="?attr/bottom_navigation_background"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
         <com.google.android.material.appbar.CollapsingToolbarLayout
