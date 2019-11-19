@@ -16,8 +16,6 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import androidx.core.app.NavUtils;
-
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 import com.xabber.android.R;
@@ -36,7 +34,7 @@ import com.xabber.android.ui.helper.ContactAdder;
 
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
-import org.jxmpp.jid.EntityBareJid;
+import org.jxmpp.jid.Jid;
 import org.jxmpp.jid.impl.JidCreate;
 import org.jxmpp.stringprep.XmppStringprepException;
 
@@ -325,8 +323,8 @@ public class ContactAddFragment extends GroupEditorFragment
 
         final UserJid user;
         try {
-            EntityBareJid entityFullJid = JidCreate.entityBareFrom(contactString);
-            user = UserJid.from(entityFullJid);
+            Jid jid = JidCreate.from(contactString);
+            user = UserJid.from(jid);
         } catch (XmppStringprepException | UserJid.UserJidCreateException  e) {
             e.printStackTrace();
             setError(getString(R.string.INCORRECT_USER_NAME));
@@ -408,21 +406,55 @@ public class ContactAddFragment extends GroupEditorFragment
             }
         }
 
+        //Invalid when domain is empty
         if (domainName.equals("")) {
-            setError("Empty domain!");
+            setError(getString(R.string.INCORRECT_USER_NAME) + getString(R.string.INCORRECT_USER_NAME_ADDENDUM_DOMAIN));
             return true;
         }
 
+        //Invalid when "@" is present but localPart is empty
+        if (atChar == 0) {
+            setError(getString(R.string.INCORRECT_USER_NAME) + getString(R.string.INCORRECT_USER_NAME_ADDENDUM_LOCAL));
+            return true;
+        }
+
+        //Invalid when "@" is present in a domainPart
+        if (atChar > 0) {
+            if (domainName.contains("@")) {
+                setError(getString(R.string.INCORRECT_USER_NAME) + getString(R.string.INCORRECT_USER_NAME_ADDENDUM_DOMAIN));
+                return true;
+            }
+        }
+
+        //Invalid when "/" is present but resourcePart is empty
+        //if (slashIndex == contactString.length()-1) {
+        //    setError(getString(R.string.INCORRECT_USER_NAME) + getString(R.string.INCORRECT_USER_NAME_ADDENDUM_RESOURCE));
+        //    return true;
+        //}
+
+        //Invalid when domain has "." at the start/end
         if (domainName.charAt(domainName.length()-1)=='.' || domainName.charAt(0)=='.'){
-            setError(getString(R.string.INCORRECT_USER_NAME) + ": invalid domain");
+            setError(getString(R.string.INCORRECT_USER_NAME) + getString(R.string.INCORRECT_USER_NAME_ADDENDUM_DOMAIN));
+            return true;
+        }
+        //Invalid when domain does not have a "." in the middle, when paired with the last check
+        if (!domainName.contains(".")) {
+            setError(getString(R.string.INCORRECT_USER_NAME) + getString(R.string.INCORRECT_USER_NAME_ADDENDUM_DOMAIN));
             return true;
         }
 
-        if (localName.charAt(localName.length()-1)=='.' || localName.charAt(0)=='.'){
-            setError(getString(R.string.INCORRECT_USER_NAME));
-            return true;
+        if (!localName.equals("")) {
+            //Invalid when localPart is NOT empty, and HAS "." at the start/end
+            if (localName.charAt(localName.length() - 1) == '.' || localName.charAt(0) == '.') {
+                setError(getString(R.string.INCORRECT_USER_NAME));
+                return true;
+            }
+            //Invalid when localPart is NOT empty, and contains ":" symbol
+            if (localName.contains(":")) {
+                setError(getString(R.string.INCORRECT_USER_NAME));
+                return true;
+            }
         }
-
         return false;
     }
 
@@ -439,7 +471,7 @@ public class ContactAddFragment extends GroupEditorFragment
             public void run() {
                 if (listenerActivity != null)
                     listenerActivity.showProgress(false);
-                if (success) NavUtils.navigateUpFromSameTask(getActivity());
+                if (success) getActivity().finish();
             }
         });
     }
