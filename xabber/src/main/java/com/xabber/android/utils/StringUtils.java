@@ -19,8 +19,12 @@ import android.content.res.Resources;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.roster.RosterCacheManager;
 
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;
@@ -30,6 +34,13 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
+
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 
 /**
  * Helper class to get plural forms.
@@ -321,5 +332,36 @@ public class StringUtils {
     public static String getColoredText(String text, int color) {
         String hexColor = String.format("#%06X", 0xFFFFFF & color);
         return getColoredText(text, hexColor);
+    }
+
+    /**
+     * Beautify XML string
+     * @param data
+     * @return
+     */
+    public static String getPrettyXmlString(String data){
+        try {
+            data = data.substring(data.indexOf("<")-1);
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            Transformer transformer = transformerFactory.newTransformer();
+
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
+            transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+
+            StringWriter stringWriter = new StringWriter();
+            StreamResult xmlOutput = new StreamResult(stringWriter);
+
+            Source xmlInput = new StreamSource(new StringReader(data));
+            transformer.transform(xmlInput, xmlOutput);
+
+            String result = xmlOutput.getWriter().toString();
+            return "\n ".concat(result.substring(0, result.length()-1));
+        } catch (Exception e) {
+            LogManager.e("StringUtils", e.toString());
+            return data;
+        }
+
     }
 }
