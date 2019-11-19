@@ -47,7 +47,7 @@ public class AbstractContact extends BaseEntity {
     }
 
     /**
-     * vCard and roster can be  used for name resolving.
+     * vCard and roster can be used for name resolving.
      *
      * @return Verbose name.
      */
