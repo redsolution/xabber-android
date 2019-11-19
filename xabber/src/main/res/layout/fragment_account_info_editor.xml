@@ -107,11 +107,11 @@
                             android:orientation="vertical">
 
                             <EditText
-                                android:id="@+id/vcard_family_name"
+                                android:id="@+id/vcard_given_name"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center_vertical"
-                                android:hint="@string/vcard_family_name"
+                                android:hint="@string/vcard_given_name"
                                 android:singleLine="true"
                                 android:textSize="@dimen/vcard_edit_main_text_size" />
 
@@ -125,13 +125,14 @@
                                 android:textSize="@dimen/vcard_edit_main_text_size" />
 
                             <EditText
-                                android:id="@+id/vcard_given_name"
+                                android:id="@+id/vcard_family_name"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center_vertical"
-                                android:hint="@string/vcard_given_name"
+                                android:hint="@string/vcard_family_name"
                                 android:singleLine="true"
                                 android:textSize="@dimen/vcard_edit_main_text_size" />
+
                         </LinearLayout>
                     </LinearLayout>
 

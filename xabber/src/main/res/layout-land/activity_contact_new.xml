@@ -108,7 +108,6 @@
                     android:layout_marginLeft="11dp"
                     android:ellipsize="end"
                     android:gravity="center_vertical"
-                    android:maxLines="3"
                     android:paddingTop="3dp"
                     android:paddingBottom="4dp"
                     android:text="Lorem Ipsum"

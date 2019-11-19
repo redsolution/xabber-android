@@ -38,7 +38,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="6dp"
                 android:gravity="center_vertical"
-                android:singleLine="true"
                 android:text="Lorem Ipsum"
                 android:textColor="@color/primary_text_default_material_dark"
                 android:textSize="24sp" />

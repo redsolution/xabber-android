@@ -42,12 +42,15 @@
     <string name="account_tls_require_summary">Require TLS encryption when connect to server</string>
     <string name="account_enable_tls">Require TLS cryptographic protocol</string>
     <string name="account_use_tor">Use TOR anonymity network (requires Orbot proxy)</string>
-    <string name="INCORRECT_USER_NAME">Incorrect user name</string>
     <string name="orbot_required_message">In order to process using TOR you must have Orbot installed and activated to proxy traffic through it. Would you like to install it from Google Play?</string>
     <string name="orbot_required_title">Install Orbot?</string>
     <string name="install_orbot">Install Orbot</string>
     <string name="ACCOUNT_REGISTER_FAILED">Failed to register account on the server.</string>
     <string name="SERVER_INFO_ERROR">Could not get server info.</string>
+    <string name="INCORRECT_USER_NAME">Incorrect user name</string>
+    <string name="INCORRECT_USER_NAME_ADDENDUM_DOMAIN">: invalid domain</string>
+    <string name="INCORRECT_USER_NAME_ADDENDUM_LOCAL">: invalid local part with "@" present</string>
+    <string name="INCORRECT_USER_NAME_ADDENDUM_RESOURCE">: invalid resource part with "/" present</string>
 
     <string name="account_color">Account color</string>
     <string name="account_color_name_green">Green</string>

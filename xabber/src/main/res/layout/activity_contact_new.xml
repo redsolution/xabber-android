@@ -18,7 +18,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main_content"
     android:fitsSystemWindows="true"
-    android:background="?attr/bottom_navigation_background"
+    android:background="?attr/contact_list_background"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -100,7 +100,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
         app:layout_behavior="com.xabber.android.ui.helper.CustomScrollingViewBehavior">
 
@@ -109,7 +109,7 @@
         <FrameLayout
             android:id="@+id/scrollable_container"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:background="?attr/contact_list_background">
             <!--app:layout_behavior="@string/appbar_scrolling_view_behavior"-->
         </FrameLayout>
