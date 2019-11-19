@@ -1004,7 +1004,7 @@ public class AccountInfoEditFragment extends Fragment implements OnVCardSaveList
         }
 
         enableProgressMode(getString(R.string.saving));
-        VCardManager.getInstance().request(account, account.getFullJid());
+        VCardManager.getInstance().request(account, account.getFullJid().asBareJid());
         isSaveSuccess = true;
     }
 
