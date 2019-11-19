@@ -82,7 +82,7 @@
                     android:clickable="true"
                     android:focusable="true"
                     android:background="@drawable/test_ripple"
-                    app:srcCompat="@drawable/ic_clear_grey_24dp"
+                    app:srcCompat="@drawable/ic_clear_grey_600_24dp"
                     android:visibility="gone"/>
 
             </RelativeLayout>
