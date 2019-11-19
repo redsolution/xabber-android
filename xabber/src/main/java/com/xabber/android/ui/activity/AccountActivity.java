@@ -753,7 +753,7 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
     }
 
     private void preprocessAndStartCrop(final Uri source) {
-        Glide.with(this).asBitmap().load(source)
+        Glide.with(this).asBitmap().load(source).diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true)
                 .into(new CustomTarget<Bitmap>() {
                     @Override
                     public void onResourceReady(@NonNull final Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
@@ -884,14 +884,6 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
                                     //resource.compress(Bitmap.CompressFormat.PNG, 100, stream);
                                 }
                                 byte[] data = stream.toByteArray();
-                                Bitmap bitmap;
-                                try {
-                                     bitmap = MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(), src);
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-                                new File(src.getPath()).length();
-                                new File(newAvatarImageUri.getPath()).length();
                                 if (data.length > 35 * KB_SIZE_IN_BYTES) {
                                     MAX_IMAGE_RESIZE = MAX_IMAGE_RESIZE - MAX_IMAGE_RESIZE / 8;
                                     if (MAX_IMAGE_RESIZE == 0) {
@@ -907,7 +899,6 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
                                 } catch (IOException e) {
                                     e.printStackTrace();
                                 }
-
                                 Uri rotatedImage = null;
                                 if (imageFileType != null) {
                                     if (imageFileType.equals("image/png")) {
