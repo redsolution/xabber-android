@@ -1,6 +1,7 @@
 package com.xabber.android.data.log;
 
 import com.xabber.android.data.SettingsManager;
+import com.xabber.android.utils.StringUtils;
 
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.debugger.AbstractDebugger;
@@ -17,7 +18,7 @@ public class SmackDebugger extends AbstractDebugger {
 
     @Override
     protected void log(String logMessage) {
-        LogManager.i(LOG_TAG, logMessage, replaceMessageBody(logMessage));
+        LogManager.i(LOG_TAG, logMessage, replaceMessageBody(StringUtils.getPrettyXmlString(logMessage)));
     }
 
     @Override
