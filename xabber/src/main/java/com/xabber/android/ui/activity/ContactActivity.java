@@ -407,6 +407,7 @@ public class ContactActivity extends ManagedActivity implements
     }
 
     private void updateName() {
+        ((TextView) findViewById(R.id.name)).setText(bestContact.getName());
         /*if (MUCManager.getInstance().isMucPrivateChat(account, user)) {
             String vCardName = VCardManager.getInstance().getName(user.getJid());
             if (!"".equals(vCardName)) {
