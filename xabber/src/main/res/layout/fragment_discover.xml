@@ -45,19 +45,7 @@
         android:padding="16dp"
         >
 
-        <Space
-            android:layout_width="match_parent"
-            android:layout_height="8dp" />
-
-        <TextView
-            android:id="@+id/about_header_about"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Xabber"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textColor="?attr/contact_list_contact_name_text_color" />
-
-        <Space
+            <Space
             android:layout_width="match_parent"
             android:layout_height="16dp" />
 
@@ -65,7 +53,7 @@
             android:id="@+id/about_text_about"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/about_text_about"
+            android:text="@string/fragment_discover_template"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textColor="?attr/contact_list_contact_name_text_color" />
 
@@ -73,93 +61,7 @@
             android:layout_width="match_parent"
             android:layout_height="16dp" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <TextView
-                android:id="@+id/about_xabber_site"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:autoLink="web"
-                android:text="@string/about_xabber_url"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textColorLink="?attr/contact_list_contact_name_text_color" />
-
-            <Space
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1" />
-
         </LinearLayout>
-
-        <Space
-            android:layout_width="match_parent"
-            android:layout_height="24dp" />
-
-        <TextView
-            android:id="@+id/about_xabber_web"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Xabber for Web"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textColor="?attr/contact_list_contact_name_text_color" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <TextView
-                android:id="@+id/about_xabber_web_site"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:autoLink="web"
-                android:text="http://www.xabber.com/web/"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textColorLink="?attr/contact_list_contact_name_text_color" />
-
-            <Space
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1" />
-        </LinearLayout>
-
-        <Space
-            android:layout_width="match_parent"
-            android:layout_height="24dp" />
-
-        <TextView
-            android:id="@+id/about_xabber_ios"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Xabber for iOS"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textColor="?attr/contact_list_contact_name_text_color" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <TextView
-                android:id="@+id/about_xabber_ios_site"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:autoLink="web"
-                android:text="http://www.xabber.com/ios/"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textColorLink="?attr/contact_list_contact_name_text_color" />
-
-            <Space
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1" />
-        </LinearLayout>
-
-        <Space
-            android:layout_width="match_parent"
-            android:layout_height="16dp" />
-
-    </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

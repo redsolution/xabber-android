@@ -66,15 +66,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <TextView
-                android:id="@+id/calls_xabber_site"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:autoLink="web"
-                android:text="@string/about_xabber_url"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textColorLink="?attr/contact_list_contact_name_text_color" />
-
             <Space
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -82,9 +73,6 @@
 
         </LinearLayout>
 
-        <Space
-            android:layout_width="match_parent"
-            android:layout_height="24dp" />
     </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

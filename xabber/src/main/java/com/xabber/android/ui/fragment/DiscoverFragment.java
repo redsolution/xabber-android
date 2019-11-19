@@ -88,10 +88,6 @@ public class DiscoverFragment extends Fragment implements View.OnClickListener, 
         toolbarSearchIv.setOnClickListener(this);
         toolbarTitleTv.setText("Discover");
 
-        view.findViewById(R.id.about_github).setOnClickListener(this);
-        view.findViewById(R.id.about_twitter).setOnClickListener(this);
-        view.findViewById(R.id.about_redsolution).setOnClickListener(this);
-
         return view;
     }
 
