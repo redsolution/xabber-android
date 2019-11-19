@@ -29,6 +29,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.soundcloud.android.crop.Crop;
@@ -594,7 +595,7 @@ public class AccountInfoEditFragment extends Fragment implements OnVCardSaveList
 
     private void preprocessAndStartCrop(final Uri source) {
         enableProgressMode(getString(R.string.processing_image));
-        Glide.with(this).asBitmap().load(source)
+        Glide.with(this).asBitmap().load(source).diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true)
                 .into(new CustomTarget<Bitmap>() {
                     @Override
                     public void onResourceReady(@NonNull final Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
@@ -606,9 +607,20 @@ public class AccountInfoEditFragment extends Fragment implements OnVCardSaveList
                                 imageFileType = imageType;
 
                                 ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                                resource.compress(Bitmap.CompressFormat.PNG, 100, stream);
+
+                                if (imageFileType.equals("image/png")) {
+                                    resource.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                                } else {
+                                    resource.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+                                }
+                                //resource.compress(Bitmap.CompressFormat.PNG, 100, stream);
                                 byte[] data = stream.toByteArray();
                                 resource.recycle();
+                                try {
+                                    stream.close();
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
                                 Uri rotatedImage;
                                 if (imageType.equals("image/png")) {
                                     rotatedImage = FileManager.savePNGImage(data, ROTATE_FILE_NAME);
@@ -690,7 +702,7 @@ public class AccountInfoEditFragment extends Fragment implements OnVCardSaveList
 
     //Resizing of the image when it's too big for a normal stanza size-limit
     private void resize(final Uri src){
-        Glide.with(this).asBitmap().load(src).override(MAX_IMAGE_RESIZE, MAX_IMAGE_RESIZE)
+        Glide.with(this).asBitmap().load(src).override(MAX_IMAGE_RESIZE, MAX_IMAGE_RESIZE).diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true)
                 .into(new CustomTarget<Bitmap>() {
                     @Override
                     public void onResourceReady(@NonNull final Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
@@ -698,11 +710,18 @@ public class AccountInfoEditFragment extends Fragment implements OnVCardSaveList
                             @Override
                             public void run() {
                                 ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                                resource.compress(Bitmap.CompressFormat.PNG, quality, stream);
+                                if (imageFileType != null) {
+                                    if (imageFileType.equals("image/png")) {
+                                        resource.compress(Bitmap.CompressFormat.PNG, 90, stream);
+                                    } else {
+                                        resource.compress(Bitmap.CompressFormat.JPEG, 90, stream);
+                                    }
+                                }
+                                //resource.compress(Bitmap.CompressFormat.PNG, quality, stream);
                                 byte[] data = stream.toByteArray();
-                                if (data.length>36000) {
+                                if (data.length > 35 * KB_SIZE_IN_BYTES) {
                                     MAX_IMAGE_RESIZE = MAX_IMAGE_RESIZE - MAX_IMAGE_RESIZE/8;
-                                    if(MAX_IMAGE_RESIZE == 0) {
+                                    if (MAX_IMAGE_RESIZE == 0) {
                                         Toast.makeText(getActivity(), "Error with resizing", Toast.LENGTH_LONG).show();
                                         return;
                                     }
@@ -710,6 +729,11 @@ public class AccountInfoEditFragment extends Fragment implements OnVCardSaveList
                                     return;
                                 }
                                 resource.recycle();
+                                try {
+                                    stream.close();
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
                                 Uri rotatedImage = null;
                                 if(imageFileType!=null) {
                                     if (imageFileType.equals("image/png")) {
