@@ -32,7 +32,7 @@
         android:layout_alignEnd="@+id/ivAvatar"
         android:layout_alignRight="@+id/ivAvatar"
         android:layout_centerVertical="true"
-        android:layout_marginEnd="30dp"
+        android:layout_marginEnd="60dp"
         android:layout_marginRight="60dp"
         android:visibility="gone"
         app:srcCompat="@drawable/ic_camera_avatar" />
