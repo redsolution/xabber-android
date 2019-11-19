@@ -104,6 +104,7 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
 
     private static final int DIALOG_CLOSE_APPLICATION_ID = 0x57;
 
+    private static final String ACTIVE_FRAGMENT = "com.xabber.android.ui.activity.ContactList.ACTIVE_FRAGMENT";
     private static final String CONTACT_LIST_TAG = "CONTACT_LIST";
     private static final String CHAT_LIST_TAG = "CHAT_LIST";
     private static final String DISCOVER_TAG = "DISCOVER_TAG";
@@ -158,6 +159,11 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
 
         getIntent().setAction(null);
 
+        if (savedInstanceState != null) {
+            currentActiveFragment = (ActiveFragment) savedInstanceState.getSerializable(ACTIVE_FRAGMENT);
+            if (currentActiveFragment == null) currentActiveFragment = ActiveFragment.CHATS;
+        }
+
 //        showcaseView = findViewById(R.id.showcaseView);
 //        btnShowcaseGotIt = (Button) findViewById(R.id.btnGotIt);
 //        btnShowcaseGotIt.setOnClickListener(new View.OnClickListener() {
@@ -167,6 +173,12 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
 //                showShowcase(false);
 //            }
 //        });
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putSerializable(ACTIVE_FRAGMENT, currentActiveFragment);
     }
 
     @Override
@@ -310,7 +322,8 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
         // remove all message notifications
         MessageNotificationManager.getInstance().removeAllMessageNotifications();
         showBottomNavigation();
-        showChatListFragment();
+        showSavedOrCurrentFragment(currentActiveFragment);
+        //showChatListFragment();
         setStatusBarColor();
     }
 
@@ -620,6 +633,16 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
             fTrans.replace(R.id.containerBottomNavigation, getBottomBarFragment(), BOTTOM_BAR_TAG);
             fTrans.commit();
             if (currentActiveFragment != null) getBottomBarFragment().setColoredButton(currentActiveFragment);
+        }
+    }
+
+    private void showSavedOrCurrentFragment(ActiveFragment fragment) {
+        switch (fragment) {
+            case CHATS: showChatListFragment(); break;
+            case CALLS: showCallsFragment(); break;
+            case CONTACTS: showContactListFragment(null); break;
+            case DISCOVER: showDiscoverFragment(); break;
+            case SETTINGS: showMenuFragment(); break;
         }
     }
 
