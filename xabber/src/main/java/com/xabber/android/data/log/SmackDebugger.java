@@ -10,7 +10,7 @@ import java.io.Reader;
 import java.io.Writer;
 
 public class SmackDebugger extends AbstractDebugger {
-    private static final String LOG_TAG = "Smack";
+    public static final String LOG_TAG = "Smack";
 
     public SmackDebugger(XMPPConnection connection, Writer writer, Reader reader) {
         super(connection, writer, reader);
