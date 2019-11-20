@@ -15,6 +15,7 @@
 package com.xabber.android.data.extension.capability;
 
 import android.content.Context;
+
 import androidx.annotation.Nullable;
 
 import com.xabber.android.BuildConfig;
@@ -164,7 +165,7 @@ public class CapabilitiesManager {
                 clientInfoCache.put(jid, ClientInfo.fromDiscoveryInfo(discoverInfo));
             }
 
-        } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException | InterruptedException | SmackException.NotConnectedException e) {
+        } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException | InterruptedException | SmackException.NotConnectedException | ClassCastException e) {
             LogManager.exception(this, e);
             clientInfoCache.put(jid, ClientInfo.INVALID_CLIENT_INFO);
         }
