@@ -1,10 +1,9 @@
 package com.xabber.android.ui.fragment;
 
 import android.app.Activity;
-import androidx.fragment.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.annotation.Nullable;
+import android.os.Handler;
 import android.text.TextUtils;
 import android.text.util.Linkify;
 import android.view.LayoutInflater;
@@ -14,6 +13,9 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
@@ -72,6 +74,7 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
     private View progressBar;
     private Listener listener;
     private Button editButton;
+    private final Handler handler = new Handler();
 
     public interface Listener {
         void onVCardReceived();
@@ -200,6 +203,15 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
     public void requestVCard() {
         progressBar.setVisibility(View.VISIBLE);
         VCardManager.getInstance().requestByUser(account, user.getJid());
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (vCard == null && !vCardError) {
+                    progressBar.setVisibility(View.GONE);
+                    LogManager.i(LOG_TAG, "Automatically stopped progress bar");
+                }
+            }
+        }, 30000);
     }
 
     @Override
@@ -223,6 +235,7 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
     public void onDetach() {
         super.onDetach();
 
+        handler.removeCallbacksAndMessages(null);
         listener = null;
     }
 
