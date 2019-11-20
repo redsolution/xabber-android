@@ -34,7 +34,7 @@ import com.xabber.android.ui.helper.ContactAdder;
 
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
-import org.jxmpp.jid.Jid;
+import org.jxmpp.jid.BareJid;
 import org.jxmpp.jid.impl.JidCreate;
 import org.jxmpp.stringprep.XmppStringprepException;
 
@@ -323,7 +323,7 @@ public class ContactAddFragment extends GroupEditorFragment
 
         final UserJid user;
         try {
-            Jid jid = JidCreate.from(contactString);
+            BareJid jid = JidCreate.bareFrom(contactString);
             user = UserJid.from(jid);
         } catch (XmppStringprepException | UserJid.UserJidCreateException  e) {
             e.printStackTrace();
@@ -383,11 +383,10 @@ public class ContactAddFragment extends GroupEditorFragment
 
         String domainName;
         String localName;
-        //for possible future resource name checks
-        //String resourceName;
+        String resourceName;
 
         if (slashIndex > 0) {
-            //resourceName = contactString.substring(slashIndex + 1);
+            resourceName = contactString.substring(slashIndex + 1);
             if (atChar > 0 && atChar < slashIndex) {
                 localName = contactString.substring(0, atChar);
                 domainName = contactString.substring(atChar + 1, slashIndex);
@@ -396,7 +395,7 @@ public class ContactAddFragment extends GroupEditorFragment
                 domainName = contactString.substring(0, slashIndex);
             }
         } else {
-            //resourceName = "";
+            resourceName = "";
             if (atChar > 0) {
                 localName = contactString.substring(0, atChar);
                 domainName = contactString.substring(atChar + 1);
@@ -406,22 +405,27 @@ public class ContactAddFragment extends GroupEditorFragment
             }
         }
 
+        //
+        if (!resourceName.equals("")) {
+            setError(getString(R.string.INCORRECT_USER_NAME) + getString(R.string.INCORRECT_USER_NAME_ADDENDUM_RESOURCE));
+            return true;
+        }
         //Invalid when domain is empty
         if (domainName.equals("")) {
-            setError(getString(R.string.INCORRECT_USER_NAME) + getString(R.string.INCORRECT_USER_NAME_ADDENDUM_DOMAIN));
+            setError(getString(R.string.INCORRECT_USER_NAME));
             return true;
         }
 
         //Invalid when "@" is present but localPart is empty
         if (atChar == 0) {
-            setError(getString(R.string.INCORRECT_USER_NAME) + getString(R.string.INCORRECT_USER_NAME_ADDENDUM_LOCAL));
+            setError(getString(R.string.INCORRECT_USER_NAME));
             return true;
         }
 
         //Invalid when "@" is present in a domainPart
         if (atChar > 0) {
             if (domainName.contains("@")) {
-                setError(getString(R.string.INCORRECT_USER_NAME) + getString(R.string.INCORRECT_USER_NAME_ADDENDUM_DOMAIN));
+                setError(getString(R.string.INCORRECT_USER_NAME));
                 return true;
             }
         }
@@ -434,12 +438,17 @@ public class ContactAddFragment extends GroupEditorFragment
 
         //Invalid when domain has "." at the start/end
         if (domainName.charAt(domainName.length()-1)=='.' || domainName.charAt(0)=='.'){
-            setError(getString(R.string.INCORRECT_USER_NAME) + getString(R.string.INCORRECT_USER_NAME_ADDENDUM_DOMAIN));
+            setError(getString(R.string.INCORRECT_USER_NAME));
             return true;
         }
         //Invalid when domain does not have a "." in the middle, when paired with the last check
         if (!domainName.contains(".")) {
-            setError(getString(R.string.INCORRECT_USER_NAME) + getString(R.string.INCORRECT_USER_NAME_ADDENDUM_DOMAIN));
+            setError(getString(R.string.INCORRECT_USER_NAME));
+            return true;
+        }
+        //Invalid when domain has multiple dots in a row
+        if(domainName.contains("..")) {
+            setError(getString(R.string.INCORRECT_USER_NAME));
             return true;
         }
 
@@ -449,8 +458,8 @@ public class ContactAddFragment extends GroupEditorFragment
                 setError(getString(R.string.INCORRECT_USER_NAME));
                 return true;
             }
-            //Invalid when localPart is NOT empty, and contains ":" symbol
-            if (localName.contains(":")) {
+            //Invalid when localPart is NOT empty, and contains ":" or "/" symbol. Other restricted localPart symbols get checked during the creation of the jid/userJid.
+            if (localName.contains(":") || localName.contains("/")) {
                 setError(getString(R.string.INCORRECT_USER_NAME));
                 return true;
             }

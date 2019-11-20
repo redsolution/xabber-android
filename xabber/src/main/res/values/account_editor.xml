@@ -49,8 +49,8 @@
     <string name="SERVER_INFO_ERROR">Could not get server info.</string>
     <string name="INCORRECT_USER_NAME">Incorrect user name</string>
     <string name="INCORRECT_USER_NAME_ADDENDUM_DOMAIN">: invalid domain</string>
-    <string name="INCORRECT_USER_NAME_ADDENDUM_LOCAL">: invalid local part with "@" present</string>
-    <string name="INCORRECT_USER_NAME_ADDENDUM_RESOURCE">: invalid resource part with "/" present</string>
+    <string name="INCORRECT_USER_NAME_ADDENDUM_LOCAL">: invalid local part with \"@\" present</string>
+    <string name="INCORRECT_USER_NAME_ADDENDUM_RESOURCE">: \"/\" character is not accepted</string>
 
     <string name="account_color">Account color</string>
     <string name="account_color_name_green">Green</string>
