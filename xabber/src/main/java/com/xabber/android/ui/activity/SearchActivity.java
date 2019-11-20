@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.TypedArray;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -36,7 +35,6 @@ import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.presentation.ui.contactlist.ChatListFragment;
 import com.xabber.android.ui.color.AccountPainter;
-import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.color.StatusBarPainter;
 import com.xabber.android.ui.dialog.AccountChooseDialogFragment;
 import com.xabber.android.ui.dialog.ContactSubscriptionDialog;
@@ -518,7 +516,7 @@ public class SearchActivity extends ManagedActivity implements View.OnClickListe
         intent.setAction(ACTION_ROOM_INVITE);
         return intent;
     }
-
+/*
     public static Intent createContactSubscriptionIntent(Context context, AccountJid account, UserJid user) {
         Intent intent = new EntityIntentBuilder(context, SearchActivity.class)
                 .setAccount(account).setUser(user).build();
@@ -539,6 +537,7 @@ public class SearchActivity extends ManagedActivity implements View.OnClickListe
         intent.setAction(ACTION_INCOMING_MUC_INVITE);
         return intent;
     }
+*/
 
     public static Intent createClearStackIntent(Context context) {
         Intent intent = new Intent(context, SearchActivity.class);
