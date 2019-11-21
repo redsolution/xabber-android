@@ -241,28 +241,28 @@ class FileLog {
             } else {
                 e.printStackTrace();
             }
-        } else {
-            getInstance().controlFileSize();
-            if (getInstance().streamWriter != null) {
-                getInstance().logQueue.postRunnable(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            getInstance().streamWriter.write(getInstance().dateFormat.format(System.currentTimeMillis()) + " E/" + tag + "﹕ " + e + "\n");
-                            StackTraceElement[] stack = e.getStackTrace();
-                            for (int a = 0; a < stack.length; a++) {
-                                getInstance().streamWriter.write(getInstance().dateFormat.format(System.currentTimeMillis()) + " E/" + tag + "﹕ " + stack[a] + "\n");
-                            }
-                            getInstance().streamWriter.flush();
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                });
-            } else {
-                e.printStackTrace();
-            }
         }
+        getInstance().controlFileSize();
+        if (getInstance().streamWriter != null) {
+            getInstance().logQueue.postRunnable(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        getInstance().streamWriter.write(getInstance().dateFormat.format(System.currentTimeMillis()) + " E/" + tag + "﹕ " + e + "\n");
+                        StackTraceElement[] stack = e.getStackTrace();
+                        for (int a = 0; a < stack.length; a++) {
+                            getInstance().streamWriter.write(getInstance().dateFormat.format(System.currentTimeMillis()) + " E/" + tag + "﹕ " + stack[a] + "\n");
+                        }
+                        getInstance().streamWriter.flush();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        } else {
+            e.printStackTrace();
+        }
+
     }
 
     public static void d(final String tag, final String message) {
@@ -281,22 +281,22 @@ class FileLog {
                     }
                 });
             }
-        } else {
-            getInstance().controlFileSize();
-            if (getInstance().streamWriter != null) {
-                getInstance().logQueue.postRunnable(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            getInstance().streamWriter.write(getInstance().dateFormat.format(System.currentTimeMillis()) + " D/" + tag + "﹕ " + message + "\n");
-                            getInstance().streamWriter.flush();
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                });
-            }
         }
+        getInstance().controlFileSize();
+        if (getInstance().streamWriter != null) {
+            getInstance().logQueue.postRunnable(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        getInstance().streamWriter.write(getInstance().dateFormat.format(System.currentTimeMillis()) + " D/" + tag + "﹕ " + message + "\n");
+                        getInstance().streamWriter.flush();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
+
     }
 
     public static void w(final String tag, final String message) {
@@ -314,21 +314,20 @@ class FileLog {
                         }
                     }
                 });
-            } else {
-                getInstance().controlFileSize();
-                if (getInstance().streamWriter != null) {
-                    getInstance().logQueue.postRunnable(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                getInstance().streamWriter.write(getInstance().dateFormat.format(System.currentTimeMillis()) + " W/" + tag + ": " + message + "\n");
-                                getInstance().streamWriter.flush();
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
+            }
+            getInstance().controlFileSize();
+            if (getInstance().streamWriter != null) {
+                getInstance().logQueue.postRunnable(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            getInstance().streamWriter.write(getInstance().dateFormat.format(System.currentTimeMillis()) + " W/" + tag + ": " + message + "\n");
+                            getInstance().streamWriter.flush();
+                        } catch (Exception e) {
+                            e.printStackTrace();
                         }
-                    });
-                }
+                    }
+                });
             }
         }
     }
