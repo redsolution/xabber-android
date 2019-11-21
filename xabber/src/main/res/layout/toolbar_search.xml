@@ -27,15 +27,16 @@
         android:paddingLeft="18dp"
         android:layout_toRightOf="@id/toolbar_search_back_button"
         android:visibility="gone">
+
         <TextView
+            android:id="@+id/search_toolbar_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Choose recipient"
             android:layout_centerVertical="true"
             android:fontFamily="sans-serif-medium"
-            android:textSize="18sp"
+            android:text="Choose recipient"
             android:textColor="?attr/contact_list_contact_name_text_color"
-            />
+            android:textSize="18sp" />
         <ImageView
             android:id="@+id/search_toolbar_search_button"
             android:src="?attr/standard_search_icon"

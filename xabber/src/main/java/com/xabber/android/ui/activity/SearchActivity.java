@@ -13,6 +13,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import androidx.fragment.app.FragmentTransaction;
 
@@ -68,6 +69,7 @@ public class SearchActivity extends ManagedActivity implements View.OnClickListe
     private ImageView toolbarBackIv;                //Back arrow always active
     private RelativeLayout toolbarGreetingsLayout;  //Contains toolbarGreetingsSearchIv and "Choose recipient" TextView
     private ImageView toolbarGreetingsSearchIv;     //Belongs to toolbarGreetingLayout
+    private TextView toolbarGreetingsSearchTitle;   //Belongs to toolbarGreetingLayout
     private RelativeLayout toolbarSearchlayout;     //Contains toolbar toolbarSearchEt, toolbarSearchClearIv
     private EditText toolbarSearchEt;               //Belongs to toolbarSearchLayout
     private ImageView toolbarSearchClearIv;         //belongs to toolbarSearchLayout
@@ -103,6 +105,7 @@ public class SearchActivity extends ManagedActivity implements View.OnClickListe
         toolbarBackIv = findViewById(R.id.toolbar_search_back_button);
         toolbarGreetingsLayout = findViewById(R.id.search_toolbar_greetings_view);
         toolbarGreetingsSearchIv = findViewById(R.id.search_toolbar_search_button);
+        toolbarGreetingsSearchTitle = findViewById(R.id.search_toolbar_title);
         toolbarSearchlayout = findViewById(R.id.search_toolbar_search_view);
         toolbarSearchEt = findViewById(R.id.search_toolbar_edittext);
         toolbarSearchClearIv = findViewById(R.id.search_toolbar_clear_button);
@@ -250,7 +253,9 @@ public class SearchActivity extends ManagedActivity implements View.OnClickListe
                     showMucInviteDialog();
                     break;
                 case ACTION_SEARCH:
+                    toolbarGreetingsSearchTitle.setText("Search");
                     toolbarGreetingsLayout.setVisibility(View.GONE);
+                    toolbarGreetingsLayout.setOnClickListener(this);
                     toolbarSearchlayout.setVisibility(View.VISIBLE);
                     toolbarSearchEt.requestFocus();
                     inputMethodManager.showSoftInput(toolbarSearchEt, InputMethodManager.SHOW_IMPLICIT);
@@ -278,8 +283,17 @@ public class SearchActivity extends ManagedActivity implements View.OnClickListe
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.toolbar_search_back_button:
-                finish();
+                if (!action.equals(ACTION_SEARCH) && toolbarSearchEt.hasFocus()) {
+                    inputMethodManager.hideSoftInputFromWindow(toolbarSearchEt.getWindowToken(), 0);
+                    toolbarSearchlayout.setVisibility(View.GONE);
+                    toolbarGreetingsLayout.setVisibility(View.VISIBLE);
+                    toolbarSearchEt.clearFocus();
+                    toolbarSearchEt.setText("");
+                } else {
+                    finish();
+                }
                 break;
+            case R.id.search_toolbar_greetings_view:
             case R.id.search_toolbar_search_button:
                 toolbarSearchlayout.setVisibility(View.VISIBLE);
                 toolbarGreetingsLayout.setVisibility(View.GONE);
@@ -297,6 +311,7 @@ public class SearchActivity extends ManagedActivity implements View.OnClickListe
                 }
                 break;
             default:
+                /*
                 inputMethodManager.hideSoftInputFromWindow(toolbarSearchEt.getWindowToken(), 0);
                 if (toolbarSearchEt.getText().toString().isEmpty() || toolbarSearchEt.getText() == null){
                     inputMethodManager.hideSoftInputFromWindow(toolbarSearchEt.getWindowToken(), 0);
@@ -304,6 +319,7 @@ public class SearchActivity extends ManagedActivity implements View.OnClickListe
                     toolbarGreetingsLayout.setVisibility(View.VISIBLE);
                     //TODO implement clearing search string and probably change view id
                 }
+                */
                 break;
         }
     }
