@@ -336,12 +336,13 @@ public class StringUtils {
 
     /**
      * Beautify XML string
-     * @param data
+     * @param xmlData
      * @return
      */
-    public static String getPrettyXmlString(String data){
+    public static String getPrettyXmlString(String xmlData){
         try {
-            data = data.substring(data.indexOf("<")-1);
+            int xmlMarkupStartsAtIndex = xmlData.indexOf("<");
+            String data = xmlData.substring(xmlMarkupStartsAtIndex-1);
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
             Transformer transformer = transformerFactory.newTransformer();
 
@@ -357,10 +358,10 @@ public class StringUtils {
             transformer.transform(xmlInput, xmlOutput);
 
             String result = xmlOutput.getWriter().toString();
-            return "\n ".concat(result.substring(0, result.length()-1));
+            return xmlData.substring(0, xmlMarkupStartsAtIndex) + "\n" + result.substring(0, result.length()-1);
         } catch (Exception e) {
             LogManager.e("StringUtils", e.toString());
-            return data;
+            return xmlData;
         }
 
     }
