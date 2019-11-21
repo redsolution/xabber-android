@@ -10,7 +10,6 @@ import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.extension.mam.NextMamManager;
-import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.ui.activity.PreferenceSummaryHelperActivity;
@@ -39,15 +38,6 @@ public class DebugSettingsFragment extends android.preference.PreferenceFragment
             public boolean onPreferenceClick(Preference preference) {
                 startMessageArchiveDownload();
                 return true;
-            }
-        });
-
-        Preference prefWriteFile = preferenceScreen.findPreference(getString(R.string.debug_file_log_key));
-        prefWriteFile.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                if (SettingsManager.fileLog()) LogManager.getInstance().startNewLogFile();
-                return false;
             }
         });
 

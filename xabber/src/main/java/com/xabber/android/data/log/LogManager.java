@@ -54,10 +54,6 @@ public class LogManager {
         onSettingsChanged();
     }
 
-    public void startNewLogFile(){
-        new FileLog();
-    }
-
     public void onSettingsChanged() {
         fileLog = SettingsManager.fileLog();
 
@@ -68,6 +64,7 @@ public class LogManager {
             System.setProperty("smack.debugEnabled", "false");
             SmackConfiguration.DEBUG = false;
         }
+        if (fileLog) FileLog.getInstance().createNewFiles();;
     }
 
     private static void dString(String tag, String msg) {
