@@ -66,6 +66,12 @@ class FileLog {
             e.printStackTrace();
         }
     }
+
+    void createNewFiles(){
+        createLogFile();
+        createXmppLogFile();
+    }
+
     private File createXmppLogFile(){
         File newLogFile = null;
         String appName = XMPP_LOG_FILE_NAME_PERFIX;
@@ -87,6 +93,7 @@ class FileLog {
                 xmppStreaWriter.close();
             }
             newLogFile.createNewFile();
+            xmppCurrentFile = newLogFile;
             FileOutputStream stream = new FileOutputStream(newLogFile);
             xmppStreaWriter = new OutputStreamWriter(stream);
             xmppStreaWriter.write("-----start log " + dateFormat.format(System.currentTimeMillis())
@@ -126,6 +133,7 @@ class FileLog {
                 streamWriter.close();
             }
             newLogFile.createNewFile();
+            currentFile = newLogFile;
             FileOutputStream stream = new FileOutputStream(newLogFile);
             streamWriter = new OutputStreamWriter(stream);
             streamWriter.write("-----start log " + dateFormat.format(System.currentTimeMillis())
