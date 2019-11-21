@@ -31,10 +31,17 @@
     </extensionProvider>
 
     <!-- Avatar Metadata -->
-        <extensionProvider>
-            <elementName>metadata</elementName>
-            <namespace>urn:xmpp:avatar:metadata</namespace>
-            <className>com.xabber.xmpp.avatar.MetadataProvider</className>
-        </extensionProvider>
+    <extensionProvider>
+        <elementName>metadata</elementName>
+        <namespace>urn:xmpp:avatar:metadata</namespace>
+        <className>com.xabber.xmpp.avatar.MetadataProvider</className>
+    </extensionProvider>
+
+    <!-- Custom vCard Provider -->
+    <iqProvider>
+        <elementName>vCard</elementName>
+        <namespace>vcard-temp</namespace>
+        <className>com.xabber.xmpp.vcard.VCardCustomProvider</className>
+    </iqProvider>
 
 </smackProviders>

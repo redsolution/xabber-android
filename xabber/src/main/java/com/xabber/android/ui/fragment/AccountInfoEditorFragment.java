@@ -49,13 +49,13 @@ import com.xabber.android.ui.helper.PermissionsRequester;
 import com.xabber.xmpp.avatar.UserAvatarManager;
 import com.xabber.xmpp.vcard.AddressProperty;
 import com.xabber.xmpp.vcard.TelephoneType;
+import com.xabber.xmpp.vcard.VCard;
 import com.xabber.xmpp.vcard.VCardProperty;
 
 import org.apache.commons.io.FileUtils;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smackx.pubsub.PubSubException;
-import org.jivesoftware.smackx.vcardtemp.packet.VCard;
 import org.jxmpp.jid.Jid;
 
 import java.io.ByteArrayOutputStream;

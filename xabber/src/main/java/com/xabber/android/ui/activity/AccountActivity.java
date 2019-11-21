@@ -81,13 +81,13 @@ import com.xabber.android.ui.helper.BlurTransformation;
 import com.xabber.android.ui.helper.ContactTitleInflater;
 import com.xabber.android.ui.helper.PermissionsRequester;
 import com.xabber.xmpp.avatar.UserAvatarManager;
+import com.xabber.xmpp.vcard.VCard;
 
 import org.apache.commons.io.FileUtils;
 import org.greenrobot.eventbus.Subscribe;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smackx.pubsub.PubSubException;
-import org.jivesoftware.smackx.vcardtemp.packet.VCard;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;

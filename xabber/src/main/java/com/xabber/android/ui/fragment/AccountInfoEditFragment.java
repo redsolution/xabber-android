@@ -51,13 +51,13 @@ import com.xabber.android.ui.helper.PermissionsRequester;
 import com.xabber.xmpp.avatar.UserAvatarManager;
 import com.xabber.xmpp.vcard.AddressProperty;
 import com.xabber.xmpp.vcard.TelephoneType;
+import com.xabber.xmpp.vcard.VCard;
 import com.xabber.xmpp.vcard.VCardProperty;
 
 import org.apache.commons.io.FileUtils;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smackx.pubsub.PubSubException;
-import org.jivesoftware.smackx.vcardtemp.packet.VCard;
 import org.jxmpp.jid.Jid;
 
 import java.io.ByteArrayOutputStream;
@@ -130,6 +130,7 @@ public class AccountInfoEditFragment extends Fragment implements OnVCardSaveList
     private EditText emailWork;
     private EditText phoneHome;
     private EditText phoneWork;
+    private EditText phoneMobile;
 
     private EditText addressHomePostOfficeBox;
     private EditText addressHomePostExtended;
@@ -273,6 +274,7 @@ public class AccountInfoEditFragment extends Fragment implements OnVCardSaveList
 
         phoneHome = setUpInputField(view, R.id.vcard_phone_home);
         phoneWork = setUpInputField(view, R.id.vcard_phone_work);
+        phoneMobile = setUpInputField(view, R.id.vcard_phone_mobile);
 
         emailHome = setUpInputField(view, R.id.vcard_email_home);
         emailWork = setUpInputField(view, R.id.vcard_email_work);
@@ -396,6 +398,13 @@ public class AccountInfoEditFragment extends Fragment implements OnVCardSaveList
             String phone = vCard.getPhoneWork(telephoneType.name());
             if (phone != null && !phone.isEmpty()) {
                 phoneWork.setText(phone);
+            }
+        }
+
+        for (TelephoneType telephoneType : TelephoneType.values() ) {
+            String phone = vCard.getPhoneMobile(telephoneType.name());
+            if (phone != null && !phone.isEmpty()) {
+                phoneMobile.setText(phone);
             }
         }
 
@@ -848,6 +857,7 @@ public class AccountInfoEditFragment extends Fragment implements OnVCardSaveList
 
         vCard.setPhoneHome(TelephoneType.VOICE.name(), getValueFromEditText(phoneHome));
         vCard.setPhoneWork(TelephoneType.VOICE.name(), getValueFromEditText(phoneWork));
+        vCard.setPhoneMobile(TelephoneType.VOICE.name(), getValueFromEditText(phoneMobile));
 
         vCard.setEmailHome(getValueFromEditText(emailHome));
         vCard.setEmailWork(getValueFromEditText(emailWork));

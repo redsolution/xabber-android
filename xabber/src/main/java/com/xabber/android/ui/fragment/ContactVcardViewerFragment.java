@@ -42,11 +42,11 @@ import com.xabber.xmpp.vcard.AddressProperty;
 import com.xabber.xmpp.vcard.AddressType;
 import com.xabber.xmpp.vcard.EmailType;
 import com.xabber.xmpp.vcard.TelephoneType;
+import com.xabber.xmpp.vcard.VCard;
+import com.xabber.xmpp.vcard.VCardCustomProvider;
 import com.xabber.xmpp.vcard.VCardProperty;
 
 import org.jivesoftware.smack.packet.Presence;
-import org.jivesoftware.smackx.vcardtemp.packet.VCard;
-import org.jivesoftware.smackx.vcardtemp.provider.VCardProvider;
 import org.jxmpp.jid.Jid;
 import org.jxmpp.jid.parts.Resourcepart;
 import org.xmlpull.v1.XmlPullParser;
@@ -147,7 +147,7 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
         if (!VCard.NAMESPACE.equals(parser.getNamespace())) {
             throw new IllegalStateException(parser.getNamespace());
         }
-        return (new VCardProvider()).parse(parser);
+        return (new VCardCustomProvider()).parse(parser);
     }
 
     @Nullable
@@ -208,7 +208,7 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
             public void run() {
                 if (vCard == null && !vCardError) {
                     progressBar.setVisibility(View.GONE);
-                    LogManager.i(LOG_TAG, "Automatically stopped progress bar");
+                    LogManager.i(LOG_TAG, "Automatically stopped progress bar for " + user.toString());
                 }
             }
         }, 30000);
@@ -459,22 +459,22 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
         addItemGroup(webList, contactInfoItems, R.drawable.ic_vcard_web_24dp);
 
         addAdditionalInfo(vCard);
-        addAddresses(vCard);
         addPhones(vCard);
         addEmails(vCard);
+        addAddresses(vCard);
     }
 
     private void addEmails(VCard vCard) {
         List<View> emailList = new ArrayList<>();
 
-        String emailHome = vCard.getEmailHome();
-        if (!"".equals(emailHome)) {
-            addItem(emailList, contactInfoItems, getString(VcardMaps.getEmailTypeMap().get(EmailType.HOME)), emailHome);
-        }
-
         String emailWork = vCard.getEmailWork();
         if (!"".equals(emailWork)) {
             addItem(emailList, contactInfoItems, getString(VcardMaps.getEmailTypeMap().get(EmailType.WORK)), emailWork);
+        }
+
+        String emailHome = vCard.getEmailHome();
+        if (!"".equals(emailHome)) {
+            addItem(emailList, contactInfoItems, getString(VcardMaps.getEmailTypeMap().get(EmailType.HOME)), emailHome);
         }
 
         addItemGroup(emailList, contactInfoItems, R.drawable.ic_vcard_email_24dp);
@@ -482,6 +482,17 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
 
     private void addPhones(VCard vCard) {
         List<View> phoneList = new ArrayList<>();
+
+        for (TelephoneType type : TelephoneType.values()) {
+            String types = getString(VcardMaps.getTelephoneTypeMap().get(TelephoneType.WORK));
+
+            String phoneWork = vCard.getPhoneWork(type.name());
+
+            if (!"".equals(phoneWork)) {
+                types = addString(types, getString(VcardMaps.getTelephoneTypeMap().get(type)), ", ");
+                addItem(phoneList, contactInfoItems, types, phoneWork);
+            }
+        }
 
         for (TelephoneType type : TelephoneType.values()) {
             String types = getString(VcardMaps.getTelephoneTypeMap().get(TelephoneType.HOME));
@@ -495,13 +506,13 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
         }
 
         for (TelephoneType type : TelephoneType.values()) {
-            String types = getString(VcardMaps.getTelephoneTypeMap().get(TelephoneType.WORK));
+            String types = "Mobile";
 
-            String phoneHome = vCard.getPhoneWork(type.name());
+            String phoneMobile = vCard.getPhoneMobile(type.name());
 
-            if (!"".equals(phoneHome)) {
+            if (!"".equals(phoneMobile)) {
                 types = addString(types, getString(VcardMaps.getTelephoneTypeMap().get(type)), ", ");
-                addItem(phoneList, contactInfoItems, types, phoneHome);
+                addItem(phoneList, contactInfoItems, types, phoneMobile);
             }
         }
 
@@ -538,13 +549,10 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
     private void addOrganizationInfo(VCard vCard) {
         List<View> organizationList = new ArrayList<>();
 
+        addItem(organizationList, contactInfoItems, getString(R.string.vcard_organization), vCard.getOrganization());
         addItem(organizationList, contactInfoItems, getString(R.string.vcard_title), vCard.getField(VCardProperty.TITLE.toString()));
+        addItem(organizationList, contactInfoItems, getString(R.string.vcard_organization_unit), vCard.getOrganizationUnit());
         addItem(organizationList, contactInfoItems, getString(R.string.vcard_role), vCard.getField(VCardProperty.ROLE.toString()));
-
-        String organization = vCard.getOrganization();
-        String unit = vCard.getOrganizationUnit();
-
-        addItem(organizationList, contactInfoItems, getString(R.string.vcard_organization), addString(organization, unit, "\n"));
 
         addItemGroup(organizationList, contactInfoItems, R.drawable.ic_vcard_job_title_24dp);
     }
@@ -552,14 +560,13 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
     private void addNameInfo(VCard vCard) {
         List<View> nameList = new ArrayList<>();
 
-        addItem(nameList, contactInfoItems, getString(R.string.vcard_nick_name), vCard.getField(VCardProperty.NICKNAME.name()));
-        addItem(nameList, contactInfoItems, getString(R.string.vcard_formatted_name), vCard.getField(VCardProperty.FN.name()));
-        addItem(nameList, contactInfoItems, getString(R.string.vcard_prefix_name), vCard.getPrefix());
-
         addItem(nameList, contactInfoItems, getString(R.string.vcard_given_name), vCard.getFirstName());
         addItem(nameList, contactInfoItems, getString(R.string.vcard_middle_name), vCard.getMiddleName());
         addItem(nameList, contactInfoItems, getString(R.string.vcard_family_name), vCard.getLastName());
-        addItem(nameList, contactInfoItems, getString(R.string.vcard_suffix_name), vCard.getSuffix());
+        //addItem(nameList, contactInfoItems, getString(R.string.vcard_prefix_name), vCard.getPrefix());
+        //addItem(nameList, contactInfoItems, getString(R.string.vcard_suffix_name), vCard.getSuffix());
+        addItem(nameList, contactInfoItems, getString(R.string.vcard_formatted_name), vCard.getField(VCardProperty.FN.name()));
+        addItem(nameList, contactInfoItems, getString(R.string.vcard_nick_name), vCard.getField(VCardProperty.NICKNAME.name()));
 
         addItemGroup(nameList, contactInfoItems, R.drawable.ic_vcard_contact_info_24dp);
     }

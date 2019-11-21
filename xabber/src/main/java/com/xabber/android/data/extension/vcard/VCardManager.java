@@ -39,6 +39,7 @@ import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.data.roster.StructuredName;
+import com.xabber.xmpp.vcard.VCard;
 import com.xabber.xmpp.vcard.VCardProperty;
 
 import org.jivesoftware.smack.AbstractXMPPConnection;
@@ -47,7 +48,6 @@ import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.IQ.Type;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.Stanza;
-import org.jivesoftware.smackx.vcardtemp.packet.VCard;
 import org.jxmpp.jid.BareJid;
 import org.jxmpp.jid.Jid;
 import org.jxmpp.jid.impl.JidCreate;
@@ -346,6 +346,7 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
         Collection<UserJid> blockedContacts = BlockingManager.getInstance().getBlockedContacts(account);
         for (UserJid blockedContact : blockedContacts) {
             if (blockedContact.getBareJid().equals(srcUser.asBareJid())) {
+                onVCardFailed(account, srcUser);
                 return;
             }
         }
