@@ -19,9 +19,6 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.InputType;
@@ -968,7 +965,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         Intent sendIntent = SearchActivity.createIntent(this);
         sendIntent.setAction(ACTION_FORWARD);
         sendIntent.putStringArrayListExtra(KEY_MESSAGES_ID, messagesIds);
-        finish();
+        //finish();
         startActivity(sendIntent);
     }
 

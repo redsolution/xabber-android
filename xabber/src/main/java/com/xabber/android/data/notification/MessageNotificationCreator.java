@@ -9,13 +9,14 @@ import android.graphics.Color;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
+
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.Person;
 import androidx.core.app.RemoteInput;
 import androidx.core.graphics.drawable.IconCompat;
-import android.text.Spannable;
-import android.text.SpannableString;
-import android.text.style.ForegroundColorSpan;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
@@ -37,7 +38,6 @@ import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.receiver.NotificationReceiver;
 import com.xabber.android.ui.activity.ChatActivity;
 import com.xabber.android.ui.activity.ContactListActivity;
-import com.xabber.android.ui.activity.SearchActivity;
 import com.xabber.android.utils.StringUtils;
 
 import java.util.ArrayList;
@@ -405,7 +405,7 @@ public class MessageNotificationCreator {
 
     private PendingIntent createBundleContentIntent() {
         return PendingIntent.getActivity(context, MESSAGE_BUNDLE_NOTIFICATION_ID,
-                SearchActivity.createClearStackIntent(context),
+                ContactListActivity.createClearStackIntent(context),
                 PendingIntent.FLAG_UPDATE_CURRENT);
     }
 

@@ -38,6 +38,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.xabber.android.R;
+import com.xabber.android.data.ActivityManager;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
@@ -112,6 +113,7 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
     private static final String ACTION_MUC_PRIVATE_CHAT_INVITE = "com.xabber.android.ui.activity.SearchActivity.ACTION_MUC_PRIVATE_CHAT_INVITE";
     private static final String ACTION_CONTACT_SUBSCRIPTION = "com.xabber.android.ui.activity.SearchActivity.ACTION_CONTACT_SUBSCRIPTION";
     private static final String ACTION_INCOMING_MUC_INVITE = "com.xabber.android.ui.activity.SearchActivity.ACTION_INCOMING_MUC_INVITE";
+    private static final String ACTION_CLEAR_STACK = "com.xabber.android.ui.activity.SearchActivity.ACTION_CLEAR_STACK";
 
     private static final String ACTIVE_FRAGMENT = "com.xabber.android.ui.activity.ContactList.ACTIVE_FRAGMENT";
     private static final String CONTACT_LIST_TAG = "CONTACT_LIST";
@@ -316,6 +318,11 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
                     }
                     break;
                 }
+                case ACTION_CLEAR_STACK:
+                    ActivityManager.getInstance().clearStack(false);
+                    currentActiveFragment = ActiveFragment.CHATS;
+                    break;
+
                 case ACTION_MUC_PRIVATE_CHAT_INVITE:
                     action = null;
                     showMucPrivateChatDialog();
@@ -733,12 +740,16 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
         setStatusBarColor();
     }
 
+    public static Intent createClearStackIntent(Context context) {
+        Intent intent = new Intent(context, ContactListActivity.class);
+        intent.setAction(ACTION_CLEAR_STACK);
+        return intent;
+    }
+
     public static Intent createContactSubscriptionIntent(Context context, AccountJid account, UserJid user) {
         Intent intent = new EntityIntentBuilder(context, ContactListActivity.class)
                 .setAccount(account).setUser(user).build();
         intent.setAction(ACTION_CONTACT_SUBSCRIPTION);
-        intent.addCategory("android.intent.category.LAUNCHER");
-        intent.setFlags(Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED | Intent.FLAG_ACTIVITY_NEW_TASK);
         return intent;
     }
 
@@ -746,8 +757,6 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
         Intent intent = new EntityIntentBuilder(context, ContactListActivity.class)
                 .setAccount(account).setUser(user).build();
         intent.setAction(ACTION_MUC_PRIVATE_CHAT_INVITE);
-        intent.addCategory("android.intent.category.LAUNCHER");
-        intent.setFlags(Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED | Intent.FLAG_ACTIVITY_NEW_TASK);
         return intent;
     }
 
@@ -755,8 +764,6 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
         Intent intent = new EntityIntentBuilder(context, ContactListActivity.class)
                 .setAccount(account).setUser(user).build();
         intent.setAction(ACTION_INCOMING_MUC_INVITE);
-        intent.addCategory("android.intent.category.LAUNCHER");
-        intent.setFlags(Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED | Intent.FLAG_ACTIVITY_NEW_TASK);
         return intent;
     }
 

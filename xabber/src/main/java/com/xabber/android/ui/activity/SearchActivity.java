@@ -325,6 +325,11 @@ public class SearchActivity extends ManagedActivity implements View.OnClickListe
     }
 
     @Override
+    public void onBackPressed() {
+        onClick(toolbarBackIv);
+    }
+
+    @Override
     public void onManageAccountsClick() {
         finish();
     }
@@ -554,12 +559,13 @@ public class SearchActivity extends ManagedActivity implements View.OnClickListe
         return intent;
     }
 */
-
+/*
     public static Intent createClearStackIntent(Context context) {
         Intent intent = new Intent(context, SearchActivity.class);
         intent.setAction(ACTION_CLEAR_STACK);
         return intent;
     }
+*/
 
     private void forwardMessages(AbstractContact abstractContact, Intent intent) {
         ArrayList<String> messages = intent.getStringArrayListExtra(ChatActivity.KEY_MESSAGES_ID);
