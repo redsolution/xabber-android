@@ -8,6 +8,7 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.listeners.OnAccountRemovedListener;
 import com.xabber.android.data.connection.listeners.OnConnectedListener;
 import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.extension.carbons.CarbonManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.push.SyncManager;
 
@@ -48,10 +49,17 @@ public class ReconnectionManager implements OnConnectedListener,
     @Override
     public void onTimer() {
         Collection<AccountJid> allAccounts = AccountManager.getInstance().getAllAccounts();
-
+        checkCarbonStatus();
         for (AccountJid accountJid : allAccounts) {
             checkConnection(AccountManager.getInstance().getAccount(accountJid),
                     getReconnectionInfo(accountJid));
+        }
+    }
+
+    private void checkCarbonStatus(){
+        Collection<AccountItem> accountItems = AccountManager.getInstance().getAllAccountItems();
+        for (AccountItem accountItem : accountItems){
+            LogManager.d(LOG_TAG, "For account " + accountItem.getAccount().toString() + " carbons status is: " + CarbonManager.getInstance().isCarbonsEnabledForConnection((ConnectionItem) accountItem));
         }
     }
 

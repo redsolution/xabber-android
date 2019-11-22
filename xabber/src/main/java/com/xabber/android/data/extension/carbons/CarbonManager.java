@@ -99,7 +99,6 @@ public class CarbonManager {
     }
 
     public boolean isCarbonsEnabledForConnection(ConnectionItem connection) {
-
         return org.jivesoftware.smackx.carbons.CarbonManager
                 .getInstanceFor(connection.getConnection())
                 .getCarbonsEnabled();
