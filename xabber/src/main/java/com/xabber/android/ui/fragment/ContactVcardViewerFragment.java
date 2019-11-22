@@ -559,6 +559,7 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
 
     private void addNameInfo(VCard vCard) {
         List<View> nameList = new ArrayList<>();
+        List<View> nickName = new ArrayList<>(1);
 
         addItem(nameList, contactInfoItems, getString(R.string.vcard_given_name), vCard.getFirstName());
         addItem(nameList, contactInfoItems, getString(R.string.vcard_middle_name), vCard.getMiddleName());
@@ -566,9 +567,12 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
         //addItem(nameList, contactInfoItems, getString(R.string.vcard_prefix_name), vCard.getPrefix());
         //addItem(nameList, contactInfoItems, getString(R.string.vcard_suffix_name), vCard.getSuffix());
         addItem(nameList, contactInfoItems, getString(R.string.vcard_formatted_name), vCard.getField(VCardProperty.FN.name()));
-        addItem(nameList, contactInfoItems, getString(R.string.vcard_nick_name), vCard.getField(VCardProperty.NICKNAME.name()));
 
-        addItemGroup(nameList, contactInfoItems, R.drawable.ic_vcard_contact_info_24dp);
+        addItemGroup(nameList, contactInfoItems, R.drawable.ic_vcard_details_grey600_24dp);
+
+        addItem(nickName, contactInfoItems, getString(R.string.vcard_nick_name), vCard.getField(VCardProperty.NICKNAME.name()));
+
+        addItemGroup(nickName, contactInfoItems, R.drawable.ic_vcard_contact_info_24dp);
     }
 
     private void addItemGroup(List<View> nameList, LinearLayout itemList, int groupIcon) {
