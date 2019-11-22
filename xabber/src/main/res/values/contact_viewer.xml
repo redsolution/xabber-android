@@ -10,6 +10,7 @@
     <string name="vcard_middle_name">Middle name</string>
     <string name="vcard_family_name">Family name</string>
     <string name="vcard_suffix_name">Suffix name</string>
+    <string name="vcard_basic_info">Your name and an optional profile picture</string>
     <string name="vcard_birth_date">Birthday</string>
     <string name="vcard_url">Web site</string>
     <string name="vcard_organization">Organization</string>

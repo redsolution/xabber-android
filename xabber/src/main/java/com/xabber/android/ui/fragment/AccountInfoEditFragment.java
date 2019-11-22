@@ -225,11 +225,45 @@ public class AccountInfoEditFragment extends Fragment implements OnVCardSaveList
         //prefixName = setUpInputField(view, R.id.vcard_prefix_name);
         formattedName = setUpInputField(view, R.id.vcard_formatted_name);
         givenName = setUpInputField(view, R.id.vcard_given_name);
+        givenName.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean hasFocus) {
+                if (!hasFocus) {
+                    nickName.setHint(((EditText) view).getText().toString().concat(" ") + middleName.getText().toString().concat(" ") + familyName.getText().toString().concat(" "));
+                    if (nickName.getHint().equals("")) {
+                        nickName.setHint(R.string.vcard_nick_name);
+                    }
+                }
+            }
+        });
         middleName = setUpInputField(view, R.id.vcard_middle_name);
+        middleName.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean hasFocus) {
+                if (!hasFocus) {
+                    nickName.setHint(givenName.getText().toString().concat(" ") + ((EditText) view).getText().toString().concat(" ") + familyName.getText().toString().concat(" "));
+                    if (nickName.getHint().equals("")) {
+                        nickName.setHint(R.string.vcard_nick_name);
+                    }
+                }
+            }
+        });
+
         familyName = setUpInputField(view, R.id.vcard_family_name);
+        familyName.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean hasFocus) {
+                if (!hasFocus) {
+                    nickName.setHint(givenName.getText().toString().concat(" ") + middleName.getText().toString().concat(" ") + ((EditText)view).getText().toString().concat(" "));
+                    if (nickName.getHint().equals("")) {
+                        nickName.setHint(R.string.vcard_nick_name);
+                    }
+                }
+            }
+        });
         //suffixName = setUpInputField(view, R.id.vcard_suffix_name);
         nickName = setUpInputField(view, R.id.vcard_nickname);
-
+        //nickName.setHint(account.getFullJid().asBareJid().toString());
         avatar = (ImageView) view.findViewById(R.id.vcard_avatar);
         avatar.setOnClickListener(new View.OnClickListener() {
             @Override
