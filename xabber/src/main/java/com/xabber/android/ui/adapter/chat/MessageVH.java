@@ -121,6 +121,7 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
         // Added .concat("&zwj;") and .concat(String.valueOf(Character.MIN_VALUE)
         // to avoid click by empty space after ClickableSpan
         // Try to decode to avoid ugly non-english links
+        LogManager.d(LOG_TAG, "Message before viewing: " + messageItem.toString());
         if (messageItem.getMarkupText() != null && !messageItem.getMarkupText().isEmpty()){
             Spanned markupText = Html.fromHtml(messageItem.getMarkupText().trim()
                             .replace("\n", "<br/>").concat("&zwj;"), null,
@@ -136,6 +137,7 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
                         .concat(String.valueOf(Character.MIN_VALUE)));
             }
         } else messageText.setText(messageItem.getText().trim().concat(String.valueOf(Character.MIN_VALUE)));
+
 
         if (OTRManager.getInstance().isEncrypted(messageItem.getText())) {
             if (extraData.isShowOriginalOTR())
@@ -189,6 +191,7 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
         if (extraData.isChecked()) itemView.setBackgroundColor(extraData.getContext().getResources()
                 .getColor(R.color.unread_messages_background));
         else itemView.setBackgroundDrawable(null);
+        LogManager.d(LOG_TAG, "Message viewed: id " + messageId + " time " + messageTime.getText() + " text " + messageText.getText());
     }
 
     protected void setupForwarded(MessageItem messageItem, MessagesAdapter.MessageExtraData extraData) {

@@ -7,6 +7,7 @@ package com.xabber.android.ui.adapter;
 import android.app.Activity;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
+import android.graphics.Color;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
 import androidx.recyclerview.widget.RecyclerView;
@@ -23,9 +24,11 @@ import android.widget.TextView;
 import com.xabber.android.R;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
+import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.ConnectionState;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
+import com.xabber.android.data.extension.carbons.CarbonManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.xaccount.XabberAccount;
 import com.xabber.android.data.xaccount.XabberAccountManager;
@@ -114,7 +117,9 @@ public class AccountListPreferenceAdapter extends RecyclerView.Adapter {
                 getAccountMainColor(accountItem.getAccount()) : defaultAccountNameColor);
 
         accountHolder.status.setText(accountItem.getState().getStringId());
-
+        if (CarbonManager.getInstance().isCarbonsEnabledForConnection((ConnectionItem) accountItem))
+            accountHolder.status.setTextColor(Color.GREEN);
+        else accountHolder.status.setTextColor(Color.RED);
         // push state
         boolean pushEnabled = accountItem.getState().equals(ConnectionState.connected)
                 && accountItem.isPushWasEnabled();

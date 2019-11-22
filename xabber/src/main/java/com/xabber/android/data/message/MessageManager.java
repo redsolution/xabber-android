@@ -102,7 +102,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
         OnStatusChangeListener {
 
     private static MessageManager instance;
-
+    private static final String LOG_TAG = MessageManager.class.getSimpleName();
     private final EntityNotificationProvider<MucPrivateChatNotification> mucPrivateChatRequestProvider;
 
     /**
@@ -762,6 +762,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
         message.setThread(threadId);
         // send auto-generated messages without carbons
         CarbonManager.getInstance().setMessageToIgnoreCarbons(message);
+        LogManager.d(LOG_TAG, "Message sent without chat. Invoke CarbonManager setMessageToIgnoreCarbons");
         try {
             StanzaSender.sendStanza(account, message);
         } catch (NetworkException e) {
@@ -770,11 +771,13 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
     }
 
     public void processCarbonsMessage(AccountJid account, final Message message, CarbonExtension.Direction direction) {
+        LogManager.d(LOG_TAG, "invoked processCarbonsMessage");
         if (direction == CarbonExtension.Direction.sent) {
             UserJid companion;
             try {
                 companion = UserJid.from(message.getTo()).getBareUserJid();
             } catch (UserJid.UserJidCreateException e) {
+                LogManager.exception(LOG_TAG, e);
                 return;
             }
             AbstractChat chat = getChat(account, companion);
@@ -783,6 +786,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
             }
             final String body = message.getBody();
             if (body == null) {
+                LogManager.d(LOG_TAG, "... but message body is null!");
                 return;
             }
 
