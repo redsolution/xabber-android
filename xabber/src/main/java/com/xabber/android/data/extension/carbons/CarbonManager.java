@@ -61,8 +61,18 @@ public class CarbonManager {
                 .getInstanceFor(connectionItem.getConnection());
 
         try {
-            carbonManager.setCarbonsEnabled(SettingsManager.connectionUseCarbons());
-            addListener(carbonManager, connectionItem.getAccount());
+            if (carbonManager.isSupportedByServer()) {
+                if (carbonManager.getCarbonsEnabled()) {
+                    // Smack CarbonManager still thinks, that carbons enabled and does not sent IQ
+                    // it drops flag to false when on authorized listener, but it happens after this listener
+                    // so it is problem of unordered authorized listeners
+                    carbonManager.setCarbonsEnabled(false);
+                }
+                carbonManager.setCarbonsEnabled(SettingsManager.connectionUseCarbons());
+
+                addListener(carbonManager, connectionItem.getAccount());
+            }
+
         } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException
                 | SmackException.NotConnectedException | InterruptedException e) {
             LogManager.exception(this, e);
