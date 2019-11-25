@@ -66,7 +66,7 @@ public class CarbonManager {
                 .getInstanceFor(connectionItem.getConnection());
 
         try {
-            LogManager.d(LOG_TAG, "try to do something strange (with disabling and enabling carbons again");
+            LogManager.d(LOG_TAG, "try to do something strange (with disabling and enabling carbons again)");
             if (carbonManager.isSupportedByServer()) {
                 if (carbonManager.getCarbonsEnabled()) {
                     // Smack CarbonManager still thinks, that carbons enabled and does not sent IQ

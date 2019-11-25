@@ -106,10 +106,10 @@ class ConnectionThread {
     @SuppressWarnings("WeakerAccess")
     void connectAndLogin() {
         AndroidLoggingHandler.reset(new AndroidLoggingHandler());
-        java.util.logging.Logger.getLogger(XMPPTCPConnection.class.getName()).setLevel(Level.FINEST);
-        java.util.logging.Logger.getLogger(AbstractDNSClient.class.getName()).setLevel(Level.FINEST);
-        java.util.logging.Logger.getLogger(AbstractXMPPConnection.class.getName()).setLevel(Level.FINEST);
-        java.util.logging.Logger.getLogger(DNSUtil.class.getName()).setLevel(Level.FINEST);
+        java.util.logging.Logger.getLogger(XMPPTCPConnection.class.getName()).setLevel(Level.ALL);
+        java.util.logging.Logger.getLogger(AbstractDNSClient.class.getName()).setLevel(Level.ALL);
+        java.util.logging.Logger.getLogger(AbstractXMPPConnection.class.getName()).setLevel(Level.ALL);
+        java.util.logging.Logger.getLogger(DNSUtil.class.getName()).setLevel(Level.ALL);
 
         if (connection.getConfiguration().getPassword().isEmpty()) {
             AccountErrorEvent accountErrorEvent = new AccountErrorEvent(connectionItem.getAccount(),
