@@ -39,6 +39,7 @@ public class BackpressureMessageMarker {
     private void createSubject() {
         subject = PublishSubject.create();
         subject.buffer(1000, TimeUnit.MILLISECONDS)
+                .onBackpressureBuffer()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<List<MessageIdAndMarker>>() {
                     @Override
