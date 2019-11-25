@@ -37,7 +37,7 @@ public class MetadataInfo {
         this.id = StringUtils.requireNotNullOrEmpty(id, "ID is required.");
         this.url = url;
         this.bytes = longToIntConverter(bytes);
-        this.type = StringUtils.requireNotNullOrEmpty(type, "Content Type is required.");
+        this.type = type; //StringUtils.requireNotNullOrEmpty(type, "Content Type is required.");
         //if (pixelsHeight < 0 || pixelsHeight > MAX_HEIGHT) {
         //    throw new IllegalArgumentException("Image height value must be between 0 and 65536.");
         //}
