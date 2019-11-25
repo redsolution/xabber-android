@@ -262,6 +262,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         ivClose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                forwardIds.clear();
                 closeInteractionPanel();
             }
         });
@@ -279,7 +280,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
             @Override
             public void onClick(View v) {
                 forwardIds = new ArrayList<>(chatMessageAdapter.getCheckedItemIds());
-                closeInteractionPanel();
+                //closeInteractionPanel();
                 openChooserForForward((ArrayList<String>) forwardIds);
             }
         });
@@ -289,6 +290,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
             public void onClick(View v) {
                 MessageManager.getInstance()
                         .removeMessage(new ArrayList<>(chatMessageAdapter.getCheckedItemIds()));
+                forwardIds.clear();
                 closeInteractionPanel();
             }
         });
@@ -297,6 +299,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
             @Override
             public void onClick(View v) {
                 ClipManager.copyMessagesToClipboard(new ArrayList<>(chatMessageAdapter.getCheckedItemIds()));
+                forwardIds.clear();
                 closeInteractionPanel();
             }
         });
