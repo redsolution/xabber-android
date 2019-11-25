@@ -148,7 +148,7 @@ public class ContactAddFragment extends GroupEditorFragment
         qrScan.setOnClickListener(this);
 
         if (getUser() != null) {
-            userView.setText(getUser().toString());
+            userView.setText(getUser().getBareJid().toString());
         }
         if (name != null) {
             nameView.setText(name);
