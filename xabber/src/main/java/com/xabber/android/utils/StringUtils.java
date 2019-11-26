@@ -16,6 +16,7 @@ package com.xabber.android.utils;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.icu.text.Transliterator;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
@@ -361,6 +362,20 @@ public class StringUtils {
             LogManager.e("StringUtils", e.toString());
             return xmlData;
         }
+    }
 
+    public static boolean isBasicLatin(String string){
+        char[] array = string.toCharArray();
+        boolean result = true;
+        for (int i = 0; i < array.length; i++){
+            if (!Character.UnicodeBlock.BASIC_LATIN.equals(Character.UnicodeBlock.of(array[i])))
+                result = false;
+        }
+        return result;
+    }
+
+    public static String translitirateToLatin(String string){
+        //TODO add detecting language and make this more flexible
+        return Transliterator.getInstance("Cyrillic-Latin").transliterate(string);
     }
 }
