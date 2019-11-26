@@ -49,6 +49,7 @@ import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.util.StringUtils;
 import org.jxmpp.jid.EntityBareJid;
+import org.jxmpp.jid.Jid;
 import org.jxmpp.jid.parts.Resourcepart;
 
 import java.util.ArrayList;
@@ -382,7 +383,8 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
             }
             subscriptionRequestProvider.remove(account, from);
         } else {
-            subscriptionRequestProvider.add(new SubscriptionRequest(account, from), null);
+            if (notInContactRoster(account, from))
+                subscriptionRequestProvider.add(new SubscriptionRequest(account, from), null);
         }
     }
 
@@ -392,6 +394,29 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
         } catch (NetworkException e) {
             LogManager.exception(this, e);
         }
+    }
+
+    public void onRosterEntriesUpdated(AccountJid account, Collection<Jid> entries) {
+        for (Jid entry : entries) {
+            try {
+                UserJid user = UserJid.from(entry);
+                if(subscriptionRequestProvider.get(account, user) != null) {
+                    subscriptionRequestProvider.remove(account, user);
+                    createChatForNewContact(account, user);
+                }
+            } catch (UserJid.UserJidCreateException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private boolean notInContactRoster(AccountJid account, UserJid user) {
+        for (RosterContact contact : RosterManager.getInstance().getAccountRosterContacts(account)) {
+            if (contact.getUser().getBareJid().equals(user.getBareJid().toString())) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public static void sortPresencesByPriority(List<Presence> allPresences) {
