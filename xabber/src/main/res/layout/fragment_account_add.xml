@@ -50,8 +50,9 @@
                         android:imeOptions="actionNext"
                         android:inputType="textEmailAddress"
                         android:nextFocusForward="@+id/account_password"
+                        android:paddingRight="50dp"
                         android:singleLine="true"
-                        android:textSize="16sp"/>
+                        android:textSize="16sp" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -101,12 +102,11 @@
                     android:id="@+id/account_password"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:imeOptions="actionDone"
-                    android:singleLine="true"
-                    android:textSize="16sp"
                     android:hint="@string/hint_pass"
+                    android:imeOptions="actionDone"
                     android:inputType="textPassword"
-                    />
+                    android:singleLine="true"
+                    android:textSize="16sp" />
 
             </com.google.android.material.textfield.TextInputLayout>
 

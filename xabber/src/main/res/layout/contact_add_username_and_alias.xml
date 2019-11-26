@@ -16,14 +16,16 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
         <EditText
-            android:text=""
             android:id="@+id/contact_user"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/user_domain_name"
+            android:inputType="textEmailAddress"
+            android:paddingRight="45dp"
             android:singleLine="true"
-            android:inputType="textEmailAddress" />
+            android:text="" />
 
         <ImageView
             android:id="@+id/imgQRcode"
