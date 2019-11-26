@@ -2,6 +2,9 @@ package com.xabber.android.data.extension.mam;
 
 import android.util.Pair;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
@@ -30,6 +33,7 @@ import com.xabber.android.data.push.SyncManager;
 import com.xabber.android.data.roster.OnRosterReceivedListener;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
+import com.xabber.xmpp.smack.XMPPTCPConnection;
 
 import net.java.otr4j.io.SerializationUtils;
 import net.java.otr4j.io.messages.PlainTextMessage;
@@ -41,7 +45,6 @@ import org.jivesoftware.smack.packet.ExtensionElement;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Stanza;
-import com.xabber.xmpp.smack.XMPPTCPConnection;
 import org.jivesoftware.smack.util.PacketParserUtils;
 import org.jivesoftware.smackx.delay.packet.DelayInformation;
 import org.jivesoftware.smackx.forward.packet.Forwarded;
@@ -67,9 +70,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import io.realm.Realm;
 import io.realm.RealmList;
@@ -756,6 +756,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
 
     private List<MessageItem> saveOrUpdateMessages(Realm realm, final Collection<MessageItem> messages, boolean ui) {
         List<MessageItem> messagesToSave = new ArrayList<>();
+        realm.beginTransaction();
         if (messages != null && !messages.isEmpty()) {
             Iterator<MessageItem> iterator = messages.iterator();
             while (iterator.hasNext()) {
@@ -763,7 +764,6 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
                 if (newMessage != null) messagesToSave.add(newMessage);
             }
         }
-        realm.beginTransaction();
         realm.copyToRealmOrUpdate(messagesToSave);
         realm.commitTransaction();
         SyncManager.getInstance().onMessageSaved();
@@ -784,6 +784,8 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
 
         MessageItem localMessage = findSameLocalMessage(realm, chat, message);
         if (localMessage == null) {
+            LogManager.d(this, "Matching message doesn't exist! Creating a new one");
+
             // forwarded
             if (originalMessage != null) {
                 RealmList<ForwardId> forwardIds = chat.parseForwardedMessage(ui, originalMessage, message.getUniqueId());
@@ -799,12 +801,10 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
             if (notify && !visible)
                 NotificationManager.getInstance().onMessageNotification(message);
             //
-
             return message;
         } else {
-            realm.beginTransaction();
+            LogManager.d(this, "Matching message found! Updating message");
             localMessage.setArchivedId(message.getArchivedId());
-            realm.commitTransaction();
             return localMessage;
         }
     }
@@ -957,30 +957,21 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
     }
 
     private MessageItem findSameLocalMessage(Realm realm, AbstractChat chat, MessageItem message) {
+        LogManager.d(this, "Querying Realm for message. Account: " + chat.getAccount().toString() + " User: " + chat.getUser().toString() + "\nIDs: 1) Stanza Id/Origin Id: " + message.getStanzaId() + " 2) Packet Id: " + message.getPacketId() + " 3) ArchiveId: " + message.getArchivedId());
         return realm.where(MessageItem.class)
                 .equalTo(MessageItem.Fields.ACCOUNT, chat.getAccount().toString())
                 .equalTo(MessageItem.Fields.USER, chat.getUser().toString())
                 .equalTo(MessageItem.Fields.TEXT, message.getText())
                 .isNull(MessageItem.Fields.PARENT_MESSAGE_ID)
-                .equalTo(MessageItem.Fields.STANZA_ID, message.getStanzaId())
-                .or()
-                .equalTo(MessageItem.Fields.ACCOUNT, chat.getAccount().toString())
-                .equalTo(MessageItem.Fields.USER, chat.getUser().toString())
-                .equalTo(MessageItem.Fields.TEXT, message.getText())
-                .isNull(MessageItem.Fields.PARENT_MESSAGE_ID)
-                .equalTo(MessageItem.Fields.STANZA_ID, message.getPacketId())
-                .or()
-                .equalTo(MessageItem.Fields.ACCOUNT, chat.getAccount().toString())
-                .equalTo(MessageItem.Fields.USER, chat.getUser().toString())
-                .equalTo(MessageItem.Fields.TEXT, message.getText())
-                .isNull(MessageItem.Fields.PARENT_MESSAGE_ID)
-                .equalTo(MessageItem.Fields.STANZA_ID, message.getArchivedId())
-                .or()
-                .equalTo(MessageItem.Fields.ACCOUNT, chat.getAccount().toString())
-                .equalTo(MessageItem.Fields.USER, chat.getUser().toString())
-                .equalTo(MessageItem.Fields.TEXT, message.getText())
-                .isNull(MessageItem.Fields.PARENT_MESSAGE_ID)
-                .equalTo(MessageItem.Fields.ARCHIVED_ID, message.getArchivedId())
+                .beginGroup()
+                    .equalTo(MessageItem.Fields.STANZA_ID, message.getStanzaId())
+                    .or()
+                    .equalTo(MessageItem.Fields.STANZA_ID, message.getPacketId())
+                    .or()
+                    .equalTo(MessageItem.Fields.STANZA_ID, message.getArchivedId())
+                    .or()
+                    .equalTo(MessageItem.Fields.ARCHIVED_ID, message.getArchivedId())
+                .endGroup()
                 .findFirst();
     }
 
