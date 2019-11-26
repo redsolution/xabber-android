@@ -21,6 +21,7 @@ import androidx.annotation.NonNull;
 import com.xabber.android.data.account.AccountErrorEvent;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
+import com.xabber.android.data.extension.carbons.CarbonManager;
 import com.xabber.android.data.extension.forward.ForwardComment;
 import com.xabber.android.data.extension.forward.ForwardCommentProvider;
 import com.xabber.android.data.extension.httpfileupload.CustomDataProvider;
@@ -201,7 +202,7 @@ class ConnectionThread {
         } catch (InterruptedException e) {
             LogManager.exception(this, e);
         }
-
+        CarbonManager.getInstance().onAuthorized(connectionItem);
         LogManager.i(this, "Connection thread finished");
     }
 

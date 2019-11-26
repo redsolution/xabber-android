@@ -403,12 +403,15 @@ public class XMPPTCPConnection extends AbstractXMPPConnection {
         }
 
         // X-TOKEN
-        Mechanisms mechanisms = getFeature(Mechanisms.ELEMENT, Mechanisms.NAMESPACE);
-        List<String> mechanismsList = mechanisms.getMechanisms();
-        if (mechanismsList.contains(SASLXTOKENMechanism.NAME) &&
-                !getUsedSaslMechansism().equals(SASLXTOKENMechanism.NAME)) {
-            XTokenManager.getInstance().sendXTokenRequest(this);
+        if (getFeature(Mechanisms.ELEMENT, Mechanisms.NAMESPACE) != null){
+            Mechanisms mechanisms = getFeature(Mechanisms.ELEMENT, Mechanisms.NAMESPACE);
+            List<String> mechanismsList = mechanisms.getMechanisms();
+            if (mechanismsList.contains(SASLXTOKENMechanism.NAME) &&
+                    !getUsedSaslMechansism().equals(SASLXTOKENMechanism.NAME)) {
+                XTokenManager.getInstance().sendXTokenRequest(this);
+            }
         }
+
 
         // Now bind the resource. It is important to do this *after* we dropped an eventually
         // existing Stream Management state. As otherwise <bind/> and <session/> may end up in
