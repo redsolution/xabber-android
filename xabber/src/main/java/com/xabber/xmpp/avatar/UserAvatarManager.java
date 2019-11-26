@@ -453,7 +453,7 @@ public final class UserAvatarManager extends Manager {
                             AvatarManager.getInstance().onAvatarReceived(from, "", null, "xep");
 
                         } else for (MetadataInfo info : metadataExtension.getInfoElements()){
-                            if (info.getType() != null && (info.getType().equals("image/jpeg") || info.getType().equals("image/png"))) {
+                            if (info.getType() == null || info.getType().equals("image/jpeg") || info.getType().equals("image/png")) {
                                 if (metadataStore != null && metadataStore.hasAvatarAvailable(from, info.getId())) {
                                     AvatarManager am = AvatarManager.getInstance();
                                     // If we have a locally saved copy of the avatar, check if its hash
