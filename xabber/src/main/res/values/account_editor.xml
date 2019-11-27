@@ -49,7 +49,10 @@
     <string name="SERVER_INFO_ERROR">Could not get server info.</string>
     <string name="INCORRECT_USER_NAME">Incorrect user name</string>
     <string name="INCORRECT_USER_NAME_ADDENDUM_DOMAIN">: invalid domain</string>
-    <string name="INCORRECT_USER_NAME_ADDENDUM_LOCAL">: invalid local part with \"@\" present</string>
+    <string name="INCORRECT_USER_NAME_ADDENDUM_AT">: multiple \"@\"-symbols present</string>
+    <string name="INCORRECT_USER_NAME_ADDENDUM_LOCAL">: invalid local part</string>
+    <string name="INCORRECT_USER_NAME_ADDENDUM_LOCAL_AT">: \"@\" is present without local part</string>
+    <string name="INCORRECT_USER_NAME_ADDENDUM_LOCAL_SYMBOL">: \"%s\" symbol is not accepted in the local part</string>
     <string name="INCORRECT_USER_NAME_ADDENDUM_RESOURCE">: \"/\" character is not accepted</string>
 
     <string name="account_color">Account color</string>

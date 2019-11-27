@@ -2,7 +2,6 @@ package com.xabber.android.ui.fragment;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -14,6 +13,7 @@ import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.zxing.integration.android.IntentIntegrator;
@@ -53,6 +53,7 @@ public class ContactAddFragment extends GroupEditorFragment
     private Spinner accountView;
     private EditText userView;
     private EditText nameView;
+    private TextView errorView;
     private String name;
     private String error;
     private IntentIntegrator integrator;
@@ -128,7 +129,9 @@ public class ContactAddFragment extends GroupEditorFragment
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
 
             @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                setError("");
+            }
 
             @Override
             public void afterTextChanged(Editable editable) {
@@ -146,16 +149,16 @@ public class ContactAddFragment extends GroupEditorFragment
         nameView = (EditText) view.findViewById(R.id.contact_name);
         qrScan = (ImageView) view.findViewById(R.id.imgQRcode);
         qrScan.setOnClickListener(this);
+        errorView = (TextView) view.findViewById(R.id.error_view);
 
         if (getUser() != null) {
             userView.setText(getUser().getBareJid().toString());
+            if (error != null) {
+                setError(error);
+            }
         }
         if (name != null) {
             nameView.setText(name);
-        }
-
-        if (error != null) {
-            setError(error);
         }
 /*
         if(getArguments()!=null){
@@ -239,9 +242,8 @@ public class ContactAddFragment extends GroupEditorFragment
         outState.putParcelable(SAVED_ACCOUNT, getAccount());
         outState.putString(SAVED_USER, userView.getText().toString());
         outState.putString(SAVED_NAME, nameView.getText().toString());
-        if (userView.getError()!=null) {
-            outState.putString(SAVED_ERROR, userView.getError().toString());
-        }
+        outState.putString(SAVED_ERROR, errorView.getText().toString());
+
     }
 
     @Override
@@ -418,14 +420,14 @@ public class ContactAddFragment extends GroupEditorFragment
 
         //Invalid when "@" is present but localPart is empty
         if (atChar == 0) {
-            setError(getString(R.string.INCORRECT_USER_NAME));
+            setError(getString(R.string.INCORRECT_USER_NAME) + getString(R.string.INCORRECT_USER_NAME_ADDENDUM_LOCAL_AT));
             return true;
         }
 
         //Invalid when "@" is present in a domainPart
         if (atChar > 0) {
             if (domainName.contains("@")) {
-                setError(getString(R.string.INCORRECT_USER_NAME));
+                setError(getString(R.string.INCORRECT_USER_NAME) + getString(R.string.INCORRECT_USER_NAME_ADDENDUM_AT));
                 return true;
             }
         }
@@ -438,29 +440,38 @@ public class ContactAddFragment extends GroupEditorFragment
 
         //Invalid when domain has "." at the start/end
         if (domainName.charAt(domainName.length()-1)=='.' || domainName.charAt(0)=='.'){
-            setError(getString(R.string.INCORRECT_USER_NAME));
+            setError(getString(R.string.INCORRECT_USER_NAME) + getString(R.string.INCORRECT_USER_NAME_ADDENDUM_DOMAIN));
             return true;
         }
         //Invalid when domain does not have a "." in the middle, when paired with the last check
         if (!domainName.contains(".")) {
-            setError(getString(R.string.INCORRECT_USER_NAME));
+            setError(getString(R.string.INCORRECT_USER_NAME) + getString(R.string.INCORRECT_USER_NAME_ADDENDUM_DOMAIN));
             return true;
         }
         //Invalid when domain has multiple dots in a row
         if(domainName.contains("..")) {
-            setError(getString(R.string.INCORRECT_USER_NAME));
+            setError(getString(R.string.INCORRECT_USER_NAME) + getString(R.string.INCORRECT_USER_NAME_ADDENDUM_DOMAIN));
             return true;
         }
 
         if (!localName.equals("")) {
             //Invalid when localPart is NOT empty, and HAS "." at the start/end
             if (localName.charAt(localName.length() - 1) == '.' || localName.charAt(0) == '.') {
-                setError(getString(R.string.INCORRECT_USER_NAME));
+                setError(getString(R.string.INCORRECT_USER_NAME) + getString(R.string.INCORRECT_USER_NAME_ADDENDUM_LOCAL));
                 return true;
             }
             //Invalid when localPart is NOT empty, and contains ":" or "/" symbol. Other restricted localPart symbols get checked during the creation of the jid/userJid.
-            if (localName.contains(":") || localName.contains("/")) {
-                setError(getString(R.string.INCORRECT_USER_NAME));
+            if (localName.contains(":")) {
+                setError(getString(R.string.INCORRECT_USER_NAME) + String.format(getString(R.string.INCORRECT_USER_NAME_ADDENDUM_LOCAL_SYMBOL), ":"));
+                return true;
+            }
+            if (localName.contains("/")) {
+                setError(getString(R.string.INCORRECT_USER_NAME) + String.format(getString(R.string.INCORRECT_USER_NAME_ADDENDUM_LOCAL_SYMBOL), "/"));
+                return true;
+            }
+            //Invalid when localPart is NOT empty, and has multiple dots in a row
+            if(localName.contains("..")) {
+                setError(getString(R.string.INCORRECT_USER_NAME) + getString(R.string.INCORRECT_USER_NAME_ADDENDUM_LOCAL));
                 return true;
             }
         }
@@ -468,10 +479,12 @@ public class ContactAddFragment extends GroupEditorFragment
     }
 
     private void setError(String error){
-        Drawable warning = (Drawable)getResources().getDrawable(R.color.transparent);
-        Drawable qr = (Drawable)getResources().getDrawable(R.drawable.qrcode_scan_icon_grey);
-        warning.setBounds(0,0,qr.getIntrinsicWidth()+50, qr.getIntrinsicHeight());
-        userView.setError(error, warning);
+        //Drawable warning = (Drawable)getResources().getDrawable(R.color.transparent);
+        //Drawable qr = (Drawable)getResources().getDrawable(R.drawable.qrcode_scan_icon_grey);
+        //warning.setBounds(0,0,qr.getIntrinsicWidth()+50, qr.getIntrinsicHeight());
+        //userView.setError(error, warning);
+        errorView.setText(error);
+        errorView.setVisibility("".equals(error) ? View.INVISIBLE : View.VISIBLE);
     }
 
     private void stopAddContactProcess(final boolean success) {

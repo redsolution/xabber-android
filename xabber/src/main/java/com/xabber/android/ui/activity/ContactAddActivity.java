@@ -87,6 +87,7 @@ public class ContactAddActivity extends ManagedActivity implements ContactAddFra
             if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light)
                 ((TextView) view).setTextColor(getResources().getColor(R.color.grey_900));
             else ((TextView) view).setTextColor(getResources().getColor(R.color.white));
+        toolbarSetEnabled(false);
         toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
@@ -157,8 +158,9 @@ public class ContactAddActivity extends ManagedActivity implements ContactAddFra
     }
 
     public void toolbarSetEnabled(boolean active){
-        if (active) toolbar.getMenu().findItem(R.id.action_add_contact).setEnabled(true);
-        else toolbar.getMenu().findItem(R.id.action_add_contact).setEnabled(false);
+            toolbar.getMenu().findItem(R.id.action_add_contact).setEnabled(active ? true : false);
+            View view = findViewById(R.id.action_add_contact);
+            if (view instanceof TextView)
+                ((TextView) view).setTextColor(((TextView) view).getTextColors().withAlpha(active ? 255 : 127));
     }
-
 }
