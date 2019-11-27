@@ -84,6 +84,7 @@ import com.xabber.android.ui.color.AccountPainter;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.helper.ContextMenuHelper;
 import com.xabber.android.ui.widget.ShortcutBuilder;
+import com.xabber.android.utils.StringUtils;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -456,7 +457,9 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
 
     /** Show contacts filtered by filterString */
     public void search(String filterString){
-        this.filterString = filterString;
+        if ( filterString != null && filterString.length() != 0 && !StringUtils.isBasicLatin(filterString)){
+            this.filterString = StringUtils.translitirateToLatin(filterString);
+        } else this.filterString = filterString;
         updateBackpressure.refreshRequest();
     }
 
