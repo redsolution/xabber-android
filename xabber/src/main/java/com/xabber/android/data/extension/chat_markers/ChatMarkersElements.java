@@ -5,6 +5,8 @@ import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.util.StringUtils;
 import org.jivesoftware.smack.util.XmlStringBuilder;
 
+import java.util.ArrayList;
+
 
 public class ChatMarkersElements {
 
@@ -20,14 +22,12 @@ public class ChatMarkersElements {
      */
     public static final class MarkableExtension implements ExtensionElement {
 
-        public static final MarkableExtension INSTANCE = new MarkableExtension();
-
         /**
          * markable element.
          */
         public static final String ELEMENT = ChatMarkersState.markable.toString();
 
-        private MarkableExtension() {
+        public MarkableExtension() {
         }
 
         @Override
@@ -54,6 +54,7 @@ public class ChatMarkersElements {
 
     protected abstract static class ChatMarkerExtensionWithId implements ExtensionElement {
         protected final String id;
+        protected ArrayList<String> stanzaId = new ArrayList<>();
 
         protected ChatMarkerExtensionWithId(String id) {
             this.id = StringUtils.requireNotNullOrEmpty(id, "Message ID must not be null");
@@ -66,6 +67,14 @@ public class ChatMarkersElements {
          */
         public final String getId() {
             return id;
+        }
+
+        public void setStanzaId(String stanzaId) {
+            this.stanzaId.add(stanzaId);
+        }
+
+        public ArrayList<String> getStanzaId() {
+            return stanzaId;
         }
 
         @Override

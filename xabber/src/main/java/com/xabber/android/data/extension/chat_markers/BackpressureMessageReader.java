@@ -1,5 +1,7 @@
 package com.xabber.android.data.extension.chat_markers;
 
+import androidx.annotation.Nullable;
+
 import com.xabber.android.data.database.MessageDatabaseManager;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
@@ -17,6 +19,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import io.realm.Realm;
+import io.realm.RealmQuery;
 import io.realm.RealmResults;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
@@ -82,11 +85,11 @@ public class BackpressureMessageReader {
         return subject;
     }
 
-    public void markAsReadTest(String messageId, AccountJid accountJid, UserJid userJid, boolean trySendDisplayed) {
+    public void markAsReadTest(String messageId, @Nullable ArrayList<String> stanzaId, AccountJid accountJid, UserJid userJid, boolean trySendDisplayed) {
         AbstractContact contact = RosterManager.getInstance().getAbstractContact(accountJid, userJid);
         PublishSubject<MessageHolderTest> subject = queriesTest.get(contact);
         if (subject == null) subject = createSubjectTest(contact);
-        subject.onNext(new MessageHolderTest(messageId, trySendDisplayed, accountJid));
+        subject.onNext(new MessageHolderTest(messageId, stanzaId, trySendDisplayed, accountJid));
     }
 
     private PublishSubject<MessageHolderTest> createSubjectTest(final AbstractContact contact) {
@@ -97,12 +100,13 @@ public class BackpressureMessageReader {
                     @Override
                     public void call(MessageHolderTest holder) {
                         String messageId = holder.messageId;
+                        ArrayList<String> stanzaId = holder.stanzaId;
                         AccountJid accountJid = holder.account;
 
                         Realm realm = MessageDatabaseManager.getInstance().getRealmUiThread();
                         realm.beginTransaction();
 
-                        MessageItem message = getMessageById(realm, messageId, accountJid);
+                        MessageItem message = getMessageById(realm, messageId, stanzaId, accountJid);
                         if (message != null) {
                             if (holder.trySendDisplayed) {
                                 ChatMarkerManager.getInstance().sendDisplayed(message);
@@ -132,12 +136,24 @@ public class BackpressureMessageReader {
         return subject;
     }
 
-    private MessageItem getMessageById(Realm realm, String stanzaId, AccountJid accountJid) {
+    private MessageItem getMessageById(Realm realm, String id, ArrayList<String> stanzaIds, AccountJid accountJid) {
         MessageItem message;
-        message = realm.where(MessageItem.class)
-                .equalTo(MessageItem.Fields.ACCOUNT, accountJid.toString())
-                .equalTo(MessageItem.Fields.STANZA_ID, stanzaId)
-                .findFirst();
+        RealmQuery<MessageItem> realmQuery = RealmQuery.createQuery(realm, MessageItem.class);
+        realmQuery.equalTo(MessageItem.Fields.ACCOUNT, accountJid.toString());
+        if (stanzaIds != null && stanzaIds.size()>0) {
+            realmQuery.beginGroup();
+            realmQuery.equalTo(MessageItem.Fields.STANZA_ID, id);
+            for (String stanzaId : stanzaIds) {
+                realmQuery.or();
+                realmQuery.equalTo(MessageItem.Fields.STANZA_ID, stanzaId);
+            }
+            realmQuery.endGroup();
+            message = realmQuery.findFirst();
+
+        } else {
+            realmQuery.equalTo(MessageItem.Fields.STANZA_ID, id);
+            message = realmQuery.findFirst();
+        }
         return message;
     }
 
@@ -152,11 +168,13 @@ public class BackpressureMessageReader {
 
     private class MessageHolderTest {
         final String messageId;
+        final ArrayList<String> stanzaId;
         final boolean trySendDisplayed;
         final AccountJid account;
 
-        public MessageHolderTest(String messageId, boolean trySendDisplayed, AccountJid account) {
+        MessageHolderTest(String messageId, @Nullable ArrayList<String> stanzaId, boolean trySendDisplayed, AccountJid account) {
             this.messageId = messageId;
+            this.stanzaId = stanzaId;
             this.trySendDisplayed = trySendDisplayed;
             this.account = account;
         }
