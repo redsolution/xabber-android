@@ -159,6 +159,7 @@ public class ServerInfoActivity extends ManagedActivity {
             boolean fileUpload = HttpFileUploadManager.getInstance().isFileUploadSupported(accountItem.getAccount());
             boolean mucLight = !MultiUserChatLightManager.getInstanceFor(connection).getLocalServices().isEmpty();
             boolean bookmarks = BookmarksManager.getInstance().isSupported(accountItem.getAccount());
+            //boolean retract = RetractManager
 
             serverInfoList.add(getString(R.string.xep_0045_muc) + " " + getCheckOrCross(muc));
             serverInfoList.add(getString(R.string.xep_0163_pep) + " " + getCheckOrCross(pep));
@@ -172,6 +173,7 @@ public class ServerInfoActivity extends ManagedActivity {
             serverInfoList.add(getString(R.string.xep_0363_file_upload) + " " + getCheckOrCross(fileUpload));
             serverInfoList.add(getString(R.string.xep_xxxx_muc_light) + " " + getCheckOrCross(mucLight));
             serverInfoList.add(getString(R.string.xep_0048_bookmarks) + " " + getCheckOrCross(bookmarks));
+            serverInfoList.add(getString(R.string.xep_0rrr_retract) + " " + getCheckOrCross(true));
             serverInfoList.add("");
         } catch (InterruptedException | SmackException.NoResponseException
                 | XMPPException.XMPPErrorException | SmackException.NotConnectedException e) {

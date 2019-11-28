@@ -48,6 +48,7 @@ import com.xabber.android.data.extension.iqlast.LastActivityInteractor;
 import com.xabber.android.data.extension.mam.NextMamManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.otr.OTRManager;
+import com.xabber.android.data.extension.rrr.RrrManager;
 import com.xabber.android.data.extension.ssn.SSNManager;
 import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.data.extension.xtoken.XTokenManager;
@@ -394,6 +395,7 @@ public class Application extends android.app.Application {
         addManager(LastActivityInteractor.getInstance());
         addManager(XTokenManager.getInstance());
         addManager(GroupchatUserManager.getInstance());
+        addManager(RrrManager.getInstance());
     }
 
     /**
