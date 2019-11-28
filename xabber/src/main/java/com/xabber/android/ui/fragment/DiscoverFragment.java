@@ -19,6 +19,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
+import androidx.cardview.widget.CardView;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.Fragment;
 
@@ -50,6 +51,8 @@ public class DiscoverFragment extends Fragment implements View.OnClickListener, 
     private Toolbar toolbarToolbarLayout;
     private View toolbarAccountColorIndicator;
     private View toolbarAccountColorIndicatorBack;
+    private CardView cardViewTest1;
+    private CardView cardViewTest2;
     private ImageView toolbarAddIv;
     private TextView toolbarTitleTv;
     private ImageView toolbarAvatarIv;
@@ -87,6 +90,10 @@ public class DiscoverFragment extends Fragment implements View.OnClickListener, 
         //toolbarTitleTv.setOnClickListener(this);
         toolbarSearchIv.setOnClickListener(this);
         toolbarTitleTv.setText("Discover");
+        cardViewTest1 = (CardView) view.findViewById(R.id.card_discover_web);
+        cardViewTest1.setPreventCornerOverlap(false);
+        cardViewTest2 = (CardView) view.findViewById(R.id.card_discover_ios);
+        cardViewTest2.setPreventCornerOverlap(false);
 
         return view;
     }
