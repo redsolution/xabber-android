@@ -161,7 +161,7 @@ public class ServerInfoActivity extends ManagedActivity {
             boolean fileUpload = HttpFileUploadManager.getInstance().isFileUploadSupported(accountItem.getAccount());
             boolean mucLight = !MultiUserChatLightManager.getInstanceFor(connection).getLocalServices().isEmpty();
             boolean bookmarks = BookmarksManager.getInstance().isSupported(accountItem.getAccount());
-            boolean reliable = ReliableMessageDeliveryManager.isSupported(connection);
+            boolean reliable = ReliableMessageDeliveryManager.getInstance().isSupported(connection);
 
             serverInfoList.add(getString(R.string.xep_0045_muc) + " " + getCheckOrCross(muc));
             serverInfoList.add(getString(R.string.xep_0163_pep) + " " + getCheckOrCross(pep));
