@@ -1,11 +1,15 @@
 package com.xabber.android.data.extension.reliablemessagedelivery;
 
 import com.xabber.android.data.account.AccountItem;
+import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.database.MessageDatabaseManager;
 import com.xabber.android.data.database.messagerealm.MessageItem;
+import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.log.LogManager;
+import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.MessageUpdateEvent;
 import com.xabber.android.utils.StringUtils;
 import com.xabber.xmpp.smack.XMPPTCPConnection;
@@ -16,9 +20,13 @@ import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.provider.ProviderManager;
 import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
 
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.Map;
 
 import io.realm.Realm;
+import io.realm.RealmResults;
+import io.realm.Sort;
 
 public class ReliableMessageDeliveryManager implements OnPacketListener {
 
@@ -55,6 +63,35 @@ public class ReliableMessageDeliveryManager implements OnPacketListener {
         }
     }
 
+    private LinkedHashMap<AccountJid, UserJid> getAccountsWithEnabledXep() {
+        final LinkedHashMap<AccountJid, UserJid> list = new LinkedHashMap<>();
+        Realm realm = MessageDatabaseManager.getInstance().getRealmUiThread();
+        for (final AccountJid accountJid : AccountManager.getInstance().getEnabledAccounts()) {
+            if (isSupported(AccountManager.getInstance().getAccount(accountJid))) {
+                realm.executeTransaction(new Realm.Transaction() {
+                    @Override
+                    public void execute(Realm realm) {
+                        RealmResults<MessageItem> messagesUndelivered = realm.where(MessageItem.class)
+                                .equalTo(MessageItem.Fields.ACCOUNT, accountJid.toString())
+                                .equalTo(MessageItem.Fields.SENT, true)
+                                .equalTo(MessageItem.Fields.DELIVERED, false)
+                                .findAllSorted(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
+                        for (MessageItem messageItem : messagesUndelivered) {
+                            //if (!list.containsKey(messageItem.getAccount()) && !list.get(messageItem.getAccount()).equals(messageItem.getUser()))
+                            list.put(messageItem.getAccount(), messageItem.getUser());
+                        }
+                    }
+                });
+            }
+        }
+        return list;
+    }
+
+    public void resendMessagesWithoutReceipt() {
+        for (Map.Entry<AccountJid, UserJid> entry : getAccountsWithEnabledXep().entrySet())
+            MessageManager.getInstance().getChat(entry.getKey(), entry.getValue()).sendMessages();
+    }
+
     private void deleteMessageFromWaitingReceiptsList(String id) throws NoSuchFieldException {
         if (originIdsWithoutReceipt.contains(id))
             originIdsWithoutReceipt.remove(id);
@@ -75,6 +112,7 @@ public class ReliableMessageDeliveryManager implements OnPacketListener {
                 LogManager.d(LOG_TAG, "Started apply changes to message: \nStanza ID: " + messageItem.getStanzaId() + "\nTimestamp: " + messageItem.getTimestamp());
                 messageItem.setStanzaId(stanzaId);
                 messageItem.setTimestamp(millis);
+                messageItem.setDelivered(true);
                 LogManager.d(LOG_TAG, "Changes was applied. New message: \nStanza ID: " + messageItem.getStanzaId() + "\nTimestamp: " + messageItem.getTimestamp());
             }
         });
