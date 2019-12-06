@@ -22,7 +22,6 @@ import androidx.annotation.Nullable;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
-import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.StanzaSender;
 import com.xabber.android.data.database.MessageDatabaseManager;
 import com.xabber.android.data.database.messagerealm.Attachment;
@@ -42,7 +41,6 @@ import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.references.ReferenceElement;
 import com.xabber.android.data.extension.references.ReferencesManager;
 import com.xabber.android.data.extension.reliablemessagedelivery.ReceiptRequestElement;
-import com.xabber.android.data.extension.reliablemessagedelivery.ReliableMessageDeliveryManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.notification.MessageNotificationManager;
@@ -733,8 +731,6 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
                         realm.close();
                     }
                 });
-                if (ReliableMessageDeliveryManager.getInstance().isSupported(AccountManager.getInstance().getAccount(account)))
-                    ReliableMessageDeliveryManager.getInstance().addMessageIdToReceiptWaiting(messageItem.getAccount(), messageId);
             } catch (NetworkException e) {
                 return false;
             }

@@ -3,9 +3,11 @@ package com.xabber.android.data.extension.reliablemessagedelivery;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
-import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.database.MessageDatabaseManager;
+import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.MessageUpdateEvent;
+import com.xabber.android.utils.StringUtils;
 import com.xabber.xmpp.smack.XMPPTCPConnection;
 
 import org.greenrobot.eventbus.EventBus;
@@ -14,27 +16,26 @@ import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.provider.ProviderManager;
 import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
 
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
-import java.util.Map;
+
+import io.realm.Realm;
 
 public class ReliableMessageDeliveryManager implements OnPacketListener {
 
     public static final String NAMESPACE = "http://xabber.com/protocol/delivery";
     public static final String LOG_TAG = ReliableMessageDeliveryManager.class.getSimpleName();
 
-    private LinkedHashMap<AccountJid, LinkedList<String>> usersMessagesReceiptsWaiting = new LinkedHashMap<>();
-
     private static ReliableMessageDeliveryManager instance;
+    private LinkedList<String> originIdsWithoutReceipt = new LinkedList<String>();
 
-    public static ReliableMessageDeliveryManager getInstance(){
+    public static ReliableMessageDeliveryManager getInstance() {
         if (instance == null)
             instance = new ReliableMessageDeliveryManager();
         ProviderManager.addExtensionProvider(ReceiptElement.ELEMENT, ReceiptElement.NAMESPACE, new ReceiptElement.ReceiptElementProvider());
         return instance;
     }
 
-    public boolean isSupported(XMPPTCPConnection xmpptcpConnection){
+    public boolean isSupported(XMPPTCPConnection xmpptcpConnection) {
         try {
             return ServiceDiscoveryManager.getInstanceFor(xmpptcpConnection).serverSupportsFeature(NAMESPACE);
         } catch (Exception e) {
@@ -43,62 +44,60 @@ public class ReliableMessageDeliveryManager implements OnPacketListener {
         }
     }
 
-    public boolean isSupported(AccountItem accountItem){
+    public boolean isSupported(AccountItem accountItem) {
         return isSupported(accountItem.getConnection());
     }
 
-    public void addMessageIdToReceiptWaiting(AccountJid accountJid, String messageId){
-        if (usersMessagesReceiptsWaiting.containsKey(accountJid))
-            usersMessagesReceiptsWaiting.get(accountJid).add(messageId);
-        else {
-            usersMessagesReceiptsWaiting.put(accountJid, new LinkedList<String>());
-            usersMessagesReceiptsWaiting.get(accountJid).add(messageId);
+    public void addMessageStanzaIdToReceiptWaitingList(String originId) {
+        if (!originIdsWithoutReceipt.contains(originId)) {
+            originIdsWithoutReceipt.add(originId);
+            LogManager.d(LOG_TAG, "Added a origin-id to waiting receipt list: " + originId);
         }
-
-        LogManager.d(LOG_TAG, "Added to waiting list: " + accountJid.toString() + " " + messageId);
     }
 
-    private AccountJid getAccountJidBymessageId(String id) throws NoSuchFieldException{
-        for (LinkedList<String> list : usersMessagesReceiptsWaiting.values()){
-            if (list.contains(id))
-                for (Map.Entry<AccountJid, LinkedList<String>> entry: usersMessagesReceiptsWaiting.entrySet())
-                    if (entry.getValue().equals(list))
-                        return entry.getKey();
-        }
-        throw new NoSuchFieldException("Can't find message in waiting for receipt list with provided id: " + id);
+    private void deleteMessageFromWaitingReceiptsList(String id) throws NoSuchFieldException {
+        if (originIdsWithoutReceipt.contains(id))
+            originIdsWithoutReceipt.remove(id);
+        else
+            throw new NoSuchFieldException("Can't find message in waiting for receipt list with provided id: " + id);
     }
 
-    private void deleteMessageFromWaitingReceiptsList(String id) throws NoSuchFieldException{
-        for (LinkedList<String> list : usersMessagesReceiptsWaiting.values()){
-            if (list.contains(id)){
-                list.remove(id);
-                return;
+    private void markMessageReceivedInDatabase(final String time, final String originId, final String stanzaId) {
+        Realm realm = MessageDatabaseManager.getInstance().getRealmUiThread();
+        final Long millis = StringUtils.parseReceivedReceiptTimestampString(time).getTime();
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                MessageItem messageItem = realm
+                        .where(MessageItem.class)
+                        .equalTo(MessageItem.Fields.STANZA_ID, originId)
+                        .findFirst();
+                LogManager.d(LOG_TAG, "Started apply changes to message: \nStanza ID: " + messageItem.getStanzaId() + "\nTimestamp: " + messageItem.getTimestamp());
+                messageItem.setStanzaId(stanzaId);
+                messageItem.setTimestamp(millis);
+                LogManager.d(LOG_TAG, "Changes was applied. New message: \nStanza ID: " + messageItem.getStanzaId() + "\nTimestamp: " + messageItem.getTimestamp());
             }
-        }
-        throw new NoSuchFieldException("Can't find message in waiting for receipt list with provided id: " + id);
+        });
     }
 
-    private void onReceiptRecieved(String time, String originId, String stanzaId){
-        try {
-            AccountJid accountJid = getAccountJidBymessageId(originId);
-            deleteMessageFromWaitingReceiptsList(originId);
-            //TODO writing to DB new stanza id and timestamp;
-            LogManager.d(LOG_TAG, "Got receipt for account: " + accountJid.toString());
-            EventBus.getDefault().post(new MessageUpdateEvent()); //TODO user and account into constructor;
-        } catch (Exception e){
-            LogManager.exception(LOG_TAG, e);
-        }
-    }
 
     @Override
     public void onStanza(ConnectionItem connection, Stanza stanza) {
         if (stanza instanceof Message
-                && ((Message) stanza).getType().equals(Message.Type.headline )
-                && stanza.hasExtension(NAMESPACE)){
-            ReceiptElement receipt = (ReceiptElement) stanza.getExtension(NAMESPACE);
-            onReceiptRecieved(receipt.getTimeElement().getStamp(),
-                    receipt.getOriginIdElement().getId(),
-                    receipt.getStanzaIdElement().getId());
+                && ((Message) stanza).getType().equals(Message.Type.headline)
+                && stanza.hasExtension(NAMESPACE)) {
+            try {
+                ReceiptElement receipt = (ReceiptElement) stanza.getExtension(NAMESPACE);
+                String timestamp = receipt.getTimeElement().getStamp();
+                String originId = receipt.getOriginIdElement().getId();
+                String stanzaId = receipt.getOriginIdElement().getId();
+                LogManager.d(LOG_TAG, "Receipt received with timestamp: " + timestamp + "; origin-id: " + originId + "; stanza-id: " + stanzaId + ". Trying to wite it to database");
+                markMessageReceivedInDatabase(timestamp, originId, stanzaId);
+                deleteMessageFromWaitingReceiptsList(originId);
+                EventBus.getDefault().post(new MessageUpdateEvent());
+            } catch (Exception e) {
+                LogManager.exception(LOG_TAG, e);
+            }
         }
     }
 

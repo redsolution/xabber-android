@@ -18,18 +18,38 @@ public class ReceiptElement implements EmbeddedPacketExtension {
     private StanzaIdElement stanzaIdElement;
 
     @Override
-    public String getNamespace() { return NAMESPACE; }
+    public String getNamespace() {
+        return NAMESPACE;
+    }
 
     @Override
-    public String getElementName() { return ELEMENT; }
+    public String getElementName() {
+        return ELEMENT;
+    }
 
-    public TimeElement getTimeElement() { return timeElement; }
-    public OriginIdElement getOriginIdElement() { return originIdElement; }
-    public StanzaIdElement getStanzaIdElement() { return stanzaIdElement; }
+    public TimeElement getTimeElement() {
+        return timeElement;
+    }
 
-    public void setTimeElement(TimeElement timeElement) { this.timeElement = timeElement; }
-    public void setOriginIdElement(OriginIdElement originId) { this.originIdElement = originId; }
-    public void setStanzaIdElement(StanzaIdElement stanzaId) { this.stanzaIdElement = stanzaId; }
+    public void setTimeElement(TimeElement timeElement) {
+        this.timeElement = timeElement;
+    }
+
+    public OriginIdElement getOriginIdElement() {
+        return originIdElement;
+    }
+
+    public void setOriginIdElement(OriginIdElement originId) {
+        this.originIdElement = originId;
+    }
+
+    public StanzaIdElement getStanzaIdElement() {
+        return stanzaIdElement;
+    }
+
+    public void setStanzaIdElement(StanzaIdElement stanzaId) {
+        this.stanzaIdElement = stanzaId;
+    }
 
     @Override
     public List<ExtensionElement> getExtensions() {
@@ -52,11 +72,11 @@ public class ReceiptElement implements EmbeddedPacketExtension {
                     String by = standardExtensionElement.getAttributeValue(TimeElement.ATTRIBUTE_BY);
                     String stamp = standardExtensionElement.getAttributeValue(TimeElement.ATTRIBUTE_STAMP);
                     receiptElement.setTimeElement(new TimeElement(by, stamp));
-                } else if (standardExtensionElement.getElementName().equals(OriginIdElement.ELEMENT)){
+                } else if (standardExtensionElement.getElementName().equals(OriginIdElement.ELEMENT)) {
                     String by = standardExtensionElement.getAttributeValue(OriginIdElement.ATTRIBUTE_BY);
                     String id = standardExtensionElement.getAttributeValue(OriginIdElement.ATTRIBUTE_ID);
                     receiptElement.setOriginIdElement(new OriginIdElement(by, id));
-                } else if (standardExtensionElement.getElementName().equals(StanzaIdElement.ELEMENT)){
+                } else if (standardExtensionElement.getElementName().equals(StanzaIdElement.ELEMENT)) {
                     String by = standardExtensionElement.getAttributeValue(StanzaIdElement.ATTRIBUTE_BY);
                     String id = standardExtensionElement.getAttributeValue(StanzaIdElement.ATTRIBUTE_ID);
                     receiptElement.setStanzaIdElement(new StanzaIdElement(by, id));

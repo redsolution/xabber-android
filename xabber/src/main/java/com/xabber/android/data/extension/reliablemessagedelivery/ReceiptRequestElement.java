@@ -5,8 +5,8 @@ import org.jivesoftware.smack.util.XmlStringBuilder;
 
 public class ReceiptRequestElement implements ExtensionElement {
 
-    private static final String NAMESPACE = "http://xabber.com/protocol/delivery";
     public static final String ELEMENT = "request";
+    private static final String NAMESPACE = "http://xabber.com/protocol/delivery";
 
     @Override
     public String getElementName() {

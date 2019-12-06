@@ -3,18 +3,19 @@ package com.xabber.android.data.connection;
 import androidx.annotation.NonNull;
 
 import com.xabber.android.R;
-import com.xabber.android.data.account.AccountItem;
-import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.NetworkException;
+import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.extension.reliablemessagedelivery.ReliableMessageDeliveryManager;
+import com.xabber.android.data.log.LogManager;
+import com.xabber.xmpp.smack.XMPPTCPConnection;
 
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.StanzaListener;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.sm.StreamManagementException;
-import com.xabber.xmpp.smack.XMPPTCPConnection;
 
 public class StanzaSender {
     private static String LOG_TAG = StanzaSender.class.getSimpleName();
@@ -24,8 +25,9 @@ public class StanzaSender {
      */
     public static void sendStanza(AccountJid account, Message stanza, StanzaListener acknowledgedListener) throws NetworkException {
         XMPPTCPConnection xmppConnection = getXmppTcpConnection(account);
-
-        if (xmppConnection.isSmEnabled()) {
+        if (ReliableMessageDeliveryManager.getInstance().isSupported(xmppConnection))
+            ReliableMessageDeliveryManager.getInstance().addMessageStanzaIdToReceiptWaitingList(stanza.getStanzaId());
+        else if (xmppConnection.isSmEnabled()) {
             try {
                 xmppConnection.addStanzaIdAcknowledgedListener(stanza.getStanzaId(), acknowledgedListener);
             } catch (StreamManagementException.StreamManagementNotEnabledException e) {

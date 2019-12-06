@@ -1,7 +1,6 @@
 package com.xabber.android.data.extension.reliablemessagedelivery;
 
 import org.jivesoftware.smack.packet.ExtensionElement;
-import org.jivesoftware.smack.packet.StandardExtensionElement;
 import org.jivesoftware.smack.provider.EmbeddedExtensionProvider;
 import org.jivesoftware.smack.util.XmlStringBuilder;
 
@@ -18,31 +17,39 @@ public class TimeElement implements ExtensionElement {
     private String by = null;
     private String stamp = null;
 
-    @Override
-    public String getNamespace() { return NAMESPACE; }
-
-    @Override
-    public String getElementName() { return ELEMENT; }
-
-    public String getBy() { return by; }
-    public void setBy(String by) { this.by = by; }
-
-    public String getStamp() { return stamp; }
-    public void setStamp(String stamp) { this.stamp = stamp; }
-
-    public TimeElement(String by, String timeStamp){
+    public TimeElement(String by, String timeStamp) {
         this.by = by;
         this.stamp = timeStamp;
     }
 
-    public TimeElement(StandardExtensionElement standardExtensionElement){
-        if (!standardExtensionElement.getElementName().equals(ELEMENT))
-            throw new ClassCastException("Not a Time Element!");
-        this.by = standardExtensionElement.getAttributeValue(ATTRIBUTE_BY);
-        this.stamp = standardExtensionElement.getAttributeValue(ATTRIBUTE_STAMP);
+    public TimeElement() {
     }
 
-    public TimeElement(){}
+    @Override
+    public String getNamespace() {
+        return NAMESPACE;
+    }
+
+    @Override
+    public String getElementName() {
+        return ELEMENT;
+    }
+
+    public String getBy() {
+        return by;
+    }
+
+    public void setBy(String by) {
+        this.by = by;
+    }
+
+    public String getStamp() {
+        return stamp;
+    }
+
+    public void setStamp(String stamp) {
+        this.stamp = stamp;
+    }
 
     @Override
     public XmlStringBuilder toXML() {
@@ -53,7 +60,7 @@ public class TimeElement implements ExtensionElement {
         return xmlStringBuilder;
     }
 
-    public static class TimeElementProvider extends EmbeddedExtensionProvider<TimeElement>{
+    public static class TimeElementProvider extends EmbeddedExtensionProvider<TimeElement> {
         @Override
         protected TimeElement createReturnExtension(String currentElement, String currentNamespace, Map attributeMap, List content) {
             TimeElement timeElement = new TimeElement();

@@ -16,23 +16,39 @@ public class StanzaIdElement implements ExtensionElement {
     private String by = null;
     private String id = null;
 
-    @Override
-    public String getNamespace() { return NAMESPACE; }
-    @Override
-    public String getElementName() { return ELEMENT; }
-
-    public String getBy() { return by; }
-    public void setBy(String by) { this.by = by; }
-
-    public String getId() { return id; }
-    public void setId(String id) { this.id = id; }
-
-    StanzaIdElement(String by, String id){
+    StanzaIdElement(String by, String id) {
         this.by = by;
         this.id = id;
     }
 
-    StanzaIdElement(){}
+    StanzaIdElement() {
+    }
+
+    @Override
+    public String getNamespace() {
+        return NAMESPACE;
+    }
+
+    @Override
+    public String getElementName() {
+        return ELEMENT;
+    }
+
+    public String getBy() {
+        return by;
+    }
+
+    public void setBy(String by) {
+        this.by = by;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     @Override
     public XmlStringBuilder toXML() {
@@ -43,7 +59,7 @@ public class StanzaIdElement implements ExtensionElement {
         return xmlStringBuilder;
     }
 
-    public static class StanzaIdElementProvider extends EmbeddedExtensionProvider<StanzaIdElement>{
+    public static class StanzaIdElementProvider extends EmbeddedExtensionProvider<StanzaIdElement> {
         @Override
         protected StanzaIdElement createReturnExtension(String currentElement, String currentNamespace, Map attributeMap, List content) {
             StanzaIdElement stanzaIdElement = new StanzaIdElement();

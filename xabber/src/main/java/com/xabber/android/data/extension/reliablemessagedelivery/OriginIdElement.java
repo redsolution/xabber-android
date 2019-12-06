@@ -16,23 +16,39 @@ public class OriginIdElement implements ExtensionElement {
     private String by = null;
     private String id = null;
 
-    @Override
-    public String getNamespace() { return NAMESPACE; }
-    @Override
-    public String getElementName() { return ELEMENT; }
-
-    public String getBy() { return by; }
-    public void setBy(String by) { this.by = by; }
-
-    public String getId() { return id; }
-    public void setId(String id) { this.id = id; }
-
-    OriginIdElement(String by, String id){
+    OriginIdElement(String by, String id) {
         this.by = by;
         this.id = id;
     }
 
-    OriginIdElement(){}
+    OriginIdElement() {
+    }
+
+    @Override
+    public String getNamespace() {
+        return NAMESPACE;
+    }
+
+    @Override
+    public String getElementName() {
+        return ELEMENT;
+    }
+
+    public String getBy() {
+        return by;
+    }
+
+    public void setBy(String by) {
+        this.by = by;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     @Override
     public XmlStringBuilder toXML() {

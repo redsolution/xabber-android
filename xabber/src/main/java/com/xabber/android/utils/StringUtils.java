@@ -364,6 +364,27 @@ public class StringUtils {
         }
     }
 
+    /**
+     * Convert date time string to Date.
+     * (Mostly for XEP-0XXX Reliable Message Delivery)
+     * @param string can be three formats:
+     *               or yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'
+     *               or yyyy-MM-dd'T'HH:mm:ss.SSS'Z'
+     *               or yyyy-MM-dd'T'HH:mm:ss'Z'
+     * @return
+     */
+    public static Date parseReceivedReceiptTimestampString(String string){
+        try {
+            switch (string.length()){
+                case 27: return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'").parse(string);
+                case 24: return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").parse(string);
+                case 21: return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").parse(string);
+                default: return null;
+            }
+        } catch (Exception e) { LogManager.exception(StringUtils.class.getSimpleName(), e); }
+        return null;
+    }
+
     public static boolean isBasicLatin(String string){
         char[] array = string.toCharArray();
         boolean result = true;
