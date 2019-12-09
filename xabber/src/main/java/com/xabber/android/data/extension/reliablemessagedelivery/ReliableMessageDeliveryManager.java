@@ -66,15 +66,15 @@ public class ReliableMessageDeliveryManager implements OnPacketListener {
                     realm.executeTransaction(new Realm.Transaction() {
                         @Override
                         public void execute(Realm realm) {
-                            for (AccountJid accountJid : AccountManager.getInstance().getEnabledAccounts()) {
+                            for (AccountJid accountJid : AccountManager.getInstance().getEnabledAccounts()){
                                 AccountItem accountItem = AccountManager.getInstance().getAccount(accountJid);
-                                if (isSupported(accountItem) && accountItem.isSuccessfulConnectionHappened()) {
+                                if (isSupported(accountItem) && accountItem.isSuccessfulConnectionHappened()){
                                     RealmResults<MessageItem> messagesUndelivered = realm.where(MessageItem.class)
-                                            .equalTo(MessageItem.Fields.ACCOUNT, accountJid.toString())
-                                            .equalTo(MessageItem.Fields.SENT, true)
-                                            .equalTo(MessageItem.Fields.DELIVERED, false)
-                                            .findAllSorted(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
-                                    for (MessageItem messageItem : messagesUndelivered) {
+                                        .equalTo(MessageItem.Fields.ACCOUNT, accountJid.toString())
+                                        .equalTo(MessageItem.Fields.SENT, true)
+                                        .equalTo(MessageItem.Fields.DELIVERED, false)
+                                        .findAllSorted(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
+                                    for (MessageItem messageItem : messagesUndelivered){
                                         list.put(messageItem.getAccount(), messageItem.getUser());
                                     }
                                 }
@@ -82,7 +82,7 @@ public class ReliableMessageDeliveryManager implements OnPacketListener {
                         }
                     });
                 } finally {
-                    if (realm != null) {
+                    if (realm != null){
                         realm.close();
                     }
                 }
@@ -92,7 +92,7 @@ public class ReliableMessageDeliveryManager implements OnPacketListener {
     }
 
     public void resendMessagesWithoutReceipt() {
-        for (Map.Entry<AccountJid, UserJid> entry : getChatsWithEnabledXep().entrySet()) {
+        for (Map.Entry<AccountJid, UserJid> entry : getChatsWithEnabledXep().entrySet()){
             LogManager.d(LOG_TAG, "Found messages without receipt for chats with: " + entry.getKey() + " and: " + entry.getValue());
             MessageManager.getInstance().getChat(entry.getKey(), entry.getValue()).sendMessages();
         }
