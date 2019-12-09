@@ -85,6 +85,8 @@ public class MessageItem extends RealmObject {
         public static final String PREVIOUS_ID = "previousId";
         public static final String ARCHIVED_ID = "archivedId";
         public static final String GROUPCHAT_USER_ID = "groupchatUserId";
+        public static final String ORIGIN_ID = "originId";
+        public static final String SERVER_TIMESTAMP = "serverTimestamp";
     }
 
     /**
@@ -136,6 +138,11 @@ public class MessageItem extends RealmObject {
      */
     private Long delayTimestamp;
     /**
+     * TIme frome delivery receipt from server
+     * For XEP-0XXX
+     */
+    private Long serverTimestamp;
+    /**
      * Error response received on send request.
      */
     private boolean error;
@@ -161,7 +168,10 @@ public class MessageItem extends RealmObject {
      * Outgoing packet id - usual message stanza (packet) id
      */
     private String stanzaId;
-
+    /**
+     * Outgoing packet id - usual message stanza id
+     */
+    private String originId;
     /**
      * If message was received from server message archive (XEP-0313)
      */
@@ -334,6 +344,10 @@ public class MessageItem extends RealmObject {
         this.timestamp = timestamp;
     }
 
+    public Long getServerTimestamp(){ return serverTimestamp; }
+
+    public void setServerTimestamp(Long timestamp) { this.serverTimestamp = timestamp; }
+
     public Long getDelayTimestamp() {
         return delayTimestamp;
     }
@@ -389,6 +403,10 @@ public class MessageItem extends RealmObject {
     public void setStanzaId(String stanzaId) {
         this.stanzaId = stanzaId;
     }
+
+    public String getOriginId() { return originId; }
+
+    public void setOriginId(String originId) { this.originId = originId; }
 
     public boolean isReceivedFromMessageArchive() {
         return isReceivedFromMessageArchive;

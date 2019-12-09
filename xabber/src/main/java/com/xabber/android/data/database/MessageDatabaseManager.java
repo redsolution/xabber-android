@@ -18,7 +18,6 @@ import com.xabber.android.data.log.LogManager;
 
 import org.jxmpp.stringprep.XmppStringprepException;
 
-import java.lang.reflect.Field;
 import java.util.Date;
 
 import io.realm.DynamicRealm;
@@ -36,7 +35,7 @@ import io.realm.annotations.RealmModule;
 
 public class MessageDatabaseManager {
     private static final String REALM_MESSAGE_DATABASE_NAME = "xabber.realm";
-    static final int REALM_MESSAGE_DATABASE_VERSION = 23;
+    static final int REALM_MESSAGE_DATABASE_VERSION = 24;
     private final RealmConfiguration realmConfiguration;
 
     private static MessageDatabaseManager instance;
@@ -363,6 +362,13 @@ public class MessageDatabaseManager {
                         if (oldVersion == 22) {
                             schema.get(MessageItem.class.getSimpleName())
                                     .addField(MessageItem.Fields.GROUPCHAT_USER_ID, String.class);
+                            oldVersion++;
+                        }
+
+                        if (oldVersion == 23 ) {
+                            schema.get(MessageItem.class.getSimpleName())
+                                    .addField(MessageItem.Fields.ORIGIN_ID, String.class)
+                                    .addField(MessageItem.Fields.SERVER_TIMESTAMP, Long.class);
                             oldVersion++;
                         }
 
