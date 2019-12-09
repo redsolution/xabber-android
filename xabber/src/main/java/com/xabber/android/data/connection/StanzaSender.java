@@ -25,9 +25,7 @@ public class StanzaSender {
      */
     public static void sendStanza(AccountJid account, Message stanza, StanzaListener acknowledgedListener) throws NetworkException {
         XMPPTCPConnection xmppConnection = getXmppTcpConnection(account);
-        if (ReliableMessageDeliveryManager.getInstance().isSupported(xmppConnection))
-            ReliableMessageDeliveryManager.getInstance().addMessageStanzaIdToReceiptWaitingList(stanza.getStanzaId());
-        else if (xmppConnection.isSmEnabled()) {
+        if (xmppConnection.isSmEnabled()) {
             try {
                 xmppConnection.addStanzaIdAcknowledgedListener(stanza.getStanzaId(), acknowledgedListener);
             } catch (StreamManagementException.StreamManagementNotEnabledException e) {

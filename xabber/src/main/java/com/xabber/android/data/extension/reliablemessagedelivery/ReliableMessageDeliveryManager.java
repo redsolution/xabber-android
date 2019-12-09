@@ -22,7 +22,6 @@ import org.jivesoftware.smack.provider.ProviderManager;
 import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
 
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.Map;
 
 import io.realm.Realm;
@@ -35,7 +34,6 @@ public class ReliableMessageDeliveryManager implements OnPacketListener {
     public static final String LOG_TAG = ReliableMessageDeliveryManager.class.getSimpleName();
 
     private static ReliableMessageDeliveryManager instance;
-    private LinkedList<String> originIdsWithoutReceipt = new LinkedList<String>();
 
     public static ReliableMessageDeliveryManager getInstance() {
         if (instance == null)
@@ -57,13 +55,6 @@ public class ReliableMessageDeliveryManager implements OnPacketListener {
         return isSupported(accountItem.getConnection());
     }
 
-    public void addMessageStanzaIdToReceiptWaitingList(String originId) {
-        if (!originIdsWithoutReceipt.contains(originId)) {
-            originIdsWithoutReceipt.add(originId);
-            LogManager.d(LOG_TAG, "Added a origin-id to waiting receipt list: " + originId);
-        }
-    }
-
     private LinkedHashMap<AccountJid, UserJid> getChatsWithEnabledXep() {
         final LinkedHashMap<AccountJid, UserJid> list = new LinkedHashMap<>();
         Application.getInstance().runInBackgroundUserRequest(new Runnable() {
@@ -75,15 +66,15 @@ public class ReliableMessageDeliveryManager implements OnPacketListener {
                     realm.executeTransaction(new Realm.Transaction() {
                         @Override
                         public void execute(Realm realm) {
-                            for (AccountJid accountJid : AccountManager.getInstance().getEnabledAccounts()){
+                            for (AccountJid accountJid : AccountManager.getInstance().getEnabledAccounts()) {
                                 AccountItem accountItem = AccountManager.getInstance().getAccount(accountJid);
-                                if (isSupported(accountItem) && accountItem.isSuccessfulConnectionHappened()){
+                                if (isSupported(accountItem) && accountItem.isSuccessfulConnectionHappened()) {
                                     RealmResults<MessageItem> messagesUndelivered = realm.where(MessageItem.class)
-                                        .equalTo(MessageItem.Fields.ACCOUNT, accountJid.toString())
-                                        .equalTo(MessageItem.Fields.SENT, true)
-                                        .equalTo(MessageItem.Fields.DELIVERED, false)
-                                        .findAllSorted(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
-                                    for (MessageItem messageItem : messagesUndelivered){
+                                            .equalTo(MessageItem.Fields.ACCOUNT, accountJid.toString())
+                                            .equalTo(MessageItem.Fields.SENT, true)
+                                            .equalTo(MessageItem.Fields.DELIVERED, false)
+                                            .findAllSorted(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
+                                    for (MessageItem messageItem : messagesUndelivered) {
                                         list.put(messageItem.getAccount(), messageItem.getUser());
                                     }
                                 }
@@ -91,7 +82,7 @@ public class ReliableMessageDeliveryManager implements OnPacketListener {
                         }
                     });
                 } finally {
-                    if (realm != null){
+                    if (realm != null) {
                         realm.close();
                     }
                 }
@@ -101,18 +92,11 @@ public class ReliableMessageDeliveryManager implements OnPacketListener {
     }
 
     public void resendMessagesWithoutReceipt() {
-        for (Map.Entry<AccountJid, UserJid> entry : getChatsWithEnabledXep().entrySet()){
+        for (Map.Entry<AccountJid, UserJid> entry : getChatsWithEnabledXep().entrySet()) {
             LogManager.d(LOG_TAG, "Found messages without receipt for chats with: " + entry.getKey() + " and: " + entry.getValue());
             MessageManager.getInstance().getChat(entry.getKey(), entry.getValue()).sendMessages();
         }
 
-    }
-
-    private void deleteMessageFromWaitingReceiptsList(String id) throws NoSuchFieldException {
-        if (originIdsWithoutReceipt.contains(id))
-            originIdsWithoutReceipt.remove(id);
-        else
-            throw new NoSuchFieldException("Can't find message in waiting for receipt list with provided id: " + id);
     }
 
     private void markMessageReceivedInDatabase(final String time, final String originId, final String stanzaId) {
@@ -131,7 +115,7 @@ public class ReliableMessageDeliveryManager implements OnPacketListener {
                                     .equalTo(MessageItem.Fields.STANZA_ID, originId)
                                     .findFirst();
                             messageItem.setStanzaId(stanzaId);
-                            messageItem.setServerTimestamp(millis);
+                            messageItem.setTimestamp(millis);
                             messageItem.setDelivered(true);
                         }
                     });
@@ -142,7 +126,6 @@ public class ReliableMessageDeliveryManager implements OnPacketListener {
             }
         });
     }
-
 
     @Override
     public void onStanza(ConnectionItem connection, Stanza stanza) {
@@ -156,7 +139,6 @@ public class ReliableMessageDeliveryManager implements OnPacketListener {
                 String stanzaId = receipt.getOriginIdElement().getId();
                 LogManager.d(LOG_TAG, "Receipt received with timestamp: " + timestamp + "; origin-id: " + originId + "; stanza-id: " + stanzaId + ". Trying to wite it to database");
                 markMessageReceivedInDatabase(timestamp, originId, stanzaId);
-                deleteMessageFromWaitingReceiptsList(originId);
                 EventBus.getDefault().post(new MessageUpdateEvent());
             } catch (Exception e) {
                 LogManager.exception(LOG_TAG, e);
