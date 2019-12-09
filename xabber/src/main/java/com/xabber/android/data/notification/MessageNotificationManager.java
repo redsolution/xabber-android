@@ -575,7 +575,9 @@ public class MessageNotificationManager implements OnLoadListener {
                 if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT)
                     messageText = URLDecoder.decode(messageText.toString(), StandardCharsets.UTF_8.name());
             } catch (Exception e) {
-                LogManager.exception(this, e); }
+                LogManager.exception(this, e);
+                messageText = messageText.toString();
+            }
             return messageText;
         }
 
