@@ -38,6 +38,7 @@
                     android:nextFocusForward="@+id/edtPass"
                     android:singleLine="true"
                     android:textSize="16sp"
+                    android:paddingRight="45dp"
                     android:theme="@style/Theme" />
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -58,6 +59,7 @@
                 app:srcCompat="@drawable/qrcode_scan_icon_grey" />
             <ImageView
                 android:id="@+id/imgCross"
+                style="@style/QRCodeLoginButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignBottom="@id/edtUsernameLayout"
@@ -67,7 +69,7 @@
                 android:layout_marginBottom="0dp"
                 android:clickable="true"
                 android:focusable="true"
-                android:background="@color/transparent"
+                android:background="@drawable/test_ripple"
                 app:srcCompat="@drawable/ic_clear_grey_600_24dp"
                 android:visibility="gone"/>
 
