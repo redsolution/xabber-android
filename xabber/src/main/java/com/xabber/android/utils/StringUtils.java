@@ -32,6 +32,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
+import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
 import javax.xml.transform.OutputKeys;
@@ -362,6 +363,30 @@ public class StringUtils {
             LogManager.e("StringUtils", e.toString());
             return xmlData;
         }
+    }
+
+    /**
+     * Convert date time string to Date.
+     * (Mostly for XEP-0XXX Reliable Message Delivery)
+     * @param string can be three formats:
+     *               or yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'
+     *               or yyyy-MM-dd'T'HH:mm:ss.SSS'Z'
+     *               or yyyy-MM-dd'T'HH:mm:ss'Z'
+     * @return
+     */
+    public static Date parseReceivedReceiptTimestampString(String string){
+        try {
+            SimpleDateFormat simpleDateFormat;
+            switch (string.length()){
+                case 27: simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS");
+                case 24: simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+                case 21: simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+                default: simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS");
+            }
+            simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+            return simpleDateFormat.parse(string);
+        } catch (Exception e) { LogManager.exception(StringUtils.class.getSimpleName(), e); }
+        return null;
     }
 
     public static boolean isBasicLatin(String string){

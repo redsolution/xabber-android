@@ -141,7 +141,7 @@ public class MessageItem extends RealmObject {
     private boolean error;
     private String errorDescription;
     /**
-     * Receipt was received for sent message.
+     * ReceiptElement was received for sent message.
      */
     private boolean delivered;
     /**
