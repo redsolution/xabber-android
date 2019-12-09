@@ -1,5 +1,6 @@
 package com.xabber.android.data.extension.reliablemessagedelivery;
 
+import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
@@ -63,33 +64,48 @@ public class ReliableMessageDeliveryManager implements OnPacketListener {
         }
     }
 
-    private LinkedHashMap<AccountJid, UserJid> getAccountsWithEnabledXep() {
+    private LinkedHashMap<AccountJid, UserJid> getChatsWithEnabledXep() {
         final LinkedHashMap<AccountJid, UserJid> list = new LinkedHashMap<>();
-        Realm realm = MessageDatabaseManager.getInstance().getRealmUiThread();
-        for (final AccountJid accountJid : AccountManager.getInstance().getEnabledAccounts()) {
-            if (isSupported(AccountManager.getInstance().getAccount(accountJid))) {
-                realm.executeTransaction(new Realm.Transaction() {
-                    @Override
-                    public void execute(Realm realm) {
-                        RealmResults<MessageItem> messagesUndelivered = realm.where(MessageItem.class)
-                                .equalTo(MessageItem.Fields.ACCOUNT, accountJid.toString())
-                                .equalTo(MessageItem.Fields.SENT, true)
-                                .equalTo(MessageItem.Fields.DELIVERED, false)
-                                .findAllSorted(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
-                        for (MessageItem messageItem : messagesUndelivered) {
-                            //if (!list.containsKey(messageItem.getAccount()) && !list.get(messageItem.getAccount()).equals(messageItem.getUser()))
-                            list.put(messageItem.getAccount(), messageItem.getUser());
+        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
+            @Override
+            public void run() {
+                Realm realm = null;
+                try {
+                    realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
+                    realm.executeTransaction(new Realm.Transaction() {
+                        @Override
+                        public void execute(Realm realm) {
+                            for (AccountJid accountJid : AccountManager.getInstance().getEnabledAccounts()){
+                                AccountItem accountItem = AccountManager.getInstance().getAccount(accountJid);
+                                if (isSupported(accountItem) && accountItem.isSuccessfulConnectionHappened()){
+                                    RealmResults<MessageItem> messagesUndelivered = realm.where(MessageItem.class)
+                                        .equalTo(MessageItem.Fields.ACCOUNT, accountJid.toString())
+                                        .equalTo(MessageItem.Fields.SENT, true)
+                                        .equalTo(MessageItem.Fields.DELIVERED, false)
+                                        .findAllSorted(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
+                                    for (MessageItem messageItem : messagesUndelivered){
+                                        list.put(messageItem.getAccount(), messageItem.getUser());
+                                    }
+                                }
+                            }
                         }
+                    });
+                } finally {
+                    if (realm != null){
+                        realm.close();
                     }
-                });
+                }
             }
-        }
+        });
         return list;
     }
 
     public void resendMessagesWithoutReceipt() {
-        for (Map.Entry<AccountJid, UserJid> entry : getAccountsWithEnabledXep().entrySet())
+        for (Map.Entry<AccountJid, UserJid> entry : getChatsWithEnabledXep().entrySet()){
+            LogManager.d(LOG_TAG, "Found messages without receipt for chats with: " + entry.getKey() + " and: " + entry.getValue());
             MessageManager.getInstance().getChat(entry.getKey(), entry.getValue()).sendMessages();
+        }
+
     }
 
     private void deleteMessageFromWaitingReceiptsList(String id) throws NoSuchFieldException {
@@ -100,20 +116,29 @@ public class ReliableMessageDeliveryManager implements OnPacketListener {
     }
 
     private void markMessageReceivedInDatabase(final String time, final String originId, final String stanzaId) {
-        Realm realm = MessageDatabaseManager.getInstance().getRealmUiThread();
-        final Long millis = StringUtils.parseReceivedReceiptTimestampString(time).getTime();
-        realm.executeTransaction(new Realm.Transaction() {
+        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
             @Override
-            public void execute(Realm realm) {
-                MessageItem messageItem = realm
-                        .where(MessageItem.class)
-                        .equalTo(MessageItem.Fields.STANZA_ID, originId)
-                        .findFirst();
-                LogManager.d(LOG_TAG, "Started apply changes to message: \nStanza ID: " + messageItem.getStanzaId() + "\nTimestamp: " + messageItem.getTimestamp());
-                messageItem.setStanzaId(stanzaId);
-                messageItem.setTimestamp(millis);
-                messageItem.setDelivered(true);
-                LogManager.d(LOG_TAG, "Changes was applied. New message: \nStanza ID: " + messageItem.getStanzaId() + "\nTimestamp: " + messageItem.getTimestamp());
+            public void run() {
+                Realm realm = null;
+                try {
+                    realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
+                    final Long millis = StringUtils.parseReceivedReceiptTimestampString(time).getTime();
+                    realm.executeTransaction(new Realm.Transaction() {
+                        @Override
+                        public void execute(Realm realm) {
+                            MessageItem messageItem = realm
+                                    .where(MessageItem.class)
+                                    .equalTo(MessageItem.Fields.STANZA_ID, originId)
+                                    .findFirst();
+                            messageItem.setStanzaId(stanzaId);
+                            messageItem.setServerTimestamp(millis);
+                            messageItem.setDelivered(true);
+                        }
+                    });
+                } finally {
+                    if (realm != null)
+                        realm.close();
+                }
             }
         });
     }
