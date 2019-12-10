@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="wrap_content"
     android:maxWidth="280dp"
@@ -74,14 +75,13 @@
     </RelativeLayout>
 
     <LinearLayout
-        android:orientation="vertical"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:layout_toRightOf="@id/iconLayout"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
-        >
+        android:layout_toRightOf="@id/iconLayout"
+        android:orientation="vertical">
 
         <TextView
             android:id="@+id/tvFileName"
@@ -93,18 +93,29 @@
             android:singleLine="true"
             android:text="Undefined file"
             android:textColor="?attr/file_message_text_color"
-            android:textStyle="bold"
-            />
+            android:textStyle="bold" />
 
+
+        <com.xabber.android.ui.widget.PlayerVisualizerView
+            android:id="@+id/audioVisualizer"
+            android:layout_width="150dp"
+            android:layout_height="24dp"
+            android:visibility="gone" />
+
+        <SeekBar
+            android:id="@+id/audioProgress"
+            android:layout_width="196dp"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            tools:visibility="gone" />
 
         <TextView
             android:id="@+id/tvFileSize"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="0 bytes"
             android:layout_marginLeft="4dp"
-            android:textColor="?attr/file_message_text_color"
-            />
+            android:text="0 bytes"
+            android:textColor="?attr/file_message_text_color" />
 
     </LinearLayout>
 

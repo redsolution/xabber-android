@@ -8,6 +8,7 @@
     <string name="chat_delay">sent at %s</string>
     <string name="chat_input_hint">Type your message here</string>
     <string name="chat_send">Send</string>
+    <string name="chat_record">Record</string>
     <string name="clear_history">Clear history</string>
     <string name="clear_chat_history_dialog_button">Clear</string>
     <string name="clear_chat_history_dialog_message">Do you really want to clear all chat history with %s?</string>
@@ -136,6 +137,7 @@
     <string name="xabber_chat_description">News feed</string>
     <string name="xabber_join_button">Support Xabber</string>
     <string name="action_new_contact">New contact</string>
+    <string name="action_new_subscription_request">New subscription request</string>
     <string name="open_this_link">Open this link?</string>
     <string name="open">Open</string>
 </resources>

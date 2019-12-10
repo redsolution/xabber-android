@@ -9,6 +9,7 @@
     <string name="chat_delay">отправлено в %s</string>
     <string name="chat_input_hint">Введите сообщение</string>
     <string name="chat_send">Отправить</string>
+    <string name="chat_record">Запись</string>
     <string name="clear_history">Очистить историю сообщений</string>
     <string name="clear_chat_history_dialog_button">Очистить</string>
     <string name="clear_chat_history_dialog_message">Очистить всю историю сообщений с %s?</string>
