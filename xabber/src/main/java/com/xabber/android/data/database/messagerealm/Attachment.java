@@ -21,6 +21,7 @@ public class Attachment extends RealmObject {
         public static final String IMAGE_HEIGHT = "imageHeight";
         public static final String DURATION = "duration";
         public static final String MIME_TYPE = "mimeType";
+        public static final String REF_TYPE = "refType";
     }
 
     @PrimaryKey
@@ -50,6 +51,9 @@ public class Attachment extends RealmObject {
     private Long fileSize;
 
     private String mimeType;
+
+    @Nullable
+    private String refType;
 
     /** Duration in seconds */
     private Long duration;
@@ -134,5 +138,14 @@ public class Attachment extends RealmObject {
 
     public void setDuration(Long duration) {
         this.duration = duration;
+    }
+
+    @Nullable
+    public String getRefType() {
+        return refType;
+    }
+
+    public void setRefType(String refType) {
+        this.refType = refType;
     }
 }

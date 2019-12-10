@@ -18,7 +18,6 @@ import com.xabber.android.data.log.LogManager;
 
 import org.jxmpp.stringprep.XmppStringprepException;
 
-import java.lang.reflect.Field;
 import java.util.Date;
 
 import io.realm.DynamicRealm;
@@ -366,6 +365,12 @@ public class MessageDatabaseManager {
                         if (oldVersion == 22) {
                             schema.get(MessageItem.class.getSimpleName())
                                     .addField(MessageItem.Fields.GROUPCHAT_USER_ID, String.class);
+                            oldVersion++;
+                        }
+
+                        if (oldVersion == 23) {
+                            schema.get(Attachment.class.getSimpleName())
+                                    .addField(Attachment.Fields.REF_TYPE, String.class);
                             oldVersion++;
                         }
 
