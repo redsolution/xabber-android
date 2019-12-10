@@ -55,7 +55,10 @@ public class MessageDatabaseManager {
         Realm.init(Application.getInstance());
         realmConfiguration = createRealmConfiguration();
 
-        boolean success = Realm.compactRealm(realmConfiguration);
+        boolean success = false;
+        try{
+            success = Realm.compactRealm(realmConfiguration);
+        } catch (Throwable throwable){ LogManager.exception(this.getClass().getSimpleName(), throwable); }
         System.out.println("Realm message compact database file result: " + success);
 
     }
