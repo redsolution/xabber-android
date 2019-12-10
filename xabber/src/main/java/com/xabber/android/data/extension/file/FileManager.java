@@ -6,6 +6,7 @@ import android.content.res.Resources;
 import android.graphics.BitmapFactory;
 import android.media.ExifInterface;
 import android.net.Uri;
+import android.os.Environment;
 import android.util.Log;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -32,6 +33,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
@@ -48,6 +51,8 @@ public class FileManager {
     private static final String[] VALID_IMAGE_EXTENSIONS = {"webp", "jpeg", "jpg", "png", "jpe", "gif"};
 
     private final static FileManager instance;
+    private static final String XABBER_DIR = "Xabber";
+    private static final String XABBER_AUDIO_DIR = "Xabber Audio";
 
     private static int maxImageSize;
     private static int maxImageHeightSize;
@@ -347,6 +352,83 @@ public class FileManager {
                 ".jpg",         /* suffix */
                 Application.getInstance().getExternalFilesDir(null)      /* directory */
         );
+    }
+
+    public static File createTempAudioFile(String name) throws IOException {
+        return File.createTempFile(name, ".ogg", Application.getInstance().getCacheDir());
+    }
+
+    public static File createAudioFile(String name) throws IOException {
+        // create dir
+        File directory = new File(getDownloadDirPath());
+        if (!directory.exists()) {
+            if (!directory.mkdir()) {
+                LogManager.e(Application.getInstance().getApplicationContext(), "Can't create a folder " + getDownloadDirPath());
+                return null;
+            }
+        }
+        directory = new File(getSpecificDownloadDirPath());
+        if (!directory.exists()) {
+            if (!directory.mkdir()) {
+                LogManager.e(Application.getInstance().getApplicationContext(), "Can't create a folder " + getSpecificDownloadDirPath());
+                return null;
+            }
+        }
+
+        // create file
+
+        String filePath = directory.getPath() + File.separator +
+                FilenameUtils.getBaseName(name) + "_" + System.currentTimeMillis()/1000 + "." + FilenameUtils.getExtension(name);
+        File file = new File(filePath);
+
+        if (file.exists()) {
+            file = new File(directory.getPath() + File.separator +
+                    FileManager.generateUniqueNameForFile(directory.getPath()
+                            + File.separator, name));
+            return file;
+        }
+        return file;
+    }
+
+    public static boolean copy(File source, File dest) {
+        boolean success = true;
+        try {
+            InputStream in = new FileInputStream(source);
+            try {
+                OutputStream out = new FileOutputStream(dest);
+                try {
+                    byte[] buf = new byte[1024];
+                    int len;
+                    while ((len = in.read(buf)) > 0) {
+                        out.write(buf, 0, len);
+                    }
+                } finally {
+                    out.close();
+                }
+            } finally {
+                in.close();
+            }
+        } catch (IOException e) {
+            success = false;
+        }
+        deleteTempFile(source);
+        return success;
+    }
+
+    public static void deleteTempFile(File fileOrig) {
+        if (fileOrig.exists()) {
+            fileOrig.delete();
+        }
+    }
+
+    private static String getDownloadDirPath() {
+        return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath()
+                + File.separator + XABBER_DIR;
+    }
+
+    private static String getSpecificDownloadDirPath() {
+        return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath()
+                + File.separator + XABBER_DIR + File.separator + XABBER_AUDIO_DIR;
     }
 
     public static File createTempPNGImageFile(String name) throws IOException {
