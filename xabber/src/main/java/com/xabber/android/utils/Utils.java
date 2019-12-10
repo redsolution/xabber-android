@@ -1,9 +1,14 @@
 package com.xabber.android.utils;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.graphics.Point;
 import android.os.Build;
 import android.util.TypedValue;
+import android.view.Display;
+import android.view.Surface;
 
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.push.SyncManager;
@@ -75,5 +80,55 @@ public class Utils {
             }
         }
         return sb.toString();
+    }
+
+    public static void lockScreenRotation(Activity activity, boolean lockOrientation) {
+        int lock = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
+        if (lockOrientation) {
+            Display display = activity.getWindowManager().getDefaultDisplay();
+            int rotation = display.getRotation();
+
+            Point size = new Point();
+            display.getSize(size);
+
+            if (rotation == Surface.ROTATION_0 || rotation == Surface.ROTATION_180) {
+                if (size.x > size.y) {
+                    //rotation is 0 or 180 deg, and the size of x is greater than y,
+                    //so we have a tablet
+                    if (rotation == Surface.ROTATION_0) {
+                        lock = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+                    } else {
+                        lock = ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE;
+                    }
+                } else {
+                    //rotation is 0 or 180 deg, and the size of y is greater than x,
+                    //so we have a phone
+                    if (rotation == Surface.ROTATION_0) {
+                        lock = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+                    } else {
+                        lock = ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT;
+                    }
+                }
+            } else {
+                if (size.x > size.y) {
+                    //rotation is 90 or 270, and the size of x is greater than y,
+                    //so we have a phone
+                    if (rotation == Surface.ROTATION_90) {
+                        lock = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+                    } else {
+                        lock = ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE;
+                    }
+                } else {
+                    //rotation is 90 or 270, and the size of y is greater than x,
+                    //so we have a tablet
+                    if (rotation == Surface.ROTATION_90) {
+                        lock = ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT;
+                    } else {
+                        lock = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+                    }
+                }
+            }
+        }
+        activity.setRequestedOrientation(lock);
     }
 }

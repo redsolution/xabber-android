@@ -7,18 +7,23 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.media.MediaMetadataRetriever;
+import android.media.MediaPlayer;
+import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.provider.MediaStore;
-import androidx.fragment.app.Fragment;
-import androidx.core.content.FileProvider;
-import androidx.appcompat.app.AlertDialog;
 import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.PopupMenu;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.FileProvider;
+import androidx.fragment.app.Fragment;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
@@ -29,6 +34,7 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
+import com.xabber.android.data.extension.references.ReferenceElement;
 import com.xabber.android.data.filedownload.DownloadManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.MessageManager;
@@ -41,13 +47,18 @@ import com.xabber.android.ui.dialog.AttachDialog;
 import com.xabber.android.ui.helper.PermissionsRequester;
 
 import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import io.realm.Realm;
 import io.realm.RealmList;
+import rx.subjects.PublishSubject;
+
+import static android.media.MediaRecorder.AudioSource.MIC;
 
 public class FileInteractionFragment extends Fragment implements FileMessageVH.FileListener,
         AttachDialog.Listener, ForwardedAdapter.ForwardListener {
@@ -57,6 +68,9 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
     private static final String SAVE_ACCOUNT = "com.xabber.android.ui.fragment.ARGUMENT_ACCOUNT";
     private static final String SAVE_USER = "com.xabber.android.ui.fragment.ARGUMENT_USER";
     private static final String SAVE_CURRENT_PICTURE_PATH = "com.xabber.android.ui.fragment.ARGUMENT_CURRENT_PICTURE_PATH";
+    public static final int COMPLETED_AUDIO_PROGRESS = 99;
+    public static final int NORMAL_AUDIO_PROGRESS = 98;
+    public static final int PAUSED_AUDIO_PROGRESS = 97;
 
     public static final int FILE_SELECT_ACTIVITY_REQUEST_CODE = 11;
     private static final int REQUEST_IMAGE_CAPTURE = 12;
@@ -65,10 +79,19 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
     private static final int PERMISSIONS_REQUEST_ATTACH_FILE = 21;
     private static final int PERMISSIONS_REQUEST_CAMERA = 23;
     private static final int PERMISSIONS_REQUEST_DOWNLOAD_FILE = 24;
+    static final int PERMISSIONS_REQUEST_RECORD_AUDIO = 37;
 
     private int clickedAttachmentPos;
     private String clickedMessageUID;
     private String currentPicturePath;
+    private boolean recordingInProgress = false;
+    private MediaPlayer mp;
+    MediaRecorder mr;
+    private PublishSubject<PublishAudioProgress.AudioInfo> progressSubscribe = PublishSubject.create();
+    private Handler mHandler = new Handler();
+    private int voiceAttachmentHash;
+    private int voiceFileDuration;
+    private int voiceAttachmentDuration;
 
     protected AccountJid account;
     protected UserJid user;
@@ -137,6 +160,16 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
 
                 HttpFileUploadManager.getInstance().uploadFileViaUri(account, user, uris, getActivity());
                 break;
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mHandler.removeCallbacks(updateAudioProgress);
+        if (mp != null) {
+            mp.release();
+            mp = null;
         }
     }
 
@@ -300,6 +333,120 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
         }
     }
 
+    protected final Runnable record = new Runnable() {
+        @Override
+        public void run() {
+            onVoiceRecordPressed();
+        }
+    };
+
+    protected final Runnable createLocalWaveform = new Runnable() {
+        @Override
+        public void run() {
+            creatingWaveSample();
+        }
+    };
+
+    private void onVoiceRecordPressed() {
+
+        mr = new MediaRecorder();
+        mr.setAudioSource(MIC);
+        try {
+            File tempAudioFile = FileManager.createTempAudioFile("temp_audio_recording");
+            tempFilePath = tempAudioFile.getAbsolutePath();
+            waveForm.clear();
+            mr.setOutputFormat(MediaRecorder.OutputFormat.DEFAULT);
+            mr.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+            mr.setOutputFile(tempFilePath);
+            mr.prepare();
+            mr.start();
+            mHandler.post(createLocalWaveform);
+            recordingInProgress = true;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void creatingWaveSample() {
+        if (mr != null)
+            waveForm.add(mr.getMaxAmplitude());
+        mHandler.postDelayed(createLocalWaveform, 50);
+    }
+
+    private String tempFilePath;
+    private ArrayList<Integer> waveForm = new ArrayList<Integer>();
+
+    String stopRecordingIfPossibleForCheckup() {
+        if (recordingInProgress) {
+            recordingInProgress = false;
+            if (mr != null) {
+                mr.stop();
+                mHandler.removeCallbacks(createLocalWaveform);
+                File file = new File(tempFilePath);
+                if (file.exists()) return tempFilePath;
+                else return null;
+            }
+        }
+        return null;
+    }
+
+    ArrayList getLocalWaveformAmplitudes() {
+        return waveForm;
+    }
+
+    boolean releaseRecordedVoicePlayback(String filePath) {
+        releaseMediaPlayer();
+        File file = new File(filePath);
+        if (file.exists()) {
+            FileManager.deleteTempFile(file);
+            return !file.exists();
+        }
+        return true;
+    }
+
+
+
+    void sendStoppedVoiceMessage(String filePath) {
+        releaseMediaPlayer();
+        try {
+            File audioFile = FileManager.createAudioFile("voice_message.ogg");
+            if (FileManager.copy(new File(filePath), audioFile)) {
+                if (audioFile != null) uploadVoiceFile(audioFile.getPath());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    void stopRecordingIfPossible(boolean saveFile) {
+        if (recordingInProgress) {
+            recordingInProgress = false;
+            if (mr != null) {
+                mr.stop();
+                if (saveFile) {
+                    try {
+                        File audioFile = FileManager.createAudioFile("voice_message.ogg");
+                        if (FileManager.copy(new File(tempFilePath), audioFile)) {
+                            if (audioFile != null) uploadVoiceFile(audioFile.getPath());
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            if (!saveFile) FileManager.deleteTempFile(new File(tempFilePath));
+        }
+    }
+
+    void stopRecordingIfPossibleAsync(final boolean saveFile) {
+        Application.getInstance().runInBackground(new Runnable() {
+            @Override
+            public void run() {
+                stopRecordingIfPossible(saveFile);
+            }
+        });
+    }
+
     private void startCamera() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         File image = generatePicturePath();
@@ -367,6 +514,12 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
         HttpFileUploadManager.getInstance().uploadFile(account, user, paths, getActivity());
     }
 
+    private void uploadVoiceFile(String path) {
+        List<String> paths = new ArrayList<>();
+        paths.add(path);
+        HttpFileUploadManager.getInstance().uploadFile(account, user, paths, null, null, ReferenceElement.Type.voice.name(), getActivity());
+    }
+
     private void uploadFiles(List<String> paths) {
         HttpFileUploadManager.getInstance().uploadFile(account, user, paths, getActivity());
     }
@@ -412,7 +565,7 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
                 if (!attachment.isImage()) fileAttachments.add(attachment);
             }
 
-            Attachment attachment = fileAttachments.get(attachmentPosition);
+            final Attachment attachment = fileAttachments.get(attachmentPosition);
             if (attachment == null) return;
 
             if (attachment.getFilePath() != null) {
@@ -422,22 +575,290 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
                     return;
                 }
 
-                Intent i = new Intent(Intent.ACTION_VIEW);
-                String path = attachment.getFilePath();
-                i.setDataAndType(FileProvider.getUriForFile(getActivity(),
-                        getActivity().getApplicationContext().getPackageName()
-                                + ".provider", new File(path)), attachment.getMimeType());
-                i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                if ("voice".equals(attachment.getRefType())) {
+                    manageVoicePlayback(attachment);
+                } else {
+                    Intent i = new Intent(Intent.ACTION_VIEW);
+                    String path = attachment.getFilePath();
+                    i.setDataAndType(FileProvider.getUriForFile(getActivity(),
+                            getActivity().getApplicationContext().getPackageName()
+                                    + ".provider", new File(path)), attachment.getMimeType());
+                    i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
-                try {
-                    startActivity(i);
-                } catch (ActivityNotFoundException e) {
-                    LogManager.exception(LOG_TAG, e);
-                    Toast.makeText(getActivity(), R.string.toast_could_not_open_file, Toast.LENGTH_SHORT).show();
+                    try {
+                        startActivity(i);
+                    } catch (ActivityNotFoundException e) {
+                        LogManager.exception(LOG_TAG, e);
+                        Toast.makeText(getActivity(), R.string.toast_could_not_open_file, Toast.LENGTH_SHORT).show();
+                    }
                 }
 
             } else DownloadManager.getInstance().downloadFile(attachment, account, getActivity());
         }
     }
 
+    private void releaseMediaPlayer() {
+        if (mp != null) {
+            mp.stop();
+            mp.reset();
+            mp.release();
+            mp = null;
+        }
+    }
+
+    void manageRecordedVoicePlayback(String filePath) {
+        if (mp == null) {
+            voiceAttachmentHash = 0;
+            mp = new MediaPlayer();
+            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mediaPlayer) {
+                    LogManager.i(this, "onCompletion() has been called");
+                    mHandler.removeCallbacks(updateAudioProgress);
+                    publishCompletedAudioProgress(voiceAttachmentHash);
+                    releaseMediaPlayer();
+                }
+            });
+            mp.setOnErrorListener(new MediaPlayer.OnErrorListener() {
+                @Override
+                public boolean onError(MediaPlayer mediaPlayer, int i, int i1) {
+                    LogManager.e(this, "Error with MediaPlayer (" + i + ", " + i1 + "), releasing)");
+                    mHandler.removeCallbacks(updateAudioProgress);
+                    mediaPlayer.reset();
+                    mediaPlayer.release();
+                    mp = null;
+                    return false;
+                }
+            });
+            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mediaPlayer) {
+                    mp.start();
+                    updateAudioProgressBar();
+                }
+            });
+            try {
+                mp.setDataSource(filePath);
+                mp.prepareAsync();
+            } catch (IOException e) {
+                LogManager.exception(LOG_TAG, e);
+            }
+        } else {
+            if (voiceAttachmentHash == 0) {
+                if (mp.isPlaying()) {
+                    mp.pause();
+                    publishAudioProgressWithCustomCode(PAUSED_AUDIO_PROGRESS);
+                    mHandler.removeCallbacks(updateAudioProgress);
+                } else {
+                    mp.start();
+                    updateAudioProgressBar();
+                }
+            } else {
+                if (mp.isPlaying())
+                    mp.stop();
+                mp.reset();
+                mHandler.removeCallbacks(updateAudioProgress);
+                publishCompletedAudioProgress(voiceAttachmentHash);
+                try {
+                    voiceAttachmentHash = 0;
+                    mp.setDataSource(filePath);
+                    mp.prepareAsync();
+                } catch (IOException e) {
+                    LogManager.exception(LOG_TAG, e);
+                }
+            }
+        }
+    }
+
+    private void manageVoicePlayback(Attachment attachment) {
+        final String path = attachment.getFilePath();
+        final String id = attachment.getUniqueId();
+        if (mp == null) {
+            mp = new MediaPlayer();
+            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mediaPlayer) {
+                    LogManager.i(this, "onCompletion() has been called");
+                    mHandler.removeCallbacks(updateAudioProgress);
+                    publishCompletedAudioProgress(voiceAttachmentHash);
+                    releaseMediaPlayer();
+                }
+            });
+            mp.setOnErrorListener(new MediaPlayer.OnErrorListener() {
+                @Override
+                public boolean onError(MediaPlayer mediaPlayer, int i, int i1) {
+                    LogManager.e(this, "Error with MediaPlayer (" + i + ", " + i1 + "), releasing)");
+                    mHandler.removeCallbacks(updateAudioProgress);
+                    mediaPlayer.reset();
+                    mediaPlayer.release();
+                    mp = null;
+                    return false;
+                }
+            });
+            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mediaPlayer) {
+                    mp.start();
+                    updateAudioProgressBar();
+                }
+            });
+            try {
+                if (attachment.getDuration() == null)
+                        setDurationIfEmpty(path, id);
+                else voiceAttachmentDuration = longToIntConverter(attachment.getDuration());
+                voiceAttachmentHash = id.hashCode();
+                mp.setDataSource(attachment.getFileUrl());
+                mp.prepareAsync();
+            } catch (IOException e) {
+                LogManager.exception(LOG_TAG, e);
+            }
+        }else if (voiceAttachmentHash == attachment.getUniqueId().hashCode()) {
+            if (mp.isPlaying()) {
+                mp.pause();
+                publishAudioProgressWithCustomCode(PAUSED_AUDIO_PROGRESS);
+                mHandler.removeCallbacks(updateAudioProgress);
+            } else {
+                mp.start();
+                updateAudioProgressBar();
+            }
+        } else {
+            if (mp.isPlaying()) {
+                mp.stop();
+            }
+            mp.reset();
+            mHandler.removeCallbacks(updateAudioProgress);
+            publishCompletedAudioProgress(voiceAttachmentHash);
+            try {
+                if (attachment.getDuration() == null)
+                    setDurationIfEmpty(path, id);
+                else voiceAttachmentDuration = longToIntConverter(attachment.getDuration());
+                voiceAttachmentHash = id.hashCode();
+                mp.setDataSource(path);
+                mp.prepareAsync();
+            } catch (IOException e) {
+                LogManager.exception(LOG_TAG, e);
+            }
+        }
+    }
+
+    private void setDurationIfEmpty(final String path, final String id) {
+        Application.getInstance().runInBackground(new Runnable() {
+            @Override
+            public void run() {
+                Realm realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
+                final MediaMetadataRetriever mmr = new MediaMetadataRetriever();
+                mmr.setDataSource(path);
+                final String dur = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
+                voiceFileDuration = Integer.valueOf(dur);
+                realm.executeTransaction(new Realm.Transaction() {
+                    @Override
+                    public void execute(Realm realm) {
+                        Attachment backgroundAttachment = realm.where(Attachment.class).equalTo(Attachment.Fields.UNIQUE_ID, id).findFirst();
+                        backgroundAttachment.setDuration(Long.valueOf(dur) / 1000);
+                    }
+                });
+            }
+        });
+    }
+
+    public void updateAudioProgressBar() {
+        mHandler.postDelayed(updateAudioProgress, 100);
+    }
+
+    private Runnable updateAudioProgress = new Runnable() {
+        @Override
+        public void run() {
+            publishAudioProgressWithCustomCode(NORMAL_AUDIO_PROGRESS);
+            mHandler.postDelayed(this, 100);
+        }
+    };
+
+    private void publishAudioProgressWithCustomCode(int resultCode) {
+        if (mp != null) {
+            int duration = getOptimalVoiceDuration();
+            PublishAudioProgress.getInstance().updateAudioProgress(mp.getCurrentPosition(), duration, voiceAttachmentHash, resultCode);
+            LogManager.d(this, "current : " + mp.getCurrentPosition() + " max MP.getDuration: " + mp.getDuration() + " max MMR.extractDur: " + voiceFileDuration);
+        }
+    }
+
+    private int getOptimalVoiceDuration() {
+        if (voiceFileDuration != 0)
+            return voiceFileDuration;
+        else if (mp.getDuration() > 500) return mp.getDuration();
+        else return voiceAttachmentDuration;
+    }
+
+    public Integer longToIntConverter(long number) {
+        if (number <= Integer.MAX_VALUE && number > 0)
+            return (int) number;
+        else if (number > Integer.MAX_VALUE)
+            return Integer.MAX_VALUE;
+        else return 0;
+    }
+
+    private void publishCompletedAudioProgress(int attachmentId) {
+        PublishAudioProgress.getInstance().updateAudioProgress(0, 10000, attachmentId, COMPLETED_AUDIO_PROGRESS);
+    }
+
+    private void publishPausedAudioProgress(int attachmentId) {
+        PublishAudioProgress.getInstance().updateAudioProgress(0, 10000, attachmentId, PAUSED_AUDIO_PROGRESS);
+    }
+
+    public static class PublishAudioProgress {
+
+        private static PublishAudioProgress instance;
+        private PublishSubject<AudioInfo> subject;
+
+        public static PublishAudioProgress getInstance() {
+            if (instance == null) instance = new PublishAudioProgress();
+            return instance;
+        }
+
+        public void updateAudioProgress(int currentPosition, int duration, int attachmentId, int resultCode) {
+            subject.onNext(new AudioInfo(currentPosition, duration, attachmentId, resultCode));
+        }
+
+        private PublishAudioProgress() {
+            createSubject();
+        }
+
+        private void createSubject() {
+            subject = PublishSubject.create();
+        }
+
+
+        public PublishSubject<AudioInfo> subscribeForProgress() {
+            return subject;
+        }
+
+        public class AudioInfo {
+            final int currentPosition;
+            final int duration;
+            final int attachmentId;
+            final int resultCode;
+
+            public AudioInfo(int currentPosition, int duration, int attachmentId, int resultCode) {
+                this.currentPosition = currentPosition;
+                this.duration = duration;
+                this.attachmentId = attachmentId;
+                this.resultCode = resultCode;
+            }
+
+            public int getDuration() {
+                return duration;
+            }
+
+            public int getCurrentPosition() {
+                return currentPosition;
+            }
+
+            public int getResultCode() {
+                return resultCode;
+            }
+
+            public int getAttachmentId() {
+                return attachmentId;
+            }
+        }
+    }
 }

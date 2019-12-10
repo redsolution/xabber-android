@@ -5,8 +5,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.ResultReceiver;
-import androidx.annotation.Nullable;
 import android.util.Log;
+
+import androidx.annotation.Nullable;
 
 import com.xabber.android.data.database.MessageDatabaseManager;
 import com.xabber.android.data.database.messagerealm.Attachment;
@@ -141,9 +142,9 @@ public class DownloadService extends IntentService {
                 Attachment attachment = realm.where(Attachment.class)
                         .equalTo(Attachment.Fields.UNIQUE_ID, attachmentId).findFirst();
                 attachment.setFilePath(path);
-                publishCompleted();
             }
         });
+        publishCompleted();
     }
 
     private void publishProgress(long downloadedBytes, long fileSize) {

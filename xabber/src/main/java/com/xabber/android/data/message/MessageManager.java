@@ -52,6 +52,7 @@ import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.muc.RoomChat;
 import com.xabber.android.data.extension.references.RefUser;
+import com.xabber.android.data.extension.references.ReferenceElement;
 import com.xabber.android.data.extension.references.ReferencesManager;
 import com.xabber.android.data.groupchat.GroupchatUserManager;
 import com.xabber.android.data.log.LogManager;
@@ -291,6 +292,12 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
         AbstractChat chat = getOrCreateChat(account, user);
         chat.openChat();
         return chat.newFileMessage(files, null);
+    }
+
+    public String createVoiceMessage(AccountJid account, UserJid user, List<File> files, String refElement) {
+        AbstractChat chat = getOrCreateChat(account, user);
+        chat.openChat();
+        return chat.newFileMessage(files, null, ReferenceElement.Type.voice.name());
     }
 
     public String createFileMessageFromUris(AccountJid account, UserJid user, List<Uri> uris) {

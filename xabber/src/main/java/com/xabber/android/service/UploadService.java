@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.ResultReceiver;
+
 import androidx.annotation.Nullable;
 
 import com.xabber.android.data.SettingsManager;
@@ -17,6 +18,7 @@ import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.extension.file.FileUtils;
 import com.xabber.android.data.extension.file.UriUtils;
 import com.xabber.android.data.extension.httpfileupload.ImageCompressor;
+import com.xabber.android.data.extension.references.ReferenceElement;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.utils.HttpClientWithMTM;
@@ -66,6 +68,7 @@ public class UploadService extends IntentService {
     public final static String KEY_PROGRESS = "progress";
     public final static String KEY_ERROR = "error";
     public final static String KEY_MESSAGE_ID = "message_id";
+    public final static String KEY_REFERENCE_ELEMENT = "ref_element";
 
     public static final int UPDATE_PROGRESS_CODE = 2232;
     public static final int ERROR_CODE = 2233;
@@ -85,11 +88,12 @@ public class UploadService extends IntentService {
         AccountJid account = intent.getParcelableExtra(KEY_ACCOUNT_JID);
         UserJid user = intent.getParcelableExtra(KEY_USER_JID);
         List<String> filePaths = intent.getStringArrayListExtra(KEY_FILE_PATHS);
+        String referenceElement = intent.getStringExtra(KEY_REFERENCE_ELEMENT);
         List<Uri> fileUris = intent.getParcelableArrayListExtra(KEY_FILE_URIS);
         CharSequence uploadServerUrl = intent.getCharSequenceExtra(KEY_UPLOAD_SERVER_URL);
         String existMessageId = intent.getStringExtra(KEY_MESSAGE_ID);
 
-        if (filePaths != null) startWork(account, user, filePaths, uploadServerUrl, existMessageId);
+        if (filePaths != null) startWork(account, user, filePaths, uploadServerUrl, existMessageId, referenceElement);
         else if (fileUris != null) startWorkWithUris(account, user, fileUris, uploadServerUrl);
     }
 
@@ -157,6 +161,11 @@ public class UploadService extends IntentService {
 
     private void startWork(AccountJid account, UserJid user, List<String> filePaths,
                            CharSequence uploadServerUrl, String existMessageId) {
+        startWork(account, user, filePaths, uploadServerUrl, existMessageId, null);
+    }
+
+    private void startWork(AccountJid account, UserJid user, List<String> filePaths,
+                           CharSequence uploadServerUrl, String existMessageId, String referenceElement) {
 
         // get account item
         AccountItem accountItem = AccountManager.getInstance().getAccount(account);
@@ -180,7 +189,10 @@ public class UploadService extends IntentService {
             for (String filePath : filePaths) {
                 files.add(new File(filePath));
             }
-            fileMessageId = MessageManager.getInstance().createFileMessage(account, user, files);
+            if (referenceElement != null && referenceElement.equals(ReferenceElement.Type.voice.name())) {
+                fileMessageId = MessageManager.getInstance().createVoiceMessage(account, user, files, referenceElement);
+            }
+            else fileMessageId = MessageManager.getInstance().createFileMessage(account, user, files);
         } else fileMessageId = existMessageId; // use existing fileMessage
 
         HashMap<String, String> uploadedFilesUrls = new HashMap<>();

@@ -50,6 +50,19 @@ public class PermissionsRequester {
         return checkAndRequestPermission(Manifest.permission.CAMERA, activity, requestCode);
     }
 
+    public static boolean requestRecordAudioPermissionIfNeeded(Fragment fragment, int requestCode) {
+        return checkAndRequestPermission(Manifest.permission.RECORD_AUDIO, fragment, requestCode);
+    }
+
+    public static boolean requestRecordAudioPermissionIfNeeded(androidx.fragment.app.Fragment  fragment, int requestCode) {
+        return checkAndRequestPermission(Manifest.permission.RECORD_AUDIO, fragment, requestCode);
+    }
+
+    public static boolean requestRecordAudioPermissionIfNeeded(Activity activity, int requestCode) {
+        return checkAndRequestPermission(Manifest.permission.RECORD_AUDIO, activity, requestCode);
+    }
+
+
     public static boolean hasFileReadPermission() {
         return checkPermission(Manifest.permission.READ_EXTERNAL_STORAGE);
     }
