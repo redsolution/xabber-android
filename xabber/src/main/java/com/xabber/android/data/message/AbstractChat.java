@@ -22,6 +22,7 @@ import androidx.annotation.Nullable;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
+import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.StanzaSender;
 import com.xabber.android.data.database.MessageDatabaseManager;
 import com.xabber.android.data.database.messagerealm.Attachment;
@@ -40,6 +41,9 @@ import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.references.ReferenceElement;
 import com.xabber.android.data.extension.references.ReferencesManager;
+import com.xabber.android.data.extension.reliablemessagedelivery.ReceiptRequestElement;
+import com.xabber.android.data.extension.reliablemessagedelivery.ReliableMessageDeliveryManager;
+import com.xabber.android.data.extension.reliablemessagedelivery.RetryReceiptRequestElement;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.notification.MessageNotificationManager;
@@ -703,6 +707,10 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
             CarbonManager.getInstance().updateOutgoingMessage(AbstractChat.this, message);
             LogManager.d(AbstractChat.class.toString(), "Message sent. Invoke CarbonManager updateOutgoingMessage");
             message.addExtension(new OriginIdElement(messageItem.getStanzaId()));
+            if (ReliableMessageDeliveryManager.getInstance().isSupported(AccountManager.getInstance().getAccount(account)))
+                if (messageItem.isDelivered())
+                    message.addExtension(new RetryReceiptRequestElement());
+                else message.addExtension(new ReceiptRequestElement());
             if (delayTimestamp != null) {
                 message.addExtension(new DelayInformation(delayTimestamp));
             }
@@ -843,14 +851,13 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         if (message != null) executeRead(message, trySendDisplay);
     }
 
-    public void markAsReadTest(String messageId, boolean trySendDisplay) {
-        executeReadTest(messageId, trySendDisplay);
+    public void markAsReadTest(String messageId, ArrayList<String> stanzaId, boolean trySendDisplay) {
+        executeReadTest(messageId, stanzaId, trySendDisplay);
     }
 
-    private void executeReadTest(String messageId, boolean trySendDisplay) {
+    private void executeReadTest(String messageId, ArrayList<String> stanzaId, boolean trySendDisplay) {
         EventBus.getDefault().post(new MessageUpdateEvent(account, user));
-        BackpressureMessageReader.getInstance().markAsReadTest(messageId, account, user, trySendDisplay);
-
+        BackpressureMessageReader.getInstance().markAsReadTest(messageId, stanzaId, account, user, trySendDisplay);
     }
 
     public void markAsRead(MessageItem messageItem, boolean trySendDisplay) {

@@ -35,7 +35,6 @@ import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smackx.carbons.packet.CarbonExtension;
-import org.jivesoftware.smackx.chat_markers.element.ChatMarkersElements;
 import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
 import org.jivesoftware.smackx.disco.packet.DiscoverInfo;
 import org.jxmpp.jid.Jid;
@@ -120,7 +119,7 @@ public class ChatMarkerManager implements OnPacketListener {
                 }
                 AbstractChat chat = MessageManager.getInstance().getOrCreateChat(account, companion);
                 if (chat != null) {
-                    chat.markAsReadTest(extension.getId(), false);
+                    chat.markAsReadTest(extension.getId(), extension.getStanzaId(), false);
                     //chat.markAsRead(extension.getId(), false);
                     MessageNotificationManager.getInstance().removeChatWithTimer(account, companion);
 
@@ -133,10 +132,12 @@ public class ChatMarkerManager implements OnPacketListener {
             if (ChatMarkersElements.ReceivedExtension.from(message) != null) {
                 // received
                 BackpressureMessageMarker.getInstance().markMessage(ChatMarkersElements.ReceivedExtension.from(message).getId(),
+                        ChatMarkersElements.ReceivedExtension.from(message).getStanzaId(),
                         ChatMarkersState.received, account);
             } else if (ChatMarkersElements.DisplayedExtension.from(message) != null) {
                 // displayed
                 BackpressureMessageMarker.getInstance().markMessage(ChatMarkersElements.DisplayedExtension.from(message).getId(),
+                        ChatMarkersElements.DisplayedExtension.from(message).getStanzaId(),
                         ChatMarkersState.displayed, account);
             }
         }

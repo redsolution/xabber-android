@@ -38,6 +38,7 @@
                     android:imeOptions="actionNext"
                     android:inputType="textEmailAddress"
                     android:nextFocusForward="@+id/edtPass"
+                    android:paddingRight="45dp"
                     android:singleLine="true"
                     android:hint="@string/label_xmpp_id"
                     android:textSize="16sp"

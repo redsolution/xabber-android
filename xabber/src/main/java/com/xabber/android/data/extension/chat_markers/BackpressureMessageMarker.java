@@ -1,5 +1,7 @@
 package com.xabber.android.data.extension.chat_markers;
 
+import androidx.annotation.Nullable;
+
 import com.xabber.android.data.database.MessageDatabaseManager;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
@@ -13,6 +15,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import io.realm.Realm;
+import io.realm.RealmQuery;
 import io.realm.RealmResults;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
@@ -27,9 +30,9 @@ public class BackpressureMessageMarker {
         return instance;
     }
 
-    public void markMessage(String messageId, ChatMarkersState marker, AccountJid accountJid) {
+    public void markMessage(String messageId, @Nullable ArrayList<String> stanzaId, ChatMarkersState marker, AccountJid accountJid) {
         if (messageId != null && marker != null && accountJid != null)
-            subject.onNext(new MessageIdAndMarker(messageId, marker, accountJid));
+            subject.onNext(new MessageIdAndMarker(messageId, stanzaId, marker, accountJid));
     }
 
     private BackpressureMessageMarker() {
@@ -50,10 +53,11 @@ public class BackpressureMessageMarker {
                         for (MessageIdAndMarker messageAndMarker : messageAndMarkers) {
 
                             String headMessageId = messageAndMarker.messageId;
+                            ArrayList<String> altHeadMessageId = messageAndMarker.stanzaId;
                             ChatMarkersState marker = messageAndMarker.marker;
                             AccountJid accountJid = messageAndMarker.accountJid;
 
-                            MessageItem headMessage = getMessageById(realm, headMessageId, accountJid);
+                            MessageItem headMessage = getMessageById(realm, headMessageId,altHeadMessageId, accountJid);
                             if (headMessage != null && marker != null) {
                                 RealmResults<MessageItem> messages = getPreviousUnmarkedMessages(realm, headMessage, marker);
                                 List<String> ids = new ArrayList<>();
@@ -111,22 +115,36 @@ public class BackpressureMessageMarker {
                 .findAll();
     }
 
-    private MessageItem getMessageById(Realm realm, String stanzaId, AccountJid accountJid) {
+    private MessageItem getMessageById(Realm realm, String id, ArrayList<String> stanzaIds, AccountJid accountJid) {
         MessageItem message;
-        message = realm.where(MessageItem.class)
-                .equalTo(MessageItem.Fields.ACCOUNT, accountJid.toString())
-                .equalTo(MessageItem.Fields.STANZA_ID, stanzaId)
-                .findFirst();
+        RealmQuery<MessageItem> realmQuery = RealmQuery.createQuery(realm, MessageItem.class);
+
+        realmQuery.equalTo(MessageItem.Fields.ACCOUNT, accountJid.toString());
+        if (stanzaIds != null && stanzaIds.size()>0) {
+            realmQuery.beginGroup();
+            realmQuery.equalTo(MessageItem.Fields.STANZA_ID, id);
+            for (String stanzaId : stanzaIds) {
+                realmQuery.or();
+                realmQuery.equalTo(MessageItem.Fields.STANZA_ID, stanzaId);
+            }
+            realmQuery.endGroup();
+            message = realmQuery.findFirst();
+        } else {
+            realmQuery.equalTo(MessageItem.Fields.STANZA_ID, id);
+            message = realmQuery.findFirst();
+        }
         return message;
     }
 
     private class MessageIdAndMarker {
         final String messageId;
+        final ArrayList<String> stanzaId;
         final ChatMarkersState marker;
         final AccountJid accountJid;
 
-        public MessageIdAndMarker(String messageId, ChatMarkersState marker, AccountJid accountJid) {
+        public MessageIdAndMarker(String messageId, @Nullable ArrayList<String> stanzaId, ChatMarkersState marker, AccountJid accountJid) {
             this.messageId = messageId;
+            this.stanzaId = stanzaId;
             this.marker = marker;
             this.accountJid = accountJid;
         }

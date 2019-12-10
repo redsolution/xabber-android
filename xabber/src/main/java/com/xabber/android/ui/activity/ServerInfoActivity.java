@@ -3,11 +3,12 @@ package com.xabber.android.ui.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.appcompat.widget.Toolbar;
-import android.view.View;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
@@ -17,16 +18,18 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.bookmarks.BookmarksManager;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
+import com.xabber.android.data.extension.reliablemessagedelivery.ReliableMessageDeliveryManager;
+import com.xabber.android.data.extension.rrr.RrrManager;
 import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.push.PushManager;
 import com.xabber.android.ui.adapter.ServerInfoAdapter;
 import com.xabber.android.ui.color.BarPainter;
+import com.xabber.xmpp.smack.XMPPTCPConnection;
 
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.roster.Roster;
-import com.xabber.xmpp.smack.XMPPTCPConnection;
 import org.jivesoftware.smackx.blocking.BlockingCommandManager;
 import org.jivesoftware.smackx.csi.ClientStateIndicationManager;
 import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
@@ -159,7 +162,8 @@ public class ServerInfoActivity extends ManagedActivity {
             boolean fileUpload = HttpFileUploadManager.getInstance().isFileUploadSupported(accountItem.getAccount());
             boolean mucLight = !MultiUserChatLightManager.getInstanceFor(connection).getLocalServices().isEmpty();
             boolean bookmarks = BookmarksManager.getInstance().isSupported(accountItem.getAccount());
-            //boolean retract = RetractManager
+            boolean rewrite = RrrManager.getInstance().isSupported(connection);
+            boolean reliable = ReliableMessageDeliveryManager.getInstance().isSupported(connection);
 
             serverInfoList.add(getString(R.string.xep_0045_muc) + " " + getCheckOrCross(muc));
             serverInfoList.add(getString(R.string.xep_0163_pep) + " " + getCheckOrCross(pep));
@@ -173,8 +177,10 @@ public class ServerInfoActivity extends ManagedActivity {
             serverInfoList.add(getString(R.string.xep_0363_file_upload) + " " + getCheckOrCross(fileUpload));
             serverInfoList.add(getString(R.string.xep_xxxx_muc_light) + " " + getCheckOrCross(mucLight));
             serverInfoList.add(getString(R.string.xep_0048_bookmarks) + " " + getCheckOrCross(bookmarks));
-            serverInfoList.add(getString(R.string.xep_0rrr_retract) + " " + getCheckOrCross(true));
+            serverInfoList.add(getString(R.string.xep_0rrr_retract) + " " + getCheckOrCross(rewrite));
+            serverInfoList.add(getString(R.string.xep_0xxx_reliable_message_delivery) + " " + getCheckOrCross(reliable));
             serverInfoList.add("");
+
         } catch (InterruptedException | SmackException.NoResponseException
                 | XMPPException.XMPPErrorException | SmackException.NotConnectedException e) {
             LogManager.exception(LOG_TAG, e);

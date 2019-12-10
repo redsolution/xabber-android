@@ -56,6 +56,7 @@ public class ContactAddFragment extends GroupEditorFragment
     private TextView errorView;
     private String name;
     private String error;
+    private boolean oldError = false;
     private IntentIntegrator integrator;
     private ImageView qrScan;
     private ImageView clearText;
@@ -123,18 +124,26 @@ public class ContactAddFragment extends GroupEditorFragment
                 userView.getText().clear();
             }
         });
+        errorView = (TextView) view.findViewById(R.id.error_view);
+        if (error != null && !"".equals(error)) {
+            oldError = true;
+            setError(error);
+        }
         userView = (EditText) view.findViewById(R.id.contact_user);
         userView.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
 
             @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                setError("");
-            }
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
 
             @Override
             public void afterTextChanged(Editable editable) {
+                if (oldError) {
+                    oldError = false;
+                } else {
+                    setError("");
+                }
                 if (editable.toString().equals("")) {
                     ((ContactAddActivity)getActivity()).toolbarSetEnabled(false);
                     clearText.setVisibility(View.GONE);
@@ -149,13 +158,9 @@ public class ContactAddFragment extends GroupEditorFragment
         nameView = (EditText) view.findViewById(R.id.contact_name);
         qrScan = (ImageView) view.findViewById(R.id.imgQRcode);
         qrScan.setOnClickListener(this);
-        errorView = (TextView) view.findViewById(R.id.error_view);
 
         if (getUser() != null) {
             userView.setText(getUser().getBareJid().toString());
-            if (error != null) {
-                setError(error);
-            }
         }
         if (name != null) {
             nameView.setText(name);
@@ -465,10 +470,10 @@ public class ContactAddFragment extends GroupEditorFragment
                 setError(getString(R.string.INCORRECT_USER_NAME) + String.format(getString(R.string.INCORRECT_USER_NAME_ADDENDUM_LOCAL_SYMBOL), ":"));
                 return true;
             }
-            if (localName.contains("/")) {
-                setError(getString(R.string.INCORRECT_USER_NAME) + String.format(getString(R.string.INCORRECT_USER_NAME_ADDENDUM_LOCAL_SYMBOL), "/"));
-                return true;
-            }
+            //if (localName.contains("/")) {
+            //    setError(getString(R.string.INCORRECT_USER_NAME) + String.format(getString(R.string.INCORRECT_USER_NAME_ADDENDUM_LOCAL_SYMBOL), "/"));
+            //    return true;
+            //}
             //Invalid when localPart is NOT empty, and has multiple dots in a row
             if(localName.contains("..")) {
                 setError(getString(R.string.INCORRECT_USER_NAME) + getString(R.string.INCORRECT_USER_NAME_ADDENDUM_LOCAL));
