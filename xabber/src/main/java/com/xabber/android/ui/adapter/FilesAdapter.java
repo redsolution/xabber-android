@@ -1,6 +1,5 @@
 package com.xabber.android.ui.adapter;
 
-import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,17 +11,18 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.xabber.android.R;
+import com.xabber.android.data.Application;
 import com.xabber.android.data.database.messagerealm.Attachment;
 import com.xabber.android.data.extension.references.VoiceMessagePresenterManager;
 import com.xabber.android.data.filedownload.DownloadManager;
 import com.xabber.android.data.filedownload.FileCategory;
 import com.xabber.android.ui.fragment.FileInteractionFragment;
 import com.xabber.android.ui.widget.PlayerVisualizerView;
+import com.xabber.android.utils.StringUtils;
 
 import org.apache.commons.io.FileUtils;
 
 import java.util.Locale;
-import java.util.concurrent.TimeUnit;
 
 import io.realm.RealmList;
 import rx.functions.Action1;
@@ -60,16 +60,21 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.FileViewHold
         if ("voice".equals(attachment.getRefType())) {
             holder.voiceMessage = true;
             holder.subscribeForAudioProgress();
-            holder.tvFileName.setText(attachment.getTitle());
+
+            StringBuilder voiceText = new StringBuilder();
+            voiceText.append(Application.getInstance().getResources().getString(R.string.voice_message));
+            if (attachment.getDuration() != null && attachment.getDuration() != 0) {
+                voiceText.append(String.format(Locale.getDefault(), ", %s", StringUtils.getDurationStringForVoiceMessage(null, attachment.getDuration())));
+            }
+            holder.tvFileName.setText(voiceText);
+
             Long size = attachment.getFileSize();
-            Long time = attachment.getDuration();
 
             if (attachment.getFilePath() != null) {
                 holder.tvFileName.setVisibility(View.GONE);
                 holder.tvFileSize.setText((attachment.getDuration()!= null && attachment.getDuration() != 0) ?
-                        String.format(Locale.getDefault(), "%02d:%02d",
-                                TimeUnit.SECONDS.toMinutes(time),
-                                (TimeUnit.SECONDS.toSeconds(time)) % 60) : FileUtils.byteCountToDisplaySize(size != null ? size : 0));
+                        StringUtils.getDurationStringForVoiceMessage(null, attachment.getDuration())
+                        : FileUtils.byteCountToDisplaySize(size != null ? size : 0));
                 VoiceMessagePresenterManager.getInstance().sendWaveDataIfSaved(attachment.getFilePath(), holder.audioVisualizer);
                 holder.audioVisualizer.setVisibility(View.VISIBLE);
             } else holder.tvFileSize.setText(FileUtils.byteCountToDisplaySize(size != null ? size : 0));
@@ -166,7 +171,7 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.FileViewHold
 
         public FileViewHolder(View itemView) {
             super(itemView);
-            this.itemView = itemView;
+            this.itemView = itemView.findViewById(R.id.file_message);
             tvFileName = itemView.findViewById(R.id.tvFileName);
             tvFileSize = itemView.findViewById(R.id.tvFileSize);
             ivFileIcon = itemView.findViewById(R.id.ivFileIcon);
@@ -208,10 +213,23 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.FileViewHold
                     } else {
                         audioVisualizer.updatePlayerPercent(((float) info.getCurrentPosition() / ((float) info.getDuration() * 1000)));
                     }
-                    if (info.getResultCode() == FileInteractionFragment.COMPLETED_AUDIO_PROGRESS
-                            || info.getResultCode() == FileInteractionFragment.PAUSED_AUDIO_PROGRESS)
+                    if (info.getResultCode() == FileInteractionFragment.COMPLETED_AUDIO_PROGRESS) {
                         ivFileIcon.setImageResource(R.drawable.ic_play);
-                    else ivFileIcon.setImageResource(R.drawable.ic_pause);
+                        tvFileSize.setText(StringUtils.getDurationStringForVoiceMessage(null,
+                                info.getDuration() > 1000 ?
+                                        (info.getDuration() / 1000) : info.getDuration()));
+                    } else if (info.getResultCode() == FileInteractionFragment.PAUSED_AUDIO_PROGRESS) {
+                        ivFileIcon.setImageResource(R.drawable.ic_play);
+                        tvFileSize.setText(StringUtils.getDurationStringForVoiceMessage((long) info.getCurrentPosition() / 1000,
+                                info.getDuration() > 1000 ?
+                                        (info.getDuration() / 1000) : info.getDuration()));
+                    }
+                    else {
+                        ivFileIcon.setImageResource(R.drawable.ic_pause);
+                        tvFileSize.setText(StringUtils.getDurationStringForVoiceMessage((long) info.getCurrentPosition() / 1000,
+                                info.getDuration() > 1000 ?
+                                        (info.getDuration() / 1000) : info.getDuration()));
+                    }
                 }
             }
         }
@@ -220,17 +238,17 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.FileViewHold
             if (progressData != null && progressData.getAttachmentId().equals(attachmentId)) {
                 if (progressData.isCompleted()) {
                     showProgress(false);
-                    if (voiceMessage) {
-                        final Handler handler = new Handler();
-                        final View view = itemView;
-                        handler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                view.callOnClick();
-                                handler.removeCallbacks(null);
-                            }
-                        }, 100);
-                    }
+                    //if (voiceMessage) {
+                    //    final Handler handler = new Handler();
+                    //    final View view = itemView;
+                    //    handler.postDelayed(new Runnable() {
+                    //        @Override
+                    //        public void run() {
+                    //            view.callOnClick();
+                    //            handler.removeCallbacks(null);
+                    //        }
+                    //    }, 100);
+                    //}
                 } else if (progressData.getError() != null) {
                     showProgress(false);
                     listener.onDownloadError(progressData.getError());
