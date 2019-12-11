@@ -96,6 +96,7 @@
     <string name="no_messages">Нет сообщений</string>
     <string name="show_all_chats">Показать все чаты</string>
     <string name="category_title_contacts">Контакты</string>
+    <string name="voice_message">Голосовое Сообщение</string>
     <string name="showcase_contact_list_text_1">Смахните влево или вправо чтобы поместить чат в архив</string>
     <string name="last_seen_now">был в сети только что</string>
     <string name="last_seen_minutes">был в сети %1$s минут назад</string>

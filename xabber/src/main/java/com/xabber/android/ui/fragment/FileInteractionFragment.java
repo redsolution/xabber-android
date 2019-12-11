@@ -340,48 +340,57 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
         }
     };
 
-    protected final Runnable createLocalWaveform = new Runnable() {
-        @Override
-        public void run() {
-            creatingWaveSample();
-        }
-    };
+    //protected final Runnable createLocalWaveform = new Runnable() {
+    //    @Override
+    //    public void run() {
+    //        creatingWaveSample();
+    //    }
+    //};
 
     private void onVoiceRecordPressed() {
 
         mr = new MediaRecorder();
+        mr.setOnErrorListener(new MediaRecorder.OnErrorListener() {
+            @Override
+            public void onError(MediaRecorder mediaRecorder, int i, int i1) {
+                LogManager.e(this, "Error with MediaRecorder (" + i + ", " + i1 + "), releasing)");
+                mediaRecorder.reset();
+                mediaRecorder.release();
+                mr = null;
+            }
+        });
         mr.setAudioSource(MIC);
         try {
             File tempAudioFile = FileManager.createTempAudioFile("temp_audio_recording");
             tempFilePath = tempAudioFile.getAbsolutePath();
-            waveForm.clear();
+            //waveForm.clear();
             mr.setOutputFormat(MediaRecorder.OutputFormat.DEFAULT);
             mr.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
             mr.setOutputFile(tempFilePath);
             mr.prepare();
             mr.start();
-            mHandler.post(createLocalWaveform);
+            //mHandler.post(createLocalWaveform);
             recordingInProgress = true;
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private void creatingWaveSample() {
-        if (mr != null)
-            waveForm.add(mr.getMaxAmplitude());
-        mHandler.postDelayed(createLocalWaveform, 50);
-    }
+    //private void creatingWaveSample() {
+    //    if (mr != null)
+    //        waveForm.add(mr.getMaxAmplitude());
+    //    mHandler.postDelayed(createLocalWaveform, 50);
+    //}
 
     private String tempFilePath;
-    private ArrayList<Integer> waveForm = new ArrayList<Integer>();
+    //private ArrayList<Integer> waveForm = new ArrayList<Integer>();
 
     String stopRecordingIfPossibleForCheckup() {
         if (recordingInProgress) {
             recordingInProgress = false;
             if (mr != null) {
-                mr.stop();
-                mHandler.removeCallbacks(createLocalWaveform);
+                releaseMediaRecorder();
+                //mHandler.removeCallbacks(createLocalWaveform);
                 File file = new File(tempFilePath);
                 if (file.exists()) return tempFilePath;
                 else return null;
@@ -390,9 +399,9 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
         return null;
     }
 
-    ArrayList getLocalWaveformAmplitudes() {
-        return waveForm;
-    }
+    //ArrayList getLocalWaveformAmplitudes() {
+    //    return waveForm;
+    //}
 
     boolean releaseRecordedVoicePlayback(String filePath) {
         releaseMediaPlayer();
@@ -422,7 +431,7 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
         if (recordingInProgress) {
             recordingInProgress = false;
             if (mr != null) {
-                mr.stop();
+                releaseMediaRecorder();
                 if (saveFile) {
                     try {
                         File audioFile = FileManager.createAudioFile("voice_message.ogg");
@@ -597,13 +606,37 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
         }
     }
 
-    private void releaseMediaPlayer() {
+    void releaseMediaRecorder() {
+        if (mr != null) {
+            mr.stop();
+            mr.reset();
+            mr.release();
+            mr = null;
+        }
+    }
+
+    void clearCachedVoiceFile() {
+        Application.getInstance().runInBackground(new Runnable() {
+            @Override
+            public void run() {
+                if (tempFilePath != null) {
+                    FileManager.deleteTempFile(tempFilePath);
+                }
+            }
+        });
+    }
+
+    void releaseMediaPlayer() {
         if (mp != null) {
             mp.stop();
             mp.reset();
             mp.release();
             mp = null;
         }
+    }
+
+    void changeVoicePlayback() {
+
     }
 
     void manageRecordedVoicePlayback(String filePath) {
@@ -656,9 +689,9 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
             } else {
                 if (mp.isPlaying())
                     mp.stop();
+                publishCompletedAudioProgress(voiceAttachmentHash);
                 mp.reset();
                 mHandler.removeCallbacks(updateAudioProgress);
-                publishCompletedAudioProgress(voiceAttachmentHash);
                 try {
                     voiceAttachmentHash = 0;
                     mp.setDataSource(filePath);
@@ -712,7 +745,7 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
             } catch (IOException e) {
                 LogManager.exception(LOG_TAG, e);
             }
-        }else if (voiceAttachmentHash == attachment.getUniqueId().hashCode()) {
+        } else if (voiceAttachmentHash == attachment.getUniqueId().hashCode()) {
             if (mp.isPlaying()) {
                 mp.pause();
                 publishAudioProgressWithCustomCode(PAUSED_AUDIO_PROGRESS);
@@ -725,9 +758,9 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
             if (mp.isPlaying()) {
                 mp.stop();
             }
+            publishCompletedAudioProgress(voiceAttachmentHash);
             mp.reset();
             mHandler.removeCallbacks(updateAudioProgress);
-            publishCompletedAudioProgress(voiceAttachmentHash);
             try {
                 if (attachment.getDuration() == null)
                     setDurationIfEmpty(path, id);
@@ -745,18 +778,26 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
         Application.getInstance().runInBackground(new Runnable() {
             @Override
             public void run() {
-                Realm realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
                 final MediaMetadataRetriever mmr = new MediaMetadataRetriever();
                 mmr.setDataSource(path);
                 final String dur = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
                 voiceFileDuration = Integer.valueOf(dur);
-                realm.executeTransaction(new Realm.Transaction() {
-                    @Override
-                    public void execute(Realm realm) {
-                        Attachment backgroundAttachment = realm.where(Attachment.class).equalTo(Attachment.Fields.UNIQUE_ID, id).findFirst();
-                        backgroundAttachment.setDuration(Long.valueOf(dur) / 1000);
+                if (voiceFileDuration != 0) {
+                    Realm realm = null;
+                    try {
+                        realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
+                        realm.executeTransaction(new Realm.Transaction() {
+                            @Override
+                            public void execute(Realm realm) {
+                                Attachment backgroundAttachment = realm.where(Attachment.class).equalTo(Attachment.Fields.UNIQUE_ID, id).findFirst();
+                                backgroundAttachment.setDuration(Long.valueOf(dur) / 1000);
+                            }
+                        });
+                    } finally {
+                        if (realm != null)
+                            realm.close();
                     }
-                });
+                }
             }
         });
     }
@@ -797,11 +838,7 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
     }
 
     private void publishCompletedAudioProgress(int attachmentId) {
-        PublishAudioProgress.getInstance().updateAudioProgress(0, 10000, attachmentId, COMPLETED_AUDIO_PROGRESS);
-    }
-
-    private void publishPausedAudioProgress(int attachmentId) {
-        PublishAudioProgress.getInstance().updateAudioProgress(0, 10000, attachmentId, PAUSED_AUDIO_PROGRESS);
+        PublishAudioProgress.getInstance().updateAudioProgress(0, getOptimalVoiceDuration(), attachmentId, COMPLETED_AUDIO_PROGRESS);
     }
 
     public static class PublishAudioProgress {

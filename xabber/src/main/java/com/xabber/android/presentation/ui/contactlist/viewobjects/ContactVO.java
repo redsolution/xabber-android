@@ -21,6 +21,7 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.xabber.android.R;
+import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.database.messagerealm.Attachment;
@@ -47,6 +48,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 
 import eu.davidea.flexibleadapter.FlexibleAdapter;
@@ -175,7 +177,14 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
         } else {
             if (lastMessage.haveAttachments() && lastMessage.getAttachments().size() > 0) {
                 Attachment attachment = lastMessage.getAttachments().get(0);
-                messageText = StringUtils.getColoredText(attachment.getTitle().trim(), accountColorIndicator);
+                if ("voice".equals(attachment.getRefType())) {
+                    StringBuilder voiceText = new StringBuilder();
+                    voiceText.append(Application.getInstance().getResources().getString(R.string.voice_message));
+                    if (attachment.getDuration() != null && attachment.getDuration() != 0) {
+                        voiceText.append(String.format(Locale.getDefault(), ", %s", StringUtils.getDurationStringForVoiceMessage(null, attachment.getDuration())));
+                    }
+                    messageText = StringUtils.getColoredText(voiceText.toString(), accountColorIndicator);
+                } else messageText = StringUtils.getColoredText(attachment.getTitle().trim(), accountColorIndicator);
             } else if (lastMessage.getFilePath() != null) {
                 messageText = new File(lastMessage.getFilePath()).getName();
             } else if (ChatAction.available.toString().equals(lastMessage.getAction())) {
