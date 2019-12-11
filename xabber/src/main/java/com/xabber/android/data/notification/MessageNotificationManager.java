@@ -24,6 +24,7 @@ import com.xabber.android.data.message.NotificationState;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
+import com.xabber.android.utils.StringUtils;
 
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
@@ -31,6 +32,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 
 import io.realm.Realm;
@@ -336,8 +338,17 @@ public class MessageNotificationManager implements OnLoadListener {
         String text = message.getText().trim();
         if (message.haveAttachments() && message.getAttachments().size() > 0) {
             Attachment attachment = message.getAttachments().get(0);
-            FileCategory category = FileCategory.determineFileCategory(attachment.getMimeType());
-            text = FileCategory.getCategoryName(category, false) + attachment.getTitle();
+            if ("voice".equals(attachment.getRefType())) {
+                StringBuilder sb = new StringBuilder(Application.getInstance().getResources().getString(R.string.voice_message));
+                if (attachment.getDuration() != null && attachment.getDuration() != 0) {
+                    sb.append(String.format(Locale.getDefault(), ", %s",
+                            StringUtils.getDurationStringForVoiceMessage(null, attachment.getDuration())));
+                }
+                text = sb.toString();
+            } else {
+                FileCategory category = FileCategory.determineFileCategory(attachment.getMimeType());
+                text = FileCategory.getCategoryName(category, false) + attachment.getTitle();
+            }
         }
         if (message.haveForwardedMessages() && message.getForwardedIds().size() > 0 && text.isEmpty()) {
             String forwardText = message.getFirstForwardedMessageText();
