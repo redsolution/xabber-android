@@ -421,6 +421,13 @@ public class FileManager {
         }
     }
 
+    public static void deleteTempFile(String filePath) {
+        File file = new File(filePath);
+        if (file.exists()) {
+            file.delete();
+        }
+    }
+
     private static String getDownloadDirPath() {
         return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath()
                 + File.separator + XABBER_DIR;
