@@ -1741,13 +1741,17 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
     private void stopRecording() {
         Utils.lockScreenRotation(getActivity(), false);
-        recordingPath = stopRecordingIfPossibleForCheckup();
-        endRecordingButtonsAnimation();
-        beginTimer(false);
-        currentVoiceRecordingState = VoiceRecordState.StoppedRecording;
-        if (recordingPath != null) {
-            setUpVoiceMessagePresenter();
-            showScrollDownButtonIfNeed();
+        if (recordSaveAllowed) {
+            recordingPath = stopRecordingIfPossibleForCheckup();
+            endRecordingButtonsAnimation();
+            beginTimer(false);
+            currentVoiceRecordingState = VoiceRecordState.StoppedRecording;
+            if (recordingPath != null) {
+                setUpVoiceMessagePresenter();
+                showScrollDownButtonIfNeed();
+            }
+        } else {
+            clearVoiceMessage();
         }
     }
 
