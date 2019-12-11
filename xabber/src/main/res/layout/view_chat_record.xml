@@ -129,6 +129,7 @@
                     android:id="@+id/voice_presenter_visualizer"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:layout_marginLeft="5dp"
                     android:layout_weight="8"
                     android:visibility="visible" />
 
@@ -138,6 +139,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center|right"
                     android:maxLines="1"
+                    android:paddingLeft="5dp"
                     android:text="1:23"
                     android:textColor="@color/white"
                     tools:text="1:23" />
