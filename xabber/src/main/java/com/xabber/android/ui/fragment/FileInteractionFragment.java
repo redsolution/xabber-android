@@ -56,6 +56,8 @@ import java.util.Locale;
 
 import io.realm.Realm;
 import io.realm.RealmList;
+import rx.Subscription;
+import rx.functions.Action1;
 import rx.subjects.PublishSubject;
 
 import static android.media.MediaRecorder.AudioSource.MIC;
@@ -83,15 +85,17 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
 
     private int clickedAttachmentPos;
     private String clickedMessageUID;
+    private String clickedAttachmentUID;
     private String currentPicturePath;
     private boolean recordingInProgress = false;
     private MediaPlayer mp;
-    MediaRecorder mr;
-    private PublishSubject<PublishAudioProgress.AudioInfo> progressSubscribe = PublishSubject.create();
+    private MediaRecorder mr;
     private Handler mHandler = new Handler();
     private int voiceAttachmentHash;
     private int voiceFileDuration;
     private int voiceAttachmentDuration;
+    private PublishSubject<DownloadManager.ProgressData> voiceDownload;
+    private Subscription voiceDownloadSubscription;
 
     protected AccountJid account;
     protected UserJid user;
@@ -167,6 +171,7 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
     public void onDetach() {
         super.onDetach();
         mHandler.removeCallbacks(updateAudioProgress);
+        if (voiceDownloadSubscription != null) voiceDownloadSubscription.unsubscribe();
         if (mp != null) {
             mp.release();
             mp = null;
@@ -238,6 +243,30 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
         if (PermissionsRequester.requestFileWritePermissionIfNeeded(
                 this, PERMISSIONS_REQUEST_DOWNLOAD_FILE))
             openFileOrDownload(messageUID, attachmentPosition);
+    }
+
+    @Override
+    public void onVoiceClick(int messagePosition, int attachmentPosition, String attachmentId, String messageUID, boolean saved) {
+        LogManager.d("VoiceDebug", "onVoiceClick start! attachmentPosition = " + attachmentPosition + " attachmentId = " + attachmentId + " messageUID = " + messageUID);
+        clickedAttachmentPos = attachmentPosition;
+        clickedMessageUID = messageUID;
+        clickedAttachmentUID = attachmentId;
+        if (!saved) subscribeForVoiceDownloadProgress();
+        if (PermissionsRequester.requestFileWritePermissionIfNeeded(
+                this, PERMISSIONS_REQUEST_DOWNLOAD_FILE))
+            openFileOrDownload(messageUID, attachmentPosition);
+    }
+
+    protected void subscribeForVoiceDownloadProgress() {
+        LogManager.d("VoiceDebug", "progress Subscribed to!~");
+        voiceDownload = DownloadManager.getInstance().subscribeForProgress();
+        if (voiceDownloadSubscription != null) voiceDownloadSubscription.unsubscribe();
+        voiceDownloadSubscription = voiceDownload.doOnNext(new Action1<DownloadManager.ProgressData>() {
+            @Override
+            public void call(DownloadManager.ProgressData progressData) {
+                waitForVoiceDownloadFinish(progressData);
+            }
+        }).subscribe();
     }
 
     @Override
@@ -353,7 +382,7 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
         mr.setOnErrorListener(new MediaRecorder.OnErrorListener() {
             @Override
             public void onError(MediaRecorder mediaRecorder, int i, int i1) {
-                LogManager.e(this, "Error with MediaRecorder (" + i + ", " + i1 + "), releasing)");
+                LogManager.e(LOG_TAG, "Error with MediaRecorder (" + i + ", " + i1 + "), releasing)");
                 mediaRecorder.reset();
                 mediaRecorder.release();
                 mr = null;
@@ -562,6 +591,7 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
     private void openFileOrDownload(String messageUID, int attachmentPosition) {
         MessageItem messageItem = MessageDatabaseManager.getInstance().getRealmUiThread().where(MessageItem.class)
                 .equalTo(MessageItem.Fields.UNIQUE_ID, messageUID).findFirst();
+        LogManager.d("VoiceDebug", "openFileOrDownload start! attachmentPosition = " + attachmentPosition + " messageUID = " + messageUID);
 
         if (messageItem == null) {
             LogManager.w(LOG_TAG, "onMessageFileClick: null message item. UID: " + messageUID);
@@ -577,7 +607,9 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
             final Attachment attachment = fileAttachments.get(attachmentPosition);
             if (attachment == null) return;
 
+            LogManager.d("VoiceDebug", "openFileOrDownload fork! dl or open?");
             if (attachment.getFilePath() != null) {
+                LogManager.d("VoiceDebug", "Opening file shortly!");
                 File file = new File(attachment.getFilePath());
                 if (!file.exists()) {
                     MessageManager.setAttachmentLocalPathToNull(attachment.getUniqueId());
@@ -602,13 +634,15 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
                     }
                 }
 
-            } else DownloadManager.getInstance().downloadFile(attachment, account, getActivity());
+            } else {
+                LogManager.d("VoiceDebug", "Download Starting Shortly! attachment.getUniqueId = " + attachment.getUniqueId());
+                DownloadManager.getInstance().downloadFile(attachment, account, getActivity());
+            }
         }
     }
 
     void releaseMediaRecorder() {
         if (mr != null) {
-            mr.stop();
             mr.reset();
             mr.release();
             mr = null;
@@ -628,7 +662,6 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
 
     void releaseMediaPlayer() {
         if (mp != null) {
-            mp.stop();
             mp.reset();
             mp.release();
             mp = null;
@@ -646,7 +679,7 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mediaPlayer) {
-                    LogManager.i(this, "onCompletion() has been called");
+                    LogManager.i(LOG_TAG, "onCompletion() has been called");
                     mHandler.removeCallbacks(updateAudioProgress);
                     publishCompletedAudioProgress(voiceAttachmentHash);
                     releaseMediaPlayer();
@@ -655,7 +688,7 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
             mp.setOnErrorListener(new MediaPlayer.OnErrorListener() {
                 @Override
                 public boolean onError(MediaPlayer mediaPlayer, int i, int i1) {
-                    LogManager.e(this, "Error with MediaPlayer (" + i + ", " + i1 + "), releasing)");
+                    LogManager.e(LOG_TAG, "Error with MediaPlayer (" + i + ", " + i1 + "), releasing)");
                     mHandler.removeCallbacks(updateAudioProgress);
                     mediaPlayer.reset();
                     mediaPlayer.release();
@@ -711,7 +744,7 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mediaPlayer) {
-                    LogManager.i(this, "onCompletion() has been called");
+                    LogManager.i(LOG_TAG, "onCompletion() has been called");
                     mHandler.removeCallbacks(updateAudioProgress);
                     publishCompletedAudioProgress(voiceAttachmentHash);
                     releaseMediaPlayer();
@@ -720,7 +753,7 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
             mp.setOnErrorListener(new MediaPlayer.OnErrorListener() {
                 @Override
                 public boolean onError(MediaPlayer mediaPlayer, int i, int i1) {
-                    LogManager.e(this, "Error with MediaPlayer (" + i + ", " + i1 + "), releasing)");
+                    LogManager.e(LOG_TAG, "Error with MediaPlayer (" + i + ", " + i1 + "), releasing)");
                     mHandler.removeCallbacks(updateAudioProgress);
                     mediaPlayer.reset();
                     mediaPlayer.release();
@@ -802,6 +835,25 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
         });
     }
 
+    private void waitForVoiceDownloadFinish(DownloadManager.ProgressData progressData) {
+        if (progressData.isCompleted()) {
+            LogManager.d("VoiceDebug", "Download Completed Progress Data arrived! attachmentId = " + progressData.getAttachmentId());
+            if (progressData.getAttachmentId() != null && clickedAttachmentUID != null && clickedAttachmentUID.equals(progressData.getAttachmentId())) {
+                final Handler handler = new Handler();
+                final String messageId = clickedMessageUID;
+                final int attachmentPosition = clickedAttachmentPos;
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        openFileOrDownload(messageId, attachmentPosition);
+                        handler.removeCallbacks(null);
+                    }
+                }, 100);
+            }
+        }
+    }
+
+
     public void updateAudioProgressBar() {
         mHandler.postDelayed(updateAudioProgress, 100);
     }
@@ -818,7 +870,7 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
         if (mp != null) {
             int duration = getOptimalVoiceDuration();
             PublishAudioProgress.getInstance().updateAudioProgress(mp.getCurrentPosition(), duration, voiceAttachmentHash, resultCode);
-            LogManager.d(this, "current : " + mp.getCurrentPosition() + " max MP.getDuration: " + mp.getDuration() + " max MMR.extractDur: " + voiceFileDuration);
+            LogManager.d("VoiceDebug", "current : " + mp.getCurrentPosition() + " max MP.getDuration: " + mp.getDuration() + " max MMR.extractDur: " + voiceFileDuration);
         }
     }
 

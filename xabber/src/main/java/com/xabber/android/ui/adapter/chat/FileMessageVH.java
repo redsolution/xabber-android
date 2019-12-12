@@ -34,6 +34,7 @@ import com.xabber.android.data.database.messagerealm.Attachment;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
+import com.xabber.android.data.extension.references.VoiceMessagePresenterManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.ui.adapter.FilesAdapter;
 import com.xabber.android.ui.helper.RoundedBorders;
@@ -78,6 +79,7 @@ public class FileMessageVH extends MessageVH
     public interface FileListener {
         void onImageClick(int messagePosition, int attachmentPosition, String messageUID);
         void onFileClick(int messagePosition, int attachmentPosition, String messageUID);
+        void onVoiceClick(int messagePosition, int attachmentPosition, String attachmentId, String messageUID, boolean saved);
         void onFileLongClick(Attachment attachment, View caller);
         void onDownloadCancel();
         void onUploadCancel();
@@ -110,12 +112,14 @@ public class FileMessageVH extends MessageVH
 
     protected void setupImageOrFile(MessageItem messageItem, Context context) {
         fileLayout.setVisibility(View.GONE);
-        messageImage.setVisibility(View.GONE);
-        imageGridContainer.removeAllViews();
-        imageGridContainer.setVisibility(View.GONE);
-
+        if (messageImage != null) messageImage.setVisibility(View.GONE);
+        if (imageGridContainer != null) {
+            imageGridContainer.removeAllViews();
+            imageGridContainer.setVisibility(View.GONE);
+        }
         if (messageItem.haveAttachments()) {
             setUpImage(messageItem.getAttachments());
+            //setUpVoice(messageItem.getAttachments(), context);
             setUpFile(messageItem.getAttachments(), context);
         } else if (messageItem.isImage()) {
             prepareImage(messageItem, context);
@@ -291,6 +295,16 @@ public class FileMessageVH extends MessageVH
             return;
         }
         listener.onFileClick(messagePosition, attachmentPosition, messageId);
+    }
+
+    @Override
+    public void onVoiceClick(int attachmentPosition, String attachmentId, boolean saved) {
+        int messagePosition = getAdapterPosition();
+        if (messagePosition == RecyclerView.NO_POSITION) {
+            LogManager.w(LOG_TAG, "onClick: no position");
+            return;
+        }
+        listener.onVoiceClick(messagePosition, attachmentPosition, attachmentId, messageId, saved);
     }
 
     @Override

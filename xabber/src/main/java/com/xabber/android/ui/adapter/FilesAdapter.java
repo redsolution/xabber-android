@@ -35,6 +35,7 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.FileViewHold
 
     public interface FileListListener {
         void onFileClick(int position);
+        void onVoiceClick(int position, String attachmentId, boolean saved);
         void onFileLongClick(Attachment attachment, View caller);
         void onDownloadCancel();
         void onDownloadError(String error);
@@ -53,7 +54,7 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.FileViewHold
 
     @Override
     public void onBindViewHolder(final FileViewHolder holder, final int position) {
-        Attachment attachment = items.get(position);
+        final Attachment attachment = items.get(position);
 
         holder.attachmentId = attachment.getUniqueId();
 
@@ -73,7 +74,7 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.FileViewHold
             if (attachment.getFilePath() != null) {
                 holder.tvFileName.setVisibility(View.GONE);
                 holder.tvFileSize.setText((attachment.getDuration()!= null && attachment.getDuration() != 0) ?
-                        StringUtils.getDurationStringForVoiceMessage(null, attachment.getDuration())
+                        StringUtils.getDurationStringForVoiceMessage(0L, attachment.getDuration())
                         : FileUtils.byteCountToDisplaySize(size != null ? size : 0));
                 VoiceMessagePresenterManager.getInstance().sendWaveDataIfSaved(attachment.getFilePath(), holder.audioVisualizer);
                 holder.audioVisualizer.setVisibility(View.VISIBLE);
@@ -92,9 +93,10 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.FileViewHold
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                holder.subscribeForAudioProgress();
-                listener.onFileClick(position);
-                //holder.subscribeForAudioData();
+                if (holder.voiceMessage)
+                    listener.onVoiceClick(holder.getAdapterPosition(), holder.attachmentId, attachment.getFilePath()!=null);
+                else
+                    listener.onFileClick(position);
             }
         });
         holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
@@ -117,6 +119,7 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.FileViewHold
             @Override
             public void onViewAttachedToWindow(View view) {
                 holder.subscribeForDownloadProgress();
+                holder.subscribeForAudioProgress();
             }
 
             @Override
@@ -215,7 +218,7 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.FileViewHold
                     }
                     if (info.getResultCode() == FileInteractionFragment.COMPLETED_AUDIO_PROGRESS) {
                         ivFileIcon.setImageResource(R.drawable.ic_play);
-                        tvFileSize.setText(StringUtils.getDurationStringForVoiceMessage(null,
+                        tvFileSize.setText(StringUtils.getDurationStringForVoiceMessage(0L,
                                 info.getDuration() > 1000 ?
                                         (info.getDuration() / 1000) : info.getDuration()));
                     } else if (info.getResultCode() == FileInteractionFragment.PAUSED_AUDIO_PROGRESS) {
@@ -238,17 +241,6 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.FileViewHold
             if (progressData != null && progressData.getAttachmentId().equals(attachmentId)) {
                 if (progressData.isCompleted()) {
                     showProgress(false);
-                    //if (voiceMessage) {
-                    //    final Handler handler = new Handler();
-                    //    final View view = itemView;
-                    //    handler.postDelayed(new Runnable() {
-                    //        @Override
-                    //        public void run() {
-                    //            view.callOnClick();
-                    //            handler.removeCallbacks(null);
-                    //        }
-                    //    }, 100);
-                    //}
                 } else if (progressData.getError() != null) {
                     showProgress(false);
                     listener.onDownloadError(progressData.getError());
