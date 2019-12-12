@@ -5,6 +5,7 @@ import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.SettingsManager.SecurityOtrMode;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
+import com.xabber.android.data.connection.ConnectionState;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.otr.SecurityLevel;
@@ -61,6 +62,10 @@ public class CarbonManager {
     @SuppressWarnings("WeakerAccess")
     void updateIsSupported(final ConnectionItem connectionItem) {
         LogManager.d(LOG_TAG, "invoked updateIsSupported on ConnectionItem: " + connectionItem.toString());
+        if ((connectionItem.getRealJid() == null)){
+            LogManager.d(LOG_TAG, "But connection status is not equal to connected!");
+            return;
+        }
         org.jivesoftware.smackx.carbons.CarbonManager carbonManager
                 = org.jivesoftware.smackx.carbons.CarbonManager
                 .getInstanceFor(connectionItem.getConnection());

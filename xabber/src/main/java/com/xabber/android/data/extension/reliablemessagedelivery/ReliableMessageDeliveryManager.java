@@ -44,6 +44,10 @@ public class ReliableMessageDeliveryManager implements OnPacketListener {
 
     public boolean isSupported(XMPPTCPConnection xmpptcpConnection) {
         try {
+            if (xmpptcpConnection.getUser() == null){
+                LogManager.d(LOG_TAG, "To check supporting connection should be connected!");
+                return false;
+            }
             return ServiceDiscoveryManager.getInstanceFor(xmpptcpConnection).serverSupportsFeature(NAMESPACE);
         } catch (Exception e) {
             LogManager.exception(LOG_TAG, e);
@@ -79,12 +83,13 @@ public class ReliableMessageDeliveryManager implements OnPacketListener {
                                     }
                                 }
                             }
+                            LogManager.d(LOG_TAG, Integer.toString(Realm.getGlobalInstanceCount(realm.getConfiguration())));
                         }
                     });
                 } finally {
                     if (realm != null){
                         realm.close();
-                    }
+                    } LogManager.d(LOG_TAG, Integer.toString(Realm.getGlobalInstanceCount(realm.getConfiguration())));
                 }
             }
         });
@@ -119,12 +124,15 @@ public class ReliableMessageDeliveryManager implements OnPacketListener {
                             messageItem.setDelivered(true);
                         }
                     });
+                    LogManager.d(LOG_TAG, Integer.toString(Realm.getGlobalInstanceCount(realm.getConfiguration())));
                 } finally {
                     if (realm != null)
                         realm.close();
+                    LogManager.d(LOG_TAG, Integer.toString(Realm.getGlobalInstanceCount(realm.getConfiguration())));
                 }
             }
         });
+
     }
 
     @Override
