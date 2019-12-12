@@ -363,14 +363,14 @@ public class FileManager {
         File directory = new File(getDownloadDirPath());
         if (!directory.exists()) {
             if (!directory.mkdir()) {
-                LogManager.e(Application.getInstance().getApplicationContext(), "Can't create a folder " + getDownloadDirPath());
+                LogManager.e(LOG_TAG, "Can't create a folder " + getDownloadDirPath());
                 return null;
             }
         }
         directory = new File(getSpecificDownloadDirPath());
         if (!directory.exists()) {
             if (!directory.mkdir()) {
-                LogManager.e(Application.getInstance().getApplicationContext(), "Can't create a folder " + getSpecificDownloadDirPath());
+                LogManager.e(LOG_TAG, "Can't create a folder " + getSpecificDownloadDirPath());
                 return null;
             }
         }
@@ -434,8 +434,7 @@ public class FileManager {
     }
 
     private static String getSpecificDownloadDirPath() {
-        return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath()
-                + File.separator + XABBER_DIR + File.separator + XABBER_AUDIO_DIR;
+        return getDownloadDirPath() + File.separator + XABBER_AUDIO_DIR;
     }
 
     public static File createTempPNGImageFile(String name) throws IOException {
