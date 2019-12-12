@@ -166,15 +166,16 @@
         android:visibility="gone"
         />
 
-    <RelativeLayout
+    <LinearLayout
         android:id="@+id/record_lock_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginRight="13dp"
+        android:layout_marginRight="12dp"
         android:layout_marginBottom="86dp"
         android:background="@drawable/rounded_background_dark_transparent_voice_lock"
+        android:orientation="vertical"
         android:paddingTop="3dp"
         android:paddingBottom="3dp"
         android:visibility="invisible">
@@ -193,7 +194,7 @@
             app:srcCompat="@drawable/ic_chevron_up" />
 
 
-    </RelativeLayout>
+    </LinearLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/record_float_button"
