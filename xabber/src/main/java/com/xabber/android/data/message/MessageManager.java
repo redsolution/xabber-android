@@ -388,6 +388,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
                 }
             }
         });
+        realm.close();
     }
 
     public void updateMessageWithError(final String messageId, final String errorDescription) {
@@ -407,6 +408,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
                     updateMessageWithError(realm, messageId, errorDescription);
                 }
             });
+            realm.close();
         }
     }
 

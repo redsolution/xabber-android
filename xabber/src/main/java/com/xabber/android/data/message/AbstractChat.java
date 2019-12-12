@@ -335,6 +335,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
                     EventBus.getDefault().post(new NewMessageEvent());
                 }
             });
+            realm.close();
         }
     }
 
@@ -482,6 +483,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
                 realm.copyToRealm(messageItem);
             }
         });
+        realm.close();
 
         return messageId;
     }
@@ -711,6 +713,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
                     references.add(reference);
                 }
             }
+            realm.close();
             builder.append(text);
             text = builder.toString();
 
