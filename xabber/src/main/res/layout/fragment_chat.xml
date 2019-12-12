@@ -88,6 +88,10 @@
         <include layout="@layout/view_chat_interaction"
             android:visibility="gone"/>
 
+        <include layout="@layout/view_chat_record"
+            android:visibility="gone"/>
+
+
     </RelativeLayout>
 
     <RelativeLayout
@@ -161,6 +165,50 @@
         android:layout_marginBottom="-8dp"
         android:visibility="gone"
         />
+
+    <RelativeLayout
+        android:id="@+id/record_lock_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginRight="13dp"
+        android:layout_marginBottom="86dp"
+        android:background="@drawable/rounded_background_dark_transparent_voice_lock"
+        android:paddingTop="3dp"
+        android:paddingBottom="3dp"
+        android:visibility="invisible">
+
+        <ImageView
+            android:id="@+id/iv_record_lock"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/ic_security_plain_24dp" />
+
+        <ImageView
+            android:id="@+id/iv_record_chevron_lock"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/iv_record_lock"
+            app:srcCompat="@drawable/ic_chevron_up" />
+
+
+    </RelativeLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/record_float_button"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginRight="-12dp"
+        android:layout_marginBottom="-12dp"
+        android:baselineAlignBottom="false"
+        android:clickable="false"
+        android:tint="@color/white"
+        android:visibility="invisible"
+        app:fabCustomSize="78dp"
+        app:srcCompat="@drawable/ic_microphone" />
 
     <LinearLayout
         android:id="@+id/placeholder"

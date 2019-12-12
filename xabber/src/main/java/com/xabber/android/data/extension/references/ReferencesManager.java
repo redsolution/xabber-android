@@ -56,6 +56,19 @@ public class ReferencesManager {
         return new Media(begin, end, mediaList);
     }
 
+    public static Voice createVoiceReferences(Attachment attachment, int begin, int end) {
+        List<RefMedia> voiceList = new ArrayList<>();
+        RefFile.Builder builder = RefFile.newBuilder();
+        builder.setName(attachment.getTitle());
+        builder.setMediaType(attachment.getMimeType());
+        builder.setDuration(attachment.getDuration());
+        builder.setSize(attachment.getFileSize());
+        RefMedia media = new RefMedia(builder.build(), attachment.getFileUrl());
+        voiceList.add(media);
+
+        return new Voice(begin, end, voiceList);
+    }
+
     public static Forward createForwardReference(MessageItem item, int begin, int end) {
         List<Forwarded> forwardedList = new ArrayList<>();
         try {
@@ -80,6 +93,19 @@ public class ReferencesManager {
             }
         }
         return media;
+    }
+
+    public static List<RefMedia> getVoiceFromReferences(Stanza packet) {
+        List<ExtensionElement> elements = packet.getExtensions(ReferenceElement.ELEMENT, ReferenceElement.NAMESPACE);
+        if (elements == null || elements.size() == 0) return Collections.emptyList();
+
+        List<RefMedia> voice = new ArrayList<>();
+        for (ExtensionElement element : elements) {
+            if (element instanceof Voice) {
+                voice.addAll(((Voice) element).getVoice());
+            }
+        }
+        return voice;
     }
 
     @Nullable
@@ -167,6 +193,9 @@ public class ReferencesManager {
         if (begin > end) return chars;
         switch (reference.getType()) {
             case media:
+                chars = remove(begin, end, chars);
+                break;
+            case voice:
                 chars = remove(begin, end, chars);
                 break;
             case forward:

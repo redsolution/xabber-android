@@ -15,12 +15,14 @@
 package com.xabber.android.data.message;
 
 import android.content.Intent;
-import androidx.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Pair;
 
+import androidx.annotation.NonNull;
+
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
+import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.database.messagerealm.Attachment;
 import com.xabber.android.data.database.messagerealm.ForwardId;
 import com.xabber.android.data.database.messagerealm.MessageItem;
@@ -33,9 +35,12 @@ import com.xabber.android.data.extension.otr.OTRUnencryptedException;
 import com.xabber.android.data.extension.otr.SecurityLevel;
 import com.xabber.android.data.extension.references.RefUser;
 import com.xabber.android.data.extension.references.ReferencesManager;
+import com.xabber.android.data.extension.reliablemessagedelivery.ReliableMessageDeliveryManager;
+import com.xabber.android.data.extension.reliablemessagedelivery.TimeElement;
 import com.xabber.android.data.groupchat.GroupchatUserManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.xaccount.XMPPAuthManager;
+import com.xabber.android.utils.StringUtils;
 
 import net.java.otr4j.OtrException;
 
@@ -43,6 +48,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Message.Type;
 import org.jivesoftware.smack.packet.Presence;
+import org.jivesoftware.smack.packet.StandardExtensionElement;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smackx.delay.packet.DelayInformation;
 import org.jivesoftware.smackx.muc.packet.MUCUser;
@@ -247,18 +253,23 @@ public class RegularChat extends AbstractChat {
             Pair<String, String> bodies = ReferencesManager.modifyBodyWithReferences(message, text);
             text = bodies.first;
             String markupText = bodies.second;
-
+            Date timestamp = null;
+            if ((ReliableMessageDeliveryManager.getInstance().isSupported(AccountManager.getInstance().getAccount(account)))
+                    && (message.hasExtension(TimeElement.ELEMENT, TimeElement.NAMESPACE))){
+                StandardExtensionElement timeElement = (StandardExtensionElement) message.getExtension(TimeElement.ELEMENT, TimeElement.NAMESPACE);
+                timestamp = StringUtils.parseReceivedReceiptTimestampString(timeElement.getAttributeValue(TimeElement.ATTRIBUTE_STAMP));
+            }
             // create message with file-attachments
             if (attachments.size() > 0)
                 createAndSaveFileMessage(true, uid, resource, text, markupText, null,
-                        null, getDelayStamp(message), true, true, encrypted,
+                        timestamp, getDelayStamp(message), true, true, encrypted,
                         isOfflineMessage(account.getFullJid().getDomain(), packet),
                         getStanzaId(message), attachments, originalStanza, null,
                         originalFrom, false, false, gropchatUserId);
 
                 // create message without attachments
             else createAndSaveNewMessage(true, uid, resource, text, markupText, null,
-                    null, getDelayStamp(message), true, true, encrypted,
+                    timestamp, getDelayStamp(message), true, true, encrypted,
                     isOfflineMessage(account.getFullJid().getDomain(), packet),
                     getStanzaId(message), originalStanza, null,
                     originalFrom, forwardIds,false, false, gropchatUserId);

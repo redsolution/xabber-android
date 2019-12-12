@@ -18,6 +18,8 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.icu.text.Transliterator;
 
+import androidx.annotation.Nullable;
+
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.log.LogManager;
@@ -317,6 +319,24 @@ public class StringUtils {
         SimpleDateFormat pattern = new SimpleDateFormat(strPattern,
                 Application.getInstance().getResources().getConfiguration().locale);
         return pattern.format(date);
+    }
+
+    public static String getDurationStringForVoiceMessage(@Nullable Long current, long duration) {
+        StringBuilder sb = new StringBuilder();
+        if (current != null) {
+            sb.append(transformTimeToFormattedString(current));
+            sb.append(" / ");
+            sb.append(transformTimeToFormattedString(duration));
+        } else {
+            sb.append(transformTimeToFormattedString(duration));
+        }
+        return sb.toString();
+    }
+
+    private static String transformTimeToFormattedString(long time) {
+        return String.format(Locale.getDefault(), "%01d:%02d",
+                TimeUnit.SECONDS.toMinutes(time),
+                (TimeUnit.SECONDS.toSeconds(time)) % 60);
     }
 
     public static String getColoredText(String text, String hexColor) {

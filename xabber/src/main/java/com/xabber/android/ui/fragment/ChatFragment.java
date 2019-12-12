@@ -1,29 +1,39 @@
 package com.xabber.android.ui.fragment;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.SystemClock;
 import android.text.Editable;
 import android.text.Spannable;
 import android.text.TextWatcher;
+import android.view.HapticFeedbackConstants;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.view.ViewTreeObserver;
+import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
+import android.widget.Chronometer;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -42,6 +52,7 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
@@ -94,7 +105,9 @@ import com.xabber.android.ui.dialog.ChatHistoryClearDialog;
 import com.xabber.android.ui.helper.PermissionsRequester;
 import com.xabber.android.ui.widget.CustomMessageMenu;
 import com.xabber.android.ui.widget.ForwardPanel;
+import com.xabber.android.ui.widget.PlayerVisualizerView;
 import com.xabber.android.utils.StringUtils;
+import com.xabber.android.utils.Utils;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -105,18 +118,24 @@ import org.jxmpp.jid.impl.JidCreate;
 import org.jxmpp.jid.parts.Resourcepart;
 import org.jxmpp.stringprep.XmppStringprepException;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 
 import github.ankushsachdeva.emojicon.EmojiconGridView;
 import github.ankushsachdeva.emojicon.EmojiconsPopup;
 import github.ankushsachdeva.emojicon.emoji.Emojicon;
 import io.realm.RealmResults;
+import rx.Subscription;
+import rx.functions.Action1;
+import rx.subjects.PublishSubject;
 
 public class ChatFragment extends FileInteractionFragment implements PopupMenu.OnMenuItemClickListener,
         View.OnClickListener, Toolbar.OnMenuItemClickListener, MessageVH.MessageClickListener,
@@ -126,6 +145,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
     public static final String ARGUMENT_ACCOUNT = "ARGUMENT_ACCOUNT";
     public static final String ARGUMENT_USER = "ARGUMENT_USER";
+    public static final String VOICE_MESSAGE = "VOICE_MESSAGE";
     private static final String LOG_TAG = ChatFragment.class.getSimpleName();
     private final long STOP_TYPING_DELAY = 4000; // in ms
     private static final int PERMISSIONS_REQUEST_EXPORT_CHAT = 22;
@@ -134,6 +154,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     private ImageButton sendButton;
     private ImageButton securityButton;
     private ImageButton attachButton;
+    private ImageButton recordButton;
     private View lastHistoryProgressBar;
     private View previousHistoryProgressBar;
 
@@ -142,6 +163,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     private TextView tvNotifyTitle;
     private TextView tvNotifyAction;
 
+    private View rootView;
     private RecyclerView realmRecyclerView;
     private MessagesAdapter chatMessageAdapter;
     private LinearLayoutManager layoutManager;
@@ -164,6 +186,37 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     boolean isInputEmpty = true;
     private boolean skipOnTextChanges = false;
 
+    private Handler handler = new Handler();
+    private VoiceRecordState currentVoiceRecordingState = VoiceRecordState.NotRecording;
+    private boolean recordSaveAllowed = false;
+    private int lockViewHeightSize;
+    private int lockViewMarginBottom;
+    private int fabMicViewHeightSize;
+    private int fabMicViewMarginBottom;
+    private float rootViewHeight;
+    private float rootViewWidth;
+    private String recordingPath;
+
+    //Voice message recorder layout
+    private RelativeLayout voiceMessageRecorderLayout;
+    private FloatingActionButton recordButtonExpanded;
+    private View recordLockView;
+    private ImageView recordLockImage;
+    private ImageView recordLockChevronImage;
+    private ImageView recordImageView;
+    private Chronometer recordTimer;
+    private LinearLayout slideToCancelLayout;
+    private LinearLayout cancelRecordingLayout;
+    private TextView cancelRecordingTextView;
+    private LinearLayout recordingPresenterLayout;
+    private LinearLayout recordingPresenterPlaybarLayout;
+    private PlayerVisualizerView recordingPresenter;
+    private ImageButton recordingPlayButton;
+    private ImageButton recordingDeleteButton;
+    private ImageButton recordingPresenterSendButton;
+    private TextView recordingPresenterDuration;
+    private PublishSubject<FileInteractionFragment.PublishAudioProgress.AudioInfo> audioProgress;
+    private Subscription subscription;
 
     private ChatViewerFragmentListener listener;
 
@@ -217,6 +270,33 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         LogManager.i(this, "onCreate " + user);
     }
 
+    protected final Runnable timer = new Runnable() {
+        @Override
+        public void run() {
+            changeStateOfInputViewButtonsTo(false);
+            recordLockView.setVisibility(View.VISIBLE);
+            rootView.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+
+            recordButtonExpanded.show();
+            recordLockView.startAnimation(AnimationUtils.loadAnimation(getActivity().getApplication(), R.anim.fade_in_200));
+            recordLockView.animate()
+                    .y(rootViewHeight - (lockViewMarginBottom + lockViewHeightSize))
+                    .setDuration(300)
+                    .start();
+            beginTimer(currentVoiceRecordingState == VoiceRecordState.InitiatedRecording);
+
+        }
+    };
+
+    protected final Runnable postAnimation = new Runnable() {
+        @Override
+        public void run() {
+            closeVoiceRecordPanel();
+        }
+    };
+
+
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
@@ -226,6 +306,18 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         tvNewReceivedCount = view.findViewById(R.id.tvNewReceivedCount);
         btnScrollDown = view.findViewById(R.id.btnScrollDown);
         btnScrollDown.setOnClickListener(this);
+
+        rootView = view.findViewById(R.id.root_view);
+        rootView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+            @Override
+            public void onLayoutChange(View view, int left, int top, int right, int bottom, int leftOld, int topOld, int rightOld, int bottomOld) {
+                int heightOld = bottomOld - topOld;
+                if (heightOld != view.getHeight()) {
+                    rootViewHeight = view.getHeight();
+                    rootViewWidth = view.getWidth();
+                }
+            }
+        });
 
         sendButton = (ImageButton) view.findViewById(R.id.button_send_message);
         sendButton.setColorFilter(ColorManager.getInstance().getAccountPainter().getGreyMain());
@@ -238,6 +330,190 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
             }
         });
 
+        recordButton = (ImageButton) view.findViewById(R.id.button_record);
+
+        recordButton.setOnTouchListener(new View.OnTouchListener() {
+
+
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                final int x = (int) motionEvent.getRawX();
+
+                switch (motionEvent.getAction() & MotionEvent.ACTION_MASK) {
+                    case MotionEvent.ACTION_DOWN:
+                        if (PermissionsRequester.requestRecordAudioPermissionIfNeeded(getActivity(), PERMISSIONS_REQUEST_RECORD_AUDIO))
+                            if (PermissionsRequester.requestFileWritePermissionIfNeeded(getActivity(), PERMISSIONS_REQUEST_RECORD_AUDIO)) {
+                                if (currentVoiceRecordingState == VoiceRecordState.NotRecording) {
+                                    LinearLayout.LayoutParams lParams = (LinearLayout.LayoutParams)
+                                            view.getLayoutParams();
+
+                                    recordButtonExpanded.setImageResource(R.drawable.ic_microphone);
+                                    recordSaveAllowed = false;
+                                    slideToCancelLayout.setAlpha(1.0f);
+                                    recordLockView.setAlpha(1.0f);
+                                    handler.postDelayed(record, 500);
+                                    handler.postDelayed(timer, 500);
+                                    currentVoiceRecordingState = VoiceRecordState.InitiatedRecording;
+                                    Utils.lockScreenRotation(getActivity(), true);
+                                }
+                            }
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        if (currentVoiceRecordingState == VoiceRecordState.TouchRecording) {
+                            sendVoiceMessage();
+                            Utils.lockScreenRotation(getActivity(), false);
+                        } else if (currentVoiceRecordingState == VoiceRecordState.InitiatedRecording) {
+                            handler.removeCallbacks(record);
+                            handler.removeCallbacks(timer);
+                            currentVoiceRecordingState = VoiceRecordState.NotRecording;
+                            Utils.lockScreenRotation(getActivity(), false);
+                        }
+                        break;
+
+                    case MotionEvent.ACTION_MOVE:
+
+                        //FAB movement
+                        RelativeLayout.LayoutParams lockParams = (RelativeLayout.LayoutParams) recordLockChevronImage.getLayoutParams();
+                        float yRecordDiff = rootViewHeight - (fabMicViewHeightSize + fabMicViewMarginBottom) + motionEvent.getY();
+                        float yLockDiff = rootViewHeight - (lockViewMarginBottom + lockViewHeightSize) + motionEvent.getY();
+                        if (currentVoiceRecordingState == VoiceRecordState.TouchRecording) {
+                            if (yRecordDiff > rootViewHeight - (fabMicViewHeightSize + fabMicViewMarginBottom)) {
+                                recordButtonExpanded.animate()
+                                        .y(rootViewHeight - (fabMicViewHeightSize + fabMicViewMarginBottom))
+                                        .setDuration(0)
+                                        .start();
+                                recordLockView.animate()
+                                        .y(rootViewHeight - (lockViewMarginBottom + lockViewHeightSize))
+                                        .setDuration(0)
+                                        .start();
+                                recordLockChevronImage.setAlpha(1f);
+                            } else if (yRecordDiff > rootViewHeight - (fabMicViewHeightSize + fabMicViewMarginBottom) - 200) { //200 = height to the "locked" state
+                                recordButtonExpanded.animate()
+                                        .y(yRecordDiff)
+                                        .setDuration(0)
+                                        .start();
+                                recordLockView.animate()
+                                        .y(yLockDiff)
+                                        .setDuration(0)
+                                        .start();
+
+                                lockParams.topMargin = -((int)rootViewHeight - (fabMicViewHeightSize + fabMicViewMarginBottom) - (int) yRecordDiff) / 3;
+                                recordLockChevronImage.setAlpha((yRecordDiff - (rootViewHeight * 0.8f)) /
+                                                ((rootViewHeight * 0.2f) - (fabMicViewHeightSize + fabMicViewMarginBottom))
+                                );
+                                recordLockChevronImage.setLayoutParams(lockParams);
+                            } else {
+                                currentVoiceRecordingState = VoiceRecordState.NoTouchRecording;
+
+                                //workaround for the https://issuetracker.google.com/issues/111316656 issue of
+                                //the button's image not updating after setting a background tint manually.
+                                recordButtonExpanded.hide();
+                                recordButtonExpanded.setImageResource(R.drawable.ic_send_black_24dp);
+                                recordButtonExpanded.show();
+                                ////////////////////////////
+
+                                recordButtonExpanded.animate()
+                                        .y(rootViewHeight - (fabMicViewHeightSize + fabMicViewMarginBottom))
+                                        .setDuration(100)
+                                        .start();
+                                recordLockView.animate()
+                                        .y(rootViewHeight - (lockViewMarginBottom + lockViewHeightSize) + 50) // 50=temporary offset
+                                        .setDuration(100)
+                                        .start();
+
+                                cancelRecordingLayout.setVisibility(View.VISIBLE);
+                                recordLockImage.setImageResource(R.drawable.ic_stop);
+                                recordLockImage.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        if (currentVoiceRecordingState == VoiceRecordState.NoTouchRecording) {
+                                            stopRecording();
+                                        }
+                                    }
+                                });
+                                lockParams.topMargin = -(recordLockChevronImage.getHeight());
+                                recordLockChevronImage.setLayoutParams(lockParams);
+                                recordLockChevronImage.setAlpha(0f);
+                                view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+                            }
+                        }
+
+                        //"Slide To Cancel" movement;
+                        float alpha = (1f + motionEvent.getX() / 400f);
+                        if (currentVoiceRecordingState == VoiceRecordState.TouchRecording) {
+                            if (motionEvent.getX() < 0)
+                                slideToCancelLayout.animate().x(motionEvent.getX()).setDuration(0).start();
+                            else
+                                slideToCancelLayout.animate().x(0).setDuration(0).start();
+
+                            slideToCancelLayout.setAlpha(alpha);
+
+                            //since alpha and slide are tied together, we can cancel recording by checking transparency value
+                            if (alpha<=0) {
+                                cancelRecordingCompletely(true);
+                            }
+                        }
+                        break;
+                }
+                return true;
+            }
+        });
+
+        recordImageView = view.findViewById(R.id.ivRecording);
+
+        slideToCancelLayout = view.findViewById(R.id.slide_layout);
+
+        cancelRecordingLayout = view.findViewById(R.id.cancel_record_layout);
+        cancelRecordingTextView = view.findViewById(R.id.tv_cancel_recording);
+        cancelRecordingTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (currentVoiceRecordingState == VoiceRecordState.NoTouchRecording) {
+                    clearVoiceMessage();
+                }
+            }
+        });
+
+        recordingPresenterLayout = view.findViewById(R.id.recording_presenter_layout);
+        recordingPresenterPlaybarLayout = view.findViewById(R.id.recording_playbar_layout);
+        recordingPresenterPlaybarLayout.getBackground().setColorFilter(ColorManager.getInstance().getAccountPainter().getAccountMainColor(account), PorterDuff.Mode.SRC_IN);
+        recordingPresenter = view.findViewById(R.id.voice_presenter_visualizer);
+        recordingPresenter.setNotPlayedColorRes(R.color.grey_400); //ContextCompat.getColor(getContext(), R.color.grey_800)
+        recordingPresenter.setPlayedColor(Color.WHITE);
+        recordingPlayButton = view.findViewById(R.id.voice_presenter_play);
+        recordingDeleteButton = view.findViewById(R.id.voice_presenter_delete);
+        recordingPresenterDuration = view.findViewById(R.id.voice_presenter_time);
+        recordingPresenterSendButton = view.findViewById(R.id.voice_presenter_send);
+        recordingPresenterSendButton.setColorFilter(ColorManager.getInstance().getAccountPainter().getAccountMainColor(account));
+
+        voiceMessageRecorderLayout = view.findViewById(R.id.record_layout);
+
+        recordTimer = view.findViewById(R.id.chrRecordingTimer);
+        recordTimer.setOnChronometerTickListener(new Chronometer.OnChronometerTickListener() {
+            @Override
+            public void onChronometerTick(Chronometer chronometer) {
+                long elapsedMillis = SystemClock.elapsedRealtime() - recordTimer.getBase();
+
+                if (elapsedMillis > 1000) {
+                    recordSaveAllowed = true;
+                } else
+                    recordSaveAllowed = false;
+            }
+        });
+
+        recordButtonExpanded = (FloatingActionButton) view.findViewById(R.id.record_float_button);
+        recordButtonExpanded.setBackgroundTintList(ColorStateList.valueOf(ColorManager.getInstance().getAccountPainter().getAccountMainColor(account)));
+        recordButtonExpanded.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (currentVoiceRecordingState == VoiceRecordState.NoTouchRecording)
+                    sendVoiceMessage();
+            }
+        });
+
+        recordLockView = view.findViewById(R.id.record_lock_view);
+        recordLockImage = view.findViewById(R.id.iv_record_lock);
+        recordLockChevronImage = view.findViewById(R.id.iv_record_chevron_lock);
 
         lastHistoryProgressBar = view.findViewById(R.id.chat_last_history_progress_bar);
         previousHistoryProgressBar = view.findViewById(R.id.chat_previous_history_progress_bar);
@@ -304,7 +580,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
             }
         });
 
-        view.findViewById(R.id.button_send_message).setOnClickListener(
+        sendButton.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -343,6 +619,16 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         stubJoin = (ViewStub) view.findViewById(R.id.stubJoin);
         NotificationManager.getInstance().removeMessageNotification(account, user);
         setChat(account, user);
+        if (savedInstanceState != null) {
+            String voiceRecordPath = savedInstanceState.getString(VOICE_MESSAGE);
+            if (voiceRecordPath != null) {
+                recordingPath = voiceRecordPath;
+                currentVoiceRecordingState = VoiceRecordState.StoppedRecording;
+                changeStateOfInputViewButtonsTo(false);
+                voiceMessageRecorderLayout.setVisibility(View.VISIBLE);
+                setUpVoiceMessagePresenter();
+            }
+        }
 
         if (SettingsManager.chatsShowBackground()) {
             if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.dark) {
@@ -366,6 +652,13 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                 }
                 else tvTopDate.getViewTreeObserver().removeGlobalOnLayoutListener(this);
                 updateTopDateIfNeed();
+                //measurements for the recording layout animations.
+                rootViewHeight = rootView.getHeight();
+                rootViewWidth = rootView.getWidth();
+                lockViewHeightSize = recordLockView.getHeight();
+                lockViewMarginBottom = ((RelativeLayout.LayoutParams) recordLockView.getLayoutParams()).bottomMargin;
+                fabMicViewHeightSize = recordButtonExpanded.getHeight();
+                fabMicViewMarginBottom = ((RelativeLayout.LayoutParams) recordButtonExpanded.getLayoutParams()).bottomMargin;
             }
         });
 
@@ -425,6 +718,9 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
         saveInputState();
         saveScrollState();
+        if (currentVoiceRecordingState == VoiceRecordState.NoTouchRecording
+                || currentVoiceRecordingState == VoiceRecordState.TouchRecording)
+            stopRecording();
 
         Application.getInstance().removeUIListener(OnAccountChangedListener.class, this);
     }
@@ -448,6 +744,21 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
             listener.unregisterChatFragment();
             listener = null;
         }
+        handler.removeCallbacks(record);
+        handler.removeCallbacks(postAnimation);
+        if (subscription != null) subscription.unsubscribe();
+        if (currentVoiceRecordingState != VoiceRecordState.NotRecording) {
+            stopRecordingIfPossibleAsync(false);
+        }
+        clearCachedVoiceFile();
+        releaseMediaPlayer();
+        releaseMediaRecorder();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(VOICE_MESSAGE, recordingPath);
     }
 
     private void setUpInputView(View view) {
@@ -741,14 +1052,18 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         }
 
         if (isInputEmpty) {
+            sendButton.setVisibility(View.GONE);
             sendButton.setColorFilter(ColorManager.getInstance().getAccountPainter().getGreyMain());
             sendButton.setEnabled(false);
             showSecurityButton(true);
+            recordButton.setVisibility(View.VISIBLE);
             attachButton.setVisibility(View.VISIBLE);
         } else {
+            sendButton.setVisibility(View.VISIBLE);
             sendButton.setEnabled(true);
             sendButton.setColorFilter(ColorManager.getInstance().getAccountPainter().getAccountSendButtonColor(account));
             showSecurityButton(false);
+            recordButton.setVisibility(View.GONE);
             attachButton.setVisibility(View.GONE);
         }
     }
@@ -1381,7 +1696,9 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         int pastVisibleItems = layoutManager.findLastVisibleItemPosition();
         boolean isBottom = pastVisibleItems >= chatMessageAdapter.getItemCount() - 1;
 
-        if (isBottom) {
+        if (isBottom
+                || currentVoiceRecordingState == VoiceRecordState.TouchRecording
+                || currentVoiceRecordingState == VoiceRecordState.NoTouchRecording) {
             btnScrollDown.setVisibility(View.GONE);
         } else btnScrollDown.setVisibility(View.VISIBLE);
     }
@@ -1401,6 +1718,175 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     private void closeInteractionPanel() {
         chatMessageAdapter.resetCheckedItems();
         setUpInputViewButtons();
+    }
+
+    public void onSensorNearState() {
+
+    }
+
+    private void sendVoiceMessage() {
+        manageVoiceMessage(recordSaveAllowed);
+    }
+
+    private void clearVoiceMessage() {
+        manageVoiceMessage(false);
+    }
+
+    private void manageVoiceMessage(boolean saveMessage) {
+        handler.removeCallbacks(record);
+        handler.removeCallbacks(timer);
+        stopRecordingIfPossible(saveMessage);
+        cancelRecordingCompletely(true);
+    }
+
+    private void stopRecording() {
+        Utils.lockScreenRotation(getActivity(), false);
+        if (recordSaveAllowed) {
+            recordingPath = stopRecordingIfPossibleForCheckup();
+            endRecordingButtonsAnimation();
+            beginTimer(false);
+            currentVoiceRecordingState = VoiceRecordState.StoppedRecording;
+            if (recordingPath != null) {
+                setUpVoiceMessagePresenter();
+                showScrollDownButtonIfNeed();
+            }
+        } else {
+            clearVoiceMessage();
+        }
+    }
+
+    private void setUpVoiceMessagePresenter() {
+        long time = HttpFileUploadManager.getVoiceLength(recordingPath);
+
+        recordingPresenterDuration.setText(String.format(Locale.getDefault(), "%02d:%02d",
+                TimeUnit.SECONDS.toMinutes(time),
+                TimeUnit.SECONDS.toSeconds(time)));
+        subscribeForRecordedAudioProgress();
+
+        recordingPresenterLayout.setVisibility(View.VISIBLE);
+
+        recordingPresenter.updateVisualizerFromFile(new File(recordingPath));
+        recordingPresenter.updatePlayerPercent(0f);
+        recordingPlayButton.setImageResource(R.drawable.ic_play);
+
+        recordingPlayButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                manageRecordedVoicePlayback(recordingPath);
+            }
+        });
+        recordingDeleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                releaseRecordedVoicePlayback(recordingPath);
+                finishVoiceRecordLayout();
+                recordingPath = null;
+                subscription.unsubscribe();
+            }
+        });
+        recordingPresenterSendButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sendStoppedVoiceMessage(recordingPath);
+                finishVoiceRecordLayout();
+                recordingPath = null;
+                subscription.unsubscribe();
+            }
+        });
+    }
+
+    private void subscribeForRecordedAudioProgress() {
+        audioProgress = FileInteractionFragment.PublishAudioProgress.getInstance().subscribeForProgress();
+        subscription = audioProgress.doOnNext(new Action1<PublishAudioProgress.AudioInfo>() {
+            @Override
+            public void call(FileInteractionFragment.PublishAudioProgress.AudioInfo info) {
+                setUpAudioProgress(info);
+            }
+        }).subscribe();
+    }
+
+    private void setUpAudioProgress(FileInteractionFragment.PublishAudioProgress.AudioInfo info) {
+        if (info.getAttachmentId() == 0) {
+            recordingPresenter.updatePlayerPercent((float) info.getCurrentPosition() / info.getDuration());
+            if (info.getResultCode() == FileInteractionFragment.COMPLETED_AUDIO_PROGRESS
+                    || info.getResultCode() == FileInteractionFragment.PAUSED_AUDIO_PROGRESS)
+                recordingPlayButton.setImageResource(R.drawable.ic_play);
+            else recordingPlayButton.setImageResource(R.drawable.ic_pause);
+        }
+    }
+
+    private void finishVoiceRecordLayout() {
+        recordingPresenterLayout.setVisibility(View.GONE);
+        recordingPresenter.updateVisualizer(null);
+        currentVoiceRecordingState = VoiceRecordState.NotRecording;
+        closeVoiceRecordPanel();
+        changeStateOfInputViewButtonsTo(true);
+    }
+
+    private void closeVoiceRecordPanel() {
+        recordLockView.setVisibility(View.GONE);
+        voiceMessageRecorderLayout.setVisibility(View.GONE);
+        cancelRecordingLayout.setVisibility(View.GONE);
+        handler.removeCallbacks(postAnimation);
+        showScrollDownButtonIfNeed();
+    }
+
+    private void endRecordingButtonsAnimation() {
+        recordButtonExpanded.hide();
+        recordButtonExpanded.animate()
+                .y(rootViewHeight - (fabMicViewHeightSize + fabMicViewMarginBottom))
+                .setDuration(300)
+                .start();
+        recordLockView.startAnimation(AnimationUtils.loadAnimation(getActivity().getApplication(), R.anim.fade_out_200));
+        recordLockView.animate()
+                .y(rootViewHeight - (lockViewHeightSize + lockViewMarginBottom))
+                .setDuration(300)
+                .start();
+    }
+
+    private void cancelRecordingCompletely(boolean enableInputButtons) {
+        changeStateOfInputViewButtonsTo(enableInputButtons);
+        currentVoiceRecordingState = VoiceRecordState.NotRecording;
+
+        endRecordingButtonsAnimation();
+        voiceMessageRecorderLayout.startAnimation(AnimationUtils.loadAnimation(getActivity().getApplication(), R.anim.slide_out_right_opaque));
+        handler.postDelayed(postAnimation, 300);
+
+        beginTimer(false);
+        rootView.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+        Utils.lockScreenRotation(getActivity(), false);
+    }
+
+    private void changeStateOfInputViewButtonsTo(boolean state) {
+        ((ImageButton) rootView.findViewById(R.id.button_emoticon)).setEnabled(state);
+        attachButton.setEnabled(state);
+        securityButton.setEnabled(state);
+    }
+
+    public void beginTimer(boolean start) {
+        if (start) voiceMessageRecorderLayout.setVisibility(View.VISIBLE);
+        if (start) {
+            slideToCancelLayout.animate().x(0).setDuration(0).start();
+            recordLockChevronImage.setAlpha(1f);
+            recordLockImage.setImageResource(R.drawable.ic_security_plain_24dp);
+            RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) recordLockChevronImage.getLayoutParams();
+            layoutParams.topMargin = 0;
+            recordLockChevronImage.setLayoutParams(layoutParams);
+            recordTimer.setBase(SystemClock.elapsedRealtime());
+            recordTimer.start();
+            currentVoiceRecordingState = VoiceRecordState.TouchRecording;
+            showScrollDownButtonIfNeed();
+        } else {
+            recordTimer.stop();
+        }
+    }
+
+    private enum VoiceRecordState {
+        NotRecording,
+        InitiatedRecording,
+        TouchRecording,
+        NoTouchRecording,
+        StoppedRecording
     }
 
     /** Forward Panel */

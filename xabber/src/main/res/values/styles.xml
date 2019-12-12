@@ -25,6 +25,9 @@
         <item name="android:radius">1dp</item>
     </style>
 
+    <style name="RecordVoiceButton" parent="@style/Widget.AppCompat.ActionButton">
+        <item name="android:radius">80dp</item>
+    </style>
 
     <style name="AddAccountButton" parent="@style/Widget.MaterialComponents.Button">
         <item name="android:minHeight">30dp</item>

@@ -3,6 +3,7 @@ package com.xabber.android.data.extension.httpfileupload;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
+import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -25,6 +26,7 @@ import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.extension.references.RefFile;
 import com.xabber.android.data.extension.references.RefMedia;
+import com.xabber.android.data.extension.references.ReferenceElement;
 import com.xabber.android.data.extension.references.ReferencesManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.MessageManager;
@@ -126,6 +128,13 @@ public class HttpFileUploadManager implements OnLoadListener, OnAccountRemovedLi
     public void uploadFile(final AccountJid account, final UserJid user,
                            final List<String> filePaths, final List<Uri> fileUris,
                            String existMessageId, Context context) {
+        uploadFile(account, user, filePaths, fileUris, existMessageId, null, context);
+    }
+
+
+    public void uploadFile(final AccountJid account, final UserJid user,
+                           final List<String> filePaths, final List<Uri> fileUris,
+                           String existMessageId, String element, Context context) {
 
         if (isUploading) {
             progressSubscribe.onNext(new ProgressData(0, 0, "Uploading already started",
@@ -147,6 +156,7 @@ public class HttpFileUploadManager implements OnLoadListener, OnAccountRemovedLi
         intent.putExtra(UploadService.KEY_RECEIVER, new UploadReceiver(new Handler()));
         intent.putExtra(UploadService.KEY_ACCOUNT_JID, (Parcelable) account);
         intent.putExtra(UploadService.KEY_USER_JID, user);
+        intent.putExtra(UploadService.KEY_REFERENCE_ELEMENT, element);
         intent.putStringArrayListExtra(UploadService.KEY_FILE_PATHS, (ArrayList<String>) filePaths);
         intent.putParcelableArrayListExtra(UploadService.KEY_FILE_URIS, (ArrayList<Uri>) fileUris);
         intent.putExtra(UploadService.KEY_UPLOAD_SERVER_URL, (CharSequence) uploadServerUrl);
@@ -188,6 +198,17 @@ public class HttpFileUploadManager implements OnLoadListener, OnAccountRemovedLi
                 | SmackException.NoResponseException | InterruptedException e) {
             LogManager.exception(this, e);
         }
+    }
+
+    public static long getVoiceLength(String filePath) {
+        MediaMetadataRetriever mmr = new MediaMetadataRetriever();
+        mmr.setDataSource(filePath);
+        String dur = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
+        long duration = 0;
+        if (dur != null) {
+            duration = Math.round(Long.valueOf(dur) / 1000);
+        }
+        return duration;
     }
 
     public static ImageSize getImageSizes(String filePath) {
@@ -239,9 +260,15 @@ public class HttpFileUploadManager implements OnLoadListener, OnAccountRemovedLi
 
         // parsing data references
         List<RefMedia> refMediaList = ReferencesManager.getMediaFromReferences(packet);
+        List<RefMedia> refVoiceList = ReferencesManager.getVoiceFromReferences(packet);
         if (!refMediaList.isEmpty()) {
             for (RefMedia media : refMediaList) {
-                attachments.add(refMediaToAttachment(media));
+                attachments.add(refMediaToAttachment(media, ReferenceElement.Type.media.name()));
+            }
+        }
+        if (!refVoiceList.isEmpty()) {
+            for (RefMedia voice : refVoiceList) {
+                attachments.add(refMediaToAttachment(voice, ReferenceElement.Type.voice.name()));
             }
         }
 
@@ -261,10 +288,11 @@ public class HttpFileUploadManager implements OnLoadListener, OnAccountRemovedLi
         return attachments;
     }
 
-    private static Attachment refMediaToAttachment(RefMedia media) {
+    private static Attachment refMediaToAttachment(RefMedia media, String referenceType) {
         Attachment attachment = new Attachment();
         attachment.setFileUrl(media.getUri());
         attachment.setIsImage(FileManager.isImageUrl(media.getUri()));
+        attachment.setRefType(referenceType);
 
         RefFile file = media.getFile();
         if (file != null) {

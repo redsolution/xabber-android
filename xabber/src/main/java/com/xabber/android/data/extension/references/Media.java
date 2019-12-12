@@ -6,6 +6,7 @@ import java.util.List;
 
 public class Media extends ReferenceElement {
     private final List<RefMedia> media;
+    public static final String MEDIA = "media";
 
     public Media(int begin, int end, List<RefMedia> media) {
         super(begin, end);

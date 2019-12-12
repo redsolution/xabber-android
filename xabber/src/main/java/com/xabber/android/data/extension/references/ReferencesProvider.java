@@ -82,6 +82,8 @@ public class ReferencesProvider extends ExtensionElementProvider<ReferenceElemen
                     return new Forward(begin, end, forwardedMessages);
                 case media:
                     return new Media(begin, end, mediaElements);
+                case voice:
+                    return new Voice(begin, end, mediaElements);
                 case markup:
                     return new Markup(begin, end, bold, italic, underline, strike, uri);
                 case quote:

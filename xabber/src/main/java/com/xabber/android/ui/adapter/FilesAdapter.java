@@ -1,6 +1,5 @@
 package com.xabber.android.ui.adapter;
 
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,12 +8,21 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.xabber.android.R;
+import com.xabber.android.data.Application;
 import com.xabber.android.data.database.messagerealm.Attachment;
+import com.xabber.android.data.extension.references.VoiceMessagePresenterManager;
 import com.xabber.android.data.filedownload.DownloadManager;
 import com.xabber.android.data.filedownload.FileCategory;
+import com.xabber.android.ui.fragment.FileInteractionFragment;
+import com.xabber.android.ui.widget.PlayerVisualizerView;
+import com.xabber.android.utils.StringUtils;
 
 import org.apache.commons.io.FileUtils;
+
+import java.util.Locale;
 
 import io.realm.RealmList;
 import rx.functions.Action1;
@@ -49,21 +57,46 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.FileViewHold
 
         holder.attachmentId = attachment.getUniqueId();
 
-        // set file icon
-        holder.tvFileName.setText(attachment.getTitle());
-        Long size = attachment.getFileSize();
-        holder.tvFileSize.setText(FileUtils.byteCountToDisplaySize(size != null ? size : 0));
-        holder.ivFileIcon.setImageResource(attachment.getFilePath() != null
-                ? getFileIconByCategory(FileCategory.determineFileCategory(attachment.getMimeType()))
-                : R.drawable.ic_download);
+        if ("voice".equals(attachment.getRefType())) {
+            holder.voiceMessage = true;
+            holder.subscribeForAudioProgress();
 
+            StringBuilder voiceText = new StringBuilder();
+            voiceText.append(Application.getInstance().getResources().getString(R.string.voice_message));
+            if (attachment.getDuration() != null && attachment.getDuration() != 0) {
+                voiceText.append(String.format(Locale.getDefault(), ", %s", StringUtils.getDurationStringForVoiceMessage(null, attachment.getDuration())));
+            }
+            holder.tvFileName.setText(voiceText);
+
+            Long size = attachment.getFileSize();
+
+            if (attachment.getFilePath() != null) {
+                holder.tvFileName.setVisibility(View.GONE);
+                holder.tvFileSize.setText((attachment.getDuration()!= null && attachment.getDuration() != 0) ?
+                        StringUtils.getDurationStringForVoiceMessage(null, attachment.getDuration())
+                        : FileUtils.byteCountToDisplaySize(size != null ? size : 0));
+                VoiceMessagePresenterManager.getInstance().sendWaveDataIfSaved(attachment.getFilePath(), holder.audioVisualizer);
+                holder.audioVisualizer.setVisibility(View.VISIBLE);
+            } else holder.tvFileSize.setText(FileUtils.byteCountToDisplaySize(size != null ? size : 0));
+            holder.ivFileIcon.setImageResource(R.drawable.ic_play);
+        } else {
+            // set file icon
+            holder.voiceMessage = false;
+            holder.tvFileName.setText(attachment.getTitle());
+            Long size = attachment.getFileSize();
+            holder.tvFileSize.setText(FileUtils.byteCountToDisplaySize(size != null ? size : 0));
+            holder.ivFileIcon.setImageResource(attachment.getFilePath() != null
+                    ? getFileIconByCategory(FileCategory.determineFileCategory(attachment.getMimeType()))
+                    : R.drawable.ic_download);
+        }
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                holder.subscribeForAudioProgress();
                 listener.onFileClick(position);
+                //holder.subscribeForAudioData();
             }
         });
-
         holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
@@ -125,19 +158,26 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.FileViewHold
 
         private CompositeSubscription subscriptions = new CompositeSubscription();
         String attachmentId;
+        boolean voiceMessage;
 
+        final View itemView;
         final TextView tvFileName;
         final TextView tvFileSize;
         final ImageView ivFileIcon;
         final ProgressBar progressBar;
+        //final SeekBar audioProgress;
+        final PlayerVisualizerView audioVisualizer;
         final ImageButton ivCancelDownload;
 
         public FileViewHolder(View itemView) {
             super(itemView);
+            this.itemView = itemView.findViewById(R.id.file_message);
             tvFileName = itemView.findViewById(R.id.tvFileName);
             tvFileSize = itemView.findViewById(R.id.tvFileSize);
             ivFileIcon = itemView.findViewById(R.id.ivFileIcon);
             progressBar = itemView.findViewById(R.id.progressBar);
+            //audioProgress = itemView.findViewById(R.id.audioProgress);
+            audioVisualizer = itemView.findViewById(R.id.audioVisualizer);
             ivCancelDownload = itemView.findViewById(R.id.ivCancelDownload);
         }
 
@@ -147,18 +187,68 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.FileViewHold
 
         public void subscribeForDownloadProgress() {
             subscriptions.add(DownloadManager.getInstance().subscribeForProgress()
-                .doOnNext(new Action1<DownloadManager.ProgressData>() {
-                    @Override
-                    public void call(DownloadManager.ProgressData progressData) {
-                        setUpProgress(progressData);
+                    .doOnNext(new Action1<DownloadManager.ProgressData>() {
+                        @Override
+                        public void call(DownloadManager.ProgressData progressData) {
+                            setUpProgress(progressData);
+                        }
+                    }).subscribe());
+        }
+
+        public void subscribeForAudioProgress() {
+            subscriptions.add(FileInteractionFragment.PublishAudioProgress.getInstance().subscribeForProgress()
+                    .doOnNext(new Action1<FileInteractionFragment.PublishAudioProgress.AudioInfo>() {
+                        @Override
+                        public void call(FileInteractionFragment.PublishAudioProgress.AudioInfo info) {
+                            setUpAudioProgress(info);
+                        }
+                    }).subscribe());
+        }
+
+        private void setUpAudioProgress(FileInteractionFragment.PublishAudioProgress.AudioInfo info) {
+            if(info != null && info.getAttachmentId() == attachmentId.hashCode()) {
+                if (info.getDuration() != 0) {
+                    if (info.getDuration() > 1000) {
+                        audioVisualizer.updatePlayerPercent(((float) info.getCurrentPosition() / (float) info.getDuration()));
+                    } else {
+                        audioVisualizer.updatePlayerPercent(((float) info.getCurrentPosition() / ((float) info.getDuration() * 1000)));
                     }
-                }).subscribe());
+                    if (info.getResultCode() == FileInteractionFragment.COMPLETED_AUDIO_PROGRESS) {
+                        ivFileIcon.setImageResource(R.drawable.ic_play);
+                        tvFileSize.setText(StringUtils.getDurationStringForVoiceMessage(null,
+                                info.getDuration() > 1000 ?
+                                        (info.getDuration() / 1000) : info.getDuration()));
+                    } else if (info.getResultCode() == FileInteractionFragment.PAUSED_AUDIO_PROGRESS) {
+                        ivFileIcon.setImageResource(R.drawable.ic_play);
+                        tvFileSize.setText(StringUtils.getDurationStringForVoiceMessage((long) info.getCurrentPosition() / 1000,
+                                info.getDuration() > 1000 ?
+                                        (info.getDuration() / 1000) : info.getDuration()));
+                    }
+                    else {
+                        ivFileIcon.setImageResource(R.drawable.ic_pause);
+                        tvFileSize.setText(StringUtils.getDurationStringForVoiceMessage((long) info.getCurrentPosition() / 1000,
+                                info.getDuration() > 1000 ?
+                                        (info.getDuration() / 1000) : info.getDuration()));
+                    }
+                }
+            }
         }
 
         private void setUpProgress(DownloadManager.ProgressData progressData) {
             if (progressData != null && progressData.getAttachmentId().equals(attachmentId)) {
                 if (progressData.isCompleted()) {
                     showProgress(false);
+                    //if (voiceMessage) {
+                    //    final Handler handler = new Handler();
+                    //    final View view = itemView;
+                    //    handler.postDelayed(new Runnable() {
+                    //        @Override
+                    //        public void run() {
+                    //            view.callOnClick();
+                    //            handler.removeCallbacks(null);
+                    //        }
+                    //    }, 100);
+                    //}
                 } else if (progressData.getError() != null) {
                     showProgress(false);
                     listener.onDownloadError(progressData.getError());
@@ -180,7 +270,6 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.FileViewHold
                 ivFileIcon.setVisibility(View.VISIBLE);
             }
         }
-
     }
 
 }
