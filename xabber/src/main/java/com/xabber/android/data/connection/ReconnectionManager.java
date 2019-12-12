@@ -26,6 +26,7 @@ public class ReconnectionManager implements OnConnectedListener,
      * fails. Last value will be used if there is no more values in array.
      */
     private final static int RECONNECT_AFTER[] = new int[]{0, 2, 10, 30, 60};
+    private int tenSecondsCounter = 0;
     private static final String LOG_TAG = ReconnectionManager.class.getSimpleName();
 
     /**
@@ -39,7 +40,6 @@ public class ReconnectionManager implements OnConnectedListener,
         if (instance == null) {
             instance = new ReconnectionManager();
         }
-
         return instance;
     }
 
@@ -49,8 +49,12 @@ public class ReconnectionManager implements OnConnectedListener,
 
     @Override
     public void onTimer() {
+        tenSecondsCounter++;
+        if (tenSecondsCounter >= 10){
+            tenSecondsCounter = 0;
+            ReliableMessageDeliveryManager.getInstance().resendMessagesWithoutReceipt();
+        }
         Collection<AccountJid> allAccounts = AccountManager.getInstance().getAllAccounts();
-        ReliableMessageDeliveryManager.getInstance().resendMessagesWithoutReceipt();
         checkCarbonStatus();
         for (AccountJid accountJid : allAccounts) {
             checkConnection(AccountManager.getInstance().getAccount(accountJid),
@@ -153,6 +157,7 @@ public class ReconnectionManager implements OnConnectedListener,
     public void onConnected(ConnectionItem connection) {
         LogManager.i(LOG_TAG, "onConnected " + connection.getAccount());
         resetReconnectionInfo(connection.getAccount());
+        ReliableMessageDeliveryManager.getInstance().resendMessagesWithoutReceipt();
     }
 
     @Override

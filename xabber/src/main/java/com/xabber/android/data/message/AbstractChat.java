@@ -676,7 +676,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     }
 
     @SuppressWarnings("WeakerAccess")
-    boolean sendMessage(MessageItem messageItem) {
+    public boolean sendMessage(MessageItem messageItem) {
         String text = prepareText(messageItem.getText());
         messageItem.setEncrypted(OTRManager.getInstance().isEncrypted(text));
         Long timestamp = messageItem.getTimestamp();
