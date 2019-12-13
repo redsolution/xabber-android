@@ -33,7 +33,7 @@ public final class VoiceMessagePresenterManager {
         if (voiceWaveData.get(filePath) != null)
             view.updateVisualizer(voiceWaveData.get(filePath));
         else
-            Application.getInstance().runInBackground(new Runnable() {
+            Application.getInstance().runInBackgroundUserRequest(new Runnable() {
                 @Override
                 public void run() {
                     File file = new File(filePath);
