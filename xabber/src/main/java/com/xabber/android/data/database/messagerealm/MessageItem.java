@@ -66,6 +66,7 @@ public class MessageItem extends RealmObject {
         public static final String SENT = "sent";
         public static final String READ = "read";
         public static final String STANZA_ID = "stanzaId";
+        public static final String ORIGIN_ID = "origin_id";
         public static final String IS_RECEIVED_FROM_MAM = "isReceivedFromMessageArchive";
         public static final String FORWARDED = "forwarded";
         public static final String FILE_PATH = "filePath";
@@ -161,6 +162,10 @@ public class MessageItem extends RealmObject {
      * Outgoing packet id - usual message stanza (packet) id
      */
     private String stanzaId;
+    /**
+     * Internal packet id
+     */
+    private String originId;
 
     /**
      * If message was received from server message archive (XEP-0313)
@@ -354,9 +359,7 @@ public class MessageItem extends RealmObject {
         return delivered;
     }
 
-    public void setDelivered(boolean delivered) {
-        this.delivered = delivered;
-    }
+    public void setDelivered(boolean delivered) { this.delivered = delivered; }
 
     public boolean isDisplayed() {
         return displayed;
@@ -382,13 +385,13 @@ public class MessageItem extends RealmObject {
         this.read = read;
     }
 
-    public String getStanzaId() {
-        return stanzaId;
-    }
+    public String getStanzaId() { return stanzaId; }
 
-    public void setStanzaId(String stanzaId) {
-        this.stanzaId = stanzaId;
-    }
+    public void setStanzaId(String stanzaId) { this.stanzaId = stanzaId; }
+
+    public String getOriginId() { return originId; }
+
+    public void setOriginId(String originId) { this.originId = originId; }
 
     public boolean isReceivedFromMessageArchive() {
         return isReceivedFromMessageArchive;

@@ -22,7 +22,6 @@ import androidx.annotation.Nullable;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
-import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.StanzaSender;
 import com.xabber.android.data.database.MessageDatabaseManager;
 import com.xabber.android.data.database.messagerealm.Attachment;
@@ -419,6 +418,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         messageItem.setOffline(offline);
         messageItem.setFromMUC(fromMUC);
         messageItem.setStanzaId(stanzaId);
+        messageItem.setOriginId(stanzaId);
         if (attachments != null) messageItem.setAttachments(attachments);
         FileManager.processFileMessage(messageItem);
 
@@ -676,7 +676,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     }
 
     @SuppressWarnings("WeakerAccess")
-    boolean sendMessage(MessageItem messageItem) {
+    public boolean sendMessage(MessageItem messageItem) {
         String text = prepareText(messageItem.getText());
         messageItem.setEncrypted(OTRManager.getInstance().isEncrypted(text));
         Long timestamp = messageItem.getTimestamp();
@@ -731,8 +731,8 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
             CarbonManager.getInstance().updateOutgoingMessage(AbstractChat.this, message);
             LogManager.d(AbstractChat.class.toString(), "Message sent. Invoke CarbonManager updateOutgoingMessage");
             message.addExtension(new OriginIdElement(messageItem.getStanzaId()));
-            if (ReliableMessageDeliveryManager.getInstance().isSupported(AccountManager.getInstance().getAccount(account)))
-                if (messageItem.isDelivered())
+            if (ReliableMessageDeliveryManager.getInstance().isSupported(account))
+                if (!messageItem.isDelivered() && messageItem.isSent())
                     message.addExtension(new RetryReceiptRequestElement());
                 else message.addExtension(new ReceiptRequestElement());
             if (delayTimestamp != null) {

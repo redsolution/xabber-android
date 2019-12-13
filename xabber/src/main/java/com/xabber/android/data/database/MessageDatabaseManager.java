@@ -35,7 +35,7 @@ import io.realm.annotations.RealmModule;
 
 public class MessageDatabaseManager {
     private static final String REALM_MESSAGE_DATABASE_NAME = "xabber.realm";
-    static final int REALM_MESSAGE_DATABASE_VERSION = 23;
+    static final int REALM_MESSAGE_DATABASE_VERSION = 25;
     private final RealmConfiguration realmConfiguration;
 
     private static MessageDatabaseManager instance;
@@ -371,6 +371,11 @@ public class MessageDatabaseManager {
                             oldVersion++;
                         }
 
+                        if (oldVersion == 24) {
+                            schema.get(MessageItem.class.getSimpleName())
+                                    .addField(MessageItem.Fields.ORIGIN_ID, String.class);
+                            oldVersion++;
+                        }
                     }
                 })
                 .build();
