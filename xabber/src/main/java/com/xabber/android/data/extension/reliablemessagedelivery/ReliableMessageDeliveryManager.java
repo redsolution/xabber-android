@@ -21,7 +21,6 @@ import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.provider.ProviderManager;
 import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
 
-import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -60,7 +59,8 @@ public class ReliableMessageDeliveryManager implements OnPacketListener {
         return isSupported(accountItem.getConnection());
     }
 
-    public void resendMessagesWithoutReceipt() {
+    private LinkedHashMap<AccountJid, UserJid> getChatsWithEnabledXep() {
+        final LinkedHashMap<AccountJid, UserJid> list = new LinkedHashMap<>();
         Application.getInstance().runInBackgroundUserRequest(new Runnable() {
             @Override
             public void run() {
@@ -73,19 +73,13 @@ public class ReliableMessageDeliveryManager implements OnPacketListener {
                             for (AccountJid accountJid : AccountManager.getInstance().getEnabledAccounts()){
                                 AccountItem accountItem = AccountManager.getInstance().getAccount(accountJid);
                                 if (isSupported(accountItem) && accountItem.isSuccessfulConnectionHappened()){
-                                    MessageItem messageItem = realm.where(MessageItem.class)
-                                            .equalTo(MessageItem.Fields.ACCOUNT, accountJid.toString())
-                                            .equalTo(MessageItem.Fields.INCOMING, false)
-                                            .equalTo(MessageItem.Fields.SENT, true)
-                                            .equalTo(MessageItem.Fields.DELIVERED, false)
-                                            .equalTo(MessageItem.Fields.DISPLAYED, false)
-                                            .equalTo(MessageItem.Fields.IS_RECEIVED_FROM_MAM, false)
-                                            .findFirst();
-                                    LogManager.d(LOG_TAG, "while searching for undelivered messages: " + Integer.toString(Realm.getGlobalInstanceCount(realm.getConfiguration())));
-                                    if (messageItem != null && new Date(System.currentTimeMillis()).getTime() - messageItem.getTimestamp() > 5000){
-                                        LogManager.d(LOG_TAG, "Found undelivered message: " + messageItem.toString() + " (Stanza ID) " + messageItem.getStanzaId());
-                                        messageItem.setSent(false);
-                                        MessageManager.getInstance().getChat(messageItem.getAccount(), messageItem.getUser()).sendMessage(messageItem);
+                                    RealmResults<MessageItem> messagesUndelivered = realm.where(MessageItem.class)
+                                        .equalTo(MessageItem.Fields.ACCOUNT, accountJid.toString())
+                                        .equalTo(MessageItem.Fields.SENT, true)
+                                        .equalTo(MessageItem.Fields.DELIVERED, false)
+                                        .findAllSorted(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
+                                    for (MessageItem messageItem : messagesUndelivered){
+                                        list.put(messageItem.getAccount(), messageItem.getUser());
                                     }
                                 }
                             }
@@ -99,6 +93,15 @@ public class ReliableMessageDeliveryManager implements OnPacketListener {
                 }
             }
         });
+        return list;
+    }
+
+    public void resendMessagesWithoutReceipt() {
+        for (Map.Entry<AccountJid, UserJid> entry : getChatsWithEnabledXep().entrySet()){
+            LogManager.d(LOG_TAG, "Found messages without receipt for chats with: " + entry.getKey() + " and: " + entry.getValue());
+            MessageManager.getInstance().getChat(entry.getKey(), entry.getValue()).sendMessages();
+        }
+
     }
 
     private void markMessageReceivedInDatabase(final String time, final String originId, final String stanzaId) {
@@ -119,7 +122,6 @@ public class ReliableMessageDeliveryManager implements OnPacketListener {
                             messageItem.setStanzaId(stanzaId);
                             messageItem.setTimestamp(millis);
                             messageItem.setDelivered(true);
-                            LogManager.d(LOG_TAG, "While marking: " + Integer.toString(Realm.getGlobalInstanceCount(realm.getConfiguration())));
                         }
                     });
                     LogManager.d(LOG_TAG, Integer.toString(Realm.getGlobalInstanceCount(realm.getConfiguration())));

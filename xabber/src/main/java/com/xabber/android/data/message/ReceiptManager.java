@@ -17,14 +17,12 @@ package com.xabber.android.data.message;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.account.AccountItem;
-import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.StanzaSender;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.database.MessageDatabaseManager;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.extension.reliablemessagedelivery.ReliableMessageDeliveryManager;
 import com.xabber.android.data.log.LogManager;
 
 import org.greenrobot.eventbus.EventBus;
@@ -157,7 +155,7 @@ public class ReceiptManager implements OnPacketListener, ReceiptReceivedListener
         realm.beginTransaction();
         MessageItem first = realm.where(MessageItem.class)
                 .equalTo(MessageItem.Fields.STANZA_ID, receiptId).findFirst();
-        if (first != null && !ReliableMessageDeliveryManager.getInstance().isSupported(AccountManager.getInstance().getAccount(first.getAccount()))) {
+        if (first != null) {
             first.setDelivered(true);
         }
         realm.commitTransaction();
