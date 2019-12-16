@@ -255,7 +255,7 @@ public class RegularChat extends AbstractChat {
             String markupText = bodies.second;
             Date timestamp = null;
             if ((ReliableMessageDeliveryManager.getInstance().isSupported(AccountManager.getInstance().getAccount(account)))
-                    && (message.hasExtension(TimeElement.ELEMENT, ""))){
+                    && (message.hasExtension(TimeElement.ELEMENT, TimeElement.NAMESPACE))){
                 StandardExtensionElement timeElement = (StandardExtensionElement) message.getExtension(TimeElement.ELEMENT, TimeElement.NAMESPACE);
                 timestamp = StringUtils.parseReceivedReceiptTimestampString(timeElement.getAttributeValue(TimeElement.ATTRIBUTE_STAMP));
             }

@@ -16,6 +16,7 @@ import androidx.annotation.Nullable;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.account.AccountItem;
+import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.listeners.OnAccountRemovedListener;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.database.RealmManager;
@@ -86,7 +87,11 @@ public class HttpFileUploadManager implements OnLoadListener, OnAccountRemovedLi
     }
 
     public boolean isFileUploadSupported(AccountJid account) {
-        return uploadServers.containsKey(account.getFullJid().asBareJid());
+        if (AccountManager.getInstance().getAccount(account).isSuccessfulConnectionHappened())
+            try {
+                return uploadServers.containsKey(account.getFullJid().asBareJid());
+            } catch (Exception e) { LogManager.exception(LOG_TAG, e); }
+        return false;
     }
 
     public void retrySendFileMessage(final MessageItem messageItem, Context context) {

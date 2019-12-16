@@ -41,16 +41,12 @@ public class ReliableMessageDeliveryManager implements OnPacketListener {
     }
 
     public boolean isSupported(XMPPTCPConnection xmpptcpConnection) {
-        try {
-            if (!xmpptcpConnection.isConnected()){
-                LogManager.d(LOG_TAG, "To check supporting connection should be connected!");
-                return false;
-            }
-            return ServiceDiscoveryManager.getInstanceFor(xmpptcpConnection).serverSupportsFeature(NAMESPACE);
-        } catch (Exception e) {
-            LogManager.exception(LOG_TAG, e);
-            return false;
-        }
+        if (xmpptcpConnection.isConnected())
+            try {
+                return ServiceDiscoveryManager.getInstanceFor(xmpptcpConnection).serverSupportsFeature(NAMESPACE);
+            } catch (Exception e) { LogManager.exception(LOG_TAG, e); }
+        LogManager.d(LOG_TAG, "To check supporting connection should be connected!");
+        return false;
     }
 
     public boolean isSupported(AccountItem accountItem) { return isSupported(accountItem.getConnection()); }

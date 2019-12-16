@@ -55,7 +55,7 @@ public class ReconnectionManager implements OnConnectedListener,
             ReliableMessageDeliveryManager.getInstance().resendMessagesWithoutReceipt();
         }
         Collection<AccountJid> allAccounts = AccountManager.getInstance().getAllAccounts();
-        checkCarbonStatus();
+//        checkCarbonStatus();
         for (AccountJid accountJid : allAccounts) {
             checkConnection(AccountManager.getInstance().getAccount(accountJid),
                     getReconnectionInfo(accountJid));

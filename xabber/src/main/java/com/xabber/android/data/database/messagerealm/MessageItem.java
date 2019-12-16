@@ -66,7 +66,7 @@ public class MessageItem extends RealmObject {
         public static final String SENT = "sent";
         public static final String READ = "read";
         public static final String STANZA_ID = "stanzaId";
-        public static final String ORIGIN_ID = "origin_id";
+        public static final String ORIGIN_ID = "originId";
         public static final String IS_RECEIVED_FROM_MAM = "isReceivedFromMessageArchive";
         public static final String FORWARDED = "forwarded";
         public static final String FILE_PATH = "filePath";
