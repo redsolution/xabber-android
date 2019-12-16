@@ -1,11 +1,13 @@
 package com.xabber.android.ui.adapter;
 
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -13,7 +15,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.database.messagerealm.Attachment;
-import com.xabber.android.data.extension.references.VoiceMessagePresenterManager;
 import com.xabber.android.data.filedownload.DownloadManager;
 import com.xabber.android.data.filedownload.FileCategory;
 import com.xabber.android.ui.fragment.FileInteractionFragment;
@@ -76,8 +77,27 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.FileViewHold
                 holder.tvFileSize.setText((attachment.getDuration()!= null && attachment.getDuration() != 0) ?
                         StringUtils.getDurationStringForVoiceMessage(0L, attachment.getDuration())
                         : FileUtils.byteCountToDisplaySize(size != null ? size : 0));
-                VoiceMessagePresenterManager.getInstance().sendWaveDataIfSaved(attachment.getFilePath(), holder.audioVisualizer);
-                holder.audioVisualizer.setVisibility(View.VISIBLE);
+                //VoiceMessagePresenterManager.getInstance().sendWaveDataIfSaved(attachment.getFilePath(), holder.audioVisualizer);
+                //holder.audioVisualizer.setVisibility(View.VISIBLE);
+                holder.audioProgress.setVisibility(View.VISIBLE);
+                /*
+                holder.audioProgress.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                    @Override
+                    public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+
+                    }
+
+                    @Override
+                    public void onStartTrackingTouch(SeekBar seekBar) {
+
+                    }
+
+                    @Override
+                    public void onStopTrackingTouch(SeekBar seekBar) {
+                        listener.onVoiceProgressClick(holder.getAdapterPosition(), holder.attachmentId, seekBar.getProgress(), seekBar.getMax());
+                    }
+                });
+                */
             } else holder.tvFileSize.setText(FileUtils.byteCountToDisplaySize(size != null ? size : 0));
             holder.ivFileIcon.setImageResource(R.drawable.ic_play);
         } else {
@@ -168,7 +188,7 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.FileViewHold
         final TextView tvFileSize;
         final ImageView ivFileIcon;
         final ProgressBar progressBar;
-        //final SeekBar audioProgress;
+        final SeekBar audioProgress;
         final PlayerVisualizerView audioVisualizer;
         final ImageButton ivCancelDownload;
 
@@ -179,7 +199,13 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.FileViewHold
             tvFileSize = itemView.findViewById(R.id.tvFileSize);
             ivFileIcon = itemView.findViewById(R.id.ivFileIcon);
             progressBar = itemView.findViewById(R.id.progressBar);
-            //audioProgress = itemView.findViewById(R.id.audioProgress);
+            audioProgress = itemView.findViewById(R.id.audioProgress);
+            audioProgress.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View view, MotionEvent motionEvent) {
+                    return true;
+                }
+            });
             audioVisualizer = itemView.findViewById(R.id.audioVisualizer);
             ivCancelDownload = itemView.findViewById(R.id.ivCancelDownload);
         }
@@ -213,8 +239,12 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.FileViewHold
                 if (info.getDuration() != 0) {
                     if (info.getDuration() > 1000) {
                         audioVisualizer.updatePlayerPercent(((float) info.getCurrentPosition() / (float) info.getDuration()));
+                        audioProgress.setMax(info.getDuration());
+                        audioProgress.setProgress(info.getCurrentPosition());
                     } else {
                         audioVisualizer.updatePlayerPercent(((float) info.getCurrentPosition() / ((float) info.getDuration() * 1000)));
+                        audioProgress.setMax(info.getDuration() * 1000);
+                        audioProgress.setProgress(info.getCurrentPosition());
                     }
                     if (info.getResultCode() == FileInteractionFragment.COMPLETED_AUDIO_PROGRESS) {
                         ivFileIcon.setImageResource(R.drawable.ic_play);

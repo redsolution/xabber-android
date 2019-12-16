@@ -89,7 +89,8 @@
             android:singleLine="true"
             android:text="Undefined file"
             android:textColor="?attr/file_message_text_color"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            tools:visibility="gone" />
 
 
         <com.xabber.android.ui.widget.PlayerVisualizerView
@@ -102,8 +103,15 @@
             android:id="@+id/audioProgress"
             android:layout_width="196dp"
             android:layout_height="wrap_content"
+            android:clickable="false"
+            android:focusable="false"
+            android:paddingStart="0dp"
+            android:paddingEnd="0dp"
+            android:thumb="@android:color/transparent"
+            android:background="@color/transparent"
             android:visibility="gone"
-            tools:visibility="gone" />
+            android:enabled="false"
+            tools:visibility="visible" />
 
         <TextView
             android:id="@+id/tvFileSize"
