@@ -14,9 +14,10 @@
  */
 package com.xabber.android.data.extension.muc;
 
+import android.util.Pair;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import android.util.Pair;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
@@ -426,6 +427,7 @@ public class RoomChat extends AbstractChat {
                         message.setOriginalFrom(originalFrom);
                     }
                 });
+                realm.close();
             }
         });
     }

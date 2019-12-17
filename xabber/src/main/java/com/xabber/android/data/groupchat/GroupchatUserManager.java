@@ -29,6 +29,7 @@ public class GroupchatUserManager implements OnLoadListener {
         for (GroupchatUserRealm user : users) {
             this.users.put(user.getUniqueId(), realmUserToUser(user));
         }
+        realm.close();
     }
 
     public GroupchatUser getGroupchatUser(String id) {

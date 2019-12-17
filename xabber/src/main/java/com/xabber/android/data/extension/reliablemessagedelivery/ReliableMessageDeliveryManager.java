@@ -8,7 +8,6 @@ import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.database.MessageDatabaseManager;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.MessageUpdateEvent;
@@ -21,8 +20,7 @@ import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.provider.ProviderManager;
 import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.Date;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
@@ -43,24 +41,19 @@ public class ReliableMessageDeliveryManager implements OnPacketListener {
     }
 
     public boolean isSupported(XMPPTCPConnection xmpptcpConnection) {
-        try {
-            if (xmpptcpConnection.getUser() == null){
-                LogManager.d(LOG_TAG, "To check supporting connection should be connected!");
-                return false;
-            }
-            return ServiceDiscoveryManager.getInstanceFor(xmpptcpConnection).serverSupportsFeature(NAMESPACE);
-        } catch (Exception e) {
-            LogManager.exception(LOG_TAG, e);
-            return false;
-        }
+        if (xmpptcpConnection.isConnected())
+            try {
+                return ServiceDiscoveryManager.getInstanceFor(xmpptcpConnection).serverSupportsFeature(NAMESPACE);
+            } catch (Exception e) { LogManager.exception(LOG_TAG, e); }
+        LogManager.d(LOG_TAG, "To check supporting connection should be connected!");
+        return false;
     }
 
-    public boolean isSupported(AccountItem accountItem) {
-        return isSupported(accountItem.getConnection());
-    }
+    public boolean isSupported(AccountItem accountItem) { return isSupported(accountItem.getConnection()); }
 
-    private LinkedHashMap<AccountJid, UserJid> getChatsWithEnabledXep() {
-        final LinkedHashMap<AccountJid, UserJid> list = new LinkedHashMap<>();
+    public boolean isSupported(AccountJid accountJid) { return isSupported(AccountManager.getInstance().getAccount(accountJid)); }
+
+    public void resendMessagesWithoutReceipt() {
         Application.getInstance().runInBackgroundUserRequest(new Runnable() {
             @Override
             public void run() {
@@ -74,34 +67,31 @@ public class ReliableMessageDeliveryManager implements OnPacketListener {
                                 AccountItem accountItem = AccountManager.getInstance().getAccount(accountJid);
                                 if (isSupported(accountItem) && accountItem.isSuccessfulConnectionHappened()){
                                     RealmResults<MessageItem> messagesUndelivered = realm.where(MessageItem.class)
-                                        .equalTo(MessageItem.Fields.ACCOUNT, accountJid.toString())
-                                        .equalTo(MessageItem.Fields.SENT, true)
-                                        .equalTo(MessageItem.Fields.DELIVERED, false)
-                                        .findAllSorted(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
+                                            .equalTo(MessageItem.Fields.ACCOUNT, accountJid.toString())
+                                            .equalTo(MessageItem.Fields.SENT, true)
+                                            .equalTo(MessageItem.Fields.INCOMING, false)
+                                            .equalTo(MessageItem.Fields.DELIVERED, false)
+                                            .equalTo(MessageItem.Fields.IS_RECEIVED_FROM_MAM, false)
+                                            .equalTo(MessageItem.Fields.DISPLAYED, false)
+                                            .findAllSorted(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
                                     for (MessageItem messageItem : messagesUndelivered){
-                                        list.put(messageItem.getAccount(), messageItem.getUser());
+                                        if (messageItem.getTimestamp() + 5000 <= new Date(System.currentTimeMillis()).getTime()) {
+                                            MessageManager.getInstance().getChat(messageItem.getAccount(), messageItem.getUser()).sendMessage(messageItem);
+                                            LogManager.d(LOG_TAG, "Retry sending message with stanza: " + messageItem.getOriginalStanza());
+                                            LogManager.d(LOG_TAG, "Realm instances: " + Realm.getGlobalInstanceCount(realm.getConfiguration()));
+                                        }
                                     }
                                 }
                             }
-                            LogManager.d(LOG_TAG, Integer.toString(Realm.getGlobalInstanceCount(realm.getConfiguration())));
                         }
                     });
                 } finally {
                     if (realm != null){
                         realm.close();
-                    } LogManager.d(LOG_TAG, Integer.toString(Realm.getGlobalInstanceCount(realm.getConfiguration())));
+                    }
                 }
             }
         });
-        return list;
-    }
-
-    public void resendMessagesWithoutReceipt() {
-        for (Map.Entry<AccountJid, UserJid> entry : getChatsWithEnabledXep().entrySet()){
-            LogManager.d(LOG_TAG, "Found messages without receipt for chats with: " + entry.getKey() + " and: " + entry.getValue());
-            MessageManager.getInstance().getChat(entry.getKey(), entry.getValue()).sendMessages();
-        }
-
     }
 
     private void markMessageReceivedInDatabase(final String time, final String originId, final String stanzaId) {
@@ -117,18 +107,17 @@ public class ReliableMessageDeliveryManager implements OnPacketListener {
                         public void execute(Realm realm) {
                             MessageItem messageItem = realm
                                     .where(MessageItem.class)
-                                    .equalTo(MessageItem.Fields.STANZA_ID, originId)
+                                    .equalTo(MessageItem.Fields.ORIGIN_ID, originId)
                                     .findFirst();
                             messageItem.setStanzaId(stanzaId);
                             messageItem.setTimestamp(millis);
                             messageItem.setDelivered(true);
+                            LogManager.d(LOG_TAG, messageItem.getOriginalStanza());
                         }
                     });
-                    LogManager.d(LOG_TAG, Integer.toString(Realm.getGlobalInstanceCount(realm.getConfiguration())));
                 } finally {
                     if (realm != null)
                         realm.close();
-                    LogManager.d(LOG_TAG, Integer.toString(Realm.getGlobalInstanceCount(realm.getConfiguration())));
                 }
             }
         });

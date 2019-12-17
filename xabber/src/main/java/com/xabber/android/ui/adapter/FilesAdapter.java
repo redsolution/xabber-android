@@ -1,11 +1,13 @@
 package com.xabber.android.ui.adapter;
 
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -13,7 +15,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.database.messagerealm.Attachment;
-import com.xabber.android.data.extension.references.VoiceMessagePresenterManager;
 import com.xabber.android.data.filedownload.DownloadManager;
 import com.xabber.android.data.filedownload.FileCategory;
 import com.xabber.android.ui.fragment.FileInteractionFragment;
@@ -35,6 +36,7 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.FileViewHold
 
     public interface FileListListener {
         void onFileClick(int position);
+        void onVoiceClick(int position, String attachmentId, boolean saved);
         void onFileLongClick(Attachment attachment, View caller);
         void onDownloadCancel();
         void onDownloadError(String error);
@@ -53,7 +55,7 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.FileViewHold
 
     @Override
     public void onBindViewHolder(final FileViewHolder holder, final int position) {
-        Attachment attachment = items.get(position);
+        final Attachment attachment = items.get(position);
 
         holder.attachmentId = attachment.getUniqueId();
 
@@ -73,10 +75,29 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.FileViewHold
             if (attachment.getFilePath() != null) {
                 holder.tvFileName.setVisibility(View.GONE);
                 holder.tvFileSize.setText((attachment.getDuration()!= null && attachment.getDuration() != 0) ?
-                        StringUtils.getDurationStringForVoiceMessage(null, attachment.getDuration())
+                        StringUtils.getDurationStringForVoiceMessage(0L, attachment.getDuration())
                         : FileUtils.byteCountToDisplaySize(size != null ? size : 0));
-                VoiceMessagePresenterManager.getInstance().sendWaveDataIfSaved(attachment.getFilePath(), holder.audioVisualizer);
-                holder.audioVisualizer.setVisibility(View.VISIBLE);
+                //VoiceMessagePresenterManager.getInstance().sendWaveDataIfSaved(attachment.getFilePath(), holder.audioVisualizer);
+                //holder.audioVisualizer.setVisibility(View.VISIBLE);
+                holder.audioProgress.setVisibility(View.VISIBLE);
+                /*
+                holder.audioProgress.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                    @Override
+                    public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+
+                    }
+
+                    @Override
+                    public void onStartTrackingTouch(SeekBar seekBar) {
+
+                    }
+
+                    @Override
+                    public void onStopTrackingTouch(SeekBar seekBar) {
+                        listener.onVoiceProgressClick(holder.getAdapterPosition(), holder.attachmentId, seekBar.getProgress(), seekBar.getMax());
+                    }
+                });
+                */
             } else holder.tvFileSize.setText(FileUtils.byteCountToDisplaySize(size != null ? size : 0));
             holder.ivFileIcon.setImageResource(R.drawable.ic_play);
         } else {
@@ -92,9 +113,10 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.FileViewHold
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                holder.subscribeForAudioProgress();
-                listener.onFileClick(position);
-                //holder.subscribeForAudioData();
+                if (holder.voiceMessage)
+                    listener.onVoiceClick(holder.getAdapterPosition(), holder.attachmentId, attachment.getFilePath()!=null);
+                else
+                    listener.onFileClick(position);
             }
         });
         holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
@@ -117,6 +139,7 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.FileViewHold
             @Override
             public void onViewAttachedToWindow(View view) {
                 holder.subscribeForDownloadProgress();
+                holder.subscribeForAudioProgress();
             }
 
             @Override
@@ -165,7 +188,7 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.FileViewHold
         final TextView tvFileSize;
         final ImageView ivFileIcon;
         final ProgressBar progressBar;
-        //final SeekBar audioProgress;
+        final SeekBar audioProgress;
         final PlayerVisualizerView audioVisualizer;
         final ImageButton ivCancelDownload;
 
@@ -176,7 +199,13 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.FileViewHold
             tvFileSize = itemView.findViewById(R.id.tvFileSize);
             ivFileIcon = itemView.findViewById(R.id.ivFileIcon);
             progressBar = itemView.findViewById(R.id.progressBar);
-            //audioProgress = itemView.findViewById(R.id.audioProgress);
+            audioProgress = itemView.findViewById(R.id.audioProgress);
+            audioProgress.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View view, MotionEvent motionEvent) {
+                    return true;
+                }
+            });
             audioVisualizer = itemView.findViewById(R.id.audioVisualizer);
             ivCancelDownload = itemView.findViewById(R.id.ivCancelDownload);
         }
@@ -210,12 +239,16 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.FileViewHold
                 if (info.getDuration() != 0) {
                     if (info.getDuration() > 1000) {
                         audioVisualizer.updatePlayerPercent(((float) info.getCurrentPosition() / (float) info.getDuration()));
+                        audioProgress.setMax(info.getDuration());
+                        audioProgress.setProgress(info.getCurrentPosition());
                     } else {
                         audioVisualizer.updatePlayerPercent(((float) info.getCurrentPosition() / ((float) info.getDuration() * 1000)));
+                        audioProgress.setMax(info.getDuration() * 1000);
+                        audioProgress.setProgress(info.getCurrentPosition());
                     }
                     if (info.getResultCode() == FileInteractionFragment.COMPLETED_AUDIO_PROGRESS) {
                         ivFileIcon.setImageResource(R.drawable.ic_play);
-                        tvFileSize.setText(StringUtils.getDurationStringForVoiceMessage(null,
+                        tvFileSize.setText(StringUtils.getDurationStringForVoiceMessage(0L,
                                 info.getDuration() > 1000 ?
                                         (info.getDuration() / 1000) : info.getDuration()));
                     } else if (info.getResultCode() == FileInteractionFragment.PAUSED_AUDIO_PROGRESS) {
@@ -238,17 +271,6 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.FileViewHold
             if (progressData != null && progressData.getAttachmentId().equals(attachmentId)) {
                 if (progressData.isCompleted()) {
                     showProgress(false);
-                    //if (voiceMessage) {
-                    //    final Handler handler = new Handler();
-                    //    final View view = itemView;
-                    //    handler.postDelayed(new Runnable() {
-                    //        @Override
-                    //        public void run() {
-                    //            view.callOnClick();
-                    //            handler.removeCallbacks(null);
-                    //        }
-                    //    }, 100);
-                    //}
                 } else if (progressData.getError() != null) {
                     showProgress(false);
                     listener.onDownloadError(progressData.getError());

@@ -216,7 +216,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     private ImageButton recordingPresenterSendButton;
     private TextView recordingPresenterDuration;
     private PublishSubject<FileInteractionFragment.PublishAudioProgress.AudioInfo> audioProgress;
-    private Subscription subscription;
+    private Subscription audioProgressSubscription;
 
     private ChatViewerFragmentListener listener;
 
@@ -373,11 +373,11 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                     case MotionEvent.ACTION_MOVE:
 
                         //FAB movement
-                        RelativeLayout.LayoutParams lockParams = (RelativeLayout.LayoutParams) recordLockChevronImage.getLayoutParams();
+                        LinearLayout.LayoutParams lockParams = (LinearLayout.LayoutParams) recordLockChevronImage.getLayoutParams();
                         float yRecordDiff = rootViewHeight - (fabMicViewHeightSize + fabMicViewMarginBottom) + motionEvent.getY();
                         float yLockDiff = rootViewHeight - (lockViewMarginBottom + lockViewHeightSize) + motionEvent.getY();
                         if (currentVoiceRecordingState == VoiceRecordState.TouchRecording) {
-                            if (yRecordDiff > rootViewHeight - (fabMicViewHeightSize + fabMicViewMarginBottom)) {
+                            if (motionEvent.getY() > 0) {
                                 recordButtonExpanded.animate()
                                         .y(rootViewHeight - (fabMicViewHeightSize + fabMicViewMarginBottom))
                                         .setDuration(0)
@@ -387,7 +387,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                                         .setDuration(0)
                                         .start();
                                 recordLockChevronImage.setAlpha(1f);
-                            } else if (yRecordDiff > rootViewHeight - (fabMicViewHeightSize + fabMicViewMarginBottom) - 200) { //200 = height to the "locked" state
+                            } else if (motionEvent.getY() > -200) { //200 = height to the "locked" state
                                 recordButtonExpanded.animate()
                                         .y(yRecordDiff)
                                         .setDuration(0)
@@ -398,9 +398,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                                         .start();
 
                                 lockParams.topMargin = -((int)rootViewHeight - (fabMicViewHeightSize + fabMicViewMarginBottom) - (int) yRecordDiff) / 3;
-                                recordLockChevronImage.setAlpha((yRecordDiff - (rootViewHeight * 0.8f)) /
-                                                ((rootViewHeight * 0.2f) - (fabMicViewHeightSize + fabMicViewMarginBottom))
-                                );
+                                recordLockChevronImage.setAlpha(1f + (motionEvent.getY() / 200f));
                                 recordLockChevronImage.setLayoutParams(lockParams);
                             } else {
                                 currentVoiceRecordingState = VoiceRecordState.NoTouchRecording;
@@ -746,7 +744,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         }
         handler.removeCallbacks(record);
         handler.removeCallbacks(postAnimation);
-        if (subscription != null) subscription.unsubscribe();
+        if (audioProgressSubscription != null) audioProgressSubscription.unsubscribe();
         if (currentVoiceRecordingState != VoiceRecordState.NotRecording) {
             stopRecordingIfPossibleAsync(false);
         }
@@ -1781,7 +1779,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                 releaseRecordedVoicePlayback(recordingPath);
                 finishVoiceRecordLayout();
                 recordingPath = null;
-                subscription.unsubscribe();
+                audioProgressSubscription.unsubscribe();
             }
         });
         recordingPresenterSendButton.setOnClickListener(new View.OnClickListener() {
@@ -1790,14 +1788,14 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                 sendStoppedVoiceMessage(recordingPath);
                 finishVoiceRecordLayout();
                 recordingPath = null;
-                subscription.unsubscribe();
+                audioProgressSubscription.unsubscribe();
             }
         });
     }
 
     private void subscribeForRecordedAudioProgress() {
         audioProgress = FileInteractionFragment.PublishAudioProgress.getInstance().subscribeForProgress();
-        subscription = audioProgress.doOnNext(new Action1<PublishAudioProgress.AudioInfo>() {
+        audioProgressSubscription = audioProgress.doOnNext(new Action1<PublishAudioProgress.AudioInfo>() {
             @Override
             public void call(FileInteractionFragment.PublishAudioProgress.AudioInfo info) {
                 setUpAudioProgress(info);
@@ -1869,7 +1867,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
             slideToCancelLayout.animate().x(0).setDuration(0).start();
             recordLockChevronImage.setAlpha(1f);
             recordLockImage.setImageResource(R.drawable.ic_security_plain_24dp);
-            RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) recordLockChevronImage.getLayoutParams();
+            LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) recordLockChevronImage.getLayoutParams();
             layoutParams.topMargin = 0;
             recordLockChevronImage.setLayoutParams(layoutParams);
             recordTimer.setBase(SystemClock.elapsedRealtime());

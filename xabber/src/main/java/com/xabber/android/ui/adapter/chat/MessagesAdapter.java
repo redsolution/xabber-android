@@ -359,6 +359,12 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
     }
 
     @Override
+    public void onVoiceClick(int messagePosition, int attachmentPosition, String attachmentId, String messageUID, boolean saved) {
+        if (isCheckMode) addOrRemoveCheckedItem(messagePosition);
+        else fileListener.onVoiceClick(messagePosition, attachmentPosition, attachmentId, messageUID, saved);
+    }
+
+    @Override
     public void onFileLongClick(Attachment attachment, View caller) {
         fileListener.onFileLongClick(attachment, caller);
     }

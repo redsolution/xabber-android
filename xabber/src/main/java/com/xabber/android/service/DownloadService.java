@@ -13,6 +13,7 @@ import com.xabber.android.data.database.MessageDatabaseManager;
 import com.xabber.android.data.database.messagerealm.Attachment;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.file.FileManager;
+import com.xabber.android.data.extension.references.ReferenceElement;
 import com.xabber.android.utils.HttpClientWithMTM;
 
 import java.io.File;
@@ -32,6 +33,7 @@ public class DownloadService extends IntentService {
     public static final int ERROR_CODE = 3133;
     public static final int COMPLETE_CODE = 3134;
     private static final String XABBER_DIR = "Xabber";
+    private static final String XABBER_AUDIO_DIR = "Xabber Audio";
 
     public final static String KEY_ATTACHMENT_ID = "attachment_id";
     public final static String KEY_RECEIVER = "receiver";
@@ -39,6 +41,7 @@ public class DownloadService extends IntentService {
     public final static String KEY_ACCOUNT_JID = "account_jid";
     public final static String KEY_FILE_NAME = "file_name";
     public final static String KEY_FILE_SIZE = "file_size";
+    public final static String KEY_REFERENCE_ELEMENT = "ref_element";
     public final static String KEY_URL = "url";
     public final static String KEY_ERROR = "error";
 
@@ -56,6 +59,7 @@ public class DownloadService extends IntentService {
         this.receiver = intent.getParcelableExtra(KEY_RECEIVER);
         this.attachmentId = intent.getStringExtra(KEY_ATTACHMENT_ID);
         String fileName = intent.getStringExtra(KEY_FILE_NAME);
+        String refElement = intent.getStringExtra(KEY_REFERENCE_ELEMENT);
         long fileSize = intent.getLongExtra(KEY_FILE_SIZE, 0);
         String url = intent.getStringExtra(KEY_URL);
         AccountJid accountJid = intent.getParcelableExtra(KEY_ACCOUNT_JID);
@@ -64,7 +68,7 @@ public class DownloadService extends IntentService {
         OkHttpClient client = HttpClientWithMTM.getClient(accountJid);
 
         // start download
-        if (client != null) requestFileDownload(fileName, fileSize, url, client);
+        if (client != null) requestFileDownload(fileName, fileSize, refElement, url, client);
         else publishError("Downloading not started");
     }
 
@@ -74,7 +78,7 @@ public class DownloadService extends IntentService {
         needStop = true;
     }
 
-    private void requestFileDownload(final String fileName, final long fileSize, String url, OkHttpClient client) {
+    private void requestFileDownload(final String fileName, final long fileSize, String type, String url, OkHttpClient client) {
         Request request = new Request.Builder().url(url).build();
         try {
             Response response = client.newCall(request).execute();
@@ -91,6 +95,16 @@ public class DownloadService extends IntentService {
                     publishError("Directory not created");
                     return;
                 }
+
+            if (ReferenceElement.Type.voice.name().equals(type)) {
+                directory = new File(getSpecificDownloadDirPath());
+                if (!directory.exists()) {
+                    if (!directory.mkdir()) {
+                        publishError("Directory not created");
+                        return;
+                    }
+                }
+            }
 
             // create file
             String filePath = directory.getPath() + File.separator + fileName;
@@ -136,15 +150,21 @@ public class DownloadService extends IntentService {
     }
 
     private void saveAttachmentPathToRealm(final String path) {
-        MessageDatabaseManager.getInstance().getNewBackgroundRealm().executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                Attachment attachment = realm.where(Attachment.class)
-                        .equalTo(Attachment.Fields.UNIQUE_ID, attachmentId).findFirst();
-                attachment.setFilePath(path);
-            }
-        });
-        publishCompleted();
+        Realm realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
+        try {
+            realm.executeTransaction(new Realm.Transaction() {
+                @Override
+                public void execute(Realm realm) {
+                    Attachment attachment = realm.where(Attachment.class)
+                            .equalTo(Attachment.Fields.UNIQUE_ID, attachmentId).findFirst();
+                    attachment.setFilePath(path);
+                }
+            });
+        } finally {
+            if (realm != null)
+                realm.close();
+            publishCompleted();
+        }
     }
 
     private void publishProgress(long downloadedBytes, long fileSize) {
@@ -168,5 +188,9 @@ public class DownloadService extends IntentService {
     private static String getDownloadDirPath() {
         return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath()
                 + File.separator + XABBER_DIR;
+    }
+
+    private static String getSpecificDownloadDirPath() {
+        return getDownloadDirPath() + File.separator + XABBER_AUDIO_DIR;
     }
 }
