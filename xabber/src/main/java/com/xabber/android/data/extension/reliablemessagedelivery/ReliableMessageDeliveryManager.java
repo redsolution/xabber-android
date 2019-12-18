@@ -72,13 +72,15 @@ public class ReliableMessageDeliveryManager implements OnPacketListener {
                                             .equalTo(MessageItem.Fields.INCOMING, false)
                                             .equalTo(MessageItem.Fields.DELIVERED, false)
                                             .equalTo(MessageItem.Fields.IS_RECEIVED_FROM_MAM, false)
+                                            .equalTo(MessageItem.Fields.READ, false)
                                             .equalTo(MessageItem.Fields.DISPLAYED, false)
                                             .findAllSorted(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
                                     if (messagesUndelivered.size() == 0)
                                         LogManager.d(LOG_TAG, "There are no messages without receipts!");
                                     else
                                         for (MessageItem messageItem : messagesUndelivered){
-                                            if (messageItem != null && messageItem.getTimestamp() + 5000 <= new Date(System.currentTimeMillis()).getTime()) {
+                                            if (messageItem != null && !messageItem.getStanzaId().equals(messageItem.getOriginId())
+                                                    && messageItem.getTimestamp() + 5000 <= new Date(System.currentTimeMillis()).getTime()) {
                                                 MessageManager.getInstance().getChat(messageItem.getAccount(), messageItem.getUser()).sendMessage(messageItem);
                                                 LogManager.d(LOG_TAG, "Retry sending message with stanza: " + messageItem.getOriginalStanza());
                                             }
@@ -137,7 +139,7 @@ public class ReliableMessageDeliveryManager implements OnPacketListener {
                 ReceiptElement receipt = (ReceiptElement) stanza.getExtension(NAMESPACE);
                 String timestamp = receipt.getTimeElement().getStamp();
                 String originId = receipt.getOriginIdElement().getId();
-                String stanzaId = receipt.getOriginIdElement().getId();
+                String stanzaId = receipt.getStanzaIdElement().getId();
                 LogManager.d(LOG_TAG, "Received receipt: " + stanza.toString());
                 markMessageReceivedInDatabase(timestamp, originId, stanzaId);
                 EventBus.getDefault().post(new MessageUpdateEvent());
