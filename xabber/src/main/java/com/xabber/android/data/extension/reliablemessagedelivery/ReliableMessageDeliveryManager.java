@@ -74,17 +74,21 @@ public class ReliableMessageDeliveryManager implements OnPacketListener {
                                             .equalTo(MessageItem.Fields.IS_RECEIVED_FROM_MAM, false)
                                             .equalTo(MessageItem.Fields.DISPLAYED, false)
                                             .findAllSorted(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
-                                    for (MessageItem messageItem : messagesUndelivered){
-                                        if (messageItem.getTimestamp() + 5000 <= new Date(System.currentTimeMillis()).getTime()) {
-                                            MessageManager.getInstance().getChat(messageItem.getAccount(), messageItem.getUser()).sendMessage(messageItem);
-                                            LogManager.d(LOG_TAG, "Retry sending message with stanza: " + messageItem.getOriginalStanza());
-                                            LogManager.d(LOG_TAG, "Realm instances: " + Realm.getGlobalInstanceCount(realm.getConfiguration()));
-                                        }
+                                    if (messagesUndelivered.size() == 0)
+                                        LogManager.d(LOG_TAG, "There are no messages without receipts!");
+                                    else
+                                        for (MessageItem messageItem : messagesUndelivered){
+                                            if (messageItem != null && messageItem.getTimestamp() + 5000 <= new Date(System.currentTimeMillis()).getTime()) {
+                                                MessageManager.getInstance().getChat(messageItem.getAccount(), messageItem.getUser()).sendMessage(messageItem);
+                                                LogManager.d(LOG_TAG, "Retry sending message with stanza: " + messageItem.getOriginalStanza());
+                                            }
                                     }
                                 }
                             }
                         }
                     });
+                } catch (Exception e) {
+                    LogManager.exception(LOG_TAG, e);
                 } finally {
                     if (realm != null){
                         realm.close();
@@ -112,7 +116,7 @@ public class ReliableMessageDeliveryManager implements OnPacketListener {
                             messageItem.setStanzaId(stanzaId);
                             messageItem.setTimestamp(millis);
                             messageItem.setDelivered(true);
-                            LogManager.d(LOG_TAG, messageItem.getOriginalStanza());
+                            LogManager.d(LOG_TAG, "Message marked as received with original stanza" + messageItem.getOriginalStanza());
                         }
                     });
                 } finally {
@@ -134,7 +138,7 @@ public class ReliableMessageDeliveryManager implements OnPacketListener {
                 String timestamp = receipt.getTimeElement().getStamp();
                 String originId = receipt.getOriginIdElement().getId();
                 String stanzaId = receipt.getOriginIdElement().getId();
-                LogManager.d(LOG_TAG, "Receipt received with timestamp: " + timestamp + "; origin-id: " + originId + "; stanza-id: " + stanzaId + ". Trying to wite it to database");
+                LogManager.d(LOG_TAG, "Received receipt: " + stanza.toString());
                 markMessageReceivedInDatabase(timestamp, originId, stanzaId);
                 EventBus.getDefault().post(new MessageUpdateEvent());
             } catch (Exception e) {
