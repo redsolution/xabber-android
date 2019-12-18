@@ -1019,13 +1019,15 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     public static String getStanzaId(Message message) {
         String stanzaId = null;
 
-        stanzaId = UniqStanzaHelper.getOriginId(message);
-        if (stanzaId != null && !stanzaId.isEmpty()) return stanzaId;
-
         stanzaId = UniqStanzaHelper.getStanzaId(message);
         if (stanzaId != null && !stanzaId.isEmpty()) return stanzaId;
 
         stanzaId = message.getStanzaId();
+        if (stanzaId != null && !stanzaId.isEmpty()) return stanzaId;
+
+        stanzaId = UniqStanzaHelper.getOriginId(message);
+        if (stanzaId != null && !stanzaId.isEmpty()) return stanzaId;
+
         return stanzaId;
     }
 
