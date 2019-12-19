@@ -78,6 +78,7 @@
         android:layout_marginLeft="4dp"
         android:layout_marginRight="8dp"
         android:layout_toRightOf="@id/iconLayout"
+        android:minWidth="150dp"
         android:orientation="vertical">
 
         <TextView
