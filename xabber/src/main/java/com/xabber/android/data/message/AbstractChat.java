@@ -466,6 +466,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
                 RealmList<Attachment> attachments;
                 if (files != null) attachments = attachmentsFromFiles(files, referenceType);
                 else attachments = attachmentsFromUris(uris);
+                String initialID = UUID.randomUUID().toString();
 
                 MessageItem messageItem = new MessageItem(messageId);
                 messageItem.setAccount(account);
@@ -479,7 +480,8 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
                 messageItem.setError(false);
                 messageItem.setIncoming(false);
                 messageItem.setInProgress(true);
-                messageItem.setStanzaId(UUID.randomUUID().toString());
+                messageItem.setStanzaId(initialID);
+                messageItem.setOriginId(initialID);
                 realm.copyToRealm(messageItem);
             }
         });

@@ -125,13 +125,14 @@ public class ReceiptManager implements OnPacketListener, ReceiptReceivedListener
         realm.beginTransaction();
         MessageItem first = realm.where(MessageItem.class)
                 .equalTo(MessageItem.Fields.ACCOUNT, account.toString())
-                .equalTo(MessageItem.Fields.STANZA_ID, AbstractChat.getStanzaId(message)).findFirst();
+                .equalTo(MessageItem.Fields.STANZA_ID, AbstractChat.getStanzaId(message))
+                .findFirst();
         if (first != null) {
             first.setError(true);
             XMPPError error = message.getError();
             if (error != null) {
                 String errorStr = error.toString();
-                String descr = error.getDescriptiveText(null);
+                String descr = error.getDescriptiveText();
                 first.setErrorDescription(errorStr + "\n" + descr);
             }
         }

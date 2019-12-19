@@ -124,7 +124,7 @@ public class BackpressureMessageMarker {
         realmQuery.equalTo(MessageItem.Fields.ACCOUNT, accountJid.toString());
         if (stanzaIds != null && stanzaIds.size()>0) {
             realmQuery.beginGroup();
-            realmQuery.equalTo(MessageItem.Fields.STANZA_ID, id);
+            realmQuery.equalTo(MessageItem.Fields.ORIGIN_ID, id);
             for (String stanzaId : stanzaIds) {
                 realmQuery.or();
                 realmQuery.equalTo(MessageItem.Fields.STANZA_ID, stanzaId);
@@ -132,7 +132,7 @@ public class BackpressureMessageMarker {
             realmQuery.endGroup();
             message = realmQuery.findFirst();
         } else {
-            realmQuery.equalTo(MessageItem.Fields.STANZA_ID, id);
+            realmQuery.equalTo(MessageItem.Fields.ORIGIN_ID, id);
             message = realmQuery.findFirst();
         }
         return message;
