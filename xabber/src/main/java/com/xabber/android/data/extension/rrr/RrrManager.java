@@ -7,6 +7,7 @@ import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.database.MessageDatabaseManager;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.MessageUpdateEvent;
 import com.xabber.xmpp.smack.XMPPTCPConnection;
@@ -19,6 +20,8 @@ import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.StandardExtensionElement;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
+
+import java.util.List;
 
 import io.realm.Realm;
 
@@ -64,14 +67,15 @@ public class RrrManager implements OnPacketListener {
         }
     }
 
-    public boolean subscribeForUpdates(AccountJid accountJid) {
+    public boolean subscribeForUpdates(final AccountJid accountJid) {
         XMPPTCPConnection xmpptcpConnection = AccountManager.getInstance().getAccount(accountJid).getConnection();
         try {
             xmpptcpConnection.sendIqWithResponseCallback(new SubscribeUpdatesIQ(accountJid), new StanzaListener() {
                 @Override
                 public void processStanza(Stanza packet) throws SmackException.NotConnectedException, InterruptedException {
-                    if (packet instanceof IQ && ((IQ) packet).getType().equals(IQ.Type.result))
-                        LogManager.d(LOG_TAG, "Received result IQ");
+                    if (packet instanceof IQ && ((IQ) packet).getType().equals(IQ.Type.error)){
+                        LogManager.d(LOG_TAG, "Failed to subscribe for RRR updates for account " + accountJid +"! Received error IQ");
+                    }
                 }
             });
         } catch (Exception e) {
@@ -79,6 +83,34 @@ public class RrrManager implements OnPacketListener {
             return false;
         }
         return true;
+    }
+
+    public void sendRetractRequest(AccountJid accountJid, UserJid userJid, List<String> list){
+        for (String id : list)
+            sendRetractRequest(accountJid, userJid, id);
+    }
+
+    public void sendRetractRequest(AccountJid accountJid, UserJid userJid, final String id){
+        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
+            @Override
+            public void run() {
+                Realm realm = null;
+                try {
+                    realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
+                    realm.executeTransaction(new Realm.Transaction() {
+                        @Override
+                        public void execute(Realm realm) {
+                            MessageItem messageItem = realm.where(MessageItem.class)
+                                    .equalTo(MessageItem.Fields.UNIQUE_ID, id).findFirst();
+
+                        }
+                    });
+
+                } finally {
+
+                }
+            }
+        });
     }
 
     private void retractMessage(final String id, final String by, final String conversation) {
@@ -109,6 +141,7 @@ public class RrrManager implements OnPacketListener {
     }
 
     private void rewriteMessage(final String stanzaId, final String conversation, final String stamp, final String body) {
+        //TODO rewrite this
         Application.getInstance().runInBackgroundUserRequest(new Runnable() {
             @Override
             public void run() {
@@ -123,7 +156,8 @@ public class RrrManager implements OnPacketListener {
                                     .equalTo(MessageItem.Fields.STANZA_ID, stanzaId)
                                     .findFirst();
                             if (messageItem != null)
-                                messageItem.setText(body);
+                                if (body != null)
+                                    messageItem.setText(body);
                             EventBus.getDefault().post(new MessageUpdateEvent());
                         }
                     });
@@ -137,6 +171,7 @@ public class RrrManager implements OnPacketListener {
 
     @Override
     public void onStanza(ConnectionItem connection, Stanza packet) {
+
         if (packet instanceof Message && ((Message) packet).getType().equals(Message.Type.headline)) {
 
             if (packet.hasExtension(RETRACT_MESSAGE_ELEMENT, NAMESPACE_NOTIFY)) {
@@ -159,6 +194,7 @@ public class RrrManager implements OnPacketListener {
                 String stamp = newMessage.getFirstElement(REPLACED_STAMP_ELEMENT, NAMESPACE).getAttributeValue(STAMP_ATTRIBUTE);
                 String body = newMessage.getFirstElement(BODY_MESSAGE_ELEMENT).getText();
                 rewriteMessage(stanzaId, conversation, stamp, body);
+
             }
         }
     }

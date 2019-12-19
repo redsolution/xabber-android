@@ -78,6 +78,7 @@ import com.xabber.android.data.extension.muc.RoomState;
 import com.xabber.android.data.extension.otr.AuthAskEvent;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.otr.SecurityLevel;
+import com.xabber.android.data.extension.rrr.RrrManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.ClipManager;
@@ -562,8 +563,9 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         ivDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                MessageManager.getInstance()
-                        .removeMessage(new ArrayList<>(chatMessageAdapter.getCheckedItemIds()));
+                List<String> checkedItemIds = chatMessageAdapter.getCheckedItemIds();
+                //RrrManager.getInstance().sendRetractRequest(account, user, checkedItemIds);
+                MessageManager.getInstance().removeMessage(checkedItemIds);
                 forwardIds.clear();
                 closeInteractionPanel();
             }
