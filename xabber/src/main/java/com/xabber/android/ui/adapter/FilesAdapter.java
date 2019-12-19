@@ -1,12 +1,13 @@
 package com.xabber.android.ui.adapter;
 
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -15,11 +16,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.database.messagerealm.Attachment;
+import com.xabber.android.data.extension.references.VoiceMessagePresenterManager;
 import com.xabber.android.data.filedownload.DownloadManager;
 import com.xabber.android.data.filedownload.FileCategory;
 import com.xabber.android.ui.fragment.FileInteractionFragment;
 import com.xabber.android.ui.widget.PlayerVisualizerView;
 import com.xabber.android.utils.StringUtils;
+import com.xabber.android.utils.Utils;
 
 import org.apache.commons.io.FileUtils;
 
@@ -67,6 +70,15 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.FileViewHold
             voiceText.append(Application.getInstance().getResources().getString(R.string.voice_message));
             if (attachment.getDuration() != null && attachment.getDuration() != 0) {
                 voiceText.append(String.format(Locale.getDefault(), ", %s", StringUtils.getDurationStringForVoiceMessage(null, attachment.getDuration())));
+                RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) holder.fileInfoLayout.getLayoutParams();
+                int width = Utils.dipToPx(150, holder.fileInfoLayout.getContext());
+                if (attachment.getDuration() < 10) {
+                    lp.width = width + Utils.dipToPx(5 * attachment.getDuration(), holder.fileInfoLayout.getContext());
+                    holder.fileInfoLayout.setLayoutParams(lp);
+                } else {
+                    lp.width = width + Utils.dipToPx(50, holder.fileInfoLayout.getContext());
+                    holder.fileInfoLayout.setLayoutParams(lp);
+                }
             }
             holder.tvFileName.setText(voiceText);
 
@@ -77,27 +89,21 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.FileViewHold
                 holder.tvFileSize.setText((attachment.getDuration()!= null && attachment.getDuration() != 0) ?
                         StringUtils.getDurationStringForVoiceMessage(0L, attachment.getDuration())
                         : FileUtils.byteCountToDisplaySize(size != null ? size : 0));
-                //VoiceMessagePresenterManager.getInstance().sendWaveDataIfSaved(attachment.getFilePath(), holder.audioVisualizer);
-                //holder.audioVisualizer.setVisibility(View.VISIBLE);
-                holder.audioProgress.setVisibility(View.VISIBLE);
-                /*
-                holder.audioProgress.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-                    @Override
-                    public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-
-                    }
-
-                    @Override
-                    public void onStartTrackingTouch(SeekBar seekBar) {
-
-                    }
-
-                    @Override
-                    public void onStopTrackingTouch(SeekBar seekBar) {
-                        listener.onVoiceProgressClick(holder.getAdapterPosition(), holder.attachmentId, seekBar.getProgress(), seekBar.getMax());
-                    }
-                });
-                */
+                VoiceMessagePresenterManager.getInstance().sendWaveDataIfSaved(attachment.getFilePath(), holder.audioVisualizer);
+                holder.audioVisualizer.setVisibility(View.VISIBLE);
+                //holder.audioProgress.setVisibility(View.VISIBLE);
+                //holder.audioProgress.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                //    @Override
+                //    public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                //    }
+                //    @Override
+                //    public void onStartTrackingTouch(SeekBar seekBar) {
+                //    }
+                //    @Override
+                //    public void onStopTrackingTouch(SeekBar seekBar) {
+                //        listener.onVoiceProgressClick(holder.getAdapterPosition(), holder.attachmentId, seekBar.getProgress(), seekBar.getMax());
+                //    }
+                //});
             } else holder.tvFileSize.setText(FileUtils.byteCountToDisplaySize(size != null ? size : 0));
             holder.ivFileIcon.setImageResource(R.drawable.ic_play);
         } else {
@@ -184,6 +190,7 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.FileViewHold
         boolean voiceMessage;
 
         final View itemView;
+        final LinearLayout fileInfoLayout;
         final TextView tvFileName;
         final TextView tvFileSize;
         final ImageView ivFileIcon;
@@ -195,17 +202,18 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.FileViewHold
         public FileViewHolder(View itemView) {
             super(itemView);
             this.itemView = itemView.findViewById(R.id.file_message);
+            fileInfoLayout = itemView.findViewById(R.id.fileInfoLayout);
             tvFileName = itemView.findViewById(R.id.tvFileName);
             tvFileSize = itemView.findViewById(R.id.tvFileSize);
             ivFileIcon = itemView.findViewById(R.id.ivFileIcon);
             progressBar = itemView.findViewById(R.id.progressBar);
             audioProgress = itemView.findViewById(R.id.audioProgress);
-            audioProgress.setOnTouchListener(new View.OnTouchListener() {
+            /*audioProgress.setOnTouchListener(new View.OnTouchListener() {
                 @Override
                 public boolean onTouch(View view, MotionEvent motionEvent) {
                     return true;
                 }
-            });
+            });*/
             audioVisualizer = itemView.findViewById(R.id.audioVisualizer);
             ivCancelDownload = itemView.findViewById(R.id.ivCancelDownload);
         }

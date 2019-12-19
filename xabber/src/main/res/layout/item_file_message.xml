@@ -71,6 +71,7 @@
     </RelativeLayout>
 
     <LinearLayout
+        android:id="@+id/fileInfoLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
@@ -95,23 +96,20 @@
 
         <com.xabber.android.ui.widget.PlayerVisualizerView
             android:id="@+id/audioVisualizer"
-            android:layout_width="150dp"
+            android:layout_width="match_parent"
             android:layout_height="24dp"
-            android:visibility="gone" />
+            android:visibility="gone"
+            tools:visibility="visible" />
 
         <SeekBar
             android:id="@+id/audioProgress"
-            android:layout_width="196dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:clickable="false"
-            android:focusable="false"
+            android:background="@color/transparent"
             android:paddingStart="0dp"
             android:paddingEnd="0dp"
             android:thumb="@android:color/transparent"
-            android:background="@color/transparent"
-            android:visibility="gone"
-            android:enabled="false"
-            tools:visibility="visible" />
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/tvFileSize"

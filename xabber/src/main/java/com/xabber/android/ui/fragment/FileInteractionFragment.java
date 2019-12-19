@@ -11,6 +11,7 @@ import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -73,6 +74,8 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
     public static final int COMPLETED_AUDIO_PROGRESS = 99;
     public static final int NORMAL_AUDIO_PROGRESS = 98;
     public static final int PAUSED_AUDIO_PROGRESS = 97;
+    private static final int SAMPLING_RATE = 48000;
+    private static final int ENCODING_BIT_RATE = 96000;
 
     public static final int FILE_SELECT_ACTIVITY_REQUEST_CODE = 11;
     private static final int REQUEST_IMAGE_CAPTURE = 12;
@@ -89,6 +92,9 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
     private String currentPicturePath;
     private boolean recordingInProgress = false;
     private MediaPlayer mp;
+    private byte[] waveForm;
+    private int currentTime;
+    private int maxTime;
     private MediaRecorder mr;
     private Handler mHandler = new Handler();
     private int voiceAttachmentHash;
@@ -251,10 +257,22 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
         clickedAttachmentPos = attachmentPosition;
         clickedMessageUID = messageUID;
         clickedAttachmentUID = attachmentId;
+        currentTime = -1;
+        maxTime = -1;
         if (!saved) subscribeForVoiceDownloadProgress();
         if (PermissionsRequester.requestFileWritePermissionIfNeeded(
                 this, PERMISSIONS_REQUEST_DOWNLOAD_FILE))
             openFileOrDownload(messageUID, attachmentPosition);
+    }
+
+    @Override
+    public void onVoiceProgressClick(int messagePosition, int attachmentPosition, String attachmentId, String messageUID, int current, int max) {
+        clickedAttachmentPos = attachmentPosition;
+        clickedMessageUID = messageUID;
+        clickedAttachmentUID = attachmentId;
+        currentTime = current;
+        maxTime = max;
+        openFileOrDownload(messageUID, attachmentPosition);
     }
 
     protected void subscribeForVoiceDownloadProgress() {
@@ -377,42 +395,40 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
     //};
 
     private void onVoiceRecordPressed() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 
-        mr = new MediaRecorder();
-        mr.setOnErrorListener(new MediaRecorder.OnErrorListener() {
-            @Override
-            public void onError(MediaRecorder mediaRecorder, int i, int i1) {
-                LogManager.e(LOG_TAG, "Error with MediaRecorder (" + i + ", " + i1 + "), releasing)");
-                mediaRecorder.reset();
-                mediaRecorder.release();
-                mr = null;
+            mr = new MediaRecorder();
+            mr.setOnErrorListener(new MediaRecorder.OnErrorListener() {
+                @Override
+                public void onError(MediaRecorder mediaRecorder, int i, int i1) {
+                    LogManager.e(LOG_TAG, "Error with MediaRecorder (" + i + ", " + i1 + "), releasing)");
+                    mediaRecorder.reset();
+                    mediaRecorder.release();
+                    mr = null;
+                }
+            });
+            mr.setAudioSource(MIC);
+            try {
+                File tempAudioFile = FileManager.createTempAudioFile("temp_audio_recording");
+                tempFilePath = tempAudioFile.getAbsolutePath();
+                //waveForm.clear();
+                mr.setOutputFormat(MediaRecorder.OutputFormat.DEFAULT);
+                mr.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+
+                mr.setOutputFile(tempFilePath);
+                mr.setAudioSamplingRate(SAMPLING_RATE);
+                mr.setAudioEncodingBitRate(ENCODING_BIT_RATE);
+                mr.prepare();
+                mr.start();
+                //mHandler.post(createLocalWaveform);
+                recordingInProgress = true;
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        });
-        mr.setAudioSource(MIC);
-        try {
-            File tempAudioFile = FileManager.createTempAudioFile("temp_audio_recording");
-            tempFilePath = tempAudioFile.getAbsolutePath();
-            //waveForm.clear();
-            mr.setOutputFormat(MediaRecorder.OutputFormat.DEFAULT);
-            mr.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
-            mr.setOutputFile(tempFilePath);
-            mr.prepare();
-            mr.start();
-            //mHandler.post(createLocalWaveform);
-            recordingInProgress = true;
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 
-    //private void creatingWaveSample() {
-    //    if (mr != null)
-    //        waveForm.add(mr.getMaxAmplitude());
-    //    mHandler.postDelayed(createLocalWaveform, 50);
-    //}
-
     private String tempFilePath;
-    //private ArrayList<Integer> waveForm = new ArrayList<Integer>();
 
     String stopRecordingIfPossibleForCheckup() {
         if (recordingInProgress) {
@@ -427,10 +443,6 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
         }
         return null;
     }
-
-    //ArrayList getLocalWaveformAmplitudes() {
-    //    return waveForm;
-    //}
 
     boolean releaseRecordedVoicePlayback(String filePath) {
         releaseMediaPlayer();
@@ -619,25 +631,28 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
                 if ("voice".equals(attachment.getRefType())) {
                     manageVoicePlayback(attachment);
                 } else {
-                    Intent i = new Intent(Intent.ACTION_VIEW);
-                    String path = attachment.getFilePath();
-                    i.setDataAndType(FileProvider.getUriForFile(getActivity(),
-                            getActivity().getApplicationContext().getPackageName()
-                                    + ".provider", new File(path)), attachment.getMimeType());
-                    i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-
-                    try {
-                        startActivity(i);
-                    } catch (ActivityNotFoundException e) {
-                        LogManager.exception(LOG_TAG, e);
-                        Toast.makeText(getActivity(), R.string.toast_could_not_open_file, Toast.LENGTH_SHORT).show();
-                    }
+                    manageOpeningFile(attachment);
                 }
-
             } else {
                 LogManager.d("VoiceDebug", "Download Starting Shortly! attachment.getUniqueId = " + attachment.getUniqueId());
                 DownloadManager.getInstance().downloadFile(attachment, account, getActivity());
             }
+        }
+    }
+
+    private void manageOpeningFile(Attachment attachment) {
+        Intent i = new Intent(Intent.ACTION_VIEW);
+        String path = attachment.getFilePath();
+        i.setDataAndType(FileProvider.getUriForFile(getActivity(),
+                getActivity().getApplicationContext().getPackageName()
+                        + ".provider", new File(path)), attachment.getMimeType());
+        i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+        try {
+            startActivity(i);
+        } catch (ActivityNotFoundException e) {
+            LogManager.exception(LOG_TAG, e);
+            Toast.makeText(getActivity(), R.string.toast_could_not_open_file, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -739,6 +754,10 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
     private void manageVoicePlayback(Attachment attachment) {
         final String path = attachment.getFilePath();
         final String id = attachment.getUniqueId();
+        if (path == null) {
+            LogManager.e(LOG_TAG, "Error with media playback! Local attachment path is null, abandoning playback");
+            return;
+        }
         if (mp == null) {
             mp = new MediaPlayer();
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
@@ -764,6 +783,10 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
             mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mediaPlayer) {
+                    if (currentTime != -1 && maxTime != -1) {
+                        mp.seekTo(currentTime);
+                        return;
+                    }
                     mp.start();
                     updateAudioProgressBar();
                 }
@@ -773,7 +796,14 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
                         setDurationIfEmpty(path, id);
                 else voiceAttachmentDuration = longToIntConverter(attachment.getDuration());
                 voiceAttachmentHash = id.hashCode();
-                mp.setDataSource(attachment.getFileUrl());
+                if (attachment.getFileUrl() == null) {
+                    if (attachment.getFilePath() != null)
+                        mp.setDataSource(attachment.getFilePath());
+                    else {
+                        releaseMediaPlayer();
+                        return;
+                    }
+                } else mp.setDataSource(attachment.getFileUrl());
                 mp.prepareAsync();
             } catch (IOException e) {
                 LogManager.exception(LOG_TAG, e);
@@ -781,11 +811,19 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
         } else if (voiceAttachmentHash == attachment.getUniqueId().hashCode()) {
             if (mp.isPlaying()) {
                 mp.pause();
-                publishAudioProgressWithCustomCode(PAUSED_AUDIO_PROGRESS);
-                mHandler.removeCallbacks(updateAudioProgress);
+                if (currentTime != -1 && maxTime != -1) {
+                    mp.seekTo(currentTime);
+                } else {
+                    publishAudioProgressWithCustomCode(PAUSED_AUDIO_PROGRESS);
+                    mHandler.removeCallbacks(updateAudioProgress);
+                }
             } else {
-                mp.start();
-                updateAudioProgressBar();
+                if (currentTime != -1 && maxTime != -1) {
+                    mp.seekTo(currentTime);
+                } else {
+                    mp.start();
+                    updateAudioProgressBar();
+                }
             }
         } else {
             if (mp.isPlaying()) {
@@ -799,7 +837,7 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
                     setDurationIfEmpty(path, id);
                 else voiceAttachmentDuration = longToIntConverter(attachment.getDuration());
                 voiceAttachmentHash = id.hashCode();
-                mp.setDataSource(path);
+                mp.setDataSource(attachment.getFileUrl());
                 mp.prepareAsync();
             } catch (IOException e) {
                 LogManager.exception(LOG_TAG, e);
@@ -848,7 +886,7 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
                         openFileOrDownload(messageId, attachmentPosition);
                         handler.removeCallbacks(null);
                     }
-                }, 100);
+                }, 50);
             }
         }
     }
