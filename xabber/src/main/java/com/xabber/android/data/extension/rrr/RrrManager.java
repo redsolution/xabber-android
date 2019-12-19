@@ -90,7 +90,7 @@ public class RrrManager implements OnPacketListener {
             sendRetractRequest(accountJid, userJid, id);
     }
 
-    public void sendRetractRequest(AccountJid accountJid, UserJid userJid, final String id){
+    public void sendRetractRequest(final AccountJid accountJid, final UserJid userJid, final String id){
         Application.getInstance().runInBackgroundUserRequest(new Runnable() {
             @Override
             public void run() {
@@ -100,14 +100,29 @@ public class RrrManager implements OnPacketListener {
                     realm.executeTransaction(new Realm.Transaction() {
                         @Override
                         public void execute(Realm realm) {
-                            MessageItem messageItem = realm.where(MessageItem.class)
+                            final MessageItem messageItem = realm.where(MessageItem.class)
                                     .equalTo(MessageItem.Fields.UNIQUE_ID, id).findFirst();
-
+                            try {
+                                AccountManager.getInstance().getAccount(accountJid).getConnection().sendIqWithResponseCallback(new RetractMessageIQ(accountJid.getFullJid().asBareJid().toString(), messageItem.getStanzaId(), true), new StanzaListener() {
+                                    @Override
+                                    public void processStanza(Stanza packet) throws SmackException.NotConnectedException, InterruptedException {
+                                        if (packet instanceof IQ){
+                                            if (((IQ) packet).getType().equals(IQ.Type.error))
+                                                LogManager.d(LOG_TAG, "Failed to retract message");
+                                            if (((IQ) packet).getType().equals(IQ.Type.result))
+                                                messageItem.deleteFromRealm();
+                                        }
+                                    }
+                                });
+                            } catch (Exception e) { LogManager.exception(LOG_TAG, e); }
                         }
                     });
 
+                } catch (Exception e) {
+                    LogManager.exception(LOG_TAG, e);
                 } finally {
-
+                    if (realm != null)
+                        realm.close();
                 }
             }
         });

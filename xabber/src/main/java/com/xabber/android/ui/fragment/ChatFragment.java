@@ -78,7 +78,6 @@ import com.xabber.android.data.extension.muc.RoomState;
 import com.xabber.android.data.extension.otr.AuthAskEvent;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.otr.SecurityLevel;
-import com.xabber.android.data.extension.rrr.RrrManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.ClipManager;
@@ -564,7 +563,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
             @Override
             public void onClick(View v) {
                 List<String> checkedItemIds = chatMessageAdapter.getCheckedItemIds();
-                //RrrManager.getInstance().sendRetractRequest(account, user, checkedItemIds);
+                //RrrManager.getInstance().sendRetractRequest(account, user, checkedItemIds.get(0));
                 MessageManager.getInstance().removeMessage(checkedItemIds);
                 forwardIds.clear();
                 closeInteractionPanel();

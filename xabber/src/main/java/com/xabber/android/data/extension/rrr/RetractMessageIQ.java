@@ -1,9 +1,8 @@
 package com.xabber.android.data.extension.rrr;
 
-import org.jivesoftware.smack.packet.ExtensionElement;
-import org.jivesoftware.smack.util.XmlStringBuilder;
+import org.jivesoftware.smack.packet.IQ;
 
-public class RetractExtensionElement extends ExtensionElement {
+public class RetractMessageIQ extends IQ {
 
     public static final String NAMESPACE = RrrManager.NAMESPACE;
     public static final String ELEMENT = "retract-message";
@@ -18,16 +17,20 @@ public class RetractExtensionElement extends ExtensionElement {
     public String getNamespace(){ return NAMESPACE; }
     public String getElementName(){ return ELEMENT; }
 
-    RetractExtensionElement(String by, String id, boolean symmetric){
+    RetractMessageIQ(String by, String id, boolean symmetric){
+        super(ELEMENT, NAMESPACE);
+        this.setType(Type.set);
         this.by = by;
         this.id = id;
         this.symmetric = symmetric;
+        this.setFrom(this.by);
     }
 
     @Override
-    public XmlStringBuilder toXML() {
-        XmlStringBuilder xmlStringBuilder = new XmlStringBuilder();
-        //xmlStringBuilder.attribute()
-        return null;
+    protected IQChildElementXmlStringBuilder getIQChildElementBuilder(IQChildElementXmlStringBuilder xml) {
+        xml.attribute(SYMMETRIC_ATTRIBUTE, symmetric);
+        xml.attribute(BY_ATTRIBUTE, by);
+        xml.attribute(ID_ATTRIBUTE, id);
+        return xml;
     }
 }
