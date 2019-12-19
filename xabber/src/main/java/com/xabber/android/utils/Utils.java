@@ -24,6 +24,14 @@ public class Utils {
                 dip, context.getResources().getDisplayMetrics());
     }
 
+    public static int longToInt(long number) {
+        if (number > Integer.MAX_VALUE)
+            return Integer.MAX_VALUE;
+        else if (number < Integer.MIN_VALUE)
+            return Integer.MIN_VALUE;
+        else return (int) number;
+    }
+
     public static boolean isSameDay(Long date1, Long date2) {
         Calendar cal1 = Calendar.getInstance();
         Calendar cal2 = Calendar.getInstance();

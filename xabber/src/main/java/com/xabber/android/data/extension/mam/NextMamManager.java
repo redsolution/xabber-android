@@ -33,6 +33,7 @@ import com.xabber.android.data.push.SyncManager;
 import com.xabber.android.data.roster.OnRosterReceivedListener;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
+import com.xabber.xmpp.sid.UniqStanzaHelper;
 import com.xabber.xmpp.smack.XMPPTCPConnection;
 
 import net.java.otr4j.io.SerializationUtils;
@@ -721,6 +722,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
         }
         messageItem.setIncoming(incoming);
         messageItem.setStanzaId(AbstractChat.getStanzaId(message));
+        messageItem.setOriginId(UniqStanzaHelper.getOriginId(message));
         messageItem.setPacketId(message.getStanzaId());
         messageItem.setReceivedFromMessageArchive(true);
         messageItem.setRead(timestamp <= accountItem.getStartHistoryTimestamp());
@@ -964,6 +966,14 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
                 .equalTo(MessageItem.Fields.TEXT, message.getText())
                 .isNull(MessageItem.Fields.PARENT_MESSAGE_ID)
                 .beginGroup()
+                    .equalTo(MessageItem.Fields.ORIGIN_ID, message.getOriginId())
+                    .or()
+                    .equalTo(MessageItem.Fields.ORIGIN_ID, message.getStanzaId())
+                    .or()
+                    .equalTo(MessageItem.Fields.ORIGIN_ID, message.getPacketId())
+                    .or()
+                    .equalTo(MessageItem.Fields.STANZA_ID, message.getOriginId())
+                    .or()
                     .equalTo(MessageItem.Fields.STANZA_ID, message.getStanzaId())
                     .or()
                     .equalTo(MessageItem.Fields.STANZA_ID, message.getPacketId())

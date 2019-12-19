@@ -142,6 +142,8 @@ public class BackpressureMessageReader {
         realmQuery.equalTo(MessageItem.Fields.ACCOUNT, accountJid.toString());
         if (stanzaIds != null && stanzaIds.size()>0) {
             realmQuery.beginGroup();
+            realmQuery.equalTo(MessageItem.Fields.ORIGIN_ID, id);
+            realmQuery.or();
             realmQuery.equalTo(MessageItem.Fields.STANZA_ID, id);
             for (String stanzaId : stanzaIds) {
                 realmQuery.or();
@@ -151,6 +153,8 @@ public class BackpressureMessageReader {
             message = realmQuery.findFirst();
 
         } else {
+            realmQuery.equalTo(MessageItem.Fields.ORIGIN_ID, id);
+            realmQuery.or();
             realmQuery.equalTo(MessageItem.Fields.STANZA_ID, id);
             message = realmQuery.findFirst();
         }

@@ -638,6 +638,9 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     }
 
     private void close() {
+        if (chatFragment != null) {
+            chatFragment.cleanUpVoice(true);
+        }
         update();
         finish();
         ActivityManager.getInstance().clearStack(false);

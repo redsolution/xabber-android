@@ -65,6 +65,7 @@ import com.xabber.android.data.roster.OnStatusChangeListener;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.utils.StringUtils;
+import com.xabber.xmpp.sid.UniqStanzaHelper;
 
 import org.jivesoftware.smack.packet.ExtensionElement;
 import org.jivesoftware.smack.packet.Message;
@@ -818,6 +819,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
 
             MessageItem newMessageItem = finalChat.createNewMessageItem(text);
             newMessageItem.setStanzaId(AbstractChat.getStanzaId(message));
+            newMessageItem.setOriginId(UniqStanzaHelper.getOriginId(message));
             newMessageItem.setAcknowledged(true);
             newMessageItem.setSent(true);
             newMessageItem.setForwarded(true);

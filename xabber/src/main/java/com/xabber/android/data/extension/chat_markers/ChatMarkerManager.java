@@ -101,7 +101,7 @@ public class ChatMarkerManager implements OnPacketListener {
         if (messageItem.getStanzaId() == null || messageItem.getStanzaId().isEmpty()) return;
 
         Message displayed = new Message(messageItem.getUser().getJid());
-        displayed.addExtension(new ChatMarkersElements.DisplayedExtension(messageItem.getStanzaId()));
+        displayed.addExtension(new ChatMarkersElements.DisplayedExtension(messageItem.getOriginId()));
         displayed.setType(Message.Type.chat);
 
         sendMessageInBackgroundUserRequest(displayed, messageItem.getAccount());
@@ -195,7 +195,7 @@ public class ChatMarkerManager implements OnPacketListener {
     private void markAsDisplayed(final String messageID) {
         Realm realm = MessageDatabaseManager.getInstance().getRealmUiThread();
         MessageItem first = realm.where(MessageItem.class)
-                .equalTo(MessageItem.Fields.STANZA_ID, messageID).findFirst();
+                .equalTo(MessageItem.Fields.ORIGIN_ID, messageID).findFirst();
 
         if (first != null) {
             RealmResults<MessageItem> results = realm.where(MessageItem.class)
@@ -221,7 +221,7 @@ public class ChatMarkerManager implements OnPacketListener {
     private void markAsDelivered(final String stanzaID) {
         Realm realm = MessageDatabaseManager.getInstance().getRealmUiThread();
         MessageItem first = realm.where(MessageItem.class)
-                .equalTo(MessageItem.Fields.STANZA_ID, stanzaID).findFirst();
+                .equalTo(MessageItem.Fields.ORIGIN_ID, stanzaID).findFirst();
 
         if (first != null) {
             RealmResults<MessageItem> results = realm.where(MessageItem.class)

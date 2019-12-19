@@ -5,27 +5,22 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.util.AttributeSet;
-import android.widget.ImageView;
+import android.view.View;
 
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 
 import com.xabber.android.R;
-import com.xabber.android.data.Application;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.ArrayList;
 
 @SuppressLint("AppCompatCustomView")
-public class PlayerVisualizerView extends ImageView {
+public class PlayerVisualizerView extends View {
     /**
      * bytes array converted from file.
      */
     private byte[] bytes;
+    private ArrayList<Integer> wave = new ArrayList<>();
 
     private int amplitude;
 
@@ -57,9 +52,11 @@ public class PlayerVisualizerView extends ImageView {
         notPlayedStatePainting.setStrokeWidth(1f);
         notPlayedStatePainting.setAntiAlias(true);
         notPlayedStatePainting.setColor(ContextCompat.getColor(getContext(), R.color.grey_500));
+        notPlayedStatePainting.setAlpha(127);
         playedStatePainting.setStrokeWidth(1f);
         playedStatePainting.setAntiAlias(true);
         playedStatePainting.setColor(ContextCompat.getColor(getContext(), R.color.grey_800));
+        playedStatePainting.setAlpha(127);
     }
 
     public void setPlayedColor(int color) {
@@ -67,6 +64,7 @@ public class PlayerVisualizerView extends ImageView {
         playedStatePainting.setStrokeWidth(1f);
         playedStatePainting.setAntiAlias(true);
         playedStatePainting.setColor(color);
+        playedStatePainting.setAlpha(127);
     }
 
     public void setNotPlayedColor(int color) {
@@ -74,6 +72,7 @@ public class PlayerVisualizerView extends ImageView {
         notPlayedStatePainting.setStrokeWidth(1f);
         notPlayedStatePainting.setAntiAlias(true);
         notPlayedStatePainting.setColor(color);
+        notPlayedStatePainting.setAlpha(127);
     }
 
     public void setNotPlayedColorRes(int id) {
@@ -81,54 +80,26 @@ public class PlayerVisualizerView extends ImageView {
         notPlayedStatePainting.setStrokeWidth(1f);
         notPlayedStatePainting.setAntiAlias(true);
         notPlayedStatePainting.setColor(ContextCompat.getColor(getContext(), id));
+        notPlayedStatePainting.setAlpha(127);
     }
 
     /**
      * update and redraw Visualizer view
      */
-    public void updateVisualizer(byte[] bytes) {
+    /*public void updateVisualizer(byte[] bytes) {
         this.bytes = bytes;
+        //decodeOpus(bytes);
+        invalidate();
+    }*/
+
+    public void updateVisualizer(ArrayList<Integer> wave) {
+        this.wave = wave;
+        calculateAmplitude();
         invalidate();
     }
 
-    public void updateVisualizerFromFile(File file) {
-        int size = (int) file.length();
-        final byte[] bytes = new byte[size];
-        try {
-            BufferedInputStream buf = new BufferedInputStream(new FileInputStream(file));
-            buf.read(bytes, 0, bytes.length);
-            buf.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        updateVisualizer(bytes);
-    }
-
-    public void updateVisualizerFromFileAsync(final File file) {
-        Application.getInstance().runInBackground(new Runnable() {
-            @Override
-            public void run() {
-                int size = (int) file.length();
-                final byte[] bytes = new byte[size];
-                try {
-                    BufferedInputStream buf = new BufferedInputStream(new FileInputStream(file));
-                    buf.read(bytes, 0, bytes.length);
-                    buf.close();
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                Application.getInstance().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        updateVisualizer(bytes);
-                    }
-                });
-            }
-        });
+    public void setAmplitude(int amp) {
+        this.amplitude = amp;
     }
 
     /**
@@ -186,106 +157,84 @@ public class PlayerVisualizerView extends ImageView {
         return waveform;
     }
 
+    private void calculateAmplitude () {
+        if (wave == null || wave.isEmpty())
+            return;
+        int amplitude = 0;
+        for (int i = 0; i < wave.size(); i++) {
+            if (wave.get(i) > amplitude)
+                amplitude = wave.get(i);
+        }
+        this.amplitude = amplitude;
+    }
+
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        if (bytes == null || width == 0) {
+
+        if (width == 0) {
             return;
         }
-        float totalBarsCount = width / dp(3);
-        if (totalBarsCount <= 0.1f) {
+        int totalBarsCount = width / dp(3);
+        if (totalBarsCount == 0) {
             return;
         }
-        byte value;
-        int samplesCount = bytes.length;
-        int samplesPerBar = samplesCount/(int)totalBarsCount;
-        ArrayList<Integer> waveform = getFakeAmplitudeList();
 
-        for (int a = 0; a < totalBarsCount; a++) {
 
-            //value = (byte) ((bytes[a]) & ((2 << 4) - 1));
-            int barHeight;
-            if (amplitude != 0)
-                barHeight = height * waveform.get(a)/amplitude;
-            else barHeight = 0;
-            if (barHeight < dp(1))
-                barHeight = dp(1);
-            int x = a * dp(3);
-            float left = x;
-            float right = x + dp(2);
-            float top = height - barHeight;
-            float bottom = height;
-            if (x < denseness) {
-                canvas.drawRect(left, top, right, bottom, playedStatePainting);
-            } else {
-                canvas.drawRect(left, top, right, bottom, notPlayedStatePainting);
-            }
-        }
-    }
+        if (wave != null && !wave.isEmpty()) {
+            for (int a = 0; a < totalBarsCount; a++) {
 
-    /*@Override
-    protected void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
-        if (bytes == null || width == 0) {
-            return;
-        }
-        float totalBarsCount = width / dp(3);
-        if (totalBarsCount <= 0.1f) {
-            return;
-        }
-        byte value;
-        int samplesCount = (bytes.length * 8 / 5);
-        float samplesPerBar = samplesCount / totalBarsCount;
-        float barCounter = 0;
-        int nextBarNum = 0;
+                int barHeight;
+                int sampleIndex;
+                int sampleSize;
 
-        int y = (height - dp(VISUALIZER_HEIGHT)) / 2;
-        int barNum = 0;
-        int lastBarNum;
-        int drawBarCount;
+                sampleIndex = (a * wave.size())/ totalBarsCount;
+                sampleSize = wave.get(sampleIndex);
+                if (amplitude != 0 && sampleSize / amplitude <= 1) {
+                    barHeight = height * sampleSize / amplitude;
+                } else barHeight = 0;
 
-        for (int a = 0; a < samplesCount; a++) {
-            if (a != nextBarNum) {
-                continue;
-            }
-            drawBarCount = 0;
-            lastBarNum = nextBarNum;
-            while (lastBarNum == nextBarNum) {
-                barCounter += samplesPerBar;
-                nextBarNum = (int) barCounter;
-                drawBarCount++;
-            }
+                if (barHeight < dp(1))
+                    barHeight = dp(1);
 
-            int bitPointer = a * 5;
-            int byteNum = bitPointer / Byte.SIZE;
-            int byteBitOffset = bitPointer - byteNum * Byte.SIZE;
-            int currentByteCount = Byte.SIZE - byteBitOffset;
-            int nextByteRest = 5 - currentByteCount;
-            value = (byte) ((bytes[byteNum] >> byteBitOffset) & ((2 << (Math.min(5, currentByteCount) - 1)) - 1));
-            if (nextByteRest > 0) {
-                value <<= nextByteRest;
-                value |= bytes[byteNum + 1] & ((2 << (nextByteRest - 1)) - 1);
-            }
-
-            for (int b = 0; b < drawBarCount; b++) {
-                int x = barNum * dp(3);
+                int x = a * dp(3);
                 float left = x;
-                float top = y + dp(VISUALIZER_HEIGHT - Math.max(1, VISUALIZER_HEIGHT * value / 31.0f));
                 float right = x + dp(2);
-                float bottom = y + dp(VISUALIZER_HEIGHT);
-                if (x < denseness && x + dp(2) < denseness) {
+                float top = height - barHeight;
+                float bottom = height;
+                if (x < denseness) {
                     canvas.drawRect(left, top, right, bottom, playedStatePainting);
                 } else {
                     canvas.drawRect(left, top, right, bottom, notPlayedStatePainting);
-                    if (x < denseness) {
-                        canvas.drawRect(left, top, right, bottom, playedStatePainting);
-                    }
                 }
-                barNum++;
+            }
+        } else {
+
+            if (bytes == null)
+                return;
+
+            ArrayList<Integer> waveform = getFakeAmplitudeList();
+            for (int a = 0; a < totalBarsCount; a++) {
+
+                int barHeight;
+                if (amplitude != 0)
+                    barHeight = (height * waveform.get(a)) / amplitude;
+                else barHeight = 0;
+                if (barHeight < dp(1))
+                    barHeight = dp(1);
+                int x = a * dp(3);
+                float left = x;
+                float right = x + dp(2);
+                float top = height - barHeight;
+                float bottom = height;
+                if (x < denseness) {
+                    canvas.drawRect(left, top, right, bottom, playedStatePainting);
+                } else {
+                    canvas.drawRect(left, top, right, bottom, notPlayedStatePainting);
+                }
             }
         }
     }
-*/
 
     public int dp(float value) {
         if (value == 0) {

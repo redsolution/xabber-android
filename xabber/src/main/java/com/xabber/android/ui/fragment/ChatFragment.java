@@ -78,6 +78,7 @@ import com.xabber.android.data.extension.muc.RoomState;
 import com.xabber.android.data.extension.otr.AuthAskEvent;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.otr.SecurityLevel;
+import com.xabber.android.data.extension.references.VoiceMessagePresenterManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.ClipManager;
@@ -118,7 +119,6 @@ import org.jxmpp.jid.impl.JidCreate;
 import org.jxmpp.jid.parts.Resourcepart;
 import org.jxmpp.stringprep.XmppStringprepException;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -749,9 +749,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         if (currentVoiceRecordingState != VoiceRecordState.NotRecording) {
             stopRecordingIfPossibleAsync(false);
         }
-        clearCachedVoiceFile();
-        releaseMediaPlayer();
-        releaseMediaRecorder();
+        cleanUpVoice(false);
     }
 
     @Override
@@ -1764,7 +1762,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
         recordingPresenterLayout.setVisibility(View.VISIBLE);
 
-        recordingPresenter.updateVisualizerFromFile(new File(recordingPath));
+        //recordingPresenter.updateVisualizerFromFile();
+        VoiceMessagePresenterManager.getInstance().sendWaveDataIfSaved(recordingPath, recordingPresenter);
         recordingPresenter.updatePlayerPercent(0f);
         recordingPlayButton.setImageResource(R.drawable.ic_play);
 
@@ -1802,6 +1801,12 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                 setUpAudioProgress(info);
             }
         }).subscribe();
+    }
+
+    public void cleanUpVoice(boolean deleteTempFile) {
+        if (deleteTempFile) clearCachedVoiceFile();
+        releaseMediaRecorder();
+        releaseMediaPlayer();
     }
 
     private void setUpAudioProgress(FileInteractionFragment.PublishAudioProgress.AudioInfo info) {
