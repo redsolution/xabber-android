@@ -38,6 +38,7 @@ import com.xabber.android.data.message.ForwardManager;
 import com.xabber.android.data.message.NewIncomingMessageEvent;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.roster.RosterManager;
+import com.xabber.xmpp.sid.UniqStanzaHelper;
 
 import org.greenrobot.eventbus.EventBus;
 import org.jivesoftware.smack.packet.Message;
@@ -190,8 +191,9 @@ public class RoomChat extends AbstractChat {
 
     @Override
     protected MessageItem createNewMessageItem(String text) {
+        String id = UUID.randomUUID().toString();
         return createMessageItem(nickname, text, null, null, null, false,
-                false, false, false, UUID.randomUUID().toString(), null,
+                false, false, false, id, id, null,
         null, null, account.getFullJid().toString(), null, true);
     }
 
@@ -302,13 +304,13 @@ public class RoomChat extends AbstractChat {
                 if (attachments.size() > 0)
                     createAndSaveFileMessage(true, uid, resource, text, markupText, null,
                             null, delay, true, notify,
-                            false, false, getStanzaId(message), attachments,
+                            false, false, getStanzaId(message), UniqStanzaHelper.getOriginId(message), attachments,
                             originalStanza, null, originalFrom, true, false, null);
 
                     // create message without attachments
                 else createAndSaveNewMessage(true, uid, resource, text, markupText, null,
                         null, delay, true, notify,
-                        false, false, getStanzaId(message),
+                        false, false, getStanzaId(message), UniqStanzaHelper.getOriginId(message),
                         originalStanza, null, originalFrom, forwardIds, true, false, null);
 
                 EventBus.getDefault().post(new NewIncomingMessageEvent(account, user));
@@ -402,12 +404,12 @@ public class RoomChat extends AbstractChat {
         // create message with file-attachments
         if (attachments.size() > 0)
             createAndSaveFileMessage(ui, uid, resource, text, markupText, null, timestamp, getDelayStamp(message),
-                    true, false, false, false, getStanzaId(message), attachments,
-                    originalStanza, parentMessageId, originalFrom, fromMUC, true, null);
+                    true, false, false, false, getStanzaId(message), UniqStanzaHelper.getOriginId(message),
+                    attachments, originalStanza, parentMessageId, originalFrom, fromMUC, true, null);
 
             // create message without attachments
         else createAndSaveNewMessage(ui, uid, resource, text, markupText, null, timestamp, getDelayStamp(message),
-                true, false, false, false, getStanzaId(message),
+                true, false, false, false, getStanzaId(message), UniqStanzaHelper.getOriginId(message),
                 originalStanza, parentMessageId, originalFrom, forwardIds, fromMUC, true, null);
 
         return uid;
@@ -479,7 +481,7 @@ public class RoomChat extends AbstractChat {
                     createAndSaveNewMessage(true, UUID.randomUUID().toString(), resource, Application.getInstance().getString(
                                     R.string.action_join_complete_to, user), null,
                             ChatAction.complete, null, null, true, true,
-                            false, false, null,
+                            false, false, null, null,
                             null, null, null, null, true, false, null);
                 }
                 active = true;
