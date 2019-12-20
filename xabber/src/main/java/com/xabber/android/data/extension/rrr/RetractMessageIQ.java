@@ -31,6 +31,7 @@ public class RetractMessageIQ extends IQ {
         xml.attribute(SYMMETRIC_ATTRIBUTE, symmetric);
         xml.attribute(BY_ATTRIBUTE, by);
         xml.attribute(ID_ATTRIBUTE, id);
+        xml.rightAngleBracket();
         return xml;
     }
 }

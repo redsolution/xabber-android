@@ -140,4 +140,6 @@
     <string name="action_new_subscription_request">New subscription request</string>
     <string name="open_this_link">Open this link?</string>
     <string name="open">Open</string>
+    <string name="delete_for_all">Delete for companion</string>
+    <string name="delete_message_question">Delete checked messages?</string>
 </resources>

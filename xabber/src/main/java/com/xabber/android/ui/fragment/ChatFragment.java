@@ -33,6 +33,7 @@ import android.view.ViewTreeObserver;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
+import android.widget.CheckBox;
 import android.widget.Chronometer;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -79,6 +80,7 @@ import com.xabber.android.data.extension.otr.AuthAskEvent;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.otr.SecurityLevel;
 import com.xabber.android.data.extension.references.VoiceMessagePresenterManager;
+import com.xabber.android.data.extension.rrr.RrrManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.ClipManager;
@@ -301,7 +303,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
 
-        View view = inflater.inflate(R.layout.fragment_chat, container, false);
+        final View view = inflater.inflate(R.layout.fragment_chat, container, false);
 
         tvNewReceivedCount = view.findViewById(R.id.tvNewReceivedCount);
         btnScrollDown = view.findViewById(R.id.btnScrollDown);
@@ -562,9 +564,41 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         ivDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                List<String> checkedItemIds = chatMessageAdapter.getCheckedItemIds();
-                //RrrManager.getInstance().sendRetractRequest(account, user, checkedItemIds.get(0));
-                MessageManager.getInstance().removeMessage(checkedItemIds);
+                final ArrayList<String> checkedItemIds = new ArrayList<>(chatMessageAdapter.getCheckedItemIds());
+                if (RrrManager.getInstance().isSupported(account)){
+                    View checkBoxView = view.inflate(getContext(), R.layout.delete_for_companion_checkbox, null);
+                    final CheckBox checkBox = checkBoxView.findViewById(R.id.delete_for_all_checkbox);
+                    AlertDialog dialog = new AlertDialog.Builder(getContext())
+                            .setMessage(getContext().getResources().getString(R.string.delete_message_question))
+                            .setView(checkBoxView)
+                            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    if (checkBox.isChecked())
+                                        RrrManager.getInstance().sendRetractRequest(account, checkedItemIds, true);
+                                    else RrrManager.getInstance().sendRetractRequest(account, checkedItemIds, false);
+                                }
+                            })
+                            .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) { }
+                            })
+                            .show();
+                } else {
+                    AlertDialog dialog = new AlertDialog.Builder(getContext())
+                            .setMessage(getContext().getResources().getString(R.string.delete_message_question))
+                            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    MessageManager.getInstance().removeMessage(checkedItemIds);
+                                }
+                            })
+                            .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {           }
+                            })
+                            .show();
+                }
                 forwardIds.clear();
                 closeInteractionPanel();
             }

@@ -19,6 +19,7 @@ public class SubscribeUpdatesIQ extends IQ {
 
     @Override
     protected IQChildElementXmlStringBuilder getIQChildElementBuilder(final IQChildElementXmlStringBuilder xml) {
+        xml.rightAngleBracket();
         return xml;
     }
 }
