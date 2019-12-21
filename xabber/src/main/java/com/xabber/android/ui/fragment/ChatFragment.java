@@ -183,6 +183,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     private ImageView ivForward;
     private ImageView ivDelete;
     private ImageView ivCopy;
+    private ImageView ivEdit;
     private TextView tvTopDate;
 
     boolean isInputEmpty = true;
@@ -564,43 +565,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         ivDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final ArrayList<String> checkedItemIds = new ArrayList<>(chatMessageAdapter.getCheckedItemIds());
-                if (RrrManager.getInstance().isSupported(account)){
-                    View checkBoxView = view.inflate(getContext(), R.layout.delete_for_companion_checkbox, null);
-                    final CheckBox checkBox = checkBoxView.findViewById(R.id.delete_for_all_checkbox);
-                    AlertDialog dialog = new AlertDialog.Builder(getContext())
-                            .setMessage(getContext().getResources().getString(R.string.delete_message_question))
-                            .setView(checkBoxView)
-                            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    if (checkBox.isChecked())
-                                        RrrManager.getInstance().sendRetractRequest(account, checkedItemIds, true);
-                                    else RrrManager.getInstance().sendRetractRequest(account, checkedItemIds, false);
-                                }
-                            })
-                            .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) { }
-                            })
-                            .show();
-                } else {
-                    AlertDialog dialog = new AlertDialog.Builder(getContext())
-                            .setMessage(getContext().getResources().getString(R.string.delete_message_question))
-                            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    MessageManager.getInstance().removeMessage(checkedItemIds);
-                                }
-                            })
-                            .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {           }
-                            })
-                            .show();
-                }
-                forwardIds.clear();
-                closeInteractionPanel();
+                deleteChecked();
             }
         });
         ivCopy = view.findViewById(R.id.ivCopy);
@@ -610,6 +575,13 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                 ClipManager.copyMessagesToClipboard(new ArrayList<>(chatMessageAdapter.getCheckedItemIds()));
                 forwardIds.clear();
                 closeInteractionPanel();
+            }
+        });
+        ivEdit = view.findViewById(R.id.ivEdit);
+        ivEdit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                editMessage();
             }
         });
 
@@ -1282,6 +1254,50 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         }
     }
 
+    private void deleteChecked(){
+        final ArrayList<String> checkedItemIds = new ArrayList<>(chatMessageAdapter.getCheckedItemIds());
+        if (RrrManager.getInstance().isSupported(account)){
+            View checkBoxView = getView().inflate(getContext(), R.layout.delete_for_companion_checkbox, null);
+            final CheckBox checkBox = checkBoxView.findViewById(R.id.delete_for_all_checkbox);
+            AlertDialog dialog = new AlertDialog.Builder(getContext())
+                    .setMessage(getContext().getResources().getString(R.string.delete_message_question))
+                    .setView(checkBoxView)
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            if (checkBox.isChecked())
+                                RrrManager.getInstance().sendRetractRequest(account, checkedItemIds, true);
+                            else RrrManager.getInstance().sendRetractRequest(account, checkedItemIds, false);
+                        }
+                    })
+                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) { }
+                    })
+                    .show();
+        } else {
+            AlertDialog dialog = new AlertDialog.Builder(getContext())
+                    .setMessage(getContext().getResources().getString(R.string.delete_message_question))
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            MessageManager.getInstance().removeMessage(checkedItemIds);
+                        }
+                    })
+                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {           }
+                    })
+                    .show();
+        }
+        forwardIds.clear();
+        closeInteractionPanel();
+    }
+
+    private void editMessage(){
+        Toast.makeText(getContext(), "Not implemented yet", Toast.LENGTH_SHORT).show();
+    }
+
     public void showResourceChoiceAlert(final AccountJid account, final UserJid user, final boolean restartSession) {
         final List<Presence> allPresences = RosterManager.getInstance().getPresences(account, user.getJid());
 
@@ -1439,6 +1455,10 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
             interactionView.setVisibility(View.VISIBLE);
             tvCount.setText(String.valueOf(checkedItems));
         } else interactionView.setVisibility(View.GONE);
+
+        if (checkedItems == 1) {
+            ivEdit.setVisibility(View.VISIBLE);
+        } else ivEdit.setVisibility(View.GONE);
     }
 
     public void showCustomMenu(View anchor) {
@@ -1458,6 +1478,9 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
             CustomMessageMenu.addMenuItem(menuItems, "action_message_copy", getString(R.string.message_copy));
             CustomMessageMenu.addMenuItem(menuItems, "action_message_remove", getString(R.string.message_remove));
         }
+
+        if (!clickedMessageItem.isIncoming())
+            CustomMessageMenu.addMenuItem(menuItems, "action_message_edit", getString(R.string.message_edit));
 
         if (clickedMessageItem.isIncoming() && MUCManager.getInstance()
                 .hasRoom(account, user.getJid().asEntityBareJidIfPossible())) {
@@ -1509,7 +1532,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                     setInputTextAtCursor("> " + clickedMessageItem.getText() + "\n");
                     break;
                 case "action_message_remove":
-                    MessageManager.getInstance().removeMessage(clickedMessageItem.getUniqueId());
+                    deleteChecked();
                     break;
                 case "action_message_open_muc_private_chat":
                     UserJid occupantFullJid = null;
@@ -1531,6 +1554,9 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                 case "action_message_status":
                     if (clickedMessageItem.isError())
                         showError(clickedMessageItem.getErrorDescription());
+                    break;
+                case "action_message_edit":
+                    editMessage();
                     break;
                 default:
                     break;

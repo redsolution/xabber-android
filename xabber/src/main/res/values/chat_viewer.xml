@@ -142,4 +142,5 @@
     <string name="open">Open</string>
     <string name="delete_for_all">Delete for companion</string>
     <string name="delete_message_question">Delete checked messages?</string>
+    <string name="message_edit">Edit</string>
 </resources>
