@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.ResultReceiver;
 import android.util.Log;
+import android.webkit.MimeTypeMap;
 
 import androidx.annotation.Nullable;
 
@@ -13,7 +14,6 @@ import com.xabber.android.data.database.MessageDatabaseManager;
 import com.xabber.android.data.database.messagerealm.Attachment;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.file.FileManager;
-import com.xabber.android.data.extension.references.ReferenceElement;
 import com.xabber.android.utils.HttpClientWithMTM;
 
 import java.io.File;
@@ -34,6 +34,8 @@ public class DownloadService extends IntentService {
     public static final int COMPLETE_CODE = 3134;
     private static final String XABBER_DIR = "Xabber";
     private static final String XABBER_AUDIO_DIR = "Xabber Audio";
+    private static final String XABBER_DOCUMENTS_DIR = "Xabber Documents";
+    private static final String XABBER_IMAGES_DIR = "Xabber Images";
 
     public final static String KEY_ATTACHMENT_ID = "attachment_id";
     public final static String KEY_RECEIVER = "receiver";
@@ -41,7 +43,6 @@ public class DownloadService extends IntentService {
     public final static String KEY_ACCOUNT_JID = "account_jid";
     public final static String KEY_FILE_NAME = "file_name";
     public final static String KEY_FILE_SIZE = "file_size";
-    public final static String KEY_REFERENCE_ELEMENT = "ref_element";
     public final static String KEY_URL = "url";
     public final static String KEY_ERROR = "error";
 
@@ -59,7 +60,6 @@ public class DownloadService extends IntentService {
         this.receiver = intent.getParcelableExtra(KEY_RECEIVER);
         this.attachmentId = intent.getStringExtra(KEY_ATTACHMENT_ID);
         String fileName = intent.getStringExtra(KEY_FILE_NAME);
-        String refElement = intent.getStringExtra(KEY_REFERENCE_ELEMENT);
         long fileSize = intent.getLongExtra(KEY_FILE_SIZE, 0);
         String url = intent.getStringExtra(KEY_URL);
         AccountJid accountJid = intent.getParcelableExtra(KEY_ACCOUNT_JID);
@@ -68,7 +68,7 @@ public class DownloadService extends IntentService {
         OkHttpClient client = HttpClientWithMTM.getClient(accountJid);
 
         // start download
-        if (client != null) requestFileDownload(fileName, fileSize, refElement, url, client);
+        if (client != null) requestFileDownload(fileName, fileSize, url, client);
         else publishError("Downloading not started");
     }
 
@@ -78,7 +78,7 @@ public class DownloadService extends IntentService {
         needStop = true;
     }
 
-    private void requestFileDownload(final String fileName, final long fileSize, String type, String url, OkHttpClient client) {
+    private void requestFileDownload(final String fileName, final long fileSize, String url, OkHttpClient client) {
         Request request = new Request.Builder().url(url).build();
         try {
             Response response = client.newCall(request).execute();
@@ -96,8 +96,35 @@ public class DownloadService extends IntentService {
                     return;
                 }
 
-            if (ReferenceElement.Type.voice.name().equals(type)) {
-                directory = new File(getSpecificDownloadDirPath());
+            String extension = MimeTypeMap.getFileExtensionFromUrl(url);
+            String fileType = null;
+            if (extension != null) {
+                fileType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+                if (fileType != null) {
+                    int slash = fileType.indexOf("/");
+                    if (slash != -1) {
+                        fileType = fileType.substring(0, slash);
+                    }
+                }
+            }
+            if ("audio".equals(fileType)) {
+                directory = new File(getAudioDownloadDirPath());
+                if (!directory.exists()) {
+                    if (!directory.mkdir()) {
+                        publishError("Directory not created");
+                        return;
+                    }
+                }
+            } else if ("image".equals(fileType)) {
+                directory = new File(getImagesDownloadDirPath());
+                if (!directory.exists()) {
+                    if (!directory.mkdir()) {
+                        publishError("Directory not created");
+                        return;
+                    }
+                }
+            } else {
+                directory = new File(getDocumentsDownloadDirPath());
                 if (!directory.exists()) {
                     if (!directory.mkdir()) {
                         publishError("Directory not created");
@@ -120,7 +147,7 @@ public class DownloadService extends IntentService {
 
                 // download
                 FileOutputStream fos = new FileOutputStream(file);
-                byte [] buffer = new byte [8192];
+                byte[] buffer = new byte[8192];
                 int r;
 
                 int downloadedBytes = 0;
@@ -190,7 +217,15 @@ public class DownloadService extends IntentService {
                 + File.separator + XABBER_DIR;
     }
 
-    private static String getSpecificDownloadDirPath() {
+    private static String getAudioDownloadDirPath() {
         return getDownloadDirPath() + File.separator + XABBER_AUDIO_DIR;
+    }
+
+    private static String getDocumentsDownloadDirPath() {
+        return getDownloadDirPath() + File.separator + XABBER_DOCUMENTS_DIR;
+    }
+
+    private static String getImagesDownloadDirPath() {
+        return getDownloadDirPath() + File.separator + XABBER_IMAGES_DIR;
     }
 }
