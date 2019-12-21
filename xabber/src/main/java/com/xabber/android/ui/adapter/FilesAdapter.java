@@ -40,6 +40,7 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.FileViewHold
     public interface FileListListener {
         void onFileClick(int position);
         void onVoiceClick(int position, String attachmentId, boolean saved);
+        //void onVoiceProgressClick(int position, String attachmentId, int current, int max);
         void onFileLongClick(Attachment attachment, View caller);
         void onDownloadCancel();
         void onDownloadError(String error);
@@ -71,12 +72,12 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.FileViewHold
             if (attachment.getDuration() != null && attachment.getDuration() != 0) {
                 voiceText.append(String.format(Locale.getDefault(), ", %s", StringUtils.getDurationStringForVoiceMessage(null, attachment.getDuration())));
                 RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) holder.fileInfoLayout.getLayoutParams();
-                int width = Utils.dipToPx(150, holder.fileInfoLayout.getContext());
+                int width = Utils.dipToPx(120, holder.fileInfoLayout.getContext());
                 if (attachment.getDuration() < 10) {
-                    lp.width = width + Utils.dipToPx(5 * attachment.getDuration(), holder.fileInfoLayout.getContext());
+                    lp.width = width + Utils.dipToPx(8 * attachment.getDuration(), holder.fileInfoLayout.getContext());
                     holder.fileInfoLayout.setLayoutParams(lp);
                 } else {
-                    lp.width = width + Utils.dipToPx(50, holder.fileInfoLayout.getContext());
+                    lp.width = width + Utils.dipToPx(80, holder.fileInfoLayout.getContext());
                     holder.fileInfoLayout.setLayoutParams(lp);
                 }
             }

@@ -19,6 +19,10 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.InputType;
@@ -103,7 +107,7 @@ import java.util.List;
 public class ChatActivity extends ManagedActivity implements OnContactChangedListener,
         OnAccountChangedListener, OnChatStateListener, ChatFragment.ChatViewerFragmentListener, OnBlockedListChangedListener,
         ContactVcardViewerFragment.Listener, Toolbar.OnMenuItemClickListener,
-        UpdateBackpressure.UpdatableObject, OccupantListFragment.Listener, SnoozeDialog.OnSnoozeListener {
+        UpdateBackpressure.UpdatableObject, OccupantListFragment.Listener, SnoozeDialog.OnSnoozeListener, SensorEventListener {
 
     private static final String LOG_TAG = ChatActivity.class.getSimpleName();
     private static final String CHAT_FRAGMENT_TAG = "CHAT_FRAGMENT_TAG";
@@ -141,6 +145,9 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     private UpdateBackpressure updateBackpressure;
     private String extraText = null;
     private ArrayList<String> forwardsIds;
+
+    private SensorManager mSensorManager;
+    private Sensor mSensor;
 
     private AccountJid account;
     private UserJid user;
@@ -323,6 +330,8 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         showcaseView = findViewById(R.id.showcaseView);
 
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+        mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+        mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
 
         Intent intent = getIntent();
         account = getAccount(intent);
@@ -350,6 +359,8 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     protected void onResume() {
         super.onResume();
         LogManager.i(LOG_TAG, "onResume");
+
+        mSensorManager.registerListener(this, mSensor, SensorManager.SENSOR_DELAY_NORMAL);
 
         updateToolbar();
         updateStatusBar();
@@ -516,6 +527,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     protected void onPause() {
         super.onPause();
         updateBackpressure.removeRefreshRequests();
+        mSensorManager.unregisterListener(this);
         Application.getInstance().removeUIListener(OnChatStateListener.class, this);
         Application.getInstance().removeUIListener(OnContactChangedListener.class, this);
         Application.getInstance().removeUIListener(OnAccountChangedListener.class, this);
@@ -1038,6 +1050,22 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         return gestureDetector.onTouchEvent(event);
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent sensorEvent) {
+        if (sensorEvent.sensor.getType() == Sensor.TYPE_PROXIMITY) {
+            if (sensorEvent.values[0] < sensorEvent.sensor.getMaximumRange()) {
+                //near
+            } else {
+                //far
+            }
+        }
+
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int i) {
     }
 
     private class SwipeDetector extends GestureDetector.SimpleOnGestureListener {
