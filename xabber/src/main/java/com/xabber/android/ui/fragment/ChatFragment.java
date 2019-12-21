@@ -1307,6 +1307,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         closeInteractionPanel();
         setInputText(messageItem.getText());
         //TODO implement this!
+        Toast.makeText(getContext(), "Editing not working properly yet!", Toast.LENGTH_SHORT).show();
     }
 
     public void showResourceChoiceAlert(final AccountJid account, final UserJid user, final boolean restartSession) {

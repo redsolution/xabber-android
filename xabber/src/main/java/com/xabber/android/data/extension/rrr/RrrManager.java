@@ -7,7 +7,9 @@ import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.database.MessageDatabaseManager;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.log.LogManager;
+import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.MessageUpdateEvent;
 import com.xabber.xmpp.smack.XMPPTCPConnection;
 
@@ -130,6 +132,30 @@ public class RrrManager implements OnPacketListener {
                 }
             }
         });
+    }
+
+    public void sendRetractAllMessagesRequest(final AccountJid accountJid, final UserJid userJid, final boolean symmetric){
+        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
+            @Override
+            public void run() {
+                RetractAllMessagesIQ retractAllMessagesIQ = new RetractAllMessagesIQ(userJid.toString(), symmetric);
+                try {
+                    AccountManager.getInstance().getAccount(accountJid).getConnection()
+                            .sendIqWithResponseCallback(retractAllMessagesIQ, new StanzaListener() {
+                                @Override
+                                public void processStanza(Stanza packet) throws SmackException.NotConnectedException, InterruptedException {
+                                    if (packet instanceof IQ ) {
+                                        if (((IQ) packet).getType().equals(IQ.Type.error))
+                                            LogManager.d(LOG_TAG, "Failed to retract message");
+                                        if (((IQ) packet).getType().equals(IQ.Type.result))
+                                            LogManager.d(LOG_TAG, "Message successfully retracted");
+                                    }
+                                }
+                            });
+                } catch (Exception e) {LogManager.exception(LOG_TAG, e); }
+            }
+        });
+        MessageManager.getInstance().clearHistory(accountJid, userJid);
     }
 
     private void handleIncomingRetractMessage(final String id, final String by, final String conversation) {
