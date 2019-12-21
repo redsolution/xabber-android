@@ -565,7 +565,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         ivDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                deleteChecked(new ArrayList<String>(chatMessageAdapter.getCheckedItemIds()));
+                deleteMessage(new ArrayList<MessageItem>(chatMessageAdapter.getCheckedMessageItems()));
             }
         });
         ivCopy = view.findViewById(R.id.ivCopy);
@@ -581,7 +581,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         ivEdit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                editMessage(chatMessageAdapter.getCheckedItemIds().get(0));
+                editMessage(chatMessageAdapter.getCheckedMessageItems().get(0));
             }
         });
 
@@ -1254,13 +1254,19 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         }
     }
 
-    private void deleteChecked(final ArrayList<String> ids){
+    private void deleteMessage(final ArrayList<MessageItem> messages){
+        final List<String> ids = new ArrayList<>();
+        boolean onlyOutgoing = true;
+        for (MessageItem messageItem : messages){
+            ids.add(messageItem.getUniqueId());
+            if (messageItem.isIncoming())
+                onlyOutgoing = false;
+        }
         if (RrrManager.getInstance().isSupported(account)){
             View checkBoxView = getView().inflate(getContext(), R.layout.delete_for_companion_checkbox, null);
             final CheckBox checkBox = checkBoxView.findViewById(R.id.delete_for_all_checkbox);
-            AlertDialog dialog = new AlertDialog.Builder(getContext())
+            AlertDialog.Builder dialog = new AlertDialog.Builder(getContext())
                     .setMessage(getContext().getResources().getString(R.string.delete_message_question))
-                    .setView(checkBoxView)
                     .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
@@ -1272,8 +1278,9 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                     .setNegativeButton("No", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) { }
-                    })
-                    .show();
+                    });
+            if (onlyOutgoing) dialog.setView(checkBoxView);
+            dialog.show();
         } else {
             AlertDialog dialog = new AlertDialog.Builder(getContext())
                     .setMessage(getContext().getResources().getString(R.string.delete_message_question))
@@ -1299,6 +1306,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         showBottomMessagesPanel(arrayList, BottomMessagesPanel.Purposes.EDITING);
         closeInteractionPanel();
         setInputText(messageItem.getText());
+        //TODO implement this!
     }
 
     public void showResourceChoiceAlert(final AccountJid account, final UserJid user, final boolean restartSession) {
@@ -1459,7 +1467,9 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
             tvCount.setText(String.valueOf(checkedItems));
         } else interactionView.setVisibility(View.GONE);
 
-        if (checkedItems == 1 && RrrManager.getInstance().isSupported(account)) { //TODO Implement checking for incoming\outcoming
+        if (checkedItems == 1
+                && RrrManager.getInstance().isSupported(account)
+                && !chatMessageAdapter.getCheckedMessageItems().get(0).isIncoming()) {
             ivEdit.setVisibility(View.VISIBLE);
         } else ivEdit.setVisibility(View.GONE);
     }
@@ -1535,9 +1545,9 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                     setInputTextAtCursor("> " + clickedMessageItem.getText() + "\n");
                     break;
                 case "action_message_remove":
-                    ArrayList<String> arrayList = new ArrayList<>();
-                    arrayList.add(clickedMessageItem.getUniqueId());
-                    deleteChecked(arrayList);
+                    ArrayList<MessageItem> arrayList = new ArrayList<>();
+                    arrayList.add(clickedMessageItem);
+                    deleteMessage(arrayList);
                     break;
                 case "action_message_open_muc_private_chat":
                     UserJid occupantFullJid = null;
@@ -1968,7 +1978,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     private void hideBottomMessagePanel() {
         bottomPanelMessagesIds.clear();
         setUpInputViewButtons();
-
+        if (bottomMessagesPanel.getPurpose().equals(BottomMessagesPanel.Purposes.EDITING))
+            inputView.setText("");
         Activity activity = getActivity();
         if (activity != null && !activity.isFinishing()) {
             FragmentManager fragmentManager = getChildFragmentManager();

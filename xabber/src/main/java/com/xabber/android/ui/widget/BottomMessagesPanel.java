@@ -2,15 +2,16 @@ package com.xabber.android.ui.widget;
 
 import android.content.Context;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
 import com.amulyakhare.textdrawable.util.ColorGenerator;
 import com.xabber.android.R;
@@ -36,6 +37,8 @@ public class BottomMessagesPanel extends Fragment {
     public interface OnCloseListener {
         void onClose();
     }
+
+    public Purposes getPurpose() { return purpose; }
 
     public static BottomMessagesPanel newInstance(List<String> messagesIds, Purposes purpose) {
         BottomMessagesPanel panel = new BottomMessagesPanel();
