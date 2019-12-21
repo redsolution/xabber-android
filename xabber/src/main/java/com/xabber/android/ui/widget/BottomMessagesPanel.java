@@ -24,21 +24,23 @@ import java.util.List;
 
 import io.realm.RealmResults;
 
-public class ForwardPanel extends Fragment {
+public class BottomMessagesPanel extends Fragment {
 
-    private List<String> forwardedIds;
-    private TextView tvForwardedFrom;
-    private TextView tvForwardedText;
-    private ImageView ivCloseForwardPanel;
+    private List<String> messagesIds;
+    private TextView tvFrom;
+    private TextView tvText;
+    private ImageView ivCloseBottomMessagePanel;
     private OnCloseListener listener;
+    private Purposes purpose;
 
     public interface OnCloseListener {
         void onClose();
     }
 
-    public static ForwardPanel newInstance(List<String> forwardedIds) {
-        ForwardPanel panel = new ForwardPanel();
-        panel.forwardedIds = forwardedIds;
+    public static BottomMessagesPanel newInstance(List<String> messagesIds, Purposes purpose) {
+        BottomMessagesPanel panel = new BottomMessagesPanel();
+        panel.messagesIds = messagesIds;
+        panel.purpose = purpose;
         return panel;
     }
 
@@ -55,11 +57,11 @@ public class ForwardPanel extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.view_chat_forward, container, false);
+        View view = inflater.inflate(R.layout.view_chat_bottom_message_panel, container, false);
 
-        tvForwardedText = view.findViewById(R.id.tvForwardedText);
-        tvForwardedFrom = view.findViewById(R.id.tvForwardedFrom);
-        ivCloseForwardPanel = view.findViewById(R.id.ivCloseForwardPanel);
+        tvText = view.findViewById(R.id.tvText);
+        tvFrom = view.findViewById(R.id.tvFrom);
+        ivCloseBottomMessagePanel = view.findViewById(R.id.ivCloseBottomMessagePanel);
 
         return view;
     }
@@ -68,23 +70,23 @@ public class ForwardPanel extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        if (forwardedIds != null && forwardedIds.size() > 0) {
-            RealmResults<MessageItem> forwardedMessages =
+        if (messagesIds != null && messagesIds.size() > 0) {
+            RealmResults<MessageItem> messages =
                     MessageDatabaseManager.getInstance().getRealmUiThread().where(MessageItem.class)
-                            .in(MessageItem.Fields.UNIQUE_ID, forwardedIds.toArray(new String[0])).findAll();
+                            .in(MessageItem.Fields.UNIQUE_ID, messagesIds.toArray(new String[0])).findAll();
 
-            tvForwardedFrom.setText(Html.fromHtml(getNames(forwardedMessages)));
+            tvFrom.setText(Html.fromHtml(getNames(messages)));
 
-            String forwardedText = forwardedMessages.get(0).getText();
-            if (forwardedMessages.size() > 1 || forwardedText.trim().isEmpty()) {
+            String text = messages.get(0).getText();
+            if (messages.size() > 1 || text.trim().isEmpty()) {
                 Context context = getContext();
-                if (context != null)
-                    tvForwardedText.setText(String.format(context.getResources()
-                        .getString(R.string.forwarded_messages_count), forwardedMessages.size()));
-            } else tvForwardedText.setText(forwardedText);
+                if (context != null && purpose.equals(Purposes.FORWARDING))
+                    tvText.setText(String.format(context.getResources()
+                        .getString(R.string.forwarded_messages_count), messages.size()));
+            } else tvText.setText(text);
         }
 
-        ivCloseForwardPanel.setOnClickListener(new View.OnClickListener() {
+        ivCloseBottomMessagePanel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 listener.onClose();
@@ -109,5 +111,10 @@ public class ForwardPanel extends Fragment {
 
         stringBuilder.delete(stringBuilder.length() - 2, stringBuilder.length() - 1);
         return stringBuilder.toString();
+    }
+
+    public enum Purposes {
+        FORWARDING,
+        EDITING
     }
 }

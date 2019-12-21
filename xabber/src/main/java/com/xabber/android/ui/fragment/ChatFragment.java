@@ -106,8 +106,8 @@ import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.dialog.ChatExportDialogFragment;
 import com.xabber.android.ui.dialog.ChatHistoryClearDialog;
 import com.xabber.android.ui.helper.PermissionsRequester;
+import com.xabber.android.ui.widget.BottomMessagesPanel;
 import com.xabber.android.ui.widget.CustomMessageMenu;
-import com.xabber.android.ui.widget.ForwardPanel;
 import com.xabber.android.ui.widget.PlayerVisualizerView;
 import com.xabber.android.utils.StringUtils;
 import com.xabber.android.utils.Utils;
@@ -142,7 +142,7 @@ import rx.subjects.PublishSubject;
 public class ChatFragment extends FileInteractionFragment implements PopupMenu.OnMenuItemClickListener,
         View.OnClickListener, Toolbar.OnMenuItemClickListener, MessageVH.MessageClickListener,
         MessagesAdapter.Listener, AdapterView.OnItemClickListener, PopupWindow.OnDismissListener,
-        OnAccountChangedListener, ForwardPanel.OnCloseListener, MessagesAdapter.AnchorHolder,
+        OnAccountChangedListener, BottomMessagesPanel.OnCloseListener, MessagesAdapter.AnchorHolder,
         IncomingMessageVH.BindListener {
 
     public static final String ARGUMENT_ACCOUNT = "ARGUMENT_ACCOUNT";
@@ -236,8 +236,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
     private Intent notifyIntent;
 
-    private ForwardPanel forwardPanel;
-    private List<String> forwardIds = new ArrayList<>();
+    private BottomMessagesPanel bottomMessagesPanel;
+    private List<String> bottomPanelMessagesIds = new ArrayList<>();
 
     public static ChatFragment newInstance(AccountJid account, UserJid user) {
         ChatFragment fragment = new ChatFragment();
@@ -539,7 +539,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         ivClose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                forwardIds.clear();
+                bottomPanelMessagesIds.clear();
                 closeInteractionPanel();
             }
         });
@@ -547,8 +547,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         ivReply.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                forwardIds = new ArrayList<>(chatMessageAdapter.getCheckedItemIds());
-                showForwardPanel(forwardIds);
+                bottomPanelMessagesIds = new ArrayList<>(chatMessageAdapter.getCheckedItemIds());
+                showBottomMessagesPanel(bottomPanelMessagesIds, BottomMessagesPanel.Purposes.FORWARDING);
                 closeInteractionPanel();
             }
         });
@@ -556,16 +556,16 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         ivForward.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                forwardIds = new ArrayList<>(chatMessageAdapter.getCheckedItemIds());
+                bottomPanelMessagesIds = new ArrayList<>(chatMessageAdapter.getCheckedItemIds());
                 //closeInteractionPanel();
-                openChooserForForward((ArrayList<String>) forwardIds);
+                openChooserForForward((ArrayList<String>) bottomPanelMessagesIds);
             }
         });
         ivDelete = view.findViewById(R.id.ivDelete);
         ivDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                deleteChecked();
+                deleteChecked(new ArrayList<String>(chatMessageAdapter.getCheckedItemIds()));
             }
         });
         ivCopy = view.findViewById(R.id.ivCopy);
@@ -573,7 +573,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
             @Override
             public void onClick(View v) {
                 ClipManager.copyMessagesToClipboard(new ArrayList<>(chatMessageAdapter.getCheckedItemIds()));
-                forwardIds.clear();
+                bottomPanelMessagesIds.clear();
                 closeInteractionPanel();
             }
         });
@@ -581,7 +581,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         ivEdit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                editMessage();
+                editMessage(chatMessageAdapter.getCheckedItemIds().get(0));
             }
         });
 
@@ -1048,7 +1048,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
     private void setUpInputViewButtons() {
         boolean empty = inputView.getText().toString().trim().isEmpty();
-        if (empty) empty = forwardIds.isEmpty();
+        if (empty) empty = bottomPanelMessagesIds.isEmpty();
 
         if (empty != isInputEmpty) {
             isInputEmpty = empty;
@@ -1100,8 +1100,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         scrollDown();
         playMessageSound();
 
-        if (forwardIds != null && !forwardIds.isEmpty()) {
-            sendForwardMessage(forwardIds, text);
+        if (bottomPanelMessagesIds != null && !bottomPanelMessagesIds.isEmpty()) {
+            sendForwardMessage(bottomPanelMessagesIds, text);
         } else if (!text.isEmpty()) {
             sendMessage(text);
         } else {
@@ -1254,8 +1254,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         }
     }
 
-    private void deleteChecked(){
-        final ArrayList<String> checkedItemIds = new ArrayList<>(chatMessageAdapter.getCheckedItemIds());
+    private void deleteChecked(final ArrayList<String> ids){
         if (RrrManager.getInstance().isSupported(account)){
             View checkBoxView = getView().inflate(getContext(), R.layout.delete_for_companion_checkbox, null);
             final CheckBox checkBox = checkBoxView.findViewById(R.id.delete_for_all_checkbox);
@@ -1266,8 +1265,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             if (checkBox.isChecked())
-                                RrrManager.getInstance().sendRetractRequest(account, checkedItemIds, true);
-                            else RrrManager.getInstance().sendRetractRequest(account, checkedItemIds, false);
+                                RrrManager.getInstance().sendRetractRequest(account, ids, true);
+                            else RrrManager.getInstance().sendRetractRequest(account, ids, false);
                         }
                     })
                     .setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -1281,7 +1280,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                     .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            MessageManager.getInstance().removeMessage(checkedItemIds);
+                            MessageManager.getInstance().removeMessage(ids);
                         }
                     })
                     .setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -1290,12 +1289,16 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                     })
                     .show();
         }
-        forwardIds.clear();
+        bottomPanelMessagesIds.clear();
         closeInteractionPanel();
     }
 
-    private void editMessage(){
-        Toast.makeText(getContext(), "Not implemented yet", Toast.LENGTH_SHORT).show();
+    private void editMessage(MessageItem messageItem){
+        List<String> arrayList = new ArrayList<String>();
+        arrayList.add(messageItem.getUniqueId());
+        showBottomMessagesPanel(arrayList, BottomMessagesPanel.Purposes.EDITING);
+        closeInteractionPanel();
+        setInputText(messageItem.getText());
     }
 
     public void showResourceChoiceAlert(final AccountJid account, final UserJid user, final boolean restartSession) {
@@ -1456,7 +1459,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
             tvCount.setText(String.valueOf(checkedItems));
         } else interactionView.setVisibility(View.GONE);
 
-        if (checkedItems == 1) {
+        if (checkedItems == 1 && RrrManager.getInstance().isSupported(account)) { //TODO Implement checking for incoming\outcoming
             ivEdit.setVisibility(View.VISIBLE);
         } else ivEdit.setVisibility(View.GONE);
     }
@@ -1532,7 +1535,9 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                     setInputTextAtCursor("> " + clickedMessageItem.getText() + "\n");
                     break;
                 case "action_message_remove":
-                    deleteChecked();
+                    ArrayList<String> arrayList = new ArrayList<>();
+                    arrayList.add(clickedMessageItem.getUniqueId());
+                    deleteChecked(arrayList);
                     break;
                 case "action_message_open_muc_private_chat":
                     UserJid occupantFullJid = null;
@@ -1556,7 +1561,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                         showError(clickedMessageItem.getErrorDescription());
                     break;
                 case "action_message_edit":
-                    editMessage();
+                    editMessage(clickedMessageItem);
                     break;
                 default:
                     break;
@@ -1953,47 +1958,47 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         StoppedRecording
     }
 
-    /** Forward Panel */
+    /** Bottom message Panel (forwarding or editing*/
 
     @Override
     public void onClose() {
-        hideForwardPanel();
+        hideBottomMessagePanel();
     }
 
-    private void hideForwardPanel() {
-        forwardIds.clear();
+    private void hideBottomMessagePanel() {
+        bottomPanelMessagesIds.clear();
         setUpInputViewButtons();
 
         Activity activity = getActivity();
         if (activity != null && !activity.isFinishing()) {
             FragmentManager fragmentManager = getChildFragmentManager();
             FragmentTransaction fTrans = fragmentManager.beginTransaction();
-            fTrans.remove(forwardPanel);
+            fTrans.remove(bottomMessagesPanel);
             fTrans.commit();
         }
     }
 
-    public void setForwardIds(List<String> forwardIds) {
-        this.forwardIds = forwardIds;
+    public void setBottomPanelMessagesIds(List<String> bottomPanelMessagesIds, BottomMessagesPanel.Purposes purpose) {
+        this.bottomPanelMessagesIds = bottomPanelMessagesIds;
         setUpInputViewButtons();
-        showForwardPanel(forwardIds);
+        showBottomMessagesPanel(bottomPanelMessagesIds, purpose);
     }
 
-    private void showForwardPanel(List<String> forwardIds) {
+    private void showBottomMessagesPanel(List<String> forwardIds, BottomMessagesPanel.Purposes purpose) {
         List<String> ids = new ArrayList<>(forwardIds);
         Activity activity = getActivity();
         if (activity != null && !activity.isFinishing()) {
             FragmentManager fragmentManager = getChildFragmentManager();
-            forwardPanel = ForwardPanel.newInstance(ids);
+            bottomMessagesPanel = BottomMessagesPanel.newInstance(ids, purpose);
             FragmentTransaction fTrans = fragmentManager.beginTransaction();
-            fTrans.replace(R.id.secondBottomPanel, forwardPanel);
+            fTrans.replace(R.id.secondBottomPanel, bottomMessagesPanel);
             fTrans.commit();
         }
     }
 
     private void sendForwardMessage(List<String> messages, String text) {
         ForwardManager.forwardMessage(messages, account, user, text);
-        hideForwardPanel();
+        hideBottomMessagePanel();
         setFirstUnreadMessageId(null);
     }
 
