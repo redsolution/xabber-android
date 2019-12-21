@@ -278,7 +278,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         public void run() {
             changeStateOfInputViewButtonsTo(false);
             recordLockView.setVisibility(View.VISIBLE);
-            rootView.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+            performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
 
             recordButtonExpanded.show();
             recordLockView.startAnimation(AnimationUtils.loadAnimation(getActivity().getApplication(), R.anim.fade_in_200));
@@ -400,7 +400,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                                         .setDuration(0)
                                         .start();
 
-                                lockParams.topMargin = -((int)rootViewHeight - (fabMicViewHeightSize + fabMicViewMarginBottom) - (int) yRecordDiff) / 3;
+                                //lockParams.topMargin = (int) motionEvent.getY() / 3;
+                                lockParams.topMargin = (int) motionEvent.getY() * (recordLockChevronImage.getHeight() - recordLockImage.getPaddingTop()) / 200;
                                 recordLockChevronImage.setAlpha(1f + (motionEvent.getY() / 200f));
                                 recordLockChevronImage.setLayoutParams(lockParams);
                             } else {
@@ -424,10 +425,12 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
                                 cancelRecordingLayout.setVisibility(View.VISIBLE);
                                 recordLockImage.setImageResource(R.drawable.ic_stop);
+                                recordLockImage.setPadding(0,0,0,0);
                                 recordLockImage.setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View view) {
                                         if (currentVoiceRecordingState == VoiceRecordState.NoTouchRecording) {
+                                            performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
                                             stopRecording();
                                         }
                                     }
@@ -435,7 +438,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                                 lockParams.topMargin = -(recordLockChevronImage.getHeight());
                                 recordLockChevronImage.setLayoutParams(lockParams);
                                 recordLockChevronImage.setAlpha(0f);
-                                view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+                                performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
                             }
                         }
 
@@ -479,7 +482,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         recordingPresenterPlaybarLayout = view.findViewById(R.id.recording_playbar_layout);
         recordingPresenterPlaybarLayout.getBackground().setColorFilter(ColorManager.getInstance().getAccountPainter().getAccountMainColor(account), PorterDuff.Mode.SRC_IN);
         recordingPresenter = view.findViewById(R.id.voice_presenter_visualizer);
-        recordingPresenter.setNotPlayedColorRes(R.color.grey_400); //ContextCompat.getColor(getContext(), R.color.grey_800)
+        recordingPresenter.setNotPlayedColor(Color.WHITE); //ContextCompat.getColor(getContext(), R.color.grey_800)
+        recordingPresenter.setNotPlayedColorAlpha(127);
         recordingPresenter.setPlayedColor(Color.WHITE);
         recordingPlayButton = view.findViewById(R.id.voice_presenter_play);
         recordingDeleteButton = view.findViewById(R.id.voice_presenter_delete);
@@ -1927,13 +1931,14 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     private void cancelRecordingCompletely(boolean enableInputButtons) {
         changeStateOfInputViewButtonsTo(enableInputButtons);
         currentVoiceRecordingState = VoiceRecordState.NotRecording;
+        releaseMediaRecorder();
 
         endRecordingButtonsAnimation();
         voiceMessageRecorderLayout.startAnimation(AnimationUtils.loadAnimation(getActivity().getApplication(), R.anim.slide_out_right_opaque));
         handler.postDelayed(postAnimation, 300);
 
         beginTimer(false);
-        rootView.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+        performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
         Utils.lockScreenRotation(getActivity(), false);
     }
 
@@ -1943,12 +1948,18 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         securityButton.setEnabled(state);
     }
 
+    public void performHapticFeedback(int feedbackType, int flag) {
+        rootView.performHapticFeedback(feedbackType != -1 ? feedbackType : HapticFeedbackConstants.VIRTUAL_KEY, flag);
+
+    }
+
     public void beginTimer(boolean start) {
         if (start) voiceMessageRecorderLayout.setVisibility(View.VISIBLE);
         if (start) {
             slideToCancelLayout.animate().x(0).setDuration(0).start();
             recordLockChevronImage.setAlpha(1f);
             recordLockImage.setImageResource(R.drawable.ic_security_plain_24dp);
+            recordLockImage.setPadding(0, Utils.dipToPx(4, getActivity()), 0, 0);
             LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) recordLockChevronImage.getLayoutParams();
             layoutParams.topMargin = 0;
             recordLockChevronImage.setLayoutParams(layoutParams);

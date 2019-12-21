@@ -189,7 +189,7 @@ public class UploadService extends IntentService {
             for (String filePath : filePaths) {
                 files.add(new File(filePath));
             }
-            if (referenceElement != null && referenceElement.equals(ReferenceElement.Type.voice.name())) {
+            if (ReferenceElement.Type.voice.name().equals(referenceElement)) {
                 fileMessageId = MessageManager.getInstance().createVoiceMessage(account, user, files, referenceElement);
             }
             else fileMessageId = MessageManager.getInstance().createFileMessage(account, user, files);
