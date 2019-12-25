@@ -17,6 +17,7 @@ public class Attachment extends RealmObject {
         public static final String FILE_URL = "fileUrl";
         public static final String FILE_SIZE = "fileSize";
         public static final String IS_IMAGE = "isImage";
+        public static final String IS_VOICE = "isVoice";
         public static final String IMAGE_WIDTH = "imageWidth";
         public static final String IMAGE_HEIGHT = "imageHeight";
         public static final String DURATION = "duration";
@@ -41,6 +42,11 @@ public class Attachment extends RealmObject {
      * If message contains URL to image (and may be drawn as image)
      */
     private boolean isImage;
+
+    /**
+     * If message contains URL to a voice-recording file
+     */
+    private boolean isVoice;
 
     @Nullable
     private Integer imageWidth;
@@ -80,6 +86,14 @@ public class Attachment extends RealmObject {
 
     public void setIsImage(boolean isImage) {
         this.isImage = isImage;
+    }
+
+    public boolean isVoice() {
+        return isVoice;
+    }
+
+    public void setIsVoice(boolean isVoice) {
+        this.isVoice = isVoice;
     }
 
     @Nullable
