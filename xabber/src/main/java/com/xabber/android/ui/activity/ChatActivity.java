@@ -89,6 +89,7 @@ import com.xabber.android.ui.fragment.OccupantListFragment;
 import com.xabber.android.ui.helper.NewContactTitleInflater;
 import com.xabber.android.ui.helper.PermissionsRequester;
 import com.xabber.android.ui.preferences.CustomNotifySettings;
+import com.xabber.android.ui.widget.BottomMessagesPanel;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -609,7 +610,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
 
     private void setForwardMessages() {
         if (forwardsIds == null || chatFragment == null) return;
-        chatFragment.setForwardIds(forwardsIds);
+        chatFragment.setBottomPanelMessagesIds(forwardsIds, BottomMessagesPanel.Purposes.FORWARDING);
         forwardsIds = null;
     }
 

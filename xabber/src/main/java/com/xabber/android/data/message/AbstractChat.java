@@ -755,7 +755,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
                                             .equalTo(MessageItem.Fields.UNIQUE_ID, messageId)
                                             .findFirst();
 
-                                    if (acknowledgedMessage != null) {
+                                    if (acknowledgedMessage != null && !ReliableMessageDeliveryManager.getInstance().isSupported(account)) {
                                         acknowledgedMessage.setAcknowledged(true);
                                     }
                                 }

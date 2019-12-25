@@ -266,15 +266,15 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
             openFileOrDownload(messageUID, attachmentPosition);
     }
 
-    //@Override
-    //public void onVoiceProgressClick(int messagePosition, int attachmentPosition, String attachmentId, String messageUID, int current, int max) {
-    //    clickedAttachmentPos = attachmentPosition;
-    //    clickedMessageUID = messageUID;
-    //    clickedAttachmentUID = attachmentId;
-    //    currentTime = current;
-    //    maxTime = max;
-    //    openFileOrDownload(messageUID, attachmentPosition);
-    //}
+//    @Override
+//    public void onVoiceProgressClick(int messagePosition, int attachmentPosition, String attachmentId, String messageUID, int current, int max) {
+//        clickedAttachmentPos = attachmentPosition;
+//        clickedMessageUID = messageUID;
+//        clickedAttachmentUID = attachmentId;
+//        currentTime = current;
+//        maxTime = max;
+//        openFileOrDownload(messageUID, attachmentPosition);
+//    }
 
     protected void subscribeForVoiceDownloadProgress() {
         LogManager.d("VoiceDebug", "progress Subscribed to!~");
@@ -639,7 +639,7 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
                     return;
                 }
 
-                if (attachment.isVoice()) {
+                if ("voice".equals(attachment.getRefType())) {
                     manageVoicePlayback(attachment);
                 } else {
                     manageOpeningFile(attachment);

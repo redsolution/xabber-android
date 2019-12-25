@@ -3,7 +3,6 @@ package com.xabber.android.presentation.ui.contactlist;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -457,9 +456,7 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
 
     /** Show contacts filtered by filterString */
     public void search(String filterString){
-        if ( filterString != null && filterString.length() != 0 && !StringUtils.isBasicLatin(filterString)){
-            this.filterString = StringUtils.translitirateToLatin(filterString);
-        } else this.filterString = filterString;
+        this.filterString = filterString;
         updateBackpressure.refreshRequest();
     }
 
@@ -806,7 +803,7 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
     private ArrayList<AbstractContact> getSearchResults(Collection<RosterContact> rosterContacts,
                                                         Map<AccountJid, Map<UserJid, AbstractChat>> abstractChats) {
         final ArrayList<AbstractContact> baseEntities = new ArrayList<>();
-
+        String transliterated = StringUtils.translitirateToLatin(filterString);
         // Build structure.
         for (RosterContact rosterContact : rosterContacts) {
             if (!rosterContact.isEnabled()) {
@@ -818,7 +815,9 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
                 users.remove(rosterContact.getUser());
             }
             if (rosterContact.getName().toLowerCase(Locale.getDefault()).contains(filterString)
-            || rosterContact.getUser().toString().toLowerCase(Locale.getDefault()).contains(filterString)) {
+                    || rosterContact.getName().toString().toLowerCase(Locale.getDefault()).contains(transliterated)
+                    || rosterContact.getUser().toString().toLowerCase(Locale.getDefault()).contains(filterString)
+                    || rosterContact.getUser().toString().toLowerCase(Locale.getDefault()).contains(transliterated)) {
                 baseEntities.add(rosterContact);
             }
         }
@@ -831,7 +830,9 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
                     abstractContact = new ChatContact(abstractChat);
                 }
                 if (abstractContact.getName().toLowerCase(Locale.getDefault()).contains(filterString)
-                || abstractContact.getUser().toString().toLowerCase(Locale.getDefault()).contains(filterString)) {
+                        || abstractContact.getUser().toString().toLowerCase(Locale.getDefault()).contains(filterString)
+                        || abstractContact.getName().toLowerCase(Locale.getDefault()).contains(transliterated)
+                        || abstractContact.getUser().toString().toLowerCase(Locale.getDefault()).contains(transliterated))                 {
                     baseEntities.add(abstractContact);
                 }
             }

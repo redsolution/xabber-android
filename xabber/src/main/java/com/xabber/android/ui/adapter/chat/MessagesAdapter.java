@@ -73,6 +73,7 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
 
     private List<String> itemsNeedOriginalText = new ArrayList<>();
     private List<String> checkedItemIds = new ArrayList<>();
+    private List<MessageItem> checkedMessageItems = new ArrayList<>();
 
     public interface Listener {
         void onMessagesUpdated();
@@ -387,11 +388,16 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
     /** Checked items */
 
     private void addOrRemoveCheckedItem(int position) {
-        String uniqueId = getItem(position).getUniqueId();
+        MessageItem messageItem = getItem(position);
+        String uniqueId = messageItem.getUniqueId();
 
-        if (checkedItemIds.contains(uniqueId))
+        if (checkedItemIds.contains(uniqueId)){
+            checkedMessageItems.remove(messageItem);
             checkedItemIds.remove(uniqueId);
-        else checkedItemIds.add(uniqueId);
+        } else {
+            checkedItemIds.add(uniqueId);
+            checkedMessageItems.add(messageItem);
+        }
 
         boolean isCheckModePrevious = isCheckMode;
         isCheckMode = checkedItemIds.size() > 0;
@@ -407,6 +413,10 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
         return checkedItemIds;
     }
 
+    public List<MessageItem> getCheckedMessageItems(){
+        return checkedMessageItems;
+    }
+
     public int getCheckedItemsCount() {
         return checkedItemIds.size();
     }
@@ -414,6 +424,7 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
     public void resetCheckedItems() {
         if (checkedItemIds.size() > 0) {
             checkedItemIds.clear();
+            checkedMessageItems.clear();
             isCheckMode = false;
             notifyDataSetChanged();
             listener.onChangeCheckedItems(checkedItemIds.size());
