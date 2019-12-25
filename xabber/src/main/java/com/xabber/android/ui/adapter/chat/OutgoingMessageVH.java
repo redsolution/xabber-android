@@ -55,7 +55,7 @@ public class OutgoingMessageVH extends FileMessageVH {
             forwardedParams.setMargins(
                     Utils.dipToPx(1f, context),
                     Utils.dipToPx(3f, context),
-                    Utils.dipToPx(needTail ? 11f : 12f, context),
+                    Utils.dipToPx(12f, context),
                     Utils.dipToPx(0f, context));
 
             forwardLayout.setLayoutParams(forwardedParams);

@@ -53,6 +53,7 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
     ImageView statusIcon;
     ImageView ivEncrypted;
     String messageId;
+    Long timestamp;
     View messageInfo;
     View forwardLayout;
     View forwardLeftBorder;
@@ -149,6 +150,13 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
             messageNotDecrypted.setVisibility(View.GONE);
         }
         messageText.setMovementMethod(CorrectlyMeasuringTextView.LocalLinkMovementMethod.getInstance());
+
+        //Since the original and forwarded voice messages are basically the same, we need some help with properly differentiating them to avoid cases when
+        //original voice message and the forward with this voice message are showing the same progress change during playback.
+        //Saving any type of data from the base message (message that "houses" the forwarded messages) will help us differentiate
+        //original voice message and voice message inside forwards, as well as same forwarded messages in different replies.
+        //TODO:should probably swap timestamp to the UID of the message, since it's more versatile
+        timestamp = extraData.getMainMessageTimestamp();
 
         String time = StringUtils.getTimeText(new Date(messageItem.getTimestamp()));
 

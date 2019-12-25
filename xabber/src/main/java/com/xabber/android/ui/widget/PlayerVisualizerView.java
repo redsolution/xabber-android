@@ -104,6 +104,13 @@ public class PlayerVisualizerView extends View {
         invalidate();
     }
 
+    public void refreshVisualizer() {
+        ArrayList<Integer> empty = new ArrayList<Integer>();
+        empty.add(0);
+        this.wave = empty;
+        invalidate();
+    }
+
     public void setAmplitude(int amp) {
         this.amplitude = amp;
     }

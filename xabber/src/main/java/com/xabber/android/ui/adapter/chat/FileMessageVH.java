@@ -34,9 +34,11 @@ import com.xabber.android.data.database.messagerealm.Attachment;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
-import com.xabber.android.data.extension.references.VoiceMessagePresenterManager;
+import com.xabber.android.data.extension.references.voice.VoiceManager;
+import com.xabber.android.data.filedownload.DownloadManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.ui.adapter.FilesAdapter;
+import com.xabber.android.ui.fragment.FileInteractionFragment;
 import com.xabber.android.ui.helper.RoundedBorders;
 import com.xabber.android.ui.widget.ImageGridBuilder;
 
@@ -79,7 +81,7 @@ public class FileMessageVH extends MessageVH
     public interface FileListener {
         void onImageClick(int messagePosition, int attachmentPosition, String messageUID);
         void onFileClick(int messagePosition, int attachmentPosition, String messageUID);
-        void onVoiceClick(int messagePosition, int attachmentPosition, String attachmentId, String messageUID, boolean saved);
+        void onVoiceClick(int messagePosition, int attachmentPosition, String attachmentId, String messageUID, Long timestamp);
         void onFileLongClick(Attachment attachment, View caller);
         void onDownloadCancel();
         void onUploadCancel();
@@ -171,7 +173,7 @@ public class FileMessageVH extends MessageVH
         if (fileAttachments.size() > 0) {
             RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(context);
             rvFileList.setLayoutManager(layoutManager);
-            FilesAdapter adapter = new FilesAdapter(fileAttachments, this);
+            FilesAdapter adapter = new FilesAdapter(fileAttachments, timestamp, this);
             rvFileList.setAdapter(adapter);
             fileLayout.setVisibility(View.VISIBLE);
         }
@@ -298,13 +300,16 @@ public class FileMessageVH extends MessageVH
     }
 
     @Override
-    public void onVoiceClick(int attachmentPosition, String attachmentId, boolean saved) {
+    public void onVoiceClick(int attachmentPosition, String attachmentId, boolean saved, Long mainMessageTimestamp) {
         int messagePosition = getAdapterPosition();
         if (messagePosition == RecyclerView.NO_POSITION) {
             LogManager.w(LOG_TAG, "onClick: no position");
             return;
         }
-        listener.onVoiceClick(messagePosition, attachmentPosition, attachmentId, messageId, saved);
+        if (!saved)
+            listener.onVoiceClick(messagePosition, attachmentPosition, attachmentId, messageId, mainMessageTimestamp);
+        else
+            VoiceManager.getInstance().voiceClicked(messageId, attachmentPosition, mainMessageTimestamp);
     }
 
     //@Override

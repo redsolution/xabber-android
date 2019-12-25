@@ -2,13 +2,14 @@ package com.xabber.android.ui.fragment;
 
 import android.content.res.ColorStateList;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 
 import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
@@ -108,7 +109,7 @@ public class ForwardedFragment extends FileInteractionFragment {
 
         MessagesAdapter.MessageExtraData extraData = new MessagesAdapter.MessageExtraData(this,
                 this, null, getActivity(),
-                userName, colorStateList, groupchatUser, accountMainColor, mentionColor, isMUC, false,
+                userName, colorStateList, groupchatUser, accountMainColor, mentionColor, null, isMUC, false,
                 false, false, false, false);
 
         if (forwardedMessages.size() > 0) {

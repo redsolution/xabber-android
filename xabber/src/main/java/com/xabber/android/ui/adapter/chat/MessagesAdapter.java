@@ -66,6 +66,7 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
     private String userName;
     private AccountJid account;
     private UserJid user;
+    private Long mainMessageTimestamp;
     private int prevItemCount;
     private String prevFirstItemId;
     private String firstUnreadMessageID;
@@ -137,7 +138,7 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
 
         // if noFlex is true, should use special layout without flexbox-style text
         boolean isUploadMessage = messageItem.getText().equals(FileMessageVH.UPLOAD_TAG);
-        boolean noFlex = messageItem.haveForwardedMessages() || messageItem.haveAttachments() /*|| messageItem.isImage()*/;
+        boolean noFlex = messageItem.haveForwardedMessages() || messageItem.haveAttachments();
         boolean isImage = messageItem.hasImage() || messageItem.isImage();
         boolean notJustImage = (!messageItem.getText().trim().isEmpty() && !isUploadMessage) || (!messageItem.isAttachmentImageOnly());
 
@@ -257,8 +258,10 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
             needDate = !Utils.isSameDay(messageItem.getTimestamp(), previousMessage.getTimestamp());
         } else needDate = true;
 
+        mainMessageTimestamp = messageItem.getTimestamp();
+
         MessageExtraData extraData = new MessageExtraData(fileListener, fwdListener, anchorHolder,
-                context, userName, colorStateList, groupchatUser, accountMainColor, mentionColor, isMUC,
+                context, userName, colorStateList, groupchatUser, accountMainColor, mentionColor, mainMessageTimestamp, isMUC,
                 showOriginalOTR, unread, checked, needTail, needDate);
 
         switch (viewType) {
@@ -360,9 +363,9 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
     }
 
     @Override
-    public void onVoiceClick(int messagePosition, int attachmentPosition, String attachmentId, String messageUID, boolean saved) {
+    public void onVoiceClick(int messagePosition, int attachmentPosition, String attachmentId, String messageUID, Long timestamp) {
         if (isCheckMode) addOrRemoveCheckedItem(messagePosition);
-        else fileListener.onVoiceClick(messagePosition, attachmentPosition, attachmentId, messageUID, saved);
+        else fileListener.onVoiceClick(messagePosition, attachmentPosition, attachmentId, messageUID, timestamp);
     }
 
     @Override
@@ -435,7 +438,7 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
 
     public static class MessageExtraData {
 
-        private  Context context;
+        private Context context;
         private FileMessageVH.FileListener listener;
         private ForwardedAdapter.ForwardListener fwdListener;
         private AnchorHolder anchorHolder;
@@ -443,6 +446,7 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
         private ColorStateList colorStateList;
         private int accountMainColor;
         private int mentionColor;
+        private Long mainTimestamp;
         private GroupchatUser groupchatUser;
 
         private boolean isMuc;
@@ -456,7 +460,7 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
                                 ForwardedAdapter.ForwardListener fwdListener,
                                 AnchorHolder anchorHolder,
                                 Context context, String username, ColorStateList colorStateList,
-                                GroupchatUser groupchatUser, int accountMainColor, int mentionColor,
+                                GroupchatUser groupchatUser, int accountMainColor, int mentionColor, Long mainTimestamp,
                                 boolean isMuc, boolean showOriginalOTR, boolean unread, boolean checked,
                                 boolean needTail, boolean needDate) {
             this.listener = listener;
@@ -474,6 +478,7 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
             this.needTail = needTail;
             this.needDate = needDate;
             this.groupchatUser = groupchatUser;
+            this.mainTimestamp = mainTimestamp;
         }
 
         public FileMessageVH.FileListener getListener() {
@@ -510,6 +515,10 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
 
         public GroupchatUser getGroupchatUser() {
             return groupchatUser;
+        }
+
+        public Long getMainMessageTimestamp() {
+            return mainTimestamp;
         }
 
         public boolean isMuc() {

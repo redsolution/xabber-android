@@ -177,7 +177,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
         } else {
             if (lastMessage.haveAttachments() && lastMessage.getAttachments().size() > 0) {
                 Attachment attachment = lastMessage.getAttachments().get(0);
-                if ("voice".equals(attachment.getRefType())) {
+                if (attachment.isVoice()) {
                     StringBuilder voiceText = new StringBuilder();
                     voiceText.append(Application.getInstance().getResources().getString(R.string.voice_message));
                     if (attachment.getDuration() != null && attachment.getDuration() != 0) {

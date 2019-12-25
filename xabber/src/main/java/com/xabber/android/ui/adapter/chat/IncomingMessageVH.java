@@ -63,7 +63,7 @@ public class IncomingMessageVH  extends FileMessageVH {
                     ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
 
             forwardedParams.setMargins(
-                    Utils.dipToPx(needTail ? 11f : 12f, context),
+                    Utils.dipToPx(12f, context),
                     Utils.dipToPx(3f, context),
                     Utils.dipToPx(1f, context),
                     Utils.dipToPx(0f, context));
@@ -105,7 +105,7 @@ public class IncomingMessageVH  extends FileMessageVH {
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
 
         layoutParams.setMargins(
-                Utils.dipToPx(needTail ? 2f : 11f, context),
+                Utils.dipToPx(needTail ? 3f : 11f, context),
                 Utils.dipToPx(haveForwarded ? 0f : 3f, context),
                 Utils.dipToPx(0f, context),
                 Utils.dipToPx(3f, context));
