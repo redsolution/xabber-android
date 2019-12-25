@@ -59,7 +59,6 @@ public class DownloadManager {
         intent.putExtra(DownloadService.KEY_ATTACHMENT_ID, attachment.getUniqueId());
         intent.putExtra(DownloadService.KEY_ACCOUNT_JID, (Parcelable) accountJid);
         intent.putExtra(DownloadService.KEY_FILE_NAME, attachment.getTitle());
-        intent.putExtra(DownloadService.KEY_REFERENCE_ELEMENT, attachment.getRefType());
         intent.putExtra(DownloadService.KEY_URL, attachment.getFileUrl());
         intent.putExtra(DownloadService.KEY_FILE_SIZE, attachment.getFileSize());
         context.startService(intent);

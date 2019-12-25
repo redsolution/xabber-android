@@ -36,6 +36,7 @@ import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.references.ReferenceElement;
+import com.xabber.android.data.extension.references.VoiceMessagePresenterManager;
 import com.xabber.android.data.filedownload.DownloadManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.MessageManager;
@@ -92,7 +93,7 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
     private String currentPicturePath;
     private boolean recordingInProgress = false;
     private MediaPlayer mp;
-    private byte[] waveForm;
+    private ArrayList<Float> waveForm = new ArrayList<>();
     private int currentTime;
     private int maxTime;
     private MediaRecorder mr;
@@ -265,15 +266,15 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
             openFileOrDownload(messageUID, attachmentPosition);
     }
 
-    @Override
-    public void onVoiceProgressClick(int messagePosition, int attachmentPosition, String attachmentId, String messageUID, int current, int max) {
-        clickedAttachmentPos = attachmentPosition;
-        clickedMessageUID = messageUID;
-        clickedAttachmentUID = attachmentId;
-        currentTime = current;
-        maxTime = max;
-        openFileOrDownload(messageUID, attachmentPosition);
-    }
+//    @Override
+//    public void onVoiceProgressClick(int messagePosition, int attachmentPosition, String attachmentId, String messageUID, int current, int max) {
+//        clickedAttachmentPos = attachmentPosition;
+//        clickedMessageUID = messageUID;
+//        clickedAttachmentUID = attachmentId;
+//        currentTime = current;
+//        maxTime = max;
+//        openFileOrDownload(messageUID, attachmentPosition);
+//    }
 
     protected void subscribeForVoiceDownloadProgress() {
         LogManager.d("VoiceDebug", "progress Subscribed to!~");
@@ -387,12 +388,15 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
         }
     };
 
-    //protected final Runnable createLocalWaveform = new Runnable() {
-    //    @Override
-    //    public void run() {
-    //        creatingWaveSample();
-    //    }
-    //};
+    protected final Runnable createLocalWaveform = new Runnable() {
+        @Override
+        public void run() {
+            if (mr != null) {
+                waveForm.add((float) mr.getMaxAmplitude());
+                mHandler.postDelayed(this, 30);
+            }
+        }
+    };
 
     private void onVoiceRecordPressed() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -411,7 +415,7 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
             try {
                 File tempAudioFile = FileManager.createTempAudioFile("temp_audio_recording");
                 tempFilePath = tempAudioFile.getAbsolutePath();
-                //waveForm.clear();
+                waveForm.clear();
                 mr.setOutputFormat(MediaRecorder.OutputFormat.DEFAULT);
                 mr.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
 
@@ -420,7 +424,7 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
                 mr.setAudioEncodingBitRate(ENCODING_BIT_RATE);
                 mr.prepare();
                 mr.start();
-                //mHandler.post(createLocalWaveform);
+                mHandler.postDelayed(createLocalWaveform, 30);
                 recordingInProgress = true;
             } catch (IOException e) {
                 e.printStackTrace();
@@ -435,7 +439,7 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
             recordingInProgress = false;
             if (mr != null) {
                 releaseMediaRecorder();
-                //mHandler.removeCallbacks(createLocalWaveform);
+                VoiceMessagePresenterManager.getInstance().addAndOptimizeWave(waveForm, tempFilePath);
                 File file = new File(tempFilePath);
                 if (file.exists()) return tempFilePath;
                 else return null;
@@ -446,6 +450,7 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
 
     boolean releaseRecordedVoicePlayback(String filePath) {
         releaseMediaPlayer();
+        VoiceMessagePresenterManager.getInstance().deleteOldPath(filePath);
         File file = new File(filePath);
         if (file.exists()) {
             FileManager.deleteTempFile(file);
@@ -461,7 +466,10 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
         try {
             File audioFile = FileManager.createAudioFile("voice_message.ogg");
             if (FileManager.copy(new File(filePath), audioFile)) {
-                if (audioFile != null) uploadVoiceFile(audioFile.getPath());
+                if (audioFile != null) {
+                    VoiceMessagePresenterManager.getInstance().modifyFilePathIfSaved(tempFilePath, audioFile.getPath());
+                    uploadVoiceFile(audioFile.getPath());
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -477,7 +485,10 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
                     try {
                         File audioFile = FileManager.createAudioFile("voice_message.ogg");
                         if (FileManager.copy(new File(tempFilePath), audioFile)) {
-                            if (audioFile != null) uploadVoiceFile(audioFile.getPath());
+                            if (audioFile != null) {
+                                VoiceMessagePresenterManager.getInstance().addAndOptimizeWave(waveForm, audioFile.getPath());
+                                uploadVoiceFile(audioFile.getPath());
+                            }
                         }
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -657,6 +668,7 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
     }
 
     void releaseMediaRecorder() {
+        mHandler.removeCallbacks(createLocalWaveform);
         if (mr != null) {
             mr.reset();
             mr.release();

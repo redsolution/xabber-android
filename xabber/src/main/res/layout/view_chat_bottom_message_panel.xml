@@ -23,12 +23,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@id/ivReplyIcon"
-        android:layout_toLeftOf="@id/ivCloseForwardPanel"
+        android:layout_toLeftOf="@id/ivCloseBottomMessagePanel"
         android:layout_centerVertical="true"
         >
 
         <TextView
-            android:id="@+id/tvForwardedFrom"
+            android:id="@+id/tvFrom"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textStyle="bold"
@@ -38,7 +38,7 @@
             />
 
         <TextView
-            android:id="@+id/tvForwardedText"
+            android:id="@+id/tvText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:singleLine="true"
@@ -49,7 +49,7 @@
     </LinearLayout>
 
     <ImageView
-        android:id="@+id/ivCloseForwardPanel"
+        android:id="@+id/ivCloseBottomMessagePanel"
         android:layout_width="52dp"
         android:layout_height="52dp"
         android:padding="14dp"

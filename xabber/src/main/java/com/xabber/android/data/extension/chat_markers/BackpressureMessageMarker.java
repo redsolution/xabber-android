@@ -5,7 +5,6 @@ import androidx.annotation.Nullable;
 import com.xabber.android.data.database.MessageDatabaseManager;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.extension.reliablemessagedelivery.ReliableMessageDeliveryManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.MessageUpdateEvent;
 
@@ -87,8 +86,7 @@ public class BackpressureMessageMarker {
     private void setMarkedState(MessageItem item, ChatMarkersState marker) {
         switch (marker) {
             case received:
-                if (ReliableMessageDeliveryManager.getInstance().isSupported(item.getAccount()))
-                    item.setDelivered(true);
+                item.setDelivered(true);
                 break;
             case displayed:
                 item.setDisplayed(true);

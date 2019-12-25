@@ -64,7 +64,14 @@ public class PlayerVisualizerView extends View {
         playedStatePainting.setStrokeWidth(1f);
         playedStatePainting.setAntiAlias(true);
         playedStatePainting.setColor(color);
-        playedStatePainting.setAlpha(127);
+    }
+
+    public void setPlayedColorAlpha(int alpha) {
+        playedStatePainting.setAlpha(alpha);
+    }
+
+    public void setNotPlayedColorAlpha(int alpha) {
+        notPlayedStatePainting.setAlpha(alpha);
     }
 
     public void setNotPlayedColor(int color) {
@@ -72,7 +79,6 @@ public class PlayerVisualizerView extends View {
         notPlayedStatePainting.setStrokeWidth(1f);
         notPlayedStatePainting.setAntiAlias(true);
         notPlayedStatePainting.setColor(color);
-        notPlayedStatePainting.setAlpha(127);
     }
 
     public void setNotPlayedColorRes(int id) {

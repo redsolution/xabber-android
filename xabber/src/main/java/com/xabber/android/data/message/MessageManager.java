@@ -54,6 +54,7 @@ import com.xabber.android.data.extension.muc.RoomChat;
 import com.xabber.android.data.extension.references.RefUser;
 import com.xabber.android.data.extension.references.ReferenceElement;
 import com.xabber.android.data.extension.references.ReferencesManager;
+import com.xabber.android.data.extension.reliablemessagedelivery.ReliableMessageDeliveryManager;
 import com.xabber.android.data.groupchat.GroupchatUserManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.ChatManager;
@@ -820,7 +821,8 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
             MessageItem newMessageItem = finalChat.createNewMessageItem(text);
             newMessageItem.setStanzaId(AbstractChat.getStanzaId(message));
             newMessageItem.setOriginId(UniqStanzaHelper.getOriginId(message));
-            newMessageItem.setAcknowledged(true);
+            if (ReliableMessageDeliveryManager.getInstance().isSupported(account))
+                newMessageItem.setAcknowledged(true);
             newMessageItem.setSent(true);
             newMessageItem.setForwarded(true);
             if (markupText != null) newMessageItem.setMarkupText(markupText);

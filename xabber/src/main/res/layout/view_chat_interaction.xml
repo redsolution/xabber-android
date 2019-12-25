@@ -42,6 +42,18 @@
         >
 
         <ImageView
+            android:id="@+id/ivEdit"
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            android:padding="12dp"
+            android:src="@drawable/ic_edit_grey_24dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:visibility="gone"
+            />
+
+        <ImageView
             android:id="@+id/ivDelete"
             android:layout_width="52dp"
             android:layout_height="52dp"

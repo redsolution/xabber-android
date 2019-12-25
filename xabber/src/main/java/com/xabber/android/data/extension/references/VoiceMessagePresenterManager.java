@@ -41,6 +41,33 @@ public final class VoiceMessagePresenterManager {
 
     public VoiceMessagePresenterManager() {}
 
+    public void addAndOptimizeWave(ArrayList<Float> wave, String filePath) {
+        if (!waveInProgress.contains(filePath)) {
+            waveInProgress.add(filePath);
+            ArrayList<Integer> optimized = new ArrayList<>();
+            optimizeWaveData(wave, optimized);
+            voiceWaveData.put(filePath, optimized);
+            waveInProgress.remove(filePath);
+        }
+    }
+
+    public void modifyFilePathIfSaved(String oldPath, String newPath) {
+        if (!waveInProgress.contains(newPath)) {
+            waveInProgress.add(newPath);
+            if (voiceWaveData.get(oldPath) != null) {
+                voiceWaveData.put(newPath, voiceWaveData.get(oldPath));
+                voiceWaveData.remove(oldPath);
+            }
+            waveInProgress.remove(newPath);
+        }
+    }
+
+    public void deleteOldPath(String oldPath) {
+        if (voiceWaveData.get(oldPath) != null) {
+            voiceWaveData.remove(oldPath);
+        }
+    }
+
     public void sendWaveDataIfSaved(final String filePath, final PlayerVisualizerView view) {
         if (voiceWaveData.get(filePath) != null) {
             view.updateVisualizer(voiceWaveData.get(filePath));
@@ -62,6 +89,7 @@ public final class VoiceMessagePresenterManager {
                     }
                     if (waveInProgress.contains(file.getPath())) return;
                     else {
+                        LogManager.i(this, "Started wave modifications for the file with path = " + file.getPath());
                         waveInProgress.add(file.getPath());
                         mediaDecoderTest(file, view);
                     }
@@ -104,7 +132,7 @@ public final class VoiceMessagePresenterManager {
                         MediaFormat bufferFormat = codec.getOutputFormat(index);
                         int pcmType;
                         try {
-                            pcmType = bufferFormat.getInteger("123");
+                            pcmType = bufferFormat.getInteger("pcm-encoding");
                         } catch (RuntimeException e) {
                             LogManager.e(this, e.getMessage());
                             pcmType = 0;
@@ -145,25 +173,25 @@ public final class VoiceMessagePresenterManager {
                             LogManager.d("MediaCodec", "BUFFER_FLAG_END_OF_STREAM");
                             codec.stop();
                             codec.release();
-                            long num = 0;
-                            if (sampleArray != null) {
-                                int sampleRate = sampleArray.size() / 50;
-                                if (sampleRate != 0) {
-                                    for (int i = 0; i < sampleArray.size(); i++) {
-                                        if (i % sampleRate == 0) {
-                                            squashedArray.add(Utils.longToInt(num));
-                                            num = 0;
-                                        }
-                                        if (sampleArray.get(i) < 0)
-                                            num += -sampleArray.get(i);
-                                        else
-                                            num += sampleArray.get(i);
-                                    }
-                                    squashedArray.add(Utils.longToInt(num));
-                                } else squashedArray.add(0);
-                            } else squashedArray.add(0);
+                            optimizeWaveData(sampleArray, squashedArray);
+                            //long num = 0;
+                            //int sampleRate = sampleArray.size() / 50;
+                            //if (sampleRate != 0) {
+                            //    for (int i = 0; i < sampleArray.size(); i++) {
+                            //        if (i % sampleRate == 0) {
+                            //            squashedArray.add(Utils.longToInt(num));
+                            //            num = 0;
+                            //        }
+                            //        if (sampleArray.get(i) < 0)
+                            //            num += -sampleArray.get(i);
+                            //        else
+                            //            num += sampleArray.get(i);
+                            //    }
+                            //    squashedArray.add(Utils.longToInt(num));
+                            //} else squashedArray.add(0);
                             if ((voiceWaveData.get(file.getPath()) == null || voiceWaveData.get(file.getPath()).isEmpty()) && !squashedArray.isEmpty()) {
                                 voiceWaveData.put(file.getPath(), squashedArray);
+                                LogManager.i(this, "Finished wave modifications for the file with path = " + file.getPath());
                                 view.updateVisualizer(squashedArray);
                             }
                             waveInProgress.remove(file.getPath());
@@ -193,6 +221,24 @@ public final class VoiceMessagePresenterManager {
                 e.printStackTrace();
             }
         }
+    }
+
+    private static void optimizeWaveData(ArrayList<Float> waveData, ArrayList<Integer> optimisedDataForReturn) {
+        long num = 0;
+        int sampleRate = waveData.size() / 50;
+        if (sampleRate != 0) {
+            for (int i = 0; i < waveData.size(); i++) {
+                if (i % sampleRate == 0) {
+                    optimisedDataForReturn.add(Utils.longToInt(num));
+                    num = 0;
+                }
+                if (waveData.get(i) < 0)
+                    num += -waveData.get(i);
+                else
+                    num += waveData.get(i);
+            }
+            optimisedDataForReturn.add(Utils.longToInt(num));
+        } else optimisedDataForReturn.add(0);
     }
 }
 
