@@ -87,8 +87,7 @@ public class BackpressureMessageMarker {
     private void setMarkedState(MessageItem item, ChatMarkersState marker) {
         switch (marker) {
             case received:
-                if (ReliableMessageDeliveryManager.getInstance().isSupported(item.getAccount()))
-                    item.setDelivered(true);
+                item.setDelivered(true);
                 break;
             case displayed:
                 item.setDisplayed(true);

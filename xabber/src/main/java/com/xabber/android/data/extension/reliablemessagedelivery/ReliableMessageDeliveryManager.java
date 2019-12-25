@@ -117,7 +117,7 @@ public class ReliableMessageDeliveryManager implements OnPacketListener {
                                     .findFirst();
                             messageItem.setStanzaId(stanzaId);
                             messageItem.setTimestamp(millis);
-                            messageItem.setDelivered(true);
+                            messageItem.setAcknowledged(true);
                             LogManager.d(LOG_TAG, "Message marked as received with original stanza" + messageItem.getOriginalStanza());
                         }
                     });

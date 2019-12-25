@@ -236,8 +236,7 @@ public class ChatMarkerManager implements OnPacketListener {
             if (results != null) {
                 realm.beginTransaction();
                 for (MessageItem item : results) {
-                    if (ReliableMessageDeliveryManager.getInstance().isSupported(item.getAccount()))
-                        item.setDelivered(true);
+                    item.setDelivered(true);
                 }
                 realm.commitTransaction();
                 EventBus.getDefault().post(new MessageUpdateEvent());
