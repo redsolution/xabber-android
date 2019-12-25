@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/file_message"
     android:layout_width="wrap_content"
@@ -28,7 +29,7 @@
             android:background="?attr/round_background"
             android:paddingLeft="11dp"
             android:paddingRight="11dp"
-            android:src="@drawable/ic_file"
+            app:srcCompat="@drawable/ic_file"
             android:tint="?attr/shevron_file_icons_color" />
 
 
@@ -64,7 +65,7 @@
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
             android:background="@drawable/ripple_background_circle"
-            android:src="@drawable/ic_close"
+            app:srcCompat="@drawable/ic_close"
             android:tint="@color/white"
             android:visibility="gone" />
 
@@ -78,7 +79,7 @@
         android:layout_marginLeft="4dp"
         android:layout_marginRight="8dp"
         android:layout_toRightOf="@id/iconLayout"
-        android:minWidth="150dp"
+        android:minWidth="140dp"
         android:orientation="vertical">
 
         <TextView

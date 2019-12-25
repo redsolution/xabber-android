@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="wrap_content"
     android:layout_height="match_parent"
@@ -9,6 +10,6 @@
         android:id="@+id/rvFileList"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        />
+        tools:listitem="@layout/item_file_message" />
 
 </LinearLayout>

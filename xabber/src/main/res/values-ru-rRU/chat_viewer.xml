@@ -57,7 +57,12 @@
     <string name="call_attention">Окликнуть</string>
     <string name="chat_settings">Настройки чата</string>
     <string name="chat_state_composing">Набирает сообщение&#8230;</string>
+    <string name="chat_state_composing_voice">Записывает аудиосообщение…</string>
+    <string name="chat_state_composing_video">Записывает видеосообщение…</string>
+    <string name="chat_state_composing_upload">Отправляет файл…</string>
     <string name="chat_state_paused">Ввел текст&#8230;</string>
+    <string name="chat_state_paused_voice_and_video">Запись остановлена…</string>
+    <string name="chat_state_paused_upload">Отправка остановлена…</string>
     <string name="chat_typed">набрано в %s</string>
     <string name="export_chat">Экспорт истории</string>
     <string name="export_chat_done">История сохранена на SD карте</string>

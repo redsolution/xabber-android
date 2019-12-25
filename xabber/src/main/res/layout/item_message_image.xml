@@ -1,7 +1,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/message_shadow"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="right"
     android:background="@drawable/msg_shadow"
@@ -11,10 +12,11 @@
 
     <RelativeLayout
         android:id="@+id/message_balloon"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/msg"
         android:backgroundTint="?attr/message_background"
+        android:gravity="end"
         android:paddingLeft="3dp"
         android:paddingTop="3dp"
         android:paddingRight="3dp"
@@ -123,7 +125,7 @@
                     android:layout_height="14dp"
                     android:layout_marginLeft="2dp"
                     android:layout_marginRight="1dp"
-                    android:src="@drawable/ic_message_synced_14dp" />
+                    app:srcCompat="@drawable/ic_message_synced_14dp" />
 
                 <ProgressBar
                     android:id="@+id/message_progress_bar"
@@ -143,7 +145,7 @@
                     android:layout_height="14dp"
                     android:layout_marginStart="3dp"
                     android:layout_marginLeft="3dp"
-                    android:src="@drawable/ic_lock" />
+                    app:srcCompat="@drawable/ic_lock" />
 
             </LinearLayout>
 
