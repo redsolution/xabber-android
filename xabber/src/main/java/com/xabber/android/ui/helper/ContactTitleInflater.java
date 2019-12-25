@@ -155,7 +155,7 @@ public class ContactTitleInflater {
                 statusText = context.getString(R.string.chat_state_composing);
             } else {
                 switch (type) {
-                    case audio:
+                    case voice:
                         statusText = context.getString(R.string.chat_state_composing_voice);
                         break;
                     case video:
@@ -174,7 +174,7 @@ public class ContactTitleInflater {
                 statusText = context.getString(R.string.chat_state_paused);
             } else {
                 switch (type) {
-                    case audio:
+                    case voice:
                     case video:
                         statusText = context.getString(R.string.chat_state_paused_voice_and_video);
                         break;

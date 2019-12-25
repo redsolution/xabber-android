@@ -5,8 +5,7 @@ public enum ChatStateSubtype {
     /**
      * User is recording a voice message.
      */
-    //TODO:Should change back to "voice" when the bug on web client will be fixed
-    audio,
+    voice,
     /**
      * User is recording a video message.
      */
