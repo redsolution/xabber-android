@@ -1104,8 +1104,16 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         scrollDown();
         playMessageSound();
 
-        if (bottomPanelMessagesIds != null && !bottomPanelMessagesIds.isEmpty()) {
+        if (bottomPanelMessagesIds != null
+                && !bottomPanelMessagesIds.isEmpty()
+                && bottomMessagesPanel.getPurpose().equals(BottomMessagesPanel.Purposes.FORWARDING)) {
             sendForwardMessage(bottomPanelMessagesIds, text);
+            return;
+        } else if (bottomPanelMessagesIds != null
+                && !bottomPanelMessagesIds.isEmpty()
+                && bottomMessagesPanel.getPurpose().equals(BottomMessagesPanel.Purposes.EDITING)) {
+            //TODO invoke send edited message
+            Toast.makeText(getContext(), "Message was duplicated cause editing did not implemented yet! ", Toast.LENGTH_SHORT).show();
         } else if (!text.isEmpty()) {
             sendMessage(text);
         } else {
@@ -1266,12 +1274,16 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
             if (messageItem.isIncoming())
                 onlyOutgoing = false;
         }
+        int size = ids.size();
         if (RrrManager.getInstance().isSupported(account)){
             View checkBoxView = getView().inflate(getContext(), R.layout.delete_for_companion_checkbox, null);
             final CheckBox checkBox = checkBoxView.findViewById(R.id.delete_for_all_checkbox);
+            checkBox.setText(String.format(getContext().getString(R.string.delete_for_all),
+                    RosterManager.getInstance().getBestContact(account, user).getName()));
             AlertDialog.Builder dialog = new AlertDialog.Builder(getContext())
-                    .setMessage(getContext().getResources().getString(R.string.delete_message_question))
-                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    .setTitle(size == 1 ? getString(R.string.delete_message_title) : getString(R.string.delete_messages_title, String.valueOf(size)))
+                    .setMessage(size == 1 ? R.string.delete_message_question : R.string.delete_messages_question)
+                    .setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             if (checkBox.isChecked())
@@ -1279,7 +1291,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                             else RrrManager.getInstance().sendRetractRequest(account, ids, false);
                         }
                     })
-                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    .setNegativeButton(R.string.cancel_action, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) { }
                     });
@@ -1287,14 +1299,14 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
             dialog.show();
         } else {
             AlertDialog dialog = new AlertDialog.Builder(getContext())
-                    .setMessage(getContext().getResources().getString(R.string.delete_message_question))
-                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    .setMessage(getContext().getResources().getString(R.string.delete_messages_question))
+                    .setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             MessageManager.getInstance().removeMessage(ids);
                         }
                     })
-                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    .setNegativeButton(R.string.cancel_action, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {           }
                     })

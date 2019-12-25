@@ -11,7 +11,8 @@
     <string name="chat_record">Record</string>
     <string name="clear_history">Clear history</string>
     <string name="clear_chat_history_dialog_button">Clear</string>
-    <string name="clear_chat_history_dialog_message">Do you really want to clear all chat history with %s?</string>
+    <string name="clear_chat_history_dialog_message">Are you sure you want to clear your chat history with %s?</string>
+    <string name="clear_chat_history_for_companion_checkbox">Also clear history for %s</string>
     <string name="contact_is_offline">The recipient is offline. Messages you send will be delivered when they come back online.</string>
     <string name="ENTRY_IS_NOT_AVAILABLE">Contact is not available</string>
     <string name="FILE_NOT_FOUND">File not found</string>
@@ -140,7 +141,12 @@
     <string name="action_new_subscription_request">New subscription request</string>
     <string name="open_this_link">Open this link?</string>
     <string name="open">Open</string>
-    <string name="delete_for_all">Delete for companion</string>
-    <string name="delete_message_question">Delete checked messages?</string>
+    <string name="delete_for_all">Also delete for %s</string>
+    <string name="delete_message_title">Delete message</string>
+    <string name="delete_messages_title">Delete %s messages</string>
+    <string name="delete_message_question">Are you sure you want to delete this message?</string>
+    <string name="delete_messages_question">Are you sure you want to delete these messages?</string>
     <string name="message_edit">Edit</string>
+    <string name="cancel_action">Cancel</string>
+    <string name="delete">Delete</string>
 </resources>

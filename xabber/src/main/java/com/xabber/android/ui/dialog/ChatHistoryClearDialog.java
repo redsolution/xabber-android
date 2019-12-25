@@ -47,6 +47,7 @@ public class ChatHistoryClearDialog extends DialogFragment implements DialogInte
         if (RrrManager.getInstance().isSupported(account)){
             checkBoxView = getView().inflate(getContext(), R.layout.delete_for_companion_checkbox, null);
             checkBox = checkBoxView.findViewById(R.id.delete_for_all_checkbox);
+            checkBox.setText(getString(R.string.clear_chat_history_for_companion_checkbox, name));
             return new AlertDialog.Builder(getActivity())
                     .setView(checkBoxView)
                     .setTitle(R.string.clear_history)
