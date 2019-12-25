@@ -268,7 +268,7 @@ public class RegularChat extends AbstractChat {
                         timestamp, getDelayStamp(message), true, true, encrypted,
                         isOfflineMessage(account.getFullJid().getDomain(), packet),
                         getStanzaId(message), UniqStanzaHelper.getOriginId(message), attachments, originalStanza, null,
-                        originalFrom, false, false, gropchatUserId);
+                        originalFrom, forwardIds, false, false, gropchatUserId);
 
                 // create message without attachments
             else createAndSaveNewMessage(true, uid, resource, text, markupText, null,
@@ -328,7 +328,7 @@ public class RegularChat extends AbstractChat {
             createAndSaveFileMessage(ui, uid, resource, text, markupText, null,
                     timestamp, getDelayStamp(message), true, false, encrypted,
                     false, getStanzaId(message), UniqStanzaHelper.getOriginId(message), attachments,
-                    originalStanza, parentMessageId, originalFrom, fromMuc, true, gropchatUserId);
+                    originalStanza, parentMessageId, originalFrom, forwardIds, fromMuc, true, gropchatUserId);
 
             // create message without attachments
         else createAndSaveNewMessage(ui, uid, resource, text, markupText, null,

@@ -63,6 +63,7 @@ public class UploadService extends IntentService {
     public final static String KEY_USER_JID = "user_jid";
     public final static String KEY_FILE_PATHS = "file_paths";
     public final static String KEY_FILE_URIS = "file_uris";
+    public final static String KEY_FORWARD_IDS = "attached_forwards";
     public final static String KEY_UPLOAD_SERVER_URL = "upload_server_url";
     public final static String KEY_FILE_COUNT = "file_count";
     public final static String KEY_PROGRESS = "progress";
@@ -88,13 +89,14 @@ public class UploadService extends IntentService {
         AccountJid account = intent.getParcelableExtra(KEY_ACCOUNT_JID);
         UserJid user = intent.getParcelableExtra(KEY_USER_JID);
         List<String> filePaths = intent.getStringArrayListExtra(KEY_FILE_PATHS);
+        List<String> forwardIds = intent.getStringArrayListExtra(KEY_FORWARD_IDS);
         String referenceElement = intent.getStringExtra(KEY_REFERENCE_ELEMENT);
         List<Uri> fileUris = intent.getParcelableArrayListExtra(KEY_FILE_URIS);
         CharSequence uploadServerUrl = intent.getCharSequenceExtra(KEY_UPLOAD_SERVER_URL);
         String existMessageId = intent.getStringExtra(KEY_MESSAGE_ID);
 
-        if (filePaths != null) startWork(account, user, filePaths, uploadServerUrl, existMessageId, referenceElement);
-        else if (fileUris != null) startWorkWithUris(account, user, fileUris, uploadServerUrl);
+        if (filePaths != null) startWork(account, user, filePaths, forwardIds, uploadServerUrl, existMessageId, referenceElement);
+        else if (fileUris != null) startWorkWithUris(account, user, fileUris, forwardIds, uploadServerUrl);
     }
 
     @Override
@@ -103,7 +105,7 @@ public class UploadService extends IntentService {
         needStop = true;
     }
 
-    private void startWorkWithUris(AccountJid account, UserJid user, List<Uri> fileUris,
+    private void startWorkWithUris(AccountJid account, UserJid user, List<Uri> fileUris, List<String> forwardIds,
                            CharSequence uploadServerUrl) {
 
         // determine which files are local or remote
@@ -118,8 +120,8 @@ public class UploadService extends IntentService {
         // create message with progress
         String messageId;
         if (remoteFiles.isEmpty())
-            messageId = MessageManager.getInstance().createFileMessage(account, user, files);
-        else messageId = MessageManager.getInstance().createFileMessageFromUris(account, user, remoteFiles);
+            messageId = MessageManager.getInstance().createFileMessageWithForwards(account, user, files, forwardIds);
+        else messageId = MessageManager.getInstance().createFileMessageFromUrisWithForwards(account, user, remoteFiles, forwardIds);
 
         // create dir
         File directory = new File(getDownloadDirPath());
@@ -161,10 +163,10 @@ public class UploadService extends IntentService {
 
     private void startWork(AccountJid account, UserJid user, List<String> filePaths,
                            CharSequence uploadServerUrl, String existMessageId) {
-        startWork(account, user, filePaths, uploadServerUrl, existMessageId, null);
+        startWork(account, user, filePaths, null, uploadServerUrl, existMessageId, null);
     }
 
-    private void startWork(AccountJid account, UserJid user, List<String> filePaths,
+    private void startWork(AccountJid account, UserJid user, List<String> filePaths, List<String> forwardIds,
                            CharSequence uploadServerUrl, String existMessageId, String referenceElement) {
 
         // get account item
@@ -190,9 +192,9 @@ public class UploadService extends IntentService {
                 files.add(new File(filePath));
             }
             if (ReferenceElement.Type.voice.name().equals(referenceElement)) {
-                fileMessageId = MessageManager.getInstance().createVoiceMessage(account, user, files, referenceElement);
+                fileMessageId = MessageManager.getInstance().createVoiceMessageWithForwards(account, user, files, forwardIds);
             }
-            else fileMessageId = MessageManager.getInstance().createFileMessage(account, user, files);
+            else fileMessageId = MessageManager.getInstance().createFileMessageWithForwards(account, user, files, forwardIds);
         } else fileMessageId = existMessageId; // use existing fileMessage
 
         HashMap<String, String> uploadedFilesUrls = new HashMap<>();

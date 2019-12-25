@@ -614,6 +614,11 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         forwardsIds = null;
     }
 
+    public void hideForwardPanel() {
+        if (chatFragment == null) return;
+        chatFragment.hideBottomMessagePanel();
+    }
+
     private void insertExtraText() {
         if (extraText == null || extraText.equals("")) {
             return;

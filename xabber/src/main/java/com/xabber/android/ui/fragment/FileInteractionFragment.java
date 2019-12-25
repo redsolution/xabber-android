@@ -7,11 +7,7 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.media.MediaMetadataRetriever;
-import android.media.MediaPlayer;
-import android.media.MediaRecorder;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -36,7 +32,8 @@ import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.references.ReferenceElement;
-import com.xabber.android.data.extension.references.VoiceMessagePresenterManager;
+import com.xabber.android.data.extension.references.voice.VoiceManager;
+import com.xabber.android.data.extension.references.voice.VoiceMessagePresenterManager;
 import com.xabber.android.data.filedownload.DownloadManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.MessageManager;
@@ -49,23 +46,19 @@ import com.xabber.android.ui.dialog.AttachDialog;
 import com.xabber.android.ui.helper.PermissionsRequester;
 
 import java.io.File;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import io.realm.Realm;
 import io.realm.RealmList;
 import rx.Subscription;
 import rx.functions.Action1;
 import rx.subjects.PublishSubject;
 
-import static android.media.MediaRecorder.AudioSource.MIC;
-
 public class FileInteractionFragment extends Fragment implements FileMessageVH.FileListener,
-        AttachDialog.Listener, ForwardedAdapter.ForwardListener {
+        ForwardedAdapter.ForwardListener, AttachDialog.Listener {
 
     private static final String LOG_TAG = FileInteractionFragment.class.getSimpleName();
 
@@ -76,7 +69,7 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
     public static final int NORMAL_AUDIO_PROGRESS = 98;
     public static final int PAUSED_AUDIO_PROGRESS = 97;
     private static final int SAMPLING_RATE = 48000;
-    private static final int ENCODING_BIT_RATE = 96000;
+    //private static final int ENCODING_BIT_RATE = 96000;
 
     public static final int FILE_SELECT_ACTIVITY_REQUEST_CODE = 11;
     private static final int REQUEST_IMAGE_CAPTURE = 12;
@@ -91,16 +84,10 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
     private String clickedMessageUID;
     private String clickedAttachmentUID;
     private String currentPicturePath;
-    private boolean recordingInProgress = false;
-    private MediaPlayer mp;
-    private ArrayList<Float> waveForm = new ArrayList<>();
-    private int currentTime;
-    private int maxTime;
-    private MediaRecorder mr;
+    private Long messageTimestamp;
+    private List<String> forwardIds = new ArrayList<>();
+
     private Handler mHandler = new Handler();
-    private int voiceAttachmentHash;
-    private int voiceFileDuration;
-    private int voiceAttachmentDuration;
     private PublishSubject<DownloadManager.ProgressData> voiceDownload;
     private Subscription voiceDownloadSubscription;
 
@@ -169,7 +156,14 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
                     return;
                 }
 
-                HttpFileUploadManager.getInstance().uploadFileViaUri(account, user, uris, getActivity());
+                if (forwardIds.size() == 0)
+                    HttpFileUploadManager.getInstance().uploadFileViaUri(account, user, uris, getActivity());
+                else {
+                    HttpFileUploadManager.getInstance().uploadFile(account, user, null, uris, forwardIds, null, null, getActivity());
+                    forwardIds.clear();
+                    if (getActivity() != null)
+                        ((ChatActivity)getActivity()).hideForwardPanel();
+                }
                 break;
         }
     }
@@ -177,12 +171,7 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
     @Override
     public void onDetach() {
         super.onDetach();
-        mHandler.removeCallbacks(updateAudioProgress);
         if (voiceDownloadSubscription != null) voiceDownloadSubscription.unsubscribe();
-        if (mp != null) {
-            mp.release();
-            mp = null;
-        }
     }
 
     /** Permissions */
@@ -253,31 +242,18 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
     }
 
     @Override
-    public void onVoiceClick(int messagePosition, int attachmentPosition, String attachmentId, String messageUID, boolean saved) {
-        LogManager.d("VoiceDebug", "onVoiceClick start! attachmentPosition = " + attachmentPosition + " attachmentId = " + attachmentId + " messageUID = " + messageUID);
+    public void onVoiceClick(int messagePosition, int attachmentPosition, String attachmentId, String messageUID, Long timestamp) {
         clickedAttachmentPos = attachmentPosition;
         clickedMessageUID = messageUID;
         clickedAttachmentUID = attachmentId;
-        currentTime = -1;
-        maxTime = -1;
-        if (!saved) subscribeForVoiceDownloadProgress();
+        messageTimestamp = timestamp;
+        subscribeForVoiceDownloadProgress();
         if (PermissionsRequester.requestFileWritePermissionIfNeeded(
                 this, PERMISSIONS_REQUEST_DOWNLOAD_FILE))
             openFileOrDownload(messageUID, attachmentPosition);
     }
 
-//    @Override
-//    public void onVoiceProgressClick(int messagePosition, int attachmentPosition, String attachmentId, String messageUID, int current, int max) {
-//        clickedAttachmentPos = attachmentPosition;
-//        clickedMessageUID = messageUID;
-//        clickedAttachmentUID = attachmentId;
-//        currentTime = current;
-//        maxTime = max;
-//        openFileOrDownload(messageUID, attachmentPosition);
-//    }
-
     protected void subscribeForVoiceDownloadProgress() {
-        LogManager.d("VoiceDebug", "progress Subscribed to!~");
         voiceDownload = DownloadManager.getInstance().subscribeForProgress();
         if (voiceDownloadSubscription != null) voiceDownloadSubscription.unsubscribe();
         voiceDownloadSubscription = voiceDownload.doOnNext(new Action1<DownloadManager.ProgressData>() {
@@ -381,75 +357,23 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
         }
     }
 
+    protected void forwardIdsForAttachments(List<String> forwardIds) {
+        if (forwardIds == null) {
+            this.forwardIds.clear();
+        } else {
+            this.forwardIds = forwardIds;
+        }
+    }
+
     protected final Runnable record = new Runnable() {
         @Override
         public void run() {
-            onVoiceRecordPressed();
+            VoiceManager.getInstance().startRecording();
         }
     };
-
-    protected final Runnable createLocalWaveform = new Runnable() {
-        @Override
-        public void run() {
-            if (mr != null) {
-                waveForm.add((float) mr.getMaxAmplitude());
-                mHandler.postDelayed(this, 30);
-            }
-        }
-    };
-
-    private void onVoiceRecordPressed() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-
-            mr = new MediaRecorder();
-            mr.setOnErrorListener(new MediaRecorder.OnErrorListener() {
-                @Override
-                public void onError(MediaRecorder mediaRecorder, int i, int i1) {
-                    LogManager.e(LOG_TAG, "Error with MediaRecorder (" + i + ", " + i1 + "), releasing)");
-                    mediaRecorder.reset();
-                    mediaRecorder.release();
-                    mr = null;
-                }
-            });
-            mr.setAudioSource(MIC);
-            try {
-                File tempAudioFile = FileManager.createTempAudioFile("temp_audio_recording");
-                tempFilePath = tempAudioFile.getAbsolutePath();
-                waveForm.clear();
-                mr.setOutputFormat(MediaRecorder.OutputFormat.DEFAULT);
-                mr.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
-
-                mr.setOutputFile(tempFilePath);
-                mr.setAudioSamplingRate(SAMPLING_RATE);
-                mr.setAudioEncodingBitRate(ENCODING_BIT_RATE);
-                mr.prepare();
-                mr.start();
-                mHandler.postDelayed(createLocalWaveform, 30);
-                recordingInProgress = true;
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    private String tempFilePath;
-
-    String stopRecordingIfPossibleForCheckup() {
-        if (recordingInProgress) {
-            recordingInProgress = false;
-            if (mr != null) {
-                releaseMediaRecorder();
-                VoiceMessagePresenterManager.getInstance().addAndOptimizeWave(waveForm, tempFilePath);
-                File file = new File(tempFilePath);
-                if (file.exists()) return tempFilePath;
-                else return null;
-            }
-        }
-        return null;
-    }
 
     boolean releaseRecordedVoicePlayback(String filePath) {
-        releaseMediaPlayer();
+        VoiceManager.getInstance().releaseMediaPlayer();
         VoiceMessagePresenterManager.getInstance().deleteOldPath(filePath);
         File file = new File(filePath);
         if (file.exists()) {
@@ -459,43 +383,38 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
         return true;
     }
 
-
-
     void sendStoppedVoiceMessage(String filePath) {
-        releaseMediaPlayer();
-        try {
-            File audioFile = FileManager.createAudioFile("voice_message.ogg");
-            if (FileManager.copy(new File(filePath), audioFile)) {
-                if (audioFile != null) {
-                    VoiceMessagePresenterManager.getInstance().modifyFilePathIfSaved(tempFilePath, audioFile.getPath());
-                    uploadVoiceFile(audioFile.getPath());
-                }
+        sendStoppedVoiceMessage(filePath, null);
+    }
+
+    void sendStoppedVoiceMessage(String filePath, List<String> forwardIDs) {
+        VoiceManager.getInstance().releaseMediaPlayer();
+        String path = VoiceManager.getInstance().getStoppedRecordingNewFilePath(filePath);
+        if (path != null) {
+            if (forwardIDs != null) {
+                uploadVoiceFile(path, forwardIDs);
+            } else {
+                uploadVoiceFile(path);
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 
-    void stopRecordingIfPossible(boolean saveFile) {
-        if (recordingInProgress) {
-            recordingInProgress = false;
-            if (mr != null) {
-                releaseMediaRecorder();
-                if (saveFile) {
-                    try {
-                        File audioFile = FileManager.createAudioFile("voice_message.ogg");
-                        if (FileManager.copy(new File(tempFilePath), audioFile)) {
-                            if (audioFile != null) {
-                                VoiceMessagePresenterManager.getInstance().addAndOptimizeWave(waveForm, audioFile.getPath());
-                                uploadVoiceFile(audioFile.getPath());
-                            }
-                        }
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
+    void stopRecordingAndSend(boolean send) {
+        stopRecordingAndSend(send, null);
+    }
+
+    void stopRecordingAndSend(boolean send, List<String> forwardIDs) {
+        if (send) {
+            String filepath = VoiceManager.getInstance().stopRecordingAndGetNewFilePath();
+            if (filepath != null) {
+                if (forwardIDs != null)
+                    uploadVoiceFile(filepath, forwardIDs);
+                else
+                    uploadVoiceFile(filepath);
             }
-            if (!saveFile) FileManager.deleteTempFile(new File(tempFilePath));
+        } else {
+            VoiceManager.getInstance().stopRecording();
+            VoiceManager.getInstance().deleteRecordedFile();
         }
     }
 
@@ -503,7 +422,7 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
         Application.getInstance().runInBackground(new Runnable() {
             @Override
             public void run() {
-                stopRecordingIfPossible(saveFile);
+                stopRecordingAndSend(saveFile);
             }
         });
     }
@@ -572,17 +491,40 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
     private void uploadFile(String path) {
         List<String> paths = new ArrayList<>();
         paths.add(path);
-        HttpFileUploadManager.getInstance().uploadFile(account, user, paths, getActivity());
+        if (forwardIds.size() == 0)
+            HttpFileUploadManager.getInstance().uploadFile(account, user, paths, getActivity());
+        else {
+            HttpFileUploadManager.getInstance().uploadFile(account, user, paths, null, forwardIds, null, null, getActivity());
+            forwardIds.clear();
+            if (getActivity() != null)
+                ((ChatActivity)getActivity()).hideForwardPanel();
+        }
     }
 
     private void uploadVoiceFile(String path) {
+        uploadVoiceFile(path, null);
+    }
+
+    private void uploadVoiceFile(String path, List<String> forwardIds) {
         List<String> paths = new ArrayList<>();
         paths.add(path);
-        HttpFileUploadManager.getInstance().uploadFile(account, user, paths, null, null, ReferenceElement.Type.voice.name(), getActivity());
+        HttpFileUploadManager.getInstance().uploadFile(account, user, paths, null, forwardIds, null, ReferenceElement.Type.voice.name(), getActivity());
+        if (forwardIds != null && forwardIds.size() != 0) {
+            forwardIds.clear();
+            if (getActivity() != null)
+                ((ChatActivity) getActivity()).hideForwardPanel();
+        }
     }
 
     private void uploadFiles(List<String> paths) {
-        HttpFileUploadManager.getInstance().uploadFile(account, user, paths, getActivity());
+        if (forwardIds.size() == 0)
+            HttpFileUploadManager.getInstance().uploadFile(account, user, paths, getActivity());
+        else {
+            HttpFileUploadManager.getInstance().uploadFile(account, user, paths, null, forwardIds, null, null, getActivity());
+            forwardIds.clear();
+            if (getActivity() != null)
+                ((ChatActivity)getActivity()).hideForwardPanel();
+        }
     }
 
     private void onShareClick(Attachment attachment) {
@@ -639,8 +581,9 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
                     return;
                 }
 
-                if ("voice".equals(attachment.getRefType())) {
-                    manageVoicePlayback(attachment);
+                if ("voice".equals(attachment.getRefType())
+                        || attachment.isVoice()) {
+                    VoiceManager.getInstance().voiceClicked(messageItem, attachmentPosition, null);
                 } else {
                     manageOpeningFile(attachment);
                 }
@@ -667,336 +610,10 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
         }
     }
 
-    void releaseMediaRecorder() {
-        mHandler.removeCallbacks(createLocalWaveform);
-        if (mr != null) {
-            mr.reset();
-            mr.release();
-            mr = null;
-        }
-    }
-
-    void clearCachedVoiceFile() {
-        Application.getInstance().runInBackground(new Runnable() {
-            @Override
-            public void run() {
-                if (tempFilePath != null) {
-                    FileManager.deleteTempFile(tempFilePath);
-                }
-            }
-        });
-    }
-
-    void releaseMediaPlayer() {
-        if (mp != null) {
-            mp.reset();
-            mp.release();
-            mp = null;
-        }
-    }
-
-    void changeVoicePlayback() {
-
-    }
-
-    void manageRecordedVoicePlayback(String filePath) {
-        if (mp == null) {
-            voiceAttachmentHash = 0;
-            mp = new MediaPlayer();
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mediaPlayer) {
-                    LogManager.i(LOG_TAG, "onCompletion() has been called");
-                    mHandler.removeCallbacks(updateAudioProgress);
-                    publishCompletedAudioProgress(voiceAttachmentHash);
-                    releaseMediaPlayer();
-                }
-            });
-            mp.setOnErrorListener(new MediaPlayer.OnErrorListener() {
-                @Override
-                public boolean onError(MediaPlayer mediaPlayer, int i, int i1) {
-                    LogManager.e(LOG_TAG, "Error with MediaPlayer (" + i + ", " + i1 + "), releasing)");
-                    mHandler.removeCallbacks(updateAudioProgress);
-                    mediaPlayer.reset();
-                    mediaPlayer.release();
-                    mp = null;
-                    return false;
-                }
-            });
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mediaPlayer) {
-                    mp.start();
-                    updateAudioProgressBar();
-                }
-            });
-            try {
-                mp.setDataSource(filePath);
-                mp.prepareAsync();
-            } catch (IOException e) {
-                LogManager.exception(LOG_TAG, e);
-            }
-        } else {
-            if (voiceAttachmentHash == 0) {
-                if (mp.isPlaying()) {
-                    mp.pause();
-                    publishAudioProgressWithCustomCode(PAUSED_AUDIO_PROGRESS);
-                    mHandler.removeCallbacks(updateAudioProgress);
-                } else {
-                    mp.start();
-                    updateAudioProgressBar();
-                }
-            } else {
-                if (mp.isPlaying())
-                    mp.stop();
-                publishCompletedAudioProgress(voiceAttachmentHash);
-                mp.reset();
-                mHandler.removeCallbacks(updateAudioProgress);
-                try {
-                    voiceAttachmentHash = 0;
-                    mp.setDataSource(filePath);
-                    mp.prepareAsync();
-                } catch (IOException e) {
-                    LogManager.exception(LOG_TAG, e);
-                }
-            }
-        }
-    }
-
-    private void manageVoicePlayback(Attachment attachment) {
-        final String path = attachment.getFilePath();
-        final String id = attachment.getUniqueId();
-        if (path == null) {
-            LogManager.e(LOG_TAG, "Error with media playback! Local attachment path is null, abandoning playback");
-            return;
-        }
-        if (mp == null) {
-            mp = new MediaPlayer();
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mediaPlayer) {
-                    LogManager.i(LOG_TAG, "onCompletion() has been called");
-                    mHandler.removeCallbacks(updateAudioProgress);
-                    publishCompletedAudioProgress(voiceAttachmentHash);
-                    releaseMediaPlayer();
-                }
-            });
-            mp.setOnErrorListener(new MediaPlayer.OnErrorListener() {
-                @Override
-                public boolean onError(MediaPlayer mediaPlayer, int i, int i1) {
-                    LogManager.e(LOG_TAG, "Error with MediaPlayer (" + i + ", " + i1 + "), releasing)");
-                    mHandler.removeCallbacks(updateAudioProgress);
-                    mediaPlayer.reset();
-                    mediaPlayer.release();
-                    mp = null;
-                    return false;
-                }
-            });
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mediaPlayer) {
-                    if (currentTime != -1 && maxTime != -1) {
-                        mp.seekTo(currentTime);
-                        return;
-                    }
-                    mp.start();
-                    updateAudioProgressBar();
-                }
-            });
-            try {
-                if (attachment.getDuration() == null)
-                        setDurationIfEmpty(path, id);
-                else voiceAttachmentDuration = longToIntConverter(attachment.getDuration());
-                voiceAttachmentHash = id.hashCode();
-                if (attachment.getFileUrl() == null) {
-                    if (attachment.getFilePath() != null)
-                        mp.setDataSource(attachment.getFilePath());
-                    else {
-                        releaseMediaPlayer();
-                        return;
-                    }
-                } else mp.setDataSource(attachment.getFileUrl());
-                mp.prepareAsync();
-            } catch (IOException e) {
-                LogManager.exception(LOG_TAG, e);
-            }
-        } else if (voiceAttachmentHash == attachment.getUniqueId().hashCode()) {
-            if (mp.isPlaying()) {
-                mp.pause();
-                if (currentTime != -1 && maxTime != -1) {
-                    mp.seekTo(currentTime);
-                } else {
-                    publishAudioProgressWithCustomCode(PAUSED_AUDIO_PROGRESS);
-                    mHandler.removeCallbacks(updateAudioProgress);
-                }
-            } else {
-                if (currentTime != -1 && maxTime != -1) {
-                    mp.seekTo(currentTime);
-                } else {
-                    mp.start();
-                    updateAudioProgressBar();
-                }
-            }
-        } else {
-            if (mp.isPlaying()) {
-                mp.stop();
-            }
-            publishCompletedAudioProgress(voiceAttachmentHash);
-            mp.reset();
-            mHandler.removeCallbacks(updateAudioProgress);
-            try {
-                if (attachment.getDuration() == null)
-                    setDurationIfEmpty(path, id);
-                else voiceAttachmentDuration = longToIntConverter(attachment.getDuration());
-                voiceAttachmentHash = id.hashCode();
-                mp.setDataSource(attachment.getFileUrl());
-                mp.prepareAsync();
-            } catch (IOException e) {
-                LogManager.exception(LOG_TAG, e);
-            }
-        }
-    }
-
-    private void setDurationIfEmpty(final String path, final String id) {
-        Application.getInstance().runInBackground(new Runnable() {
-            @Override
-            public void run() {
-                final MediaMetadataRetriever mmr = new MediaMetadataRetriever();
-                mmr.setDataSource(path);
-                final String dur = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
-                voiceFileDuration = Integer.valueOf(dur);
-                if (voiceFileDuration != 0) {
-                    Realm realm = null;
-                    try {
-                        realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
-                        realm.executeTransaction(new Realm.Transaction() {
-                            @Override
-                            public void execute(Realm realm) {
-                                Attachment backgroundAttachment = realm.where(Attachment.class).equalTo(Attachment.Fields.UNIQUE_ID, id).findFirst();
-                                backgroundAttachment.setDuration(Long.valueOf(dur) / 1000);
-                            }
-                        });
-                    } finally {
-                        if (realm != null)
-                            realm.close();
-                    }
-                }
-            }
-        });
-    }
-
     private void waitForVoiceDownloadFinish(DownloadManager.ProgressData progressData) {
         if (progressData.isCompleted()) {
-            LogManager.d("VoiceDebug", "Download Completed Progress Data arrived! attachmentId = " + progressData.getAttachmentId());
             if (progressData.getAttachmentId() != null && clickedAttachmentUID != null && clickedAttachmentUID.equals(progressData.getAttachmentId())) {
-                final Handler handler = new Handler();
-                final String messageId = clickedMessageUID;
-                final int attachmentPosition = clickedAttachmentPos;
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        openFileOrDownload(messageId, attachmentPosition);
-                        handler.removeCallbacks(null);
-                    }
-                }, 50);
-            }
-        }
-    }
-
-
-    public void updateAudioProgressBar() {
-        mHandler.postDelayed(updateAudioProgress, 100);
-    }
-
-    private Runnable updateAudioProgress = new Runnable() {
-        @Override
-        public void run() {
-            publishAudioProgressWithCustomCode(NORMAL_AUDIO_PROGRESS);
-            mHandler.postDelayed(this, 100);
-        }
-    };
-
-    private void publishAudioProgressWithCustomCode(int resultCode) {
-        if (mp != null) {
-            int duration = getOptimalVoiceDuration();
-            PublishAudioProgress.getInstance().updateAudioProgress(mp.getCurrentPosition(), duration, voiceAttachmentHash, resultCode);
-            LogManager.d("VoiceDebug", "current : " + mp.getCurrentPosition() + " max MP.getDuration: " + mp.getDuration() + " max MMR.extractDur: " + voiceFileDuration);
-        }
-    }
-
-    private int getOptimalVoiceDuration() {
-        if (voiceFileDuration != 0)
-            return voiceFileDuration;
-        else if (mp.getDuration() > 500) return mp.getDuration();
-        else return voiceAttachmentDuration;
-    }
-
-    public Integer longToIntConverter(long number) {
-        if (number <= Integer.MAX_VALUE && number > 0)
-            return (int) number;
-        else if (number > Integer.MAX_VALUE)
-            return Integer.MAX_VALUE;
-        else return 0;
-    }
-
-    private void publishCompletedAudioProgress(int attachmentId) {
-        PublishAudioProgress.getInstance().updateAudioProgress(0, getOptimalVoiceDuration(), attachmentId, COMPLETED_AUDIO_PROGRESS);
-    }
-
-    public static class PublishAudioProgress {
-
-        private static PublishAudioProgress instance;
-        private PublishSubject<AudioInfo> subject;
-
-        public static PublishAudioProgress getInstance() {
-            if (instance == null) instance = new PublishAudioProgress();
-            return instance;
-        }
-
-        public void updateAudioProgress(int currentPosition, int duration, int attachmentId, int resultCode) {
-            subject.onNext(new AudioInfo(currentPosition, duration, attachmentId, resultCode));
-        }
-
-        private PublishAudioProgress() {
-            createSubject();
-        }
-
-        private void createSubject() {
-            subject = PublishSubject.create();
-        }
-
-
-        public PublishSubject<AudioInfo> subscribeForProgress() {
-            return subject;
-        }
-
-        public class AudioInfo {
-            final int currentPosition;
-            final int duration;
-            final int attachmentId;
-            final int resultCode;
-
-            public AudioInfo(int currentPosition, int duration, int attachmentId, int resultCode) {
-                this.currentPosition = currentPosition;
-                this.duration = duration;
-                this.attachmentId = attachmentId;
-                this.resultCode = resultCode;
-            }
-
-            public int getDuration() {
-                return duration;
-            }
-
-            public int getCurrentPosition() {
-                return currentPosition;
-            }
-
-            public int getResultCode() {
-                return resultCode;
-            }
-
-            public int getAttachmentId() {
-                return attachmentId;
+                VoiceManager.getInstance().voiceClicked(clickedMessageUID, clickedAttachmentPos, messageTimestamp);
             }
         }
     }

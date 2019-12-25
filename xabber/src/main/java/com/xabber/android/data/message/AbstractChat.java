@@ -309,12 +309,12 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
                                             final Date delayTimestamp, final boolean incoming, boolean notify,
                                             final boolean encrypted, final boolean offline, final String stanzaId,
                                             String originId, RealmList<Attachment> attachments, final String originalStanza,
-                                            final String parentMessageId, final String originalFrom, boolean fromMUC,
-                                            boolean fromMAM, String groupchatUserId) {
+                                            final String parentMessageId, final String originalFrom, final RealmList<ForwardId> forwardIds,
+                                            boolean fromMUC, boolean fromMAM, String groupchatUserId) {
 
         final MessageItem messageItem = createMessageItem(uid, resource, text, markupText, action,
                 timestamp, delayTimestamp, incoming, notify, encrypted, offline, stanzaId, originId, attachments,
-                originalStanza, parentMessageId, originalFrom, null, fromMUC, fromMAM, groupchatUserId);
+                originalStanza, parentMessageId, originalFrom, forwardIds, fromMUC, fromMAM, groupchatUserId);
 
         saveMessageItem(ui, messageItem);
         //EventBus.getDefault().post(new NewMessageEvent());
@@ -457,6 +457,10 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     }
 
     public String newFileMessage(final List<File> files, final List<Uri> uris, final String referenceType) {
+        return newFileMessageWithFwr(files, uris, referenceType, null);
+    }
+
+    public String newFileMessageWithFwr(final List<File> files, final List<Uri> uris, final String referenceType, final List<String> forwards) {
         Realm realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
         final String messageId = UUID.randomUUID().toString();
 
@@ -469,6 +473,16 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
                 String initialID = UUID.randomUUID().toString();
 
                 MessageItem messageItem = new MessageItem(messageId);
+
+                if (forwards != null && forwards.size()>0) {
+                    RealmList<ForwardId> ids = new RealmList<>();
+
+                    for (String forward : forwards) {
+                        ids.add(new ForwardId(forward));
+                    }
+                    messageItem.setForwardedIds(ids);
+                }
+
                 messageItem.setAccount(account);
                 messageItem.setUser(user);
                 messageItem.setOriginalFrom(account.toString());
@@ -503,7 +517,8 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
             attachment.setTitle(file.getName());
             attachment.setIsImage(FileManager.fileIsImage(file));
             attachment.setMimeType(HttpFileUploadManager.getMimeType(file.getPath()));
-            if (refElement != null && refElement.equals(ReferenceElement.Type.voice.name())) {
+            if (ReferenceElement.Type.voice.name().equals(refElement)) {
+                attachment.setIsVoice(true);
                 attachment.setRefType(ReferenceElement.Type.voice.name());
                 attachment.setDuration(HttpFileUploadManager.getVoiceLength(file.getPath()));
             } else {
@@ -598,6 +613,23 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         return message;
     }
 
+    public Message createFileAndForwardMessagePacket(String stanzaId, RealmList<Attachment> attachments, String[] forwardIds, String text) {
+
+        Message message = new Message();
+        message.setTo(getTo());
+        message.setType(getType());
+        message.setThread(threadId);
+        if (stanzaId != null) message.setStanzaId(stanzaId);
+
+        StringBuilder builder = new StringBuilder();
+        createForwardMessageReferences(message, forwardIds, builder);
+        builder.append(text);
+        createFileMessageReferences(message, attachments, builder);
+
+        message.setBody(builder);
+        return message;
+    }
+
     /**
      * Send stanza with data-references.
      */
@@ -610,6 +642,28 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         if (stanzaId != null) message.setStanzaId(stanzaId);
 
         StringBuilder builder = new StringBuilder(body);
+        createFileMessageReferences(message, attachments, builder);
+
+        message.setBody(builder);
+        return message;
+    }
+
+    public Message createForwardMessagePacket(String stanzaId, String[] forwardIds, String text) {
+        Message message = new Message();
+        message.setTo(getTo());
+        message.setType(getType());
+        message.setThread(threadId);
+        if (stanzaId != null) message.setStanzaId(stanzaId);
+
+        StringBuilder builder = new StringBuilder();
+        createForwardMessageReferences(message, forwardIds, builder);
+        builder.append(text);
+
+        message.setBody(builder);
+        return message;
+    }
+
+    private void createFileMessageReferences(Message message, RealmList<Attachment> attachments, StringBuilder builder) {
         for (Attachment attachment : attachments) {
             StringBuilder rowBuilder = new StringBuilder();
             if (builder.length() > 0) rowBuilder.append("\n");
@@ -618,8 +672,8 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
             int begin = getSizeOfEncodedChars(builder.toString());
             builder.append(rowBuilder);
             ReferenceElement reference;
-            if (ReferenceElement.Type.voice.name().equals(attachment.getRefType())) {
-                 reference = ReferencesManager.createVoiceReferences(attachment,
+            if (attachment.isVoice()) {
+                reference = ReferencesManager.createVoiceReferences(attachment,
                         begin, getSizeOfEncodedChars(builder.toString()) - 1);
             } else {
                 reference = ReferencesManager.createMediaReferences(attachment,
@@ -627,9 +681,24 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
             }
             message.addExtension(reference);
         }
+    }
 
-        message.setBody(builder);
-        return message;
+    private void createForwardMessageReferences(Message message, String[] forwardedIds, StringBuilder builder) {
+        Realm realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
+        RealmResults<MessageItem> items = realm.where(MessageItem.class)
+                .in(MessageItem.Fields.UNIQUE_ID, forwardedIds).findAll();
+
+        if (items != null && !items.isEmpty()) {
+            for (MessageItem item : items) {
+                String forward = ClipManager.createMessageTree(realm, item.getUniqueId()) + "\n";
+                int begin = getSizeOfEncodedChars(builder.toString());
+                builder.append(forward);
+                ReferenceElement reference = ReferencesManager.createForwardReference(item,
+                        begin, getSizeOfEncodedChars(builder.toString()) - 1);
+                message.addExtension(reference);
+            }
+        }
+        realm.close();
     }
 
     private int getSizeOfEncodedChars(String str) {
@@ -695,35 +764,15 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         Message message = null;
 
         if (messageItem.haveAttachments()) {
-            message = createFileMessagePacket(messageItem.getStanzaId(),
-                    messageItem.getAttachments(), text);
-
+            if (messageItem.haveForwardedMessages()) {
+                message = createFileAndForwardMessagePacket(messageItem.getStanzaId(),
+                        messageItem.getAttachments(), messageItem.getForwardedIdsAsArray(), text);
+            } else {
+                message = createFileMessagePacket(messageItem.getStanzaId(),
+                        messageItem.getAttachments(), text);
+            }
         } else if (messageItem.haveForwardedMessages()) {
-            Realm realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
-            RealmResults<MessageItem> items = realm.where(MessageItem.class)
-                    .in(MessageItem.Fields.UNIQUE_ID, messageItem.getForwardedIdsAsArray()).findAll();
-
-            List<ReferenceElement> references = new ArrayList<>();
-            StringBuilder builder = new StringBuilder();
-            if (items != null && !items.isEmpty()) {
-                for (MessageItem item : items) {
-                    String forward = ClipManager.createMessageTree(realm, item.getUniqueId()) + "\n";
-                    int begin = getSizeOfEncodedChars(builder.toString());
-                    builder.append(forward);
-                    ReferenceElement reference = ReferencesManager.createForwardReference(item,
-                            begin, getSizeOfEncodedChars(builder.toString()) - 1);
-                    references.add(reference);
-                }
-            }
-            realm.close();
-            builder.append(text);
-            text = builder.toString();
-
-            message = createMessagePacket(text, messageItem.getStanzaId());
-            for (ReferenceElement element : references) {
-                message.addExtension(element);
-            }
-
+            message = createForwardMessagePacket(messageItem.getStanzaId(), messageItem.getForwardedIdsAsArray(), text);
         } else if (text != null) {
             message = createMessagePacket(text, messageItem.getStanzaId());
         }

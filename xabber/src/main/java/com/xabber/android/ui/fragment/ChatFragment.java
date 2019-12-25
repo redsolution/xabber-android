@@ -30,6 +30,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.view.ViewTreeObserver;
+import android.view.WindowManager;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
@@ -79,7 +80,8 @@ import com.xabber.android.data.extension.muc.RoomState;
 import com.xabber.android.data.extension.otr.AuthAskEvent;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.otr.SecurityLevel;
-import com.xabber.android.data.extension.references.VoiceMessagePresenterManager;
+import com.xabber.android.data.extension.references.voice.VoiceManager;
+import com.xabber.android.data.extension.references.voice.VoiceMessagePresenterManager;
 import com.xabber.android.data.extension.rrr.RrrManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
@@ -111,6 +113,7 @@ import com.xabber.android.ui.widget.CustomMessageMenu;
 import com.xabber.android.ui.widget.PlayerVisualizerView;
 import com.xabber.android.utils.StringUtils;
 import com.xabber.android.utils.Utils;
+import com.xabber.xmpp.uuu.ChatStateSubtype;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -218,8 +221,10 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     private ImageButton recordingDeleteButton;
     private ImageButton recordingPresenterSendButton;
     private TextView recordingPresenterDuration;
-    private PublishSubject<FileInteractionFragment.PublishAudioProgress.AudioInfo> audioProgress;
+    private PublishSubject<VoiceManager.PublishAudioProgress.AudioInfo> audioProgress;
     private Subscription audioProgressSubscription;
+
+    private boolean isReply = false;
 
     private ChatViewerFragmentListener listener;
 
@@ -330,6 +335,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
             @Override
             public void onClick(View v) {
                 onAttachButtonPressed();
+                forwardIdsForAttachments(bottomPanelMessagesIds);
             }
         });
 
@@ -552,6 +558,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
             @Override
             public void onClick(View v) {
                 bottomPanelMessagesIds = new ArrayList<>(chatMessageAdapter.getCheckedItemIds());
+                isReply = true;
                 showBottomMessagesPanel(bottomPanelMessagesIds, BottomMessagesPanel.Purposes.FORWARDING);
                 closeInteractionPanel();
             }
@@ -1052,7 +1059,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
     private void setUpInputViewButtons() {
         boolean empty = inputView.getText().toString().trim().isEmpty();
-        if (empty) empty = bottomPanelMessagesIds.isEmpty();
+        if (empty) empty = (bottomPanelMessagesIds.isEmpty() || isReply);
 
         if (empty != isInputEmpty) {
             isInputEmpty = empty;
@@ -1824,14 +1831,20 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     private void manageVoiceMessage(boolean saveMessage) {
         handler.removeCallbacks(record);
         handler.removeCallbacks(timer);
-        stopRecordingIfPossible(saveMessage);
+        if (bottomPanelMessagesIds != null && bottomPanelMessagesIds.size()>0) {
+            stopRecordingAndSend(saveMessage, bottomPanelMessagesIds);
+            hideBottomMessagePanel();
+        } else
+            stopRecordingAndSend(saveMessage);
+        scrollDown();
+        setFirstUnreadMessageId(null);
         cancelRecordingCompletely(true);
     }
 
     private void stopRecording() {
         Utils.lockScreenRotation(getActivity(), false);
         if (recordSaveAllowed) {
-            recordingPath = stopRecordingIfPossibleForCheckup();
+            recordingPath = VoiceManager.getInstance().stopRecordingAndGetTempFilePath();
             endRecordingButtonsAnimation();
             beginTimer(false);
             currentVoiceRecordingState = VoiceRecordState.StoppedRecording;
@@ -1862,7 +1875,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         recordingPlayButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                manageRecordedVoicePlayback(recordingPath);
+                VoiceManager.getInstance().voiceClicked(recordingPath);
             }
         });
         recordingDeleteButton.setOnClickListener(new View.OnClickListener() {
@@ -1877,7 +1890,14 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         recordingPresenterSendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                sendStoppedVoiceMessage(recordingPath);
+                if (bottomPanelMessagesIds != null && bottomPanelMessagesIds.size() > 0) {
+                    sendStoppedVoiceMessage(recordingPath, bottomPanelMessagesIds);
+                    hideBottomMessagePanel();
+                } else {
+                    sendStoppedVoiceMessage(recordingPath);
+                }
+                scrollDown();
+                setFirstUnreadMessageId(null);
                 finishVoiceRecordLayout();
                 recordingPath = null;
                 audioProgressSubscription.unsubscribe();
@@ -1886,23 +1906,23 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     }
 
     private void subscribeForRecordedAudioProgress() {
-        audioProgress = FileInteractionFragment.PublishAudioProgress.getInstance().subscribeForProgress();
-        audioProgressSubscription = audioProgress.doOnNext(new Action1<PublishAudioProgress.AudioInfo>() {
+        audioProgress = VoiceManager.PublishAudioProgress.getInstance().subscribeForProgress();
+        audioProgressSubscription = audioProgress.doOnNext(new Action1<VoiceManager.PublishAudioProgress.AudioInfo>() {
             @Override
-            public void call(FileInteractionFragment.PublishAudioProgress.AudioInfo info) {
-                setUpAudioProgress(info);
+            public void call(VoiceManager.PublishAudioProgress.AudioInfo audioInfo) {
+                setUpAudioProgress(audioInfo);
             }
         }).subscribe();
     }
 
     public void cleanUpVoice(boolean deleteTempFile) {
-        if (deleteTempFile) clearCachedVoiceFile();
-        releaseMediaRecorder();
-        releaseMediaPlayer();
+        if (deleteTempFile) VoiceManager.getInstance().deleteRecordedFile();
+        VoiceManager.getInstance().releaseMediaRecorder();
+        VoiceManager.getInstance().releaseMediaPlayer();
     }
 
-    private void setUpAudioProgress(FileInteractionFragment.PublishAudioProgress.AudioInfo info) {
-        if (info.getAttachmentId() == 0) {
+    private void setUpAudioProgress(VoiceManager.PublishAudioProgress.AudioInfo info) {
+        if (info.getAttachmentIdHash() == 0) {
             recordingPresenter.updatePlayerPercent((float) info.getCurrentPosition() / info.getDuration());
             if (info.getResultCode() == FileInteractionFragment.COMPLETED_AUDIO_PROGRESS
                     || info.getResultCode() == FileInteractionFragment.PAUSED_AUDIO_PROGRESS)
@@ -1943,11 +1963,11 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     private void cancelRecordingCompletely(boolean enableInputButtons) {
         changeStateOfInputViewButtonsTo(enableInputButtons);
         currentVoiceRecordingState = VoiceRecordState.NotRecording;
-        releaseMediaRecorder();
+        VoiceManager.getInstance().releaseMediaRecorder();
 
         endRecordingButtonsAnimation();
         voiceMessageRecorderLayout.startAnimation(AnimationUtils.loadAnimation(getActivity().getApplication(), R.anim.slide_out_right_opaque));
-        handler.postDelayed(postAnimation, 300);
+        handler.postDelayed(postAnimation, 295);
 
         beginTimer(false);
         performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
@@ -1968,6 +1988,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     public void beginTimer(boolean start) {
         if (start) voiceMessageRecorderLayout.setVisibility(View.VISIBLE);
         if (start) {
+            ChatStateManager.getInstance().onComposing(account, user, null, ChatStateSubtype.audio);
             slideToCancelLayout.animate().x(0).setDuration(0).start();
             recordLockChevronImage.setAlpha(1f);
             recordLockImage.setImageResource(R.drawable.ic_security_plain_24dp);
@@ -1979,8 +2000,21 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
             recordTimer.start();
             currentVoiceRecordingState = VoiceRecordState.TouchRecording;
             showScrollDownButtonIfNeed();
+            manageScreenSleep(true);
         } else {
             recordTimer.stop();
+            ChatStateManager.getInstance().onPaused(account, user);
+            manageScreenSleep(false);
+        }
+    }
+
+    private void manageScreenSleep(boolean keepScreenOn) {
+        if (getActivity() != null) {
+            if (keepScreenOn) {
+                getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            } else {
+                getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            }
         }
     }
 
@@ -1999,7 +2033,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         hideBottomMessagePanel();
     }
 
-    private void hideBottomMessagePanel() {
+    public void hideBottomMessagePanel() {
         bottomPanelMessagesIds.clear();
         setUpInputViewButtons();
         if (bottomMessagesPanel.getPurpose().equals(BottomMessagesPanel.Purposes.EDITING))
@@ -2015,6 +2049,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
     public void setBottomPanelMessagesIds(List<String> bottomPanelMessagesIds, BottomMessagesPanel.Purposes purpose) {
         this.bottomPanelMessagesIds = bottomPanelMessagesIds;
+        isReply = false;
         setUpInputViewButtons();
         showBottomMessagesPanel(bottomPanelMessagesIds, purpose);
     }

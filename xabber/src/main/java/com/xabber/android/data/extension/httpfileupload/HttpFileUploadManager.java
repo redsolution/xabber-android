@@ -141,6 +141,13 @@ public class HttpFileUploadManager implements OnLoadListener, OnAccountRemovedLi
                            final List<String> filePaths, final List<Uri> fileUris,
                            String existMessageId, String element, Context context) {
 
+        uploadFile(account, user, filePaths, fileUris, null, existMessageId, null, context);
+    }
+
+    public void uploadFile(final AccountJid account, final UserJid user,
+                           final List<String> filePaths, final List<Uri> fileUris,
+                           List<String> forwardIds,
+                           String existMessageId, String element, Context context) {
         if (isUploading) {
             progressSubscribe.onNext(new ProgressData(0, 0, "Uploading already started",
                     false, null));
@@ -166,7 +173,7 @@ public class HttpFileUploadManager implements OnLoadListener, OnAccountRemovedLi
         intent.putParcelableArrayListExtra(UploadService.KEY_FILE_URIS, (ArrayList<Uri>) fileUris);
         intent.putExtra(UploadService.KEY_UPLOAD_SERVER_URL, (CharSequence) uploadServerUrl);
         intent.putExtra(UploadService.KEY_MESSAGE_ID, existMessageId);
-
+        intent.putStringArrayListExtra(UploadService.KEY_FORWARD_IDS, (ArrayList<String>) forwardIds);
         context.startService(intent);
     }
 
@@ -297,6 +304,8 @@ public class HttpFileUploadManager implements OnLoadListener, OnAccountRemovedLi
         Attachment attachment = new Attachment();
         attachment.setFileUrl(media.getUri());
         attachment.setIsImage(FileManager.isImageUrl(media.getUri()));
+        if (ReferenceElement.Type.voice.name().equals(referenceType))
+            attachment.setIsVoice(true);
         attachment.setRefType(referenceType);
 
         RefFile file = media.getFile();

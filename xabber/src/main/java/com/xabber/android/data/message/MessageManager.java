@@ -291,21 +291,33 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
     }
 
     public String createFileMessage(AccountJid account, UserJid user, List<File> files) {
-        AbstractChat chat = getOrCreateChat(account, user);
-        chat.openChat();
-        return chat.newFileMessage(files, null);
+        return createFileMessageWithForwards(account, user, files, null);
     }
 
-    public String createVoiceMessage(AccountJid account, UserJid user, List<File> files, String refElement) {
+    public String createFileMessageWithForwards(AccountJid account, UserJid user, List<File> files, List<String> forwardIds) {
         AbstractChat chat = getOrCreateChat(account, user);
         chat.openChat();
-        return chat.newFileMessage(files, null, ReferenceElement.Type.voice.name());
+        return chat.newFileMessageWithFwr(files, null, null, forwardIds);
+    }
+
+    public String createVoiceMessageWithForwards(AccountJid account, UserJid user, List<File> files, List<String> forwardIds) {
+        AbstractChat chat = getOrCreateChat(account, user);
+        chat.openChat();
+        return chat.newFileMessageWithFwr(files, null, ReferenceElement.Type.voice.name(), forwardIds);
+    }
+
+    public String createVoiceMessage(AccountJid account, UserJid user, List<File> files) {
+        return createVoiceMessageWithForwards(account, user, files, null);
     }
 
     public String createFileMessageFromUris(AccountJid account, UserJid user, List<Uri> uris) {
+        return createFileMessageFromUrisWithForwards(account, user, uris, null);
+    }
+
+    public String createFileMessageFromUrisWithForwards(AccountJid account, UserJid user, List<Uri> uris, List<String> forwardIds) {
         AbstractChat chat = getOrCreateChat(account, user);
         chat.openChat();
-        return chat.newFileMessage(null, uris);
+        return chat.newFileMessageWithFwr(null, uris, null, forwardIds);
     }
 
     public void updateFileMessage(AccountJid account, UserJid user, final String messageId,

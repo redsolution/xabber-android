@@ -1,10 +1,11 @@
-package com.xabber.android.data.extension.references;
+package com.xabber.android.data.extension.references.voice;
 
 import android.media.MediaCodec;
 import android.media.MediaCodecList;
 import android.media.MediaExtractor;
 import android.media.MediaFormat;
 import android.os.Build;
+import android.os.Handler;
 
 import androidx.annotation.NonNull;
 
@@ -23,15 +24,17 @@ import java.nio.ByteOrder;
 import java.nio.ShortBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 
 public final class VoiceMessagePresenterManager {
 
     private static VoiceMessagePresenterManager instance;
+    private Handler handler = new Handler();
 
     private static final Map<String, ArrayList<Integer>> voiceWaveData = new HashMap<>();
-    private static final HashSet<String> waveInProgress = new HashSet<>();
+    private static final Map<String, PlayerVisualizerView> voiceWaveFreshViews = new HashMap<>();
+    private static final ArrayList<String> voiceWaveInProgress = new ArrayList<>();
+    private static final ArrayList<String> voiceWaveForRemoval = new ArrayList<>();
 
     public static VoiceMessagePresenterManager getInstance() {
         if (instance == null)
@@ -39,26 +42,50 @@ public final class VoiceMessagePresenterManager {
         return instance;
     }
 
-    public VoiceMessagePresenterManager() {}
+    public VoiceMessagePresenterManager() {
+        handler.postDelayed(refreshAvailableViews, 1000);
+    }
+
+
+    private Runnable refreshAvailableViews = new Runnable() {
+        @Override
+        public void run() {
+            int size = voiceWaveInProgress.size();
+            if (size != 0) {
+                for (int i=0;i<size;i++) {
+                    String voicePath = voiceWaveInProgress.get(i);
+                    if (voiceWaveData.get(voicePath)!=null) {
+                        PlayerVisualizerView view = voiceWaveFreshViews.get(voicePath);
+                        if (view != null) {
+                            view.updateVisualizer(voiceWaveData.get(voicePath));
+                            voiceWaveFreshViews.remove(voicePath);
+                            voiceWaveForRemoval.add(voicePath);
+                        }
+                    }
+                }
+            }
+            int removeSize = voiceWaveForRemoval.size();
+            if (removeSize != 0) {
+                for (int i = 0; i < removeSize; i++) {
+                    voiceWaveInProgress.remove(voiceWaveForRemoval.get(i));
+                }
+                voiceWaveForRemoval.clear();
+            }
+            handler.postDelayed(this, 1000);
+        }
+    };
+
 
     public void addAndOptimizeWave(ArrayList<Float> wave, String filePath) {
-        if (!waveInProgress.contains(filePath)) {
-            waveInProgress.add(filePath);
-            ArrayList<Integer> optimized = new ArrayList<>();
-            optimizeWaveData(wave, optimized);
-            voiceWaveData.put(filePath, optimized);
-            waveInProgress.remove(filePath);
-        }
+        ArrayList<Integer> optimized = new ArrayList<>();
+        optimizeWaveData(wave, optimized);
+        voiceWaveData.put(filePath, optimized);
     }
 
     public void modifyFilePathIfSaved(String oldPath, String newPath) {
-        if (!waveInProgress.contains(newPath)) {
-            waveInProgress.add(newPath);
-            if (voiceWaveData.get(oldPath) != null) {
-                voiceWaveData.put(newPath, voiceWaveData.get(oldPath));
-                voiceWaveData.remove(oldPath);
-            }
-            waveInProgress.remove(newPath);
+        if (voiceWaveData.get(oldPath) != null) {
+            voiceWaveData.put(newPath, voiceWaveData.get(oldPath));
+            voiceWaveData.remove(oldPath);
         }
     }
 
@@ -87,10 +114,9 @@ public final class VoiceMessagePresenterManager {
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                    if (waveInProgress.contains(file.getPath())) return;
-                    else {
-                        LogManager.i(this, "Started wave modifications for the file with path = " + file.getPath());
-                        waveInProgress.add(file.getPath());
+                    voiceWaveFreshViews.put(filePath, view);
+                    if (!voiceWaveInProgress.contains(filePath)) {
+                        voiceWaveInProgress.add(filePath);
                         mediaDecoderTest(file, view);
                     }
                 }
@@ -192,9 +218,7 @@ public final class VoiceMessagePresenterManager {
                             if ((voiceWaveData.get(file.getPath()) == null || voiceWaveData.get(file.getPath()).isEmpty()) && !squashedArray.isEmpty()) {
                                 voiceWaveData.put(file.getPath(), squashedArray);
                                 LogManager.i(this, "Finished wave modifications for the file with path = " + file.getPath());
-                                view.updateVisualizer(squashedArray);
                             }
-                            waveInProgress.remove(file.getPath());
                         } else if (bufferInfo.flags == MediaCodec.BUFFER_FLAG_CODEC_CONFIG) {
                             LogManager.d("MediaCodec", "BUFFER_FLAG_CODEC_CONFIG");
                         } else if (bufferInfo.flags == MediaCodec.BUFFER_FLAG_KEY_FRAME) {
