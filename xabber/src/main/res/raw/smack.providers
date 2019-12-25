@@ -44,6 +44,8 @@
         <className>com.xabber.xmpp.vcard.VCardCustomProvider</className>
     </iqProvider>
 
+
+    <!--       XEP-0333 Chat Markers       -->
     <!-- Displayed Message Marker Provider -->
     <extensionProvider>
         <elementName>displayed</elementName>
@@ -71,5 +73,40 @@
         <namespace>urn:xmpp:chat-markers:0</namespace>
         <className>com.xabber.xmpp.chat_markers.AcknowledgedProvider</className>
     </extensionProvider>
+
+
+    <!--            XEP-0UUU + XEP-0085             -->
+    <!-- Extended Chat State Notifications Provider -->
+    <extensionProvider>
+        <elementName>active</elementName>
+        <namespace>http://jabber.org/protocol/chatstates</namespace>
+        <className>com.xabber.xmpp.uuu.ChatStateExtensionProvider</className>
+    </extensionProvider>
+
+    <extensionProvider>
+        <elementName>composing</elementName>
+        <namespace>http://jabber.org/protocol/chatstates</namespace>
+        <className>com.xabber.xmpp.uuu.ChatStateExtensionProvider</className>
+    </extensionProvider>
+
+    <extensionProvider>
+        <elementName>paused</elementName>
+        <namespace>http://jabber.org/protocol/chatstates</namespace>
+        <className>com.xabber.xmpp.uuu.ChatStateExtensionProvider</className>
+    </extensionProvider>
+
+    <extensionProvider>
+        <elementName>inactive</elementName>
+        <namespace>http://jabber.org/protocol/chatstates</namespace>
+        <className>com.xabber.xmpp.uuu.ChatStateExtensionProvider</className>
+    </extensionProvider>
+
+    <extensionProvider>
+        <elementName>gone</elementName>
+        <namespace>http://jabber.org/protocol/chatstates</namespace>
+        <className>com.xabber.xmpp.uuu.ChatStateExtensionProvider</className>
+    </extensionProvider>
+
+
 
 </smackProviders>

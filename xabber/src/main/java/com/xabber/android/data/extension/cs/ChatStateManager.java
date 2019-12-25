@@ -19,7 +19,6 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
-import android.util.Log;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
@@ -28,7 +27,6 @@ import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
-import com.xabber.android.data.connection.ConnectionManager;
 import com.xabber.android.data.connection.StanzaSender;
 import com.xabber.android.data.connection.listeners.OnDisconnectListener;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
@@ -41,6 +39,9 @@ import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.receiver.ComposingPausedReceiver;
+import com.xabber.xmpp.uuu.ChatState;
+import com.xabber.xmpp.uuu.ChatStateExtension;
+import com.xabber.xmpp.uuu.ChatStateSubtype;
 
 import org.jivesoftware.smack.ConnectionCreationListener;
 import org.jivesoftware.smack.XMPPConnection;
@@ -51,16 +52,13 @@ import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.Presence.Type;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smackx.carbons.packet.CarbonExtension;
-import org.jivesoftware.smackx.chatstates.ChatState;
-import org.jivesoftware.smackx.chatstates.packet.ChatStateExtension;
-import org.jivesoftware.smackx.chatstates.provider.ChatStateExtensionProvider;
 import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
 import org.jxmpp.jid.BareJid;
 import org.jxmpp.jid.Jid;
 import org.jxmpp.jid.parts.Resourcepart;
-import org.jxmpp.stringprep.XmppStringprepException;
 
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -83,6 +81,8 @@ public class ChatStateManager implements OnDisconnectListener,
                     public void connectionCreated(final XMPPConnection connection) {
                         ServiceDiscoveryManager.getInstanceFor(connection)
                                 .addFeature("http://jabber.org/protocol/chatstates");
+                        ServiceDiscoveryManager.getInstanceFor(connection)
+                                .addFeature("https://xabber.com/protocol/extended-chatstates");
                     }
                 });
     }
@@ -95,10 +95,12 @@ public class ChatStateManager implements OnDisconnectListener,
         return instance;
     }
 
+
     /**
      * Chat states for lower cased resource for bareAddress in account.
      */
     private final NestedNestedMaps<Resourcepart, ChatState> chatStates;
+    private final HashMap<String, ChatStateSubtype> chatStateSubtypes;
 
     /**
      * Cleaners for chat states for lower cased resource for bareAddress in
@@ -134,6 +136,7 @@ public class ChatStateManager implements OnDisconnectListener,
 
     private ChatStateManager() {
         chatStates = new NestedNestedMaps<>();
+        chatStateSubtypes = new HashMap<>();
         stateCleaners = new NestedNestedMaps<>();
         supports = new NestedNestedMaps<>();
         sent = new NestedMap<>();
@@ -155,11 +158,26 @@ public class ChatStateManager implements OnDisconnectListener,
         }
         ChatState chatState = null;
         for (ChatState check : map.values()) {
-            if (chatState == null || check.compareTo(chatState) < 0) {
+            if (chatState == null || check.compareTo(chatState) > 0) {
                 chatState = check;
             }
         }
         return chatState;
+    }
+
+    public ChatStateSubtype getChatSubstate(AccountJid account, UserJid bareAddress) {
+        //Map<Resourcepart, ChatStateSubtype> map = chatStateSubtypes.get(account.toString(), bareAddress.toString());
+        //if (map == null) {
+        //    return null;
+        //}
+        //ChatStateSubtype type = null;
+        //for (ChatStateSubtype check : map.values()) {
+        //    if (type == null || check.compareTo(type) < 0) {
+        //        type = check;
+        //    }
+        //}
+        String key = account.toString() + bareAddress.toString();
+        return chatStateSubtypes.get(key);
     }
 
     /**
@@ -205,6 +223,11 @@ public class ChatStateManager implements OnDisconnectListener,
      */
     private void updateChatState(AccountJid account, UserJid user,
                                  ChatState chatState) {
+        updateChatState(account, user, chatState, null);
+    }
+
+    private void updateChatState(AccountJid account, UserJid user,
+                                 ChatState chatState, ChatStateSubtype type) {
         if (!SettingsManager.chatsStateNotification()
                 || sent.get(account.toString(), user.toString()) == chatState) {
             return;
@@ -217,7 +240,7 @@ public class ChatStateManager implements OnDisconnectListener,
         Message message = new Message();
         message.setType(chat.getType());
         message.setTo(chat.getTo());
-        message.addExtension(new ChatStateExtension(chatState));
+        message.addExtension(new ChatStateExtension(chatState, type));
         try {
             StanzaSender.sendStanza(account, message);
         } catch (NetworkException e) {
@@ -238,23 +261,29 @@ public class ChatStateManager implements OnDisconnectListener,
      * Must be call each time user change text message.
      */
     public void onComposing(AccountJid account, UserJid user, CharSequence text) {
+        onComposing(account, user, text, null);
+    }
+
+    public void onComposing(AccountJid account, UserJid user, CharSequence text, ChatStateSubtype type) {
         cancelPauseIntent(account, user);
-        if (text.length() == 0) {
+        if (text != null && text.length() == 0 && type == null) {
             updateChatState(account, user, ChatState.active);
             return;
         } else {
-            updateChatState(account, user, ChatState.composing);
+            updateChatState(account, user, ChatState.composing, type);
         }
-        Intent intent = ComposingPausedReceiver.createIntent(
-                Application.getInstance(), account, user);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(
-                Application.getInstance(), 0, intent, 0);
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(System.currentTimeMillis());
-        calendar.add(Calendar.MILLISECOND, PAUSE_TIMEOUT);
-        alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
-                pendingIntent);
-        pauseIntents.put(account.toString(), user.toString(), pendingIntent);
+        if (type == null) {
+            Intent intent = ComposingPausedReceiver.createIntent(
+                    Application.getInstance(), account, user);
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(
+                    Application.getInstance(), 0, intent, 0);
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTimeInMillis(System.currentTimeMillis());
+            calendar.add(Calendar.MILLISECOND, PAUSE_TIMEOUT);
+            alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
+                    pendingIntent);
+            pauseIntents.put(account.toString(), user.toString(), pendingIntent);
+        }
     }
 
     public void onPaused(AccountJid account, UserJid user) {
@@ -274,6 +303,7 @@ public class ChatStateManager implements OnDisconnectListener,
             return;
         AccountJid account = ((AccountItem) connection).getAccount();
         chatStates.clear(account.toString());
+        chatStateSubtypes.clear();
         for (Map<Resourcepart, Runnable> map : stateCleaners.getNested(account.toString()).values()) {
             for (Runnable runnable : map.values()) {
                 handler.removeCallbacks(runnable);
@@ -320,6 +350,7 @@ public class ChatStateManager implements OnDisconnectListener,
                 return;
             }
             chatStates.remove(account.toString(), bareUserJid.toString(), resource);
+            chatStateSubtypes.remove(account.toString() + bareUserJid.toString());
             removeCallback(account, bareUserJid.getBareJid(), resource);
             supports.remove(account.toString(), bareUserJid.toString(), resource);
         } else if (stanza instanceof Message) {
@@ -328,8 +359,12 @@ public class ChatStateManager implements OnDisconnectListener,
                 if (extension instanceof ChatStateExtension) {
                     removeCallback(account, bareUserJid.getBareJid(), resource);
                     ChatState chatState = ((ChatStateExtension) extension).getChatState();
+                    ChatStateSubtype subtype = ((ChatStateExtension) extension).getType();
                     chatStates.put(account.toString(), bareUserJid.toString(), resource, chatState);
+
+                    if (chatState == ChatState.composing) chatStateSubtypes.put(account.toString() + bareUserJid.toString(), subtype);
                     if (chatState != ChatState.active) {
+                        final ChatState finalState = chatState;
                         Runnable runnable = new Runnable() {
                             @Override
                             public void run() {
@@ -337,6 +372,8 @@ public class ChatStateManager implements OnDisconnectListener,
                                     return;
                                 }
                                 chatStates.remove(account.toString(), bareUserJid.toString(), resource);
+                                if (finalState.name().equals("paused"))
+                                    chatStateSubtypes.remove(account.toString() + bareUserJid.toString());
                                 removeCallback(account, bareUserJid.getBareJid(), resource);
                                 RosterManager.onChatStateChanged(account, bareUserJid);
                             }

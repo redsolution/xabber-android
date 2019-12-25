@@ -1,9 +1,10 @@
 package com.xabber.android.data.extension.chat_markers;
 
+import com.xabber.xmpp.uuu.ChatState;
+
 import org.jivesoftware.smack.filter.StanzaExtensionFilter;
 import org.jivesoftware.smack.packet.ExtensionElement;
 import org.jivesoftware.smack.packet.Stanza;
-import org.jivesoftware.smackx.chatstates.ChatState;
 import org.jivesoftware.smackx.chatstates.ChatStateManager;
 
 public final class EligibleForChatMarkerFilter extends StanzaExtensionFilter {
