@@ -592,7 +592,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         ivEdit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                editMessage(chatMessageAdapter.getCheckedMessageItems().get(0));
+                getReadyForMessageEditing(chatMessageAdapter.getCheckedMessageItems().get(0));
             }
         });
 
@@ -1295,8 +1295,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             if (checkBox.isChecked())
-                                RrrManager.getInstance().sendRetractRequest(account, ids, true);
-                            else RrrManager.getInstance().sendRetractRequest(account, ids, false);
+                                RrrManager.getInstance().tryToRetractMessage(account, ids, true);
+                            else RrrManager.getInstance().tryToRetractMessage(account, ids, false);
                         }
                     })
                     .setNegativeButton(R.string.cancel_action, new DialogInterface.OnClickListener() {
@@ -1324,15 +1324,13 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         closeInteractionPanel();
     }
 
-    private void editMessage(MessageItem messageItem){
+    private void getReadyForMessageEditing(MessageItem messageItem){
         List<String> arrayList = new ArrayList<String>();
         arrayList.add(messageItem.getUniqueId());
         bottomPanelMessagesIds = arrayList;
         showBottomMessagesPanel(arrayList, BottomMessagesPanel.Purposes.EDITING);
         closeInteractionPanel();
         setInputText(messageItem.getText());
-        //TODO implement this!
-        Toast.makeText(getContext(), "Editing not working properly yet!", Toast.LENGTH_SHORT).show();
     }
 
     public void showResourceChoiceAlert(final AccountJid account, final UserJid user, final boolean restartSession) {
@@ -1495,7 +1493,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
         if (checkedItems == 1
                 && RrrManager.getInstance().isSupported(account)
-                && !chatMessageAdapter.getCheckedMessageItems().get(0).isIncoming()) {
+                && !chatMessageAdapter.getCheckedMessageItems().get(0).isIncoming()
+                && !chatMessageAdapter.getCheckedMessageItems().get(0).haveAttachments()) {
             ivEdit.setVisibility(View.VISIBLE);
         } else ivEdit.setVisibility(View.GONE);
     }
@@ -1518,7 +1517,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
             CustomMessageMenu.addMenuItem(menuItems, "action_message_remove", getString(R.string.message_remove));
         }
 
-        if (!clickedMessageItem.isIncoming())
+        if (!clickedMessageItem.isIncoming() && !clickedMessageItem.haveAttachments())
             CustomMessageMenu.addMenuItem(menuItems, "action_message_edit", getString(R.string.message_edit));
 
         if (clickedMessageItem.isIncoming() && MUCManager.getInstance()
@@ -1597,7 +1596,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                         showError(clickedMessageItem.getErrorDescription());
                     break;
                 case "action_message_edit":
-                    editMessage(clickedMessageItem);
+                    getReadyForMessageEditing(clickedMessageItem);
                     break;
                 default:
                     break;

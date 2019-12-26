@@ -90,12 +90,12 @@ public class RrrManager implements OnPacketListener {
         return true;
     }
 
-    public void sendRetractRequest(AccountJid accountJid, List<String> list, boolean symmetrically) {
+    public void tryToRetractMessage(AccountJid accountJid, List<String> list, boolean symmetrically) {
         for (String id : list)
-            sendRetractRequest(accountJid, id, symmetrically);
+            tryToRetractMessage(accountJid, id, symmetrically);
     }
 
-    public void sendRetractRequest(final AccountJid accountJid, final String id, final boolean symmetrically) {
+    public void tryToRetractMessage(final AccountJid accountJid, final String id, final boolean symmetrically) {
         Application.getInstance().runInBackgroundUserRequest(new Runnable() {
             @Override
             public void run() {
@@ -142,7 +142,8 @@ public class RrrManager implements OnPacketListener {
         });
     }
 
-    public void sendEditedMessage(final AccountJid accountJid, final UserJid userJid, final String uniqueId, final String text){
+    public void sendEditedMessage(final AccountJid accountJid, final UserJid userJid,
+                                  final String uniqueId, final String text){
         final AbstractChat chat = MessageManager.getInstance().getOrCreateChat(accountJid, userJid);
         final Message message = new Message();
         Application.getInstance().runInBackgroundUserRequest(new Runnable() {
@@ -169,11 +170,13 @@ public class RrrManager implements OnPacketListener {
                 } finally { if (realm != null) realm.close(); }
                 //now try to send packet to server
                 try {
-                    ReplaceMessageIQ replaceMessageIQ = new ReplaceMessageIQ(message.getStanzaId(), accountJid.toString(), message);
+                    ReplaceMessageIQ replaceMessageIQ = new ReplaceMessageIQ(message.getStanzaId(),
+                            accountJid.toString(), message);
                     AccountManager.getInstance().getAccount(accountJid).getConnection()
                             .sendIqWithResponseCallback(replaceMessageIQ, new StanzaListener() {
                                 @Override
-                                public void processStanza(Stanza packet) throws SmackException.NotConnectedException, InterruptedException {
+                                public void processStanza(Stanza packet)
+                                        throws SmackException.NotConnectedException, InterruptedException {
                                     LogManager.d(LOG_TAG, "OLOLO");
                                 }
                             });
@@ -182,16 +185,19 @@ public class RrrManager implements OnPacketListener {
         });
     }
 
-    public void sendRetractAllMessagesRequest(final AccountJid accountJid, final UserJid userJid, final boolean symmetric){
+    public void sendRetractAllMessagesRequest(final AccountJid accountJid, final UserJid userJid,
+                                              final boolean symmetric){
         Application.getInstance().runInBackgroundUserRequest(new Runnable() {
             @Override
             public void run() {
-                RetractAllMessagesIQ retractAllMessagesIQ = new RetractAllMessagesIQ(userJid.toString(), symmetric);
+                RetractAllMessagesIQ retractAllMessagesIQ = new RetractAllMessagesIQ(userJid.toString(),
+                        symmetric);
                 try {
                     AccountManager.getInstance().getAccount(accountJid).getConnection()
                             .sendIqWithResponseCallback(retractAllMessagesIQ, new StanzaListener() {
                                 @Override
-                                public void processStanza(Stanza packet) throws SmackException.NotConnectedException, InterruptedException {
+                                public void processStanza(Stanza packet)
+                                        throws SmackException.NotConnectedException, InterruptedException {
                                     if (packet instanceof IQ ) {
                                         if (((IQ) packet).getType().equals(IQ.Type.error))
                                             LogManager.d(LOG_TAG, "Failed to retract message");
@@ -208,7 +214,8 @@ public class RrrManager implements OnPacketListener {
         MessageManager.getInstance().clearHistory(accountJid, userJid);
     }
 
-    private void handleIncomingRetractMessage(final String id, final String by, final String conversation) {
+    private void handleIncomingRetractMessage(final String id, final String by,
+                                              final String conversation) {
         Application.getInstance().runInBackgroundUserRequest(new Runnable() {
             @Override
             public void run() {
@@ -235,7 +242,8 @@ public class RrrManager implements OnPacketListener {
         });
     }
 
-    private void handleIncomingRewriteMessage(final String stanzaId, final String conversation, final String stamp, final String body) {
+    private void handleIncomingRewriteMessage(final String stanzaId, final String conversation,
+                                              final String stamp, final String body) {
         //TODO rewrite this
         Application.getInstance().runInBackgroundUserRequest(new Runnable() {
             @Override
@@ -271,7 +279,8 @@ public class RrrManager implements OnPacketListener {
 
             if (packet.hasExtension(RETRACT_MESSAGE_ELEMENT, NAMESPACE_NOTIFY)) {
                 LogManager.d(LOG_TAG, "Received retract request with stanza id" + packet.toString());
-                StandardExtensionElement retractElement = packet.getExtension(RETRACT_MESSAGE_ELEMENT, NAMESPACE_NOTIFY);
+                StandardExtensionElement retractElement = packet
+                        .getExtension(RETRACT_MESSAGE_ELEMENT, NAMESPACE_NOTIFY);
                 String by = retractElement.getAttributeValue(BY_ATTRIBUTE);
                 String conversation = retractElement.getAttributeValue(CONVERSATION_ATTRIBUTE);
                 String id = retractElement.getAttributeValue(ID_ATTRIBUTE);
@@ -281,12 +290,14 @@ public class RrrManager implements OnPacketListener {
 
             if (packet.hasExtension(REWRITE_MESSAGE_ELEMENT, NAMESPACE_NOTIFY)) {
                 LogManager.d(LOG_TAG, "Received rewrite request with stanza " + packet.toXML().toString());
-                StandardExtensionElement rewriteElement = packet.getExtension(REWRITE_MESSAGE_ELEMENT, NAMESPACE_NOTIFY);
+                StandardExtensionElement rewriteElement = packet
+                        .getExtension(REWRITE_MESSAGE_ELEMENT, NAMESPACE_NOTIFY);
                 StandardExtensionElement newMessage = rewriteElement.getFirstElement(Message.ELEMENT);
                 String conversation = rewriteElement.getAttributeValue(CONVERSATION_ATTRIBUTE);
                 String by = rewriteElement.getAttributeValue(BY_ATTRIBUTE);
                 String stanzaId = rewriteElement.getAttributeValue(ID_ATTRIBUTE);
-                String stamp = newMessage.getFirstElement(REPLACED_STAMP_ELEMENT, NAMESPACE).getAttributeValue(STAMP_ATTRIBUTE);
+                String stamp = newMessage.getFirstElement(REPLACED_STAMP_ELEMENT, NAMESPACE)
+                        .getAttributeValue(STAMP_ATTRIBUTE);
                 String body = newMessage.getFirstElement(BODY_MESSAGE_ELEMENT).getText();
                 handleIncomingRewriteMessage(stanzaId, conversation, stamp, body);
 
