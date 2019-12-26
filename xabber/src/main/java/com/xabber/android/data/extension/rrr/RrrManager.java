@@ -1,5 +1,7 @@
 package com.xabber.android.data.extension.rrr;
 
+import android.widget.Toast;
+
 import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
@@ -9,8 +11,10 @@ import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.log.LogManager;
+import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.MessageUpdateEvent;
+import com.xabber.xmpp.sid.OriginIdElement;
 import com.xabber.xmpp.smack.XMPPTCPConnection;
 
 import org.greenrobot.eventbus.EventBus;
@@ -110,17 +114,21 @@ public class RrrManager implements OnPacketListener {
                                             @Override
                                             public void processStanza(Stanza packet) throws SmackException.NotConnectedException, InterruptedException {
                                                 if (packet instanceof IQ) {
-                                                    messageItem.deleteFromRealm();
-                                                    if (((IQ) packet).getType().equals(IQ.Type.error))
+                                                    if (((IQ) packet).getType().equals(IQ.Type.error)){
                                                         LogManager.d(LOG_TAG, "Failed to retract message");
-                                                    if (((IQ) packet).getType().equals(IQ.Type.result))
+                                                        Toast.makeText(Application.getInstance().getBaseContext(), "Failed to retract message", Toast.LENGTH_SHORT).show();
+                                                    }
+                                                    if (((IQ) packet).getType().equals(IQ.Type.result)){
                                                         LogManager.d(LOG_TAG, "Message successfully retracted");
+                                                    }
                                                 }
                                             }
                                         });
                             } catch (Exception e) {
                                 LogManager.exception(LOG_TAG, e);
                             }
+                            //TODO THIS IS REALLY BAD PLACE FOR DELETING SHOULD REPLACE INTO STANZA LISTENER
+                            messageItem.deleteFromRealm();
                         }
                     });
 
@@ -130,6 +138,46 @@ public class RrrManager implements OnPacketListener {
                     if (realm != null)
                         realm.close();
                 }
+            }
+        });
+    }
+
+    public void sendEditedMessage(final AccountJid accountJid, final UserJid userJid, final String uniqueId, final String text){
+        final AbstractChat chat = MessageManager.getInstance().getOrCreateChat(accountJid, userJid);
+        final Message message = new Message();
+        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
+            @Override
+            public void run() {
+                Realm realm = null;
+                try {
+                    realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
+                    realm.executeTransaction(new Realm.Transaction() {
+                        @Override
+                        public void execute(Realm realm) {
+                            MessageItem messageItem = realm.where(MessageItem.class)
+                                    .equalTo(MessageItem.Fields.UNIQUE_ID, uniqueId)
+                                    .findFirst();
+                            messageItem.setText(text);
+                            EventBus.getDefault().post(new MessageUpdateEvent());
+                            message.setBody(messageItem.getText());
+                            message.setStanzaId(messageItem.getStanzaId());
+                            message.setTo(messageItem.getUser().getBareJid());
+                            message.setFrom(messageItem.getAccount().getFullJid());
+                            message.addExtension( new OriginIdElement(messageItem.getOriginId()));
+                        }
+                    });
+                } finally { if (realm != null) realm.close(); }
+                //now try to send packet to server
+                try {
+                    ReplaceMessageIQ replaceMessageIQ = new ReplaceMessageIQ(message.getStanzaId(), accountJid.toString(), message);
+                    AccountManager.getInstance().getAccount(accountJid).getConnection()
+                            .sendIqWithResponseCallback(replaceMessageIQ, new StanzaListener() {
+                                @Override
+                                public void processStanza(Stanza packet) throws SmackException.NotConnectedException, InterruptedException {
+                                    LogManager.d(LOG_TAG, "OLOLO");
+                                }
+                            });
+                } catch (Exception e) { LogManager.exception(LOG_TAG, e); }
             }
         });
     }
@@ -147,14 +195,16 @@ public class RrrManager implements OnPacketListener {
                                     if (packet instanceof IQ ) {
                                         if (((IQ) packet).getType().equals(IQ.Type.error))
                                             LogManager.d(LOG_TAG, "Failed to retract message");
-                                        if (((IQ) packet).getType().equals(IQ.Type.result))
+                                        else if (((IQ) packet).getType().equals(IQ.Type.result)){
                                             LogManager.d(LOG_TAG, "Message successfully retracted");
+                                        }
                                     }
                                 }
                             });
                 } catch (Exception e) {LogManager.exception(LOG_TAG, e); }
             }
         });
+        //TODO ALSO AWFUL PLACE FOR DELETING!
         MessageManager.getInstance().clearHistory(accountJid, userJid);
     }
 

@@ -1117,10 +1117,11 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
             sendForwardMessage(bottomPanelMessagesIds, text);
             return;
         } else if (bottomPanelMessagesIds != null
+                && bottomMessagesPanel != null
                 && !bottomPanelMessagesIds.isEmpty()
                 && bottomMessagesPanel.getPurpose().equals(BottomMessagesPanel.Purposes.EDITING)) {
-            //TODO invoke send edited message
-            Toast.makeText(getContext(), "Message was duplicated cause editing did not implemented yet! ", Toast.LENGTH_SHORT).show();
+            RrrManager.getInstance().sendEditedMessage(account, user, bottomPanelMessagesIds.get(0), text);
+            hideBottomMessagePanel();
         } else if (!text.isEmpty()) {
             sendMessage(text);
         } else {
@@ -1326,6 +1327,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     private void editMessage(MessageItem messageItem){
         List<String> arrayList = new ArrayList<String>();
         arrayList.add(messageItem.getUniqueId());
+        bottomPanelMessagesIds = arrayList;
         showBottomMessagesPanel(arrayList, BottomMessagesPanel.Purposes.EDITING);
         closeInteractionPanel();
         setInputText(messageItem.getText());
@@ -2026,7 +2028,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         StoppedRecording
     }
 
-    /** Bottom message Panel (forwarding or editing*/
+    /** Bottom message Panel (forwarding or editing)*/
 
     @Override
     public void onClose() {
