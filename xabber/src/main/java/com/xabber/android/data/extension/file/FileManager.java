@@ -354,8 +354,8 @@ public class FileManager {
         );
     }
 
-    public static File createTempAudioFile(String name) throws IOException {
-        return File.createTempFile(name, ".ogg", Application.getInstance().getCacheDir());
+    public static File createTempOpusFile(String name) throws IOException {
+        return File.createTempFile(name, ".opus", Application.getInstance().getCacheDir());
     }
 
     public static File createAudioFile(String name) throws IOException {
@@ -390,6 +390,14 @@ public class FileManager {
         return file;
     }
 
+
+    /**
+     * Makes a copy of the source file and then deletes it.
+     *
+     * @param source file that will be copied and subsequently deleted
+     * @param dest file the data will be copied to
+     * @return success of copying
+     */
     public static boolean copy(File source, File dest) {
         boolean success = true;
         try {
@@ -411,7 +419,8 @@ public class FileManager {
         } catch (IOException e) {
             success = false;
         }
-        deleteTempFile(source);
+        if (success)
+            deleteTempFile(source);
         return success;
     }
 

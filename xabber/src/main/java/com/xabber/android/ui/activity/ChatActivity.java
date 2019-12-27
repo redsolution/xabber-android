@@ -114,7 +114,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     private static final String CHAT_FRAGMENT_TAG = "CHAT_FRAGMENT_TAG";
     private static final String CONTACT_INFO_FRAGMENT_TAG = "CONTACT_INFO_FRAGMENT_TAG";
 
-    private static final int SWIPE_MIN_DISTANCE = 120;
+    private static final int SWIPE_MIN_DISTANCE = 300;
     private static final int SWIPE_MAX_OFF_PATH = 250;
     private static final int SWIPE_THRESHOLD_VELOCITY = 200;
     private GestureDetector gestureDetector;

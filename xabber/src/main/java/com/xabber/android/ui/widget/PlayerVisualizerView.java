@@ -5,6 +5,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.View;
 
 import androidx.annotation.Nullable;
@@ -35,6 +36,8 @@ public class PlayerVisualizerView extends View {
 
     private int width;
     private int height;
+
+    private boolean manualInputMode;
 
     public PlayerVisualizerView(Context context) {
         super(context);
@@ -120,14 +123,20 @@ public class PlayerVisualizerView extends View {
      *
      * @param percent
      */
-    public void updatePlayerPercent(float percent) {
-        denseness = (int) Math.ceil(width * percent);
-        if (denseness < 0) {
-            denseness = 0;
-        } else if (denseness > width) {
-            denseness = width;
+    public void updatePlayerPercent(float percent, boolean manual) {
+        if (!manualInputMode || manual) {
+            denseness = (int) Math.ceil(width * percent);
+            if (denseness < 0) {
+                denseness = 0;
+            } else if (denseness > width) {
+                denseness = width;
+            }
+            invalidate();
         }
-        invalidate();
+    }
+
+    public void setManualInputMode(boolean manual) {
+        manualInputMode = manual;
     }
 
     @Override
@@ -247,6 +256,42 @@ public class PlayerVisualizerView extends View {
                 }
             }
         }
+    }
+
+
+/*    @Override
+    public boolean performClick() {
+        return super.performClick();
+    }*/
+
+    public static class onProgressTouch implements View.OnTouchListener {
+
+        @Override
+        public boolean onTouch(View view, MotionEvent motionEvent) {
+            float touchPoint;
+            int width;
+            switch (motionEvent.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    touchPoint = motionEvent.getX();
+                    width = view.getWidth();
+                    ((PlayerVisualizerView)view).setManualInputMode(true);
+                    ((PlayerVisualizerView)view).updatePlayerPercent(touchPoint/width, true);
+                    view.getParent().requestDisallowInterceptTouchEvent(true);
+                    break;
+                case MotionEvent.ACTION_MOVE:
+                    touchPoint = motionEvent.getX();
+                    width = view.getWidth();
+                    ((PlayerVisualizerView)view).updatePlayerPercent(touchPoint/width, true);
+                    break;
+                case MotionEvent.ACTION_CANCEL:
+                case MotionEvent.ACTION_UP:
+                    ((PlayerVisualizerView)view).setManualInputMode(false);
+                    view.getParent().requestDisallowInterceptTouchEvent(false);
+                    break;
+            }
+            return true;
+        }
+
     }
 
     public int dp(float value) {
