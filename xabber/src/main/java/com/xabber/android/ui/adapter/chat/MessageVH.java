@@ -159,12 +159,15 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
         timestamp = extraData.getMainMessageTimestamp();
 
         String time = StringUtils.getTimeText(new Date(messageItem.getTimestamp()));
-
         Long delayTimestamp = messageItem.getDelayTimestamp();
         if (delayTimestamp != null) {
             String delay = extraData.getContext().getString(messageItem.isIncoming() ? R.string.chat_delay : R.string.chat_typed,
                     StringUtils.getTimeText(new Date(delayTimestamp)));
             time += " (" + delay + ")";
+        }
+        Long editedTimestamp = messageItem.getEditedTimestamp();
+        if (editedTimestamp != null) {
+            time += extraData.getContext().getString(R.string.edited, StringUtils.getTimeText(new Date (editedTimestamp)));
         }
 
         messageTime.setText(time);
