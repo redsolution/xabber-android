@@ -14,6 +14,7 @@ import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.MessageUpdateEvent;
+import com.xabber.android.utils.StringUtils;
 import com.xabber.xmpp.sid.OriginIdElement;
 import com.xabber.xmpp.smack.XMPPTCPConnection;
 
@@ -261,6 +262,8 @@ public class RrrManager implements OnPacketListener {
                             if (messageItem != null)
                                 if (body != null)
                                     messageItem.setText(body);
+                                if (stamp != null)
+                                    messageItem.setEditedTimestamp(StringUtils.parseReceivedReceiptTimestampString(stamp).getTime());
                             EventBus.getDefault().post(new MessageUpdateEvent());
                         }
                     });
