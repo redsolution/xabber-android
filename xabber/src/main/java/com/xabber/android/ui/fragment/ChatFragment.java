@@ -1858,6 +1858,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         }
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private void setUpVoiceMessagePresenter() {
         long time = HttpFileUploadManager.getVoiceLength(recordingPath);
 
@@ -1870,7 +1871,28 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
         //recordingPresenter.updateVisualizerFromFile();
         VoiceMessagePresenterManager.getInstance().sendWaveDataIfSaved(recordingPath, recordingPresenter);
-        recordingPresenter.updatePlayerPercent(0f);
+        recordingPresenter.updatePlayerPercent(0f, false);
+        recordingPresenter.setOnTouchListener(new PlayerVisualizerView.onProgressTouch() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                switch (motionEvent.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                    case MotionEvent.ACTION_MOVE:
+                        if (VoiceManager.getInstance().playbackInProgress("", null))
+                            return super.onTouch(view, motionEvent);
+                        else {
+                            ((PlayerVisualizerView)view).updatePlayerPercent(0, true);
+                            return true;
+                        }
+                    case MotionEvent.ACTION_UP:
+                        if (VoiceManager.getInstance().playbackInProgress("", null))
+                            VoiceManager.getInstance().seekAudioPlaybackTo("", null, (int) motionEvent.getX(), view.getWidth());
+                        return super.onTouch(view, motionEvent);
+
+                }
+                return super.onTouch(view, motionEvent);
+            }
+        });
         recordingPlayButton.setImageResource(R.drawable.ic_play);
 
         recordingPlayButton.setOnClickListener(new View.OnClickListener() {
@@ -1924,7 +1946,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
     private void setUpAudioProgress(VoiceManager.PublishAudioProgress.AudioInfo info) {
         if (info.getAttachmentIdHash() == 0) {
-            recordingPresenter.updatePlayerPercent((float) info.getCurrentPosition() / info.getDuration());
+            recordingPresenter.updatePlayerPercent((float) info.getCurrentPosition() / info.getDuration(), false);
             if (info.getResultCode() == FileInteractionFragment.COMPLETED_AUDIO_PROGRESS
                     || info.getResultCode() == FileInteractionFragment.PAUSED_AUDIO_PROGRESS)
                 recordingPlayButton.setImageResource(R.drawable.ic_play);

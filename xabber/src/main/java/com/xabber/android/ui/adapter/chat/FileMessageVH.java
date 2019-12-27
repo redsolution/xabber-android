@@ -312,15 +312,15 @@ public class FileMessageVH extends MessageVH
             VoiceManager.getInstance().voiceClicked(messageId, attachmentPosition, mainMessageTimestamp);
     }
 
-    //@Override
-    //public void onVoiceProgressClick(int attachmentPosition, String attachmentId, int current, int max) {
-    //    int messagePosition = getAdapterPosition();
-    //    if (messagePosition == RecyclerView.NO_POSITION) {
-    //        LogManager.w(LOG_TAG, "onClick: no position");
-    //        return;
-    //    }
-    //    listener.onVoiceProgressClick(messagePosition, attachmentPosition, attachmentId, messageId, current, max);
-    //}
+    @Override
+    public void onVoiceProgressClick(int attachmentPosition, String attachmentId, Long timestamp, int current, int max) {
+        int messagePosition = getAdapterPosition();
+        if (messagePosition == RecyclerView.NO_POSITION) {
+            LogManager.w(LOG_TAG, "onClick: no position");
+            return;
+        }
+        VoiceManager.getInstance().seekAudioPlaybackTo(attachmentId, timestamp, current, max);
+    }
 
     @Override
     public void onFileLongClick(Attachment attachment, View caller) {

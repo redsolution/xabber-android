@@ -150,6 +150,12 @@ dependencies {
     // otr
     implementation 'com.github.redsolution:otr4j:custom-SNAPSHOT'
 
+    // Opus codec
+    implementation 'top.oply.opuslib:opuslib:1.0.2'
+/*
+    implementation 'com.github.martoreto:opuscodec:v1.2.1.2'
+*/
+
     // barcode scanner
     //implementation 'com.google.zxing:android-integration:3.3.0'
     implementation 'com.journeyapps:zxing-android-embedded:3.6.0'
