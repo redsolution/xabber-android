@@ -162,7 +162,7 @@ public class RegularChat extends AbstractChat {
 
     @Override
     protected boolean onPacket(UserJid bareAddress, Stanza packet, boolean isCarbons) {
-        //TODO I think somewhere where should be rewrited message handled.
+
         if (!super.onPacket(bareAddress, packet, isCarbons))
             return false;
         final Resourcepart resource = packet.getFrom().getResourceOrNull();
