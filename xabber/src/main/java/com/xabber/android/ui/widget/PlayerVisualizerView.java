@@ -259,10 +259,10 @@ public class PlayerVisualizerView extends View {
     }
 
 
-/*    @Override
+    @Override
     public boolean performClick() {
         return super.performClick();
-    }*/
+    }
 
     public static class onProgressTouch implements View.OnTouchListener {
 

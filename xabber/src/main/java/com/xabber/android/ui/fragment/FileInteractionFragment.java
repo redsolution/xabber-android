@@ -2,15 +2,16 @@ package com.xabber.android.ui.fragment;
 
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
+import android.content.BroadcastReceiver;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.view.MenuItem;
@@ -52,10 +53,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import io.realm.Realm;
 import io.realm.RealmList;
+import io.realm.RealmResults;
 import rx.Subscription;
 import rx.functions.Action1;
 import rx.subjects.PublishSubject;
+import top.oply.opuslib.OpusEvent;
 
 public class FileInteractionFragment extends Fragment implements FileMessageVH.FileListener,
         ForwardedAdapter.ForwardListener, AttachDialog.Listener {
@@ -86,8 +90,10 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
     private String currentPicturePath;
     private Long messageTimestamp;
     private List<String> forwardIds = new ArrayList<>();
+    protected boolean sendImmediately = false;
+    protected boolean ignore = true;
 
-    private Handler mHandler = new Handler();
+    private OpusReceiver opusReceiver = new OpusReceiver();
     private PublishSubject<DownloadManager.ProgressData> voiceDownload;
     private Subscription voiceDownloadSubscription;
 
@@ -114,7 +120,9 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
         }
     }
 
-    /** ActivityResult */
+    /**
+     * ActivityResult
+     */
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent result) {
@@ -162,7 +170,7 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
                     HttpFileUploadManager.getInstance().uploadFile(account, user, null, uris, forwardIds, null, null, getActivity());
                     forwardIds.clear();
                     if (getActivity() != null)
-                        ((ChatActivity)getActivity()).hideForwardPanel();
+                        ((ChatActivity) getActivity()).hideForwardPanel();
                 }
                 break;
         }
@@ -174,7 +182,9 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
         if (voiceDownloadSubscription != null) voiceDownloadSubscription.unsubscribe();
     }
 
-    /** Permissions */
+    /**
+     * Permissions
+     */
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
@@ -183,25 +193,30 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
         switch (requestCode) {
             case PERMISSIONS_REQUEST_ATTACH_FILE:
                 if (PermissionsRequester.isPermissionGranted(grantResults))
-                    ((ChatActivity)getActivity()).showAttachDialog();
-                else Toast.makeText(getActivity(), R.string.no_permission_to_read_files, Toast.LENGTH_SHORT).show();
+                    ((ChatActivity) getActivity()).showAttachDialog();
+                else
+                    Toast.makeText(getActivity(), R.string.no_permission_to_read_files, Toast.LENGTH_SHORT).show();
                 break;
 
             case PERMISSIONS_REQUEST_CAMERA:
                 if (PermissionsRequester.isPermissionGranted(grantResults))
                     startCamera();
-                else Toast.makeText(getActivity(), R.string.no_permission_to_camera, Toast.LENGTH_SHORT).show();
+                else
+                    Toast.makeText(getActivity(), R.string.no_permission_to_camera, Toast.LENGTH_SHORT).show();
                 break;
 
             case PERMISSIONS_REQUEST_DOWNLOAD_FILE:
                 if (PermissionsRequester.isPermissionGranted(grantResults))
                     openFileOrDownload(clickedMessageUID, clickedAttachmentPos);
-                else Toast.makeText(getActivity(), R.string.no_permission_to_write_files, Toast.LENGTH_SHORT).show();
+                else
+                    Toast.makeText(getActivity(), R.string.no_permission_to_write_files, Toast.LENGTH_SHORT).show();
                 break;
         }
     }
 
-    /** FileMessageVH.FileListener */
+    /**
+     * FileMessageVH.FileListener
+     */
 
     @Override
     public void onImageClick(int messagePosition, int attachmentPosition, String messageUID) {
@@ -300,7 +315,9 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
         popupMenu.show();
     }
 
-    /** AttachDialog.Listener */
+    /**
+     * AttachDialog.Listener
+     */
 
     @Override
     public void onRecentPhotosSend(List<String> paths) {
@@ -327,7 +344,9 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
                 PERMISSIONS_REQUEST_CAMERA)) startCamera();
     }
 
-    /** Forwarded Listener */
+    /**
+     * Forwarded Listener
+     */
 
     @Override
     public void onForwardClick(String messageId) {
@@ -353,7 +372,7 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
         }
 
         if (PermissionsRequester.requestFileReadPermissionIfNeeded(this, PERMISSIONS_REQUEST_ATTACH_FILE)) {
-            ((ChatActivity)getActivity()).showAttachDialog();
+            ((ChatActivity) getActivity()).showAttachDialog();
         }
     }
 
@@ -405,17 +424,24 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
 
     void stopRecordingAndSend(boolean send, List<String> forwardIDs) {
         if (send) {
-            String filepath = VoiceManager.getInstance().stopRecordingAndGetNewFilePath();
-            if (filepath != null) {
-                if (forwardIDs != null)
-                    uploadVoiceFile(filepath, forwardIDs);
-                else
-                    uploadVoiceFile(filepath);
-            }
+            sendImmediately = true;
+            ignore = false;
+            VoiceManager.getInstance().stopRecording(false);
+            forwardIds = forwardIDs;
         } else {
-            VoiceManager.getInstance().stopRecording();
-            VoiceManager.getInstance().deleteRecordedFile();
+            ignore = true;
+            VoiceManager.getInstance().stopRecording(true);
         }
+    }
+
+    void registerOpusBroadcastReceiver() {
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(OpusEvent.ACTION_OPUS_UI_RECEIVER);
+        getActivity().registerReceiver(opusReceiver, filter);
+    }
+
+    void unregisterOpusBroadcastReceiver() {
+        getActivity().unregisterReceiver(opusReceiver);
     }
 
     void stopRecordingIfPossibleAsync(final boolean saveFile) {
@@ -454,7 +480,7 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
             storageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
                     Application.getInstance().getString(R.string.application_title_short));
             if (!storageDir.mkdirs()) {
-                if (!storageDir.exists()){
+                if (!storageDir.exists()) {
                     LogManager.w(LOG_TAG, "failed to create directory");
                     return null;
                 }
@@ -497,7 +523,7 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
             HttpFileUploadManager.getInstance().uploadFile(account, user, paths, null, forwardIds, null, null, getActivity());
             forwardIds.clear();
             if (getActivity() != null)
-                ((ChatActivity)getActivity()).hideForwardPanel();
+                ((ChatActivity) getActivity()).hideForwardPanel();
         }
     }
 
@@ -523,7 +549,7 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
             HttpFileUploadManager.getInstance().uploadFile(account, user, paths, null, forwardIds, null, null, getActivity());
             forwardIds.clear();
             if (getActivity() != null)
-                ((ChatActivity)getActivity()).hideForwardPanel();
+                ((ChatActivity) getActivity()).hideForwardPanel();
         }
     }
 
@@ -614,6 +640,47 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
         if (progressData.isCompleted()) {
             if (progressData.getAttachmentId() != null && clickedAttachmentUID != null && clickedAttachmentUID.equals(progressData.getAttachmentId())) {
                 VoiceManager.getInstance().voiceClicked(clickedMessageUID, clickedAttachmentPos, messageTimestamp);
+            }
+        }
+    }
+
+    class OpusReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (ignore) {
+                return;
+            }
+            Bundle bundle = intent.getExtras();
+            if (bundle != null) {
+                int type = bundle.getInt(OpusEvent.EVENT_TYPE, 0);
+                switch (type) {
+                    case OpusEvent.CONVERT_STARTED:
+                    case OpusEvent.RECORD_STARTED:
+                    case OpusEvent.PLAY_PROGRESS_UPDATE:
+                    case OpusEvent.PLAY_GET_AUDIO_TRACK_INFO:
+                    case OpusEvent.PLAYING_PAUSED:
+                    case OpusEvent.PLAYING_STARTED:
+                    case OpusEvent.RECORD_PROGRESS_UPDATE:
+                        break;
+
+                    case OpusEvent.RECORD_FINISHED:
+                        if (sendImmediately) {
+                            String path = VoiceManager.getInstance().getNewFilePath();
+                            uploadVoiceFile(path, forwardIds);
+                        } else {
+                            String tempPath = VoiceManager.getInstance().getTempFilePath();
+                            ((ChatActivity)getActivity()).setUpVoiceMessagePresenter(tempPath);
+                        }
+                        ignore = true;
+                    case OpusEvent.RECORD_FAILED:
+                    case OpusEvent.PLAYING_FAILED:
+                    case OpusEvent.CONVERT_FAILED:
+                    case OpusEvent.CONVERT_FINISHED:
+                    case OpusEvent.PLAYING_FINISHED:
+                    default:
+                        break;
+
+                }
             }
         }
     }

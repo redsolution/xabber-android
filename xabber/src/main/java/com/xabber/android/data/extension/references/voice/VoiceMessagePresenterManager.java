@@ -159,11 +159,9 @@ public final class VoiceMessagePresenterManager {
                         int pcmType;
                         try {
                             pcmType = bufferFormat.getInteger("pcm-encoding");
-                        } catch (RuntimeException e) {
-                            LogManager.e(this, e.getMessage());
+                        } catch (NullPointerException e) {
                             pcmType = 0;
                         }
-
                         //int pcmType = bufferFormat.getInteger("pcm-encoding");//2 - 16bit (short); [-32768;32767].
                         //3 - 8bit; [0;255]
                         //4 - 32bit (float); [-1.0;1.0]

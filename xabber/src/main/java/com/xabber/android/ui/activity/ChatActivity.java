@@ -619,6 +619,11 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         chatFragment.hideBottomMessagePanel();
     }
 
+    public void setUpVoiceMessagePresenter(String tempPath) {
+        if (chatFragment == null) return;
+        chatFragment.setVoicePresenterData(tempPath);
+    }
+
     private void insertExtraText() {
         if (extraText == null || extraText.equals("")) {
             return;

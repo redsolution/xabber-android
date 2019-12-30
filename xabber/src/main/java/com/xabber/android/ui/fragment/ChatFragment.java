@@ -461,6 +461,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                             //since alpha and slide are tied together, we can cancel recording by checking transparency value
                             if (alpha<=0) {
                                 cancelRecordingCompletely(true);
+                                VoiceManager.getInstance().deleteRecordedFile();
                             }
                         }
                         break;
@@ -723,6 +724,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
         showJoinButtonIfNeed();
 
+        registerOpusBroadcastReceiver();
         Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
     }
 
@@ -738,6 +740,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                 || currentVoiceRecordingState == VoiceRecordState.TouchRecording)
             stopRecording();
 
+        unregisterOpusBroadcastReceiver();
         Application.getInstance().removeUIListener(OnAccountChangedListener.class, this);
     }
 
@@ -1844,20 +1847,26 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     private void stopRecording() {
         Utils.lockScreenRotation(getActivity(), false);
         if (recordSaveAllowed) {
-            recordingPath = VoiceManager.getInstance().stopRecordingAndGetTempFilePath();
+            sendImmediately = false;
+            ignore = false;
+            VoiceManager.getInstance().stopRecording(false);
             endRecordingButtonsAnimation();
             beginTimer(false);
             currentVoiceRecordingState = VoiceRecordState.StoppedRecording;
-            if (recordingPath != null) {
-                setUpVoiceMessagePresenter();
-                showScrollDownButtonIfNeed();
-            }
         } else {
+            ignore = true;
             clearVoiceMessage();
         }
     }
 
-    @SuppressLint("ClickableViewAccessibility")
+    public void setVoicePresenterData(String tempFilePath) {
+        recordingPath = tempFilePath;
+        if (recordingPath != null) {
+            setUpVoiceMessagePresenter();
+            showScrollDownButtonIfNeed();
+        }
+    }
+
     private void setUpVoiceMessagePresenter() {
         long time = HttpFileUploadManager.getVoiceLength(recordingPath);
 
