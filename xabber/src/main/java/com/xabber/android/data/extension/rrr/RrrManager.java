@@ -1,5 +1,7 @@
 package com.xabber.android.data.extension.rrr;
 
+import android.widget.Toast;
+
 import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
@@ -9,8 +11,11 @@ import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.log.LogManager;
+import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.MessageUpdateEvent;
+import com.xabber.android.utils.StringUtils;
+import com.xabber.xmpp.sid.OriginIdElement;
 import com.xabber.xmpp.smack.XMPPTCPConnection;
 
 import org.greenrobot.eventbus.EventBus;
@@ -86,12 +91,12 @@ public class RrrManager implements OnPacketListener {
         return true;
     }
 
-    public void sendRetractRequest(AccountJid accountJid, List<String> list, boolean symmetrically) {
+    public void tryToRetractMessage(AccountJid accountJid, List<String> list, boolean symmetrically) {
         for (String id : list)
-            sendRetractRequest(accountJid, id, symmetrically);
+            tryToRetractMessage(accountJid, id, symmetrically);
     }
 
-    public void sendRetractRequest(final AccountJid accountJid, final String id, final boolean symmetrically) {
+    public void tryToRetractMessage(final AccountJid accountJid, final String id, final boolean symmetrically) {
         Application.getInstance().runInBackgroundUserRequest(new Runnable() {
             @Override
             public void run() {
@@ -110,17 +115,21 @@ public class RrrManager implements OnPacketListener {
                                             @Override
                                             public void processStanza(Stanza packet) throws SmackException.NotConnectedException, InterruptedException {
                                                 if (packet instanceof IQ) {
-                                                    messageItem.deleteFromRealm();
-                                                    if (((IQ) packet).getType().equals(IQ.Type.error))
+                                                    if (((IQ) packet).getType().equals(IQ.Type.error)){
                                                         LogManager.d(LOG_TAG, "Failed to retract message");
-                                                    if (((IQ) packet).getType().equals(IQ.Type.result))
+                                                        Toast.makeText(Application.getInstance().getBaseContext(), "Failed to retract message", Toast.LENGTH_SHORT).show();
+                                                    }
+                                                    if (((IQ) packet).getType().equals(IQ.Type.result)){
                                                         LogManager.d(LOG_TAG, "Message successfully retracted");
+                                                    }
                                                 }
                                             }
                                         });
                             } catch (Exception e) {
                                 LogManager.exception(LOG_TAG, e);
                             }
+                            //TODO THIS IS REALLY BAD PLACE FOR DELETING SHOULD REPLACE INTO STANZA LISTENER
+                            messageItem.deleteFromRealm();
                         }
                     });
 
@@ -134,31 +143,80 @@ public class RrrManager implements OnPacketListener {
         });
     }
 
-    public void sendRetractAllMessagesRequest(final AccountJid accountJid, final UserJid userJid, final boolean symmetric){
+    public void sendEditedMessage(final AccountJid accountJid, final UserJid userJid,
+                                  final String uniqueId, final String text){
+        final AbstractChat chat = MessageManager.getInstance().getOrCreateChat(accountJid, userJid);
+        final Message message = new Message();
         Application.getInstance().runInBackgroundUserRequest(new Runnable() {
             @Override
             public void run() {
-                RetractAllMessagesIQ retractAllMessagesIQ = new RetractAllMessagesIQ(userJid.toString(), symmetric);
+                Realm realm = null;
+                try {
+                    realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
+                    realm.executeTransaction(new Realm.Transaction() {
+                        @Override
+                        public void execute(Realm realm) {
+                            MessageItem messageItem = realm.where(MessageItem.class)
+                                    .equalTo(MessageItem.Fields.UNIQUE_ID, uniqueId)
+                                    .findFirst();
+                            messageItem.setText(text);
+                            EventBus.getDefault().post(new MessageUpdateEvent());
+                            message.setBody(messageItem.getText());
+                            message.setStanzaId(messageItem.getStanzaId());
+                            message.setTo(messageItem.getUser().getBareJid());
+                            message.setFrom(messageItem.getAccount().getFullJid());
+                            message.addExtension( new OriginIdElement(messageItem.getOriginId()));
+                        }
+                    });
+                } finally { if (realm != null) realm.close(); }
+                //now try to send packet to server
+                try {
+                    ReplaceMessageIQ replaceMessageIQ = new ReplaceMessageIQ(message.getStanzaId(),
+                            accountJid.toString(), message);
+                    AccountManager.getInstance().getAccount(accountJid).getConnection()
+                            .sendIqWithResponseCallback(replaceMessageIQ, new StanzaListener() {
+                                @Override
+                                public void processStanza(Stanza packet)
+                                        throws SmackException.NotConnectedException, InterruptedException {
+                                    LogManager.d(LOG_TAG, "OLOLO");
+                                }
+                            });
+                } catch (Exception e) { LogManager.exception(LOG_TAG, e); }
+            }
+        });
+    }
+
+    public void sendRetractAllMessagesRequest(final AccountJid accountJid, final UserJid userJid,
+                                              final boolean symmetric){
+        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
+            @Override
+            public void run() {
+                RetractAllMessagesIQ retractAllMessagesIQ = new RetractAllMessagesIQ(userJid.toString(),
+                        symmetric);
                 try {
                     AccountManager.getInstance().getAccount(accountJid).getConnection()
                             .sendIqWithResponseCallback(retractAllMessagesIQ, new StanzaListener() {
                                 @Override
-                                public void processStanza(Stanza packet) throws SmackException.NotConnectedException, InterruptedException {
+                                public void processStanza(Stanza packet)
+                                        throws SmackException.NotConnectedException, InterruptedException {
                                     if (packet instanceof IQ ) {
                                         if (((IQ) packet).getType().equals(IQ.Type.error))
                                             LogManager.d(LOG_TAG, "Failed to retract message");
-                                        if (((IQ) packet).getType().equals(IQ.Type.result))
+                                        else if (((IQ) packet).getType().equals(IQ.Type.result)){
                                             LogManager.d(LOG_TAG, "Message successfully retracted");
+                                        }
                                     }
                                 }
                             });
                 } catch (Exception e) {LogManager.exception(LOG_TAG, e); }
             }
         });
+        //TODO ALSO AWFUL PLACE FOR DELETING!
         MessageManager.getInstance().clearHistory(accountJid, userJid);
     }
 
-    private void handleIncomingRetractMessage(final String id, final String by, final String conversation) {
+    private void handleIncomingRetractMessage(final String id, final String by,
+                                              final String conversation) {
         Application.getInstance().runInBackgroundUserRequest(new Runnable() {
             @Override
             public void run() {
@@ -185,7 +243,8 @@ public class RrrManager implements OnPacketListener {
         });
     }
 
-    private void handleIncomingRewriteMessage(final String stanzaId, final String conversation, final String stamp, final String body) {
+    private void handleIncomingRewriteMessage(final String stanzaId, final String conversation,
+                                              final String stamp, final String body) {
         //TODO rewrite this
         Application.getInstance().runInBackgroundUserRequest(new Runnable() {
             @Override
@@ -203,6 +262,8 @@ public class RrrManager implements OnPacketListener {
                             if (messageItem != null)
                                 if (body != null)
                                     messageItem.setText(body);
+                                if (stamp != null)
+                                    messageItem.setEditedTimestamp(StringUtils.parseReceivedReceiptTimestampString(stamp).getTime());
                             EventBus.getDefault().post(new MessageUpdateEvent());
                         }
                     });
@@ -221,7 +282,8 @@ public class RrrManager implements OnPacketListener {
 
             if (packet.hasExtension(RETRACT_MESSAGE_ELEMENT, NAMESPACE_NOTIFY)) {
                 LogManager.d(LOG_TAG, "Received retract request with stanza id" + packet.toString());
-                StandardExtensionElement retractElement = packet.getExtension(RETRACT_MESSAGE_ELEMENT, NAMESPACE_NOTIFY);
+                StandardExtensionElement retractElement = packet
+                        .getExtension(RETRACT_MESSAGE_ELEMENT, NAMESPACE_NOTIFY);
                 String by = retractElement.getAttributeValue(BY_ATTRIBUTE);
                 String conversation = retractElement.getAttributeValue(CONVERSATION_ATTRIBUTE);
                 String id = retractElement.getAttributeValue(ID_ATTRIBUTE);
@@ -231,12 +293,14 @@ public class RrrManager implements OnPacketListener {
 
             if (packet.hasExtension(REWRITE_MESSAGE_ELEMENT, NAMESPACE_NOTIFY)) {
                 LogManager.d(LOG_TAG, "Received rewrite request with stanza " + packet.toXML().toString());
-                StandardExtensionElement rewriteElement = packet.getExtension(REWRITE_MESSAGE_ELEMENT, NAMESPACE_NOTIFY);
+                StandardExtensionElement rewriteElement = packet
+                        .getExtension(REWRITE_MESSAGE_ELEMENT, NAMESPACE_NOTIFY);
                 StandardExtensionElement newMessage = rewriteElement.getFirstElement(Message.ELEMENT);
                 String conversation = rewriteElement.getAttributeValue(CONVERSATION_ATTRIBUTE);
                 String by = rewriteElement.getAttributeValue(BY_ATTRIBUTE);
                 String stanzaId = rewriteElement.getAttributeValue(ID_ATTRIBUTE);
-                String stamp = newMessage.getFirstElement(REPLACED_STAMP_ELEMENT, NAMESPACE).getAttributeValue(STAMP_ATTRIBUTE);
+                String stamp = newMessage.getFirstElement(REPLACED_STAMP_ELEMENT, NAMESPACE)
+                        .getAttributeValue(STAMP_ATTRIBUTE);
                 String body = newMessage.getFirstElement(BODY_MESSAGE_ELEMENT).getText();
                 handleIncomingRewriteMessage(stanzaId, conversation, stamp, body);
 

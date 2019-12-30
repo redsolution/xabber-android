@@ -19,7 +19,6 @@ public class RetractAllMessagesIQ extends IQ {
         this.setType(IQ.Type.set);
         this.conversation = conversation;
         this.symmetric = symmetric;
-        this.setTo(conversation);
     }
 
     @Override

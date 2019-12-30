@@ -59,6 +59,7 @@ public class MessageItem extends RealmObject {
         public static final String OFFLINE = "offline";
         public static final String TIMESTAMP = "timestamp";
         public static final String DELAY_TIMESTAMP = "delayTimestamp";
+        public static final String EDITED_TIMESTAMP = "editedTimestamp";
         public static final String ERROR = "error";
         public static final String ERROR_DESCR = "errorDescription";
         public static final String DELIVERED = "delivered";
@@ -131,6 +132,11 @@ public class MessageItem extends RealmObject {
      */
     @Index
     private Long timestamp;
+    /**
+     * RIme when message was edited
+     * Realm truncated Date type to seconds, using long for accuracy
+     */
+    private Long editedTimestamp;
     /**
      * Time when message was created.
      * Realm truncated Date type to seconds, using long for accuracy
@@ -338,6 +344,10 @@ public class MessageItem extends RealmObject {
     public void setTimestamp(Long timestamp) {
         this.timestamp = timestamp;
     }
+
+    public Long getEditedTimestamp() { return editedTimestamp; }
+
+    public void setEditedTimestamp(Long timestamp) { this.editedTimestamp = timestamp; }
 
     public Long getDelayTimestamp() {
         return delayTimestamp;
