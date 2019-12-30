@@ -1,17 +1,25 @@
 package com.xabber.android.data.extension.rrr;
 
+import android.util.Pair;
 import android.widget.Toast;
+
+import androidx.annotation.Nullable;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.database.MessageDatabaseManager;
+import com.xabber.android.data.database.messagerealm.Attachment;
+import com.xabber.android.data.database.messagerealm.ForwardId;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
+import com.xabber.android.data.extension.references.ReferencesManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
+import com.xabber.android.data.message.ForwardManager;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.MessageUpdateEvent;
 import com.xabber.android.utils.StringUtils;
@@ -25,11 +33,13 @@ import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.StandardExtensionElement;
 import org.jivesoftware.smack.packet.Stanza;
+import org.jivesoftware.smack.util.PacketParserUtils;
 import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
 
 import java.util.List;
 
 import io.realm.Realm;
+import io.realm.RealmList;
 
 public class RrrManager implements OnPacketListener {
 
@@ -244,7 +254,9 @@ public class RrrManager implements OnPacketListener {
     }
 
     private void handleIncomingRewriteMessage(final String stanzaId, final String conversation,
-                                              final String stamp, final String body) {
+                                              final String stamp, final String body,
+                                              final String markupText, final String originalStanza,
+                                              final RealmList<Attachment> attachments) {
         //TODO rewrite this
         Application.getInstance().runInBackgroundUserRequest(new Runnable() {
             @Override
@@ -260,6 +272,12 @@ public class RrrManager implements OnPacketListener {
                                     .equalTo(MessageItem.Fields.STANZA_ID, stanzaId)
                                     .findFirst();
                             if (messageItem != null)
+                                if (markupText != null)
+                                    messageItem.setMarkupText(markupText);
+                                if (originalStanza != null)
+                                    messageItem.setOriginalStanza(originalStanza);
+                                if (attachments != null)
+                                    messageItem.setAttachments(attachments);
                                 if (body != null)
                                     messageItem.setText(body);
                                 if (stamp != null)
@@ -293,17 +311,30 @@ public class RrrManager implements OnPacketListener {
 
             if (packet.hasExtension(REWRITE_MESSAGE_ELEMENT, NAMESPACE_NOTIFY)) {
                 LogManager.d(LOG_TAG, "Received rewrite request with stanza " + packet.toXML().toString());
-                StandardExtensionElement rewriteElement = packet
-                        .getExtension(REWRITE_MESSAGE_ELEMENT, NAMESPACE_NOTIFY);
-                StandardExtensionElement newMessage = rewriteElement.getFirstElement(Message.ELEMENT);
-                String conversation = rewriteElement.getAttributeValue(CONVERSATION_ATTRIBUTE);
-                String by = rewriteElement.getAttributeValue(BY_ATTRIBUTE);
-                String stanzaId = rewriteElement.getAttributeValue(ID_ATTRIBUTE);
-                String stamp = newMessage.getFirstElement(REPLACED_STAMP_ELEMENT, NAMESPACE)
-                        .getAttributeValue(STAMP_ATTRIBUTE);
-                String body = newMessage.getFirstElement(BODY_MESSAGE_ELEMENT).getText();
-                handleIncomingRewriteMessage(stanzaId, conversation, stamp, body);
+                try {
+                    StandardExtensionElement rewriteElement = packet
+                            .getExtension(REWRITE_MESSAGE_ELEMENT, NAMESPACE_NOTIFY);
+                    StandardExtensionElement newMessage = rewriteElement.getFirstElement(Message.ELEMENT);
+                    String conversation = rewriteElement.getAttributeValue(CONVERSATION_ATTRIBUTE);
+                    String stanzaId = rewriteElement.getAttributeValue(ID_ATTRIBUTE);
+                    String stamp = newMessage.getFirstElement(REPLACED_STAMP_ELEMENT, NAMESPACE)
+                            .getAttributeValue(STAMP_ATTRIBUTE);
+                    String originalStanza = newMessage.getText();
 
+                    Message message = (Message) PacketParserUtils.parseStanza(newMessage.toXML().toString());
+                    String text = message.getBody();
+                    Pair<String, String> bodies = ReferencesManager.modifyBodyWithReferences(message, text);
+                    text = bodies.first;
+                    String markupText = bodies.second;
+                    RealmList<Attachment> attachments = HttpFileUploadManager.parseFileMessage(message);
+                    //RealmList<ForwardId> forwardIds = parseForwardedMessage(ui, message, uid);
+                    String forwardComment = ForwardManager.parseForwardComment(message);
+                    if (forwardComment != null) text = forwardComment;
+
+
+                    handleIncomingRewriteMessage(stanzaId, conversation, stamp, text, markupText,
+                            originalStanza, attachments);
+                } catch (Exception e) { LogManager.exception(LOG_TAG, e); }
             }
         }
     }
