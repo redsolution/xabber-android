@@ -3,15 +3,12 @@ package com.xabber.android.data.extension.rrr;
 import android.util.Pair;
 import android.widget.Toast;
 
-import androidx.annotation.Nullable;
-
 import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.database.MessageDatabaseManager;
 import com.xabber.android.data.database.messagerealm.Attachment;
-import com.xabber.android.data.database.messagerealm.ForwardId;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
@@ -22,6 +19,7 @@ import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.ForwardManager;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.MessageUpdateEvent;
+import com.xabber.android.data.notification.MessageNotificationManager;
 import com.xabber.android.utils.StringUtils;
 import com.xabber.xmpp.sid.OriginIdElement;
 import com.xabber.xmpp.smack.XMPPTCPConnection;
@@ -297,21 +295,22 @@ public class RrrManager implements OnPacketListener {
     public void onStanza(ConnectionItem connection, Stanza packet) {
 
         if (packet instanceof Message && ((Message) packet).getType().equals(Message.Type.headline)) {
+            try {
+                if (packet.hasExtension(RETRACT_MESSAGE_ELEMENT, NAMESPACE_NOTIFY)) {
+                    LogManager.d(LOG_TAG, "Received retract request with stanza id" + packet.toString());
+                    StandardExtensionElement retractElement = packet
+                            .getExtension(RETRACT_MESSAGE_ELEMENT, NAMESPACE_NOTIFY);
+                    String by = retractElement.getAttributeValue(BY_ATTRIBUTE);
+                    String conversation = retractElement.getAttributeValue(CONVERSATION_ATTRIBUTE);
+                    String id = retractElement.getAttributeValue(ID_ATTRIBUTE);
+                    String to = packet.getTo().toString();
+                    MessageNotificationManager.getInstance().removeChat(AccountJid.from(to), UserJid.from(conversation));
+                    handleIncomingRetractMessage(id, by, conversation);
+                    return;
+                }
 
-            if (packet.hasExtension(RETRACT_MESSAGE_ELEMENT, NAMESPACE_NOTIFY)) {
-                LogManager.d(LOG_TAG, "Received retract request with stanza id" + packet.toString());
-                StandardExtensionElement retractElement = packet
-                        .getExtension(RETRACT_MESSAGE_ELEMENT, NAMESPACE_NOTIFY);
-                String by = retractElement.getAttributeValue(BY_ATTRIBUTE);
-                String conversation = retractElement.getAttributeValue(CONVERSATION_ATTRIBUTE);
-                String id = retractElement.getAttributeValue(ID_ATTRIBUTE);
-                handleIncomingRetractMessage(id, by, conversation);
-                return;
-            }
-
-            if (packet.hasExtension(REWRITE_MESSAGE_ELEMENT, NAMESPACE_NOTIFY)) {
-                LogManager.d(LOG_TAG, "Received rewrite request with stanza " + packet.toXML().toString());
-                try {
+                if (packet.hasExtension(REWRITE_MESSAGE_ELEMENT, NAMESPACE_NOTIFY)) {
+                    LogManager.d(LOG_TAG, "Received rewrite request with stanza " + packet.toXML().toString());
                     StandardExtensionElement rewriteElement = packet
                             .getExtension(REWRITE_MESSAGE_ELEMENT, NAMESPACE_NOTIFY);
                     StandardExtensionElement newMessage = rewriteElement.getFirstElement(Message.ELEMENT);
@@ -320,7 +319,6 @@ public class RrrManager implements OnPacketListener {
                     String stamp = newMessage.getFirstElement(REPLACED_STAMP_ELEMENT, NAMESPACE)
                             .getAttributeValue(STAMP_ATTRIBUTE);
                     String originalStanza = newMessage.getText();
-
                     Message message = (Message) PacketParserUtils.parseStanza(newMessage.toXML().toString());
                     String text = message.getBody();
                     Pair<String, String> bodies = ReferencesManager.modifyBodyWithReferences(message, text);
@@ -330,12 +328,10 @@ public class RrrManager implements OnPacketListener {
                     //RealmList<ForwardId> forwardIds = parseForwardedMessage(ui, message, uid);
                     String forwardComment = ForwardManager.parseForwardComment(message);
                     if (forwardComment != null) text = forwardComment;
-
-
                     handleIncomingRewriteMessage(stanzaId, conversation, stamp, text, markupText,
                             originalStanza, attachments);
-                } catch (Exception e) { LogManager.exception(LOG_TAG, e); }
-            }
+                }
+            } catch (Exception e) { LogManager.exception(LOG_TAG, e); }
         }
     }
 
