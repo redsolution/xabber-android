@@ -102,12 +102,12 @@ public class RosterCacheManager {
         final String account = messageItem.getAccount().getFullJid().asBareJid().toString();
         final String user = messageItem.getUser().getBareJid().toString();
         final String messageID = messageItem.getUniqueId();
-        realm.executeTransaction(new Realm.Transaction() {
+        realm.executeTransactionAsync(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
                 ContactRealm contactRealm = realm.where(ContactRealm.class).equalTo(ContactRealm.Fields.ID, account + "/" + user).findFirst();
                 MessageItem message = realm.where(MessageItem.class).equalTo(MessageItem.Fields.UNIQUE_ID, messageID).findFirst();
-                if (contactRealm != null && message != null && message.isValid() && message.isManaged()) {
+                if (contactRealm != null && message.isValid() && message.isManaged()) {
                     contactRealm.setLastMessage(message);
                     realm.copyToRealmOrUpdate(contactRealm);
                 }
