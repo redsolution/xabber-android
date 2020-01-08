@@ -53,9 +53,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import io.realm.Realm;
 import io.realm.RealmList;
-import io.realm.RealmResults;
 import rx.Subscription;
 import rx.functions.Action1;
 import rx.subjects.PublishSubject;
@@ -69,11 +67,6 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
     private static final String SAVE_ACCOUNT = "com.xabber.android.ui.fragment.ARGUMENT_ACCOUNT";
     private static final String SAVE_USER = "com.xabber.android.ui.fragment.ARGUMENT_USER";
     private static final String SAVE_CURRENT_PICTURE_PATH = "com.xabber.android.ui.fragment.ARGUMENT_CURRENT_PICTURE_PATH";
-    public static final int COMPLETED_AUDIO_PROGRESS = 99;
-    public static final int NORMAL_AUDIO_PROGRESS = 98;
-    public static final int PAUSED_AUDIO_PROGRESS = 97;
-    private static final int SAMPLING_RATE = 48000;
-    //private static final int ENCODING_BIT_RATE = 96000;
 
     public static final int FILE_SELECT_ACTIVITY_REQUEST_CODE = 11;
     private static final int REQUEST_IMAGE_CAPTURE = 12;

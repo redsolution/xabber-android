@@ -23,7 +23,6 @@ import com.xabber.android.data.extension.references.voice.VoiceMessagePresenterM
 import com.xabber.android.data.filedownload.DownloadManager;
 import com.xabber.android.data.filedownload.FileCategory;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.ui.fragment.FileInteractionFragment;
 import com.xabber.android.ui.widget.PlayerVisualizerView;
 import com.xabber.android.utils.StringUtils;
 import com.xabber.android.utils.Utils;
@@ -298,13 +297,13 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.FileViewHold
                             audioProgress.setMax(info.getDuration() * 1000);
                             audioProgress.setProgress(info.getCurrentPosition());
                         }
-                        if (info.getResultCode() == FileInteractionFragment.COMPLETED_AUDIO_PROGRESS) {
+                        if (info.getResultCode() == VoiceManager.COMPLETED_AUDIO_PROGRESS) {
                             ivFileIcon.setImageResource(R.drawable.ic_play);
                             showProgress(false);
                             tvFileSize.setText(StringUtils.getDurationStringForVoiceMessage(0L,
                                     info.getDuration() > 1000 ?
                                             (info.getDuration() / 1000) : info.getDuration()));
-                        } else if (info.getResultCode() == FileInteractionFragment.PAUSED_AUDIO_PROGRESS) {
+                        } else if (info.getResultCode() == VoiceManager.PAUSED_AUDIO_PROGRESS) {
                             ivFileIcon.setImageResource(R.drawable.ic_play);
                             showProgress(false);
                             tvFileSize.setText(StringUtils.getDurationStringForVoiceMessage((long) info.getCurrentPosition() / 1000,
