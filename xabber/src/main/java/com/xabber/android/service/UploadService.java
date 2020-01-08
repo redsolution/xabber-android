@@ -14,6 +14,7 @@ import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.extension.cs.ChatStateManager;
 import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.extension.file.FileUtils;
 import com.xabber.android.data.extension.file.UriUtils;
@@ -23,6 +24,7 @@ import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.utils.HttpClientWithMTM;
 import com.xabber.xmpp.httpfileupload.Slot;
+import com.xabber.xmpp.uuu.ChatStateSubtype;
 
 import org.jivesoftware.smack.AbstractXMPPConnection;
 import org.jivesoftware.smack.SmackException;
@@ -123,6 +125,8 @@ public class UploadService extends IntentService {
             messageId = MessageManager.getInstance().createFileMessageWithForwards(account, user, files, forwardIds);
         else messageId = MessageManager.getInstance().createFileMessageFromUrisWithForwards(account, user, remoteFiles, forwardIds);
 
+        ChatStateManager.getInstance().onComposing(account, user, null, ChatStateSubtype.upload);
+
         // create dir
         File directory = new File(getDownloadDirPath());
         if (!directory.exists())
@@ -194,8 +198,12 @@ public class UploadService extends IntentService {
             if (ReferenceElement.Type.voice.name().equals(referenceElement)) {
                 fileMessageId = MessageManager.getInstance().createVoiceMessageWithForwards(account, user, files, forwardIds);
             }
-            else fileMessageId = MessageManager.getInstance().createFileMessageWithForwards(account, user, files, forwardIds);
+            else {
+                fileMessageId = MessageManager.getInstance().createFileMessageWithForwards(account, user, files, forwardIds);
+                ChatStateManager.getInstance().onComposing(account, user, null, ChatStateSubtype.upload);
+            }
         } else fileMessageId = existMessageId; // use existing fileMessage
+
 
         HashMap<String, String> uploadedFilesUrls = new HashMap<>();
         List<String> notUploadedFilesPaths = new ArrayList<>();

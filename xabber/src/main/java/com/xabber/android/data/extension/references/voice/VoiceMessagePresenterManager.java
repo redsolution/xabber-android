@@ -187,7 +187,6 @@ public final class VoiceMessagePresenterManager {
                             else
                                 samples += ((float) shBuff.get(i) / variable);
                         }
-                        LogManager.d("MediaCodecSample", "sample sum = " + samples);
                         if (samples > 0.01)
                             sampleArray.add(samples);
 
