@@ -1837,7 +1837,6 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         handler.removeCallbacks(timer);
         if (bottomPanelMessagesIds != null && bottomPanelMessagesIds.size()>0) {
             stopRecordingAndSend(saveMessage, bottomPanelMessagesIds);
-            hideBottomMessagePanel();
         } else
             stopRecordingAndSend(saveMessage);
         scrollDown();

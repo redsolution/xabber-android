@@ -380,7 +380,7 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
         if (forwardIds == null) {
             this.forwardIds.clear();
         } else {
-            this.forwardIds = forwardIds;
+            this.forwardIds = new ArrayList<>(forwardIds);
         }
     }
 
@@ -426,8 +426,8 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
         if (send) {
             sendImmediately = true;
             ignore = false;
+            forwardIdsForAttachments(forwardIDs);
             VoiceManager.getInstance().stopRecording(false);
-            forwardIds = forwardIDs;
         } else {
             ignore = true;
             VoiceManager.getInstance().stopRecording(true);
