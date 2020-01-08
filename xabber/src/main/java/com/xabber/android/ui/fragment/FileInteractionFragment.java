@@ -25,6 +25,7 @@ import androidx.fragment.app.Fragment;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.database.MessageDatabaseManager;
 import com.xabber.android.data.database.messagerealm.Attachment;
 import com.xabber.android.data.database.messagerealm.MessageItem;
@@ -44,6 +45,7 @@ import com.xabber.android.ui.activity.ImageViewerActivity;
 import com.xabber.android.ui.adapter.chat.FileMessageVH;
 import com.xabber.android.ui.adapter.chat.ForwardedAdapter;
 import com.xabber.android.ui.dialog.AttachDialog;
+import com.xabber.android.ui.dialog.VoiceDownloadDialog;
 import com.xabber.android.ui.helper.PermissionsRequester;
 
 import java.io.File;
@@ -53,9 +55,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import io.realm.Realm;
 import io.realm.RealmList;
-import io.realm.RealmResults;
 import rx.Subscription;
 import rx.functions.Action1;
 import rx.subjects.PublishSubject;
@@ -69,11 +69,6 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
     private static final String SAVE_ACCOUNT = "com.xabber.android.ui.fragment.ARGUMENT_ACCOUNT";
     private static final String SAVE_USER = "com.xabber.android.ui.fragment.ARGUMENT_USER";
     private static final String SAVE_CURRENT_PICTURE_PATH = "com.xabber.android.ui.fragment.ARGUMENT_CURRENT_PICTURE_PATH";
-    public static final int COMPLETED_AUDIO_PROGRESS = 99;
-    public static final int NORMAL_AUDIO_PROGRESS = 98;
-    public static final int PAUSED_AUDIO_PROGRESS = 97;
-    private static final int SAMPLING_RATE = 48000;
-    //private static final int ENCODING_BIT_RATE = 96000;
 
     public static final int FILE_SELECT_ACTIVITY_REQUEST_CODE = 11;
     private static final int REQUEST_IMAGE_CAPTURE = 12;
@@ -380,7 +375,7 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
         if (forwardIds == null) {
             this.forwardIds.clear();
         } else {
-            this.forwardIds = forwardIds;
+            this.forwardIds = new ArrayList<>(forwardIds);
         }
     }
 
@@ -426,8 +421,8 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
         if (send) {
             sendImmediately = true;
             ignore = false;
+            forwardIdsForAttachments(forwardIDs);
             VoiceManager.getInstance().stopRecording(false);
-            forwardIds = forwardIDs;
         } else {
             ignore = true;
             VoiceManager.getInstance().stopRecording(true);
@@ -609,13 +604,24 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
 
                 if ("voice".equals(attachment.getRefType())
                         || attachment.isVoice()) {
-                    VoiceManager.getInstance().voiceClicked(messageItem, attachmentPosition, null);
+                    //VoiceManager.getInstance().voiceClicked(messageItem, attachmentPosition, null);
                 } else {
                     manageOpeningFile(attachment);
                 }
             } else {
                 LogManager.d("VoiceDebug", "Download Starting Shortly! attachment.getUniqueId = " + attachment.getUniqueId());
                 DownloadManager.getInstance().downloadFile(attachment, account, getActivity());
+                if ("voice".equals(attachment.getRefType())
+                        || attachment.isVoice()) {
+                    if (!SettingsManager.autoDownloadVoiceMessageSuggested()) {
+                        if (!SettingsManager.chatsAutoDownloadVoiceMessage()) {
+                            if (getFragmentManager() != null && getFragmentManager().findFragmentByTag("VoiceDownloadDialog") == null) {
+                                VoiceDownloadDialog dialog = VoiceDownloadDialog.newInstance();
+                                dialog.show(getFragmentManager(), "VoiceDownloadDialog");
+                            }
+                        }
+                    }
+                }
             }
         }
     }
@@ -673,6 +679,7 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
                         }
                         ignore = true;
                     case OpusEvent.RECORD_FAILED:
+                        ignore = true;
                     case OpusEvent.PLAYING_FAILED:
                     case OpusEvent.CONVERT_FAILED:
                     case OpusEvent.CONVERT_FINISHED:

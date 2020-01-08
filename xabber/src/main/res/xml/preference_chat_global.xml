@@ -46,6 +46,12 @@
         android:title="@string/chats_send_by_enter"
         />
 
+    <CheckBoxPreference
+        android:defaultValue="@bool/chats_auto_download_voice_messages_default"
+        android:key = "@string/chats_auto_download_voice_messages_key"
+        android:title = "@string/chats_auto_download_voice_message"
+        />
+
     <ListPreference
         android:defaultValue="@string/chats_hide_keyboard_default"
         android:entries="@array/chats_hide_keyboard_entries"

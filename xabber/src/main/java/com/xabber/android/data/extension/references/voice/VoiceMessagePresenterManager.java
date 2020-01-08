@@ -187,7 +187,6 @@ public final class VoiceMessagePresenterManager {
                             else
                                 samples += ((float) shBuff.get(i) / variable);
                         }
-
                         if (samples > 0.01)
                             sampleArray.add(samples);
 
@@ -260,7 +259,16 @@ public final class VoiceMessagePresenterManager {
                     num += waveData.get(i);
             }
             optimisedDataForReturn.add(Utils.longToInt(num));
-        } else optimisedDataForReturn.add(0);
+        } else {
+            for (int i = 0; i < waveData.size(); i++) {
+                if (waveData.get(i) < 0) {
+                    num -= waveData.get(i);
+                } else
+                    num += waveData.get(i);
+                optimisedDataForReturn.add(Utils.longToInt(num));
+                num = 0;
+            }
+        }
     }
 }
 

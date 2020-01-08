@@ -17,13 +17,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.database.messagerealm.Attachment;
 import com.xabber.android.data.extension.references.voice.VoiceManager;
 import com.xabber.android.data.extension.references.voice.VoiceMessagePresenterManager;
 import com.xabber.android.data.filedownload.DownloadManager;
 import com.xabber.android.data.filedownload.FileCategory;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.ui.fragment.FileInteractionFragment;
 import com.xabber.android.ui.widget.PlayerVisualizerView;
 import com.xabber.android.utils.StringUtils;
 import com.xabber.android.utils.Utils;
@@ -124,20 +124,11 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.FileViewHold
                         return super.onTouch(view, motionEvent);
                     }
                 });
-                //holder.audioProgress.setVisibility(View.VISIBLE);
-                //holder.audioProgress.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-                //    @Override
-                //    public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                //    }
-                //    @Override
-                //    public void onStartTrackingTouch(SeekBar seekBar) {
-                //    }
-                //    @Override
-                //    public void onStopTrackingTouch(SeekBar seekBar) {
-                //        listener.onVoiceProgressClick(holder.getAdapterPosition(), holder.attachmentId, seekBar.getProgress(), seekBar.getMax());
-                //    }
-                //});
-            } else holder.tvFileSize.setText(FileUtils.byteCountToDisplaySize(size != null ? size : 0));
+            } else {
+                holder.tvFileSize.setText(FileUtils.byteCountToDisplaySize(size != null ? size : 0));
+                if (SettingsManager.chatsAutoDownloadVoiceMessage())
+                    listener.onFileClick(position);
+            }
             holder.ivFileIcon.setImageResource(R.drawable.ic_play);
         } else {
             // set file icon
@@ -298,13 +289,13 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.FileViewHold
                             audioProgress.setMax(info.getDuration() * 1000);
                             audioProgress.setProgress(info.getCurrentPosition());
                         }
-                        if (info.getResultCode() == FileInteractionFragment.COMPLETED_AUDIO_PROGRESS) {
+                        if (info.getResultCode() == VoiceManager.COMPLETED_AUDIO_PROGRESS) {
                             ivFileIcon.setImageResource(R.drawable.ic_play);
                             showProgress(false);
                             tvFileSize.setText(StringUtils.getDurationStringForVoiceMessage(0L,
                                     info.getDuration() > 1000 ?
                                             (info.getDuration() / 1000) : info.getDuration()));
-                        } else if (info.getResultCode() == FileInteractionFragment.PAUSED_AUDIO_PROGRESS) {
+                        } else if (info.getResultCode() == VoiceManager.PAUSED_AUDIO_PROGRESS) {
                             ivFileIcon.setImageResource(R.drawable.ic_play);
                             showProgress(false);
                             tvFileSize.setText(StringUtils.getDurationStringForVoiceMessage((long) info.getCurrentPosition() / 1000,

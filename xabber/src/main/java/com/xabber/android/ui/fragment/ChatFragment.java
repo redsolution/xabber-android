@@ -1837,7 +1837,6 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         handler.removeCallbacks(timer);
         if (bottomPanelMessagesIds != null && bottomPanelMessagesIds.size()>0) {
             stopRecordingAndSend(saveMessage, bottomPanelMessagesIds);
-            hideBottomMessagePanel();
         } else
             stopRecordingAndSend(saveMessage);
         scrollDown();
@@ -1956,8 +1955,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     private void setUpAudioProgress(VoiceManager.PublishAudioProgress.AudioInfo info) {
         if (info.getAttachmentIdHash() == 0) {
             recordingPresenter.updatePlayerPercent((float) info.getCurrentPosition() / info.getDuration(), false);
-            if (info.getResultCode() == FileInteractionFragment.COMPLETED_AUDIO_PROGRESS
-                    || info.getResultCode() == FileInteractionFragment.PAUSED_AUDIO_PROGRESS)
+            if (info.getResultCode() == VoiceManager.COMPLETED_AUDIO_PROGRESS
+                    || info.getResultCode() == VoiceManager.PAUSED_AUDIO_PROGRESS)
                 recordingPlayButton.setImageResource(R.drawable.ic_play);
             else recordingPlayButton.setImageResource(R.drawable.ic_pause);
         }
@@ -2014,7 +2013,6 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
     public void performHapticFeedback(int feedbackType, int flag) {
         rootView.performHapticFeedback(feedbackType != -1 ? feedbackType : HapticFeedbackConstants.VIRTUAL_KEY, flag);
-
     }
 
     public void beginTimer(boolean start) {

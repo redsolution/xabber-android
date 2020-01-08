@@ -7,6 +7,7 @@
     <string name="cache_clear">Clear cache\nClear all local data. This can free up some space.</string>
     <string name="cache_clear_warning">Do you really want to remove chat history and other local data?\nAccount and roster data are not affected. The app will close.</string>
     <string name="chats_send_by_enter">Send on Enter\nMessage can be sent by pressing the Enter button</string>
+    <string name="chats_auto_download_voice_message">Download voice messages\nAutomatically download voice messages to local storage</string>
     <string name="connection_go_away">Auto-away\nAutomatically set away status on screen lock</string>
 
     <string name="contacts_order">Sort contacts</string>

@@ -12,9 +12,14 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 
+import com.xabber.android.data.Application;
 import com.xabber.android.data.database.messagerealm.Attachment;
 import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.service.DownloadService;
+
+import java.util.HashMap;
+import java.util.LinkedList;
 
 import rx.subjects.PublishSubject;
 
@@ -26,6 +31,8 @@ public class DownloadManager {
     private PublishSubject<ProgressData> progressSubscribe = PublishSubject.create();
     private boolean isDownloading;
     private String attachmentId;
+    private LinkedList<Attachment> downloadQueue = new LinkedList<>();
+    private HashMap<String, AccountJid> accountAttachments = new HashMap<>();
 
     public static DownloadManager getInstance() {
         if (instance == null) instance = new DownloadManager();
@@ -39,8 +46,27 @@ public class DownloadManager {
     public void downloadFile(Attachment attachment, AccountJid accountJid, Context context) {
 
         if (isDownloading) {
-            progressSubscribe.onNext(new ProgressData(0, "Downloading already started", false, attachmentId));
-            return;
+            if (downloadQueue.size() >= 10) {
+                progressSubscribe.onNext(new ProgressData(0, "Downloading already started", false, attachmentId));
+                return;
+            } else {
+                boolean duplicate = false;
+                for (int i = 0; i < downloadQueue.size(); i++) {
+                    if (downloadQueue.get(i).getUniqueId().equals(attachment.getUniqueId())) {
+                        duplicate = true; //already have this file in the queue
+                    }
+                }
+                if (attachmentId != null && attachmentId.equals(attachment.getUniqueId()))
+                    duplicate = true; //already downloading this file
+
+                if (duplicate) return;
+                else {
+                    downloadQueue.offer(attachment);
+                    accountAttachments.put(attachment.getUniqueId(), accountJid);
+                    LogManager.d(LOG_TAG + "/PUT_IN_QUEUE", "attachment id = " + attachment.getUniqueId() + " account = " + accountJid);
+                    return;
+                }
+            }
         }
 
         isDownloading = true;
@@ -54,6 +80,8 @@ public class DownloadManager {
         }
 
         attachmentId = attachment.getUniqueId();
+        accountAttachments.put(attachmentId, accountJid);
+        LogManager.d(LOG_TAG + "/ACTIVE_DOWNLOAD", "attachment id = " + attachment.getUniqueId() + " account = " + accountJid);
         Intent intent = new Intent(context, DownloadService.class);
         intent.putExtra(DownloadService.KEY_RECEIVER, new DownloadReceiver(new Handler()));
         intent.putExtra(DownloadService.KEY_ATTACHMENT_ID, attachment.getUniqueId());
@@ -63,6 +91,15 @@ public class DownloadManager {
         intent.putExtra(DownloadService.KEY_FILE_SIZE, attachment.getFileSize());
         context.startService(intent);
         return;
+    }
+
+    private void nextDownload() {
+        accountAttachments.remove(attachmentId);
+        if (downloadQueue.size() > 0) {
+            Attachment first = downloadQueue.poll();
+            if (first != null)
+                downloadFile(first, accountAttachments.get(first.getUniqueId()), Application.getInstance().getApplicationContext());
+        }
     }
 
     public void cancelDownload(Context context) {
@@ -93,10 +130,12 @@ public class DownloadManager {
                     String error = resultData.getString(DownloadService.KEY_ERROR);
                     progressSubscribe.onNext(new ProgressData(0, error, false, attachmentId));
                     isDownloading = false;
+                    nextDownload();
                     break;
                 case DownloadService.COMPLETE_CODE:
                     progressSubscribe.onNext(new ProgressData(100, null, true, attachmentId));
                     isDownloading = false;
+                    nextDownload();
                     break;
             }
         }
