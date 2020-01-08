@@ -25,6 +25,7 @@ import androidx.fragment.app.Fragment;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.database.MessageDatabaseManager;
 import com.xabber.android.data.database.messagerealm.Attachment;
 import com.xabber.android.data.database.messagerealm.MessageItem;
@@ -44,6 +45,7 @@ import com.xabber.android.ui.activity.ImageViewerActivity;
 import com.xabber.android.ui.adapter.chat.FileMessageVH;
 import com.xabber.android.ui.adapter.chat.ForwardedAdapter;
 import com.xabber.android.ui.dialog.AttachDialog;
+import com.xabber.android.ui.dialog.VoiceDownloadDialog;
 import com.xabber.android.ui.helper.PermissionsRequester;
 
 import java.io.File;
@@ -602,13 +604,24 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
 
                 if ("voice".equals(attachment.getRefType())
                         || attachment.isVoice()) {
-                    VoiceManager.getInstance().voiceClicked(messageItem, attachmentPosition, null);
+                    //VoiceManager.getInstance().voiceClicked(messageItem, attachmentPosition, null);
                 } else {
                     manageOpeningFile(attachment);
                 }
             } else {
                 LogManager.d("VoiceDebug", "Download Starting Shortly! attachment.getUniqueId = " + attachment.getUniqueId());
                 DownloadManager.getInstance().downloadFile(attachment, account, getActivity());
+                if ("voice".equals(attachment.getRefType())
+                        || attachment.isVoice()) {
+                    if (!SettingsManager.autoDownloadVoiceMessageSuggested()) {
+                        if (!SettingsManager.chatsAutoDownloadVoiceMessage()) {
+                            if (getFragmentManager() != null && getFragmentManager().findFragmentByTag("VoiceDownloadDialog") == null) {
+                                VoiceDownloadDialog dialog = VoiceDownloadDialog.newInstance();
+                                dialog.show(getFragmentManager(), "VoiceDownloadDialog");
+                            }
+                        }
+                    }
+                }
             }
         }
     }
@@ -666,6 +679,7 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
                         }
                         ignore = true;
                     case OpusEvent.RECORD_FAILED:
+                        ignore = true;
                     case OpusEvent.PLAYING_FAILED:
                     case OpusEvent.CONVERT_FAILED:
                     case OpusEvent.CONVERT_FINISHED:

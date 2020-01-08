@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.database.messagerealm.Attachment;
 import com.xabber.android.data.extension.references.voice.VoiceManager;
 import com.xabber.android.data.extension.references.voice.VoiceMessagePresenterManager;
@@ -123,20 +124,11 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.FileViewHold
                         return super.onTouch(view, motionEvent);
                     }
                 });
-                //holder.audioProgress.setVisibility(View.VISIBLE);
-                //holder.audioProgress.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-                //    @Override
-                //    public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                //    }
-                //    @Override
-                //    public void onStartTrackingTouch(SeekBar seekBar) {
-                //    }
-                //    @Override
-                //    public void onStopTrackingTouch(SeekBar seekBar) {
-                //        listener.onVoiceProgressClick(holder.getAdapterPosition(), holder.attachmentId, seekBar.getProgress(), seekBar.getMax());
-                //    }
-                //});
-            } else holder.tvFileSize.setText(FileUtils.byteCountToDisplaySize(size != null ? size : 0));
+            } else {
+                holder.tvFileSize.setText(FileUtils.byteCountToDisplaySize(size != null ? size : 0));
+                if (SettingsManager.chatsAutoDownloadVoiceMessage())
+                    listener.onFileClick(position);
+            }
             holder.ivFileIcon.setImageResource(R.drawable.ic_play);
         } else {
             // set file icon

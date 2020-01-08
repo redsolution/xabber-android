@@ -21,8 +21,9 @@ import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
-import androidx.annotation.NonNull;
 import android.text.TextUtils;
+
+import androidx.annotation.NonNull;
 
 import com.xabber.android.BuildConfig;
 import com.xabber.android.R;
@@ -397,6 +398,23 @@ public class SettingsManager implements OnInitializedListener,
     public static boolean chatsSendByEnter() {
         return getBoolean(R.string.chats_send_by_enter_key,
                 R.bool.chats_send_by_enter_default);
+    }
+
+    public static boolean chatsAutoDownloadVoiceMessage() {
+        return getBoolean(R.string.chats_auto_download_voice_messages_key,
+                R.bool.chats_auto_download_voice_messages_default);
+    }
+
+    public static void setChatsAutoDownloadVoiceMessage(boolean value) {
+        setBoolean(R.string.chats_auto_download_voice_messages_key, value);
+    }
+
+    public static boolean autoDownloadVoiceMessageSuggested() {
+        return getBoolean(R.string.auto_download_voice_message_suggested_key, false);
+    }
+
+    public static void setAutoDownloadVoiceMessageSuggested() {
+        setBoolean(R.string.auto_download_voice_message_suggested_key, true);
     }
 
     public static ChatsShowStatusChange chatsShowStatusChange() {
