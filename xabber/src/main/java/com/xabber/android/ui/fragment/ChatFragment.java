@@ -1132,6 +1132,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         }
 
         listener.onMessageSent();
+        ChatStateManager.getInstance().cancelComposingSender(account, user);
 
         if (SettingsManager.chatsHideKeyboard() == SettingsManager.ChatsHideKeyboard.always
                 || (getActivity().getResources().getBoolean(R.bool.landscape)

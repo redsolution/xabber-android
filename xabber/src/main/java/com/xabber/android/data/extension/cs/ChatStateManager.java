@@ -259,10 +259,7 @@ public class ChatStateManager implements OnDisconnectListener,
             handler.postDelayed(runnable, SEND_REPEATED_COMPOSING_STATE_DELAY);
             stateSenders.put(account.toString() + user.toString(), runnable);
         } else {
-            Runnable runnable = stateSenders.remove(account.toString() + user.toString());
-            if (runnable != null) {
-                handler.removeCallbacks(runnable);
-            }
+            cancelComposingSender(account, user);
         }
         sent.put(chat.getAccount().toString(), chat.getUser().toString(), chatState);
 
@@ -284,6 +281,13 @@ public class ChatStateManager implements OnDisconnectListener,
         PendingIntent pendingIntent = pauseIntents.remove(account.toString(), user.toString());
         if (pendingIntent != null)
             alarmManager.cancel(pendingIntent);
+    }
+
+    public void cancelComposingSender(AccountJid account, UserJid user) {
+        Runnable runnable = stateSenders.remove(account.toString() + user.toString());
+        if (runnable != null) {
+            handler.removeCallbacks(runnable);
+        }
     }
 
     /**
