@@ -14,8 +14,10 @@ import com.xabber.android.utils.StringUtils;
 import com.xabber.xmpp.smack.XMPPTCPConnection;
 import com.xabber.xmpp.smack.XTokenRequestIQ;
 
+import org.greenrobot.eventbus.EventBus;
 import org.jivesoftware.smack.StanzaListener;
 import org.jivesoftware.smack.packet.IQ;
+import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Stanza;
 
 import java.lang.ref.WeakReference;
@@ -27,6 +29,7 @@ import java.util.List;
 
 public class XTokenManager implements OnPacketListener {
 
+    private static final String NAMESPACE = "http://xabber.com/protocol/auth-tokens";
     private static final String LOG_TAG = XTokenManager.class.getSimpleName();
     private static XTokenManager instance;
 
@@ -42,6 +45,8 @@ public class XTokenManager implements OnPacketListener {
             AccountManager.getInstance()
                     .updateXToken(connection.getAccount(), iqToXToken((XTokenIQ) packet));
         }
+        if (packet instanceof Message && packet.hasExtension(NAMESPACE))
+            EventBus.getDefault().post(new SessionsUpdateEvent());
     }
 
     public void sendXTokenRequest(XMPPTCPConnection connection) {
@@ -180,4 +185,6 @@ public class XTokenManager implements OnPacketListener {
             }
         }
     }
+
+    public class SessionsUpdateEvent{    }
 }

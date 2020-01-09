@@ -26,6 +26,8 @@ import com.xabber.android.data.extension.xtoken.XTokenManager;
 import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.ui.color.BarPainter;
 
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.List;
 
@@ -111,10 +113,34 @@ public class ActiveSessionsActivity extends ManagedActivity implements SessionAd
         tvCurrentIPAddress = findViewById(R.id.tvIPAddress);
         tvCurrentDate = findViewById(R.id.tvDate);
 
-        updateData();
+        getSessionsData();
     }
 
-    private void updateData() {
+    private void refreshData(){
+        XTokenManager.getInstance().requestSessions(
+                accountItem.getConnectionSettings().getXToken().getUid(),
+                accountItem.getConnection(), new XTokenManager.SessionsListener() {
+                    @Override
+                    public void onResult(SessionVO currentSession, List<SessionVO> sessions) {
+                        setCurrentSession(currentSession);
+                        adapter.setItems(sessions);
+                        adapter.notifyDataSetChanged();
+                        terminateAll.setVisibility(sessions.isEmpty() ? View.GONE : View.VISIBLE);
+                        tvActiveSessions.setVisibility(sessions.isEmpty() ? View.GONE : View.VISIBLE);
+                    }
+
+                    @Override
+                    public void onError() {
+                        Toast.makeText(ActiveSessionsActivity.this,
+                                R.string.account_active_sessions_error, Toast.LENGTH_LONG).show();
+                    }
+                });
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onNewMessageEvent(XTokenManager.SessionsUpdateEvent sessionsUpdateEvent) { refreshData(); }
+
+    private void getSessionsData() {
         progressBar.setVisibility(View.VISIBLE);
         contentView.setVisibility(View.GONE);
         XTokenManager.getInstance().requestSessions(
@@ -159,7 +185,7 @@ public class ActiveSessionsActivity extends ManagedActivity implements SessionAd
                 public void onClick(DialogInterface dialogInterface, int i) {
                     XTokenManager.getInstance().sendRevokeXTokenRequest(
                             accountItem.getConnection(), adapter.getItemsIDs());
-                    updateData();
+                    getSessionsData();
                 }
             })
             .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -179,7 +205,7 @@ public class ActiveSessionsActivity extends ManagedActivity implements SessionAd
                 public void onClick(DialogInterface dialogInterface, int i) {
                     XTokenManager.getInstance().sendRevokeXTokenRequest(
                             accountItem.getConnection(), uid);
-                    updateData();
+                    getSessionsData();
                 }
             })
             .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
