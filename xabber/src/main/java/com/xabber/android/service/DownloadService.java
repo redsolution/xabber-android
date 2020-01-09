@@ -78,7 +78,7 @@ public class DownloadService extends IntentService {
         needStop = true;
     }
 
-    private void requestFileDownload(final String fileName, final long fileSize, String url, OkHttpClient client) {
+    private void requestFileDownload(String fileName, final long fileSize, String url, OkHttpClient client) {
         Request request = new Request.Builder().url(url).build();
         try {
             Response response = client.newCall(request).execute();
@@ -134,6 +134,7 @@ public class DownloadService extends IntentService {
             }
 
             // create file
+            fileName = fileName.replaceAll("[^a-zA-Z0-9.\\-]", "_");
             String filePath = directory.getPath() + File.separator + fileName;
             File file = new File(filePath);
 
