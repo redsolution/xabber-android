@@ -1132,6 +1132,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         }
 
         listener.onMessageSent();
+        ChatStateManager.getInstance().cancelComposingSender(account, user);
 
         if (SettingsManager.chatsHideKeyboard() == SettingsManager.ChatsHideKeyboard.always
                 || (getActivity().getResources().getBoolean(R.bool.landscape)
@@ -1962,7 +1963,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         }
     }
 
-    private void finishVoiceRecordLayout() {
+    public void finishVoiceRecordLayout() {
         recordingPresenterLayout.setVisibility(View.GONE);
         recordingPresenter.updateVisualizer(null);
         currentVoiceRecordingState = VoiceRecordState.NotRecording;
@@ -2019,6 +2020,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         if (start) voiceMessageRecorderLayout.setVisibility(View.VISIBLE);
         if (start) {
             ChatStateManager.getInstance().onComposing(account, user, null, ChatStateSubtype.voice);
+            stopTypingTimer.cancel();
             slideToCancelLayout.animate().x(0).setDuration(0).start();
             recordLockChevronImage.setAlpha(1f);
             recordLockImage.setImageResource(R.drawable.ic_security_plain_24dp);

@@ -191,6 +191,8 @@ public final class VoiceManager implements MediaPlayer.OnCompletionListener, Med
         if (createPlayerIfNotInitialized()) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
                 mp.setAudioAttributes(audioAttributes);
+            else
+                mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
             mp.setOnCompletionListener(this);
             mp.setOnErrorListener(this);
             mp.setOnPreparedListener(this);

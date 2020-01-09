@@ -45,6 +45,12 @@
             android:defaultValue="@bool/connection_compress_image_on_upload_default"
             />
 
+        <CheckBoxPreference
+            android:defaultValue="@bool/connection_auto_download_voice_messages_default"
+            android:key = "@string/connection_auto_download_voice_messages_key"
+            android:title = "@string/connection_auto_download_voice_message"
+            />
+
     </PreferenceCategory>
 
 </PreferenceScreen>

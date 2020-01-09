@@ -679,6 +679,7 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
                         }
                         ignore = true;
                     case OpusEvent.RECORD_FAILED:
+                        ((ChatActivity)getActivity()).finishVoiceRecordLayout();
                         ignore = true;
                     case OpusEvent.PLAYING_FAILED:
                     case OpusEvent.CONVERT_FAILED:

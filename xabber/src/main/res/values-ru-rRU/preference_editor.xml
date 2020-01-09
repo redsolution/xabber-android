@@ -7,7 +7,7 @@
     <string name="cache_clear">Очистить кэш\nУдалить все сохранённые локально данные. Это позволит уменьшить занимаемое программой место.</string>
     <string name="cache_clear_warning">Вы действительно хотите удалить историю переписки, а также другие сохранённые локально данные?\nОбщие настройки и данные учетных записей будут сохранены. Приложение будет закрыто.</string>
     <string name="chats_send_by_enter">Отправлять по Enter\nСообщение будет отправлено при нажатии на Enter</string>
-    <string name="chats_auto_download_voice_message">Загружать голосовые сообщения\nАвтоматически загружать голосовые сообщения на локальное хранилище</string>
+    <string name="connection_auto_download_voice_message">Загружать голосовые сообщения\nАвтоматически загружать голосовые сообщения на локальное хранилище</string>
     <string name="connection_go_away">Переход в состояние \"Отошел\"\nАвтоматически переходить в состояние \"Отошел\" при блокировании экрана</string>
     <string name="contacts_order">Сортировка контактов</string>
     <string name="contacts_order_alphabet">По алфавиту</string>

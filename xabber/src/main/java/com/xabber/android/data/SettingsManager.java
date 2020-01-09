@@ -401,12 +401,12 @@ public class SettingsManager implements OnInitializedListener,
     }
 
     public static boolean chatsAutoDownloadVoiceMessage() {
-        return getBoolean(R.string.chats_auto_download_voice_messages_key,
-                R.bool.chats_auto_download_voice_messages_default);
+        return getBoolean(R.string.connection_auto_download_voice_messages_key,
+                R.bool.connection_auto_download_voice_messages_default);
     }
 
     public static void setChatsAutoDownloadVoiceMessage(boolean value) {
-        setBoolean(R.string.chats_auto_download_voice_messages_key, value);
+        setBoolean(R.string.connection_auto_download_voice_messages_key, value);
     }
 
     public static boolean autoDownloadVoiceMessageSuggested() {

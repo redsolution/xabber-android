@@ -208,10 +208,6 @@
     <string name="chats_send_by_enter_key">chats_send_by_enter</string>
     <bool name="chats_send_by_enter_default">false</bool>
 
-    <string name="chats_auto_download_voice_messages_key">auto_download_voice_messages</string>
-    <bool name="chats_auto_download_voice_messages_default">false</bool>
-    <string name="auto_download_voice_message_suggested_key">auto_download_voice_message_suggested</string>
-
     <string name="chats_show_status_change_key">chats_show_status_change</string>
     <string name="chats_show_status_change_always_value">always</string>
     <string name="chats_show_status_change_muc_value">muc</string>
@@ -359,6 +355,10 @@
 
     <string name="connection_compress_image_on_upload_key">connection_compress_image_on_upload</string>
     <bool name="connection_compress_image_on_upload_default">true</bool>
+
+    <string name="connection_auto_download_voice_messages_key">auto_download_voice_messages</string>
+    <bool name="connection_auto_download_voice_messages_default">false</bool>
+    <string name="auto_download_voice_message_suggested_key">auto_download_voice_message_suggested</string>
 
     <string name="connection_dns_resolver_type_key">connection_dns_resolver_type</string>
 

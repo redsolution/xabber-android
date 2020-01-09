@@ -231,25 +231,15 @@ public class PlayerVisualizerView extends View {
                 }
             }
         } else {
-
-            if (bytes == null)
-                return;
-
-            ArrayList<Integer> waveform = getFakeAmplitudeList();
             for (int a = 0; a < totalBarsCount; a++) {
 
-                int barHeight;
-                if (amplitude != 0)
-                    barHeight = (height * waveform.get(a)) / amplitude;
-                else barHeight = 0;
-                if (barHeight < dp(1))
-                    barHeight = dp(1);
-                int x = a * dp(3);
-                float left = x;
-                float right = x + dp(2);
+                int barHeight = dp(1);
+
+                float left = a * dp(3);
+                float right = left + dp(2);
                 float top = height - barHeight;
                 float bottom = height;
-                if (x < denseness) {
+                if (left < denseness) {
                     canvas.drawRect(left, top, right, bottom, playedStatePainting);
                 } else {
                     canvas.drawRect(left, top, right, bottom, notPlayedStatePainting);
