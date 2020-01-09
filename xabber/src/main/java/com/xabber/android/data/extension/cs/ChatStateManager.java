@@ -73,7 +73,8 @@ public class ChatStateManager implements OnDisconnectListener,
 
     private static final int PAUSE_TIMEOUT = 30 * 1000;
 
-    private static final long REMOVE_STATE_DELAY = 10 * 1000;
+    private static final long REMOVE_COMPOSING_STATE_DELAY = 30 * 1000;
+    private static final long REMOVE_PAUSED_STATE_DELAY = 5 * 1000;
 
     static {
         XMPPConnectionRegistry.addConnectionCreationListener(new ConnectionCreationListener() {
@@ -378,7 +379,10 @@ public class ChatStateManager implements OnDisconnectListener,
                                 RosterManager.onChatStateChanged(account, bareUserJid);
                             }
                         };
-                        handler.postDelayed(runnable, REMOVE_STATE_DELAY);
+                        if (chatState == ChatState.composing)
+                            handler.postDelayed(runnable, REMOVE_COMPOSING_STATE_DELAY);
+                        else
+                            handler.postDelayed(runnable, REMOVE_PAUSED_STATE_DELAY);
                         stateCleaners.put(account.toString(), bareUserJid.toString(), resource, runnable);
                     }
                     RosterManager.onChatStateChanged(account, bareUserJid);

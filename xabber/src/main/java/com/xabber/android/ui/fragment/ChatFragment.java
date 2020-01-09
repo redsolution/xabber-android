@@ -2019,6 +2019,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         if (start) voiceMessageRecorderLayout.setVisibility(View.VISIBLE);
         if (start) {
             ChatStateManager.getInstance().onComposing(account, user, null, ChatStateSubtype.voice);
+            stopTypingTimer.cancel();
             slideToCancelLayout.animate().x(0).setDuration(0).start();
             recordLockChevronImage.setAlpha(1f);
             recordLockImage.setImageResource(R.drawable.ic_security_plain_24dp);
