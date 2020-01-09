@@ -624,6 +624,11 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         chatFragment.setVoicePresenterData(tempPath);
     }
 
+    public void finishVoiceRecordLayout() {
+        if (chatFragment == null) return;
+        chatFragment.finishVoiceRecordLayout();
+    }
+
     private void insertExtraText() {
         if (extraText == null || extraText.equals("")) {
             return;

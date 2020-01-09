@@ -1962,7 +1962,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         }
     }
 
-    private void finishVoiceRecordLayout() {
+    public void finishVoiceRecordLayout() {
         recordingPresenterLayout.setVisibility(View.GONE);
         recordingPresenter.updateVisualizer(null);
         currentVoiceRecordingState = VoiceRecordState.NotRecording;
