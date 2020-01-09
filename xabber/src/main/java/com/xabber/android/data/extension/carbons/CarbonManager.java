@@ -64,7 +64,7 @@ public class CarbonManager {
                 .getInstanceFor(connectionItem.getConnection());
 
         try {
-            if (carbonManager.isSupportedByServer()) {
+            if (connectionItem.getConnection() != null && connectionItem.getConnection().getUser() != null && carbonManager.isSupportedByServer()) {
                 if (carbonManager.getCarbonsEnabled()) {
                     // Smack CarbonManager still thinks, that carbons enabled and does not sent IQ
                     // it drops flag to false when on authorized listener, but it happens after this listener

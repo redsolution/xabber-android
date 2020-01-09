@@ -890,8 +890,21 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     @Override
     public void onChange(RealmResults<MessageItem> messageItems) {
         updateLastMessage();
-        RosterCacheManager.saveLastMessageToContact(
-                MessageDatabaseManager.getInstance().getRealmUiThread(), lastMessage);
+        Application.getInstance().runInBackground(new Runnable() {
+            @Override
+            public void run() {
+                Realm realm = null;
+                try {
+                    realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
+                    RosterCacheManager.saveLastMessageToContact(realm, lastMessage);
+                } catch (Exception e) {
+                    LogManager.exception("AbstractChat", e);
+                } finally {
+                    if (realm != null )
+                        realm.close();
+                }
+            }
+        });
     }
 
     /** UNREAD MESSAGES */
@@ -910,6 +923,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     public int getUnreadMessageCount() {
         int unread = ((int) getAllUnreadQuery().count()) - waitToMarkAsRead.size();
         if (unread < 0) unread = 0;
+        if (getLastMessage() != null && !getLastMessage().isIncoming()) unread = 0;
         return unread;
     }
 
