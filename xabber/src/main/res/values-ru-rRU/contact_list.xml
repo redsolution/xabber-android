@@ -79,7 +79,8 @@
     <string name="clear_log">Удалить старые файлы журнала</string>
     <string name="open_log_file">Открыть</string>
     <string name="send_log_file">Отправить</string>
-    <string name="voice_download_dialog_message">Не хотели бы вы автоматически скачивать аудио-сообщения? Вы всегда можете изменить это поведение в настройках.</string>
+    <string name="voice_download_dialog_message">Xabber может автоматически загружать все входящие медиа файлы. Такой способ намного удобнее, но несет за собой повышенный риск конфиденциальности и может значительно повысить использование данных.\n\nВы всегда можете изменить это поведение в <b>настройках подключения.</b></string>
+    <string name="voice_download_dialog_agree">Загружать автоматически</string>
     <string name="synchronize_bookmarks">Синхронизировать закладки</string>
     <string name="remove_all_bookmarks">Удалить все</string>
     <string name="remove_selected_bookmarks">Удалить выбранные</string>

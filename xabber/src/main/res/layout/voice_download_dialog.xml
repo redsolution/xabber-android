@@ -7,9 +7,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginRight="16dp"
+        android:layout_margin="16dp"
         android:text="@string/voice_download_dialog_message"
         android:textAppearance="?android:attr/textAppearanceListItem"
         android:textColor="?attr/standard_text_color" />
@@ -22,20 +20,21 @@
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/voice_download_agree"
-            style="@style/Widget.AppCompat.Button.ButtonBar.AlertDialog"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/action_download" />
-
-        <Button
             android:id="@+id/voice_download_disagree"
             style="@style/Widget.AppCompat.Button.ButtonBar.AlertDialog"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/cancel" />
+
+        <Button
+            android:id="@+id/voice_download_agree"
+            style="@style/Widget.AppCompat.Button.ButtonBar.AlertDialog"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/voice_download_dialog_agree" />
+
     </LinearLayout>
 
 </LinearLayout>
