@@ -73,8 +73,9 @@ public class ChatStateManager implements OnDisconnectListener,
 
     private static final int PAUSE_TIMEOUT = 30 * 1000;
 
-    private static final long REMOVE_COMPOSING_STATE_DELAY = 30 * 1000;
+    private static final long REMOVE_COMPOSING_STATE_DELAY = 15 * 1000;
     private static final long REMOVE_PAUSED_STATE_DELAY = 5 * 1000;
+    private static final long SEND_REPEATED_COMPOSING_STATE_DELAY = 5 * 1000;
 
     static {
         XMPPConnectionRegistry.addConnectionCreationListener(new ConnectionCreationListener() {
@@ -108,6 +109,7 @@ public class ChatStateManager implements OnDisconnectListener,
      * account.
      */
     private final NestedNestedMaps<Resourcepart, Runnable> stateCleaners;
+    private final HashMap<String, Runnable> stateSenders;
 
     /**
      * Information about chat state notification support for lower cased
@@ -139,6 +141,7 @@ public class ChatStateManager implements OnDisconnectListener,
         chatStates = new NestedNestedMaps<>();
         chatStateSubtypes = new HashMap<>();
         stateCleaners = new NestedNestedMaps<>();
+        stateSenders = new HashMap<>();
         supports = new NestedNestedMaps<>();
         sent = new NestedMap<>();
         pauseIntents = new NestedMap<>();
@@ -227,17 +230,42 @@ public class ChatStateManager implements OnDisconnectListener,
         updateChatState(account, user, chatState, null);
     }
 
-    private void updateChatState(AccountJid account, UserJid user,
-                                 ChatState chatState, ChatStateSubtype type) {
+    private void updateChatState(final AccountJid account, UserJid user,
+                                 final ChatState chatState, final ChatStateSubtype type) {
         if (!SettingsManager.chatsStateNotification()
                 || sent.get(account.toString(), user.toString()) == chatState) {
             return;
         }
-        AbstractChat chat = MessageManager.getInstance().getChat(account, user);
+        final AbstractChat chat = MessageManager.getInstance().getChat(account, user);
         if (chat == null || !isSupported(chat, false)) {
             return;
         }
+        if (chatState == ChatState.composing) {
+            Runnable runnable = new Runnable() {
+                @Override
+                public void run() {
+                    Message message = new Message();
+                    message.setType(chat.getType());
+                    message.setTo(chat.getTo());
+                    message.addExtension(new ChatStateExtension(chatState, type));
+                    try {
+                        StanzaSender.sendStanza(account, message);
+                    } catch (NetworkException e) {
+                        // Just ignore it.
+                    }
+                    handler.postDelayed(this, SEND_REPEATED_COMPOSING_STATE_DELAY);
+                }
+            };
+            handler.postDelayed(runnable, SEND_REPEATED_COMPOSING_STATE_DELAY);
+            stateSenders.put(account.toString() + user.toString(), runnable);
+        } else {
+            Runnable runnable = stateSenders.remove(account.toString() + user.toString());
+            if (runnable != null) {
+                handler.removeCallbacks(runnable);
+            }
+        }
         sent.put(chat.getAccount().toString(), chat.getUser().toString(), chatState);
+
         Message message = new Message();
         message.setType(chat.getType());
         message.setTo(chat.getTo());
@@ -311,6 +339,7 @@ public class ChatStateManager implements OnDisconnectListener,
             }
         }
         stateCleaners.clear(account.toString());
+        stateSenders.clear();
         supports.clear(account.toString());
         sent.clear(account.toString());
         for (PendingIntent pendingIntent : pauseIntents.getNested(account.toString()).values()) {
