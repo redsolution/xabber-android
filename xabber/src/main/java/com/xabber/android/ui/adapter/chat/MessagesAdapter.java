@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -72,6 +73,7 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
     private String firstUnreadMessageID;
     private boolean isCheckMode;
 
+    private RecyclerView recyclerView;
     private List<String> itemsNeedOriginalText = new ArrayList<>();
     private List<String> checkedItemIds = new ArrayList<>();
     private List<MessageItem> checkedMessageItems = new ArrayList<>();
@@ -153,6 +155,12 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
 
         } else if(isImage) return notJustImage? VIEW_TYPE_OUTGOING_MESSAGE_IMAGE_TEXT : VIEW_TYPE_OUTGOING_MESSAGE_IMAGE;
         else return noFlex ? VIEW_TYPE_OUTGOING_MESSAGE_NOFLEX : VIEW_TYPE_OUTGOING_MESSAGE;
+    }
+
+    @Override
+    public void onAttachedToRecyclerView(@NonNull RecyclerView recyclerView) {
+        super.onAttachedToRecyclerView(recyclerView);
+        this.recyclerView = recyclerView;
     }
 
     @Override
@@ -322,7 +330,7 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
 
     @Override
     public void onMessageClick(View caller, int position) {
-        if (isCheckMode) addOrRemoveCheckedItem(position);
+        if (isCheckMode && !recyclerView.isComputingLayout()) addOrRemoveCheckedItem(position);
         else messageListener.onMessageClick(caller, position);
     }
 
@@ -391,6 +399,9 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
     /** Checked items */
 
     private void addOrRemoveCheckedItem(int position) {
+        if (recyclerView.isComputingLayout() || recyclerView.isAnimating())
+            return;
+        recyclerView.stopScroll();
         MessageItem messageItem = getItem(position);
         String uniqueId = messageItem.getUniqueId();
 
