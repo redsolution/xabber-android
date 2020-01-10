@@ -460,8 +460,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
                             //since alpha and slide are tied together, we can cancel recording by checking transparency value
                             if (alpha<=0) {
-                                cancelRecordingCompletely(true);
-                                VoiceManager.getInstance().deleteRecordedFile();
+                                clearVoiceMessage();
                             }
                         }
                         break;
@@ -1827,9 +1826,11 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
     private void sendVoiceMessage() {
         manageVoiceMessage(recordSaveAllowed);
+        scrollDown();
+        setFirstUnreadMessageId(null);
     }
 
-    private void clearVoiceMessage() {
+    public void clearVoiceMessage() {
         manageVoiceMessage(false);
     }
 
@@ -1840,8 +1841,6 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
             stopRecordingAndSend(saveMessage, bottomPanelMessagesIds);
         } else
             stopRecordingAndSend(saveMessage);
-        scrollDown();
-        setFirstUnreadMessageId(null);
         cancelRecordingCompletely(true);
     }
 
@@ -1849,7 +1848,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         Utils.lockScreenRotation(getActivity(), false);
         if (recordSaveAllowed) {
             sendImmediately = false;
-            ignore = false;
+            //ignore = false;
             VoiceManager.getInstance().stopRecording(false);
             endRecordingButtonsAnimation();
             beginTimer(false);
@@ -2021,6 +2020,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         if (start) {
             ChatStateManager.getInstance().onComposing(account, user, null, ChatStateSubtype.voice);
             stopTypingTimer.cancel();
+            ignore = false;
             slideToCancelLayout.animate().x(0).setDuration(0).start();
             recordLockChevronImage.setAlpha(1f);
             recordLockImage.setImageResource(R.drawable.ic_security_plain_24dp);

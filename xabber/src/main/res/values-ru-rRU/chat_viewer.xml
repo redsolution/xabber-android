@@ -16,6 +16,7 @@
     <string name="contact_is_offline">Сообщения доставлены на сервер получателя и могут быть прочитаны им после подключения к сети</string>
     <string name="ENTRY_IS_NOT_AVAILABLE">Контакт не доступен</string>
     <string name="FILE_NOT_FOUND">Файл не найден</string>
+    <string name="VOICE_RECORDING_ERROR">Возникли проблемы с записью, сообщение не будет отправлено</string>
     <string name="message_copy">Копировать</string>
     <string name="message_appeal">Упомянуть</string>
     <string name="message_quote">Цитировать</string>

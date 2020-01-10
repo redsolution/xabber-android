@@ -420,7 +420,7 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
     void stopRecordingAndSend(boolean send, List<String> forwardIDs) {
         if (send) {
             sendImmediately = true;
-            ignore = false;
+            //ignore = false;
             forwardIdsForAttachments(forwardIDs);
             VoiceManager.getInstance().stopRecording(false);
         } else {
@@ -678,16 +678,18 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
                             ((ChatActivity)getActivity()).setUpVoiceMessagePresenter(tempPath);
                         }
                         ignore = true;
+                        break;
                     case OpusEvent.RECORD_FAILED:
                         ((ChatActivity)getActivity()).finishVoiceRecordLayout();
+                        Toast.makeText(Application.getInstance(), getResources().getString(R.string.VOICE_RECORDING_ERROR), Toast.LENGTH_LONG).show();
                         ignore = true;
+                        break;
                     case OpusEvent.PLAYING_FAILED:
                     case OpusEvent.CONVERT_FAILED:
                     case OpusEvent.CONVERT_FINISHED:
                     case OpusEvent.PLAYING_FINISHED:
                     default:
                         break;
-
                 }
             }
         }

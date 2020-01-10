@@ -16,6 +16,7 @@
     <string name="contact_is_offline">The recipient is offline. Messages you send will be delivered when they come back online.</string>
     <string name="ENTRY_IS_NOT_AVAILABLE">Contact is not available</string>
     <string name="FILE_NOT_FOUND">File not found</string>
+    <string name="VOICE_RECORDING_ERROR">There was an error with the recording software, the message will not be sent</string>
     <string name="message_copy">Copy</string>
     <string name="message_appeal">Mention</string>
     <string name="message_quote">Quote</string>

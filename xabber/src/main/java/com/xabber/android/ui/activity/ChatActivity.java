@@ -626,6 +626,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
 
     public void finishVoiceRecordLayout() {
         if (chatFragment == null) return;
+        chatFragment.clearVoiceMessage();
         chatFragment.finishVoiceRecordLayout();
     }
 
