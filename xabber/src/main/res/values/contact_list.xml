@@ -83,7 +83,8 @@
     <string name="open_log_file">Open</string>
     <string name="send_log_file">Send</string>
 
-    <string name="voice_download_dialog_message">Xabber can automatically download all incoming media files. It is way more convenient, but carries a privacy risk and may cause high data usage.\n\nYou can always change this in <b>connection settings.</b></string>
+    <string name="voice_download_dialog_message">Xabber can automatically download all incoming media files. It is way more convenient, but carries a privacy risk and may cause high data usage.</string>
+    <string name="voice_download_dialog_message_settings">You can always change this in <b>connection settings.</b></string>
     <string name="voice_download_dialog_agree">Download automatically</string>
 
     <string name="synchronize_bookmarks">Synchronize bookmarks</string>

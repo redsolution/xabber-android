@@ -616,7 +616,7 @@ public class FileInteractionFragment extends Fragment implements FileMessageVH.F
                     if (!SettingsManager.autoDownloadVoiceMessageSuggested()) {
                         if (!SettingsManager.chatsAutoDownloadVoiceMessage()) {
                             if (getFragmentManager() != null && getFragmentManager().findFragmentByTag("VoiceDownloadDialog") == null) {
-                                VoiceDownloadDialog dialog = VoiceDownloadDialog.newInstance();
+                                VoiceDownloadDialog dialog = VoiceDownloadDialog.newInstance(account);
                                 dialog.show(getFragmentManager(), "VoiceDownloadDialog");
                             }
                         }

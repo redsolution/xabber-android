@@ -1,14 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
+    android:background="?attr/standard_background_color"
     android:layout_height="match_parent">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        android:layout_margin="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginRight="16dp"
         android:text="@string/voice_download_dialog_message"
+        android:textAppearance="?android:attr/textAppearanceListItem"
+        android:textColor="?attr/standard_text_color" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="16dp"
+        android:text="@string/voice_download_dialog_message_settings"
         android:textAppearance="?android:attr/textAppearanceListItem"
         android:textColor="?attr/standard_text_color" />
 
@@ -17,15 +32,18 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:paddingBottom="8dp">
 
         <Button
             android:id="@+id/voice_download_disagree"
-            style="@style/Widget.AppCompat.Button.ButtonBar.AlertDialog"
+            style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/cancel" />
+            android:alpha="0.7"
+            android:text="@string/cancel"
+            android:textColor="?attr/standard_text_color" />
 
         <Button
             android:id="@+id/voice_download_agree"
