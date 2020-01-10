@@ -57,10 +57,10 @@
     <string name="ATTENTION_IS_NOT_SUPPORTED">Контант не поддерживает возможность его окликнуть или отключил эту функцию</string>
     <string name="call_attention">Окликнуть</string>
     <string name="chat_settings">Настройки чата</string>
-    <string name="chat_state_composing">Набирает сообщение&#8230;</string>
-    <string name="chat_state_composing_voice">Записывает аудиосообщение…</string>
-    <string name="chat_state_composing_video">Записывает видеосообщение…</string>
-    <string name="chat_state_composing_upload">Отправляет файл…</string>
+    <string name="chat_state_composing">набирает сообщение&#8230;</string>
+    <string name="chat_state_composing_voice">записывает аудиосообщение…</string>
+    <string name="chat_state_composing_video">записывает видеосообщение…</string>
+    <string name="chat_state_composing_upload">отправляет файл…</string>
     <string name="chat_state_paused">Перестал печатать</string>
     <string name="chat_state_paused_voice_and_video">Запись остановлена</string>
     <string name="chat_state_paused_upload">Отправка остановлена</string>
