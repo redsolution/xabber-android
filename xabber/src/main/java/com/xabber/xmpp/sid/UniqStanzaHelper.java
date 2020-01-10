@@ -23,7 +23,7 @@ public class UniqStanzaHelper {
     public static String getOriginId(Message message) {
         StandardExtensionElement sidElement = message.getExtension(ELEMENT_NAME_ORIGIN, NAMESPACE);
         if (sidElement != null) return sidElement.getAttributeValue(ATTRIBUTE_ID);
-        else return null;
+        else return message.getStanzaId();
     }
 
 }

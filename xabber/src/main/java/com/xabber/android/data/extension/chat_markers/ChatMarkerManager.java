@@ -97,10 +97,19 @@ public class ChatMarkerManager implements OnPacketListener {
     }
 
     public void sendDisplayed(MessageItem messageItem) {
-        if (messageItem.getStanzaId() == null || messageItem.getStanzaId().isEmpty()) return;
+        if (messageItem.getStanzaId() == null && messageItem.getOriginId() == null) return;
+
+        String id = messageItem.getOriginId() != null ?
+                messageItem.getOriginId() : messageItem.getStanzaId();
+        if (id == null || id.isEmpty()) return;
 
         Message displayed = new Message(messageItem.getUser().getJid());
-        displayed.addExtension(new ChatMarkersElements.DisplayedExtension(messageItem.getOriginId()));
+
+        ChatMarkersElements.DisplayedExtension displayedExtension = new ChatMarkersElements.DisplayedExtension(id);
+        displayedExtension.setStanzaId(messageItem.getStanzaId());
+        displayedExtension.setStanzaIdBy(messageItem.getAccount().getFullJid().asBareJid().toString());
+
+        displayed.addExtension(displayedExtension);
         displayed.setType(Message.Type.chat);
 
         sendMessageInBackgroundUserRequest(displayed, messageItem.getAccount());

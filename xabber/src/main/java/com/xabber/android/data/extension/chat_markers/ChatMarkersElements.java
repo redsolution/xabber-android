@@ -11,6 +11,11 @@ import java.util.ArrayList;
 public class ChatMarkersElements {
 
     public static final String NAMESPACE = "urn:xmpp:chat-markers:0";
+    public static final String STANZA_ID_NAMESPACE = "urn:xmpp:sid:0";
+    public static final String STANZA_ID_ELEMENT = "stanza-id";
+    public static final String ATTRIBUTE_BY = "by";
+    public static final String ATTRIBUTE_ID = "id";
+
 
     /**
      * Markable extension class.
@@ -55,6 +60,7 @@ public class ChatMarkersElements {
     protected abstract static class ChatMarkerExtensionWithId implements ExtensionElement {
         protected final String id;
         protected ArrayList<String> stanzaId = new ArrayList<>();
+        protected String stanzaIdBy;
 
         protected ChatMarkerExtensionWithId(String id) {
             this.id = StringUtils.requireNotNullOrEmpty(id, "Message ID must not be null");
@@ -77,11 +83,28 @@ public class ChatMarkersElements {
             return stanzaId;
         }
 
+        public void setStanzaIdBy(String by) {
+            stanzaIdBy = by;
+        }
+
+        public String getStanzaIdBy() {
+            return stanzaIdBy;
+        }
+
         @Override
         public final XmlStringBuilder toXML() {
             XmlStringBuilder xml = new XmlStringBuilder(this);
             xml.attribute("id", id);
-            xml.closeEmptyElement();
+            if (stanzaId.isEmpty() || stanzaIdBy == null)
+                xml.closeEmptyElement();
+            else {
+                xml.rightAngleBracket();
+                xml.prelude(STANZA_ID_ELEMENT, STANZA_ID_NAMESPACE);
+                xml.attribute(ATTRIBUTE_ID, stanzaId.get(0));
+                xml.attribute(ATTRIBUTE_BY, stanzaIdBy);
+                xml.closeEmptyElement();
+                xml.closeElement(getElementName());
+            }
             return xml;
         }
     }
