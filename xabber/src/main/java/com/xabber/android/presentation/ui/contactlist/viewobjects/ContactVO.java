@@ -28,6 +28,7 @@ import com.xabber.android.data.database.messagerealm.Attachment;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.extension.cs.ChatStateManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.muc.RoomChat;
 import com.xabber.android.data.message.AbstractChat;
@@ -132,6 +133,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
 
     public static ContactVO convert(AbstractContact contact, ContactClickListener listener) {
         int accountColorIndicator;
+        int accountColorIndicatorLight;
         int accountColorIndicatorBack;
         Drawable avatar;
         int statusLevel;
@@ -145,6 +147,8 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
 
         accountColorIndicator = ColorManager.getInstance().getAccountPainter()
                 .getAccountMainColor(contact.getAccount());
+        accountColorIndicatorLight = ColorManager.getInstance().getAccountPainter()
+                .getAccountColorWithTint(contact.getAccount(), 300);
         accountColorIndicatorBack = ColorManager.getInstance().getAccountPainter()
                 .getAccountIndicatorBackColor(contact.getAccount());
         avatar = contact.getAvatar();
@@ -175,7 +179,10 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
         if (lastMessage == null || lastMessage.getText() == null) {
             messageText = statusText;
         } else {
-            if (lastMessage.haveAttachments() && lastMessage.getAttachments().size() > 0) {
+            if (ChatStateManager.getInstance().getFullChatStateString(contact.getAccount(), contact.getUser()) != null) {
+                String chatState = ChatStateManager.getInstance().getFullChatStateString(contact.getAccount(), contact.getUser());
+                messageText = StringUtils.getColoredText(chatState, accountColorIndicatorLight);
+            } else if (lastMessage.haveAttachments() && lastMessage.getAttachments().size() > 0) {
                 Attachment attachment = lastMessage.getAttachments().get(0);
                 if (attachment.isVoice()) {
                     StringBuilder voiceText = new StringBuilder();

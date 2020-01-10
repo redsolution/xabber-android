@@ -59,6 +59,7 @@ import com.xabber.android.data.message.NewMessageEvent;
 import com.xabber.android.data.notification.MessageNotificationManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.GroupManager;
+import com.xabber.android.data.roster.OnChatStateListener;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
@@ -103,7 +104,7 @@ import eu.davidea.flexibleadapter.items.IFlexible;
 
 public class ChatListFragment extends Fragment implements ContactVO.ContactClickListener,
         FlexibleAdapter.OnItemClickListener, FlexibleAdapter.OnItemSwipeListener, View.OnClickListener,
-        OnContactChangedListener, OnAccountChangedListener, UpdateBackpressure.UpdatableObject,
+        OnContactChangedListener, OnAccountChangedListener, OnChatStateListener, UpdateBackpressure.UpdatableObject,
         PopupMenu.OnMenuItemClickListener, ContextMenuHelper.ListPresenter {
 
     private UpdateBackpressure updateBackpressure;
@@ -151,6 +152,7 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         chatListFragmentListener = (ChatListFragmentListener) context;
         Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
         Application.getInstance().addUIListener(OnContactChangedListener.class, this);
+        Application.getInstance().addUIListener(OnChatStateListener.class, this);
         EventBus.getDefault().register(this);
         chatListFragmentListener.onChatListStateChanged(currentChatsState);
         super.onAttach(context);
@@ -202,6 +204,7 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         chatListFragmentListener = null;
         Application.getInstance().removeUIListener(OnAccountChangedListener.class, this);
         Application.getInstance().removeUIListener(OnContactChangedListener.class,this);
+        Application.getInstance().removeUIListener(OnChatStateListener.class, this);
         EventBus.getDefault().unregister(this);
         updateBackpressure.removeRefreshRequests();
         super.onDetach();
@@ -544,6 +547,11 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
 
     @Override
     public void onContactsChanged(Collection<RosterContact> entities) {
+        updateBackpressure.refreshRequest();
+    }
+
+    @Override
+    public void onChatStateChanged(Collection<RosterContact> entities) {
         updateBackpressure.refreshRequest();
     }
 
