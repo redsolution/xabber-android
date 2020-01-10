@@ -20,6 +20,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
 
+import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.OnCloseListener;
@@ -74,7 +75,7 @@ public class ChatStateManager implements OnDisconnectListener,
     private static final int PAUSE_TIMEOUT = 30 * 1000;
 
     private static final long REMOVE_COMPOSING_STATE_DELAY = 15 * 1000;
-    private static final long REMOVE_PAUSED_STATE_DELAY = 5 * 1000;
+    private static final long REMOVE_PAUSED_STATE_DELAY = 0;
     private static final long SEND_REPEATED_COMPOSING_STATE_DELAY = 5 * 1000;
 
     static {
@@ -155,7 +156,7 @@ public class ChatStateManager implements OnDisconnectListener,
      *
      * @return <code>null</code> if there is no available information.
      */
-    public ChatState getChatState(AccountJid account, UserJid bareAddress) {
+    private ChatState getChatState(AccountJid account, UserJid bareAddress) {
         Map<Resourcepart, ChatState> map = chatStates.get(account.toString(), bareAddress.toString());
         if (map == null) {
             return null;
@@ -169,19 +170,53 @@ public class ChatStateManager implements OnDisconnectListener,
         return chatState;
     }
 
-    public ChatStateSubtype getChatSubstate(AccountJid account, UserJid bareAddress) {
-        //Map<Resourcepart, ChatStateSubtype> map = chatStateSubtypes.get(account.toString(), bareAddress.toString());
-        //if (map == null) {
-        //    return null;
-        //}
-        //ChatStateSubtype type = null;
-        //for (ChatStateSubtype check : map.values()) {
-        //    if (type == null || check.compareTo(type) < 0) {
-        //        type = check;
-        //    }
-        //}
+    private ChatStateSubtype getChatSubstate(AccountJid account, UserJid bareAddress) {
         String key = account.toString() + bareAddress.toString();
         return chatStateSubtypes.get(key);
+    }
+
+    public String getFullChatStateString(AccountJid account, UserJid bareAddress) {
+        ChatState chatState = getChatState(account, bareAddress);
+        ChatStateSubtype chatStateSubtype = getChatSubstate(account, bareAddress);
+        String chatStateString = null;
+        if (chatState == ChatState.composing) {
+            if (chatStateSubtype == null) {
+                chatStateString = Application.getInstance().getString(R.string.chat_state_composing);
+            } else {
+                switch (chatStateSubtype) {
+                    case voice:
+                        chatStateString = Application.getInstance().getString(R.string.chat_state_composing_voice);
+                        break;
+                    case video:
+                        chatStateString = Application.getInstance().getString(R.string.chat_state_composing_video);
+                        break;
+                    case upload:
+                        chatStateString = Application.getInstance().getString(R.string.chat_state_composing_upload);
+                        break;
+                    default:
+                        chatStateString = Application.getInstance().getString(R.string.chat_state_composing);
+                        break;
+                }
+            }
+            //} else if (chatState == ChatState.paused) {
+            //    if (type == null) {
+            //        statusText = context.getString(R.string.chat_state_paused);
+            //    } else {
+            //        switch (type) {
+            //            case voice:
+            //            case video:
+            //                statusText = context.getString(R.string.chat_state_paused_voice_and_video);
+            //                break;
+            //            case upload:
+            //                statusText = context.getString(R.string.chat_state_composing_upload);
+            //                break;
+            //            default:
+            //                statusText = context.getString(R.string.chat_state_paused);
+            //                break;
+            //        }
+            //    }
+        }
+        return chatStateString;
     }
 
     /**

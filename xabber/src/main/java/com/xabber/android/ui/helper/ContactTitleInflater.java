@@ -33,8 +33,6 @@ import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.ui.activity.AccountActivity;
 import com.xabber.android.ui.color.ColorManager;
-import com.xabber.xmpp.uuu.ChatState;
-import com.xabber.xmpp.uuu.ChatStateSubtype;
 
 
 public class ContactTitleInflater {
@@ -141,55 +139,16 @@ public class ContactTitleInflater {
 
         final TextView statusTextView = (TextView) titleView.findViewById(R.id.status_text);
 
-
-        ChatState chatState = ChatStateManager.getInstance().getChatState(
-                abstractContact.getAccount(), abstractContact.getUser());
-        ChatStateSubtype type = ChatStateManager.getInstance().getChatSubstate(
-                abstractContact.getAccount(), abstractContact.getUser());
-
-
-        CharSequence statusText = null;
+        CharSequence statusText;
         if (isServer) statusText = "Server";
-        else if (chatState == ChatState.composing) {
-            if (type == null) {
-                statusText = context.getString(R.string.chat_state_composing);
-            } else {
-                switch (type) {
-                    case voice:
-                        statusText = context.getString(R.string.chat_state_composing_voice);
-                        break;
-                    case video:
-                        statusText = context.getString(R.string.chat_state_composing_video);
-                        break;
-                    case upload:
-                        statusText = context.getString(R.string.chat_state_composing_upload);
-                        break;
-                    default:
-                        statusText = context.getString(R.string.chat_state_composing);
-                        break;
+        else {
+            statusText = ChatStateManager.getInstance().getFullChatStateString(
+                    abstractContact.getAccount(), abstractContact.getUser());
+            if (statusText == null) {
+                statusText = abstractContact.getStatusText().trim();
+                if (statusText.toString().isEmpty()) {
+                    statusText = context.getString(abstractContact.getStatusMode().getStringID());
                 }
-            }
-        } else if (chatState == ChatState.paused) {
-            if (type == null) {
-                statusText = context.getString(R.string.chat_state_paused);
-            } else {
-                switch (type) {
-                    case voice:
-                    case video:
-                        statusText = context.getString(R.string.chat_state_paused_voice_and_video);
-                        break;
-                    case upload:
-                        statusText = context.getString(R.string.chat_state_composing_upload);
-                        break;
-                    default:
-                        statusText = context.getString(R.string.chat_state_paused);
-                        break;
-                }
-            }
-        } else {
-            statusText = abstractContact.getStatusText().trim();
-            if (statusText.toString().isEmpty()) {
-                statusText = context.getString(abstractContact.getStatusMode().getStringID());
             }
         }
         statusTextView.setText(statusText);
