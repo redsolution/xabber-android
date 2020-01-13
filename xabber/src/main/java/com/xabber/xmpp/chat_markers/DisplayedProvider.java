@@ -1,6 +1,7 @@
 package com.xabber.xmpp.chat_markers;
 
 import com.xabber.android.data.extension.chat_markers.ChatMarkersElements;
+import com.xabber.android.data.extension.reliablemessagedelivery.StanzaIdElement;
 
 import org.jivesoftware.smack.provider.ExtensionElementProvider;
 import org.xmlpull.v1.XmlPullParser;
@@ -9,7 +10,6 @@ public class DisplayedProvider extends ExtensionElementProvider<ChatMarkersEleme
 
     @Override
     public ChatMarkersElements.DisplayedExtension parse(XmlPullParser parser, int initialDepth) throws Exception {
-        final String ELEMENT_ID_NAME = "stanza-id";
         String name;
         String id = parser.getAttributeValue("", "id");
         ChatMarkersElements.DisplayedExtension extension = new ChatMarkersElements.DisplayedExtension(id);
@@ -18,10 +18,11 @@ public class DisplayedProvider extends ExtensionElementProvider<ChatMarkersEleme
             switch (eventType) {
                 case XmlPullParser.START_TAG:
                     name = parser.getName();
-                    if (name.equals(ELEMENT_ID_NAME)) {
-                        String stanzaId = parser.getAttributeValue("", "id");
-                        if (stanzaId != null)
-                            extension.setStanzaId(parser.getAttributeValue("", "id"));
+                    if (name.equals(StanzaIdElement.ELEMENT)) {
+                        String stanzaId = parser.getAttributeValue("", StanzaIdElement.ATTRIBUTE_ID);
+                        String by = parser.getAttributeValue("", StanzaIdElement.ATTRIBUTE_BY);
+                        if (stanzaId != null && by != null)
+                            extension.addStanzaIdExtension(new StanzaIdElement(by, stanzaId));
                     }
                     break;
                 case XmlPullParser.END_TAG:

@@ -107,6 +107,11 @@
         <className>com.xabber.xmpp.uuu.ChatStateExtensionProvider</className>
     </extensionProvider>
 
-
+    <!-- Stanza-id element provider -->
+    <extensionProvider>
+        <elementName>stanza-id</elementName>
+        <namespace>urn:xmpp:sid:0</namespace>
+        <className>com.xabber.android.data.extension.reliablemessagedelivery.StanzaIdProvider</className>
+    </extensionProvider>
 
 </smackProviders>

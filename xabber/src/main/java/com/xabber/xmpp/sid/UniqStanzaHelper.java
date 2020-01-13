@@ -1,5 +1,7 @@
 package com.xabber.xmpp.sid;
 
+import com.xabber.android.data.extension.reliablemessagedelivery.StanzaIdElement;
+
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.StandardExtensionElement;
 
@@ -15,8 +17,8 @@ public class UniqStanzaHelper {
     final static String ATTRIBUTE_ID = "id";
 
     public static String getStanzaId(Message message) {
-        StandardExtensionElement sidElement = message.getExtension(ELEMENT_NAME, NAMESPACE);
-        if (sidElement != null) return sidElement.getAttributeValue(ATTRIBUTE_ID);
+        StanzaIdElement sidElement = message.getExtension(ELEMENT_NAME, NAMESPACE);
+        if (sidElement != null) return sidElement.getId();
         else return null;
     }
 

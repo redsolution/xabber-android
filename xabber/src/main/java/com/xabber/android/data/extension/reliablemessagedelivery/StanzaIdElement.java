@@ -16,12 +16,12 @@ public class StanzaIdElement implements ExtensionElement {
     private String by = null;
     private String id = null;
 
-    StanzaIdElement(String by, String id) {
+    public StanzaIdElement(String by, String id) {
         this.by = by;
         this.id = id;
     }
 
-    StanzaIdElement() {
+    public StanzaIdElement() {
     }
 
     @Override
@@ -55,7 +55,7 @@ public class StanzaIdElement implements ExtensionElement {
         XmlStringBuilder xmlStringBuilder = new XmlStringBuilder(this);
         xmlStringBuilder.attribute(ATTRIBUTE_BY, by);
         xmlStringBuilder.attribute(ATTRIBUTE_ID, id);
-        xmlStringBuilder.closeElement(ELEMENT);
+        xmlStringBuilder.closeEmptyElement();
         return xmlStringBuilder;
     }
 
