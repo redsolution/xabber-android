@@ -71,6 +71,7 @@ import com.xabber.android.ui.helper.BlurTransformation;
 import com.xabber.android.ui.helper.ContactTitleInflater;
 
 import java.util.Collection;
+import java.util.concurrent.TimeUnit;
 
 public class ContactActivity extends ManagedActivity implements
         OnContactChangedListener, OnAccountChangedListener, ContactVcardViewerFragment.Listener, View.OnClickListener, View.OnLongClickListener, SnoozeDialog.OnSnoozeListener {
@@ -315,7 +316,7 @@ public class ContactActivity extends ManagedActivity implements
             win.setStatusBarColor(accountMainColor);
         }
 
-        if(toolbar.getOverflowIcon() != null)
+        if (toolbar.getOverflowIcon() != null)
             toolbar.getOverflowIcon().setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_ATOP);
 
         QRgen = findViewById(R.id.generate_qrcode);
@@ -330,10 +331,9 @@ public class ContactActivity extends ManagedActivity implements
             public void onGlobalLayout() {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
                     nameHolderView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                }
-                else nameHolderView.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                } else nameHolderView.getViewTreeObserver().removeGlobalOnLayoutListener(this);
                 int topPadding = /*Utils.dipToPx(33f, Application.getInstance().getApplicationContext()) +*/ (nameHolderView.getHeight());
-                ll.setPadding(0,topPadding,0,0);
+                ll.setPadding(0, topPadding, 0, 0);
             }
         });
 
@@ -355,15 +355,53 @@ public class ContactActivity extends ManagedActivity implements
         }*/
     }
 
-    private void setContactBar(int color, int orientation){
+    private void setContactBar(int color, int orientation) {
+        boolean notify = true;
         if (chat != null) {
+            chat.enableNotificationsIfNeed();
             if (chat.notifyAboutMessage())
                 notifyButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_bell));
-            else notifyButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_snooze));
+            else {
+                notify = false;
+                int currentTime = (int) (System.currentTimeMillis() / 1000L);
+                NotificationState notificationState = chat.getNotificationState();
+                int timeSinceMute = currentTime - notificationState.getTimestamp();
+                switch (notificationState.getMode()) {
+                    //check if the mute length at this moment could be represented by a smaller mute length, and display it
+                    //e.g. if we have a 1day mute that has 1.5h left, it will display a 2h mute icon instead of 1day one.
+                    case snooze1d:
+                        if (TimeUnit.DAYS.toSeconds(1) - timeSinceMute > TimeUnit.HOURS.toSeconds(2)) {
+                            notifyButton.setImageDrawable((getResources().getDrawable(R.drawable.ic_snooze_1day)));
+                            break;
+                        }
+                        timeSinceMute -= TimeUnit.HOURS.toSeconds(22);
+                    case snooze2h:
+                        if (TimeUnit.HOURS.toSeconds(2) - timeSinceMute > TimeUnit.HOURS.toSeconds(1)) {
+                            notifyButton.setImageDrawable((getResources().getDrawable(R.drawable.ic_snooze_2hours)));
+                            break;
+                        }
+                        timeSinceMute -= TimeUnit.HOURS.toSeconds(1);
+                    case snooze1h:
+                        if (TimeUnit.HOURS.toSeconds(1) - timeSinceMute > TimeUnit.MINUTES.toSeconds(15)) {
+                            notifyButton.setImageDrawable((getResources().getDrawable(R.drawable.ic_snooze_1hour)));
+                            break;
+                        }
+                    case snooze15m:
+                        notifyButton.setImageDrawable((getResources().getDrawable(R.drawable.ic_snooze_15min)));
+                        break;
+                    case disabled:
+                        notifyButton.setImageDrawable((getResources().getDrawable(R.drawable.ic_snooze_forever)));
+                        break;
+                    default:
+                        notifyButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_snooze));
+                        break;
+                }
+            }
         }
         callsButton.setColorFilter(color);
         chatButton.setColorFilter(color);
         videoButton.setColorFilter(color);
+        //if (notify)
         notifyButton.setColorFilter(color);
         if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
             chatButtonText.setVisibility(View.GONE);
@@ -379,13 +417,13 @@ public class ContactActivity extends ManagedActivity implements
     }
 
     public int getActionBarSize() {
-        TypedArray styledAttributes = getTheme().obtainStyledAttributes(new int[] { android.R.attr.actionBarSize });
+        TypedArray styledAttributes = getTheme().obtainStyledAttributes(new int[]{android.R.attr.actionBarSize});
         int actionBarSize = (int) styledAttributes.getDimension(0, 0);
         styledAttributes.recycle();
         return actionBarSize;
     }
 
-    public void  generateQR(){
+    public void generateQR() {
         RosterContact rosterContact = RosterManager.getInstance().getRosterContact(getAccount(), getUser());
         Intent intent = QRCodeActivity.createIntent(this, getAccount());
         String textName = rosterContact != null ? rosterContact.getName() : "";
@@ -442,7 +480,8 @@ public class ContactActivity extends ManagedActivity implements
     }
 
     @Override
-    public void registerVCardFragment(ContactVcardViewerFragment fragment) {}
+    public void registerVCardFragment(ContactVcardViewerFragment fragment) {
+    }
 
     @Override
     public void onClick(View view) {
@@ -522,7 +561,7 @@ public class ContactActivity extends ManagedActivity implements
     }
 
     /*private int calculateOffset(View buttonView, View toastView, TextView desc) {
-        *//*int I = desc.getWidth();
+     *//*int I = desc.getWidth();
         int II = desc.getMeasuredWidth();
         Rect rect = new Rect();
         desc.getWindowVisibleDisplayFrame(rect);
