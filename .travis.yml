@@ -33,7 +33,7 @@ script:
 
 
 env:
-- GRADLE_OPTS="-Xmx1024m -XX:MaxPermSize=1024m"
+- GRADLE_OPTS="-Xmx1024m -XX:MaxPermSize=2048m"
 
 jdk:
   - oraclejdk8
