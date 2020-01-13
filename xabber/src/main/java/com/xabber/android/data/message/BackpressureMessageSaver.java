@@ -24,6 +24,8 @@ import rx.subjects.PublishSubject;
  * */
 public class BackpressureMessageSaver {
 
+    private static final String LOG_TAG = BackpressureMessageSaver.class.getSimpleName();
+
     private static BackpressureMessageSaver instance;
     private PublishSubject<MessageItem> subject;
 
@@ -33,6 +35,7 @@ public class BackpressureMessageSaver {
     }
 
     public void saveMessageItem(MessageItem messageItem) {
+        if (hasCopyInRealm(messageItem)) return;
         subject.onNext(messageItem);
     }
 
@@ -75,6 +78,47 @@ public class BackpressureMessageSaver {
                     createSubject();
                 }
             });
+    }
+
+    //TODO refactor this method before releasing
+    private boolean hasCopyInRealm(final MessageItem messageItem){
+        boolean result = false;
+        Realm realm = null;
+        try {
+            realm = MessageDatabaseManager.getInstance().getRealmUiThread();
+
+            realm.beginTransaction();
+            MessageItem item = realm.where(MessageItem.class)
+                    .equalTo(MessageItem.Fields.UNIQUE_ID, messageItem.getUniqueId()).findFirst();
+            if (item != null){
+                result=true;
+                LogManager.d(LOG_TAG,
+                        "Received message, but we already have message with same ID! \n Message stanza: "
+                                + messageItem.getOriginalStanza() + "\nMessage already in database stanza: "
+                                + item.getOriginalStanza());
+            }
+            item = realm.where(MessageItem.class)
+                    .equalTo(MessageItem.Fields.STANZA_ID, messageItem.getStanzaId()).findFirst();
+            if (item != null){
+                result=true;
+                LogManager.d(LOG_TAG,
+                        "Received message, but we already have message with same ID! \n Message stanza: "
+                                + messageItem.getOriginalStanza() + "\nMessage already in database stanza: "
+                                + item.getOriginalStanza());
+            }
+            item = realm.where(MessageItem.class)
+                    .equalTo(MessageItem.Fields.ORIGIN_ID, messageItem.getOriginId()).findFirst();
+            if (item != null){
+                result = true;
+                LogManager.d(LOG_TAG,
+                        "Received message, but we already have message with same ID! \n Message stanza: "
+                                + messageItem.getOriginalStanza() + "\nMessage already in database stanza: "
+                                + item.getOriginalStanza());
+            }
+            realm.commitTransaction();
+        } catch (Exception e) { LogManager.exception(LOG_TAG, e); }
+
+        return result;
     }
 
 }
