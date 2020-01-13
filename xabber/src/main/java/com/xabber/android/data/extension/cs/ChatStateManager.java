@@ -265,7 +265,7 @@ public class ChatStateManager implements OnDisconnectListener,
         updateChatState(account, user, chatState, null);
     }
 
-    private void updateChatState(final AccountJid account, UserJid user,
+    private void updateChatState(final AccountJid account, final UserJid user,
                                  final ChatState chatState, final ChatStateSubtype type) {
         if (!SettingsManager.chatsStateNotification()
                 || sent.get(account.toString(), user.toString()) == chatState) {
@@ -279,6 +279,9 @@ public class ChatStateManager implements OnDisconnectListener,
             Runnable runnable = new Runnable() {
                 @Override
                 public void run() {
+                    if (!stateSenders.containsKey(account.toString() + user.toString())) {
+                        handler.removeCallbacks(this);
+                    }
                     Message message = new Message();
                     message.setType(chat.getType());
                     message.setTo(chat.getTo());
@@ -296,7 +299,6 @@ public class ChatStateManager implements OnDisconnectListener,
         } else {
             cancelComposingSender(account, user);
         }
-        sent.put(chat.getAccount().toString(), chat.getUser().toString(), chatState);
 
         Message message = new Message();
         message.setType(chat.getType());
@@ -304,6 +306,7 @@ public class ChatStateManager implements OnDisconnectListener,
         message.addExtension(new ChatStateExtension(chatState, type));
         try {
             StanzaSender.sendStanza(account, message);
+            sent.put(chat.getAccount().toString(), chat.getUser().toString(), chatState);
         } catch (NetworkException e) {
             // Just ignore it.
         }
@@ -322,6 +325,28 @@ public class ChatStateManager implements OnDisconnectListener,
         Runnable runnable = stateSenders.remove(account.toString() + user.toString());
         if (runnable != null) {
             handler.removeCallbacks(runnable);
+        }
+    }
+
+    public void onChatOpening(AccountJid account, UserJid user) {
+        if (!SettingsManager.chatsStateNotification()
+                || sent.get(account.toString(), user.toString()) == ChatState.active) {
+            return;
+        }
+        final AbstractChat chat = MessageManager.getInstance().getChat(account, user);
+        if (chat == null || chat instanceof RoomChat) {
+            return;
+        }
+
+        Message message = new Message();
+        message.setType(chat.getType());
+        message.setTo(chat.getTo());
+        message.addExtension(new ChatStateExtension(ChatState.active));
+        try {
+            StanzaSender.sendStanza(account, message);
+            sent.put(chat.getAccount().toString(), chat.getUser().toString(), ChatState.active);
+        } catch (NetworkException e) {
+            // Just ignore it.
         }
     }
 
@@ -441,7 +466,7 @@ public class ChatStateManager implements OnDisconnectListener,
                                     return;
                                 }
                                 chatStates.remove(account.toString(), bareUserJid.toString(), resource);
-                                if (finalState.name().equals("paused"))
+                                if (finalState == ChatState.paused)
                                     chatStateSubtypes.remove(account.toString() + bareUserJid.toString());
                                 removeCallback(account, bareUserJid.getBareJid(), resource);
                                 RosterManager.onChatStateChanged(account, bareUserJid);
@@ -464,6 +489,11 @@ public class ChatStateManager implements OnDisconnectListener,
             }
             if (support) {
                 supports.put(account.toString(), bareUserJid.toString(), resource, true);
+                if (!SettingsManager.chatsStateNotification()
+                        || sent.get(account.toString(), bareUserJid.toString()) != null) {
+                    return;
+                }
+                onChatOpening(account, bareUserJid);
             } else if (supports.get(account.toString(), bareUserJid.toString(), resource) == null) {
                 // Disable only if there no information about support.
                 supports.put(account.toString(), bareUserJid.toString(), resource, false);

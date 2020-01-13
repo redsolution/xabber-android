@@ -715,6 +715,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
         LogManager.i(this, "onResume");
 
+        ChatStateManager.getInstance().onChatOpening(account, user);
+
         updateContact();
         //restoreInputState();
         restoreScrollState(((ChatActivity)getActivity()).needScrollToUnread());
