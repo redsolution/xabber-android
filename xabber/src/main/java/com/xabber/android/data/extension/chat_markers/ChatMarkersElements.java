@@ -1,20 +1,18 @@
 package com.xabber.android.data.extension.chat_markers;
 
+import com.xabber.android.data.extension.reliablemessagedelivery.StanzaIdElement;
+
 import org.jivesoftware.smack.packet.ExtensionElement;
 import org.jivesoftware.smack.packet.Message;
-import org.jivesoftware.smack.util.StringUtils;
 import org.jivesoftware.smack.util.XmlStringBuilder;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class ChatMarkersElements {
 
     public static final String NAMESPACE = "urn:xmpp:chat-markers:0";
-    public static final String STANZA_ID_NAMESPACE = "urn:xmpp:sid:0";
-    public static final String STANZA_ID_ELEMENT = "stanza-id";
-    public static final String ATTRIBUTE_BY = "by";
-    public static final String ATTRIBUTE_ID = "id";
 
 
     /**
@@ -58,12 +56,14 @@ public class ChatMarkersElements {
     }
 
     protected abstract static class ChatMarkerExtensionWithId implements ExtensionElement {
+
         protected final String id;
-        protected ArrayList<String> stanzaId = new ArrayList<>();
-        protected String stanzaIdBy;
+        protected ArrayList<ExtensionElement> stanzaIdExtensions = new ArrayList<>();
 
         protected ChatMarkerExtensionWithId(String id) {
-            this.id = StringUtils.requireNotNullOrEmpty(id, "Message ID must not be null");
+            if (id == null)
+                id = "";
+            this.id = id;
         }
 
         /**
@@ -75,34 +75,35 @@ public class ChatMarkersElements {
             return id;
         }
 
-        public void setStanzaId(String stanzaId) {
-            this.stanzaId.add(stanzaId);
+        public void setStanzaIdExtensions(List<ExtensionElement> stanzaIdExtensions) {
+            this.stanzaIdExtensions = new ArrayList<>(stanzaIdExtensions);
+        }
+
+        public void addStanzaIdExtension(StanzaIdElement stanzaIdElement) {
+            if (stanzaIdElement == null || stanzaIdElement.getBy() == null || stanzaIdElement.getId() == null)
+                return;
+            stanzaIdExtensions.add(stanzaIdElement);
         }
 
         public ArrayList<String> getStanzaId() {
-            return stanzaId;
-        }
-
-        public void setStanzaIdBy(String by) {
-            stanzaIdBy = by;
-        }
-
-        public String getStanzaIdBy() {
-            return stanzaIdBy;
+            ArrayList<String> ids = new ArrayList<>();
+            for (ExtensionElement idElement : stanzaIdExtensions) {
+                ids.add(((StanzaIdElement)idElement).getId());
+            }
+            return ids;
         }
 
         @Override
         public final XmlStringBuilder toXML() {
             XmlStringBuilder xml = new XmlStringBuilder(this);
             xml.attribute("id", id);
-            if (stanzaId.isEmpty() || stanzaIdBy == null)
+            if (stanzaIdExtensions.isEmpty())
                 xml.closeEmptyElement();
             else {
                 xml.rightAngleBracket();
-                xml.prelude(STANZA_ID_ELEMENT, STANZA_ID_NAMESPACE);
-                xml.attribute(ATTRIBUTE_ID, stanzaId.get(0));
-                xml.attribute(ATTRIBUTE_BY, stanzaIdBy);
-                xml.closeEmptyElement();
+                for (ExtensionElement id : stanzaIdExtensions) {
+                    xml.optElement(id);
+                }
                 xml.closeElement(getElementName());
             }
             return xml;

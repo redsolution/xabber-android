@@ -12,6 +12,7 @@ import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.chat_markers.filter.ChatMarkersFilter;
+import com.xabber.android.data.extension.reliablemessagedelivery.StanzaIdElement;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
@@ -34,6 +35,7 @@ import org.jivesoftware.smack.filter.StanzaFilter;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.Stanza;
+import org.jivesoftware.smack.util.PacketParserUtils;
 import org.jivesoftware.smackx.carbons.packet.CarbonExtension;
 import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
 import org.jivesoftware.smackx.disco.packet.DiscoverInfo;
@@ -104,10 +106,18 @@ public class ChatMarkerManager implements OnPacketListener {
         if (id == null || id.isEmpty()) return;
 
         Message displayed = new Message(messageItem.getUser().getJid());
+        Message originalMessage = null;
+        try {
+            originalMessage = PacketParserUtils.parseStanza(messageItem.getOriginalStanza());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         ChatMarkersElements.DisplayedExtension displayedExtension = new ChatMarkersElements.DisplayedExtension(id);
-        displayedExtension.setStanzaId(messageItem.getStanzaId());
-        displayedExtension.setStanzaIdBy(messageItem.getAccount().getFullJid().asBareJid().toString());
+
+        if (originalMessage != null) {
+            displayedExtension.setStanzaIdExtensions(originalMessage.getExtensions(StanzaIdElement.ELEMENT, StanzaIdElement.NAMESPACE));
+        }
 
         displayed.addExtension(displayedExtension);
         displayed.setType(Message.Type.chat);
