@@ -259,7 +259,7 @@ public class UploadService extends IntentService {
         MessageManager.getInstance().updateFileMessage(account, user, fileMessageId,
                 uploadedFilesUrls, notUploadedFilesPaths);
         publishCompleted(fileMessageId);
-        ChatStateManager.getInstance().cancelComposingSender(account, user);
+        ChatStateManager.getInstance().cancelComposingSender();
 
         // if some files have errors move its to separate message
         if (notUploadedFilesPaths.size() > 0) {

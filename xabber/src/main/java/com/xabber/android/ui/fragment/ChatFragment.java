@@ -152,7 +152,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     public static final String ARGUMENT_USER = "ARGUMENT_USER";
     public static final String VOICE_MESSAGE = "VOICE_MESSAGE";
     private static final String LOG_TAG = ChatFragment.class.getSimpleName();
-    private final long STOP_TYPING_DELAY = 4000; // in ms
+    private final long STOP_TYPING_DELAY = 2500; // in ms
     private static final int PERMISSIONS_REQUEST_EXPORT_CHAT = 22;
 
     private EditText inputView;
@@ -346,8 +346,6 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
-                final int x = (int) motionEvent.getRawX();
-
                 switch (motionEvent.getAction() & MotionEvent.ACTION_MASK) {
                     case MotionEvent.ACTION_DOWN:
                         if (PermissionsRequester.requestRecordAudioPermissionIfNeeded(getActivity(), PERMISSIONS_REQUEST_RECORD_AUDIO))
@@ -1133,7 +1131,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         }
 
         listener.onMessageSent();
-        ChatStateManager.getInstance().cancelComposingSender(account, user);
+        ChatStateManager.getInstance().cancelComposingSender();
 
         if (SettingsManager.chatsHideKeyboard() == SettingsManager.ChatsHideKeyboard.always
                 || (getActivity().getResources().getBoolean(R.bool.landscape)

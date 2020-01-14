@@ -110,7 +110,6 @@ public class ChatStateManager implements OnDisconnectListener,
      * account.
      */
     private final NestedNestedMaps<Resourcepart, Runnable> stateCleaners;
-    private final HashMap<String, Runnable> stateSenders;
 
     /**
      * Information about chat state notification support for lower cased
@@ -137,12 +136,12 @@ public class ChatStateManager implements OnDisconnectListener,
      * Handler for clear states on timeout.
      */
     private final Handler handler;
+    private Runnable stateSender = null;
 
     private ChatStateManager() {
         chatStates = new NestedNestedMaps<>();
         chatStateSubtypes = new HashMap<>();
         stateCleaners = new NestedNestedMaps<>();
-        stateSenders = new HashMap<>();
         supports = new NestedNestedMaps<>();
         sent = new NestedMap<>();
         pauseIntents = new NestedMap<>();
@@ -276,12 +275,12 @@ public class ChatStateManager implements OnDisconnectListener,
             return;
         }
         if (chatState == ChatState.composing) {
-            Runnable runnable = new Runnable() {
+            if (stateSender != null) {
+                handler.removeCallbacks(stateSender);
+            }
+            stateSender = new Runnable() {
                 @Override
                 public void run() {
-                    if (!stateSenders.containsKey(account.toString() + user.toString())) {
-                        handler.removeCallbacks(this);
-                    }
                     Message message = new Message();
                     message.setType(chat.getType());
                     message.setTo(chat.getTo());
@@ -294,10 +293,9 @@ public class ChatStateManager implements OnDisconnectListener,
                     handler.postDelayed(this, SEND_REPEATED_COMPOSING_STATE_DELAY);
                 }
             };
-            handler.postDelayed(runnable, SEND_REPEATED_COMPOSING_STATE_DELAY);
-            stateSenders.put(account.toString() + user.toString(), runnable);
+            handler.postDelayed(stateSender, SEND_REPEATED_COMPOSING_STATE_DELAY);
         } else {
-            cancelComposingSender(account, user);
+            cancelComposingSender();
         }
 
         Message message = new Message();
@@ -321,10 +319,10 @@ public class ChatStateManager implements OnDisconnectListener,
             alarmManager.cancel(pendingIntent);
     }
 
-    public void cancelComposingSender(AccountJid account, UserJid user) {
-        Runnable runnable = stateSenders.remove(account.toString() + user.toString());
-        if (runnable != null) {
-            handler.removeCallbacks(runnable);
+    public void cancelComposingSender() {
+        if (stateSender != null) {
+            handler.removeCallbacks(stateSender);
+            stateSender = null;
         }
     }
 
@@ -403,7 +401,7 @@ public class ChatStateManager implements OnDisconnectListener,
             }
         }
         stateCleaners.clear(account.toString());
-        stateSenders.clear();
+        cancelComposingSender();
         supports.clear(account.toString());
         sent.clear(account.toString());
         for (PendingIntent pendingIntent : pauseIntents.getNested(account.toString()).values()) {
