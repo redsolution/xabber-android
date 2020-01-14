@@ -269,7 +269,7 @@ public class RrrManager implements OnPacketListener {
                                     .equalTo(MessageItem.Fields.USER, conversation)
                                     .equalTo(MessageItem.Fields.STANZA_ID, stanzaId)
                                     .findFirst();
-                            if (messageItem != null)
+                            if (messageItem != null) {
                                 if (markupText != null)
                                     messageItem.setMarkupText(markupText);
                                 if (originalStanza != null)
@@ -280,6 +280,7 @@ public class RrrManager implements OnPacketListener {
                                     messageItem.setText(body);
                                 if (stamp != null)
                                     messageItem.setEditedTimestamp(StringUtils.parseReceivedReceiptTimestampString(stamp).getTime());
+                            }
                             EventBus.getDefault().post(new MessageUpdateEvent());
                         }
                     });
