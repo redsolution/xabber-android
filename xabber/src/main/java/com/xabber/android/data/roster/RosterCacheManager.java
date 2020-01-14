@@ -145,19 +145,32 @@ public class RosterCacheManager {
         });
     }
 
-    public static void saveLastMessageToContact(final Realm realm, final MessageItem messageItem) {
+    public static void saveLastMessageToContact(final MessageItem messageItem) {
         if (messageItem == null) return;
         final String account = messageItem.getAccount().getFullJid().asBareJid().toString();
         final String user = messageItem.getUser().getBareJid().toString();
         final String messageID = messageItem.getUniqueId();
-        realm.executeTransactionAsync(new Realm.Transaction() {
+        Application.getInstance().runInBackground(new Runnable() {
             @Override
-            public void execute(Realm realm) {
-                ContactRealm contactRealm = realm.where(ContactRealm.class).equalTo(ContactRealm.Fields.ID, account + "/" + user).findFirst();
-                MessageItem message = realm.where(MessageItem.class).equalTo(MessageItem.Fields.UNIQUE_ID, messageID).findFirst();
-                if (contactRealm != null && message != null && message.isValid() && message.isManaged()) {
-                    contactRealm.setLastMessage(message);
-                    realm.copyToRealmOrUpdate(contactRealm);
+            public void run() {
+                Realm realm = null;
+                try {
+                    realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
+                    realm.executeTransaction(new Realm.Transaction() {
+                        @Override
+                        public void execute(Realm realm) {
+                            ContactRealm contactRealm = realm.where(ContactRealm.class).equalTo(ContactRealm.Fields.ID, account + "/" + user).findFirst();
+                            MessageItem message = realm.where(MessageItem.class).equalTo(MessageItem.Fields.UNIQUE_ID, messageID).findFirst();
+                            if (contactRealm != null && message != null && message.isValid() && message.isManaged()) {
+                                contactRealm.setLastMessage(message);
+                                realm.copyToRealmOrUpdate(contactRealm);
+                            }
+                        }
+                    });
+                } catch (Exception e){
+                    LogManager.exception(LOG_TAG, e);
+                }  finally {
+                    if (realm != null) realm.close();
                 }
             }
         });

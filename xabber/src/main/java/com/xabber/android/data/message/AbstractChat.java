@@ -890,21 +890,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     @Override
     public void onChange(RealmResults<MessageItem> messageItems) {
         updateLastMessage();
-        Application.getInstance().runInBackground(new Runnable() {
-            @Override
-            public void run() {
-                Realm realm = null;
-                try {
-                    realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
-                    RosterCacheManager.saveLastMessageToContact(realm, lastMessage);
-                } catch (Exception e) {
-                    LogManager.exception("AbstractChat", e);
-                } finally {
-                    if (realm != null )
-                        realm.close();
-                }
-            }
-        });
+        RosterCacheManager.saveLastMessageToContact(lastMessage);
     }
 
     /** UNREAD MESSAGES */
