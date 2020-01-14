@@ -40,6 +40,7 @@ import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.MultiTransformation;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
@@ -71,7 +72,6 @@ import com.xabber.android.ui.helper.BlurTransformation;
 import com.xabber.android.ui.helper.ContactTitleInflater;
 
 import java.util.Collection;
-import java.util.concurrent.TimeUnit;
 
 public class ContactActivity extends ManagedActivity implements
         OnContactChangedListener, OnAccountChangedListener, ContactVcardViewerFragment.Listener, View.OnClickListener, View.OnLongClickListener, SnoozeDialog.OnSnoozeListener {
@@ -238,6 +238,7 @@ public class ContactActivity extends ManagedActivity implements
             backgroundSource = getResources().getDrawable(R.drawable.about_backdrop);
         Glide.with(this)
                 .load(backgroundSource)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .transform(new MultiTransformation<Bitmap>(new CenterCrop(), new BlurTransformation(25, 8, /*this,*/ accountMainColor)))
                 .into(background);
 
@@ -363,35 +364,15 @@ public class ContactActivity extends ManagedActivity implements
                 notifyButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_bell));
             else {
                 notify = false;
-                int currentTime = (int) (System.currentTimeMillis() / 1000L);
                 NotificationState notificationState = chat.getNotificationState();
-                int timeSinceMute = currentTime - notificationState.getTimestamp();
                 switch (notificationState.getMode()) {
-                    //check if the mute length at this moment could be represented by a smaller mute length, and display it
-                    //e.g. if we have a 1day mute that has 1.5h left, it will display a 2h mute icon instead of 1day one.
-                    case snooze1d:
-                        if (TimeUnit.DAYS.toSeconds(1) - timeSinceMute > TimeUnit.HOURS.toSeconds(2)) {
-                            notifyButton.setImageDrawable((getResources().getDrawable(R.drawable.ic_snooze_1day)));
-                            break;
-                        }
-                        timeSinceMute -= TimeUnit.HOURS.toSeconds(22);
-                    case snooze2h:
-                        if (TimeUnit.HOURS.toSeconds(2) - timeSinceMute > TimeUnit.HOURS.toSeconds(1)) {
-                            notifyButton.setImageDrawable((getResources().getDrawable(R.drawable.ic_snooze_2hours)));
-                            break;
-                        }
-                        timeSinceMute -= TimeUnit.HOURS.toSeconds(1);
-                    case snooze1h:
-                        if (TimeUnit.HOURS.toSeconds(1) - timeSinceMute > TimeUnit.MINUTES.toSeconds(15)) {
-                            notifyButton.setImageDrawable((getResources().getDrawable(R.drawable.ic_snooze_1hour)));
-                            break;
-                        }
-                    case snooze15m:
-                        notifyButton.setImageDrawable((getResources().getDrawable(R.drawable.ic_snooze_15min)));
-                        break;
                     case disabled:
                         notifyButton.setImageDrawable((getResources().getDrawable(R.drawable.ic_snooze_forever)));
                         break;
+                    case snooze1d:
+                    case snooze2h:
+                    case snooze1h:
+                    case snooze15m:
                     default:
                         notifyButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_snooze));
                         break;
@@ -401,8 +382,7 @@ public class ContactActivity extends ManagedActivity implements
         callsButton.setColorFilter(color);
         chatButton.setColorFilter(color);
         videoButton.setColorFilter(color);
-        //if (notify)
-        notifyButton.setColorFilter(color);
+        notifyButton.setColorFilter(notify ? color : getResources().getColor(R.color.grey_500));
         if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
             chatButtonText.setVisibility(View.GONE);
             callsButtonText.setVisibility(View.GONE);
