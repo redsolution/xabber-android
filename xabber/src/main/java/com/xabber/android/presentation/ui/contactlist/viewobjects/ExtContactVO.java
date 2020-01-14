@@ -107,7 +107,11 @@ public class ExtContactVO extends ContactVO {
             } else {
                 try{
                     if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT){
-                        viewHolder.tvMessageText.setText(Html.fromHtml(URLDecoder.decode(text, StandardCharsets.UTF_8.name())));
+                        try {
+                            viewHolder.tvMessageText.setText(Html.fromHtml(URLDecoder.decode(text, StandardCharsets.UTF_8.name())));
+                        } catch (Exception e){
+                            viewHolder.tvMessageText.setText(Html.fromHtml(text));
+                        }
                     } else viewHolder.tvMessageText.setText(text);
                 } catch (Exception e) {
                     LogManager.exception(this, e);
