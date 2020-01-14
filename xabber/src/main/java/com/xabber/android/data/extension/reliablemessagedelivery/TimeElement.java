@@ -56,7 +56,7 @@ public class TimeElement implements ExtensionElement {
         XmlStringBuilder xmlStringBuilder = new XmlStringBuilder(this);
         xmlStringBuilder.attribute(ATTRIBUTE_BY, by);
         xmlStringBuilder.attribute(ATTRIBUTE_STAMP, stamp);
-        xmlStringBuilder.closeElement(ELEMENT);
+        xmlStringBuilder.closeEmptyElement();
         return xmlStringBuilder;
     }
 

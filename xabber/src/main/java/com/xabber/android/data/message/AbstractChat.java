@@ -40,6 +40,7 @@ import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.references.ReferenceElement;
 import com.xabber.android.data.extension.references.ReferencesManager;
+import com.xabber.android.data.extension.reliablemessagedelivery.OriginIdElement;
 import com.xabber.android.data.extension.reliablemessagedelivery.ReceiptRequestElement;
 import com.xabber.android.data.extension.reliablemessagedelivery.ReliableMessageDeliveryManager;
 import com.xabber.android.data.extension.reliablemessagedelivery.RetryReceiptRequestElement;
@@ -50,7 +51,6 @@ import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.RosterCacheManager;
 import com.xabber.android.ui.adapter.chat.FileMessageVH;
 import com.xabber.android.utils.Utils;
-import com.xabber.xmpp.sid.OriginIdElement;
 import com.xabber.xmpp.sid.UniqStanzaHelper;
 
 import org.greenrobot.eventbus.EventBus;

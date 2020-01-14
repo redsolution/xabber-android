@@ -11,17 +11,14 @@ public class OriginIdElement implements ExtensionElement {
 
     public static final String NAMESPACE = "urn:xmpp:sid:0";
     public static final String ELEMENT = "origin-id";
-    public static final String ATTRIBUTE_BY = "by";
     public static final String ATTRIBUTE_ID = "id";
-    private String by = null;
     private String id = null;
 
-    OriginIdElement(String by, String id) {
-        this.by = by;
+    public OriginIdElement(String id) {
         this.id = id;
     }
 
-    OriginIdElement() {
+    public OriginIdElement() {
     }
 
     @Override
@@ -32,14 +29,6 @@ public class OriginIdElement implements ExtensionElement {
     @Override
     public String getElementName() {
         return ELEMENT;
-    }
-
-    public String getBy() {
-        return by;
-    }
-
-    public void setBy(String by) {
-        this.by = by;
     }
 
     public String getId() {
@@ -53,9 +42,8 @@ public class OriginIdElement implements ExtensionElement {
     @Override
     public XmlStringBuilder toXML() {
         XmlStringBuilder xmlStringBuilder = new XmlStringBuilder(this);
-        xmlStringBuilder.attribute(ATTRIBUTE_BY, by);
         xmlStringBuilder.attribute(ATTRIBUTE_ID, id);
-        xmlStringBuilder.closeElement(ELEMENT);
+        xmlStringBuilder.closeEmptyElement();
         return xmlStringBuilder;
     }
 
@@ -63,7 +51,6 @@ public class OriginIdElement implements ExtensionElement {
         @Override
         protected OriginIdElement createReturnExtension(String currentElement, String currentNamespace, Map attributeMap, List content) {
             OriginIdElement originIdElement = new OriginIdElement();
-            originIdElement.setBy((String) attributeMap.get(ATTRIBUTE_BY));
             originIdElement.setId((String) attributeMap.get(ATTRIBUTE_ID));
             return originIdElement;
         }

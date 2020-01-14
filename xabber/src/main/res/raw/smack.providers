@@ -107,11 +107,27 @@
         <className>com.xabber.xmpp.uuu.ChatStateExtensionProvider</className>
     </extensionProvider>
 
-    <!-- Stanza-id element provider -->
+
+    <!--                XEP-0359                 -->
+    <!--  Stanza-id & Origin-id element provider -->
     <extensionProvider>
         <elementName>stanza-id</elementName>
         <namespace>urn:xmpp:sid:0</namespace>
         <className>com.xabber.android.data.extension.reliablemessagedelivery.StanzaIdProvider</className>
+    </extensionProvider>
+
+    <extensionProvider>
+        <elementName>origin-id</elementName>
+        <namespace>urn:xmpp:sid:0</namespace>
+        <className>com.xabber.android.data.extension.reliablemessagedelivery.OriginIdProvider</className>
+    </extensionProvider>
+
+
+    <!--           Time element provider         -->
+    <extensionProvider>
+        <elementName>time</elementName>
+        <namespace>http://xabber.com/protocol/delivery</namespace>
+        <className>com.xabber.android.data.extension.reliablemessagedelivery.TimeProvider</className>
     </extensionProvider>
 
 </smackProviders>

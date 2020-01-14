@@ -49,7 +49,6 @@ import org.greenrobot.eventbus.EventBus;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Message.Type;
 import org.jivesoftware.smack.packet.Presence;
-import org.jivesoftware.smack.packet.StandardExtensionElement;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smackx.delay.packet.DelayInformation;
 import org.jivesoftware.smackx.muc.packet.MUCUser;
@@ -259,8 +258,8 @@ public class RegularChat extends AbstractChat {
             Date timestamp = null;
             if ((ReliableMessageDeliveryManager.getInstance().isSupported(AccountManager.getInstance().getAccount(account)))
                     && (message.hasExtension(TimeElement.ELEMENT, TimeElement.NAMESPACE))){
-                StandardExtensionElement timeElement = (StandardExtensionElement) message.getExtension(TimeElement.ELEMENT, TimeElement.NAMESPACE);
-                timestamp = StringUtils.parseReceivedReceiptTimestampString(timeElement.getAttributeValue(TimeElement.ATTRIBUTE_STAMP));
+                TimeElement timeElement = (TimeElement) message.getExtension(TimeElement.ELEMENT, TimeElement.NAMESPACE);
+                timestamp = StringUtils.parseReceivedReceiptTimestampString(timeElement.getStamp());
             }
             // create message with file-attachments
             if (attachments.size() > 0)

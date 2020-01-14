@@ -14,6 +14,7 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.references.ReferencesManager;
+import com.xabber.android.data.extension.reliablemessagedelivery.OriginIdElement;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.ForwardManager;
@@ -21,7 +22,6 @@ import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.MessageUpdateEvent;
 import com.xabber.android.data.notification.MessageNotificationManager;
 import com.xabber.android.utils.StringUtils;
-import com.xabber.xmpp.sid.OriginIdElement;
 import com.xabber.xmpp.smack.XMPPTCPConnection;
 
 import org.greenrobot.eventbus.EventBus;
@@ -173,7 +173,7 @@ public class RrrManager implements OnPacketListener {
                             message.setStanzaId(messageItem.getStanzaId());
                             message.setTo(messageItem.getUser().getBareJid());
                             message.setFrom(messageItem.getAccount().getFullJid());
-                            message.addExtension( new OriginIdElement(messageItem.getOriginId()));
+                            message.addExtension(new OriginIdElement(messageItem.getOriginId()));
                         }
                     });
                 } finally { if (realm != null) realm.close(); }

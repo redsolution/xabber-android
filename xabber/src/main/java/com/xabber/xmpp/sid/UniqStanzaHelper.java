@@ -1,9 +1,9 @@
 package com.xabber.xmpp.sid;
 
+import com.xabber.android.data.extension.reliablemessagedelivery.OriginIdElement;
 import com.xabber.android.data.extension.reliablemessagedelivery.StanzaIdElement;
 
 import org.jivesoftware.smack.packet.Message;
-import org.jivesoftware.smack.packet.StandardExtensionElement;
 
 /**
  * Created by valery.miller on 20.04.18.
@@ -23,8 +23,8 @@ public class UniqStanzaHelper {
     }
 
     public static String getOriginId(Message message) {
-        StandardExtensionElement sidElement = message.getExtension(ELEMENT_NAME_ORIGIN, NAMESPACE);
-        if (sidElement != null) return sidElement.getAttributeValue(ATTRIBUTE_ID);
+        OriginIdElement oidElement = message.getExtension(ELEMENT_NAME_ORIGIN, NAMESPACE);
+        if (oidElement != null) return oidElement.getId();
         else return message.getStanzaId();
     }
 
