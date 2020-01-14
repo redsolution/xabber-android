@@ -1,7 +1,11 @@
 package com.xabber.android.data.message;
 
+import com.xabber.android.data.Application;
+import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.database.MessageDatabaseManager;
+import com.xabber.android.data.database.messagerealm.Attachment;
 import com.xabber.android.data.database.messagerealm.MessageItem;
+import com.xabber.android.data.filedownload.DownloadManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.push.SyncManager;
 
@@ -64,6 +68,7 @@ public class BackpressureMessageSaver {
                             public void onSuccess() {
                                 EventBus.getDefault().post(new NewMessageEvent());
                                 SyncManager.getInstance().onMessageSaved();
+                                checkForAttachmentsAndDownload(messageItems);
                             }
                         });
                     } catch (Exception e) {
@@ -121,4 +126,17 @@ public class BackpressureMessageSaver {
         return result;
     }
 
+    private void checkForAttachmentsAndDownload(List<MessageItem> messageItems) {
+        if (SettingsManager.chatsAutoDownloadVoiceMessage()) {
+            for (MessageItem message : messageItems) {
+                if (message.haveAttachments()) {
+                    for (Attachment attachment : message.getAttachments()) {
+                        if (attachment.isVoice() && attachment.getFilePath() == null) {
+                            DownloadManager.getInstance().downloadFile(attachment, message.getAccount(), Application.getInstance());
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
