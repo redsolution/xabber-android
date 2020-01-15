@@ -194,7 +194,7 @@ public class RoomChat extends AbstractChat {
         String id = UUID.randomUUID().toString();
         return createMessageItem(nickname, text, null, null, null, false,
                 false, false, false, id, id, null,
-        null, null, account.getFullJid().toString(), null, true);
+        null, null, account.getFullJid().toString(), false, null, true);
     }
 
     @Override
@@ -305,13 +305,13 @@ public class RoomChat extends AbstractChat {
                     createAndSaveFileMessage(true, uid, resource, text, markupText, null,
                             null, delay, true, notify,
                             false, false, getStanzaId(message), UniqStanzaHelper.getOriginId(message), attachments,
-                            originalStanza, null, originalFrom, forwardIds, true, false, null);
+                            originalStanza, null, originalFrom, true, forwardIds, true, false, null);
 
                     // create message without attachments
                 else createAndSaveNewMessage(true, uid, resource, text, markupText, null,
                         null, delay, true, notify,
                         false, false, getStanzaId(message), UniqStanzaHelper.getOriginId(message),
-                        originalStanza, null, originalFrom, forwardIds, true, false, null);
+                        originalStanza, null, originalFrom, true, forwardIds, true, false, null);
 
                 EventBus.getDefault().post(new NewIncomingMessageEvent(account, user));
             }
@@ -405,12 +405,12 @@ public class RoomChat extends AbstractChat {
         if (attachments.size() > 0)
             createAndSaveFileMessage(ui, uid, resource, text, markupText, null, timestamp, getDelayStamp(message),
                     true, false, false, false, getStanzaId(message), UniqStanzaHelper.getOriginId(message),
-                    attachments, originalStanza, parentMessageId, originalFrom, forwardIds, fromMUC, true, null);
+                    attachments, originalStanza, parentMessageId, originalFrom, true, forwardIds, fromMUC, true, null);
 
             // create message without attachments
         else createAndSaveNewMessage(ui, uid, resource, text, markupText, null, timestamp, getDelayStamp(message),
                 true, false, false, false, getStanzaId(message), UniqStanzaHelper.getOriginId(message),
-                originalStanza, parentMessageId, originalFrom, forwardIds, fromMUC, true, null);
+                originalStanza, parentMessageId, originalFrom, true, forwardIds, fromMUC, true, null);
 
         return uid;
     }
@@ -482,7 +482,7 @@ public class RoomChat extends AbstractChat {
                                     R.string.action_join_complete_to, user), null,
                             ChatAction.complete, null, null, true, true,
                             false, false, null, null,
-                            null, null, null, null, true, false, null);
+                            null, null, null, false,null, true, false, null);
                 }
                 active = true;
                 setRequested(false);
