@@ -136,7 +136,10 @@ public class ChatStateManager implements OnDisconnectListener,
      * Handler for clear states on timeout.
      */
     private final Handler handler;
-    private Runnable stateSender = null;
+    /**
+     * Handler for sending composing states.
+     */
+    private final Handler stateSenderHandler;
 
     private ChatStateManager() {
         chatStates = new NestedNestedMaps<>();
@@ -148,6 +151,7 @@ public class ChatStateManager implements OnDisconnectListener,
         alarmManager = (AlarmManager) Application.getInstance()
                 .getSystemService(Context.ALARM_SERVICE);
         handler = new Handler();
+        stateSenderHandler = new Handler();
     }
 
     /**
@@ -275,10 +279,8 @@ public class ChatStateManager implements OnDisconnectListener,
             return;
         }
         if (chatState == ChatState.composing) {
-            if (stateSender != null) {
-                handler.removeCallbacks(stateSender);
-            }
-            stateSender = new Runnable() {
+            cancelComposingSender();
+            Runnable stateSender = new Runnable() {
                 @Override
                 public void run() {
                     Message message = new Message();
@@ -290,10 +292,10 @@ public class ChatStateManager implements OnDisconnectListener,
                     } catch (NetworkException e) {
                         // Just ignore it.
                     }
-                    handler.postDelayed(this, SEND_REPEATED_COMPOSING_STATE_DELAY);
+                    stateSenderHandler.postDelayed(this, SEND_REPEATED_COMPOSING_STATE_DELAY);
                 }
             };
-            handler.postDelayed(stateSender, SEND_REPEATED_COMPOSING_STATE_DELAY);
+            stateSenderHandler.postDelayed(stateSender, SEND_REPEATED_COMPOSING_STATE_DELAY);
         } else {
             cancelComposingSender();
         }
@@ -320,10 +322,7 @@ public class ChatStateManager implements OnDisconnectListener,
     }
 
     public void cancelComposingSender() {
-        if (stateSender != null) {
-            handler.removeCallbacks(stateSender);
-            stateSender = null;
-        }
+        stateSenderHandler.removeCallbacks(null);
     }
 
     public void onChatOpening(AccountJid account, UserJid user) {
