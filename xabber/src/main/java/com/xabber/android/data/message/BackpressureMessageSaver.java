@@ -97,7 +97,7 @@ public class BackpressureMessageSaver {
                     .equalTo(MessageItem.Fields.UNIQUE_ID, newIncomingMessageItem.getUniqueId())
                     .equalTo(MessageItem.Fields.ACCOUNT, newIncomingMessageItem.getAccount().toString())
                     .findFirst();
-            if (item != null){
+            if (item != null && !newIncomingMessageItem.isForwarded()){
                 result=true;
                 LogManager.d(LOG_TAG,
                         "Received message, but we already have message with same ID! \n Message stanza: "
@@ -108,7 +108,7 @@ public class BackpressureMessageSaver {
                     .equalTo(MessageItem.Fields.STANZA_ID, newIncomingMessageItem.getStanzaId())
                     .equalTo(MessageItem.Fields.ACCOUNT, newIncomingMessageItem.getAccount().toString())
                     .findFirst();
-            if (item != null){
+            if (item != null && !newIncomingMessageItem.isForwarded()){
                 result=true;
                 LogManager.d(LOG_TAG,
                         "Received message, but we already have message with same ID! \n Message stanza: "
@@ -119,7 +119,7 @@ public class BackpressureMessageSaver {
                     .equalTo(MessageItem.Fields.ORIGIN_ID, newIncomingMessageItem.getOriginId())
                     .equalTo(MessageItem.Fields.ACCOUNT, newIncomingMessageItem.getAccount().toString())
                     .findFirst();
-            if (item != null){
+            if (item != null && !newIncomingMessageItem.isForwarded()){
                 result = true;
                 LogManager.d(LOG_TAG,
                         "Received message, but we already have message with same ID! \n Message stanza: "

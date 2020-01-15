@@ -156,7 +156,7 @@ public class RegularChat extends AbstractChat {
         return createMessageItem(null, text, null, null, null, false,
                 false, false, false, id,
                 id, null, null, null,
-                account.getFullJid().toString(), null, false);
+                account.getFullJid().toString(), false, null, false);
     }
 
     @Override
@@ -267,14 +267,14 @@ public class RegularChat extends AbstractChat {
                         timestamp, getDelayStamp(message), true, true, encrypted,
                         isOfflineMessage(account.getFullJid().getDomain(), packet),
                         getStanzaId(message), UniqStanzaHelper.getOriginId(message), attachments, originalStanza, null,
-                        originalFrom, forwardIds, false, false, gropchatUserId);
+                        originalFrom, false, forwardIds, false, false, gropchatUserId);
 
                 // create message without attachments
             else createAndSaveNewMessage(true, uid, resource, text, markupText, null,
                     timestamp, getDelayStamp(message), true, true, encrypted,
                     isOfflineMessage(account.getFullJid().getDomain(), packet),
                     getStanzaId(message), UniqStanzaHelper.getOriginId(message), originalStanza, null,
-                    originalFrom, forwardIds,false, false, gropchatUserId);
+                    originalFrom, false, forwardIds,false, false, gropchatUserId);
 
             EventBus.getDefault().post(new NewIncomingMessageEvent(account, user));
         }
@@ -327,13 +327,13 @@ public class RegularChat extends AbstractChat {
             createAndSaveFileMessage(ui, uid, resource, text, markupText, null,
                     timestamp, getDelayStamp(message), true, false, encrypted,
                     false, getStanzaId(message), UniqStanzaHelper.getOriginId(message), attachments,
-                    originalStanza, parentMessageId, originalFrom, forwardIds, fromMuc, true, gropchatUserId);
+                    originalStanza, parentMessageId, originalFrom, true, forwardIds, fromMuc, true, gropchatUserId);
 
             // create message without attachments
         else createAndSaveNewMessage(ui, uid, resource, text, markupText, null,
                 timestamp, getDelayStamp(message), true, false, encrypted,
                 false, getStanzaId(message), UniqStanzaHelper.getOriginId(message), originalStanza,
-                parentMessageId, originalFrom, forwardIds, fromMuc, true, gropchatUserId);
+                parentMessageId, originalFrom, true, forwardIds, fromMuc, true, gropchatUserId);
 
         return uid;
     }
