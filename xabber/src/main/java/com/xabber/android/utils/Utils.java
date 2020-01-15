@@ -8,7 +8,9 @@ import android.graphics.Point;
 import android.os.Build;
 import android.util.TypedValue;
 import android.view.Display;
+import android.view.HapticFeedbackConstants;
 import android.view.Surface;
+import android.view.View;
 
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.push.SyncManager;
@@ -138,5 +140,22 @@ public class Utils {
             }
         }
         activity.setRequestedOrientation(lock);
+    }
+
+    /**
+     * Haptic feedback helper methods.
+     *
+     * */
+    public static void performHapticFeedback(View view) {
+        performHapticFeedback(view, HapticFeedbackConstants.VIRTUAL_KEY);
+    }
+
+    public static void performHapticFeedback(View view, int feedbackType) {
+        performHapticFeedback(view, feedbackType, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
+    }
+
+    public static void performHapticFeedback(View view, int feedbackType, int flag) {
+        if (view != null)
+            view.performHapticFeedback(feedbackType, flag);
     }
 }

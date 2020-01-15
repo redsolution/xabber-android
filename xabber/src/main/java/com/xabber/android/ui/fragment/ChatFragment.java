@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.ColorStateList;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.media.AudioAttributes;
@@ -20,7 +21,6 @@ import android.os.SystemClock;
 import android.text.Editable;
 import android.text.Spannable;
 import android.text.TextWatcher;
-import android.view.HapticFeedbackConstants;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -46,11 +46,13 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -111,6 +113,7 @@ import com.xabber.android.ui.helper.PermissionsRequester;
 import com.xabber.android.ui.widget.BottomMessagesPanel;
 import com.xabber.android.ui.widget.CustomMessageMenu;
 import com.xabber.android.ui.widget.PlayerVisualizerView;
+import com.xabber.android.ui.widget.ReplySwipeCallback;
 import com.xabber.android.utils.StringUtils;
 import com.xabber.android.utils.Utils;
 import com.xabber.xmpp.uuu.ChatStateSubtype;
@@ -172,6 +175,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     private RecyclerView realmRecyclerView;
     private MessagesAdapter chatMessageAdapter;
     private LinearLayoutManager layoutManager;
+    private ReplySwipeCallback replySwipe;
     private View placeholder;
     private LinearLayout inputLayout;
     private ViewStub stubJoin;
@@ -283,7 +287,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         public void run() {
             changeStateOfInputViewButtonsTo(false);
             recordLockView.setVisibility(View.VISIBLE);
-            performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
+            Utils.performHapticFeedback(rootView);
 
             recordButtonExpanded.show();
             recordLockView.startAnimation(AnimationUtils.loadAnimation(getActivity().getApplication(), R.anim.fade_in_200));
@@ -434,7 +438,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                                     @Override
                                     public void onClick(View view) {
                                         if (currentVoiceRecordingState == VoiceRecordState.NoTouchRecording) {
-                                            performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
+                                            Utils.performHapticFeedback(rootView);
                                             stopRecording();
                                         }
                                     }
@@ -442,7 +446,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                                 lockParams.topMargin = -(recordLockChevronImage.getHeight());
                                 recordLockChevronImage.setLayoutParams(lockParams);
                                 recordLockChevronImage.setAlpha(0f);
-                                performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
+                                Utils.performHapticFeedback(rootView);
                             }
                         }
 
@@ -694,6 +698,32 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                 this, this, this, this, this,
                 this);
         realmRecyclerView.setAdapter(chatMessageAdapter);
+        realmRecyclerView.setItemAnimator(null);
+
+        replySwipe = new ReplySwipeCallback(new ReplySwipeCallback.SwipeAction() {
+            @Override
+            public void onFullSwipe(int position) {
+                MessageItem messageItem = chatMessageAdapter.getMessageItem(position);
+                if (messageItem != null) {
+                    if (messageItem.getUniqueId() != null) {
+                        bottomPanelMessagesIds.clear();
+                        bottomPanelMessagesIds.add(messageItem.getUniqueId());
+                        isReply = true;
+                        showBottomMessagesPanel(bottomPanelMessagesIds, BottomMessagesPanel.Purposes.FORWARDING);
+                        setUpInputViewButtons();
+                    }
+                }
+            }
+        });
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(replySwipe);
+        itemTouchHelper.attachToRecyclerView(realmRecyclerView);
+
+        realmRecyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
+            @Override
+            public void onDraw(@NonNull Canvas c, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
+                replySwipe.onDraw(c);
+            }
+        });
 
         restoreInputState();
 
@@ -1492,7 +1522,11 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         if (checkedItems > 0) {
             interactionView.setVisibility(View.VISIBLE);
             tvCount.setText(String.valueOf(checkedItems));
-        } else interactionView.setVisibility(View.GONE);
+            replySwipe.setSwipeEnabled(false);
+        } else {
+            interactionView.setVisibility(View.GONE);
+            replySwipe.setSwipeEnabled(true);
+        }
 
         if (checkedItems == 1
                 && RrrManager.getInstance().isSupported(account)
@@ -2001,7 +2035,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         handler.postDelayed(postAnimation, 295);
 
         beginTimer(false);
-        performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
+        Utils.performHapticFeedback(rootView);
         Utils.lockScreenRotation(getActivity(), false);
     }
 
@@ -2009,10 +2043,6 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         ((ImageButton) rootView.findViewById(R.id.button_emoticon)).setEnabled(state);
         attachButton.setEnabled(state);
         securityButton.setEnabled(state);
-    }
-
-    public void performHapticFeedback(int feedbackType, int flag) {
-        rootView.performHapticFeedback(feedbackType != -1 ? feedbackType : HapticFeedbackConstants.VIRTUAL_KEY, flag);
     }
 
     public void beginTimer(boolean start) {

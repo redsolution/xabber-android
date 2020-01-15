@@ -609,7 +609,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     }
 
     private void setForwardMessages() {
-        if (forwardsIds == null || chatFragment == null) return;
+        if (forwardsIds == null || forwardsIds.isEmpty() || chatFragment == null) return;
         chatFragment.setBottomPanelMessagesIds(forwardsIds, BottomMessagesPanel.Purposes.FORWARDING);
         forwardsIds = null;
     }
