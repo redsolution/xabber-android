@@ -1147,7 +1147,6 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                 && !bottomPanelMessagesIds.isEmpty()
                 && bottomMessagesPanel.getPurpose().equals(BottomMessagesPanel.Purposes.FORWARDING)) {
             sendForwardMessage(bottomPanelMessagesIds, text);
-            return;
         } else if (bottomPanelMessagesIds != null
                 && bottomMessagesPanel != null
                 && !bottomPanelMessagesIds.isEmpty()
