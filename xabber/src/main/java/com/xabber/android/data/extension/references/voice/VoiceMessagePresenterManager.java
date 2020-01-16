@@ -117,14 +117,14 @@ public final class VoiceMessagePresenterManager {
                     voiceWaveFreshViews.put(filePath, view);
                     if (!voiceWaveInProgress.contains(filePath)) {
                         voiceWaveInProgress.add(filePath);
-                        mediaDecoderTest(file, view);
+                        createWaveform(file, view);
                     }
                 }
             });
     }
 
 
-    public void mediaDecoderTest(final File file, final PlayerVisualizerView view) {
+    public void createWaveform(final File file, final PlayerVisualizerView view) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             final MediaCodec codec;
             MediaFormat format;

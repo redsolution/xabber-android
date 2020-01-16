@@ -17,6 +17,7 @@ import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.MessageManager;
+import com.xabber.android.service.RecordService;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,7 +25,6 @@ import java.util.ArrayList;
 
 import io.realm.Realm;
 import rx.subjects.PublishSubject;
-import top.oply.opuslib.OpusService;
 
 
 public final class VoiceManager implements MediaPlayer.OnCompletionListener, MediaPlayer.OnErrorListener, MediaPlayer.OnPreparedListener, MediaRecorder.OnErrorListener, MediaPlayer.OnSeekCompleteListener, AudioManager.OnAudioFocusChangeListener {
@@ -436,7 +436,7 @@ public final class VoiceManager implements MediaPlayer.OnCompletionListener, Med
         try {
             waveForm.clear();
             tempOpusFile = FileManager.createTempOpusFile("tempOpusFile");
-            OpusService.record(Application.getInstance().getApplicationContext(), tempOpusFile.getPath());
+            RecordService.record(Application.getInstance().getApplicationContext(), tempOpusFile.getPath());
             tempOpusPath = tempOpusFile.getPath();
         } catch (Exception e) {
             e.printStackTrace();
@@ -496,7 +496,7 @@ public final class VoiceManager implements MediaPlayer.OnCompletionListener, Med
 
     public boolean stopRecording(boolean deleteTempFile) {
         try {
-            OpusService.stopRecording(Application.getInstance().getApplicationContext());
+            RecordService.stopRecording(Application.getInstance().getApplicationContext());
             if (deleteTempFile)
                 deleteRecordedFile();
             return true;

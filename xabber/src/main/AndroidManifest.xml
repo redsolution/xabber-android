@@ -433,6 +433,7 @@
         <service android:name=".service.XabberService" />
         <service android:name=".service.DownloadService" />
         <service android:name=".service.UploadService" />
+        <service android:name=".service.RecordService" />
         <service
             android:name=".service.PushService">
             <intent-filter>
