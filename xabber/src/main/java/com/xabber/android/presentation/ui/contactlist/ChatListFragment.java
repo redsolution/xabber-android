@@ -150,9 +150,6 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
     @Override
     public void onAttach(Context context) {
         chatListFragmentListener = (ChatListFragmentListener) context;
-        Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
-        Application.getInstance().addUIListener(OnContactChangedListener.class, this);
-        Application.getInstance().addUIListener(OnChatStateListener.class, this);
         EventBus.getDefault().register(this);
         chatListFragmentListener.onChatListStateChanged(currentChatsState);
         super.onAttach(context);
@@ -202,9 +199,6 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
     @Override
     public void onDetach() {
         chatListFragmentListener = null;
-        Application.getInstance().removeUIListener(OnAccountChangedListener.class, this);
-        Application.getInstance().removeUIListener(OnContactChangedListener.class,this);
-        Application.getInstance().removeUIListener(OnChatStateListener.class, this);
         EventBus.getDefault().unregister(this);
         updateBackpressure.removeRefreshRequests();
         super.onDetach();
@@ -212,6 +206,9 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
 
     @Override
     public void onStop() {
+        Application.getInstance().removeUIListener(OnAccountChangedListener.class, this);
+        Application.getInstance().removeUIListener(OnContactChangedListener.class,this);
+        Application.getInstance().removeUIListener(OnChatStateListener.class, this);
         EventBus.getDefault().unregister(this);
         super.onStop();
     }
@@ -220,6 +217,9 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
     public void onResume() {
         if (!EventBus.getDefault().isRegistered(this))
             EventBus.getDefault().register(this);
+        Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
+        Application.getInstance().addUIListener(OnContactChangedListener.class, this);
+        Application.getInstance().addUIListener(OnChatStateListener.class, this);
         updateUnreadCount();
         if (getUnreadCount() == 0){
             onStateSelected(ChatListState.recent);
