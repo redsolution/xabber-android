@@ -28,4 +28,11 @@
     <string name="got_it">Понял</string>
     <string name="search">Поиск</string>
     <string name="free">бесплатно</string>
+
+    <string name="contact_bar_chat">Чат</string>
+    <string name="contact_bar_call">Звонок</string>
+    <string name="contact_bar_notifications">Уведомления</string>
+    <string name="contact_bar_block">Заблокировать</string>
+    <string name="contact_bar_unblock">Разблокировать</string>
+
 </resources>
