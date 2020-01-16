@@ -30,7 +30,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -51,6 +50,7 @@ import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.muc.RoomChat;
 import com.xabber.android.data.extension.muc.RoomContact;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.ChatContact;
 import com.xabber.android.data.message.MessageManager;
@@ -66,7 +66,6 @@ import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.presentation.mvp.contactlist.ContactListPresenter;
 import com.xabber.android.presentation.mvp.contactlist.UpdateBackpressure;
-import com.xabber.android.presentation.ui.contactlist.viewobjects.CategoryVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.ChatVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.ContactVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.ExtContactVO;
@@ -294,6 +293,7 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         adapter.expandItemsAtStartUp();
         adapter.setStickyHeaders(true);
         adapter.addListener(this);
+        adapter.setAnimateChangesWithDiffUtil(false);
         MessageNotificationManager.getInstance().removeAllMessageNotifications();
         chatListFragmentListener.onChatListStateChanged(currentChatsState);
 
@@ -468,56 +468,6 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
     Update chat items in adapter
      */
     private void updateItems(List<IFlexible> items){
-        /* Show placeholder if necessary */
-//        if (commonState != CommonState.online && items.size() == 0){
-//            switch (commonState){
-//                case roster:
-//                    showPlaceholder(Application.getInstance().getApplicationContext().getString(R.string.application_state_connecting), null);
-//                    break;
-//                case connecting:
-//                    showPlaceholder(Application.getInstance().getApplicationContext().getString(R.string.application_state_connecting), null);
-//                    break;
-//                case waiting:
-//                    showPlaceholder(Application.getInstance().getApplicationContext().getString(R.string.application_state_waiting)
-//                            , Application.getInstance().getApplicationContext().getString(R.string.application_action_waiting));
-//                    placeholderButton.setOnClickListener(new View.OnClickListener() {
-//                        @Override
-//                        public void onClick(View v) {
-//                            ConnectionManager.getInstance().connectAll();
-//                        }
-//                    });
-//                    break;
-//                case offline:
-//                    showPlaceholder(Application.getInstance().getApplicationContext().getString(R.string.application_state_offline)
-//                            , Application.getInstance().getApplicationContext().getString(R.string.application_state_offline));
-//                    placeholderButton.setOnClickListener(new View.OnClickListener() {
-//                        @Override
-//                        public void onClick(View v) {
-//                            AccountManager.getInstance().setStatus(StatusMode.available, null);
-//                        }
-//                    });
-//                    break;
-//                case disabled:
-//                    showPlaceholder(Application.getInstance().getApplicationContext().getString(R.string.application_state_disabled)
-//                            , Application.getInstance().getApplicationContext().getString(R.string.application_action_disabled));
-//                    placeholderButton.setOnClickListener(new View.OnClickListener() {
-//                        @Override
-//                        public void onClick(View v) {
-//                            chatListFragmentListener.onManageAccountsClick();
-//                        }
-//                    });
-//                    break;
-//                case empty:
-//                    showPlaceholder(Application.getInstance().getApplicationContext().getString(R.string.application_state_empty),
-//                            Application.getInstance().getApplicationContext().getString(R.string.application_action_empty));
-//                    placeholderButton.setOnClickListener(new View.OnClickListener() {
-//                        @Override
-//                        public void onClick(View v) {
-//                            startActivity(AccountAddActivity.createIntent(getActivity()));
-//                        }
-//                    });
-//                    break;
-//            }
          if (items.size() == 0 && showPlaceholders >= 3) {
             switch (currentChatsState) {
                 case unread:
@@ -540,10 +490,24 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         } else hidePlaceholder();
 
         /* Update items in RecyclerView */
+        adapter.setAnimationDuration(0);
+        adapter.setAnimateChangesWithDiffUtil(false);
+        List<Integer> list = getDifferentElementsPositions(this.items, items);
+        if ( list.size() == 0 || list.get(0) == -1) adapter.updateDataSet(this.items);
+        else {
+            for (int i : list){
+                adapter.removeItem(i);
+                adapter.addItem(i, items.get(i));
+                adapter.notifyItemChanged(i);
+            }
+        }
+
         this.items.clear();
         this.items.addAll(items);
-        adapter.updateDataSet(this.items);
-        adapter.notifyDataSetChanged();
+
+
+
+
     }
 
     @Override
@@ -921,16 +885,27 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         if (snackbar != null) snackbar.dismiss();
     }
 
+    private List<Integer> getDifferentElementsPositions(List<IFlexible> oldList, List<IFlexible> newList){
+        ArrayList<Integer> result = new ArrayList<Integer>();
+        if (oldList.size() != newList.size()) result.add(-1);
+        if (oldList.size() <= 0 || newList.size() <= 0) result.add(-1);
+        else
+            for (IFlexible oldFlexible : oldList){
+                ExtContactVO oldExtContactVO = (ExtContactVO) oldFlexible;
+                ExtContactVO newExtContactVO = (ExtContactVO) newList.get(oldList.indexOf(oldFlexible));
+                if (!oldExtContactVO.getAccountJid().equals(newExtContactVO.getAccountJid())
+                        || !oldExtContactVO.getAvatar().equals(newExtContactVO.getAvatar())
+                        || !oldExtContactVO.getMessageText().equals(newExtContactVO.getMessageText())
+                        || !oldExtContactVO.getUserJid().equals(newExtContactVO.getUserJid())
+                        || !oldExtContactVO.getName().equals(newExtContactVO.getName())
+                        || oldExtContactVO.getStatusLevel() != newExtContactVO.getStatusLevel())
+                    result.add(oldList.indexOf(oldFlexible));
+            }
+        LogManager.i("AAAAAAAA", "New items: " + result.size() );
+        return result;
+    }
+
     @Override
     public void onActionStateChanged(RecyclerView.ViewHolder viewHolder, int actionState) { }
 
-//    public class ChatsDiffUtilsCallback extends DiffUtil.Callback{
-//        private final List<IFlexible> oldList;
-//        private final List<IFlexible> newList;
-//
-//        public ChatsDiffUtilsCallback(List<IFlexible> oldList, List<IFlexible> newList){
-//            this.oldList = oldList;
-//            this.newList = newList;
-//        }
-//    }
 }
