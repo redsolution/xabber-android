@@ -571,7 +571,12 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
 
     @Override
     public void onChatStateChanged(Collection<RosterContact> entities) {
-        updateToolbar();
+        for (RosterContact contact : entities) {
+            if (contact.getUser().getBareJid().equals(user.getBareJid())) {
+                updateToolbar();
+                return;
+            }
+        }
     }
 
     private void updateToolbar() {
