@@ -58,6 +58,7 @@ import org.jxmpp.jid.BareJid;
 import org.jxmpp.jid.Jid;
 import org.jxmpp.jid.parts.Resourcepart;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
@@ -140,6 +141,7 @@ public class ChatStateManager implements OnDisconnectListener,
      * Handler for sending composing states.
      */
     private final Handler stateSenderHandler;
+    private ArrayList<Runnable> stateSenders;
 
     private ChatStateManager() {
         chatStates = new NestedNestedMaps<>();
@@ -152,6 +154,7 @@ public class ChatStateManager implements OnDisconnectListener,
                 .getSystemService(Context.ALARM_SERVICE);
         handler = new Handler();
         stateSenderHandler = new Handler();
+        stateSenders = new ArrayList<>();
     }
 
     /**
@@ -258,6 +261,7 @@ public class ChatStateManager implements OnDisconnectListener,
         message.addExtension(new ChatStateExtension(ChatState.active));
         sent.put(chat.getAccount().toString(), chat.getUser().toString(), ChatState.active);
         cancelPauseIntent(chat.getAccount(), chat.getUser());
+        cancelComposingSender();
     }
 
     /**
@@ -278,27 +282,8 @@ public class ChatStateManager implements OnDisconnectListener,
         if (chat == null || !isSupported(chat, false)) {
             return;
         }
-        if (chatState == ChatState.composing) {
-            cancelComposingSender();
-            Runnable stateSender = new Runnable() {
-                @Override
-                public void run() {
-                    Message message = new Message();
-                    message.setType(chat.getType());
-                    message.setTo(chat.getTo());
-                    message.addExtension(new ChatStateExtension(chatState, type));
-                    try {
-                        StanzaSender.sendStanza(account, message);
-                    } catch (NetworkException e) {
-                        // Just ignore it.
-                    }
-                    stateSenderHandler.postDelayed(this, SEND_REPEATED_COMPOSING_STATE_DELAY);
-                }
-            };
-            stateSenderHandler.postDelayed(stateSender, SEND_REPEATED_COMPOSING_STATE_DELAY);
-        } else {
-            cancelComposingSender();
-        }
+
+        cancelComposingSender();
 
         Message message = new Message();
         message.setType(chat.getType());
@@ -307,9 +292,34 @@ public class ChatStateManager implements OnDisconnectListener,
         try {
             StanzaSender.sendStanza(account, message);
             sent.put(chat.getAccount().toString(), chat.getUser().toString(), chatState);
+            if (chatState == ChatState.composing) {
+                setComposingSender(chat, chatState, type);
+            } else {
+                cancelComposingSender();
+            }
         } catch (NetworkException e) {
             // Just ignore it.
         }
+    }
+
+    private void setComposingSender(final AbstractChat chat, final ChatState chatState, final ChatStateSubtype type) {
+        Runnable stateSender = new Runnable() {
+            @Override
+            public void run() {
+                Message message = new Message();
+                message.setType(chat.getType());
+                message.setTo(chat.getTo());
+                message.addExtension(new ChatStateExtension(chatState, type));
+                try {
+                    StanzaSender.sendStanza(chat.getAccount(), message);
+                } catch (NetworkException e) {
+                    // Just ignore it.
+                }
+                stateSenderHandler.postDelayed(this, SEND_REPEATED_COMPOSING_STATE_DELAY);
+            }
+        };
+        stateSenders.add(stateSender);
+        stateSenderHandler.post(stateSender);
     }
 
     /**
@@ -322,7 +332,12 @@ public class ChatStateManager implements OnDisconnectListener,
     }
 
     public void cancelComposingSender() {
-        stateSenderHandler.removeCallbacks(null);
+        if (!stateSenders.isEmpty()) {
+            for (Runnable sender : stateSenders) {
+                stateSenderHandler.removeCallbacks(sender);
+            }
+        }
+        stateSenders.clear();
     }
 
     public void onChatOpening(AccountJid account, UserJid user) {
