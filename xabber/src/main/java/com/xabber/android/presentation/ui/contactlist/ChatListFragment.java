@@ -30,6 +30,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -668,7 +669,7 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
     }
 
     @Override
-    public boolean onItemClick(int position) {
+    public boolean onItemClick(View view, int position) {
         adapter.notifyItemChanged(position);
         IFlexible item = adapter.getItem(position);
         if (item instanceof  ContactVO){
@@ -737,7 +738,6 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
             }
             final ArrayList<AbstractContact> baseEntities = getSearchResults(rosterContacts, abstractChats);
             items.clear();
-            items.add(new CategoryVO(Application.getInstance().getApplicationContext().getString(R.string.category_title_contacts)));
             items.addAll(SettingsManager.contactsShowMessages()
                     ? ExtContactVO.convert(baseEntities, this)
                     : ContactVO.convert(baseEntities, this));
@@ -923,4 +923,14 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
 
     @Override
     public void onActionStateChanged(RecyclerView.ViewHolder viewHolder, int actionState) { }
+
+//    public class ChatsDiffUtilsCallback extends DiffUtil.Callback{
+//        private final List<IFlexible> oldList;
+//        private final List<IFlexible> newList;
+//
+//        public ChatsDiffUtilsCallback(List<IFlexible> oldList, List<IFlexible> newList){
+//            this.oldList = oldList;
+//            this.newList = newList;
+//        }
+//    }
 }

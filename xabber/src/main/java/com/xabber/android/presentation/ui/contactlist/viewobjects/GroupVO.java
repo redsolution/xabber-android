@@ -25,6 +25,7 @@ import java.util.UUID;
 import eu.davidea.flexibleadapter.FlexibleAdapter;
 import eu.davidea.flexibleadapter.items.AbstractFlexibleItem;
 import eu.davidea.flexibleadapter.items.IExpandable;
+import eu.davidea.flexibleadapter.items.IFlexible;
 import eu.davidea.flexibleadapter.items.ISectionable;
 import eu.davidea.viewholders.ExpandableViewHolder;
 
@@ -99,7 +100,7 @@ public class GroupVO extends AbstractFlexibleItem<GroupVO.ViewHolder>
     }
 
     @Override
-    public void bindViewHolder(FlexibleAdapter adapter, ViewHolder viewHolder, int position, List<Object> payloads) {
+    public void bindViewHolder(FlexibleAdapter<IFlexible> adapter, ViewHolder viewHolder, int position, List<Object> payloads) {
         Context context = viewHolder.itemView.getContext();
         /** set up ACCOUNT COLOR indicator */
         if (AccountManager.getInstance().getEnabledAccounts().size() > 1){

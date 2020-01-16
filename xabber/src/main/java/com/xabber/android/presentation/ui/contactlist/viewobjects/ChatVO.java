@@ -86,7 +86,7 @@ public class ChatVO extends ExtContactVO {
     }
 
     @Override
-    public void bindViewHolder(FlexibleAdapter adapter, ViewHolder viewHolder, int position, List<Object> payloads) {
+    public void bindViewHolder(FlexibleAdapter<IFlexible> adapter, ViewHolder viewHolder, int position, List<Object> payloads) {
         super.bindViewHolder(adapter, viewHolder, position, payloads);
         Context context = viewHolder.itemView.getContext();
 
