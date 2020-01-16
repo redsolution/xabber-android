@@ -53,6 +53,8 @@ import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.extension.blocking.BlockingManager;
+import com.xabber.android.data.extension.blocking.OnBlockedListChangedListener;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.data.intent.EntityIntentBuilder;
@@ -65,6 +67,7 @@ import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.color.ColorManager;
+import com.xabber.android.ui.dialog.BlockContactDialog;
 import com.xabber.android.ui.dialog.SnoozeDialog;
 import com.xabber.android.ui.fragment.ConferenceInfoFragment;
 import com.xabber.android.ui.fragment.ContactVcardViewerFragment;
@@ -72,9 +75,11 @@ import com.xabber.android.ui.helper.BlurTransformation;
 import com.xabber.android.ui.helper.ContactTitleInflater;
 
 import java.util.Collection;
+import java.util.Collections;
 
 public class ContactActivity extends ManagedActivity implements
-        OnContactChangedListener, OnAccountChangedListener, ContactVcardViewerFragment.Listener, View.OnClickListener, View.OnLongClickListener, SnoozeDialog.OnSnoozeListener {
+        OnContactChangedListener, OnAccountChangedListener, ContactVcardViewerFragment.Listener, View.OnClickListener,
+        View.OnLongClickListener, SnoozeDialog.OnSnoozeListener, BlockingManager.UnblockContactListener, OnBlockedListChangedListener {
 
     private static final String LOG_TAG = ContactActivity.class.getSimpleName();
     private AccountJid account;
@@ -89,19 +94,20 @@ public class ContactActivity extends ManagedActivity implements
     private ImageView QRgen;
     private ImageButton chatButton;
     private ImageButton callsButton;
-    private ImageButton videoButton;
+    private ImageButton blockButton;
     private ImageButton notifyButton;
     private int accountMainColor;
     private TextView chatButtonText;
     private TextView callsButtonText;
-    private TextView videoButtonText;
+    private TextView blockButtonText;
     private TextView notifyButtonText;
     private LinearLayout chatButtonLayout;
     private LinearLayout callsButtonLayout;
-    private LinearLayout videoButtonLayout;
+    private LinearLayout blockButtonLayout;
     private LinearLayout notifyButtonLayout;
 
     private int orientation;
+    private boolean blocked;
 
     public static Intent createIntent(Context context, AccountJid account, UserJid user) {
         return new EntityIntentBuilder(context, ContactActivity.class)
@@ -203,11 +209,11 @@ public class ContactActivity extends ManagedActivity implements
         callsButtonLayout.setOnClickListener(this);
         callsButtonLayout.setOnLongClickListener(this);
 
-        videoButton = findViewById(R.id.video_button);
-        videoButtonText = findViewById(R.id.video_call_text);
-        videoButtonLayout = findViewById(R.id.video_button_layout);
-        videoButtonLayout.setOnClickListener(this);
-        videoButtonLayout.setOnLongClickListener(this);
+        blockButton = findViewById(R.id.block_button);
+        blockButtonText = findViewById(R.id.block_text);
+        blockButtonLayout = findViewById(R.id.block_button_layout);
+        blockButtonLayout.setOnClickListener(this);
+        blockButtonLayout.setOnLongClickListener(this);
 
         notifyButton = findViewById(R.id.notify_button);
         notifyButtonText = findViewById(R.id.notification_text);
@@ -223,6 +229,7 @@ public class ContactActivity extends ManagedActivity implements
         contactAddressView.setText(user.getBareJid().toString());
 
         chat = MessageManager.getInstance().getOrCreateChat(account, user);
+        checkForBlockedStatus();
 
         orientation = getResources().getConfiguration().orientation;
         setContactBar(accountMainColor, orientation);
@@ -249,6 +256,7 @@ public class ContactActivity extends ManagedActivity implements
         super.onResume();
         Application.getInstance().addUIListener(OnContactChangedListener.class, this);
         Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
+        Application.getInstance().addUIListener(OnBlockedListChangedListener.class, this);
         ContactTitleInflater.updateTitle(contactTitleView, this, bestContact, true);
         updateName();
         appBarResize();
@@ -259,6 +267,7 @@ public class ContactActivity extends ManagedActivity implements
         super.onPause();
         Application.getInstance().removeUIListener(OnContactChangedListener.class, this);
         Application.getInstance().removeUIListener(OnAccountChangedListener.class, this);
+        Application.getInstance().removeUIListener(OnBlockedListChangedListener.class, this);
     }
 
     @Override
@@ -381,17 +390,21 @@ public class ContactActivity extends ManagedActivity implements
         }
         callsButton.setColorFilter(color);
         chatButton.setColorFilter(color);
-        videoButton.setColorFilter(color);
+        blockButton.setColorFilter(getResources().getColor(blocked ? R.color.grey_500 : R.color.red_A700));
         notifyButton.setColorFilter(notify ? color : getResources().getColor(R.color.grey_500));
+
+        blockButtonText.setText(blocked ? R.string.contact_bar_unblock : R.string.contact_bar_block);
+        blockButtonText.setTextColor(getResources().getColor(blocked ? R.color.grey_500 : R.color.red_A700));
+
         if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
             chatButtonText.setVisibility(View.GONE);
             callsButtonText.setVisibility(View.GONE);
-            videoButtonText.setVisibility(View.GONE);
+            blockButtonText.setVisibility(View.GONE);
             notifyButtonText.setVisibility(View.GONE);
         } else {
             chatButtonText.setVisibility(View.VISIBLE);
             callsButtonText.setVisibility(View.VISIBLE);
-            videoButtonText.setVisibility(View.VISIBLE);
+            blockButtonText.setVisibility(View.VISIBLE);
             notifyButtonText.setVisibility(View.VISIBLE);
         }
     }
@@ -471,7 +484,6 @@ public class ContactActivity extends ManagedActivity implements
                 finish();
                 break;
             case R.id.call_button_layout:
-            case R.id.video_button_layout:
                 Snackbar.make(view, "Feature is coming in future updates!", Snackbar.LENGTH_LONG).show();
                 break;
             case R.id.notify_button_layout:
@@ -479,6 +491,12 @@ public class ContactActivity extends ManagedActivity implements
                     showSnoozeDialog(chat);
                 else
                     removeSnooze(chat);
+                break;
+            case R.id.block_button_layout:
+                if (blocked)
+                    removeBlock();
+                else
+                    showBlockDialog();
                 break;
             case R.id.generate_qrcode:
                 generateQR();
@@ -489,7 +507,7 @@ public class ContactActivity extends ManagedActivity implements
 
     public void showSnoozeDialog(AbstractChat chat) {
         SnoozeDialog dialog = SnoozeDialog.newInstance(chat, this);
-        dialog.show(getSupportFragmentManager(), "snooze_fragment");
+        dialog.show(getSupportFragmentManager(), SnoozeDialog.class.getName());
     }
 
     public void removeSnooze(AbstractChat chat) {
@@ -500,10 +518,46 @@ public class ContactActivity extends ManagedActivity implements
         onSnoozed();
     }
 
+    public void showBlockDialog() {
+        BlockContactDialog dialog = BlockContactDialog.newInstance(getAccount(), getUser());
+        dialog.show(getFragmentManager(), BlockContactDialog.class.getName());
+    }
+
+    private void removeBlock() {
+        BlockingManager.getInstance().unblockContacts(getAccount(), Collections.singletonList(getUser()), this);
+    }
+
+    private void checkForBlockedStatus() {
+        Collection<UserJid> blockedContacts = BlockingManager.getInstance().getBlockedContacts(account);
+        for (UserJid blockedContact : blockedContacts) {
+            if (blockedContact.getBareJid().equals(getUser().getBareJid())) {
+                blocked = true;
+                return;
+            }
+        }
+        blocked = false;
+    }
+
     @Override
     public void onSnoozed() {
         setContactBar(accountMainColor, orientation);
     }
+
+    //Block listeners
+    @Override
+    public void onBlockedListChanged(AccountJid account) {
+        if (account.getFullJid().asBareJid().equals(getAccount().getFullJid().asBareJid())) {
+            checkForBlockedStatus();
+            setContactBar(accountMainColor, orientation);
+        }
+    }
+    @Override
+    public void onSuccessUnblock() {
+        blocked = false;
+        setContactBar(accountMainColor, orientation);
+    }
+    @Override
+    public void onErrorUnblock() { }
 
     @Override
     public boolean onLongClick(View view) {
@@ -539,6 +593,7 @@ public class ContactActivity extends ManagedActivity implements
         }*/
         return true;
     }
+
 
     /*private int calculateOffset(View buttonView, View toastView, TextView desc) {
      *//*int I = desc.getWidth();

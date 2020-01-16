@@ -13,10 +13,10 @@ import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.RosterContact;
+import com.xabber.xmpp.smack.XMPPTCPConnection;
 
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
-import com.xabber.xmpp.smack.XMPPTCPConnection;
 import org.jivesoftware.smackx.blocking.BlockingCommandManager;
 import org.jxmpp.jid.Jid;
 
@@ -205,8 +205,8 @@ public class BlockingManager {
     }
 
     public interface BlockContactListener {
-        void onSuccess();
-        void onError();
+        void onSuccessBlock();
+        void onErrorBlock();
     }
 
     public void blockContact(final AccountJid account, final UserJid contactJid, final BlockContactListener listener) {
@@ -236,9 +236,9 @@ public class BlockingManager {
                     public void run() {
                         if (finalSuccess) {
                             cachedBlockedContacts.get(account).add(contactJid);
-                            listener.onSuccess();
+                            listener.onSuccessBlock();
                         } else {
-                            listener.onError();
+                            listener.onErrorBlock();
                         }
                     }
                 });
@@ -270,8 +270,8 @@ public class BlockingManager {
     }
 
     public interface UnblockContactListener {
-        void onSuccess();
-        void onError();
+        void onSuccessUnblock();
+        void onErrorUnblock();
     }
 
     public void unblockContacts(final AccountJid account, final List<UserJid> contacts, final UnblockContactListener listener) {
@@ -303,9 +303,9 @@ public class BlockingManager {
                     @Override
                     public void run() {
                         if (finalSuccess) {
-                            listener.onSuccess();
+                            listener.onSuccessUnblock();
                         } else {
-                            listener.onError();
+                            listener.onErrorUnblock();
                         }
                     }
                 });
@@ -337,9 +337,9 @@ public class BlockingManager {
                     @Override
                     public void run() {
                         if (finalSuccess) {
-                            listener.onSuccess();
+                            listener.onSuccessUnblock();
                         } else {
-                            listener.onError();
+                            listener.onErrorUnblock();
                         }
                     }
                 });

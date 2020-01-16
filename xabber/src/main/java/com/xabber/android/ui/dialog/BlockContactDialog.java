@@ -13,7 +13,6 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.blocking.BlockingManager;
-import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.roster.RosterManager;
 
 public class BlockContactDialog extends DialogFragment implements DialogInterface.OnClickListener, BlockingManager.BlockContactListener {
@@ -57,12 +56,12 @@ public class BlockContactDialog extends DialogFragment implements DialogInterfac
     }
 
     @Override
-    public void onSuccess() {
+    public void onSuccessBlock() {
         Toast.makeText(Application.getInstance(), R.string.contact_blocked_successfully, Toast.LENGTH_SHORT).show();
     }
 
     @Override
-    public void onError() {
+    public void onErrorBlock() {
         Toast.makeText(Application.getInstance(), R.string.error_blocking_contact, Toast.LENGTH_SHORT).show();
     }
 }

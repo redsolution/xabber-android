@@ -3,24 +3,25 @@ package com.xabber.android.ui.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.appcompat.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
-import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.blocking.OnBlockedListChangedListener;
 import com.xabber.android.data.intent.AccountIntentBuilder;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.ui.adapter.BlockedListAdapter;
 import com.xabber.android.ui.color.BarPainter;
 import com.xabber.android.ui.dialog.UnblockAllContactsDialog;
@@ -123,7 +124,6 @@ public class BlockedListActivity extends ManagedActivity implements BlockedListA
     @Override
     protected void onPause() {
         super.onPause();
-
         Application.getInstance().removeUIListener(OnBlockedListChangedListener.class, this);
     }
 
@@ -225,12 +225,12 @@ public class BlockedListActivity extends ManagedActivity implements BlockedListA
     }
 
     @Override
-    public void onSuccess() {
+    public void onSuccessUnblock() {
         Toast.makeText(BlockedListActivity.this, getString(R.string.contacts_unblocked_successfully), Toast.LENGTH_SHORT).show();
     }
 
     @Override
-    public void onError() {
+    public void onErrorUnblock() {
         Toast.makeText(BlockedListActivity.this, getString(R.string.error_unblocking_contacts), Toast.LENGTH_SHORT).show();
     }
 }

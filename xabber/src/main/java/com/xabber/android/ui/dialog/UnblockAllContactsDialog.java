@@ -13,7 +13,7 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.blocking.BlockingManager;
 
-public class UnblockAllContactsDialog extends DialogFragment implements DialogInterface.OnClickListener, BlockingManager.BlockContactListener, BlockingManager.UnblockContactListener {
+public class UnblockAllContactsDialog extends DialogFragment implements DialogInterface.OnClickListener, BlockingManager.UnblockContactListener {
 
     public static final String ARGUMENT_ACCOUNT = "com.xabber.android.ui.dialog.UnblockAllContactsDialog.ARGUMENT_ACCOUNT";
 
@@ -49,14 +49,14 @@ public class UnblockAllContactsDialog extends DialogFragment implements DialogIn
     }
 
     @Override
-    public void onSuccess() {
+    public void onSuccessUnblock() {
         Toast.makeText(Application.getInstance(),
                 Application.getInstance().getString(R.string.contacts_unblocked_successfully),
                 Toast.LENGTH_SHORT).show();
     }
 
     @Override
-    public void onError() {
+    public void onErrorUnblock() {
         Toast.makeText(Application.getInstance(),
                 Application.getInstance().getString(R.string.error_unblocking_contacts),
                 Toast.LENGTH_SHORT).show();
