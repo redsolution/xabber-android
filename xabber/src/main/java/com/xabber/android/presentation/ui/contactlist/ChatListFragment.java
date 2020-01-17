@@ -82,6 +82,7 @@ import com.xabber.android.ui.adapter.contactlist.AccountConfiguration;
 import com.xabber.android.ui.adapter.contactlist.GroupConfiguration;
 import com.xabber.android.ui.color.AccountPainter;
 import com.xabber.android.ui.color.ColorManager;
+import com.xabber.android.ui.fragment.ChatFragment;
 import com.xabber.android.ui.helper.ContextMenuHelper;
 import com.xabber.android.ui.widget.ShortcutBuilder;
 import com.xabber.android.utils.StringUtils;
@@ -625,7 +626,7 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
 
     public void updateUnreadCount() {
         EventBus.getDefault().post(new ContactListPresenter.UpdateUnreadCountEvent(getUnreadCount()));
-        chatListFragmentListener.onUnreadChanged(getUnreadCount());
+        if (chatListFragmentListener != null) chatListFragmentListener.onUnreadChanged(getUnreadCount());
     }
 
     @Override
@@ -884,18 +885,25 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
     private List<Integer> getDifferentElementsPositions(List<IFlexible> oldList, List<IFlexible> newList){
         ArrayList<Integer> result = new ArrayList<Integer>();
         if (oldList.size() != newList.size()) result.add(-1);
-        if (oldList.size() <= 1 || newList.size() <= 1) result.add(-1);
+        if (oldList.size() <= 1 && newList.size() <= 1) result.add(-1);
         else
             for (IFlexible oldFlexible : oldList){
-                ExtContactVO oldExtContactVO = (ExtContactVO) oldFlexible;
-                ExtContactVO newExtContactVO = (ExtContactVO) newList.get(oldList.indexOf(oldFlexible));
-                if (!oldExtContactVO.getAccountJid().equals(newExtContactVO.getAccountJid())
-                        || !oldExtContactVO.getAvatar().equals(newExtContactVO.getAvatar())
-                        || !oldExtContactVO.getMessageText().equals(newExtContactVO.getMessageText())
-                        || !oldExtContactVO.getUserJid().equals(newExtContactVO.getUserJid())
-                        || !oldExtContactVO.getName().equals(newExtContactVO.getName())
-                        || oldExtContactVO.getStatusLevel() != newExtContactVO.getStatusLevel())
-                    result.add(oldList.indexOf(oldFlexible));
+                try {
+                    ExtContactVO oldExtContactVO = (ExtContactVO) oldFlexible;
+                    ExtContactVO newExtContactVO = (ExtContactVO) newList.get(oldList.indexOf(oldFlexible));
+                    if (!oldExtContactVO.getAccountJid().equals(newExtContactVO.getAccountJid())
+                            || !oldExtContactVO.getAvatar().equals(newExtContactVO.getAvatar())
+                            || !oldExtContactVO.getMessageText().equals(newExtContactVO.getMessageText())
+                            || !oldExtContactVO.getUserJid().equals(newExtContactVO.getUserJid())
+                            || !oldExtContactVO.getName().equals(newExtContactVO.getName())
+                            || oldExtContactVO.getStatusLevel() != newExtContactVO.getStatusLevel())
+                        result.add(oldList.indexOf(oldFlexible));
+                } catch (Exception e) {
+                    LogManager.exception(ChatFragment.class.getSimpleName(), e);
+                    result.clear();
+                    result.add(-1);
+                }
+
             }
         LogManager.i("AAAAAAAA", "New items: " + result.size() );
         return result;
