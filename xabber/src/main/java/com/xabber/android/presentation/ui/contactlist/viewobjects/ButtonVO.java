@@ -14,6 +14,7 @@ import java.util.UUID;
 
 import eu.davidea.flexibleadapter.FlexibleAdapter;
 import eu.davidea.flexibleadapter.items.AbstractFlexibleItem;
+import eu.davidea.flexibleadapter.items.IFlexible;
 import eu.davidea.viewholders.FlexibleViewHolder;
 
 /**
@@ -61,7 +62,7 @@ public class ButtonVO extends AbstractFlexibleItem<ButtonVO.ViewHolder> {
     }
 
     @Override
-    public void bindViewHolder(FlexibleAdapter adapter, ViewHolder holder, int position, List<Object> payloads) {
+    public void bindViewHolder(FlexibleAdapter<IFlexible> adapter, ViewHolder holder, int position, List<Object> payloads) {
         holder.btnListAction.setText(getTitle());
     }
 

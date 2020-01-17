@@ -198,7 +198,7 @@ public class RecentChatFragment extends Fragment implements Toolbar.OnMenuItemCl
     }
 
     @Override
-    public boolean onItemClick(int position) {
+    public boolean onItemClick(View view, int position) {
 
         if (adapter.getItem(position) instanceof ChatVO) {
             ChatVO chat = (ChatVO) adapter.getItem(position);

@@ -48,6 +48,7 @@ import io.realm.RealmResults;
 
 public class ChatMarkerManager implements OnPacketListener {
 
+    private static final String LOG_TAG = ChatMarkerManager.class.getSimpleName();
     private static final StanzaFilter OUTGOING_MESSAGE_FILTER = new AndFilter(
             MessageTypeFilter.NORMAL_OR_CHAT,
             MessageWithBodiesFilter.INSTANCE,
@@ -211,54 +212,78 @@ public class ChatMarkerManager implements OnPacketListener {
     }
 
     private void markAsDisplayed(final String messageID) {
-        Realm realm = MessageDatabaseManager.getInstance().getRealmUiThread();
-        MessageItem first = realm.where(MessageItem.class)
-                .equalTo(MessageItem.Fields.ORIGIN_ID, messageID).findFirst();
+        Application.getInstance().runInBackground(new Runnable() {
+            @Override
+            public void run() {
+                Realm realm = null;
+                try {
+                    realm = MessageDatabaseManager.getInstance().getRealmUiThread();
+                    realm.executeTransaction(new Realm.Transaction() {
+                        @Override
+                        public void execute(Realm realm) {
+                            MessageItem first = realm.where(MessageItem.class)
+                                    .equalTo(MessageItem.Fields.ORIGIN_ID, messageID).findFirst();
 
-        if (first != null) {
-            RealmResults<MessageItem> results = realm.where(MessageItem.class)
-                    .equalTo(MessageItem.Fields.ACCOUNT, first.getAccount().toString())
-                    .equalTo(MessageItem.Fields.USER, first.getUser().toString())
-                    .equalTo(MessageItem.Fields.INCOMING, false)
-                    .equalTo(MessageItem.Fields.DISPLAYED, false)
-                    .equalTo(MessageItem.Fields.IS_IN_PROGRESS, false)
-                    .lessThanOrEqualTo(MessageItem.Fields.TIMESTAMP, first.getTimestamp())
-                    .findAll();
+                            if (first != null) {
+                                RealmResults<MessageItem> results = realm.where(MessageItem.class)
+                                        .equalTo(MessageItem.Fields.ACCOUNT, first.getAccount().toString())
+                                        .equalTo(MessageItem.Fields.USER, first.getUser().toString())
+                                        .equalTo(MessageItem.Fields.INCOMING, false)
+                                        .equalTo(MessageItem.Fields.DISPLAYED, false)
+                                        .equalTo(MessageItem.Fields.IS_IN_PROGRESS, false)
+                                        .lessThanOrEqualTo(MessageItem.Fields.TIMESTAMP, first.getTimestamp())
+                                        .findAll();
 
-            if (results != null) {
-                realm.beginTransaction();
-                for (MessageItem item : results) {
-                    item.setDisplayed(true);
-                }
-                realm.commitTransaction();
-                EventBus.getDefault().post(new MessageUpdateEvent());
+                                if (results != null) {
+                                    for (MessageItem item : results) {
+                                        item.setDisplayed(true);
+                                    }
+                                    EventBus.getDefault().post(new MessageUpdateEvent());
+                                }
+                            }
+                        }
+                    });
+                } catch (Exception e) { LogManager.exception(LOG_TAG, e); } //TODO maybe should close!
             }
-        }
+        });
+
     }
 
     private void markAsDelivered(final String stanzaID) {
-        Realm realm = MessageDatabaseManager.getInstance().getRealmUiThread();
-        MessageItem first = realm.where(MessageItem.class)
-                .equalTo(MessageItem.Fields.ORIGIN_ID, stanzaID).findFirst();
+        Application.getInstance().runInBackground(new Runnable() {
+            @Override
+            public void run() {
+                Realm realm = null;
+                try {
+                    realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
+                    realm.executeTransaction(new Realm.Transaction() {
+                        @Override
+                        public void execute(Realm realm) {
+                            MessageItem first = realm.where(MessageItem.class)
+                                    .equalTo(MessageItem.Fields.ORIGIN_ID, stanzaID).findFirst();
 
-        if (first != null) {
-            RealmResults<MessageItem> results = realm.where(MessageItem.class)
-                    .equalTo(MessageItem.Fields.ACCOUNT, first.getAccount().toString())
-                    .equalTo(MessageItem.Fields.USER, first.getUser().toString())
-                    .equalTo(MessageItem.Fields.INCOMING, false)
-                    .equalTo(MessageItem.Fields.DELIVERED, false)
-                    .equalTo(MessageItem.Fields.IS_IN_PROGRESS, false)
-                    .lessThanOrEqualTo(MessageItem.Fields.TIMESTAMP, first.getTimestamp())
-                    .findAll();
+                            if (first != null) {
+                                RealmResults<MessageItem> results = realm.where(MessageItem.class)
+                                        .equalTo(MessageItem.Fields.ACCOUNT, first.getAccount().toString())
+                                        .equalTo(MessageItem.Fields.USER, first.getUser().toString())
+                                        .equalTo(MessageItem.Fields.INCOMING, false)
+                                        .equalTo(MessageItem.Fields.DELIVERED, false)
+                                        .equalTo(MessageItem.Fields.IS_IN_PROGRESS, false)
+                                        .lessThanOrEqualTo(MessageItem.Fields.TIMESTAMP, first.getTimestamp())
+                                        .findAll();
 
-            if (results != null) {
-                realm.beginTransaction();
-                for (MessageItem item : results) {
-                    item.setDelivered(true);
-                }
-                realm.commitTransaction();
-                EventBus.getDefault().post(new MessageUpdateEvent());
+                                if (results != null) {
+                                    for (MessageItem item : results) {
+                                        item.setDelivered(true);
+                                    }
+                                    EventBus.getDefault().post(new MessageUpdateEvent());
+                                }
+                            }
+                        }
+                    });
+                } catch (Exception e) { LogManager.exception(LOG_TAG, e); } //TODO maybe should close!
             }
-        }
+        });
+
     }
 }

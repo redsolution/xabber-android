@@ -339,7 +339,8 @@ public class Application extends android.app.Application {
 
             /** Strict Mode */
             StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
-                    .detectAll()
+                    .detectDiskWrites()
+                    .detectNetwork()
                     .penaltyLog()
                     .build());
         }

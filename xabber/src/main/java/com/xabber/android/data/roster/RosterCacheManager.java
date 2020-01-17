@@ -96,27 +96,23 @@ public class RosterCacheManager {
                 Realm realm = null;
                 try {
                     realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
-                    realm.beginTransaction();
-                    for (RosterContact contact : contacts) {
-                        String account = contact.getAccount().getFullJid().asBareJid().toString();
-                        String user = contact.getUser().getBareJid().toString();
+                    realm.executeTransaction(new Realm.Transaction() {
+                        @Override
+                        public void execute(Realm realm) {
+                            for (RosterContact contact : contacts) {
+                                String account = contact.getAccount().getFullJid().asBareJid().toString();
+                                String user = contact.getUser().getBareJid().toString();
 
-                        ContactRealm contactRealm = realm.where(ContactRealm.class).equalTo(ContactRealm.Fields.ID,
-                                account + "/" + user).findFirst();
-                        if (contactRealm != null)
-                            contactRealm.deleteFromRealm();
-                    }
-                    realm.commitTransaction();
-                } catch (Exception e) {
-                    LogManager.exception(LOG_TAG, e);
-                } finally {
-                    if (realm != null)
-                        realm.close();
-                }
-
+                                ContactRealm contactRealm = realm.where(ContactRealm.class).equalTo(ContactRealm.Fields.ID,
+                                        account + "/" + user).findFirst();
+                                if (contactRealm != null)
+                                    contactRealm.deleteFromRealm();
+                            }
+                        }
+                    });
+                } catch (Exception e) { LogManager.exception(LOG_TAG, e); }
             }
         });
-
     }
 
     public static void removeContacts(AccountJid account) {
@@ -135,12 +131,7 @@ public class RosterCacheManager {
                             results.deleteAllFromRealm();
                         }
                     });
-                } catch (Exception e) {
-                    LogManager.exception(LOG_TAG, e);
-                } finally {
-                    if (realm != null)
-                        realm.close();
-                }
+                } catch (Exception e) { LogManager.exception(LOG_TAG, e); }
             }
         });
     }
@@ -167,11 +158,7 @@ public class RosterCacheManager {
                             }
                         }
                     });
-                } catch (Exception e){
-                    LogManager.exception(LOG_TAG, e);
-                }  finally {
-                    if (realm != null) realm.close();
-                }
+                } catch (Exception e){ LogManager.exception(LOG_TAG, e); }
             }
         });
     }

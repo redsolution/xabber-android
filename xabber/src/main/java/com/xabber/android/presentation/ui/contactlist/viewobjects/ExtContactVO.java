@@ -26,6 +26,7 @@ import java.util.Date;
 import java.util.List;
 
 import eu.davidea.flexibleadapter.FlexibleAdapter;
+import eu.davidea.flexibleadapter.items.IFlexible;
 
 public class ExtContactVO extends ContactVO {
 
@@ -64,7 +65,7 @@ public class ExtContactVO extends ContactVO {
     }
 
     @Override
-    public void bindViewHolder(FlexibleAdapter adapter, ViewHolder viewHolder, int position, List<Object> payloads) {
+    public void bindViewHolder(FlexibleAdapter<IFlexible> adapter, ViewHolder viewHolder, int position, List<Object> payloads) {
         super.bindViewHolder(adapter, viewHolder, position, payloads);
         Context context = viewHolder.itemView.getContext();
 

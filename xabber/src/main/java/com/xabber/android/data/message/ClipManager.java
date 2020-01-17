@@ -7,6 +7,7 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.database.MessageDatabaseManager;
 import com.xabber.android.data.database.messagerealm.Attachment;
 import com.xabber.android.data.database.messagerealm.MessageItem;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.utils.StringUtils;
 import com.xabber.android.utils.Utils;
@@ -19,16 +20,20 @@ import io.realm.RealmResults;
 
 public class ClipManager {
 
+    private static final String LOG_TAG = ClipManager.class.getSimpleName();
+
     public static void copyMessagesToClipboard(final List<String> messageIDs) {
 
         final String[] ids = messageIDs.toArray(new String[0]);
         Application.getInstance().runInBackgroundUserRequest(new Runnable() {
             @Override
             public void run() {
-                Realm realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
-                String text = messagesToText(realm, ids, 0);
-                realm.close();
-                if (!text.isEmpty()) insertDataToClipboard(text);
+                Realm realm = null;
+                try {
+                    realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
+                    String text = messagesToText(realm, ids, 0);
+                    if (!text.isEmpty()) insertDataToClipboard(text);
+                } catch (Exception e) { LogManager.exception(LOG_TAG, e); }
             }
         });
     }

@@ -13,6 +13,7 @@ import java.util.List;
 
 import eu.davidea.flexibleadapter.FlexibleAdapter;
 import eu.davidea.flexibleadapter.items.IExpandable;
+import eu.davidea.flexibleadapter.items.IFlexible;
 
 /**
  * Created by valery.miller on 07.02.18.
@@ -39,7 +40,7 @@ public class AccountWithContactsVO extends AccountVO implements IExpandable<Acco
     }
 
     @Override
-    public void bindViewHolder(FlexibleAdapter adapter, ViewHolder viewHolder, int position, List<Object> payloads) {
+    public void bindViewHolder(FlexibleAdapter<IFlexible> adapter, ViewHolder viewHolder, int position, List<Object> payloads) {
         super.bindViewHolder(adapter, viewHolder, position, payloads);
 
         /** bind EXPAND state */

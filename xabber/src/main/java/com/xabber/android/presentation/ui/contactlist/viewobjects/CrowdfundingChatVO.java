@@ -18,6 +18,7 @@ import java.util.UUID;
 
 import eu.davidea.flexibleadapter.FlexibleAdapter;
 import eu.davidea.flexibleadapter.items.AbstractFlexibleItem;
+import eu.davidea.flexibleadapter.items.IFlexible;
 import eu.davidea.viewholders.FlexibleViewHolder;
 
 public class CrowdfundingChatVO extends AbstractFlexibleItem<CrowdfundingChatVO.ViewHolder> {
@@ -67,7 +68,7 @@ public class CrowdfundingChatVO extends AbstractFlexibleItem<CrowdfundingChatVO.
     }
 
     @Override
-    public void bindViewHolder(FlexibleAdapter adapter, ViewHolder holder, int position, List<Object> payloads) {
+    public void bindViewHolder(FlexibleAdapter<IFlexible> adapter, ViewHolder holder, int position, List<Object> payloads) {
         Context context = holder.itemView.getContext();
 
         holder.tvTime.setText(StringUtils.getSmartTimeTextForRoster(context, time));
