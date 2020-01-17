@@ -55,47 +55,43 @@
 
         <ImageView
             android:id="@+id/ivDelete"
-            android:layout_width="52dp"
+            android:layout_width="48dp"
             android:layout_height="52dp"
-            android:padding="12dp"
-            android:src="@drawable/ic_delete_grey"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
             android:focusable="true"
-            />
+            android:padding="12dp"
+            android:src="@drawable/ic_delete_grey" />
 
         <ImageView
             android:id="@+id/ivCopy"
-            android:layout_width="52dp"
+            android:layout_width="48dp"
             android:layout_height="52dp"
-            android:padding="12dp"
-            android:src="@drawable/ic_copy"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
             android:focusable="true"
-            />
+            android:padding="12dp"
+            android:src="@drawable/ic_copy" />
 
         <ImageView
             android:id="@+id/ivReply"
-            android:layout_width="52dp"
+            android:layout_width="48dp"
             android:layout_height="52dp"
-            android:padding="12dp"
-            android:src="@drawable/ic_message_forwarded_14dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
             android:focusable="true"
-            />
+            android:padding="12dp"
+            android:src="@drawable/ic_message_forwarded_14dp" />
 
         <ImageView
             android:id="@+id/ivForward"
-            android:layout_width="52dp"
+            android:layout_width="48dp"
             android:layout_height="52dp"
-            android:padding="12dp"
-            android:src="@drawable/ic_forward"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
             android:focusable="true"
-            />
+            android:padding="12dp"
+            android:src="@drawable/ic_forward" />
 
     </LinearLayout>
 
