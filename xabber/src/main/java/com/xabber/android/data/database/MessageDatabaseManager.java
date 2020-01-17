@@ -71,6 +71,7 @@ public class MessageDatabaseManager {
         if (Looper.myLooper() == Looper.getMainLooper()) {
             throw new IllegalStateException("Request background thread message realm from UI thread");
         }
+        LogManager.i(LOG_TAG, "Invoked getBackgroundRealm. Total realm instances count: " + Realm.getGlobalInstanceCount(realmConfiguration));
         return Realm.getInstance(realmConfiguration);
     }
 
@@ -89,7 +90,7 @@ public class MessageDatabaseManager {
         if (realmUiThread == null) {
             realmUiThread = Realm.getInstance(realmConfiguration);
         }
-
+        LogManager.i(LOG_TAG, "Invoked getRealmUiThread. Total realm instances count: " + Realm.getGlobalInstanceCount(realmConfiguration));
         return realmUiThread;
     }
 
