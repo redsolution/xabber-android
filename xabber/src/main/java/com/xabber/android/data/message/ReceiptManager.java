@@ -48,6 +48,8 @@ import io.realm.Realm;
  */
 public class ReceiptManager implements OnPacketListener, ReceiptReceivedListener {
 
+    private static final String LOG_TAG = ReceiptManager.class.getSimpleName();
+
     private static ReceiptManager instance;
 
     static {
@@ -120,24 +122,30 @@ public class ReceiptManager implements OnPacketListener, ReceiptReceivedListener
     }
 
     private void markAsError(final AccountJid account, final Message message) {
-        Realm realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
-        realm.beginTransaction();
-        MessageItem first = realm.where(MessageItem.class)
-                .equalTo(MessageItem.Fields.ACCOUNT, account.toString())
-                .equalTo(MessageItem.Fields.STANZA_ID, AbstractChat.getStanzaId(message))
-                .findFirst();
-        if (first != null) {
-            first.setError(true);
-            XMPPError error = message.getError();
-            if (error != null) {
-                String errorStr = error.toString();
-                String descr = error.getDescriptiveText();
-                first.setErrorDescription(errorStr + "\n" + descr);
-            }
-        }
-        realm.commitTransaction();
-        realm.close();
-        EventBus.getDefault().post(new MessageUpdateEvent(account));
+        Realm realm = null;
+        try {
+            realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
+            realm.executeTransaction(new Realm.Transaction() {
+                @Override
+                public void execute(Realm realm) {
+                    MessageItem first = realm.where(MessageItem.class)
+                            .equalTo(MessageItem.Fields.ACCOUNT, account.toString())
+                            .equalTo(MessageItem.Fields.STANZA_ID, AbstractChat.getStanzaId(message))
+                            .findFirst();
+                    if (first != null) {
+                        first.setError(true);
+                        XMPPError error = message.getError();
+                        if (error != null) {
+                            String errorStr = error.toString();
+                            String descr = error.getDescriptiveText();
+                            first.setErrorDescription(errorStr + "\n" + descr);
+                        }
+                    }
+                }
+            });
+            EventBus.getDefault().post(new MessageUpdateEvent(account));
+        } catch (Exception e) { LogManager.exception(LOG_TAG, e); }
+
     }
 
     @Override
@@ -152,13 +160,13 @@ public class ReceiptManager implements OnPacketListener, ReceiptReceivedListener
     }
 
     private void markAsDelivered(final Jid toJid, final String receiptId) {
-        Realm realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
-        realm.beginTransaction();
-        MessageItem first = realm.where(MessageItem.class)
-                .equalTo(MessageItem.Fields.STANZA_ID, receiptId).findFirst();
-        first.setDelivered(true);
-        realm.commitTransaction();
-        realm.close();
-        EventBus.getDefault().post(new MessageUpdateEvent());
+        Realm realm = null;
+        try {
+            realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
+            MessageItem first = realm.where(MessageItem.class)
+                    .equalTo(MessageItem.Fields.STANZA_ID, receiptId).findFirst();
+            first.setDelivered(true);
+            EventBus.getDefault().post(new MessageUpdateEvent());
+        } catch (Exception e) { LogManager.exception(LOG_TAG, e); }
     }
 }

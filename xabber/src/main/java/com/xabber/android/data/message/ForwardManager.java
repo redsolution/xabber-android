@@ -1,11 +1,13 @@
 package com.xabber.android.data.message;
 
+import com.xabber.android.data.Application;
 import com.xabber.android.data.database.MessageDatabaseManager;
 import com.xabber.android.data.database.messagerealm.ForwardId;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.forward.ForwardComment;
+import com.xabber.android.data.log.LogManager;
 
 import org.greenrobot.eventbus.EventBus;
 import org.jivesoftware.smack.packet.ExtensionElement;
@@ -23,6 +25,8 @@ import io.realm.RealmList;
 
 public class ForwardManager {
 
+    private static final String LOG_TAG = ForwardManager.class.getSimpleName();
+
     public static void forwardMessage(List<String> messages, AccountJid account, UserJid user, String text) {
         final AbstractChat chat = MessageManager.getInstance().getOrCreateChat(account, user);
         final MessageItem messageItem = chat.createNewMessageItem(text);
@@ -35,15 +39,23 @@ public class ForwardManager {
 
         messageItem.setForwardedIds(ids);
 
-        MessageDatabaseManager.getInstance().getRealmUiThread()
-                .executeTransactionAsync(new Realm.Transaction() {
-                    @Override
-                    public void execute(Realm realm) {
-                        realm.copyToRealm(messageItem);
-                        EventBus.getDefault().post(new NewMessageEvent());
-                        chat.sendMessages();
-                    }
-                });
+        Application.getInstance().runInBackground(new Runnable() {
+            @Override
+            public void run() {
+                Realm realm = null;
+                try {
+                    realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
+                    realm.executeTransaction(new Realm.Transaction() {
+                        @Override
+                        public void execute(Realm realm) {
+                            realm.copyToRealm(messageItem);
+                            EventBus.getDefault().post(new NewMessageEvent());
+                            chat.sendMessages();
+                        }
+                    });
+                } catch (Exception e) { LogManager.exception(LOG_TAG, e); }
+            }
+        });
     }
 
     public static String parseForwardComment(Stanza packet) {

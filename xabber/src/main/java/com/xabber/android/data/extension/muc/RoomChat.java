@@ -32,6 +32,7 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.references.ReferencesManager;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.ChatAction;
 import com.xabber.android.data.message.ForwardManager;
@@ -74,6 +75,7 @@ import io.realm.RealmList;
  */
 public class RoomChat extends AbstractChat {
 
+    private final static String LOG_TAG = RoomChat.class.getSimpleName();
     /**
      * Information about occupants for STRING-PREPed resource.
      */
@@ -419,17 +421,19 @@ public class RoomChat extends AbstractChat {
         Application.getInstance().runInBackground(new Runnable() {
             @Override
             public void run() {
-                Realm realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
-                realm.executeTransaction(new Realm.Transaction() {
-                    @Override
-                    public void execute(Realm realm) {
-                        MessageItem message = realm.where(MessageItem.class)
-                                .equalTo(MessageItem.Fields.UNIQUE_ID, messageUId).findFirst();
-                        message.setDelivered(true);
-                        message.setOriginalFrom(originalFrom);
-                    }
-                });
-                realm.close();
+                Realm realm = null;
+                try {
+                    realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
+                    realm.executeTransaction(new Realm.Transaction() {
+                        @Override
+                        public void execute(Realm realm) {
+                            MessageItem message = realm.where(MessageItem.class)
+                                    .equalTo(MessageItem.Fields.UNIQUE_ID, messageUId).findFirst();
+                            message.setDelivered(true);
+                            message.setOriginalFrom(originalFrom);
+                        }
+                    });
+                } catch (Exception e) { LogManager.exception(LOG_TAG, e); }
             }
         });
     }

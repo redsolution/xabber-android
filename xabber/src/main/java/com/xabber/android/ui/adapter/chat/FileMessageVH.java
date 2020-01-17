@@ -35,10 +35,8 @@ import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.references.voice.VoiceManager;
-import com.xabber.android.data.filedownload.DownloadManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.ui.adapter.FilesAdapter;
-import com.xabber.android.ui.fragment.FileInteractionFragment;
 import com.xabber.android.ui.helper.RoundedBorders;
 import com.xabber.android.ui.widget.ImageGridBuilder;
 
@@ -190,16 +188,24 @@ public class FileMessageVH extends MessageVH
             if (result) {
                 messageImage.setVisibility(View.VISIBLE);
             } else {
-                final Realm realm = MessageDatabaseManager.getInstance().getRealmUiThread();
-                realm.executeTransactionAsync(new Realm.Transaction() {
+                Application.getInstance().runInBackground(new Runnable() {
                     @Override
-                    public void execute(Realm realm) {
-                        MessageItem first = realm.where(MessageItem.class)
-                                .equalTo(MessageItem.Fields.UNIQUE_ID, uniqueId)
-                                .findFirst();
-                        if (first != null) {
-                            first.setFilePath(null);
-                        }
+                    public void run() {
+                        Realm realm = null;
+                        try {
+                            realm = MessageDatabaseManager.getInstance().getRealmUiThread();
+                            realm.executeTransactionAsync(new Realm.Transaction() {
+                                @Override
+                                public void execute(Realm realm) {
+                                    MessageItem first = realm.where(MessageItem.class)
+                                            .equalTo(MessageItem.Fields.UNIQUE_ID, uniqueId)
+                                            .findFirst();
+                                    if (first != null) {
+                                        first.setFilePath(null);
+                                    }
+                                }
+                            });
+                        } catch (Exception e) { LogManager.exception(LOG_TAG, e); }
                     }
                 });
             }
@@ -260,20 +266,28 @@ public class FileMessageVH extends MessageVH
                                     messageImage.setVisibility(View.GONE);
                                     return;
                                 }
-
-                                final Realm realm = MessageDatabaseManager.getInstance().getRealmUiThread();
-                                realm.executeTransactionAsync(new Realm.Transaction() {
+                                Application.getInstance().runInBackground(new Runnable() {
                                     @Override
-                                    public void execute(Realm realm) {
-                                        MessageItem first = realm.where(MessageItem.class)
-                                                .equalTo(MessageItem.Fields.UNIQUE_ID, uniqueId)
-                                                .findFirst();
-                                        if (first != null) {
-                                            first.setImageWidth(width);
-                                            first.setImageHeight(height);
-                                        }
+                                    public void run() {
+                                        Realm realm = null;
+                                        try {
+                                            realm = MessageDatabaseManager.getInstance().getRealmUiThread();
+                                            realm.executeTransactionAsync(new Realm.Transaction() {
+                                                @Override
+                                                public void execute(Realm realm) {
+                                                    MessageItem first = realm.where(MessageItem.class)
+                                                            .equalTo(MessageItem.Fields.UNIQUE_ID, uniqueId)
+                                                            .findFirst();
+                                                    if (first != null) {
+                                                        first.setImageWidth(width);
+                                                        first.setImageHeight(height);
+                                                    }
+                                                }
+                                            });
+                                        } catch (Exception e) { LogManager.exception(LOG_TAG, e); }
                                     }
                                 });
+
 
                                 FileManager.scaleImage(layoutParams, height, width);
                                 messageImage.setImageBitmap(resource);

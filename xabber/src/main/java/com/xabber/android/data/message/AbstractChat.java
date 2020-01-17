@@ -88,6 +88,8 @@ import io.realm.Sort;
  */
 public abstract class AbstractChat extends BaseEntity implements RealmChangeListener<RealmResults<MessageItem>> {
 
+    private static final String LOG_TAG = AbstractChat.class.getSimpleName();
+
     /**
      * Number of messages from history to be shown for context purpose.
      */
@@ -720,25 +722,28 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         Application.getInstance().runInBackgroundUserRequest(new Runnable() {
             @Override
             public void run() {
-                Realm realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
+                Realm realm = null;
+                try{
+                    realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
+                    realm.executeTransaction(new Realm.Transaction() {
+                        @Override
+                        public void execute(Realm realm) {
+                            RealmResults<MessageItem> messagesToSend = realm.where(MessageItem.class)
+                                    .equalTo(MessageItem.Fields.ACCOUNT, account.toString())
+                                    .equalTo(MessageItem.Fields.USER, user.toString())
+                                    .equalTo(MessageItem.Fields.SENT, false)
+                                    .findAllSorted(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
 
-                RealmResults<MessageItem> messagesToSend = realm.where(MessageItem.class)
-                        .equalTo(MessageItem.Fields.ACCOUNT, account.toString())
-                        .equalTo(MessageItem.Fields.USER, user.toString())
-                        .equalTo(MessageItem.Fields.SENT, false)
-                        .findAllSorted(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
+                            for (final MessageItem messageItem : messagesToSend) {
+                                if (messageItem.isInProgress()) continue;
+                                if (!sendMessage(messageItem)) {
+                                    break;
+                                }
+                            }
+                        }
+                    });
 
-                realm.beginTransaction();
-
-                for (final MessageItem messageItem : messagesToSend) {
-                    if (messageItem.isInProgress()) continue;
-                    if (!sendMessage(messageItem)) {
-                        break;
-                    }
-                }
-                realm.commitTransaction();
-
-                realm.close();
+                } catch (Exception e) { LogManager.exception(LOG_TAG, e); }
             }
         });
     }

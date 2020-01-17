@@ -34,6 +34,8 @@ import io.realm.Sort;
 import io.realm.annotations.RealmModule;
 
 public class MessageDatabaseManager {
+
+    private static final String LOG_TAG = MessageDatabaseManager.class.getSimpleName();
     private static final String REALM_MESSAGE_DATABASE_NAME = "xabber.realm";
     static final int REALM_MESSAGE_DATABASE_VERSION = 27;
     private final RealmConfiguration realmConfiguration;
@@ -46,7 +48,6 @@ public class MessageDatabaseManager {
         if (instance == null) {
             instance = new MessageDatabaseManager();
         }
-
         return instance;
     }
 
@@ -70,7 +71,6 @@ public class MessageDatabaseManager {
         if (Looper.myLooper() == Looper.getMainLooper()) {
             throw new IllegalStateException("Request background thread message realm from UI thread");
         }
-
         return Realm.getInstance(realmConfiguration);
     }
 
@@ -114,28 +114,49 @@ public class MessageDatabaseManager {
 
 
     void deleteRealm() {
-        Realm realm = getNewBackgroundRealm();
-        Realm.deleteRealm(realm.getConfiguration());
-        realm.close();
+        Application.getInstance().runInBackground(new Runnable() {
+            @Override
+            public void run() {
+                Realm realm = null;
+                try {
+                    realm = getNewBackgroundRealm();
+                    realm.deleteRealm(realm.getConfiguration());
+                } catch (Exception e) {
+                    LogManager.exception(LOG_TAG, e);
+                } finally {
+                    realm.close();
+                }
+            }
+        });
     }
 
     public void removeAccountMessages(final AccountJid account) {
-        Realm realm = getNewBackgroundRealm();
-        realm.executeTransaction(new Realm.Transaction() {
+        Application.getInstance().runInBackground(new Runnable() {
             @Override
-            public void execute(Realm realm) {
-                realm.where(MessageItem.class)
-                        .equalTo(MessageItem.Fields.ACCOUNT, account.toString())
-                        .findAll()
-                        .deleteAllFromRealm();
+            public void run() {
+                Realm realm = null;
+                try {
+                    realm = getNewBackgroundRealm();
+                    realm.executeTransaction(new Realm.Transaction() {
+                        @Override
+                        public void execute(Realm realm) {
+                            realm.where(MessageItem.class)
+                                    .equalTo(MessageItem.Fields.ACCOUNT, account.toString())
+                                    .findAll()
+                                    .deleteAllFromRealm();
 
-                realm.where(SyncInfo.class)
-                        .equalTo(SyncInfo.FIELD_ACCOUNT, account.toString())
-                        .findAll()
-                        .deleteAllFromRealm();
+                            realm.where(SyncInfo.class)
+                                    .equalTo(SyncInfo.FIELD_ACCOUNT, account.toString())
+                                    .findAll()
+                                    .deleteAllFromRealm();
+                        }
+                    });
+                } catch (Exception e) {
+                    LogManager.exception(LOG_TAG, e);
+                } finally { realm.close(); }
             }
         });
-        realm.close();
+
     }
 
 
