@@ -217,7 +217,7 @@ public class ChatMarkerManager implements OnPacketListener {
             public void run() {
                 Realm realm = null;
                 try {
-                    realm = MessageDatabaseManager.getInstance().getRealmUiThread();
+                    realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
                     realm.executeTransaction(new Realm.Transaction() {
                         @Override
                         public void execute(Realm realm) {
