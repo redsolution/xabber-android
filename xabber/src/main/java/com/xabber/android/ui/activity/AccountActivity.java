@@ -5,12 +5,10 @@ import android.app.AlertDialog;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.Point;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -18,9 +16,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.ContextThemeWrapper;
-import android.view.Display;
 import android.view.MenuItem;
-import android.view.Surface;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.Window;
@@ -80,6 +76,7 @@ import com.xabber.android.ui.fragment.ContactVcardViewerFragment;
 import com.xabber.android.ui.helper.BlurTransformation;
 import com.xabber.android.ui.helper.ContactTitleInflater;
 import com.xabber.android.ui.helper.PermissionsRequester;
+import com.xabber.android.utils.Utils;
 import com.xabber.xmpp.avatar.UserAvatarManager;
 import com.xabber.xmpp.vcard.VCard;
 
@@ -493,10 +490,10 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
                 } else startActivity(TutorialActivity.createIntent(this));
                 break;
             case SESSIONS:
-                if (accountItem.getConnectionSettings().getXToken() != null &&
-                        !accountItem.getConnectionSettings().getXToken().isExpired()) {
+                //if (accountItem.getConnectionSettings().getXToken() != null &&
+                //        !accountItem.getConnectionSettings().getXToken().isExpired()) {
                     startActivity(ActiveSessionsActivity.createIntent(this, account));
-                }
+                //}
                 break;
         }
     }
@@ -1024,56 +1021,6 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
 
     public void showProgressBar(boolean show) {
         progressBar.setVisibility(show ? View.VISIBLE : View.GONE);
-        lockScreenRotation(show);
-    }
-
-    public void lockScreenRotation(boolean lockOrientation) {
-        int lock = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
-        if (lockOrientation) {
-            Display display = getWindowManager().getDefaultDisplay();
-            int rotation = display.getRotation();
-
-            Point size = new Point();
-            display.getSize(size);
-
-            if (rotation == Surface.ROTATION_0 || rotation == Surface.ROTATION_180) {
-                if (size.x > size.y) {
-                    //rotation is 0 or 180 deg, and the size of x is greater than y,
-                    //so we have a tablet
-                    if (rotation == Surface.ROTATION_0) {
-                        lock = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
-                    } else {
-                        lock = ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE;
-                    }
-                } else {
-                    //rotation is 0 or 180 deg, and the size of y is greater than x,
-                    //so we have a phone
-                    if (rotation == Surface.ROTATION_0) {
-                        lock = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
-                    } else {
-                        lock = ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT;
-                    }
-                }
-            } else {
-                if (size.x > size.y) {
-                    //rotation is 90 or 270, and the size of x is greater than y,
-                    //so we have a phone
-                    if (rotation == Surface.ROTATION_90) {
-                        lock = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
-                    } else {
-                        lock = ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE;
-                    }
-                } else {
-                    //rotation is 90 or 270, and the size of y is greater than x,
-                    //so we have a tablet
-                    if (rotation == Surface.ROTATION_90) {
-                        lock = ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT;
-                    } else {
-                        lock = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
-                    }
-                }
-            }
-        }
-        setRequestedOrientation(lock);
+        Utils.lockScreenRotation(this, show);
     }
 }

@@ -369,7 +369,7 @@ public class ContactActivity extends ManagedActivity implements
         boolean notify = true;
         if (chat != null) {
             chat.enableNotificationsIfNeed();
-            if (chat.notifyAboutMessage())
+            if (chat.notifyAboutMessage() && !blocked)
                 notifyButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_bell));
             else {
                 notify = false;
@@ -383,18 +383,22 @@ public class ContactActivity extends ManagedActivity implements
                     case snooze1h:
                     case snooze15m:
                     default:
-                        notifyButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_snooze));
+                        if (blocked) notifyButton.setImageDrawable((getResources().getDrawable(R.drawable.ic_snooze_forever)));
+                        else notifyButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_snooze));
                         break;
                 }
             }
         }
-        callsButton.setColorFilter(color);
-        chatButton.setColorFilter(color);
-        blockButton.setColorFilter(getResources().getColor(blocked ? R.color.grey_500 : R.color.red_A700));
-        notifyButton.setColorFilter(notify ? color : getResources().getColor(R.color.grey_500));
+        chatButton.setColorFilter(blocked ? getResources().getColor(R.color.grey_500) : color);
+        callsButton.setColorFilter(blocked ? getResources().getColor(R.color.grey_500) : color);
+        notifyButton.setColorFilter(blocked || !notify ? getResources().getColor(R.color.grey_500) : color);
+        blockButton.setColorFilter(getResources().getColor(R.color.red_A700));
+
+        callsButtonLayout.setEnabled(!blocked);
+        notifyButtonLayout.setEnabled(!blocked);
 
         blockButtonText.setText(blocked ? R.string.contact_bar_unblock : R.string.contact_bar_block);
-        blockButtonText.setTextColor(getResources().getColor(blocked ? R.color.grey_500 : R.color.red_A700));
+        //blockButtonText.setTextColor(getResources().getColor(blocked ? R.color.grey_500 : R.color.red_A700));
 
         if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
             chatButtonText.setVisibility(View.GONE);
