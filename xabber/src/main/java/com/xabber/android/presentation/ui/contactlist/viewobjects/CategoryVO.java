@@ -11,6 +11,7 @@ import java.util.UUID;
 
 import eu.davidea.flexibleadapter.FlexibleAdapter;
 import eu.davidea.flexibleadapter.items.AbstractFlexibleItem;
+import eu.davidea.flexibleadapter.items.IFlexible;
 import eu.davidea.viewholders.FlexibleViewHolder;
 
 /**
@@ -47,7 +48,7 @@ public class CategoryVO extends AbstractFlexibleItem<CategoryVO.ViewHolder> {
     }
 
     @Override
-    public void bindViewHolder(FlexibleAdapter adapter, ViewHolder holder, int position, List<Object> payloads) {
+    public void bindViewHolder(FlexibleAdapter<IFlexible> adapter, ViewHolder holder, int position, List<Object> payloads) {
         holder.tvTitle.setText(title);
 
         /** set up ACCOUNT COLOR indicator */

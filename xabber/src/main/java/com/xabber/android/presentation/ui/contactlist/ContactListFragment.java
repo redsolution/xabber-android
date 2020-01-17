@@ -247,7 +247,7 @@ public class ContactListFragment extends Fragment implements ContactListView,
     }
 
     @Override
-    public boolean onItemClick(int position) {
+    public boolean onItemClick(View view, int position) {
         adapter.notifyItemChanged(position);
         presenter.onItemClick(adapter.getItem(position));
         return true;

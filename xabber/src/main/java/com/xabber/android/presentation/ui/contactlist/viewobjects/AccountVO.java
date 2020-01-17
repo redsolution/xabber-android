@@ -30,6 +30,7 @@ import java.util.UUID;
 
 import eu.davidea.flexibleadapter.FlexibleAdapter;
 import eu.davidea.flexibleadapter.items.AbstractHeaderItem;
+import eu.davidea.flexibleadapter.items.IFlexible;
 import eu.davidea.viewholders.ExpandableViewHolder;
 
 public class AccountVO extends AbstractHeaderItem<AccountVO.ViewHolder> {
@@ -102,7 +103,7 @@ public class AccountVO extends AbstractHeaderItem<AccountVO.ViewHolder> {
     }
 
     @Override
-    public void bindViewHolder(FlexibleAdapter adapter, ViewHolder viewHolder, int position, List<Object> payloads) {
+    public void bindViewHolder(FlexibleAdapter<IFlexible> adapter, ViewHolder viewHolder, int position, List<Object> payloads) {
         Context context = viewHolder.itemView.getContext();
 
         /** set up ACCOUNT COLOR indicator */
