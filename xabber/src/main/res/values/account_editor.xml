@@ -79,7 +79,7 @@
     <string name="account_current_session">Current session</string>
     <string name="account_terminate_all_sessions">Terminate all others sessions</string>
     <string name="account_active_sessions_summary">Manage your sessions with X-Token</string>
-    <string name="account_active_sessions_disabled">Server not support X-Token</string>
+    <string name="account_active_sessions_disabled">Server does not support X-Token</string>
     <string name="account_active_sessions_error">Failed to get a list of active sessions</string>
 
     <string name="blocked_contacts">Blocked contacts</string>
