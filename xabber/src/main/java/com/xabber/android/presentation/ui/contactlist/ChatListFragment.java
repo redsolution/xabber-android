@@ -884,7 +884,7 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
     private List<Integer> getDifferentElementsPositions(List<IFlexible> oldList, List<IFlexible> newList){
         ArrayList<Integer> result = new ArrayList<Integer>();
         if (oldList.size() != newList.size()) result.add(-1);
-        if (oldList.size() <= 0 || newList.size() <= 0) result.add(-1);
+        if (oldList.size() <= 1 || newList.size() <= 1) result.add(-1);
         else
             for (IFlexible oldFlexible : oldList){
                 ExtContactVO oldExtContactVO = (ExtContactVO) oldFlexible;
