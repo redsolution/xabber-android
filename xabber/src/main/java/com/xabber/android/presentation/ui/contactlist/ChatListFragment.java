@@ -288,6 +288,7 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         items = new ArrayList<>();
         adapter = new FlexibleAdapter<>(items, null, false);
         recyclerView.setAdapter(adapter);
+        recyclerView.setItemAnimator(null);
         adapter.setDisplayHeadersAtStartUp(true);
         adapter.setSwipeEnabled(true);
         adapter.expandItemsAtStartUp();
@@ -490,24 +491,19 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         } else hidePlaceholder();
 
         /* Update items in RecyclerView */
-        adapter.setAnimationDuration(0);
-        adapter.setAnimateChangesWithDiffUtil(false);
         List<Integer> list = getDifferentElementsPositions(this.items, items);
-        if ( list.size() == 0 || list.get(0) == -1) adapter.updateDataSet(this.items);
-        else {
+        if ( list.size() == 0 || list.get(0) == -1) {
+            adapter.updateDataSet(items);
+            this.items.clear();
+            this.items.addAll(items);
+        } else {
             for (int i : list){
-                adapter.removeItem(i);
+                this.items.set(i, items.get(i));
                 adapter.addItem(i, items.get(i));
+                adapter.removeItem(i+1);
                 adapter.notifyItemChanged(i);
             }
         }
-
-        this.items.clear();
-        this.items.addAll(items);
-
-
-
-
     }
 
     @Override
