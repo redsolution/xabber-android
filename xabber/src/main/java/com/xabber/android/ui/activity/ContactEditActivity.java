@@ -60,16 +60,6 @@ public class ContactEditActivity extends ContactActivity implements Toolbar.OnMe
 
             onCreateOptionsMenu(toolbar.getMenu());
         }
-
-        //qrImage = (ImageView) findViewById(R.id.imgQRcode);
-        //qrImage = (ImageView) findViewById(R.id.generate_qrcode);
-        /*qrImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                generateQR();
-            }
-        });*/
-
     }
 
     @Override
@@ -121,7 +111,7 @@ public class ContactEditActivity extends ContactActivity implements Toolbar.OnMe
                 return true;
 
             case R.id.action_block_contact:
-                BlockContactDialog.newInstance(getAccount(), getUser()).show(getFragmentManager(), BlockContactDialog.class.getName());
+                BlockContactDialog.newInstance(getAccount(), getUser()).show(getSupportFragmentManager(), BlockContactDialog.class.getName());
                 return true;
 
             case R.id.action_edit_alias:

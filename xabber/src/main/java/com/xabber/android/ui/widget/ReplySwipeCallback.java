@@ -13,7 +13,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
+import com.xabber.android.ui.adapter.chat.ActionMessageVH;
 import com.xabber.android.utils.Utils;
+
+import java.util.ArrayList;
 
 import static androidx.recyclerview.widget.ItemTouchHelper.ACTION_STATE_SWIPE;
 
@@ -24,10 +27,9 @@ public class ReplySwipeCallback extends ItemTouchHelper.Callback implements View
 
     private static final Drawable replyIcon = Application.getInstance().getResources().getDrawable(R.drawable.ic_reply);
     private static final int fullSize = Utils.dipToPx(24f, Application.getInstance());
-    private static int currentSize;
     private static final int paddingRight = Utils.dipToPx(12f, Application.getInstance());
     private static final float MAX_SWIPE_DISTANCE_RATIO = 0.18f;
-    private static final float ACTIVE_SWIPE_DISTANCE_RATIO = 0.14f;
+    private static final float ACTIVE_SWIPE_DISTANCE_RATIO = 0.13f;
 
     private RecyclerView.ViewHolder currentItemViewHolder = null;
     private boolean touchListenerIsSet = false;
@@ -35,6 +37,8 @@ public class ReplySwipeCallback extends ItemTouchHelper.Callback implements View
     private boolean swipeEnabled = true;
     private boolean swipeBack;
     private boolean isAnimating = false;
+    private ArrayList<Float> scaleAnimationSteps = new ArrayList<>(8);
+    private int currentAnimationStep = 0;
 
     private int left;
     private int top;
@@ -55,10 +59,12 @@ public class ReplySwipeCallback extends ItemTouchHelper.Callback implements View
 
     public ReplySwipeCallback(SwipeAction listener) {
         this.swipeListener = listener;
+        addAnimationSteps();
     }
 
     @Override
     public int getMovementFlags(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
+        if (viewHolder instanceof ActionMessageVH) return 0;
         return makeMovementFlags(0, swipeEnabled ? ItemTouchHelper.LEFT : 0);
     }
 
@@ -108,7 +114,6 @@ public class ReplySwipeCallback extends ItemTouchHelper.Callback implements View
         swipeEnabled = enabled;
     }
 
-    //TODO add proper (dis)appearance animations
     private void drawReplyArrow(Canvas c, RecyclerView.ViewHolder viewHolder) {
         if (currentReplyArrowState == ReplyArrowState.GONE) return;
 
@@ -122,45 +127,62 @@ public class ReplySwipeCallback extends ItemTouchHelper.Callback implements View
 
     private void calculateBounds(View itemView) {
         int height = itemView.getBottom() - itemView.getTop();
-        int center = itemView.getTop() + height/2;
+        int centerY = itemView.getTop() + height/2;
+        int centerX = itemView.getRight() + (int)(dXModified * 0.5);
         isAnimating = false;
 
-        if (currentReplyArrowState == ReplyArrowState.ANIMATING_IN) {
-            if (currentSize < fullSize && currentSize + fullSize * 0.1f <= fullSize) {
-                currentSize += fullSize * 0.1f;
-                isAnimating = true;
-            } else {
-                currentSize = fullSize;
-                isAnimating = false;
-                currentReplyArrowState = ReplyArrowState.VISIBLE;
-            }
-        } else if (currentReplyArrowState == ReplyArrowState.ANIMATING_OUT) {
-            if (currentSize > 0 && currentSize - fullSize * 0.1f >= 0) {
-                currentSize -= fullSize * 0.1f;
-                isAnimating = true;
-            } else {
-                currentSize = 0;
-                isAnimating = false;
-                currentReplyArrowState = ReplyArrowState.GONE;
-                currentItemViewHolder = null;
-            }
-        } else if (currentReplyArrowState == ReplyArrowState.VISIBLE) {
-            currentSize = fullSize;
-            isAnimating = false;
-        }
+        int currentSize = getCurrentIconSize();
 
-        right = itemView.getRight() - paddingRight + (int)dXModified/7;
-        left = right - currentSize;
-        top = center - currentSize/2;
-        bottom = center + currentSize/2;
+        left = centerX - currentSize/2;
+        right = centerX + currentSize/2;
+
+        top = centerY - currentSize/2;
+        bottom = centerY + currentSize/2;
 
         int rightMax = itemView.getRight() - paddingRight;
         int leftMax = right - fullSize;
-        int topMax = center - fullSize / 2;
-        int bottomMax = center + fullSize / 2;
+        int topMax = centerY - fullSize / 2;
+        int bottomMax = centerY + fullSize / 2;
 
         if (isAnimating)
             recyclerView.postInvalidateDelayed(15, leftMax, topMax, rightMax, bottomMax);
+    }
+
+    private int getCurrentIconSize() {
+        int iconSize = 0;
+        switch (currentReplyArrowState) {
+            case ANIMATING_IN:
+                if (currentAnimationStep < 7) {
+                    iconSize = (int) (fullSize * scaleAnimationSteps.get(currentAnimationStep));
+                    isAnimating = true;
+                    currentAnimationStep++;
+                } else {
+                    currentAnimationStep = 7;
+                    iconSize = fullSize;
+                    isAnimating = false;
+                    currentReplyArrowState = ReplyArrowState.VISIBLE;
+                }
+                break;
+            case ANIMATING_OUT:
+                if (currentAnimationStep > 0) {
+                    if (currentAnimationStep == 6) currentAnimationStep--;//skip enlarged frame of the animation.
+                    iconSize = (int) (fullSize * scaleAnimationSteps.get(currentAnimationStep));
+                    isAnimating = true;
+                    currentAnimationStep--;
+                } else {
+                    currentAnimationStep = 0;
+                    iconSize = 0;
+                    isAnimating = false;
+                    currentReplyArrowState = ReplyArrowState.GONE;
+                    currentItemViewHolder = null;
+                }
+                break;
+            case VISIBLE:
+                iconSize = fullSize;
+                isAnimating = false;
+                break;
+        }
+        return iconSize;
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -244,6 +266,7 @@ public class ReplySwipeCallback extends ItemTouchHelper.Callback implements View
                     if (dXModified < -Math.min(recyclerView.getWidth(), recyclerView.getHeight()) * ACTIVE_SWIPE_DISTANCE_RATIO) {
                         if (currentReplyArrowState == ReplyArrowState.GONE) {
                             currentReplyArrowState = ReplyArrowState.ANIMATING_IN;
+                            currentAnimationStep = 0;
                             Utils.performHapticFeedback(recyclerView, HapticFeedbackConstants.KEYBOARD_TAP);
                             setItemsClickable(recyclerView, false);
                             //if (drawThread == null) {
@@ -272,6 +295,18 @@ public class ReplySwipeCallback extends ItemTouchHelper.Callback implements View
         if (currentItemViewHolder != null && (currentReplyArrowState != ReplyArrowState.GONE)) {
             drawReplyArrow(c, currentItemViewHolder);
         }
+    }
+
+    private void addAnimationSteps() {
+        scaleAnimationSteps.clear();
+        scaleAnimationSteps.add(0f);//0
+        scaleAnimationSteps.add(0.15f);//15ms
+        scaleAnimationSteps.add(0.32f);//30ms
+        scaleAnimationSteps.add(0.51f);//45ms
+        scaleAnimationSteps.add(0.72f);//60ms
+        scaleAnimationSteps.add(0.95f);//75ms
+        scaleAnimationSteps.add(1.15f);//90ms
+        scaleAnimationSteps.add(1f);//105ms/end
     }
 
     enum ReplyArrowState {

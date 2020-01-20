@@ -18,11 +18,13 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import androidx.appcompat.app.AppCompatActivity;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentActivity;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
@@ -72,7 +74,7 @@ public class ContextMenuHelper {
     private ContextMenuHelper() {
     }
 
-    public static void createContactContextMenu(final Activity activity, ListPresenter presenter,
+    public static void createContactContextMenu(final FragmentActivity activity, ListPresenter presenter,
                                                 AbstractContact abstractContact, ContextMenu menu) {
         final AccountJid account = abstractContact.getAccount();
         final UserJid user = abstractContact.getUser();
@@ -84,7 +86,7 @@ public class ContextMenuHelper {
         setContactContextMenuItemsVisibilty(abstractContact, menu, account, user);
     }
 
-    private static void setContactContextMenuActions(final Activity activity,
+    private static void setContactContextMenuActions(final FragmentActivity activity,
                                                      final ListPresenter presenter, ContextMenu menu,
                                                      final AccountJid account, final UserJid user) {
 
@@ -148,7 +150,8 @@ public class ContextMenuHelper {
                 new MenuItem.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
-                        BlockContactDialog.newInstance(account, user).show(activity.getFragmentManager(), BlockContactDialog.class.getName());
+                        BlockContactDialog.newInstance(account, user)
+                                .show(activity.getSupportFragmentManager(), BlockContactDialog.class.getName());
                         return true;
             }
         });

@@ -47,6 +47,7 @@ import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.snackbar.Snackbar;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
@@ -66,6 +67,7 @@ import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
+import com.xabber.android.ui.color.AccountPainter;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.dialog.BlockContactDialog;
 import com.xabber.android.ui.dialog.SnoozeDialog;
@@ -97,6 +99,7 @@ public class ContactActivity extends ManagedActivity implements
     private ImageButton blockButton;
     private ImageButton notifyButton;
     private int accountMainColor;
+    private boolean coloredBlockText;
     private TextView chatButtonText;
     private TextView callsButtonText;
     private TextView blockButtonText;
@@ -221,8 +224,13 @@ public class ContactActivity extends ManagedActivity implements
         notifyButtonLayout.setOnClickListener(this);
         notifyButtonLayout.setOnLongClickListener(this);
 
+        int colorLevel = AccountPainter.getAccountColorLevel(account);
         accountMainColor = ColorManager.getInstance().getAccountPainter().getAccountMainColor(account);
         final int accountDarkColor = ColorManager.getInstance().getAccountPainter().getAccountDarkColor(account);
+        if (colorLevel == 0 || colorLevel == 1 || colorLevel == 3) {
+            coloredBlockText = true;
+        } else
+            coloredBlockText = false;
 
         contactTitleView = findViewById(R.id.contact_title_expanded_new);
         TextView contactAddressView = (TextView) findViewById(R.id.address_text);
@@ -392,13 +400,17 @@ public class ContactActivity extends ManagedActivity implements
         chatButton.setColorFilter(blocked ? getResources().getColor(R.color.grey_500) : color);
         callsButton.setColorFilter(blocked ? getResources().getColor(R.color.grey_500) : color);
         notifyButton.setColorFilter(blocked || !notify ? getResources().getColor(R.color.grey_500) : color);
-        blockButton.setColorFilter(getResources().getColor(R.color.red_A700));
+        blockButton.setColorFilter(getResources().getColor(R.color.red_900));
 
         callsButtonLayout.setEnabled(!blocked);
         notifyButtonLayout.setEnabled(!blocked);
 
         blockButtonText.setText(blocked ? R.string.contact_bar_unblock : R.string.contact_bar_block);
-        //blockButtonText.setTextColor(getResources().getColor(blocked ? R.color.grey_500 : R.color.red_A700));
+        blockButtonText.setTextColor(getResources().getColor(blocked || coloredBlockText ?
+                R.color.red_900 :
+                SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light ?
+                R.color.grey_600 :
+                R.color.grey_400));
 
         if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
             chatButtonText.setVisibility(View.GONE);
@@ -524,7 +536,7 @@ public class ContactActivity extends ManagedActivity implements
 
     public void showBlockDialog() {
         BlockContactDialog dialog = BlockContactDialog.newInstance(getAccount(), getUser());
-        dialog.show(getFragmentManager(), BlockContactDialog.class.getName());
+        dialog.show(getSupportFragmentManager(), BlockContactDialog.class.getName());
     }
 
     private void removeBlock() {

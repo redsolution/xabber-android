@@ -870,7 +870,8 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
                 return true;
 
             case R.id.action_block_contact:
-                BlockContactDialog.newInstance(account, user).show(getFragmentManager(), BlockContactDialog.class.getName());
+                BlockContactDialog.newInstance(account, user)
+                        .show(getSupportFragmentManager(), BlockContactDialog.class.getName());
                 return true;
 
             case R.id.action_request_subscription:
