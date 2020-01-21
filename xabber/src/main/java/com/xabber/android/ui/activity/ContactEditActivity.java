@@ -28,7 +28,7 @@ import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.dialog.BlockContactDialog;
 import com.xabber.android.ui.dialog.ChatExportDialogFragment;
 import com.xabber.android.ui.dialog.ChatHistoryClearDialog;
-import com.xabber.android.ui.dialog.ContactDeleteDialogFragment;
+import com.xabber.android.ui.dialog.ContactDeleteDialog;
 import com.xabber.android.ui.helper.PermissionsRequester;
 
 public class ContactEditActivity extends ContactActivity implements Toolbar.OnMenuItemClickListener {
@@ -123,8 +123,8 @@ public class ContactEditActivity extends ContactActivity implements Toolbar.OnMe
                 return true;
 
             case R.id.action_remove_contact:
-                ContactDeleteDialogFragment.newInstance(getAccount(), getUser())
-                        .show(getFragmentManager(), "CONTACT_DELETE");
+                ContactDeleteDialog.newInstance(getAccount(), getUser())
+                        .show(getSupportFragmentManager(), ContactDeleteDialog.class.getName());
                 return true;
 
             default:
