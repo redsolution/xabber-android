@@ -122,7 +122,7 @@ public class SearchActivity extends ManagedActivity implements View.OnClickListe
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (s.length() != 0){
                     toolbarSearchClearIv.setVisibility(View.VISIBLE);
-                    getChatListFragment().search(s.toString());
+                    getChatListFragment().search(s.toString().toLowerCase());
                 } else {
                     getChatListFragment().search(null);
                     toolbarSearchClearIv.setVisibility(View.GONE);
