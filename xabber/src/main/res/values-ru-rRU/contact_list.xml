@@ -27,6 +27,7 @@
     <string name="contact_block">Заблокировать контакт</string>
     <string name="contact_block_and_delete">Заблокировать и удалить</string>
     <string name="contact_delete_confirm">Вы действительно хотите удалить контакт %1$s из учетной записи %2$s?</string>
+    <string name="contact_delete_confirm_short">Вы действительно хотите удалить контакт &lt;b&gt;%s&lt;/b&gt;?</string>
     <string name="contact_delete_warning">Вы все еще сможете обмениваться сообщениями и запросами о подписке</string>
     <string name="discard_subscription">Запретить подписку</string>
     <string name="archive_chat">Архивировать</string>
@@ -70,7 +71,8 @@
     <string name="contacts_unblocked_successfully">Контакты успешно разблокированы</string>
     <string name="error_unblocking_contacts">Не удалось разблокировать контакты</string>
     <string name="block_contact_confirm">Вы действительно хотите удалить контакт %1$s из учетной записи %2$s?</string>
-    <string name="block_contact_warning">Вы не сможете обмениваться сообщениями и посылать обновления присутствия %s</string>
+    <string name="block_contact_confirm_short">Вы действительно хотите удалить контакт &lt;b&gt;%s&lt;/b&gt;?</string>
+    <string name="block_contact_warning">Вы не сможете обмениваться сообщениями и посылать обновления присутствия &lt;b&gt;%s&lt;/b&gt;</string>
     <string name="unblock_all_contacts_confirm">Вы действительно хотите разблокировать все контакты из аккаунта %1$s?</string>
     <string name="unblock_all">Разблокировать всех</string>
     <string name="unblock_selected">Разблокировать выбранные</string>

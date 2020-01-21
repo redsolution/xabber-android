@@ -46,14 +46,13 @@ import com.xabber.android.data.roster.GroupManager;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.data.roster.ShowOfflineMode;
-import com.xabber.android.presentation.mvp.contactlist.ContactListPresenter;
 import com.xabber.android.ui.activity.AccountActivity;
 import com.xabber.android.ui.activity.ConferenceAddActivity;
 import com.xabber.android.ui.activity.ContactAddActivity;
 import com.xabber.android.ui.activity.GroupEditActivity;
 import com.xabber.android.ui.activity.StatusEditActivity;
 import com.xabber.android.ui.dialog.BlockContactDialog;
-import com.xabber.android.ui.dialog.ContactDeleteDialogFragment;
+import com.xabber.android.ui.dialog.ContactDeleteDialog;
 import com.xabber.android.ui.dialog.GroupDeleteDialogFragment;
 import com.xabber.android.ui.dialog.GroupRenameDialogFragment;
 import com.xabber.android.ui.dialog.MUCDeleteDialogFragment;
@@ -139,8 +138,8 @@ public class ContextMenuHelper {
 
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
-                        ContactDeleteDialogFragment.newInstance(account,
-                                user).show(activity.getFragmentManager(), "CONTACT_DELETE");
+                        ContactDeleteDialog.newInstance(account, user)
+                                .show(activity.getSupportFragmentManager(), ContactDeleteDialog.class.getName());
                         return true;
                     }
 

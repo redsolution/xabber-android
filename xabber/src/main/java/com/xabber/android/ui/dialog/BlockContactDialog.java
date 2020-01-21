@@ -1,18 +1,23 @@
 package com.xabber.android.ui.dialog;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.os.Bundle;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
+import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
@@ -23,6 +28,7 @@ import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.activity.ContactActivity;
 import com.xabber.android.ui.activity.ContactListActivity;
+import com.xabber.android.ui.color.ColorManager;
 
 public class BlockContactDialog extends DialogFragment implements BlockingManager.BlockContactListener, View.OnClickListener {
 
@@ -43,9 +49,14 @@ public class BlockContactDialog extends DialogFragment implements BlockingManage
         return fragment;
     }
 
+    @NonNull
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.dialog_block_contact, container, false);
+    public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+
+        View view = inflater.inflate(R.layout.dialog_block_contact, null);
+
         Bundle args = getArguments();
 
         if (args == null) dismiss();
@@ -54,25 +65,29 @@ public class BlockContactDialog extends DialogFragment implements BlockingManage
         user = args.getParcelable(ARGUMENT_USER);
         String contactName = RosterManager.getInstance().getBestContact(account, user).getName();
         String accountName = AccountManager.getInstance().getVerboseName(account);
+        int colorIndicator = ColorManager.getInstance().getAccountPainter()
+                .getAccountMainColor(account);
+        int buttonColor = SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.dark ?
+                getResources().getColor(R.color.red_700) : getResources().getColor(R.color.red_900);
+
 
         ((TextView) view.findViewById(R.id.block_contact_confirm))
-                .setText(String.format(getResources().getString(R.string.block_contact_confirm),
-                        contactName, accountName));
+                .setText(Html.fromHtml(getString(R.string.block_contact_confirm_short, contactName)));
 
         ((TextView) view.findViewById(R.id.block_contact_warning))
-                .setText(String.format(getResources().getString(R.string.block_contact_warning),
-                        user.getBareJid().toString()));
+                .setText(Html.fromHtml(getString(R.string.block_contact_warning, user.getBareJid().toString())));
 
-        ((Button) view.findViewById(R.id.block_and_delete)).setTextColor(getResources().getColor(R.color.red_900));
-        ((Button) view.findViewById(R.id.block)).setTextColor(getResources().getColor(R.color.red_900));
+        ((Button) view.findViewById(R.id.block_and_delete)).setTextColor(buttonColor);
+        ((Button) view.findViewById(R.id.block)).setTextColor(buttonColor);
 
         view.findViewById(R.id.cancel_block).setOnClickListener(this);
         view.findViewById(R.id.block_and_delete).setOnClickListener(this);
         view.findViewById(R.id.block).setOnClickListener(this);
 
-        return view;
+        return builder.setTitle(R.string.contact_block)
+                .setView(view)
+                .create();
     }
-
 
     @Override
     public void onClick(View v) {

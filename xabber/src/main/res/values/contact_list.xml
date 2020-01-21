@@ -26,6 +26,7 @@
     <string name="contact_block">Block contact</string>
     <string name="contact_block_and_delete">Block &amp; Delete</string>
     <string name="contact_delete_confirm">Do you really want to delete contact %1$s from account %2$s?</string>
+    <string name="contact_delete_confirm_short">Do you really want to delete contact &lt;b&gt;%s&lt;/b&gt;?</string>
     <string name="contact_delete_warning">You will be able to exchange messages and subscription requests</string>
     <string name="discard_subscription">Decline contact</string>
     <string name="archive_chat">Archive</string>
@@ -71,7 +72,8 @@
     <string name="contacts_unblocked_successfully">Contacts unblocked successfully</string>
     <string name="error_unblocking_contacts">Error unblocking contacts</string>
     <string name="block_contact_confirm">Do you really want to block contact %1$s from account %2$s?</string>
-    <string name="block_contact_warning">You will be unable to exchange messages and presence updates with %s</string>
+    <string name="block_contact_confirm_short">Do you really want to block contact &lt;b&gt;%s&lt;/b&gt;?</string>
+    <string name="block_contact_warning">You will be unable to exchange messages and presence updates with &lt;b&gt;%s&lt;/b&gt;</string>
     <string name="unblock_all_contacts_confirm">Do you really want to unblock all contacts from account %1$s?</string>
     <string name="unblock_all">Unblock all</string>
     <string name="unblock_selected">Unblock selected</string>

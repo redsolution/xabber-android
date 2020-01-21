@@ -1,13 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:paddingLeft="24dp"
     android:paddingRight="12dp"
     android:paddingBottom="4dp">
 
+    <!--
+    <TextView
+        android:id="@+id/block_contact_title"
+        style="@style/ChatText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/contact_block"
+        android:textSize="24sp" />
+-->
 
     <TextView
         android:id="@+id/block_contact_confirm"
@@ -60,34 +69,5 @@
             app:layout_constraintEnd_toStartOf="@+id/block_and_delete"
             app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-    <!--    <Button
-            android:id="@+id/block"
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="right"
-            android:gravity="right"
-            android:text="@string/contact_bar_block" />
-
-        <Button
-            android:id="@+id/block_and_delete"
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="right"
-            android:gravity="right"
-            android:text="@string/contact_block_and_delete" />
-
-        <Button
-            android:id="@+id/cancel_block"
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="right"
-            android:alpha="0.5"
-            android:gravity="right"
-            android:text="@string/cancel" />-->
 
 </LinearLayout>
