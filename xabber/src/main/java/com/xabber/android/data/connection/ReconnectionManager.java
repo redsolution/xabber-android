@@ -25,7 +25,7 @@ public class ReconnectionManager implements OnConnectedListener,
      * will be used on first attempt. Next value will be used if reconnection
      * fails. Last value will be used if there is no more values in array.
      */
-    private final static int RECONNECT_AFTER[] = new int[]{0, 2, 10, 30, 60};
+    private final static int RECONNECT_AFTER[] = new int[]{0, 5, 10, 30, 60};
     private int tenSecondsCounter = 0;
     private static final String LOG_TAG = ReconnectionManager.class.getSimpleName();
 
@@ -74,7 +74,8 @@ public class ReconnectionManager implements OnConnectedListener,
             if (accountItem.getState() != ConnectionState.offline) {
                 ((ConnectionItem)accountItem).updateState(ConnectionState.offline);
             }
-        } else if (accountItem.getState() == ConnectionState.connecting) return;
+        } else if (accountItem.getState() == ConnectionState.connecting)
+            ((ConnectionItem)accountItem).updateState((ConnectionState.connecting));
 
         if ((!accountItem.isEnabled() || !accountItem.getRawStatusMode().isOnline())
                 && accountItem.getConnection().isConnected()) {
