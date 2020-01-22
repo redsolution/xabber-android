@@ -1,7 +1,8 @@
 package com.xabber.android.data.message;
 
+import androidx.annotation.NonNull;
+
 import com.xabber.android.data.Application;
-import com.xabber.android.data.database.MessageDatabaseManager;
 import com.xabber.android.data.database.messagerealm.ForwardId;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
@@ -17,8 +18,6 @@ import org.jivesoftware.smackx.forward.packet.Forwarded;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import androidx.annotation.NonNull;
 
 import io.realm.Realm;
 import io.realm.RealmList;
@@ -44,7 +43,7 @@ public class ForwardManager {
             public void run() {
                 Realm realm = null;
                 try {
-                    realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
+                    realm = Realm.getDefaultInstance();
                     realm.executeTransaction(new Realm.Transaction() {
                         @Override
                         public void execute(Realm realm) {

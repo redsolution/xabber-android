@@ -7,7 +7,6 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
-import com.xabber.android.data.database.MessageDatabaseManager;
 import com.xabber.android.data.database.messagerealm.Attachment;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
@@ -110,7 +109,7 @@ public class RrrManager implements OnPacketListener {
             public void run() {
                 Realm realm = null;
                 try {
-                    realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
+                    realm = Realm.getDefaultInstance();
                     realm.executeTransaction(new Realm.Transaction() {
                         @Override
                         public void execute(Realm realm) {
@@ -160,7 +159,7 @@ public class RrrManager implements OnPacketListener {
             public void run() {
                 Realm realm = null;
                 try {
-                    realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
+                    realm = Realm.getDefaultInstance();
                     realm.executeTransaction(new Realm.Transaction() {
                         @Override
                         public void execute(Realm realm) {
@@ -230,7 +229,7 @@ public class RrrManager implements OnPacketListener {
             public void run() {
                 Realm realm = null;
                 try {
-                    realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
+                    realm = Realm.getDefaultInstance();
                     realm.executeTransaction(new Realm.Transaction() {
                         @Override
                         public void execute(Realm realm) {
@@ -261,7 +260,7 @@ public class RrrManager implements OnPacketListener {
             public void run() {
                 Realm realm = null;
                 try {
-                    realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
+                    realm = Realm.getDefaultInstance();
                     realm.executeTransaction(new Realm.Transaction() {
                         @Override
                         public void execute(Realm realm) {

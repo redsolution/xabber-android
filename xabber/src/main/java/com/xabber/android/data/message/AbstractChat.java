@@ -195,10 +195,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
 
     public RealmResults<MessageItem> getMessages() {
         if (messages == null) {
-            messages = MessageDatabaseManager.getChatMessages(
-                    MessageDatabaseManager.getInstance().getRealmUiThread(),
-                    account,
-                    user);
+            messages = MessageDatabaseManager.getChatMessages(Realm.getDefaultInstance(), account, user);
             updateLastMessage();
 
             messages.addChangeListener(this);
@@ -326,7 +323,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         if (ui) BackpressureMessageSaver.getInstance().saveMessageItem(messageItem);
         else {
             final long startTime = System.currentTimeMillis();
-            Realm realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
+            Realm realm = Realm.getDefaultInstance();
             realm.executeTransactionAsync(new Realm.Transaction() {
                 @Override
                 public void execute(Realm realm) {
@@ -464,7 +461,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     }
 
     public String newFileMessageWithFwr(final List<File> files, final List<Uri> uris, final String referenceType, final List<String> forwards) {
-        Realm realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
+        Realm realm = Realm.getDefaultInstance();
         final String messageId = UUID.randomUUID().toString();
 
         realm.executeTransaction(new Realm.Transaction() {
@@ -570,8 +567,8 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     }
 
     private void updateLastMessage() {
-        Realm realm = MessageDatabaseManager.getInstance().getRealmUiThread();
-        lastMessage = realm.where(MessageItem.class)
+        lastMessage = Realm.getDefaultInstance()
+                .where(MessageItem.class)
                 .equalTo(MessageItem.Fields.ACCOUNT, account.toString())
                 .equalTo(MessageItem.Fields.USER, user.toString())
                 .isNull(MessageItem.Fields.PARENT_MESSAGE_ID)
@@ -687,7 +684,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     }
 
     private void createForwardMessageReferences(Message message, String[] forwardedIds, StringBuilder builder) {
-        Realm realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
+        Realm realm = Realm.getDefaultInstance();
         RealmResults<MessageItem> items = realm.where(MessageItem.class)
                 .in(MessageItem.Fields.UNIQUE_ID, forwardedIds).findAll();
 
@@ -724,7 +721,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
             public void run() {
                 Realm realm = null;
                 try{
-                    realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
+                    realm = Realm.getDefaultInstance();
                     realm.executeTransaction(new Realm.Transaction() {
                         @Override
                         public void execute(Realm realm) {
@@ -801,7 +798,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
                 StanzaSender.sendStanza(account, message, new StanzaListener() {
                     @Override
                     public void processStanza(Stanza packet) throws SmackException.NotConnectedException {
-                        Realm realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
+                        Realm realm = Realm.getDefaultInstance();
                         realm.executeTransaction(new Realm.Transaction() {
                                 @Override
                                 public void execute(Realm realm) {
@@ -927,8 +924,10 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     }
 
     public void markAsRead(String messageId, boolean trySendDisplay) {
-        MessageItem message = MessageDatabaseManager.getInstance().getRealmUiThread()
-                .where(MessageItem.class).equalTo(MessageItem.Fields.STANZA_ID, messageId).findFirst();
+        MessageItem message = Realm.getDefaultInstance()
+                .where(MessageItem.class)
+                .equalTo(MessageItem.Fields.STANZA_ID, messageId)
+                .findFirst();
         if (message != null) executeRead(message, trySendDisplay);
     }
 
@@ -963,7 +962,8 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     }
 
     private RealmQuery<MessageItem> getAllUnreadQuery() {
-        return MessageDatabaseManager.getInstance().getRealmUiThread().where(MessageItem.class)
+        return Realm.getDefaultInstance()
+                .where(MessageItem.class)
                 .equalTo(MessageItem.Fields.ACCOUNT, account.toString())
                 .equalTo(MessageItem.Fields.USER, user.toString())
                 .isNull(MessageItem.Fields.PARENT_MESSAGE_ID)
