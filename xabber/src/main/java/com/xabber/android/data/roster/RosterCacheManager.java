@@ -1,7 +1,6 @@
 package com.xabber.android.data.roster;
 
 import com.xabber.android.data.Application;
-import com.xabber.android.data.database.MessageDatabaseManager;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.database.realm.ContactGroup;
 import com.xabber.android.data.database.realm.ContactRealm;
@@ -43,7 +42,7 @@ public class RosterCacheManager {
             public void run() {
                 Realm realm = null;
                 try {
-                    realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
+                    realm = Realm.getDefaultInstance();
                     realm.executeTransaction(new Realm.Transaction() {
                         @Override
                         public void execute(Realm realm) {
@@ -96,7 +95,7 @@ public class RosterCacheManager {
             public void run() {
                 Realm realm = null;
                 try {
-                    realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
+                    realm = Realm.getDefaultInstance();
                     realm.executeTransaction(new Realm.Transaction() {
                         @Override
                         public void execute(Realm realm) {
@@ -123,7 +122,7 @@ public class RosterCacheManager {
             public void run() {
                 Realm realm = null;
                 try {
-                    realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
+                    realm = Realm.getDefaultInstance();
                     realm.executeTransaction(new Realm.Transaction() {
                         @Override
                         public void execute(Realm realm) {
@@ -147,7 +146,7 @@ public class RosterCacheManager {
             public void run() {
                 Realm realm = null;
                 try {
-                    realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
+                    realm = Realm.getDefaultInstance();
                     realm.executeTransaction(new Realm.Transaction() {
                         @Override
                         public void execute(Realm realm) {
