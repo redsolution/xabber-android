@@ -60,7 +60,7 @@ public class ChatDeleteDialog extends DialogFragment implements View.OnClickList
         ((Button) view.findViewById(R.id.delete)).setOnClickListener(this);
         ((Button) view.findViewById(R.id.cancel_delete)).setOnClickListener(this);
 
-        return builder.setTitle(R.string.clear_history)
+        return builder.setTitle(R.string.delete_chat)
                 .setView(view)
                 .create();
 

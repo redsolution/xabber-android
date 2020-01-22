@@ -81,6 +81,7 @@ import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.color.StatusBarPainter;
 import com.xabber.android.ui.dialog.AttachDialog;
 import com.xabber.android.ui.dialog.BlockContactDialog;
+import com.xabber.android.ui.dialog.ChatDeleteDialog;
 import com.xabber.android.ui.dialog.ContactDeleteDialog;
 import com.xabber.android.ui.dialog.SnoozeDialog;
 import com.xabber.android.ui.fragment.ChatFragment;
@@ -935,6 +936,9 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
                 ContactDeleteDialog.newInstance(account, user)
                         .show(getSupportFragmentManager(), ContactDeleteDialog.class.getName());
                 return true;
+            case R.id.action_delete_chat:
+                ChatDeleteDialog.newInstance(account, user)
+                        .show(getSupportFragmentManager(), ChatDeleteDialog.class.getName());
             default:
                 return false;
         }
