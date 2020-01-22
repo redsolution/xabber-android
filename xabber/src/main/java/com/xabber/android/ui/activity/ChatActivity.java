@@ -883,11 +883,17 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
                 return true;
 
             case R.id.action_archive_chat:
-                if (abstractChat != null) abstractChat.setArchived(true, true);
+                if (abstractChat != null) {
+                    abstractChat.setArchived(true, true);
+                    setUpOptionsMenu(toolbar.getMenu());
+                }
                 return true;
 
             case R.id.action_unarchive_chat:
-                if (abstractChat != null) abstractChat.setArchived(false, true);
+                if (abstractChat != null) {
+                    abstractChat.setArchived(false, true);
+                    setUpOptionsMenu(toolbar.getMenu());
+                }
                 return true;
 
             case R.id.action_mute_chat:

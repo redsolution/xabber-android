@@ -4,6 +4,7 @@ package com.xabber.android.ui.dialog;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.os.Bundle;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -53,7 +54,7 @@ public class ChatHistoryClearDialog extends DialogFragment implements View.OnCli
         int colorIndicator = ColorManager.getInstance().getAccountPainter()
                 .getAccountMainColor(account);
 
-        ((TextView) view.findViewById(R.id.clear_history_confirm)).setText(getString(R.string.clear_chat_history_dialog_message, contactName));
+        ((TextView) view.findViewById(R.id.clear_history_confirm)).setText(Html.fromHtml(getString(R.string.clear_chat_history_dialog_message, contactName)));
         ((TextView) view.findViewById(R.id.clear_history_warning)).setText(getString(R.string.clear_chat_history_dialog_warning));
 
         ((Button) view.findViewById(R.id.clear)).setTextColor(colorIndicator);

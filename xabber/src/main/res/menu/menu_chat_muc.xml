@@ -26,7 +26,7 @@
 
     <item android:id="@+id/action_clear_history"
         android:icon="@drawable/ic_clear_all_white_24dp"
-        android:orderInCategory="134"
+        android:orderInCategory="2"
         android:title="@string/clear_history"
         app:showAsAction="never"
         />
@@ -52,31 +52,31 @@
         <!--/>-->
 
     <item android:id="@+id/action_call_attention"
-        android:orderInCategory="180"
+        android:orderInCategory="1"
         android:title="@string/call_attention"
         app:showAsAction="never"
         />
 
     <item android:id="@+id/action_archive_chat"
-        android:orderInCategory="215"
+        android:orderInCategory="3"
         android:title="@string/archive_chat" />
 
     <item android:id="@+id/action_unarchive_chat"
-        android:orderInCategory="220"
+        android:orderInCategory="4"
         android:title="@string/unarchive_chat" />
 
-    <item android:id="@+id/action_configure_notifications"
-        android:orderInCategory="221"
-        android:title="@string/configure_notifications"
-        app:showAsAction="never"
-        />
-
     <item android:id="@+id/action_mute_chat"
-        android:orderInCategory="225"
+        android:orderInCategory="5"
         android:title="@string/mute_chat" />
 
     <item android:id="@+id/action_unmute_chat"
-        android:orderInCategory="230"
+        android:orderInCategory="6"
         android:title="@string/unmute_chat" />
+
+    <item android:id="@+id/action_configure_notifications"
+        android:orderInCategory="7"
+        android:title="@string/configure_notifications"
+        app:showAsAction="never"
+        />
 
 </menu>

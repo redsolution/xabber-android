@@ -21,7 +21,9 @@ import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.PorterDuff;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -109,7 +111,7 @@ public class ContactActivity extends ManagedActivity implements
     private LinearLayout blockButtonLayout;
     private LinearLayout notifyButtonLayout;
 
-    private int orientation;
+    public int orientation;
     private boolean blocked;
 
     public static Intent createIntent(Context context, AccountJid account, UserJid user) {
@@ -350,7 +352,7 @@ public class ContactActivity extends ManagedActivity implements
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
                     nameHolderView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                 } else nameHolderView.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-                int topPadding = /*Utils.dipToPx(33f, Application.getInstance().getApplicationContext()) +*/ (nameHolderView.getHeight());
+                int topPadding = nameHolderView.getHeight();
                 ll.setPadding(0, topPadding, 0, 0);
             }
         });
@@ -422,6 +424,22 @@ public class ContactActivity extends ManagedActivity implements
             callsButtonText.setVisibility(View.VISIBLE);
             blockButtonText.setVisibility(View.VISIBLE);
             notifyButtonText.setVisibility(View.VISIBLE);
+        }
+    }
+
+    public void manageAvailableUsernameSpace() {
+        if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            TextView view = findViewById(R.id.action_add_contact);
+            if (view != null) {
+                int width;
+                Rect bounds = new Rect();
+                Paint textPaint = view.getPaint();
+                textPaint.getTextBounds(view.getText().toString(), 0, view.getText().length(), bounds);
+                width = bounds.width();
+                LinearLayout nameL = findViewById(R.id.name_layout);
+                ((LinearLayout.LayoutParams) nameL.getLayoutParams())
+                        .setMargins(0, 0, width + 100, 0);
+            }
         }
     }
 

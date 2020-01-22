@@ -4,14 +4,18 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import androidx.appcompat.widget.Toolbar;
 
@@ -22,6 +26,7 @@ import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.intent.EntityIntentBuilder;
+import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
@@ -30,11 +35,17 @@ import com.xabber.android.ui.dialog.ChatExportDialogFragment;
 import com.xabber.android.ui.dialog.ChatHistoryClearDialog;
 import com.xabber.android.ui.dialog.ContactDeleteDialog;
 import com.xabber.android.ui.helper.PermissionsRequester;
+import com.xabber.android.utils.Utils;
+
+import org.jivesoftware.smack.SmackException;
+import org.jivesoftware.smack.XMPPException;
+
+import java.util.ArrayList;
 
 public class ContactEditActivity extends ContactActivity implements Toolbar.OnMenuItemClickListener {
 
     private static final int PERMISSIONS_REQUEST_EXPORT_CHAT = 27;
-    //private ImageView qrImage;
+    private ProgressBar progressBar;
 
     public static Intent createIntent(Context context, AccountJid account, UserJid user) {
         return new EntityIntentBuilder(context, ContactEditActivity.class)
@@ -47,29 +58,30 @@ public class ContactEditActivity extends ContactActivity implements Toolbar.OnMe
 
         Toolbar toolbar = getToolbar();
 
-        RosterContact rosterContact = RosterManager.getInstance().getRosterContact(getAccount(), getUser());
-        if (rosterContact != null) {
-            toolbar.inflateMenu(R.menu.toolbar_contact);
-            toolbar.setOnMenuItemClickListener(this);
-            toolbar.setOverflowIcon(getResources().getDrawable(R.drawable.ic_overflow_menu_white_24dp));
-            int orientation = getResources().getConfiguration().orientation;
-            if (toolbar.getOverflowIcon() != null)
-                if (orientation == Configuration.ORIENTATION_LANDSCAPE
+        toolbar.setOnMenuItemClickListener(this);
+        toolbar.setOverflowIcon(getResources().getDrawable(R.drawable.ic_overflow_menu_white_24dp));
+        if (toolbar.getOverflowIcon() != null)
+            if (orientation == Configuration.ORIENTATION_LANDSCAPE
                     && SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light)
                 toolbar.getOverflowIcon().setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_ATOP);
 
-            onCreateOptionsMenu(toolbar.getMenu());
-        }
+        onCreateOptionsMenu(toolbar.getMenu());
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         RosterContact rosterContact = RosterManager.getInstance().getRosterContact(getAccount(), getUser());
-        if (rosterContact != null) {
-            menu.clear();
-            getMenuInflater().inflate(R.menu.toolbar_contact, menu);
+        menu.clear();
+        getMenuInflater().inflate(R.menu.toolbar_contact, menu);
 
-            // request subscription
+        if (rosterContact == null) {
+            menu.setGroupVisible(R.id.roster_actions, false);
+            menu.findItem(R.id.action_add_contact).setVisible(true);
+            changeTextColor();
+            manageAvailableUsernameSpace();
+        } else {
+            menu.findItem(R.id.action_add_contact).setVisible(false);
+            menu.findItem(R.id.action_generate_qrcode).setVisible(orientation == Configuration.ORIENTATION_PORTRAIT);
             menu.findItem(R.id.action_request_subscription).setVisible(!rosterContact.isSubscribed());
         }
 
@@ -84,6 +96,10 @@ public class ContactEditActivity extends ContactActivity implements Toolbar.OnMe
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.action_add_contact:
+                addContact();
+                return true;
+
             case R.id.action_request_subscription:
                 try {
                     PresenceManager.getInstance().requestSubscription(getAccount(), getUser());
@@ -160,6 +176,56 @@ public class ContactEditActivity extends ContactActivity implements Toolbar.OnMe
         builder.show();
     }
 
+    private void addContact() {
+        progressBar = new ProgressBar(this);
+        progressBar.setIndeterminate(true);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            progressBar.setIndeterminateTintList(ColorStateList.valueOf(getResources().getColor(R.color.white)));
+        }
+        getToolbar().getMenu().findItem(R.id.add_contact_progress)
+                .setActionView(progressBar)
+                .setVisible(true);
+        getToolbar().getMenu().findItem(R.id.action_add_contact).setVisible(false);
+        progressBar.getLayoutParams().height = Utils.dipToPx(24f, this);
+        progressBar.getLayoutParams().width = Utils.dipToPx(48f, this);
+        progressBar.setPadding(0,0,Utils.dipToPx(24f, this), 0);
+        progressBar.requestLayout();
+
+        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
+            @Override
+            public void run() {
+                AbstractContact bestContact = RosterManager.getInstance().getBestContact(getAccount(), getUser());
+                String name = bestContact != null ? bestContact.getName() : getUser().toString();
+
+                try {
+                    RosterManager.getInstance().createContact(getAccount(), getUser(), name, new ArrayList<String>());
+                    PresenceManager.getInstance().requestSubscription(getAccount(), getUser());
+                    stopAddContactProcess(true);
+                } catch (SmackException.NotLoggedInException
+                        | XMPPException.XMPPErrorException
+                        | SmackException.NotConnectedException
+                        | InterruptedException
+                        | SmackException.NoResponseException
+                        | NetworkException e) {
+                    e.printStackTrace();
+                    stopAddContactProcess(false);
+                }
+            }
+        });
+    }
+
+    private void stopAddContactProcess(final boolean success) {
+        Application.getInstance().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                getToolbar().getMenu().findItem(R.id.add_contact_progress).setVisible(false);
+                if (success) {
+                    onCreateOptionsMenu(getToolbar().getMenu());
+                }
+            }
+        });
+    }
+
     private void sendContact() {
         RosterContact rosterContact = RosterManager.getInstance().getRosterContact(getAccount(), getUser());
         String text = rosterContact != null ? rosterContact.getName() + "\nxmpp:" + getUser().toString() : "xmpp:" + getUser().toString();
@@ -170,5 +236,16 @@ public class ContactEditActivity extends ContactActivity implements Toolbar.OnMe
         startActivity(Intent.createChooser(sendIntent, getResources().getText(R.string.send_to)));
     }
 
-
+    private void changeTextColor() {
+        TextView view = findViewById(R.id.action_add_contact);
+        if (view != null) {
+            if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+                view.setTextColor(getResources().getColor(R.color.white));
+            } else {
+                if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light)
+                    view.setTextColor(getResources().getColor(R.color.grey_900));
+                else view.setTextColor(getResources().getColor(R.color.white));
+            }
+        }
+    }
 }

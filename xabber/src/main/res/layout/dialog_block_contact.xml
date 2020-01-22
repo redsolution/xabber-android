@@ -2,18 +2,17 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    android:paddingLeft="24dp"
-    android:paddingRight="12dp"
-    android:paddingBottom="4dp">
+    android:paddingBottom="8dp">
 
 
     <TextView
         android:id="@+id/block_contact_confirm"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="24dp"
         android:layout_marginTop="4dp"
+        android:layout_marginRight="24dp"
         android:text="@string/block_contact_confirm"
         android:textAppearance="@style/ChatText"
         android:textSize="16sp" />
@@ -22,53 +21,28 @@
         android:id="@+id/block_contact_warning"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="24dp"
         android:layout_marginTop="4dp"
+        android:layout_marginRight="24dp"
         android:layout_marginBottom="12dp"
         android:text="@string/block_contact_warning"
         android:textAppearance="@style/ChatText"
         android:textSize="16sp" />
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
+        android:id="@+id/button_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <Button
-            android:id="@+id/cancel_block"
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:alpha="0.5"
-            android:text="@string/cancel"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <Button
-            android:id="@+id/block_and_delete"
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/contact_block_and_delete"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+        android:layout_height="wrap_content"
+        android:layout_marginRight="14dp"
+        android:gravity="right"
+        android:orientation="vertical">
 
         <Button
             android:id="@+id/block"
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/contact_bar_block"
-            app:layout_constraintEnd_toStartOf="@+id/block_and_delete"
-            app:layout_constraintTop_toTopOf="parent" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-    <!--    <Button
-            android:id="@+id/block"
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="right"
-            android:gravity="right"
+            android:gravity="center|right"
             android:text="@string/contact_bar_block" />
 
         <Button
@@ -76,8 +50,7 @@
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="right"
-            android:gravity="right"
+            android:gravity="center|right"
             android:text="@string/contact_block_and_delete" />
 
         <Button
@@ -85,9 +58,10 @@
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="right"
             android:alpha="0.5"
-            android:gravity="right"
-            android:text="@string/cancel" />-->
+            android:gravity="center|right"
+            android:text="@string/cancel" />
+
+    </LinearLayout>
 
 </LinearLayout>

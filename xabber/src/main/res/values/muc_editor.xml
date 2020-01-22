@@ -13,7 +13,7 @@
     <string name="ALREADY_IN_PROGRESS">Already in progress</string>
     <string name="ALREADY_JOINED">Already joined</string>
     <string name="muc_add">Add conference</string>
-    <string name="muc_delete">Remove conference</string>
+    <string name="muc_delete">Delete conference</string>
     <string name="muc_delete_confirm">Do you really want to remove conference %1$s from account %2$s?</string>
     <string name="muc_edit">Authorization settings</string>
     <string name="muc_invite_confirm">%2$s invites you to join conference %3$s. Join from account %1$s?</string>

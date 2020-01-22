@@ -12,7 +12,7 @@
     <string name="chat_record">Запись</string>
     <string name="clear_history">Очистить историю сообщений</string>
     <string name="clear_chat_history_dialog_button">Очистить</string>
-    <string name="clear_chat_history_dialog_message">Очистить всю историю сообщений с %s?</string>
+    <string name="clear_chat_history_dialog_message">Очистить всю историю сообщений с &lt;b&gt;%s&lt;/b&gt;?</string>
     <string name="contact_is_offline">Сообщения доставлены на сервер получателя и могут быть прочитаны им после подключения к сети</string>
     <string name="ENTRY_IS_NOT_AVAILABLE">Контакт не доступен</string>
     <string name="FILE_NOT_FOUND">Файл не найден</string>

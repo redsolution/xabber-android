@@ -4,14 +4,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:paddingLeft="24dp"
-    android:paddingRight="12dp">
+    android:paddingBottom="8dp">
 
     <TextView
         android:id="@+id/clear_history_confirm"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="24dp"
         android:layout_marginTop="4dp"
+        android:layout_marginRight="24dp"
         android:text="@string/clear_chat_history_dialog_message"
         android:textAppearance="@style/ChatText"
         android:textSize="16sp" />
@@ -20,7 +21,9 @@
         android:id="@+id/clear_history_warning"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="24dp"
         android:layout_marginTop="4dp"
+        android:layout_marginRight="24dp"
         android:text="@string/clear_chat_history_dialog_warning"
         android:textAppearance="@style/ChatText"
         android:textSize="16sp" />
@@ -29,13 +32,15 @@
         android:id="@+id/clear_history_retract"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="24dp"
         android:layout_marginTop="4dp"
+        android:layout_marginRight="24dp"
         android:text="@string/clear_chat_history_for_companion_checkbox" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="6dp">
+        android:layout_marginRight="14dp">
 
         <Button
             android:id="@+id/cancel_clear"
@@ -43,6 +48,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:alpha="0.5"
+            android:gravity="center|right"
             android:text="@string/cancel"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/clear"
@@ -53,6 +59,7 @@
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:gravity="center|right"
             android:text="@string/clear_chat_history_dialog_button"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
