@@ -98,7 +98,8 @@ public class MessageDatabaseManager {
     }
 
     public RealmResults<MessageItem> getChatMessagesAsync(AccountJid accountJid, UserJid userJid) {
-        return getChatMessagesQuery(getRealmUiThread(), accountJid, userJid)
+
+        return getChatMessagesQuery(Realm.getDefaultInstance(), accountJid, userJid)
                 .findAllSortedAsync(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
     }
 

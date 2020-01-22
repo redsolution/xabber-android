@@ -195,10 +195,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
 
     public RealmResults<MessageItem> getMessages() {
         if (messages == null) {
-            messages = MessageDatabaseManager.getChatMessages(
-                    MessageDatabaseManager.getInstance().getRealmUiThread(),
-                    account,
-                    user);
+            messages = MessageDatabaseManager.getChatMessages(Realm.getDefaultInstance(), account, user);
             updateLastMessage();
 
             messages.addChangeListener(this);
@@ -570,8 +567,8 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     }
 
     private void updateLastMessage() {
-        Realm realm = MessageDatabaseManager.getInstance().getRealmUiThread();
-        lastMessage = realm.where(MessageItem.class)
+        lastMessage = Realm.getDefaultInstance()
+                .where(MessageItem.class)
                 .equalTo(MessageItem.Fields.ACCOUNT, account.toString())
                 .equalTo(MessageItem.Fields.USER, user.toString())
                 .isNull(MessageItem.Fields.PARENT_MESSAGE_ID)
@@ -927,8 +924,10 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     }
 
     public void markAsRead(String messageId, boolean trySendDisplay) {
-        MessageItem message = MessageDatabaseManager.getInstance().getRealmUiThread()
-                .where(MessageItem.class).equalTo(MessageItem.Fields.STANZA_ID, messageId).findFirst();
+        MessageItem message = Realm.getDefaultInstance()
+                .where(MessageItem.class)
+                .equalTo(MessageItem.Fields.STANZA_ID, messageId)
+                .findFirst();
         if (message != null) executeRead(message, trySendDisplay);
     }
 
@@ -963,7 +962,8 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     }
 
     private RealmQuery<MessageItem> getAllUnreadQuery() {
-        return MessageDatabaseManager.getInstance().getRealmUiThread().where(MessageItem.class)
+        return Realm.getDefaultInstance()
+                .where(MessageItem.class)
                 .equalTo(MessageItem.Fields.ACCOUNT, account.toString())
                 .equalTo(MessageItem.Fields.USER, user.toString())
                 .isNull(MessageItem.Fields.PARENT_MESSAGE_ID)
