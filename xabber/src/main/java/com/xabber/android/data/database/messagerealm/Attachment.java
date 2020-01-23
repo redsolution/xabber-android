@@ -1,7 +1,5 @@
 package com.xabber.android.data.database.messagerealm;
 
-import android.os.Looper;
-
 import androidx.annotation.Nullable;
 
 import java.util.UUID;
@@ -71,143 +69,97 @@ public class Attachment extends RealmObject {
     }
 
     public String getUniqueId() {
-        if (Looper.myLooper() != Looper.getMainLooper())
-            throw new IllegalStateException("Tried read from non UI");
         return uniqueId;
     }
 
     public String getFilePath() {
-        if (Looper.myLooper() != Looper.getMainLooper())
-            throw new IllegalStateException("Tried read from non UI");
         return filePath;
     }
 
     public void setFilePath(String filePath) {
-        if (Looper.myLooper() == Looper.getMainLooper())
-            throw new IllegalStateException("Tried to write on UI");
         this.filePath = filePath;
     }
 
     public boolean isImage() {
-        if (Looper.myLooper() != Looper.getMainLooper())
-            throw new IllegalStateException("Tried read from non UI");
         return isImage;
     }
 
     public void setIsImage(boolean isImage) {
-        if (Looper.myLooper() == Looper.getMainLooper())
-            throw new IllegalStateException("Tried to write on UI");
         this.isImage = isImage;
     }
 
     public boolean isVoice() {
-        if (Looper.myLooper() != Looper.getMainLooper())
-            throw new IllegalStateException("Tried read from non UI");
         return isVoice;
     }
 
     public void setIsVoice(boolean isVoice) {
-        if (Looper.myLooper() == Looper.getMainLooper())
-            throw new IllegalStateException("Tried to write on UI");
         this.isVoice = isVoice;
     }
 
     @Nullable
     public Integer getImageWidth() {
-        if (Looper.myLooper() != Looper.getMainLooper())
-            throw new IllegalStateException("Tried read from non UI");
         return imageWidth;
     }
 
     public void setImageWidth(@Nullable Integer imageWidth) {
-        if (Looper.myLooper() == Looper.getMainLooper())
-            throw new IllegalStateException("Tried to write on UI");
         this.imageWidth = imageWidth;
     }
 
     @Nullable
     public Integer getImageHeight() {
-        if (Looper.myLooper() != Looper.getMainLooper())
-            throw new IllegalStateException("Tried read from non UI");
         return imageHeight;
     }
 
     public void setImageHeight(@Nullable Integer imageHeight) {
-        if (Looper.myLooper() == Looper.getMainLooper())
-            throw new IllegalStateException("Tried to write on UI");
         this.imageHeight = imageHeight;
     }
 
     public String getFileUrl() {
-        if (Looper.myLooper() != Looper.getMainLooper())
-            throw new IllegalStateException("Tried read from non UI");
         return fileUrl;
     }
 
     public void setFileUrl(String fileUrl) {
-        if (Looper.myLooper() == Looper.getMainLooper())
-            throw new IllegalStateException("Tried to write on UI");
         this.fileUrl = fileUrl;
     }
 
     public Long getFileSize() {
-        if (Looper.myLooper() != Looper.getMainLooper())
-            throw new IllegalStateException("Tried read from non UI");
         return fileSize;
     }
 
     public void setFileSize(Long fileSize) {
-        if (Looper.myLooper() == Looper.getMainLooper())
-            throw new IllegalStateException("Tried to write on UI");
         this.fileSize = fileSize;
     }
 
     public String getTitle() {
-        if (Looper.myLooper() != Looper.getMainLooper())
-            throw new IllegalStateException("Tried read from non UI");
         return title;
     }
 
     public void setTitle(String title) {
-        if (Looper.myLooper() == Looper.getMainLooper())
-            throw new IllegalStateException("Tried to write on UI");
         this.title = title;
     }
 
     public String getMimeType() {
-        if (Looper.myLooper() != Looper.getMainLooper())
-            throw new IllegalStateException("Tried read from non UI");
         return mimeType;
     }
 
     public void setMimeType(String mimeType) {
-        if (Looper.myLooper() == Looper.getMainLooper())
-            throw new IllegalStateException("Tried to write on UI");
         this.mimeType = mimeType;
     }
 
     public Long getDuration() {
-        if (Looper.myLooper() != Looper.getMainLooper())
-            throw new IllegalStateException("Tried read from non UI");
         return duration;
     }
 
     public void setDuration(Long duration) {
-        if (Looper.myLooper() == Looper.getMainLooper())
-            throw new IllegalStateException("Tried to write on UI");
         this.duration = duration;
     }
 
     @Nullable
     public String getRefType() {
-        if (Looper.myLooper() != Looper.getMainLooper())
-            throw new IllegalStateException("Tried read from non UI");
         return refType;
     }
 
     public void setRefType(String refType) {
-        if (Looper.myLooper() == Looper.getMainLooper())
-            throw new IllegalStateException("Tried to write on UI");
         this.refType = refType;
     }
 }
