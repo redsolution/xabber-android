@@ -2,9 +2,6 @@ package com.xabber.android.data.database.messagerealm;
 
 import android.os.Looper;
 
-import com.xabber.android.data.extension.references.Forward;
-import com.xabber.android.data.log.LogManager;
-
 import java.util.UUID;
 
 import io.realm.RealmObject;
@@ -30,25 +27,25 @@ public class ForwardId extends RealmObject {
 
     public String getForwardMessageId() {
         if (Looper.myLooper() != Looper.getMainLooper())
-            LogManager.exception(ForwardId.class.getSimpleName(), new IllegalStateException("Tried to read from non UI")); 
+            throw new IllegalStateException("Tried read from non UI");
         return forwardMessageId;
     }
 
     public void setForwardMessageId(String forwardMessageId) {
         if (Looper.myLooper() == Looper.getMainLooper())
-            LogManager.exception(ForwardId.class.getSimpleName(), new IllegalStateException("Tried to write from UI!")); 
+            throw new IllegalStateException("Tried to write on UI");
         this.forwardMessageId = forwardMessageId;
     }
 
     public String getId() {
         if (Looper.myLooper() != Looper.getMainLooper())
-            LogManager.exception(ForwardId.class.getSimpleName(), new IllegalStateException("Tried to read from non UI")); 
+            throw new IllegalStateException("Tried read from non UI");
         return id;
     }
 
     public void setId(String id) {
         if (Looper.myLooper() == Looper.getMainLooper())
-            LogManager.exception(ForwardId.class.getSimpleName(), new IllegalStateException("Tried to write from UI!")); 
+            throw new IllegalStateException("Tried to write on UI");
         this.id = id;
     }
 }
