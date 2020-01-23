@@ -11,6 +11,7 @@ import android.os.Build;
 import android.os.Handler;
 
 import com.xabber.android.data.Application;
+import com.xabber.android.data.database.MessageDatabaseManager;
 import com.xabber.android.data.database.messagerealm.Attachment;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.extension.file.FileManager;
@@ -602,7 +603,7 @@ public final class VoiceManager implements MediaPlayer.OnCompletionListener, Med
                     if (voiceFileDuration != 0) {
                         Realm realm = null;
                         try {
-                            realm = Realm.getDefaultInstance();
+                            realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
                             realm.executeTransaction(new Realm.Transaction() {
                                 @Override
                                 public void execute(Realm realm) {

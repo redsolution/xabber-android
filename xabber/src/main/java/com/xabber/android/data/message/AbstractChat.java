@@ -323,7 +323,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         if (ui) BackpressureMessageSaver.getInstance().saveMessageItem(messageItem);
         else {
             final long startTime = System.currentTimeMillis();
-            Realm realm = Realm.getDefaultInstance();
+            Realm realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
             realm.executeTransactionAsync(new Realm.Transaction() {
                 @Override
                 public void execute(Realm realm) {
@@ -461,7 +461,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     }
 
     public String newFileMessageWithFwr(final List<File> files, final List<Uri> uris, final String referenceType, final List<String> forwards) {
-        Realm realm = Realm.getDefaultInstance();
+        Realm realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
         final String messageId = UUID.randomUUID().toString();
 
         realm.executeTransaction(new Realm.Transaction() {
@@ -684,7 +684,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     }
 
     private void createForwardMessageReferences(Message message, String[] forwardedIds, StringBuilder builder) {
-        Realm realm = Realm.getDefaultInstance();
+        Realm realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
         RealmResults<MessageItem> items = realm.where(MessageItem.class)
                 .in(MessageItem.Fields.UNIQUE_ID, forwardedIds).findAll();
 
@@ -721,7 +721,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
             public void run() {
                 Realm realm = null;
                 try{
-                    realm = Realm.getDefaultInstance();
+                    realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
                     realm.executeTransaction(new Realm.Transaction() {
                         @Override
                         public void execute(Realm realm) {
@@ -798,7 +798,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
                 StanzaSender.sendStanza(account, message, new StanzaListener() {
                     @Override
                     public void processStanza(Stanza packet) throws SmackException.NotConnectedException {
-                        Realm realm = Realm.getDefaultInstance();
+                        Realm realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
                         realm.executeTransaction(new Realm.Transaction() {
                                 @Override
                                 public void execute(Realm realm) {

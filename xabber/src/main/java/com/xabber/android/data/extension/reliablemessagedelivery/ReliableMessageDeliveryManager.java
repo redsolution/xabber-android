@@ -5,6 +5,7 @@ import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
+import com.xabber.android.data.database.MessageDatabaseManager;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.log.LogManager;
@@ -58,7 +59,7 @@ public class ReliableMessageDeliveryManager implements OnPacketListener {
             public void run() {
                 Realm realm = null;
                 try {
-                    realm = Realm.getDefaultInstance();
+                    realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
                     realm.executeTransaction(new Realm.Transaction() {
                         @Override
                         public void execute(Realm realm) {
@@ -105,7 +106,7 @@ public class ReliableMessageDeliveryManager implements OnPacketListener {
             public void run() {
                 Realm realm = null;
                 try {
-                    realm = Realm.getDefaultInstance();
+                    realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
                     final Long millis = StringUtils.parseReceivedReceiptTimestampString(time).getTime();
                     realm.executeTransaction(new Realm.Transaction() {
                         @Override

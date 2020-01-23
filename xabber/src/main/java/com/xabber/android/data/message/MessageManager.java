@@ -137,7 +137,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
 
     @Override
     public void onLoad() {
-        Realm realm = Realm.getDefaultInstance();
+        Realm realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
 
         realm.executeTransaction(new Realm.Transaction() {
             @Override
@@ -326,7 +326,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
             return;
         }
 
-        Realm realm = Realm.getDefaultInstance();
+        Realm realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
 
         realm.executeTransaction(new Realm.Transaction() {
             @Override
@@ -366,7 +366,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
     }
 
     public void updateMessageWithNewAttachments(final String messageId, final List<File> files) {
-        Realm realm = Realm.getDefaultInstance();
+        Realm realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
         realm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
@@ -414,7 +414,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
                 }
             });
         } else {
-            Realm realm = Realm.getDefaultInstance();
+            Realm realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
             realm.executeTransaction(new Realm.Transaction() {
                 @Override
                 public void execute(Realm realm) {
@@ -443,7 +443,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
             return;
         }
 
-        Realm realm = Realm.getDefaultInstance();
+        Realm realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
         realm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
@@ -604,7 +604,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
         Application.getInstance().runInBackgroundUserRequest(new Runnable() {
             @Override
             public void run() {
-                Realm realm = Realm.getDefaultInstance();
+                Realm realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
 
                 MessageItem messageItem = realm.where(MessageItem.class)
                         .equalTo(MessageItem.Fields.UNIQUE_ID, messageItemId).findFirst();
@@ -628,7 +628,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
         Application.getInstance().runInBackgroundUserRequest(new Runnable() {
             @Override
             public void run() {
-                Realm realm = Realm.getDefaultInstance();
+                Realm realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
                 RealmResults<MessageItem> items = realm.where(MessageItem.class)
                         .in(MessageItem.Fields.UNIQUE_ID, ids).findAll();
 
@@ -947,7 +947,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
                 final String accountName = AccountManager.getInstance().getNickName(account);
                 final String userName = RosterManager.getInstance().getName(account, user);
 
-                Realm realm = Realm.getDefaultInstance();
+                Realm realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
                 RealmResults<MessageItem> messageItems = MessageDatabaseManager.getChatMessages(realm, account, user);
 
                 for (MessageItem messageItem : messageItems) {

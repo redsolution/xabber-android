@@ -7,6 +7,7 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.StanzaSender;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
+import com.xabber.android.data.database.MessageDatabaseManager;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
@@ -216,7 +217,7 @@ public class ChatMarkerManager implements OnPacketListener {
             public void run() {
                 Realm realm = null;
                 try {
-                    realm = Realm.getDefaultInstance();
+                    realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
                     realm.executeTransaction(new Realm.Transaction() {
                         @Override
                         public void execute(Realm realm) {
@@ -254,7 +255,7 @@ public class ChatMarkerManager implements OnPacketListener {
             public void run() {
                 Realm realm = null;
                 try {
-                    realm = Realm.getDefaultInstance();
+                    realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
                     realm.executeTransaction(new Realm.Transaction() {
                         @Override
                         public void execute(Realm realm) {
