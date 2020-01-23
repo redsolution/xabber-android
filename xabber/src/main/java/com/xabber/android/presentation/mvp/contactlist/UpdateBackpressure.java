@@ -10,7 +10,7 @@ import java.util.Date;
 
 public class UpdateBackpressure implements Runnable {
 
-    private static final long REFRESH_INTERVAL = 250;
+    private static final long REFRESH_INTERVAL = 20;
 
     public interface UpdatableObject {
         void update();

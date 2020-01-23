@@ -14,7 +14,6 @@
  */
 package com.xabber.android.data.database.messagerealm;
 
-import android.os.Looper;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.TextUtils;
@@ -247,21 +246,11 @@ public class MessageItem extends RealmObject {
 
     public MessageItem() { this.uniqueId = UUID.randomUUID().toString(); }
 
-    public String getUniqueId() {
-        if (Looper.myLooper() != Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried read from non UI"));
-        return uniqueId;
-    }
+    public String getUniqueId() { return uniqueId; }
 
-    public void setUniqueId(String uniqueId) {
-        if (Looper.myLooper() == Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried to write on UI"));
-        this.uniqueId = uniqueId;
-    }
+    public void setUniqueId(String uniqueId) { this.uniqueId = uniqueId; }
 
     public AccountJid getAccount() {
-        if (Looper.myLooper() != Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried read from non UI"));
         try {
             return AccountJid.from(account);
         } catch (XmppStringprepException e) {
@@ -270,15 +259,9 @@ public class MessageItem extends RealmObject {
         }
     }
 
-    public void setAccount(AccountJid account) {
-        if (Looper.myLooper() == Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried to write on UI"));
-        this.account = account.toString();
-    }
+    public void setAccount(AccountJid account) { this.account = account.toString(); }
 
     public UserJid getUser() {
-        if (Looper.myLooper() != Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried read from non UI"));
         try {
             return UserJid.from(user);
         } catch (UserJid.UserJidCreateException e) {
@@ -287,15 +270,9 @@ public class MessageItem extends RealmObject {
         }
     }
 
-    public void setUser(UserJid user) {
-        if (Looper.myLooper() == Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried to write on UI"));
-        this.user = user.toString();
-    }
+    public void setUser(UserJid user) { this.user = user.toString(); }
 
     public Resourcepart getResource() {
-        if (Looper.myLooper() != Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried read from non UI"));
         if (TextUtils.isEmpty(resource)) {
             return Resourcepart.EMPTY;
         }
@@ -309,8 +286,6 @@ public class MessageItem extends RealmObject {
     }
 
     public void setResource(Resourcepart resource) {
-        if (Looper.myLooper() == Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried to write on UI"));
         if (resource != null) {
             this.resource = resource.toString();
         } else {
@@ -318,377 +293,139 @@ public class MessageItem extends RealmObject {
         }
     }
 
-    public String getText() {
-        if (Looper.myLooper() != Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried read from non UI"));
-        return text;
-    }
+    public String getText() { return text; }
 
-    public void setText(String text) {
-        if (Looper.myLooper() == Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried to write on UI"));
-        this.text = text;
-    }
+    public void setText(String text) { this.text = text; }
 
-    public String getAction() {
-        if (Looper.myLooper() != Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried read from non UI"));
-        return action;
-    }
+    public String getAction() { return action; }
 
-    public void setAction(String action) {
-        if (Looper.myLooper() == Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried to write on UI"));
-        this.action = action;
-    }
+    public void setAction(String action) { this.action = action; }
 
-    public boolean isIncoming() {
-        if (Looper.myLooper() != Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried read from non UI"));
-        return incoming;
-    }
+    public boolean isIncoming() { return incoming; }
 
-    public void setIncoming(boolean incoming) {
-        if (Looper.myLooper() == Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried to write on UI"));
-        this.incoming = incoming;
-    }
+    public void setIncoming(boolean incoming) { this.incoming = incoming; }
 
-    public boolean isOffline() {
-        if (Looper.myLooper() != Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried read from non UI"));
-        return offline;
-    }
+    public boolean isOffline() { return offline; }
 
-    public void setOffline(boolean offline) {
-        if (Looper.myLooper() == Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried to write on UI"));
-        this.offline = offline;
-    }
+    public void setOffline(boolean offline) { this.offline = offline; }
 
-    public Long getTimestamp() {
-        if (Looper.myLooper() != Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried read from non UI"));
-        return timestamp;
-    }
+    public Long getTimestamp() { return timestamp; }
 
-    public void setTimestamp(Long timestamp) {
-        if (Looper.myLooper() == Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried to write on UI"));
-        this.timestamp = timestamp;
-    }
+    public void setTimestamp(Long timestamp) { this.timestamp = timestamp; }
 
-    public Long getEditedTimestamp() {
-        if (Looper.myLooper() != Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried read from non UI"));
-        return editedTimestamp;
-    }
+    public Long getEditedTimestamp() { return editedTimestamp; }
 
-    public void setEditedTimestamp(Long timestamp) {
-        if (Looper.myLooper() == Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried to write on UI"));
-        this.editedTimestamp = timestamp;
-    }
+    public void setEditedTimestamp(Long timestamp) { this.editedTimestamp = timestamp; }
 
-    public Long getDelayTimestamp() {
-        if (Looper.myLooper() != Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried read from non UI"));
-        return delayTimestamp;
-    }
+    public Long getDelayTimestamp() { return delayTimestamp; }
 
-    public void setDelayTimestamp(Long delayTimestamp) {
-        if (Looper.myLooper() == Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried to write on UI"));
-        this.delayTimestamp = delayTimestamp;
-    }
+    public void setDelayTimestamp(Long delayTimestamp) { this.delayTimestamp = delayTimestamp; }
 
-    public boolean isError() {
-        if (Looper.myLooper() != Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried read from non UI"));
-        return error;
-    }
+    public boolean isError() { return error; }
 
-    public void setError(boolean error) {
-        if (Looper.myLooper() == Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried to write on UI"));
-        this.error = error;
-    }
+    public void setError(boolean error) { this.error = error; }
 
-    public boolean isDelivered() {
-        if (Looper.myLooper() != Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried read from non UI"));
-        return delivered;
-    }
+    public boolean isDelivered() { return delivered; }
 
-    public void setDelivered(boolean delivered) {
-        if (Looper.myLooper() == Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried to write on UI"));
-        this.delivered = delivered;
-    }
+    public void setDelivered(boolean delivered) { this.delivered = delivered; }
 
-    public boolean isDisplayed() {
-        if (Looper.myLooper() != Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried read from non UI"));
-        return displayed;
-    }
+    public boolean isDisplayed() { return displayed; }
 
-    public void setDisplayed(boolean displayed) {
-        if (Looper.myLooper() == Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried to write on UI"));
-        this.displayed = displayed;
-    }
+    public void setDisplayed(boolean displayed) { this.displayed = displayed; }
 
-    public boolean isSent() {
-        if (Looper.myLooper() != Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried read from non UI"));
-        return sent;
-    }
+    public boolean isSent() { return sent; }
 
-    public void setSent(boolean sent) {
-        if (Looper.myLooper() == Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried to write on UI"));
-        this.sent = sent;
-    }
+    public void setSent(boolean sent) { this.sent = sent; }
 
-    public boolean isRead() {
-        if (Looper.myLooper() != Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried read from non UI"));
-        return read;
-    }
+    public boolean isRead() { return read; }
 
-    public void setRead(boolean read) {
-        if (Looper.myLooper() == Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried to write on UI"));
-        this.read = read;
-    }
+    public void setRead(boolean read) { this.read = read; }
 
-    public String getStanzaId() {
-        if (Looper.myLooper() != Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried read from non UI"));
-        return stanzaId;
-    }
+    public String getStanzaId() { return stanzaId; }
 
-    public void setStanzaId(String stanzaId) {
-        if (Looper.myLooper() == Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried to write on UI"));
-        this.stanzaId = stanzaId;
-    }
+    public void setStanzaId(String stanzaId) { this.stanzaId = stanzaId; }
 
-    public String getOriginId() {
-        if (Looper.myLooper() != Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried read from non UI"));
-        return originId;
-    }
+    public String getOriginId() { return originId; }
 
-    public void setOriginId(String originId) {
-        if (Looper.myLooper() == Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried to write on UI"));
-        this.originId = originId;
-    }
+    public void setOriginId(String originId) { this.originId = originId; }
 
-    public boolean isReceivedFromMessageArchive() {
-        if (Looper.myLooper() != Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried read from non UI"));
-        return isReceivedFromMessageArchive;
-    }
+    public boolean isReceivedFromMessageArchive() { return isReceivedFromMessageArchive; }
 
-    public void setReceivedFromMessageArchive(boolean receivedFromMessageArchive) {
-        if (Looper.myLooper() == Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried to write on UI"));
-        isReceivedFromMessageArchive = receivedFromMessageArchive;
-    }
+    public void setReceivedFromMessageArchive(boolean receivedFromMessageArchive) { isReceivedFromMessageArchive = receivedFromMessageArchive; }
 
-    public boolean isForwarded() {
-        if (Looper.myLooper() != Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried read from non UI"));
-        return forwarded;
-    }
+    public boolean isForwarded() { return forwarded; }
 
-    public void setForwarded(boolean forwarded) {
-        if (Looper.myLooper() == Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried to write on UI"));
-        this.forwarded = forwarded;
-    }
+    public void setForwarded(boolean forwarded) { this.forwarded = forwarded; }
 
     @Deprecated
-    public String getFilePath() {
-        if (Looper.myLooper() != Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried read from non UI"));
-        return filePath;
-    }
+    public String getFilePath() { return filePath; }
 
     @Deprecated
-    public void setFilePath(String filePath) {
-        if (Looper.myLooper() == Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried to write on UI"));
-        this.filePath = filePath;
-    }
+    public void setFilePath(String filePath) { this.filePath = filePath; }
 
     @Deprecated
-    public boolean isImage() {
-        if (Looper.myLooper() != Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried read from non UI"));
-        return isImage;
-    }
+    public boolean isImage() { return isImage; }
 
     @Deprecated
-    public void setIsImage(boolean isImage) {
-        if (Looper.myLooper() == Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried to write on UI"));
-        this.isImage = isImage;
-    }
+    public void setIsImage(boolean isImage) { this.isImage = isImage; }
 
     @Deprecated
     @Nullable
-    public Integer getImageWidth() {
-        if (Looper.myLooper() != Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried read from non UI"));
-        return imageWidth;
-    }
+    public Integer getImageWidth() { return imageWidth; }
 
     @Deprecated
-    public void setImageWidth(@Nullable Integer imageWidth) {
-        if (Looper.myLooper() == Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried to write on UI"));
-        this.imageWidth = imageWidth;
-    }
+    public void setImageWidth(@Nullable Integer imageWidth) { this.imageWidth = imageWidth; }
 
     @Deprecated
     @Nullable
-    public Integer getImageHeight() {
-        if (Looper.myLooper() != Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried read from non UI"));
-        return imageHeight;
-    }
+    public Integer getImageHeight() { return imageHeight; }
 
     @Deprecated
-    public void setImageHeight(@Nullable Integer imageHeight) {
-        if (Looper.myLooper() == Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried to write on UI"));
-        this.imageHeight = imageHeight;
-    }
+    public void setImageHeight(@Nullable Integer imageHeight) { this.imageHeight = imageHeight; }
 
     @Deprecated
-    public String getFileUrl() {
-        if (Looper.myLooper() != Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried read from non UI"));
-        return fileUrl;
-    }
+    public String getFileUrl() { return fileUrl; }
 
     @Deprecated
-    public void setFileUrl(String fileUrl) {
-        if (Looper.myLooper() == Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried to write on UI"));
-        this.fileUrl = fileUrl;
-    }
+    public void setFileUrl(String fileUrl) { this.fileUrl = fileUrl; }
 
     @Deprecated
-    public Long getFileSize() {
-        if (Looper.myLooper() != Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried read from non UI"));
-        return fileSize;
-    }
+    public Long getFileSize() { return fileSize; }
 
     @Deprecated
-    public void setFileSize(Long fileSize) {
-        if (Looper.myLooper() == Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried to write on UI"));
-        this.fileSize = fileSize;
-    }
+    public void setFileSize(Long fileSize) { this.fileSize = fileSize; }
 
-    public static ChatAction getChatAction(MessageItem messageItem) {
-        if (Looper.myLooper() != Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried read from non UI"));
-        return ChatAction.valueOf(messageItem.getAction());
-    }
+    public static ChatAction getChatAction(MessageItem messageItem) { return ChatAction.valueOf(messageItem.getAction()); }
 
-    public static Spannable getSpannable(MessageItem messageItem) {
-        if (Looper.myLooper() != Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried read from non UI"));
-        return new SpannableString(messageItem.getText());
-    }
+    public static Spannable getSpannable(MessageItem messageItem) { return new SpannableString(messageItem.getText()); }
 
-    public static boolean isUploadFileMessage(MessageItem messageItem) {
-        if (Looper.myLooper() != Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried read from non UI"));
-        return messageItem.getFilePath() != null && !messageItem.isIncoming() && !messageItem.isSent();
-    }
+    public static boolean isUploadFileMessage(MessageItem messageItem) { return messageItem.getFilePath() != null && !messageItem.isIncoming() && !messageItem.isSent(); }
 
-    public boolean isAcknowledged() {
-        if (Looper.myLooper() != Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried read from non UI"));
-        return acknowledged;
-    }
+    public boolean isAcknowledged() { return acknowledged; }
 
-    public void setAcknowledged(boolean acknowledged) {
-        if (Looper.myLooper() == Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried to write on UI"));
-        this.acknowledged = acknowledged;
-    }
+    public void setAcknowledged(boolean acknowledged) { this.acknowledged = acknowledged; }
 
-    public boolean isInProgress() {
-        if (Looper.myLooper() != Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried read from non UI"));
-        return isInProgress;
-    }
+    public boolean isInProgress() { return isInProgress; }
 
-    public void setInProgress(boolean inProgress) {
-        if (Looper.myLooper() == Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried to write on UI"));
-        isInProgress = inProgress;
-    }
+    public void setInProgress(boolean inProgress) {  isInProgress = inProgress; }
 
-    public boolean isEncrypted() {
-        if (Looper.myLooper() != Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried read from non UI"));
-        return encrypted;
-    }
+    public boolean isEncrypted() { return encrypted; }
 
-    public void setEncrypted(boolean encrypted) {
-        if (Looper.myLooper() == Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried to write on UI"));
-        this.encrypted = encrypted;
-    }
+    public void setEncrypted(boolean encrypted) { this.encrypted = encrypted; }
 
-    public String getErrorDescription() {
-        if (Looper.myLooper() != Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried read from non UI"));
-        return errorDescription;
-    }
+    public String getErrorDescription() { return errorDescription; }
 
-    public void setErrorDescription(String errorDescription) {
-        if (Looper.myLooper() == Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried to write on UI"));
-        this.errorDescription = errorDescription;
-    }
+    public void setErrorDescription(String errorDescription) { this.errorDescription = errorDescription; }
 
-    public RealmList<Attachment> getAttachments() {
-        if (Looper.myLooper() != Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried read from non UI"));
-        return attachments;
-    }
+    public RealmList<Attachment> getAttachments() { return attachments; }
 
-    public void setAttachments(RealmList<Attachment> attachments) {
-        if (Looper.myLooper() == Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried to write on UI"));
-        this.attachments = attachments;
-    }
+    public void setAttachments(RealmList<Attachment> attachments) { this.attachments = attachments; }
 
-    public boolean haveAttachments() {
-        if (Looper.myLooper() != Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried read from non UI"));
-        return attachments != null && attachments.size() > 0;
-    }
+    public boolean haveAttachments() { return attachments != null && attachments.size() > 0; }
 
-    public RealmList<ForwardId> getForwardedIds() {
-        if (Looper.myLooper() != Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried read from non UI"));
-        return forwardedIds;
-    }
+    public RealmList<ForwardId> getForwardedIds() { return forwardedIds; }
 
     public String[] getForwardedIdsAsArray() {
-        if (Looper.myLooper() != Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried read from non UI"));
         String forwardedIds[] = new String[getForwardedIds().size()];
 
         int i = 0;
@@ -700,133 +437,49 @@ public class MessageItem extends RealmObject {
         return forwardedIds;
     }
 
-    public void setForwardedIds(RealmList<ForwardId> forwardedMessages) {
-        if (Looper.myLooper() == Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried to write on UI"));
-        this.forwardedIds = forwardedMessages;
-    }
+    public void setForwardedIds(RealmList<ForwardId> forwardedMessages) { this.forwardedIds = forwardedMessages; }
 
-    public boolean haveForwardedMessages() {
-        if (Looper.myLooper() != Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried read from non UI"));
-        return forwardedIds != null && forwardedIds.size() > 0;
-    }
+    public boolean haveForwardedMessages() { return forwardedIds != null && forwardedIds.size() > 0; }
 
-    public String getOriginalStanza() {
-        if (Looper.myLooper() != Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried read from non UI"));
-        return originalStanza;
-    }
+    public String getOriginalStanza() { return originalStanza; }
 
-    public void setOriginalStanza(String originalStanza) {
-        if (Looper.myLooper() == Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried to write on UI"));
-        this.originalStanza = originalStanza;
-    }
+    public void setOriginalStanza(String originalStanza) { this.originalStanza = originalStanza; }
 
-    public String getOriginalFrom() {
-        if (Looper.myLooper() != Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried read from non UI"));
-        return originalFrom;
-    }
+    public String getOriginalFrom() { return originalFrom; }
 
-    public void setOriginalFrom(String originalFrom) {
-        if (Looper.myLooper() == Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried to write on UI"));
-        this.originalFrom = originalFrom;
-    }
+    public void setOriginalFrom(String originalFrom) { this.originalFrom = originalFrom; }
 
-    public String getParentMessageId() {
-        return parentMessageId;
-    }
+    public String getParentMessageId() { return parentMessageId; }
 
-    public void setParentMessageId(String parentMessageId) {
-        if (Looper.myLooper() == Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried to write on UI"));
-        this.parentMessageId = parentMessageId;
-    }
+    public void setParentMessageId(String parentMessageId) { this.parentMessageId = parentMessageId; }
 
-    public String getPreviousId() {
-        if (Looper.myLooper() != Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried read from non UI"));
-        return previousId;
-    }
+    public String getPreviousId() { return previousId; }
 
-    public void setPreviousId(String previousId) {
-        if (Looper.myLooper() == Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried to write on UI"));
-        this.previousId = previousId;
-    }
+    public void setPreviousId(String previousId) { this.previousId = previousId; }
 
-    public String getArchivedId() {
-        if (Looper.myLooper() != Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried read from non UI"));
-        return archivedId;
-    }
+    public String getArchivedId() { return archivedId; }
 
-    public void setArchivedId(String archivedId) {
-        if (Looper.myLooper() == Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried to write on UI"));
-        this.archivedId = archivedId;
-    }
+    public void setArchivedId(String archivedId) { this.archivedId = archivedId; }
 
-    public String getPacketId() {
-        if (Looper.myLooper() != Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried read from non UI"));
-        return packetId;
-    }
+    public String getPacketId() { return packetId; }
 
-    public void setPacketId(String packetId) {
-        if (Looper.myLooper() == Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried to write on UI"));
-        this.packetId = packetId;
-    }
+    public void setPacketId(String packetId) { this.packetId = packetId; }
 
-    public boolean isFromMUC() {
-        if (Looper.myLooper() != Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried read from non UI"));
-        return fromMUC;
-    }
+    public boolean isFromMUC() { return fromMUC; }
 
-    public void setFromMUC(boolean fromMUC) {
-        if (Looper.myLooper() == Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried to write on UI"));
-        this.fromMUC = fromMUC;
-    }
+    public void setFromMUC(boolean fromMUC) { this.fromMUC = fromMUC; }
 
-    public String getMarkupText() {
-        if (Looper.myLooper() != Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried read from non UI"));
-        return markupText;
-    }
+    public String getMarkupText() { return markupText; }
 
-    public void setMarkupText(String markupText) {
-        if (Looper.myLooper() == Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried to write on UI"));
-        this.markupText = markupText;
-    }
+    public void setMarkupText(String markupText) { this.markupText = markupText; }
 
-    public String getGroupchatUserId() {
-        if (Looper.myLooper() != Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried read from non UI"));
-        return groupchatUserId;
-    }
+    public String getGroupchatUserId() { return groupchatUserId; }
 
-    public void setGroupchatUserId(String groupchatUserId) {
-        if (Looper.myLooper() == Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried to write on UI"));
-        this.groupchatUserId = groupchatUserId;
-    }
+    public void setGroupchatUserId(String groupchatUserId) { this.groupchatUserId = groupchatUserId; }
 
-    public String getFirstForwardedMessageText() {
-        if (Looper.myLooper() != Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried read from non UI"));
-        return getFirstForwardedMessageText(-1);
-    }
+    public String getFirstForwardedMessageText() { return getFirstForwardedMessageText(-1); }
 
     public String getFirstForwardedMessageText(int color) {
-        if (Looper.myLooper() != Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried read from non UI"));
         String text = null;
         if (haveForwardedMessages()) {
             String[] forwardedIDs = getForwardedIdsAsArray();
@@ -862,8 +515,6 @@ public class MessageItem extends RealmObject {
     }
 
     public boolean isAttachmentImageOnly(){
-        if (Looper.myLooper() != Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried read from non UI"));
         if(attachments!=null && attachments.size()>0) {
             for (Attachment a : attachments) {
                 if (!a.isImage()) {
@@ -875,8 +526,7 @@ public class MessageItem extends RealmObject {
     }
 
     public boolean hasImage(){
-        if (Looper.myLooper() != Looper.getMainLooper())
-            LogManager.exception(MessageItem.class.getSimpleName(), new IllegalStateException("Tried read from non UI"));
+         
         if(attachments!=null && attachments.size()>0) {
             for (Attachment a : attachments) {
                 if (a.isImage()) {

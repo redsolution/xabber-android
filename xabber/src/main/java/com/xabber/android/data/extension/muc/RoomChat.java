@@ -24,7 +24,6 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.SettingsManager.ChatsShowStatusChange;
 import com.xabber.android.data.account.StatusMode;
-import com.xabber.android.data.database.MessageDatabaseManager;
 import com.xabber.android.data.database.messagerealm.Attachment;
 import com.xabber.android.data.database.messagerealm.ForwardId;
 import com.xabber.android.data.database.messagerealm.MessageItem;
@@ -423,7 +422,7 @@ public class RoomChat extends AbstractChat {
             public void run() {
                 Realm realm = null;
                 try {
-                    realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
+                    realm = Realm.getDefaultInstance();
                     realm.executeTransaction(new Realm.Transaction() {
                         @Override
                         public void execute(Realm realm) {
@@ -441,7 +440,7 @@ public class RoomChat extends AbstractChat {
     @Nullable
     private String getMessageIdIfInHistory(String stanzaId, String body) {
         if (stanzaId == null) return null;
-        Realm realm = MessageDatabaseManager.getInstance().getRealmUiThread();
+        Realm realm = Realm.getDefaultInstance();
         MessageItem message = realm
                 .where(MessageItem.class)
                 .equalTo(MessageItem.Fields.TEXT, body)
