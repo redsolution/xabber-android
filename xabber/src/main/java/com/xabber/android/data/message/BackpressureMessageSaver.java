@@ -2,6 +2,7 @@ package com.xabber.android.data.message;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
+import com.xabber.android.data.database.MessageDatabaseManager;
 import com.xabber.android.data.database.messagerealm.Attachment;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.filedownload.DownloadManager;
@@ -56,7 +57,8 @@ public class BackpressureMessageSaver {
                 public void call(final List<MessageItem> messageItems) {
                     if (messageItems == null || messageItems.isEmpty()) return;
                     try {
-                        Realm.getDefaultInstance().executeTransactionAsync(new Realm.Transaction() {
+                        Realm realm = MessageDatabaseManager.getInstance().getRealmUiThread();
+                        realm.executeTransactionAsync(new Realm.Transaction() {
                             @Override
                             public void execute(Realm realm) {
                                 realm.copyToRealm(messageItems);
@@ -88,7 +90,7 @@ public class BackpressureMessageSaver {
         boolean result = false;
         Realm realm = null;
         try {
-            realm = Realm.getDefaultInstance();
+            realm = MessageDatabaseManager.getInstance().getRealmUiThread();
 
             realm.beginTransaction();
             MessageItem item = realm.where(MessageItem.class)

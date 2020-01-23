@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.amulyakhare.textdrawable.util.ColorGenerator;
 import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
+import com.xabber.android.data.database.MessageDatabaseManager;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.groupchat.GroupchatUser;
@@ -33,7 +34,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Date;
 
-import io.realm.Realm;
 import io.realm.RealmResults;
 import io.realm.Sort;
 
@@ -209,8 +209,7 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
         String[] forwardedIDs = messageItem.getForwardedIdsAsArray();
         if (!Arrays.asList(forwardedIDs).contains(null)) {
             RealmResults<MessageItem> forwardedMessages =
-                    Realm.getDefaultInstance()
-                            .where(MessageItem.class)
+                    MessageDatabaseManager.getInstance().getRealmUiThread().where(MessageItem.class)
                             .in(MessageItem.Fields.UNIQUE_ID, forwardedIDs)
                             .findAllSorted(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
 

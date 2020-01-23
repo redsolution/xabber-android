@@ -2,6 +2,7 @@ package com.xabber.android.data.extension.chat_markers;
 
 import androidx.annotation.Nullable;
 
+import com.xabber.android.data.database.MessageDatabaseManager;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.log.LogManager;
@@ -47,7 +48,7 @@ public class BackpressureMessageMarker {
                     @Override
                     public void call(final List<MessageIdAndMarker> messageAndMarkers) {
                         if (messageAndMarkers == null || messageAndMarkers.isEmpty()) return;
-                        Realm realm = Realm.getDefaultInstance();
+                        Realm realm = MessageDatabaseManager.getInstance().getRealmUiThread();
                         realm.beginTransaction();
                         for (MessageIdAndMarker messageAndMarker : messageAndMarkers) {
 

@@ -32,9 +32,8 @@ public class RosterCacheManager {
     }
 
     public static List<ContactRealm> loadContacts() {
-        return Realm.getDefaultInstance()
-                .where(ContactRealm.class)
-                .findAll();
+        Realm realm = MessageDatabaseManager.getInstance().getRealmUiThread();
+        return realm.where(ContactRealm.class).findAll();
     }
 
     public static void saveContact(final AccountJid accountJid, final Collection<RosterContact> contacts) {

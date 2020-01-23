@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
+import com.xabber.android.data.database.MessageDatabaseManager;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
@@ -25,7 +26,6 @@ import com.xabber.android.ui.adapter.chat.ForwardedAdapter;
 import com.xabber.android.ui.adapter.chat.MessagesAdapter;
 import com.xabber.android.ui.color.ColorManager;
 
-import io.realm.Realm;
 import io.realm.RealmResults;
 
 public class ForwardedFragment extends FileInteractionFragment {
@@ -97,15 +97,12 @@ public class ForwardedFragment extends FileInteractionFragment {
         }
 
         // messages adapter
-        MessageItem messageItem = Realm.getDefaultInstance()
-                .where(MessageItem.class)
-                .equalTo(MessageItem.Fields.UNIQUE_ID, messageId)
-                .findFirst();
+        MessageItem messageItem = MessageDatabaseManager.getInstance().getRealmUiThread().where(MessageItem.class)
+                .equalTo(MessageItem.Fields.UNIQUE_ID, messageId).findFirst();
 
-        RealmResults<MessageItem> forwardedMessages = Realm.getDefaultInstance()
-                .where(MessageItem.class)
-                .in(MessageItem.Fields.UNIQUE_ID, messageItem.getForwardedIdsAsArray())
-                .findAll();
+        RealmResults<MessageItem> forwardedMessages =
+                MessageDatabaseManager.getInstance().getRealmUiThread().where(MessageItem.class)
+                        .in(MessageItem.Fields.UNIQUE_ID, messageItem.getForwardedIdsAsArray()).findAll();
 
         // groupchat user
         GroupchatUser groupchatUser = GroupchatUserManager.getInstance().getGroupchatUser(messageItem.getGroupchatUserId());

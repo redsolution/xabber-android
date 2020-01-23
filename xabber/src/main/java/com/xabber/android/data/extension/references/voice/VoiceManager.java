@@ -105,10 +105,8 @@ public final class VoiceManager implements MediaPlayer.OnCompletionListener, Med
     }
 
     public void voiceClicked(String messageId, int attachmentIndex, Long timestamp) {
-        MessageItem messageItem = Realm.getDefaultInstance()
-                .where(MessageItem.class)
-                .equalTo(MessageItem.Fields.UNIQUE_ID, messageId)
-                .findFirst();
+        MessageItem messageItem = MessageDatabaseManager.getInstance().getRealmUiThread().where(MessageItem.class)
+                .equalTo(MessageItem.Fields.UNIQUE_ID, messageId).findFirst();
 
         if (messageItem == null || messageItem.getAttachments() == null
                 || messageItem.getAttachments().size() <= attachmentIndex

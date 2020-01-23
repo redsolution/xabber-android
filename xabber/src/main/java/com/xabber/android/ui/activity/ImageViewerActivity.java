@@ -24,6 +24,7 @@ import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
 import com.xabber.android.R;
+import com.xabber.android.data.database.MessageDatabaseManager;
 import com.xabber.android.data.database.messagerealm.Attachment;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
@@ -110,8 +111,8 @@ public class ImageViewerActivity extends AppCompatActivity implements Toolbar.On
         });
 
         // get imageAttachments
-        MessageItem messageItem = Realm.getDefaultInstance()
-                .where(MessageItem.class)
+        Realm realm = MessageDatabaseManager.getInstance().getRealmUiThread();
+        MessageItem messageItem = realm.where(MessageItem.class)
                 .equalTo(MessageItem.Fields.UNIQUE_ID, messageId)
                 .findFirst();
 
@@ -341,8 +342,8 @@ public class ImageViewerActivity extends AppCompatActivity implements Toolbar.On
 
     private void subscribeForAttachment(Attachment attachment) {
         if (attachment == null) return;
-        Attachment attachmentForSubscribe = Realm.getDefaultInstance()
-                .where(Attachment.class)
+        Realm realm = MessageDatabaseManager.getInstance().getRealmUiThread();
+        Attachment attachmentForSubscribe = realm.where(Attachment.class)
                 .equalTo(Attachment.Fields.UNIQUE_ID, attachment.getUniqueId())
                 .findFirst();
 

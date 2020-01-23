@@ -2,6 +2,7 @@ package com.xabber.android.data.extension.chat_markers;
 
 import androidx.annotation.Nullable;
 
+import com.xabber.android.data.database.MessageDatabaseManager;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
@@ -59,7 +60,7 @@ public class BackpressureMessageReader {
                         if (holder.trySendDisplayed)
                             ChatMarkerManager.getInstance().sendDisplayed(message);
 
-                        Realm realm = Realm.getDefaultInstance();
+                        Realm realm = MessageDatabaseManager.getInstance().getRealmUiThread();
                         RealmResults<MessageItem> messages = getPreviousUnreadMessages(realm, message);
                         realm.beginTransaction();
                         List<String> ids = new ArrayList<>();
@@ -102,7 +103,7 @@ public class BackpressureMessageReader {
                         ArrayList<String> stanzaId = holder.stanzaId;
                         AccountJid accountJid = holder.account;
 
-                        Realm realm = Realm.getDefaultInstance();
+                        Realm realm = MessageDatabaseManager.getInstance().getRealmUiThread();
                         realm.beginTransaction();
 
                         MessageItem message = getMessageById(realm, messageId, stanzaId, accountJid);

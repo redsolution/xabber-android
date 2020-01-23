@@ -275,7 +275,8 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
     }
 
     private void sendMessage(final String text, final AbstractChat chat) {
-        Realm.getDefaultInstance().executeTransactionAsync(new Realm.Transaction() {
+        MessageDatabaseManager.getInstance().getRealmUiThread()
+                .executeTransactionAsync(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
                 MessageItem newMessageItem = chat.createNewMessageItem(text);
@@ -406,7 +407,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
 
     public void updateMessageWithError(final String messageId, final String errorDescription) {
         if (Looper.myLooper() == Looper.getMainLooper()) {
-            Realm realm = Realm.getDefaultInstance();
+            Realm realm = MessageDatabaseManager.getInstance().getRealmUiThread();
             realm.executeTransactionAsync(new Realm.Transaction() {
                 @Override
                 public void execute(Realm realm) {
@@ -583,7 +584,8 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
     public void clearHistory(final AccountJid account, final UserJid user) {
         final long startTime = System.currentTimeMillis();
 
-        Realm.getDefaultInstance().executeTransactionAsync(new Realm.Transaction() {
+        MessageDatabaseManager.getInstance().getRealmUiThread()
+                .executeTransactionAsync(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
                 realm.where(MessageItem.class)
@@ -1055,7 +1057,8 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
     }
 
     public static void setAttachmentLocalPathToNull(final String uniqId) {
-        Realm.getDefaultInstance().executeTransactionAsync(new Realm.Transaction() {
+        final Realm realm = MessageDatabaseManager.getInstance().getRealmUiThread();
+        realm.executeTransactionAsync(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
                 Attachment first = realm.where(Attachment.class)
