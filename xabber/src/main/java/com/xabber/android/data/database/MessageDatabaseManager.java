@@ -119,7 +119,7 @@ public class MessageDatabaseManager {
             public void run() {
                 Realm realm = null;
                 try {
-                    realm = getNewBackgroundRealm();
+                    realm = Realm.getDefaultInstance();
                     realm.deleteRealm(realm.getConfiguration());
                 } catch (Exception e) {
                     LogManager.exception(LOG_TAG, e);
@@ -136,7 +136,7 @@ public class MessageDatabaseManager {
             public void run() {
                 Realm realm = null;
                 try {
-                    realm = getNewBackgroundRealm();
+                    realm = Realm.getDefaultInstance();
                     realm.executeTransaction(new Realm.Transaction() {
                         @Override
                         public void execute(Realm realm) {
@@ -414,7 +414,7 @@ public class MessageDatabaseManager {
     }
 
     void copyDataFromSqliteToRealm() {
-        Realm realm = getNewBackgroundRealm();
+        Realm realm = Realm.getDefaultInstance();
 
         realm.beginTransaction();
 
