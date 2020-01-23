@@ -49,9 +49,11 @@ import com.xabber.android.data.roster.ShowOfflineMode;
 import com.xabber.android.ui.activity.AccountActivity;
 import com.xabber.android.ui.activity.ConferenceAddActivity;
 import com.xabber.android.ui.activity.ContactAddActivity;
+import com.xabber.android.ui.activity.ContactListActivity;
 import com.xabber.android.ui.activity.GroupEditActivity;
 import com.xabber.android.ui.activity.StatusEditActivity;
 import com.xabber.android.ui.dialog.BlockContactDialog;
+import com.xabber.android.ui.dialog.ChatDeleteDialog;
 import com.xabber.android.ui.dialog.ContactDeleteDialog;
 import com.xabber.android.ui.dialog.GroupDeleteDialogFragment;
 import com.xabber.android.ui.dialog.GroupRenameDialogFragment;
@@ -82,7 +84,11 @@ public class ContextMenuHelper {
         inflater.inflate(R.menu.item_contact, menu);
 
         setContactContextMenuActions(activity, presenter, menu, account, user);
-        setContactContextMenuItemsVisibilty(abstractContact, menu, account, user);
+        if (activity instanceof ContactListActivity) {
+            setContactContextMenuItemsVisibilty(abstractContact, ((ContactListActivity) activity).currentActiveFragment, menu, account, user);
+        } else {
+            setContactContextMenuItemsVisibilty(abstractContact, ContactListActivity.ActiveFragment.CHATS, menu, account, user);
+        }
     }
 
     private static void setContactContextMenuActions(final FragmentActivity activity,
@@ -125,13 +131,24 @@ public class ContextMenuHelper {
 
                 });
 
-        menu.findItem(R.id.action_edit_contact_groups).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                activity.startActivity(GroupEditActivity.createIntent(activity, account, user));
-                return true;
-            }
-        });
+        menu.findItem(R.id.action_edit_contact).setOnMenuItemClickListener(
+                new MenuItem.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        activity.startActivity(GroupEditActivity.createIntent(activity, account, user));
+                        return true;
+                    }
+                });
+
+        menu.findItem(R.id.action_delete_chat).setOnMenuItemClickListener(
+                new MenuItem.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        ChatDeleteDialog.newInstance(account, user)
+                                .show(activity.getSupportFragmentManager(), ChatDeleteDialog.class.getName());
+                        return true;
+                    }
+                });
 
         menu.findItem(R.id.action_delete_contact).setOnMenuItemClickListener(
                 new MenuItem.OnMenuItemClickListener() {
@@ -217,6 +234,7 @@ public class ContextMenuHelper {
     }
 
     private static void setContactContextMenuItemsVisibilty(AbstractContact abstractContact,
+                                                            ContactListActivity.ActiveFragment fragment,
                                                             ContextMenu menu,
                                                             AccountJid account, UserJid user) {
         // all menu items are visible by default
@@ -225,18 +243,19 @@ public class ContextMenuHelper {
         if (!MUCManager.getInstance().hasRoom(account, user)) {
             // is not conference
 
-            menu.findItem(R.id.action_edit_conference).setVisible(false);
-            menu.findItem(R.id.action_delete_conference).setVisible(false);
-            menu.findItem(R.id.action_leave_conference).setVisible(false);
-            menu.findItem(R.id.action_join_conference).setVisible(false);
+            menu.setGroupVisible(R.id.group_conference_actions, false);
 
-            if (RosterManager.getInstance().getRosterContact(account, user) == null) {
+            if (fragment == ContactListActivity.ActiveFragment.CHATS) {
+
                 menu.findItem(R.id.action_delete_contact).setVisible(false);
+                if (MessageManager.getInstance().getChat(account, user) == null) {
+                    menu.findItem(R.id.action_delete_chat).setVisible(false);
+                }
+            } else {
+                if (RosterManager.getInstance().getRosterContact(account, user) == null) {
+                    menu.findItem(R.id.action_delete_contact).setVisible(false);
+                }
             }
-
-//            if (!MessageManager.getInstance().hasActiveChat(account, user)) {
-//                menu.findItem(R.id.action_close_chat).setVisible(false);
-//            }
 
             Boolean supported = BlockingManager.getInstance().isSupported(account);
 
@@ -244,16 +263,13 @@ public class ContextMenuHelper {
                     && !MUCManager.getInstance().isMucPrivateChat(account, user)) {
                 menu.findItem(R.id.action_block_contact).setVisible(false);
             }
-//            if (abstractContact.isSubscribed()) {
-//                menu.findItem(R.id.action_request_subscription).setVisible(false);
-//            }
         } else { // is conference
 
-//            menu.findItem(R.id.action_contact_info).setVisible(false);
-            menu.findItem(R.id.action_edit_contact_groups).setVisible(false);
+            menu.findItem(R.id.action_delete_chat).setVisible(false);
+            menu.findItem(R.id.action_edit_contact).setVisible(false);
             menu.findItem(R.id.action_delete_contact).setVisible(false);
             menu.findItem(R.id.action_block_contact).setVisible(false);
-//            menu.findItem(R.id.action_close_chat).setVisible(false);
+            menu.findItem(R.id.action_delete_chat).setVisible(false);
 //            menu.findItem(R.id.action_request_subscription).setVisible(false);
 
             if (MUCManager.getInstance().inUse(account, user.getJid().asEntityBareJidIfPossible())) {
@@ -275,10 +291,6 @@ public class ContextMenuHelper {
 
         // archive/unarchive chat
         AbstractChat chat = MessageManager.getInstance().getChat(account, user);
-//        if (chat != null) {
-//            menu.findItem(R.id.action_archive_chat).setVisible(!chat.isArchived());
-//            menu.findItem(R.id.action_unarchive_chat).setVisible(chat.isArchived());
-//        }
 
         // mute chat
         menu.findItem(R.id.action_mute_chat).setVisible(chat != null && chat.notifyAboutMessage());

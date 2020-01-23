@@ -47,6 +47,7 @@
     <string name="unknown">Unknown</string>
     <string name="edit_alias">Edit alias</string>
     <string name="edit_contact_groups">Edit groups</string>
+    <string name="edit_contact">Edit</string>
     <string name="remove_contact">Delete contact</string>
     <string name="edit_account_user_info">Edit user info</string>
     <string name="edit_vcard">Edit</string>

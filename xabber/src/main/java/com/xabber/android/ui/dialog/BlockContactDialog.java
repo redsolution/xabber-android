@@ -79,8 +79,8 @@ public class BlockContactDialog extends DialogFragment implements BlockingManage
         ((TextView) view.findViewById(R.id.block_contact_warning))
                 .setText(Html.fromHtml(getString(R.string.block_contact_warning, user.getBareJid().toString())));
 
-        ((Button) view.findViewById(R.id.block_and_delete)).setTextColor(buttonColor);
-        ((Button) view.findViewById(R.id.block)).setTextColor(buttonColor);
+        ((Button) view.findViewById(R.id.block_and_delete)).setTextColor(colorIndicator);
+        ((Button) view.findViewById(R.id.block)).setTextColor(colorIndicator);
 
         view.findViewById(R.id.cancel_block).setOnClickListener(this);
         view.findViewById(R.id.block_and_delete).setOnClickListener(this);

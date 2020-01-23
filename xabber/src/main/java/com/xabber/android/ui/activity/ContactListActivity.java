@@ -136,7 +136,7 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
     private int unreadMessagesCount;
 
     private Fragment contentFragment;
-    private ActiveFragment currentActiveFragment = ActiveFragment.CHATS;
+    public ActiveFragment currentActiveFragment = ActiveFragment.CHATS;
     private ChatListFragment.ChatListState currentChatListState;
 
     private View showcaseView;

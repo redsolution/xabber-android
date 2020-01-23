@@ -520,11 +520,12 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     public RealmList<Attachment> attachmentsFromFiles(List<File> files, String refElement) {
         RealmList<Attachment> attachments = new RealmList<>();
         for (File file : files) {
+            boolean isImage = FileManager.fileIsImage(file);
             Attachment attachment = new Attachment();
             attachment.setFilePath(file.getPath());
             attachment.setFileSize(file.length());
             attachment.setTitle(file.getName());
-            attachment.setIsImage(FileManager.fileIsImage(file));
+            attachment.setIsImage(isImage);
             attachment.setMimeType(HttpFileUploadManager.getMimeType(file.getPath()));
             if (ReferenceElement.Type.voice.name().equals(refElement)) {
                 attachment.setIsVoice(true);
@@ -535,7 +536,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
                 attachment.setDuration((long) 0);
             }
 
-            if (attachment.isImage()) {
+            if (isImage) {
                 HttpFileUploadManager.ImageSize imageSize =
                         HttpFileUploadManager.getImageSizes(file.getPath());
                 attachment.setImageHeight(imageSize.getHeight());

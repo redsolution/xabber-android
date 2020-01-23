@@ -77,7 +77,7 @@ public class ContactDeleteDialog extends DialogFragment implements View.OnClickL
         ((TextView) view.findViewById(R.id.delete_contact_warning))
                 .setText(getString(R.string.contact_delete_warning));
 
-        ((Button) view.findViewById(R.id.delete)).setTextColor(buttonColor);
+        ((Button) view.findViewById(R.id.delete)).setTextColor(colorIndicator);
 
         deleteHistory = view.findViewById(R.id.clear_history);
 
