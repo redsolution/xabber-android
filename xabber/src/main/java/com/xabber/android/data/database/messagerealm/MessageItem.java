@@ -21,7 +21,6 @@ import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
 
-import com.xabber.android.data.database.MessageDatabaseManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.log.LogManager;
@@ -35,6 +34,7 @@ import org.jxmpp.stringprep.XmppStringprepException;
 import java.util.Arrays;
 import java.util.UUID;
 
+import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.RealmResults;
@@ -832,7 +832,8 @@ public class MessageItem extends RealmObject {
             String[] forwardedIDs = getForwardedIdsAsArray();
             if (!Arrays.asList(forwardedIDs).contains(null)) {
                 RealmResults<MessageItem> forwardedMessages =
-                        MessageDatabaseManager.getInstance().getRealmUiThread().where(MessageItem.class)
+                        Realm.getDefaultInstance()
+                                .where(MessageItem.class)
                                 .in(MessageItem.Fields.UNIQUE_ID, forwardedIDs)
                                 .findAllSorted(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
 

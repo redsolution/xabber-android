@@ -228,7 +228,7 @@ public class NextMamManager implements OnRosterReceivedListener, OnPacketListene
                             (MamElements.MamResultExtension) packetExtension;
                     String resultID = resultExtension.getQueryId();
                     if (waitingRequests.containsKey(resultID)) {
-                        Realm realm = MessageDatabaseManager.getInstance().getRealmUiThread();
+                        Realm realm = Realm.getDefaultInstance();
                         parseAndSaveMessageFromMamResult(realm, connection.getAccount(), resultExtension.getForwarded());
                         UserJid userJid = waitingRequests.get(resultID);
                         AbstractChat chat = MessageManager.getInstance().getChat(connection.getAccount(), userJid);

@@ -441,7 +441,7 @@ public class RoomChat extends AbstractChat {
     @Nullable
     private String getMessageIdIfInHistory(String stanzaId, String body) {
         if (stanzaId == null) return null;
-        Realm realm = MessageDatabaseManager.getInstance().getRealmUiThread();
+        Realm realm = Realm.getDefaultInstance();
         MessageItem message = realm
                 .where(MessageItem.class)
                 .equalTo(MessageItem.Fields.TEXT, body)

@@ -21,7 +21,6 @@ import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
-import com.xabber.android.data.database.MessageDatabaseManager;
 import com.xabber.android.data.database.messagerealm.Attachment;
 import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.message.MessageManager;
@@ -140,8 +139,7 @@ public class ImageGridBuilder {
                                     return;
                                 }
 
-                                final Realm realm = MessageDatabaseManager.getInstance().getRealmUiThread();
-                                realm.executeTransactionAsync(new Realm.Transaction() {
+                                Realm.getDefaultInstance().executeTransactionAsync(new Realm.Transaction() {
                                     @Override
                                     public void execute(Realm realm) {
                                         Attachment first = realm.where(Attachment.class)
