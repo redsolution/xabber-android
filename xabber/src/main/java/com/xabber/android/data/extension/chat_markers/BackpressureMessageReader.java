@@ -2,6 +2,7 @@ package com.xabber.android.data.extension.chat_markers;
 
 import androidx.annotation.Nullable;
 
+import com.xabber.android.data.Application;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
@@ -55,19 +56,31 @@ public class BackpressureMessageReader {
                 .subscribe(new Action1<MessageHolder>() {
                     @Override
                     public void call(MessageHolder holder) {
-                        MessageItem message = holder.messageItem;
+                        final MessageItem message = holder.messageItem;
+                        final List<String> ids = new ArrayList<>();
                         if (holder.trySendDisplayed)
                             ChatMarkerManager.getInstance().sendDisplayed(message);
-
-                        Realm realm = Realm.getDefaultInstance();
-                        RealmResults<MessageItem> messages = getPreviousUnreadMessages(realm, message);
-                        realm.beginTransaction();
-                        List<String> ids = new ArrayList<>();
-                        for (MessageItem mes : messages) {
-                            mes.setRead(true);
-                            ids.add(mes.getUniqueId());
-                        }
-                        realm.commitTransaction();
+                        Application.getInstance().runInBackground(new Runnable() {
+                            @Override
+                            public void run() {
+                                Realm realm = null;
+                                try {
+                                    realm = Realm.getDefaultInstance();
+                                    realm.executeTransaction(new Realm.Transaction() {
+                                        @Override
+                                        public void execute(Realm realm) {
+                                            RealmResults<MessageItem> messages = getPreviousUnreadMessages(realm, message);
+                                            for (MessageItem mes : messages) {
+                                                mes.setRead(true);
+                                                ids.add(mes.getUniqueId());
+                                            }
+                                        }
+                                    });
+                                } catch (Exception e) {
+                                    LogManager.exception(BackpressureMessageReader.class.getSimpleName(), e);
+                                } finally { if (realm != null) realm.close(); }
+                            }
+                        });
 
                         AbstractChat chat = MessageManager.getInstance().getOrCreateChat(message.getAccount(), message.getUser());
                         if (chat != null) chat.approveRead(ids);
