@@ -74,10 +74,11 @@ class BottomBar : Fragment(), View.OnClickListener {
 
     fun setUnreadMessages(count: Int) {
             if (count > 0) {
-                unreadCoutTextView?.visibility = View.VISIBLE
-                if (count > 99)
+                if (count > 99) {
                     unreadCoutTextView?.text = "99"
-                else unreadCoutTextView?.text = count.toString()
+                    unreadCoutTextView?.visibility = View.VISIBLE
+                }
+                unreadCoutTextView?.text = count.toString()
                 unreadCoutTextView?.visibility = View.VISIBLE
             } else {
                 unreadCoutTextView?.visibility = View.GONE

@@ -9,7 +9,6 @@ import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.CommonState;
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
-import com.xabber.android.data.database.MessageDatabaseManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.blocking.BlockingManager;
@@ -424,7 +423,15 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
     }
 
     public void updateUnreadCount() {
-        EventBus.getDefault().post(new UpdateUnreadCountEvent(MessageDatabaseManager.getUnreadMessagesCount()));
+        int unreadMessageCount = 0;
+
+        for (AbstractChat abstractChat : MessageManager.getInstance().getChatsOfEnabledAccount()) {
+            if (abstractChat.notifyAboutMessage() && !abstractChat.isArchived())
+                unreadMessageCount += abstractChat.getUnreadMessageCount();
+        }
+
+//        unreadMessageCount += CrowdfundingManager.getInstance().getUnreadMessageCount();
+        EventBus.getDefault().post(new UpdateUnreadCountEvent(unreadMessageCount));
     }
 
     public static class UpdateUnreadCountEvent {
