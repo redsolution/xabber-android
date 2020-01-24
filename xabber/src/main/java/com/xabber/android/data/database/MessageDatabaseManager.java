@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.os.Looper;
 
 import com.xabber.android.data.Application;
+import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.database.messagerealm.Attachment;
 import com.xabber.android.data.database.messagerealm.ForwardId;
 import com.xabber.android.data.database.messagerealm.MessageItem;
@@ -92,6 +93,20 @@ public class MessageDatabaseManager {
         return Realm.getDefaultInstance();
     }
 
+    public static int getUnreadMessagesCount(){
+        int result = 0;
+        for (AccountJid accountJid : AccountManager.getInstance().getEnabledAccounts()){
+            result += (int) Realm.getDefaultInstance()
+                    .where(MessageItem.class).isNull(MessageItem.Fields.PARENT_MESSAGE_ID)
+                    .isNotNull(MessageItem.Fields.TEXT)
+                    .equalTo(MessageItem.Fields.INCOMING, true)
+                    .equalTo(MessageItem.Fields.READ, false)
+                    .equalTo(MessageItem.Fields.ACCOUNT, accountJid.toString())
+                    .count();
+        }
+        return result;
+    }
+
     public static RealmResults<MessageItem> getChatMessages(Realm realm, AccountJid accountJid, UserJid userJid) {
         return getChatMessagesQuery(realm, accountJid, userJid)
                 .findAllSorted(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
@@ -156,7 +171,6 @@ public class MessageDatabaseManager {
                 } finally { realm.close(); }
             }
         });
-
     }
 
 

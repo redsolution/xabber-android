@@ -42,6 +42,7 @@ import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.CommonState;
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
+import com.xabber.android.data.database.MessageDatabaseManager;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
@@ -56,7 +57,6 @@ import com.xabber.android.data.message.ChatContact;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.MessageUpdateEvent;
 import com.xabber.android.data.message.NewIncomingMessageEvent;
-import com.xabber.android.data.message.NewMessageEvent;
 import com.xabber.android.data.notification.MessageNotificationManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.GroupManager;
@@ -180,10 +180,10 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         });
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onNewMessageEvent(NewMessageEvent event) {
-        updateBackpressure.refreshRequest();
-    }
+//    @Subscribe(threadMode = ThreadMode.MAIN)
+//    public void onNewMessageEvent(NewMessageEvent event) {
+//        updateBackpressure.refreshRequest();
+//    }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(NewIncomingMessageEvent event){
@@ -222,10 +222,12 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         Application.getInstance().addUIListener(OnContactChangedListener.class, this);
         Application.getInstance().addUIListener(OnChatStateListener.class, this);
         updateUnreadCount();
-        if (getUnreadCount() == 0){
+        if (MessageDatabaseManager.getUnreadMessagesCount() == 0){
             onStateSelected(ChatListState.recent);
         }
-        updateBackpressure.refreshRequest();
+        /* Initialize and run UpdateBackpressure */
+        updateBackpressure = new UpdateBackpressure(this);
+        updateBackpressure.run();
         super.onResume();
     }
 
@@ -240,7 +242,7 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
 
     public void onStateSelected(ChatListState state) {
         this.currentChatsState = state;
-        updateBackpressure.run();
+        //updateBackpressure.run();
         chatListFragmentListener.onChatListStateChanged(state);
         toolbarAppBarLayout.setExpanded(true, false);
         this.closeSnackbar();
@@ -323,10 +325,6 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         int dpHeight = Math.round(displayMetrics.heightPixels / displayMetrics.density);
         maxItemsOnScreen = Math.round((dpHeight - 56 - 56) / 64);
         showPlaceholders = 0;
-
-        /* Initialize and run UpdateBackpressure */
-        updateBackpressure = new UpdateBackpressure(this);
-        updateBackpressure.run();
         return view;
     }
 
@@ -625,8 +623,9 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
     }
 
     public void updateUnreadCount() {
-        EventBus.getDefault().post(new ContactListPresenter.UpdateUnreadCountEvent(getUnreadCount()));
-        if (chatListFragmentListener != null) chatListFragmentListener.onUnreadChanged(getUnreadCount());
+        int unread = MessageDatabaseManager.getUnreadMessagesCount();
+        EventBus.getDefault().post(new ContactListPresenter.UpdateUnreadCountEvent(unread));
+        if (chatListFragmentListener != null) chatListFragmentListener.onUnreadChanged(unread);
     }
 
     @Override
@@ -744,7 +743,7 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
             if (lastMessage != null) {
                 switch (state) {
                     case unread:
-                        if (!abstractChat.isArchived() && abstractChat.getUnreadMessageCount() > 0)
+                        if (!abstractChat.isArchived() && MessageDatabaseManager.getUnreadMessagesCount() > 0)
                             newChats.add(abstractChat);
                         break;
                     case archived:
