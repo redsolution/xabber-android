@@ -737,7 +737,7 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         List<AbstractChat> newChats = new ArrayList<>();
         for (AbstractChat abstractChat : chats) {
             MessageItem lastMessage = abstractChat.getLastMessage();
-            if (lastMessage != null) {
+            if (lastMessage != null || abstractChat.getChatstateMode() == AbstractChat.ChatstateType.CLEARED_HISTORY) {
                 switch (state) {
                     case unread:
                         if (!abstractChat.isArchived() && abstractChat.getUnreadMessageCount() > 0)

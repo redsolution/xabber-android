@@ -217,6 +217,8 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
             chat.setLastPosition(chatData.getLastPosition());
             chat.setArchived(chatData.isArchived(), false);
             chat.setNotificationState(chatData.getNotificationState(), false);
+            chat.setLastActionTimestamp(chatData.getLastActionTimestamp());
+            chat.setChatstate(chatData.getLastState());
             if (chatData.isHistoryRequestedAtStart()) chat.setHistoryRequestedAtStart(false);
         }
         addChat(chat);

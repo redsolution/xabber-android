@@ -13,10 +13,12 @@ public class ChatData {
     private NotificationState notificationState;
     private int lastPosition;
     private boolean historyRequestedAtStart;
+    private Long lastActionTimestamp;
+    private int state;
 
     public ChatData(String subject, String accountJid, String userJid,
                     boolean archived, NotificationState notificationState, int lastPosition,
-                    boolean historyRequestedAtStart) {
+                    boolean historyRequestedAtStart, Long lastActionTimestamp, int state) {
         this.subject = subject;
         this.accountJid = accountJid;
         this.userJid = userJid;
@@ -24,6 +26,8 @@ public class ChatData {
         this.notificationState = notificationState;
         this.lastPosition = lastPosition;
         this.historyRequestedAtStart = historyRequestedAtStart;
+        this.lastActionTimestamp = lastActionTimestamp;
+        this.state = state;
     }
 
     public String getSubject() {
@@ -76,5 +80,21 @@ public class ChatData {
 
     public boolean isHistoryRequestedAtStart() {
         return historyRequestedAtStart;
+    }
+
+    public Long getLastActionTimestamp() {
+        return lastActionTimestamp;
+    }
+
+    public void setLastActionTimestamp(Long lastActionTimestamp) {
+        this.lastActionTimestamp = lastActionTimestamp;
+    }
+
+    public int getLastState() {
+        return state;
+    }
+
+    public void setLastState(int state) {
+        this.state = state;
     }
 }

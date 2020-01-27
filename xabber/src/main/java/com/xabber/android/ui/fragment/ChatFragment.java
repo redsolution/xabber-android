@@ -1702,6 +1702,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
         if (position == -1) return;
         if (position == chatMessageAdapter.getItemCount() - 1) position = 0;
+        if (chat != null) chat.setChatstate(AbstractChat.ChatstateType.NORMAL);
         if (chat != null) chat.saveLastPosition(position);
     }
 

@@ -113,6 +113,18 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
      */
     private String threadId;
 
+    /**
+     *  Last known "chatstate", i.e. "deleted chat", "chat with cleared history", "normal chat".
+     *  TODO: tie this state with the lastActionTimestamp and archive loading to avoid showing "cleared messages" in chat or showing a "deleted" chat.
+     */
+    private int chatstateType;
+
+    /**
+     *  The timestamp of the last chat action, such as: deletion, history clear, etc.
+     */
+    private Long lastActionTimestamp;
+
+
     private int lastPosition;
     private boolean archived;
     protected NotificationState notificationState;
@@ -601,8 +613,26 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         if (lastMessage != null) {
             return new Date(lastMessage.getTimestamp());
         } else {
+            if (lastActionTimestamp != null) {
+                return new Date(getLastActionTimestamp());
+            }
             return null;
         }
+    }
+
+    public Long getLastActionTimestamp() {
+        return lastActionTimestamp;
+    }
+
+    public void setLastActionTimestamp() {
+        MessageItem lastMessage = getLastMessage();
+        if (lastMessage != null) {
+            lastActionTimestamp = lastMessage.getTimestamp();
+        }
+    }
+
+    public void setLastActionTimestamp(Long timestamp) {
+        lastActionTimestamp = timestamp;
     }
 
     public Message createMessagePacket(String body, String stanzaId) {
@@ -1111,5 +1141,19 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
 
     public boolean isGroupchat() {
         return isGroupchat;
+    }
+
+    public int getChatstateMode() {
+        return chatstateType;
+    }
+
+    public void setChatstate(int chatstateType) {
+        this.chatstateType = chatstateType;
+    }
+
+    public static class ChatstateType {
+        public static int NORMAL = 0;
+        public static int CLEARED_HISTORY = 1;
+        public static int DELETED = 2;
     }
 }
