@@ -44,8 +44,8 @@ import com.xabber.android.ui.activity.AccountActivity;
 import com.xabber.android.ui.activity.AccountAddActivity;
 import com.xabber.android.ui.activity.ContactActivity;
 import com.xabber.android.ui.activity.ContactAddActivity;
-import com.xabber.android.ui.activity.ContactEditActivity;
 import com.xabber.android.ui.activity.ContactListActivity;
+import com.xabber.android.ui.activity.ContactViewerActivity;
 import com.xabber.android.ui.adapter.contactlist.ContactListState;
 import com.xabber.android.ui.helper.ContextMenuHelper;
 import com.xabber.android.ui.widget.bottomnavigation.AccountShortcutAdapter;
@@ -300,7 +300,7 @@ public class ContactListFragment extends Fragment implements ContactListView,
             if (MUCManager.getInstance().hasRoom(accountJid, userJid)) {
                 intent = ContactActivity.createIntent(getActivity(), accountJid, userJid);
             } else {
-                intent = ContactEditActivity.createIntent(getActivity(), accountJid, userJid);
+                intent = ContactViewerActivity.createIntent(getActivity(), accountJid, userJid);
             }
             getActivity().startActivity(intent);
         }

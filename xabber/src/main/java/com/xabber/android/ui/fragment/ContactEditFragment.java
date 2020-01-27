@@ -24,7 +24,7 @@ import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
-import com.xabber.android.ui.activity.GroupEditActivity;
+import com.xabber.android.ui.activity.ContactEditActivity;
 import com.xabber.android.ui.color.ColorManager;
 
 import org.jivesoftware.smack.roster.packet.RosterPacket;
@@ -198,35 +198,35 @@ public class ContactEditFragment extends GroupEditorFragment implements OnContac
         //Nickname
         String name = RosterManager.getInstance().getName(getAccount(), getUser());
         if (!name.equals(contactEditNickname.getText().toString()) && !contactEditNickname.getText().toString().isEmpty()) {
-            ((GroupEditActivity)getActivity()).toolbarSetEnabled(true);
+            ((ContactEditActivity)getActivity()).toolbarSetEnabled(true);
             return;
         }
 
         //Subscription settings
         if (chkSendPresence.isChecked() && chkReceivePresence.isChecked()) {
             if (subType != RosterPacket.ItemType.both) {
-                ((GroupEditActivity)getActivity()).toolbarSetEnabled(true);
+                ((ContactEditActivity)getActivity()).toolbarSetEnabled(true);
                 return;
             }
         }
 
         if (chkSendPresence.isChecked() && !chkReceivePresence.isChecked()) {
             if (subType != RosterPacket.ItemType.from) {
-                ((GroupEditActivity)getActivity()).toolbarSetEnabled(true);
+                ((ContactEditActivity)getActivity()).toolbarSetEnabled(true);
                 return;
             }
         }
 
         if (!chkSendPresence.isChecked() && chkReceivePresence.isChecked()) {
             if (subType != RosterPacket.ItemType.to) {
-                ((GroupEditActivity)getActivity()).toolbarSetEnabled(true);
+                ((ContactEditActivity)getActivity()).toolbarSetEnabled(true);
                 return;
             }
         }
 
         if (!chkSendPresence.isChecked() && !chkReceivePresence.isChecked()) {
             if (subType != RosterPacket.ItemType.none) {
-                ((GroupEditActivity)getActivity()).toolbarSetEnabled(true);
+                ((ContactEditActivity)getActivity()).toolbarSetEnabled(true);
                 return;
             }
         }
@@ -237,18 +237,18 @@ public class ContactEditFragment extends GroupEditorFragment implements OnContac
         Collections.sort(selectedGroups);
 
         if (contactGroups.size() != selectedGroups.size()) {
-            ((GroupEditActivity)getActivity()).toolbarSetEnabled(true);
+            ((ContactEditActivity)getActivity()).toolbarSetEnabled(true);
             return;
         }
 
         for (int i = 0; i < selectedGroups.size(); i++) {
             if (!selectedGroups.get(i).equals(contactGroups.get(i))) {
-                ((GroupEditActivity)getActivity()).toolbarSetEnabled(true);
+                ((ContactEditActivity)getActivity()).toolbarSetEnabled(true);
                 return;
             }
         }
 
-        ((GroupEditActivity)getActivity()).toolbarSetEnabled(false);
+        ((ContactEditActivity)getActivity()).toolbarSetEnabled(false);
     }
 
     public void saveChanges() {

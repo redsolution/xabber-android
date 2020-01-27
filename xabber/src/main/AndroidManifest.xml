@@ -162,7 +162,7 @@
                 android:value="com.xabber.android.ui.activity.ContactListActivity" />
         </activity>
         <activity
-            android:name=".ui.activity.GroupEditActivity"
+            android:name=".ui.activity.ContactEditActivity"
             android:parentActivityName=".ui.activity.ContactActivity">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
@@ -246,7 +246,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.activity.ContactEditActivity"
+            android:name=".ui.activity.ContactViewerActivity"
             android:label="@string/contact_viewer"
             android:parentActivityName=".ui.activity.ChatActivity">
 

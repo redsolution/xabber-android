@@ -74,8 +74,8 @@ import com.xabber.android.presentation.ui.contactlist.viewobjects.GroupVO;
 import com.xabber.android.ui.activity.ConferenceSelectActivity;
 import com.xabber.android.ui.activity.ContactActivity;
 import com.xabber.android.ui.activity.ContactAddActivity;
-import com.xabber.android.ui.activity.ContactEditActivity;
 import com.xabber.android.ui.activity.ContactListActivity;
+import com.xabber.android.ui.activity.ContactViewerActivity;
 import com.xabber.android.ui.activity.SearchActivity;
 import com.xabber.android.ui.activity.StatusEditActivity;
 import com.xabber.android.ui.adapter.ChatComparator;
@@ -584,7 +584,7 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
             if (MUCManager.getInstance().hasRoom(accountJid, userJid)) {
                 intent = ContactActivity.createIntent(getActivity(), accountJid, userJid);
             } else {
-                intent = ContactEditActivity.createIntent(getActivity(), accountJid, userJid);
+                intent = ContactViewerActivity.createIntent(getActivity(), accountJid, userJid);
             }
             getActivity().startActivity(intent);
         }

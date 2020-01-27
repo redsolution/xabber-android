@@ -457,7 +457,7 @@ public class ContactActivity extends ManagedActivity implements
         intent.putExtra("account_name", textName);
         String textAddress = getUser().toString();
         intent.putExtra("account_address", textAddress);
-        intent.putExtra("caller", "ContactEditActivity");
+        intent.putExtra("caller", "ContactViewerActivity");
         startActivity(intent);
     }
 

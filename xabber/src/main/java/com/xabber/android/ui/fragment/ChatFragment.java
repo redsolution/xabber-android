@@ -99,7 +99,7 @@ import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.activity.ChatActivity;
 import com.xabber.android.ui.activity.ContactActivity;
-import com.xabber.android.ui.activity.ContactEditActivity;
+import com.xabber.android.ui.activity.ContactViewerActivity;
 import com.xabber.android.ui.activity.QuestionActivity;
 import com.xabber.android.ui.adapter.CustomMessageMenuAdapter;
 import com.xabber.android.ui.adapter.ResourceAdapter;
@@ -1466,7 +1466,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         if (MUCManager.getInstance().hasRoom(account, user)) {
             intent = ContactActivity.createIntent(getActivity(), account, user);
         } else {
-            intent = ContactEditActivity.createIntent(getActivity(), account, user);
+            intent = ContactViewerActivity.createIntent(getActivity(), account, user);
         }
         startActivity(intent);
     }
