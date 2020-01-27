@@ -17,32 +17,37 @@ package com.xabber.android.ui.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
+
+import androidx.appcompat.widget.Toolbar;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.intent.EntityIntentBuilder;
-import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.RosterContact;
-import com.xabber.android.data.roster.RosterManager;
-import com.xabber.android.ui.fragment.GroupEditorFragment;
-import com.xabber.android.ui.helper.ContactTitleActionBarInflater;
+import com.xabber.android.ui.color.BarPainter;
+import com.xabber.android.ui.fragment.ContactEditFragment;
 
 import org.jxmpp.jid.BareJid;
 
 import java.util.Collection;
 
 public class GroupEditActivity extends ManagedActivity implements OnContactChangedListener,
-        OnAccountChangedListener {
+        OnAccountChangedListener, Toolbar.OnMenuItemClickListener {
 
-    ContactTitleActionBarInflater contactTitleActionBarInflater;
     private AccountJid account;
     private UserJid user;
+    private Toolbar toolbar;
+    private BarPainter barPainter;
 
     public static Intent createIntent(Context context, AccountJid account, UserJid user) {
         Intent intent = new EntityIntentBuilder(context, GroupEditActivity.class)
@@ -64,8 +69,30 @@ public class GroupEditActivity extends ManagedActivity implements OnContactChang
 
         setContentView(R.layout.activity_with_toolbar_and_container);
 
-        contactTitleActionBarInflater = new ContactTitleActionBarInflater(this);
-        contactTitleActionBarInflater.setUpActionBarView();
+        toolbar = (Toolbar) findViewById(R.id.toolbar_default);
+        toolbar.inflateMenu(R.menu.toolbar_save);
+        toolbar.setTitle(R.string.contact_title);
+        TextView tvSave = (TextView) findViewById(R.id.action_save);
+
+        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light){
+            toolbar.setNavigationIcon(R.drawable.ic_clear_grey_24dp);
+            tvSave.setTextColor(getResources().getColor(R.color.grey_900));
+        } else {
+            toolbar.setNavigationIcon(R.drawable.ic_clear_white_24dp);
+            tvSave.setTextColor(getResources().getColor(R.color.white));
+        }
+        tvSave.setPadding(tvSave.getPaddingLeft(), tvSave.getPaddingTop(), tvSave.getPaddingRight() + 20, tvSave.getPaddingBottom());
+        toolbar.setOnMenuItemClickListener(this);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
+        toolbarSetEnabled(false);
+
+        barPainter = new BarPainter(this, toolbar);
 
         Intent intent = getIntent();
         account = GroupEditActivity.getAccount(intent);
@@ -79,8 +106,8 @@ public class GroupEditActivity extends ManagedActivity implements OnContactChang
         }
 
         if (savedInstanceState == null) {
-            getFragmentManager().beginTransaction()
-                    .add(R.id.fragment_container, GroupEditorFragment.newInstance(account, user)).commit();
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.fragment_container, ContactEditFragment.newInstance(account, user)).commit();
         }
 
     }
@@ -101,20 +128,13 @@ public class GroupEditActivity extends ManagedActivity implements OnContactChang
     }
 
     private void update() {
-        AbstractContact abstractContact = RosterManager.getInstance().getBestContact(account, user);
-        //MessageManager messageManager = MessageManager.getInstance();
-        //AbstractChat chat = messageManager.getOrCreateChat(abstractContact.getAccount(), abstractContact.getUser());
+        barPainter.updateWithAccountName(account);
+    }
 
-        /*if(chat.isGroupchat()){
-            contactTitleActionBarInflater.hideStatusIcon();
-            contactTitleActionBarInflater.showStatusGroupIcon();
-        } else {
-            contactTitleActionBarInflater.hideStatusGroupIcon();
-            contactTitleActionBarInflater.showStatusIcon();
-        }*/
-        contactTitleActionBarInflater.update(abstractContact);
-        contactTitleActionBarInflater.setStatusText(user.toString());
-
+    public void toolbarSetEnabled(boolean active){
+        toolbar.getMenu().findItem(R.id.action_save).setEnabled(active);
+        View view = findViewById(R.id.action_save);
+        ((TextView)view).setTextColor(((TextView) view).getTextColors().withAlpha(active ? 255 : 127));
     }
 
     @Override
@@ -133,6 +153,15 @@ public class GroupEditActivity extends ManagedActivity implements OnContactChang
         if (accounts.contains(account)) {
             update();
         }
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_save:
+                ((ContactEditFragment)getSupportFragmentManager().findFragmentById(R.id.fragment_container)).saveChanges();
+        }
+        return false;
     }
 
 }

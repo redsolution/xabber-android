@@ -14,19 +14,20 @@ import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.ContextMenu;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.PopupMenu;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.PopupMenu;
 import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.Fragment;
@@ -596,7 +597,7 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
 
     public void onItemContextMenu(int adapterPosition, ContextMenu menu){
         IFlexible item = adapter.getItem(adapterPosition);
-        if (item != null && item instanceof ContactVO) {
+        if (item instanceof ContactVO) {
             AccountJid accountJid = ((ContactVO) item).getAccountJid();
             UserJid userJid = ((ContactVO) item).getUserJid();
             AbstractContact abstractContact = RosterManager.getInstance().getAbstractContact(accountJid, userJid);
@@ -722,7 +723,9 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
                         MessageManager.getInstance().getChat(abstractContact.getAccount(), abstractContact.getUser()).markAsReadAll(true);
                     }
                     onStateSelected(ChatListFragment.ChatListState.recent);
-                    Toast.makeText(getActivity(), R.string.all_chats_were_market_as_read_toast, Toast.LENGTH_SHORT).show();
+                    Toast toast = Toast.makeText(getActivity(), R.string.all_chats_were_market_as_read_toast, Toast.LENGTH_SHORT);
+                    toast.setGravity(Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, (int)getResources().getDimension(R.dimen.bottom_navigation_height) * 2);
+                    toast.show();
                 }
             });
         }

@@ -1,17 +1,19 @@
 package com.xabber.android.ui.fragment;
 
 import android.app.Activity;
-import android.app.ListFragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ListView;
+
+import androidx.fragment.app.ListFragment;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
@@ -84,9 +86,13 @@ public class GroupEditorFragment extends ListFragment implements TextWatcher, Vi
     }
 
     @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        return super.onCreateView(inflater, container, savedInstanceState);
+    }
+
+    @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
 
         setUpFooter();
 
@@ -113,7 +119,8 @@ public class GroupEditorFragment extends ListFragment implements TextWatcher, Vi
     }
 
     private void setUpFooter() {
-        footerView = ((LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.group_add_footer, null, false);
+        footerView = ((LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE))
+                .inflate(R.layout.group_add_footer, null, false);
         getListView().addFooterView(footerView);
 
         groupAddInput = (EditText) footerView.findViewById(R.id.group_add_input);
@@ -127,7 +134,6 @@ public class GroupEditorFragment extends ListFragment implements TextWatcher, Vi
     @Override
     public void onResume() {
         super.onResume();
-
         updateGroups();
     }
 
@@ -149,7 +155,6 @@ public class GroupEditorFragment extends ListFragment implements TextWatcher, Vi
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-
         selected = getSelected();
 
         outState.putStringArrayList(SAVED_GROUPS, getGroups());
@@ -160,17 +165,6 @@ public class GroupEditorFragment extends ListFragment implements TextWatcher, Vi
     @Override
     public void onPause() {
         super.onPause();
-
-        selected = getSelected();
-
-        if (account != null && user != null) {
-            try {
-                RosterManager.getInstance().setGroups(account, user, selected);
-            } catch (NetworkException e) {
-                Application.getInstance().onError(e);
-            }
-        }
-
     }
 
     @Override
@@ -228,14 +222,24 @@ public class GroupEditorFragment extends ListFragment implements TextWatcher, Vi
         }
     }
 
+    public void saveGroups() {
+        selected = getSelected();
+
+        if (account != null && user != null) {
+            try {
+                RosterManager.getInstance().setGroups(account, user, selected);
+            } catch (NetworkException e) {
+                Application.getInstance().onError(e);
+            }
+        }
+    }
+
     @Override
     public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
     }
 
     @Override
     public void onTextChanged(CharSequence s, int start, int before, int count) {
-
     }
 
     protected AccountJid getAccount() {

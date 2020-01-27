@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="contact_title">Edit contact</string>
     <string name="contact_account">Account</string>
     <string name="contact_group">Select groups</string>
+    <string name="contact_circle">Circles</string>
     <string name="contact_name">Alias (optional)</string>
     <string name="contact_subscribe_confirm">Share your %1$s account status with contact?</string>
     <string name="contact_user">Contact username</string>
     <string name="ENTRY_IS_NOT_FOUND">Contact not found</string>
+    <string name="contact_subscription_settings">Subscription settings</string>
+    <string name="contact_subscription_send">Send presence updates</string>
+    <string name="contact_subscription_receive">Receive presence updates</string>
+    <string name="contact_subscription_ask">Ask for presence updates</string>
+    <string name="contact_subscription_accept">Accept incoming subscribe request in advance</string>
     <string name="group_is_empty">Set group name</string>
     <string name="group_name">Group name</string>
     <string name="choose_account">Choose an account</string>

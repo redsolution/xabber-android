@@ -10,7 +10,7 @@
     <ImageButton
         android:id="@+id/button_emoticon"
         android:layout_width="48dp"
-        android:layout_height="52dp"
+        android:layout_height="@dimen/input_view_height"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:padding="12dp"
         android:tint="?attr/chat_input_button_color"
@@ -37,7 +37,7 @@
     <ImageButton
         android:id="@+id/button_security"
         android:layout_width="48dp"
-        android:layout_height="52dp"
+        android:layout_height="@dimen/input_view_height"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:contentDescription="@string/otr_encryption"
         android:padding="12dp"
@@ -47,7 +47,7 @@
     <ImageButton
         android:id="@+id/button_attach"
         android:layout_width="48dp"
-        android:layout_height="52dp"
+        android:layout_height="@dimen/input_view_height"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:padding="12dp"
         android:src="@drawable/ic_attach_file_black_24dp"
@@ -67,7 +67,7 @@
     <ImageButton
         android:id="@+id/button_record"
         android:layout_width="48dp"
-        android:layout_height="52dp"
+        android:layout_height="@dimen/input_view_height"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:contentDescription="@string/chat_record"
         android:filterTouchesWhenObscured="false"

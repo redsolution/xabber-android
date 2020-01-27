@@ -84,7 +84,7 @@ public class AbstractContact extends BaseEntity {
     }
 
     public boolean isSubscribed() {
-        return RosterManager.getInstance().isSubscribed(account, user);
+        return RosterManager.getInstance().accountIsSubscribedTo(account, user);
     }
 
     public String getStatusText() {

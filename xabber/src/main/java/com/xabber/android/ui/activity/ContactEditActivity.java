@@ -25,7 +25,11 @@ import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.extension.muc.RoomChat;
+import com.xabber.android.data.extension.muc.RoomState;
 import com.xabber.android.data.intent.EntityIntentBuilder;
+import com.xabber.android.data.message.AbstractChat;
+import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterContact;
@@ -71,21 +75,54 @@ public class ContactEditActivity extends ContactActivity implements Toolbar.OnMe
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         RosterContact rosterContact = RosterManager.getInstance().getRosterContact(getAccount(), getUser());
+        AbstractChat chat = MessageManager.getInstance().getChat(getAccount(), getUser());
         menu.clear();
         getMenuInflater().inflate(R.menu.toolbar_contact, menu);
 
-        if (rosterContact == null) {
+        if (chat instanceof RoomChat) {
+            setUpMUCInfoMenu(menu, chat);
+        } else {
+            setUpContactInfoMenu(menu, rosterContact);
+        }
+        return true;
+    }
+
+    private void setUpContactInfoMenu(Menu menu, RosterContact contact) {
+        if (contact == null) {
             menu.setGroupVisible(R.id.roster_actions, false);
             menu.findItem(R.id.action_add_contact).setVisible(true);
+            menu.findItem(R.id.action_request_subscription).setVisible(false);
             changeTextColor();
             manageAvailableUsernameSpace();
         } else {
             menu.findItem(R.id.action_add_contact).setVisible(false);
             menu.findItem(R.id.action_generate_qrcode).setVisible(orientation == Configuration.ORIENTATION_PORTRAIT);
-            menu.findItem(R.id.action_request_subscription).setVisible(!rosterContact.isSubscribed());
+            menu.findItem(R.id.action_request_subscription).setVisible(!contact.isSubscribed());
+        }
+    }
+
+    private void setUpMUCInfoMenu(Menu menu, AbstractChat abstractChat) {
+        AbstractContact contact = RosterManager.getInstance().getAbstractContact(abstractChat.getAccount(), abstractChat.getUser());
+        RoomState chatState = ((RoomChat) abstractChat).getState();
+
+        menu.setGroupVisible(R.id.group_conference_actions, true);
+
+        if (chatState == RoomState.unavailable)
+            menu.findItem(R.id.action_join_conference).setVisible(true);
+        else {
+            menu.findItem(R.id.action_invite_to_chat).setVisible(true);
+
+            if (chatState != RoomState.error) {
+                menu.findItem(R.id.action_leave_conference).setVisible(true);
+            }
         }
 
-        return true;
+        if (contact != null) {
+            menu.findItem(R.id.action_request_subscription).setVisible(!contact.isSubscribed());
+        }
+
+        menu.setGroupVisible(R.id.roster_actions, false);
+        menu.findItem(R.id.action_delete_conference).setVisible(true);
     }
 
     @Override
@@ -130,11 +167,7 @@ public class ContactEditActivity extends ContactActivity implements Toolbar.OnMe
                 BlockContactDialog.newInstance(getAccount(), getUser()).show(getSupportFragmentManager(), BlockContactDialog.class.getName());
                 return true;
 
-            case R.id.action_edit_alias:
-                editAlias();
-                return true;
-
-            case R.id.action_edit_groups:
+            case R.id.action_edit_contact:
                 startActivity(GroupEditActivity.createIntent(this, getAccount(), getUser()));
                 return true;
 

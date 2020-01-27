@@ -4,21 +4,21 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/record_layout"
     android:layout_width="match_parent"
-    android:layout_height="52dp"
+    android:layout_height="@dimen/input_view_height"
     android:background="?attr/chat_input_background"
     android:orientation="horizontal">
 
     <RelativeLayout
         android:id="@+id/record_bar"
         android:layout_width="match_parent"
-        android:layout_height="52dp"
+        android:layout_height="@dimen/input_view_height"
         android:background="?attr/chat_input_background"
         android:gravity="bottom">
 
         <LinearLayout
             android:id="@+id/slide_layout"
             android:layout_width="match_parent"
-            android:layout_height="52dp"
+            android:layout_height="@dimen/input_view_height"
             android:layout_weight="1"
             android:gravity="center_horizontal"
             android:orientation="horizontal">
@@ -100,7 +100,7 @@
             <ImageButton
                 android:id="@+id/voice_presenter_delete"
                 android:layout_width="52dp"
-                android:layout_height="52dp"
+                android:layout_height="@dimen/input_view_height"
                 android:background="@color/transparent"
                 android:tint="?attr/chat_input_button_color"
                 app:srcCompat="?attr/standard_delete_icon" />
@@ -148,7 +148,7 @@
             <ImageButton
                 android:id="@+id/voice_presenter_send"
                 android:layout_width="52dp"
-                android:layout_height="52dp"
+                android:layout_height="@dimen/input_view_height"
                 android:background="@color/transparent"
                 android:tint="?attr/chat_input_button_color"
                 app:srcCompat="@drawable/ic_send" />
@@ -158,7 +158,7 @@
 
     </RelativeLayout>
 
-<!--
+    <!--
     <ImageButton
         android:id="@+id/button_record"
         android:layout_width="52dp"

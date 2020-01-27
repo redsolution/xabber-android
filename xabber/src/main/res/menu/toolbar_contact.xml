@@ -2,24 +2,28 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <group android:id="@+id/group_conference_actions">
+
+        <item android:id="@+id/action_delete_conference"
+            android:visible="false"
+            android:title="@string/muc_delete"
+            app:showAsAction="never" />
+
+        <item android:id="@+id/action_join_conference"
+            android:visible="false"
+            android:icon="@drawable/ic_group_add_white_24dp"
+            app:showAsAction="never"
+            android:title="@string/muc_join" />
+
+        <item android:id="@+id/action_leave_conference"
+            android:visible="false"
+            app:showAsAction="never"
+            android:title="@string/muc_leave" />
+    </group>
+
     <item android:id="@+id/action_invite_to_chat"
         android:orderInCategory="90"
         android:title="@string/muc_invite"
-        android:visible="false"
-        app:showAsAction="never"
-    />
-
-    <item android:id="@+id/action_join_conference"
-        android:icon="@drawable/ic_group_add_white_24dp"
-        android:orderInCategory="80"
-        android:title="@string/muc_join"
-        android:visible="false"
-        app:showAsAction="never"
-    />
-
-    <item android:id="@+id/action_leave_conference"
-        android:orderInCategory="109"
-        android:title="@string/muc_leave"
         android:visible="false"
         app:showAsAction="never"
     />
@@ -36,10 +40,11 @@
         android:visible="false"
         app:showAsAction="ifRoom"
         />
-    <group android:id="@+id/roster_actions">
 
-        <item android:id="@+id/action_request_subscription"
-            android:title="@string/request_subscription" />
+    <item android:id="@+id/action_request_subscription"
+        android:title="@string/request_subscription" />
+
+    <group android:id="@+id/roster_actions">
 
         <item
             android:id="@+id/action_generate_qrcode"
@@ -52,12 +57,8 @@
             android:title="@string/action_send_contact" />
 
         <item
-            android:id="@+id/action_edit_groups"
-            android:title="@string/edit_contact_groups"
-            app:showAsAction="never" />
-        <item
-            android:id="@+id/action_edit_alias"
-            android:title="@string/edit_alias"
+            android:id="@+id/action_edit_contact"
+            android:title="@string/edit_contact"
             app:showAsAction="never" />
 
         <item
@@ -92,13 +93,5 @@
         android:title="@string/contact_block"
         app:showAsAction="never" />
 -->
-
-
-    <item android:id="@+id/action_delete_conference"
-        android:title="@string/muc_delete"
-        app:showAsAction="never"
-        android:visible="false"
-        android:orderInCategory="110"
-        />
 
 </menu>

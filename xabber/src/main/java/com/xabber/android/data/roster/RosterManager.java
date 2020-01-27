@@ -14,9 +14,10 @@
  */
 package com.xabber.android.data.roster;
 
+import android.text.TextUtils;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import android.text.TextUtils;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
@@ -151,13 +152,30 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
         }
     }
 
-    public boolean isSubscribed(AccountJid account, UserJid user) {
+    public boolean accountIsSubscribedTo(AccountJid account, UserJid user) {
         final Roster roster = getRoster(account);
         if (roster == null) {
             return false;
         } else {
             return roster.iAmSubscribedTo(user.getJid());
         }
+    }
+
+    public boolean contactIsSubscribedTo(AccountJid account, UserJid user) {
+        final Roster roster = getRoster(account);
+        if (roster == null) {
+            return false;
+        } else {
+            return roster.isSubscribedToMyPresence(user.getJid());
+        }
+    }
+
+    public RosterPacket.ItemType getSubscriptionType(AccountJid account, UserJid user) {
+        RosterEntry entry = getRoster(account).getEntry(user.getJid().asBareJid());
+        if (entry == null) {
+            return null;
+        }
+        return entry.getType();
     }
 
     public Collection<RosterContact> getAccountRosterContacts(final AccountJid accountJid) {
