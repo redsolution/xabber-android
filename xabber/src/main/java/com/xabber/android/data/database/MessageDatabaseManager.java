@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.os.Looper;
 
 import com.xabber.android.data.Application;
+import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.database.messagerealm.Attachment;
 import com.xabber.android.data.database.messagerealm.ForwardId;
 import com.xabber.android.data.database.messagerealm.MessageItem;
@@ -15,6 +16,8 @@ import com.xabber.android.data.database.sqlite.MessageTable;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.log.LogManager;
+import com.xabber.android.data.message.AbstractChat;
+import com.xabber.android.data.message.MessageManager;
 
 import org.jxmpp.stringprep.XmppStringprepException;
 
@@ -90,6 +93,27 @@ public class MessageDatabaseManager {
             realmUiThread = Realm.getInstance(realmConfiguration);
         }
         return Realm.getDefaultInstance();
+    }
+
+    public static int getAllUnreadMessagesCount(){
+        int unreadCount = 0;
+        for (AccountJid accountJid : AccountManager.getInstance().getEnabledAccounts())
+            unreadCount += Realm.getDefaultInstance()
+                    .where(MessageItem.class)
+                    .equalTo(MessageItem.Fields.INCOMING, true)
+                    .equalTo(MessageItem.Fields.READ, false)
+                    .isNull(MessageItem.Fields.PARENT_MESSAGE_ID)
+                    .isNotNull(MessageItem.Fields.TEXT)
+                    .equalTo(MessageItem.Fields.ACCOUNT, accountJid.toString())
+                    .findAll()
+                    .size();
+        int waitToRead = 0;
+        for (AbstractChat abstractChat : MessageManager.getInstance().getChatsOfEnabledAccount()) {
+            if (abstractChat.notifyAboutMessage() && !abstractChat.isArchived())
+                waitToRead += abstractChat.getwaitToMarkAsReadCount();
+        }
+        unreadCount -= waitToRead;
+        return unreadCount > 0 ? unreadCount : 0;
     }
 
     public static RealmResults<MessageItem> getChatMessages(Realm realm, AccountJid accountJid, UserJid userJid) {

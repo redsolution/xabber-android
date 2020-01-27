@@ -42,6 +42,7 @@ import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.CommonState;
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
+import com.xabber.android.data.database.MessageDatabaseManager;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
@@ -222,7 +223,7 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         Application.getInstance().addUIListener(OnContactChangedListener.class, this);
         Application.getInstance().addUIListener(OnChatStateListener.class, this);
         updateUnreadCount();
-        if (getUnreadCount() == 0){
+        if (MessageDatabaseManager.getAllUnreadMessagesCount() == 0){
             onStateSelected(ChatListState.recent);
         }
         updateBackpressure.refreshRequest();
@@ -615,18 +616,10 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         if (chat != null) chat.setArchived(archived, true);
     }
 
-    public int getUnreadCount(){
-        int unreadMessageCount = 0;
-        for (AbstractChat abstractChat : MessageManager.getInstance().getChatsOfEnabledAccount()) {
-            if (abstractChat.notifyAboutMessage() && !abstractChat.isArchived())
-                unreadMessageCount += abstractChat.getUnreadMessageCount();
-        }
-        return unreadMessageCount;
-    }
-
     public void updateUnreadCount() {
-        EventBus.getDefault().post(new ContactListPresenter.UpdateUnreadCountEvent(getUnreadCount()));
-        if (chatListFragmentListener != null) chatListFragmentListener.onUnreadChanged(getUnreadCount());
+        int unreadCount = MessageDatabaseManager.getAllUnreadMessagesCount();
+        EventBus.getDefault().post(new ContactListPresenter.UpdateUnreadCountEvent(unreadCount));
+        if (chatListFragmentListener != null) chatListFragmentListener.onUnreadChanged(unreadCount);
     }
 
     @Override

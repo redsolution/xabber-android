@@ -926,6 +926,8 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         return unread;
     }
 
+    public int getwaitToMarkAsReadCount(){ return waitToMarkAsRead.size(); }
+
     public void approveRead(List<String> ids) {
         for (String id : ids) {
             waitToMarkAsRead.remove(id);
