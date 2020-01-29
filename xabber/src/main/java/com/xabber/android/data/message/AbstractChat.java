@@ -966,21 +966,21 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         EventBus.getDefault().post(new MessageUpdateEvent(account, user));
     }
 
-    public void markAsRead(String messageId, boolean trySendDisplay) {
-        MessageItem message = Realm.getDefaultInstance()
-                .where(MessageItem.class)
-                .equalTo(MessageItem.Fields.STANZA_ID, messageId)
-                .findFirst();
-        if (message != null) executeRead(message, trySendDisplay);
+    //public void markAsRead(String messageId, boolean trySendDisplay) {
+    //    MessageItem message = Realm.getDefaultInstance()
+    //            .where(MessageItem.class)
+    //            .equalTo(MessageItem.Fields.STANZA_ID, messageId)
+    //            .findFirst();
+    //    if (message != null) executeRead(message, trySendDisplay);
+    //}
+
+    public void markAsRead(String messageId, ArrayList<String> stanzaId, boolean trySendDisplay) {
+        executeRead(messageId, stanzaId, trySendDisplay);
     }
 
-    public void markAsReadTest(String messageId, ArrayList<String> stanzaId, boolean trySendDisplay) {
-        executeReadTest(messageId, stanzaId, trySendDisplay);
-    }
-
-    private void executeReadTest(String messageId, ArrayList<String> stanzaId, boolean trySendDisplay) {
+    private void executeRead(String messageId, ArrayList<String> stanzaId, boolean trySendDisplay) {
         EventBus.getDefault().post(new MessageUpdateEvent(account, user));
-        BackpressureMessageReader.getInstance().markAsReadTest(messageId, stanzaId, account, user, trySendDisplay);
+        BackpressureMessageReader.getInstance().markAsRead(messageId, stanzaId, account, user, trySendDisplay);
     }
 
     public void markAsRead(MessageItem messageItem, boolean trySendDisplay) {
