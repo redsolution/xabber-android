@@ -83,7 +83,7 @@ import com.xabber.android.ui.color.AccountPainter;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.fragment.ChatFragment;
 import com.xabber.android.ui.fragment.chatListFragment.ChatListAdapter;
-import com.xabber.android.ui.fragment.chatListFragment.ChatViewHolder;
+import com.xabber.android.ui.fragment.chatListFragment.ChatListItemListener;
 import com.xabber.android.ui.helper.ContextMenuHelper;
 import com.xabber.android.ui.widget.ShortcutBuilder;
 import com.xabber.android.utils.StringUtils;
@@ -104,16 +104,14 @@ import java.util.TreeMap;
 import eu.davidea.flexibleadapter.FlexibleAdapter;
 import eu.davidea.flexibleadapter.items.IFlexible;
 
-public class ChatListFragment extends Fragment implements ChatViewHolder.ChatItemClickListener,
-        FlexibleAdapter.OnItemClickListener, FlexibleAdapter.OnItemSwipeListener, View.OnClickListener,
+public class ChatListFragment extends Fragment implements ChatListItemListener,
+        FlexibleAdapter.OnItemSwipeListener, View.OnClickListener,
         OnContactChangedListener, OnAccountChangedListener, OnChatStateListener, UpdateBackpressure.UpdatableObject,
         PopupMenu.OnMenuItemClickListener, ContextMenuHelper.ListPresenter {
 
     private UpdateBackpressure updateBackpressure;
     private ChatListAdapter adapter;
-    //private FlexibleAdapter<IFlexible> adapter;
     private List<AbstractContact> items;
-    //private List<IFlexible> items;
     private Snackbar snackbar;
     private CoordinatorLayout coordinatorLayout;
     private LinearLayoutManager linearLayoutManager;
@@ -291,15 +289,8 @@ public class ChatListFragment extends Fragment implements ChatViewHolder.ChatIte
 
         items = new ArrayList<>();
         adapter = new ChatListAdapter(items, this);
-        //adapter = new FlexibleAdapter<>(items, null, false);
         recyclerView.setAdapter(adapter);
         recyclerView.setItemAnimator(null);
-        //adapter.setDisplayHeadersAtStartUp(true);
-        //adapter.setSwipeEnabled(true);
-        //adapter.expandItemsAtStartUp();
-        //adapter.setStickyHeaders(true);
-        //adapter.addListener(this);
-        //adapter.setAnimateChangesWithDiffUtil(false);
         MessageNotificationManager.getInstance().removeAllMessageNotifications();
         chatListFragmentListener.onChatListStateChanged(currentChatsState);
 
@@ -418,8 +409,8 @@ public class ChatListFragment extends Fragment implements ChatViewHolder.ChatIte
 
     /** @return  Return true when first element on the top of list*/
     public boolean isOnTop(){
-        return true;//adapter.().findFirstCompletelyVisibleItemPosition() == 0;
-    } //todo Fix this!
+        return linearLayoutManager.findLastCompletelyVisibleItemPosition() == 0;
+    }
 
     /** @return Size of list */
     public int getListSize(){ return items.size(); }
@@ -559,21 +550,6 @@ public class ChatListFragment extends Fragment implements ChatViewHolder.ChatIte
     }
 
     @Override
-    public void onChatClick(int position) {
-        AbstractContact item = adapter.getAbstractContactFromPosition(position);
-        Intent intent;
-        AccountJid accountJid = item.getAccount();
-        UserJid userJid = item.getUser();
-        if (MUCManager.getInstance().hasRoom(accountJid, userJid)) {
-            intent = ContactActivity.createIntent(getActivity(), accountJid, userJid);
-        } else {
-            intent = ContactEditActivity.createIntent(getActivity(), accountJid, userJid);
-        }
-        getActivity().startActivity(intent);
-        //TODO fix this must be chat opening not contactinfo
-    }
-
-    @Override
     public void onItemSwipe(int position, int direction) {
 //        Object itemAtPosition = adapter.getItem(position);
 //        if (itemAtPosition != null && itemAtPosition instanceof ChatVO) {
@@ -595,8 +571,7 @@ public class ChatListFragment extends Fragment implements ChatViewHolder.ChatIte
     }
 
     @Override
-    public void onAvatarClick(int adapterPosition) {
-        AbstractContact item = adapter.getAbstractContactFromPosition(adapterPosition);
+    public void onChatAvatarClick(AbstractContact item) {
         Intent intent;
         AccountJid accountJid = item.getAccount();
         UserJid userJid = item.getUser();
@@ -638,13 +613,10 @@ public class ChatListFragment extends Fragment implements ChatViewHolder.ChatIte
     }
 
     @Override
-    public boolean onItemClick(View view, int position) {
-        adapter.notifyItemChanged(position);
-        AbstractContact item = adapter.getAbstractContactFromPosition(position);
+    public void onChatItemClick(AbstractContact item) {
         AccountJid accountJid = item.getAccount();
         UserJid userJid = item.getUser();
         chatListFragmentListener.onChatClick(RosterManager.getInstance().getAbstractContact(accountJid, userJid));
-        return true;
     }
 
     @Override
@@ -704,9 +676,6 @@ public class ChatListFragment extends Fragment implements ChatViewHolder.ChatIte
             final ArrayList<AbstractContact> baseEntities = getSearchResults(rosterContacts, abstractChats);
             items.clear();
             items.addAll(baseEntities);
-//            items.addAll(SettingsManager.contactsShowMessages()
-//                    ? ExtContactVO.convert(baseEntities, this)
-//                    : ContactVO.convert(baseEntities, this));
         }
 
         /* Mark all the read button setup */
@@ -912,16 +881,6 @@ public class ChatListFragment extends Fragment implements ChatViewHolder.ChatIte
             }
         LogManager.i("AAAAAAAA", "New items: " + result.size() );
         return result;
-    }
-
-    @Override
-    public void onContextMenuCreated(int position, @org.jetbrains.annotations.Nullable ContextMenu menu) {
-        //TODO this
-    }
-
-    @Override
-    public void onContextMenuItemClick() {
-        //TODO this
     }
 
     @Override

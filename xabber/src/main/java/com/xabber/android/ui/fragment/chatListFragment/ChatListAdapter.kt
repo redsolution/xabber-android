@@ -30,13 +30,15 @@ import java.net.URLDecoder
 import java.nio.charset.StandardCharsets
 import java.util.*
 
-class ChatListAdapter(val list: MutableList<AbstractContact>, val listener: ChatViewHolder.ChatItemClickListener) :
-        RecyclerView.Adapter<ChatViewHolder>() {
+class ChatListAdapter(val list: MutableList<AbstractContact>, val listener: ChatListItemListener) :
+        RecyclerView.Adapter<ChatViewHolder>(), View.OnClickListener{
+
+    lateinit var recyclerView: RecyclerView
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChatViewHolder =
             ChatViewHolder(LayoutInflater
                     .from(parent.context)
-                    .inflate(R.layout.item_chat_in_contact_list, parent, false), listener)
+                    .inflate(R.layout.item_chat_in_contact_list, parent, false))
 
     override fun getItemCount(): Int = list.size
 
@@ -44,7 +46,20 @@ class ChatListAdapter(val list: MutableList<AbstractContact>, val listener: Chat
 
     fun addItem(index: Int, item: AbstractContact) = list.add(index, item) // TODO maybe need notifyDatasetChanged
 
+    override fun onClick(v: View?) {
+        val clickedContact = list[recyclerView.getChildLayoutPosition(v!!)]
+        if (v.id == R.id.ivAvatar) listener.onChatAvatarClick(clickedContact)
+        else listener.onChatItemClick(clickedContact)
+    }
+
+    override fun onAttachedToRecyclerView(recycler: RecyclerView) {
+        recyclerView = recycler
+        super.onAttachedToRecyclerView(recyclerView)
+    }
+
     override fun onBindViewHolder(holder: ChatViewHolder, position: Int) {
+        holder.itemView.setOnClickListener(this)
+        holder.itemView.setOnCreateContextMenuListener(listener)
         val contact = list[position]
         setupAccountColorIndicator(holder, contact)
         setupContactAvatar(holder, contact)

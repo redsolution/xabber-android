@@ -1,6 +1,5 @@
 package com.xabber.android.ui.fragment.chatListFragment
 
-import android.view.ContextMenu
 import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -10,8 +9,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.xabber.android.R
 import github.ankushsachdeva.emojicon.EmojiconTextView
 
-class ChatViewHolder(itemView: View, val listener: ChatItemClickListener) :
-        RecyclerView.ViewHolder(itemView), View.OnClickListener, View.OnCreateContextMenuListener {
+class ChatViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
+
     val avatarIV = itemView.findViewById<ImageView>(R.id.ivAvatar)
     val statusGroupchatIV = itemView.findViewById<ImageView>(R.id.ivStatusGroupchat)
     val statusIV = itemView.findViewById<ImageView>(R.id.ivStatus)
@@ -28,23 +27,5 @@ class ChatViewHolder(itemView: View, val listener: ChatItemClickListener) :
     val unreadCountTV = itemView.findViewById<TextView>(R.id.tvUnreadCount)
     val accountColorIndicatorBackView = itemView.findViewById<View>(R.id.accountColorIndicatorBack)
     val accountColorIndicatorView = itemView.findViewById<View>(R.id.accountColorIndicator)
-
-    override fun onClick(v: View?) {
-        if (layoutPosition != RecyclerView.NO_POSITION) {
-            if (v?.id == R.id.ivAvatar) listener.onAvatarClick(layoutPosition)
-            else listener.onChatClick(layoutPosition)
-        }
-    }
-
-    override fun onCreateContextMenu(menu: ContextMenu?, v: View?, menuInfo: ContextMenu.ContextMenuInfo?) {
-        if (layoutPosition != RecyclerView.NO_POSITION) listener.onContextMenuCreated(layoutPosition, menu)
-    }
-
-    interface ChatItemClickListener {
-        fun onChatClick(position: Int)
-        fun onAvatarClick(position: Int)
-        fun onContextMenuCreated(position: Int, menu: ContextMenu?)
-        fun onContextMenuItemClick()//TODO args
-    } //TODO contextMenu
 
 }
