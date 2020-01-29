@@ -19,8 +19,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.text.Editable;
+import android.text.Html;
 import android.text.Spannable;
 import android.text.TextWatcher;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -34,6 +36,7 @@ import android.view.WindowManager;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.Chronometer;
 import android.widget.EditText;
@@ -55,6 +58,9 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.transition.Slide;
+import androidx.transition.Transition;
+import androidx.transition.TransitionManager;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.xabber.android.R;
@@ -67,6 +73,7 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.attention.AttentionManager;
+import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.capability.CapabilitiesManager;
 import com.xabber.android.data.extension.capability.ClientInfo;
 import com.xabber.android.data.extension.cs.ChatStateManager;
@@ -96,6 +103,8 @@ import com.xabber.android.data.message.NewMessageEvent;
 import com.xabber.android.data.message.RegularChat;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.notification.NotificationManager;
+import com.xabber.android.data.roster.AbstractContact;
+import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.activity.ChatActivity;
 import com.xabber.android.ui.activity.ContactActivity;
@@ -121,6 +130,8 @@ import com.xabber.xmpp.uuu.ChatStateSubtype;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.jivesoftware.smack.SmackException;
+import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Presence;
 import org.jxmpp.jid.Jid;
 import org.jxmpp.jid.impl.JidCreate;
@@ -178,6 +189,11 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     private ReplySwipeCallback replySwipe;
     private View placeholder;
     private LinearLayout inputLayout;
+    private ViewStub stubNewContact;
+    private ViewGroup newContactLayout;
+    private Button addContact;
+    private Button blockContact;
+    private ImageButton closeNewContactLayout;
     private ViewStub stubJoin;
     private LinearLayout joinLayout;
     private LinearLayout actionJoin;
@@ -242,6 +258,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     private List<HashMap<String, String>> menuItems = null;
 
     private int checkedResource; // use only for alert dialog
+
+    private float toolbarElevation;
 
     private Intent notifyIntent;
 
@@ -635,6 +653,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
         stubNotify = (ViewStub) view.findViewById(R.id.stubNotify);
         stubJoin = (ViewStub) view.findViewById(R.id.stubJoin);
+        stubNewContact = (ViewStub) view.findViewById(R.id.stubNewContact);
         NotificationManager.getInstance().removeMessageNotification(account, user);
         setChat(account, user);
         if (savedInstanceState != null) {
@@ -752,6 +771,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         showHideNotifyIfNeed();
 
         showJoinButtonIfNeed();
+
+        showNewContactLayoutIfNeed();
 
         registerOpusBroadcastReceiver();
         Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
@@ -1802,6 +1823,128 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                 notifyLayout.setVisibility(View.GONE);
             }
         });
+    }
+
+    private void showNewContactLayoutIfNeed() {
+        if (getChat() instanceof RoomChat)
+            return;
+
+        if (BlockingManager.getInstance().contactIsBlocked(account, user))
+            return;
+
+        AbstractChat chat = getChat();
+        if (RosterManager.getInstance().getRosterContact(account, user) == null
+                && chat != null && !chat.isAddContactSuggested()
+                || PresenceManager.getInstance().hasSubscriptionRequest(account, user)) {
+            if (newContactLayout == null)
+                inflateNewContactLayout();
+            else {
+                newContactLayout.setVisibility(View.VISIBLE);
+            }
+        }
+    }
+
+    private void inflateNewContactLayout() {
+        newContactLayout = (ViewGroup) stubNewContact.inflate();
+        manageToolbarElevation(true);
+
+        final Transition transition = new Slide(Gravity.TOP);
+        transition.setDuration(300);
+        transition.addTarget(newContactLayout);
+
+        AbstractContact bestContact = RosterManager.getInstance().getBestContact(getAccount(), getUser());
+        final String name = bestContact != null ? bestContact.getName() : getUser().toString();
+
+        final boolean incoming = PresenceManager.getInstance().hasSubscriptionRequest(account, user);
+
+        TextView addContactMessage = newContactLayout.findViewById(R.id.add_contact_message);
+        TextView addContactTitle = newContactLayout.findViewById(R.id.add_contact_title);
+
+        addContactMessage.setText(Html.fromHtml(getString(incoming ? R.string.chat_accept_contact : R.string.chat_add_contact, name)));
+        addContactTitle.setText(getString(incoming ? R.string.subscription_request_message : R.string.chat_add_contact_title));
+
+        addContact = newContactLayout.findViewById(R.id.add_contact);
+        addContact.setTextColor(ColorManager.getInstance().getAccountPainter()
+                .getAccountMainColor(account));
+        addContact.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Application.getInstance().runInBackgroundUserRequest(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        try {
+                            if (RosterManager.getInstance().getRosterContact(account, user) == null)
+                                RosterManager.getInstance().createContact(getAccount(), getUser(), name, new ArrayList<String>());
+                            PresenceManager.getInstance().addAutoAcceptSubscription(getAccount(), getUser());
+                        } catch (SmackException.NotLoggedInException
+                                | XMPPException.XMPPErrorException
+                                | SmackException.NotConnectedException
+                                | InterruptedException
+                                | SmackException.NoResponseException
+                                | NetworkException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+                TransitionManager.beginDelayedTransition((ViewGroup) rootView, transition);
+                newContactLayout.setVisibility(View.GONE);
+                manageToolbarElevation(false);
+            }
+        });
+
+        blockContact = newContactLayout.findViewById(R.id.block_contact);
+        blockContact.setTextColor(SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.dark ?
+                getResources().getColor(R.color.red_700) : getResources().getColor(R.color.red_900));
+        blockContact.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                BlockingManager.getInstance().blockContact(account, user, new BlockingManager.BlockContactListener() {
+                    @Override
+                    public void onSuccessBlock() {
+                        Toast.makeText(Application.getInstance(), R.string.contact_blocked_successfully, Toast.LENGTH_SHORT).show();
+                        if (newContactLayout != null) {
+                            if (newContactLayout.getVisibility() == View.VISIBLE)
+                                newContactLayout.setVisibility(View.GONE);
+                        }
+                    }
+
+                    @Override
+                    public void onErrorBlock() {
+                        Toast.makeText(Application.getInstance(), R.string.error_blocking_contact, Toast.LENGTH_SHORT).show();
+                    }
+                });
+                TransitionManager.beginDelayedTransition((ViewGroup) rootView, transition);
+            }
+        });
+
+        closeNewContactLayout = newContactLayout.findViewById(R.id.close_new_contact_layout);
+        closeNewContactLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (incoming) {
+                    try {
+                        PresenceManager.getInstance().discardSubscription(account, user);
+                    } catch (NetworkException e) {
+                        e.printStackTrace();
+                    }
+                }
+                if (getChat() != null) {
+                    getChat().setAddContactSuggested(true);
+                }
+                TransitionManager.beginDelayedTransition((ViewGroup) rootView, transition);
+                newContactLayout.setVisibility(View.GONE);
+                manageToolbarElevation(false);
+            }
+        });
+    }
+
+    private void manageToolbarElevation(boolean remove) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            if (((ChatActivity) getActivity()).getToolbar().getElevation() != 0f)
+                toolbarElevation = ((ChatActivity) getActivity()).getToolbar().getElevation();
+            ((ChatActivity) getActivity()).getToolbar().setElevation(remove ? 0f : toolbarElevation);
+        }
     }
 
     private void updateTopDateIfNeed() {

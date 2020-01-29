@@ -140,6 +140,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     private MessageItem lastMessage;
     private RealmResults<MessageItem> messages;
     private String lastMessageId = null;
+    private boolean addContactSuggested = false;
     private boolean historyIsFull = false;
     private boolean historyRequestedAtStart = false;
     protected boolean isGroupchat = false;
@@ -1029,6 +1030,14 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         if (needSaveToRealm) ChatManager.getInstance().saveOrUpdateChatDataToRealm(this);
     }
 
+    public void setAddContactSuggested(boolean suggested) {
+        addContactSuggested = suggested;
+    }
+
+    public boolean isAddContactSuggested() {
+        return addContactSuggested;
+    }
+
     public NotificationState getNotificationState() {
         return notificationState;
     }
@@ -1152,8 +1161,8 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     }
 
     public static class ChatstateType {
-        public static int NORMAL = 0;
-        public static int CLEARED_HISTORY = 1;
-        public static int DELETED = 2;
+        public static final int NORMAL = 0;
+        public static final int CLEARED_HISTORY = 1;
+        public static final int DELETED = 2;
     }
 }

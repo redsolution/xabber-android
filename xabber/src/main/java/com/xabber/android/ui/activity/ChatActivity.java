@@ -597,6 +597,10 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
 
     }
 
+    public Toolbar getToolbar() {
+        return toolbar;
+    }
+
 
     private void updateStatusBar() {
         if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light)

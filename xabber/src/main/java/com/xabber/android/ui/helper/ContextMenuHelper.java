@@ -252,10 +252,13 @@ public class ContextMenuHelper {
                     menu.findItem(R.id.action_delete_chat).setVisible(false);
                 }
             } else {
+                menu.findItem(R.id.action_delete_chat).setVisible(false);
                 if (RosterManager.getInstance().getRosterContact(account, user) == null) {
                     menu.findItem(R.id.action_delete_contact).setVisible(false);
                 }
             }
+
+            menu.findItem(R.id.action_configure_notifications).setVisible(false);
 
             Boolean supported = BlockingManager.getInstance().isSupported(account);
 
