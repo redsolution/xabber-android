@@ -18,6 +18,7 @@
     <string name="choose_account">Выберите учетную запись</string>
     <string name="EMPTY_ACCOUNT">Пожалуйста, выберите учетную запись</string>
     <string name="add_new_group">Добавить новую группу&#8230;</string>
+    <string name="add_new_circle">Добавить новый круг&#8230;</string>
     <string name="accept_contact">Разрешить</string>
     <string name="decline_contact">Отклонить</string>
     <string name="processing_image">Обработка изображения...</string>

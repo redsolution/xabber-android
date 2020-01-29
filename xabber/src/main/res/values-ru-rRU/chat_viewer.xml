@@ -13,6 +13,14 @@
     <string name="clear_history">Очистить историю сообщений</string>
     <string name="clear_chat_history_dialog_button">Очистить</string>
     <string name="clear_chat_history_dialog_message">Очистить всю историю сообщений с &lt;b&gt;%s&lt;/b&gt;?</string>
+    <string name="clear_chat_history_dialog_warning">Эта операция необратима.</string>
+    <string name="clear_chat_history_for_companion_checkbox">Попробовать отозвать удаленные сообщения из чата собеседника</string>
+    <string name="chat_accept_contact">Контакт попросил быть добавлен в ваш список контактов. Если вы согласитесь, &lt;b&gt;%s&lt;/b&gt; получит доступ к вашей информации присутствия.</string>
+    <string name="chat_add_contact_title">Добавить в контакты</string>
+    <string name="chat_add_contact">Добавить &lt;b&gt;%s&lt;/b&gt; в список контактов. Если запрос будет принят, то у каждого из вас будет доступ к информации присутствия собеседника.</string>
+    <string name="delete_chat_confirm">Вы уверены что хотите удалить чат с &lt;b&gt;%s&lt;/b&gt;? История сообщений будет удалена в том числе.</string>
+    <string name="delete_chat_warning">Эта операция необратима.</string>
+    <string name="delete_chat_button">Удалить</string>
     <string name="contact_is_offline">Сообщения доставлены на сервер получателя и могут быть прочитаны им после подключения к сети</string>
     <string name="ENTRY_IS_NOT_AVAILABLE">Контакт не доступен</string>
     <string name="FILE_NOT_FOUND">Файл не найден</string>

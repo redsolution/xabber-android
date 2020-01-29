@@ -2,6 +2,7 @@ package com.xabber.android.ui.dialog;
 
 import android.app.Dialog;
 import android.os.Bundle;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -16,8 +17,12 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
+import com.xabber.android.data.message.MessageUpdateEvent;
 import com.xabber.android.data.roster.RosterManager;
+import com.xabber.android.ui.activity.ChatActivity;
 import com.xabber.android.ui.color.ColorManager;
+
+import org.greenrobot.eventbus.EventBus;
 
 public class ChatDeleteDialog extends DialogFragment implements View.OnClickListener {
 
@@ -29,13 +34,13 @@ public class ChatDeleteDialog extends DialogFragment implements View.OnClickList
     UserJid user;
 
     public static ChatDeleteDialog newInstance(AccountJid account, UserJid user) {
-        ChatDeleteDialog fragment = new ChatDeleteDialog();
+        ChatDeleteDialog dialog = new ChatDeleteDialog();
 
         Bundle arguments = new Bundle();
         arguments.putParcelable(ARGUMENT_ACCOUNT, account);
         arguments.putParcelable(ARGUMENT_USER, user);
-        fragment.setArguments(arguments);
-        return fragment;
+        dialog.setArguments(arguments);
+        return dialog;
     }
 
     @Override
@@ -52,7 +57,7 @@ public class ChatDeleteDialog extends DialogFragment implements View.OnClickList
         int colorIndicator = ColorManager.getInstance().getAccountPainter()
                 .getAccountMainColor(account);
 
-        ((TextView) view.findViewById(R.id.delete_chat_confirm)).setText(getString(R.string.delete_chat_confirm, contactName));
+        ((TextView) view.findViewById(R.id.delete_chat_confirm)).setText(Html.fromHtml(getString(R.string.delete_chat_confirm, contactName)));
         ((TextView) view.findViewById(R.id.delete_chat_warning)).setText(getString(R.string.delete_chat_warning));
 
         ((Button) view.findViewById(R.id.delete)).setTextColor(colorIndicator);
@@ -73,6 +78,10 @@ public class ChatDeleteDialog extends DialogFragment implements View.OnClickList
             if (chat != null) {
                 MessageManager.getInstance().clearHistory(account, user);
                 MessageManager.getInstance().removeChat(chat);
+                if (getActivity() instanceof ChatActivity) {
+                    getActivity().finish();
+                }
+                EventBus.getDefault().post(new MessageUpdateEvent());
             }
         }
         dismiss();

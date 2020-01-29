@@ -14,7 +14,10 @@
     <string name="clear_chat_history_dialog_message">Are you sure you want to clear your chat history with &lt;b&gt;%s&lt;/b&gt;?</string>
     <string name="clear_chat_history_dialog_warning">This operation can not be undone.</string>
     <string name="clear_chat_history_for_companion_checkbox">Attempt to retract your messages from your chat partner\'s archive</string>
-    <string name="delete_chat_confirm">Are you sure you want to delete chat with %s? Chat history will also be deleted from your message archive.</string>
+    <string name="chat_accept_contact">Contact asks to be added to your contact list. If you accept, &lt;b&gt;%s&lt;/b&gt; will be granted access to your presence information.</string>
+    <string name="chat_add_contact_title">Add to contacts</string>
+    <string name="chat_add_contact">Add &lt;b&gt;%s&lt;/b&gt; to contacts. If your request is accepted, you will have access to each other\'s presence information.</string>
+    <string name="delete_chat_confirm">Are you sure you want to delete chat with &lt;b&gt;%s&lt;/b&gt;? Chat history will also be deleted from your message archive.</string>
     <string name="delete_chat_warning">This operation can not be undone.</string>
     <string name="delete_chat_button">Delete</string>
     <string name="contact_is_offline">The recipient is offline. Messages you send will be delivered when they come back online.</string>

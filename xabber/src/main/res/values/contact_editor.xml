@@ -12,12 +12,13 @@
     <string name="contact_subscription_send">Send presence updates</string>
     <string name="contact_subscription_receive">Receive presence updates</string>
     <string name="contact_subscription_ask">Ask for presence updates</string>
-    <string name="contact_subscription_accept">Accept incoming subscribe request in advance</string>
+    <string name="contact_subscription_accept">Preemptively grant subscription request</string>
     <string name="group_is_empty">Set group name</string>
     <string name="group_name">Group name</string>
     <string name="choose_account">Choose an account</string>
     <string name="EMPTY_ACCOUNT">Please select an account</string>
     <string name="add_new_group">Add new group…</string>
+    <string name="add_new_circle">Add new circle…</string>
     <string name="accept_contact">Authorize</string>
     <string name="decline_contact">Discard</string>
     <string name="processing_image">Processing image…</string>
