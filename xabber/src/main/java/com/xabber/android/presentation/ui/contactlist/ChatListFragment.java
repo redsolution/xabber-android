@@ -717,7 +717,7 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
                     }
                     onStateSelected(ChatListFragment.ChatListState.recent);
                     Toast toast = Toast.makeText(getActivity(), R.string.all_chats_were_market_as_read_toast, Toast.LENGTH_SHORT);
-                    toast.setGravity(Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, (int)getResources().getDimension(R.dimen.bottom_navigation_height) * 2);
+                    toast.setGravity(Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, (int)(getResources().getDimension(R.dimen.bottom_navigation_height) * 1.2f));
                     toast.show();
                 }
             });

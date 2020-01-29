@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -95,6 +96,18 @@ public class ContactViewerActivity extends ContactActivity implements Toolbar.On
             changeTextColor();
             manageAvailableUsernameSpace();
         } else {
+            getTitleView().findViewById(R.id.name).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    startActivity(ContactEditActivity.createIntent(v.getContext(), getAccount(), getUser()));
+                }
+            });
+            getTitleView().findViewById(R.id.address_text).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    startActivity(ContactEditActivity.createIntent(v.getContext(), getAccount(), getUser()));
+                }
+            });
             menu.findItem(R.id.action_add_contact).setVisible(false);
             menu.findItem(R.id.action_generate_qrcode).setVisible(orientation == Configuration.ORIENTATION_PORTRAIT);
             menu.findItem(R.id.action_request_subscription).setVisible(!contact.isSubscribed());
@@ -232,7 +245,7 @@ public class ContactViewerActivity extends ContactActivity implements Toolbar.On
 
                 try {
                     RosterManager.getInstance().createContact(getAccount(), getUser(), name, new ArrayList<String>());
-                    PresenceManager.getInstance().requestSubscription(getAccount(), getUser());
+                    PresenceManager.getInstance().addAutoAcceptSubscription(getAccount(), getUser());
                     stopAddContactProcess(true);
                 } catch (SmackException.NotLoggedInException
                         | XMPPException.XMPPErrorException

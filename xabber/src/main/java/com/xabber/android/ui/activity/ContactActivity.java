@@ -242,6 +242,11 @@ public class ContactActivity extends ManagedActivity implements
         checkForBlockedStatus();
 
         orientation = getResources().getConfiguration().orientation;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            if (this.isInMultiWindowMode()) {
+                orientation = Configuration.ORIENTATION_PORTRAIT;
+            }
+        }
         setContactBar(accountMainColor, orientation);
         if (orientation == Configuration.ORIENTATION_PORTRAIT) {
             orientationPortrait();
@@ -469,6 +474,10 @@ public class ContactActivity extends ManagedActivity implements
                 break;
             }
         }
+    }
+
+    protected View getTitleView() {
+        return contactTitleView;
     }
 
     private void updateName() {

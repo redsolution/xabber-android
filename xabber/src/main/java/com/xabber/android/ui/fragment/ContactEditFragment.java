@@ -73,7 +73,7 @@ public class ContactEditFragment extends GroupEditorFragment implements OnContac
         tvSendPresence = view.findViewById(R.id.tvSendPresence);
         tvReceivePresence = view.findViewById(R.id.tvReceivePresence);
         ((TextView) view.findViewById(R.id.tvNickname)).setTextColor(ColorManager.getInstance().getAccountPainter().getAccountSendButtonColor(getAccount()));
-        ((TextView) view.findViewById(R.id.subInfo)).setTextColor(ColorManager.getInstance().getAccountPainter().getAccountSendButtonColor(getAccount()));
+        ((TextView) view.findViewById(R.id.tvSubInfo)).setTextColor(ColorManager.getInstance().getAccountPainter().getAccountSendButtonColor(getAccount()));
         ((TextView) view.findViewById(R.id.tvCircles)).setTextColor(ColorManager.getInstance().getAccountPainter().getAccountSendButtonColor(getAccount()));
         return view;
     }

@@ -33,6 +33,7 @@
             android:layout_marginTop="38dp"
             android:layout_marginEnd="16dp"
             android:layout_marginRight="16dp"
+            android:ellipsize="end"
             android:ems="10"
             android:inputType="text"
             android:textSize="20sp"
@@ -43,15 +44,21 @@
         <TextView
             android:id="@+id/tvBareUserJid"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:layout_marginStart="20dp"
             android:layout_marginLeft="20dp"
+            android:layout_marginTop="40dp"
             android:layout_marginBottom="6dp"
-            android:gravity="right"
+            android:gravity="left"
             android:text="example@somewhere.com"
             android:textSize="14sp"
+            app:autoSizeMaxTextSize="14sp"
+            app:autoSizeMinTextSize="8sp"
+            app:autoSizeTextType="uniform"
             app:layout_constraintBottom_toBottomOf="@+id/contact_avatar"
-            app:layout_constraintStart_toEndOf="@+id/contact_avatar" />
+            app:layout_constraintEnd_toEndOf="@+id/nickname"
+            app:layout_constraintStart_toEndOf="@+id/contact_avatar"
+            app:layout_constraintTop_toTopOf="@+id/nickname" />
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/contact_avatar"
@@ -69,12 +76,12 @@
         <View
             android:id="@+id/divider_name_and_sub"
             style="@style/Divider"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="18dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/contact_avatar" />
+            app:layout_constraintTop_toBottomOf="@+id/tvBareUserJid" />
 
         <TextView
-            android:id="@+id/subInfo"
+            android:id="@+id/tvSubInfo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -95,19 +102,15 @@
             android:paddingRight="16dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/subInfo">
+            app:layout_constraintTop_toBottomOf="@+id/tvSubInfo">
 
             <TextView
                 android:id="@+id/tvSendPresence"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Exchange presence updates"
+                android:layout_weight="1"
+                android:text="Send presence updates"
                 android:textAppearance="@style/ChatText" />
-
-            <Space
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1" />
 
             <CheckBox
                 android:id="@+id/chkSendPresence"
@@ -131,13 +134,9 @@
                 android:id="@+id/tvReceivePresence"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:text="Receive presence updates"
                 android:textAppearance="@style/ChatText" />
-
-            <Space
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1" />
 
             <CheckBox
                 android:id="@+id/chkReceivePresence"
