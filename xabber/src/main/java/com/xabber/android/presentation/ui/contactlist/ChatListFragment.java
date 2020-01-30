@@ -50,7 +50,6 @@ import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.muc.RoomChat;
 import com.xabber.android.data.extension.muc.RoomContact;
-import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.ChatContact;
 import com.xabber.android.data.message.MessageManager;
@@ -67,7 +66,6 @@ import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.presentation.mvp.contactlist.ContactListPresenter;
 import com.xabber.android.presentation.mvp.contactlist.UpdateBackpressure;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.ChatVO;
-import com.xabber.android.presentation.ui.contactlist.viewobjects.ExtContactVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.GroupVO;
 import com.xabber.android.ui.activity.ConferenceSelectActivity;
 import com.xabber.android.ui.activity.ContactActivity;
@@ -81,7 +79,6 @@ import com.xabber.android.ui.adapter.contactlist.AccountConfiguration;
 import com.xabber.android.ui.adapter.contactlist.GroupConfiguration;
 import com.xabber.android.ui.color.AccountPainter;
 import com.xabber.android.ui.color.ColorManager;
-import com.xabber.android.ui.fragment.ChatFragment;
 import com.xabber.android.ui.fragment.chatListFragment.ChatListAdapter;
 import com.xabber.android.ui.fragment.chatListFragment.ChatListItemListener;
 import com.xabber.android.ui.helper.ContextMenuHelper;
@@ -102,7 +99,6 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import eu.davidea.flexibleadapter.FlexibleAdapter;
-import eu.davidea.flexibleadapter.items.IFlexible;
 
 public class ChatListFragment extends Fragment implements ChatListItemListener,
         FlexibleAdapter.OnItemSwipeListener, View.OnClickListener,
@@ -489,19 +485,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener,
         /* Update items in RecyclerView */
         this.items.clear();
         this.items.addAll(items);
-//        List<Integer> list = getDifferentElementsPositions(this.items, items);
-//        if ( list.size() == 0 || list.get(0) == -1) {
-//            adapter.updateDataSet(items);
-//            this.items.clear();
-//            this.items.addAll(items);
-//        } else {
-//            for (int i : list){
-//                this.items.set(i, items.get(i));
-//                adapter.addItem(i, items.get(i));
-//                adapter.removeItem(i+1);
-//                adapter.notifyItemChanged(i);
-//            }
-//        }
+        adapter.changeItems(items);
     }
 
     @Override
@@ -583,10 +567,11 @@ public class ChatListFragment extends Fragment implements ChatListItemListener,
         getActivity().startActivity(intent);
     }
 
-//    @Override
-//    public void onContactCreateContextMenu(int adapterPosition, ContextMenu menu) {
-//        onItemContextMenu(adapterPosition, menu);
-//    }
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+
+    }
 
     public void onItemContextMenu(int adapterPosition, ContextMenu menu){
         AbstractContact item = adapter.getAbstractContactFromPosition(adapterPosition);
@@ -595,11 +580,6 @@ public class ChatListFragment extends Fragment implements ChatListItemListener,
         AbstractContact abstractContact = RosterManager.getInstance().getAbstractContact(accountJid, userJid);
         ContextMenuHelper.createContactContextMenu(getActivity(), this, abstractContact, menu);
     }
-
-//    @Override
-//    public void onContactButtonClick(int adapterPosition) {
-//        //TODO
-//    }
 
     public void setChatArchived(ChatVO chatVO, boolean archived) {
         AbstractChat chat = MessageManager.getInstance().getChat(chatVO.getAccountJid(), chatVO.getUserJid());
@@ -854,33 +834,6 @@ public class ChatListFragment extends Fragment implements ChatListItemListener,
 
     public void closeSnackbar() {
         if (snackbar != null) snackbar.dismiss();
-    }
-
-    private List<Integer> getDifferentElementsPositions(List<IFlexible> oldList, List<IFlexible> newList){
-        ArrayList<Integer> result = new ArrayList<Integer>();
-        if (oldList.size() != newList.size()) result.add(-1);
-        if (oldList.size() <= 1 && newList.size() <= 1) result.add(-1);
-        else
-            for (IFlexible oldFlexible : oldList){
-                try {
-                    ExtContactVO oldExtContactVO = (ExtContactVO) oldFlexible;
-                    ExtContactVO newExtContactVO = (ExtContactVO) newList.get(oldList.indexOf(oldFlexible));
-                    if (!oldExtContactVO.getAccountJid().equals(newExtContactVO.getAccountJid())
-                            || !oldExtContactVO.getAvatar().equals(newExtContactVO.getAvatar())
-                            || !oldExtContactVO.getMessageText().equals(newExtContactVO.getMessageText())
-                            || !oldExtContactVO.getUserJid().equals(newExtContactVO.getUserJid())
-                            || !oldExtContactVO.getName().equals(newExtContactVO.getName())
-                            || oldExtContactVO.getStatusLevel() != newExtContactVO.getStatusLevel())
-                        result.add(oldList.indexOf(oldFlexible));
-                } catch (Exception e) {
-                    LogManager.exception(ChatFragment.class.getSimpleName(), e);
-                    result.clear();
-                    result.add(-1);
-                }
-
-            }
-        LogManager.i("AAAAAAAA", "New items: " + result.size() );
-        return result;
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.xabber.android.ui.fragment.chatListFragment
 
+import android.app.Activity
 import android.content.Context
 import android.graphics.PorterDuff
 import android.graphics.Typeface
@@ -31,9 +32,10 @@ import java.nio.charset.StandardCharsets
 import java.util.*
 
 class ChatListAdapter(val list: MutableList<AbstractContact>, val listener: ChatListItemListener) :
-        RecyclerView.Adapter<ChatViewHolder>(), View.OnClickListener{
+        RecyclerView.Adapter<ChatViewHolder>(), View.OnClickListener {
 
     lateinit var recyclerView: RecyclerView
+    lateinit var activity: Activity
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChatViewHolder =
             ChatViewHolder(LayoutInflater
@@ -44,12 +46,21 @@ class ChatListAdapter(val list: MutableList<AbstractContact>, val listener: Chat
 
     fun getAbstractContactFromPosition(position: Int) = list[position]
 
-    fun addItem(index: Int, item: AbstractContact) = list.add(index, item) // TODO maybe need notifyDatasetChanged
+    fun addItem(index: Int, item: AbstractContact) {
+        this.list.add(index, item)
+        notifyDataSetChanged()
+    }
+
+    fun changeItems(newItemsList: MutableList<AbstractContact>){
+        this.list.clear()
+        this.list.addAll(newItemsList)
+        notifyDataSetChanged()
+    }
 
     override fun onClick(v: View?) {
-        val clickedContact = list[recyclerView.getChildLayoutPosition(v!!)]
-        if (v.id == R.id.ivAvatar) listener.onChatAvatarClick(clickedContact)
-        else listener.onChatItemClick(clickedContact)
+        if (v!!.id == R.id.ivAvatar) listener.onChatAvatarClick(
+                list[recyclerView.getChildLayoutPosition(v.parent.parent.parent.parent as View)])
+        else listener.onChatItemClick(list[recyclerView.getChildLayoutPosition(v)])
     }
 
     override fun onAttachedToRecyclerView(recycler: RecyclerView) {
@@ -59,6 +70,7 @@ class ChatListAdapter(val list: MutableList<AbstractContact>, val listener: Chat
 
     override fun onBindViewHolder(holder: ChatViewHolder, position: Int) {
         holder.itemView.setOnClickListener(this)
+        holder.avatarIV.setOnClickListener(this)
         holder.itemView.setOnCreateContextMenuListener(listener)
         val contact = list[position]
         setupAccountColorIndicator(holder, contact)
