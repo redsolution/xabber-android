@@ -65,7 +65,6 @@ import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.presentation.mvp.contactlist.ContactListPresenter;
 import com.xabber.android.presentation.mvp.contactlist.UpdateBackpressure;
-import com.xabber.android.presentation.ui.contactlist.viewobjects.ChatVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.GroupVO;
 import com.xabber.android.ui.activity.ConferenceSelectActivity;
 import com.xabber.android.ui.activity.ContactActivity;
@@ -88,6 +87,7 @@ import com.xabber.android.utils.StringUtils;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -555,6 +555,15 @@ public class ChatListFragment extends Fragment implements ChatListItemListener,
     }
 
     @Override
+    public void onChatItemSwiped(@NotNull AbstractContact abstractContact) {
+        AbstractChat abstractChat = MessageManager.getInstance()
+                .getChat(abstractContact.getAccount(), abstractContact.getUser());
+        MessageManager.getInstance().getChat(abstractContact.getAccount(), abstractContact.getUser())
+                .setArchived(!abstractChat.isArchived(), true);
+        updateBackpressure.refreshRequest();
+    }
+
+    @Override
     public void onChatAvatarClick(AbstractContact item) {
         Intent intent;
         AccountJid accountJid = item.getAccount();
@@ -570,19 +579,13 @@ public class ChatListFragment extends Fragment implements ChatListItemListener,
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
-
     }
 
-    public void onItemContextMenu(ContextMenu menu, AbstractContact contact){
+    public void onChatItemContextMenu(ContextMenu menu, AbstractContact contact){
         AccountJid accountJid = contact.getAccount();
         UserJid userJid = contact.getUser();
         AbstractContact abstractContact = RosterManager.getInstance().getAbstractContact(accountJid, userJid);
         ContextMenuHelper.createContactContextMenu(getActivity(), this, abstractContact, menu);
-    }
-
-    public void setChatArchived(ChatVO chatVO, boolean archived) {
-        AbstractChat chat = MessageManager.getInstance().getChat(chatVO.getAccountJid(), chatVO.getUserJid());
-        if (chat != null) chat.setArchived(archived, true);
     }
 
     public void updateUnreadCount() {

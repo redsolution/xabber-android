@@ -12,6 +12,7 @@ import android.view.ContextMenu
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.xabber.android.R
 import com.xabber.android.data.SettingsManager
@@ -33,7 +34,7 @@ import java.nio.charset.StandardCharsets
 import java.util.*
 
 class ChatListAdapter(val list: MutableList<AbstractContact>, val listener: ChatListItemListener) :
-        RecyclerView.Adapter<ChatViewHolder>(), View.OnClickListener, View.OnCreateContextMenuListener {
+        RecyclerView.Adapter<ChatViewHolder>(), View.OnClickListener, View.OnCreateContextMenuListener{
 
     lateinit var recyclerView: RecyclerView
     lateinit var activity: Activity
@@ -52,7 +53,15 @@ class ChatListAdapter(val list: MutableList<AbstractContact>, val listener: Chat
 
     fun addItem(index: Int, item: AbstractContact) {
         this.list.add(index, item)
-        notifyDataSetChanged()
+        notifyItemChanged(index)
+    }
+
+    fun deleteItemByPosition(position: Int) = list.removeAt(position)
+
+    fun deleteItemByAbstractContact(contact: AbstractContact) = deleteItemByPosition(list.indexOf(contact))
+
+    fun onSwipeChatItem(holder: ChatViewHolder){
+        listener.onChatItemSwiped(getAbstractContactFromView(holder.itemView))
     }
 
     fun changeItems(newItemsList: MutableList<AbstractContact>){
@@ -68,10 +77,11 @@ class ChatListAdapter(val list: MutableList<AbstractContact>, val listener: Chat
     }
 
     override fun onCreateContextMenu(menu: ContextMenu?, v: View?, menuInfo: ContextMenu.ContextMenuInfo?) =
-        listener.onItemContextMenu(menu!!, getAbstractContactFromView(v))
+        listener.onChatItemContextMenu(menu!!, getAbstractContactFromView(v))
 
     override fun onAttachedToRecyclerView(recycler: RecyclerView) {
         recyclerView = recycler
+        ItemTouchHelper(SwipeToArchiveCallback(this)).attachToRecyclerView(recycler)
         super.onAttachedToRecyclerView(recyclerView)
     }
 
@@ -92,6 +102,7 @@ class ChatListAdapter(val list: MutableList<AbstractContact>, val listener: Chat
         setupSenderName(holder, contact)
         setupMessageText(holder, contact)
         setupMessageStatus(holder, contact)
+        setupSwipeBackground(holder, contact)
     }
 
     private fun setupAccountColorIndicator(holder: ChatViewHolder, contact: AbstractContact) {
@@ -292,6 +303,19 @@ class ChatListAdapter(val list: MutableList<AbstractContact>, val listener: Chat
                 holder.messageStatusTV.setImageResource(R.drawable.ic_message_acknowledged_14dp)
             else holder.messageStatusTV.setImageResource(R.drawable.ic_message_not_sent_14dp)
         }
+    }
+
+    fun setupSwipeBackground(holder: ChatViewHolder, contact: AbstractContact){
+        val isArchived = MessageManager.getInstance().getOrCreateChat(contact.account, contact.user)
+                .isArchived
+        holder.actionTV.setText(if (isArchived) R.string.unarchive_chat else R.string.archive_chat)
+        holder.actionLeftTV.setText(if (isArchived) R.string.unarchive_chat else R.string.archive_chat)
+        val drawable: Drawable = if (isArchived) holder.itemView.context.getResources().getDrawable(R.drawable.ic_unarchived)
+        else holder.itemView.context.getResources().getDrawable(R.drawable.ic_arcived)
+        holder.actionTV.setCompoundDrawablesWithIntrinsicBounds(null, null, drawable, null)
+        holder.actionLeftTV.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null)
+        holder.actionLeftTV.visibility = View.VISIBLE
+        holder.actionTV.visibility = View.VISIBLE
     }
 
     private fun getThemeResource(context: Context, themeResourceId: Int): Int {

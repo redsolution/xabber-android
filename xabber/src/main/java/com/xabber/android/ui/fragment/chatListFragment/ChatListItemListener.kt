@@ -7,5 +7,6 @@ import com.xabber.android.data.roster.AbstractContact
 interface ChatListItemListener: View.OnCreateContextMenuListener{
     fun onChatItemClick(contact: AbstractContact)
     fun onChatAvatarClick(contact: AbstractContact)
-    fun onItemContextMenu(menu: ContextMenu, contact: AbstractContact)
+    fun onChatItemContextMenu(menu: ContextMenu, contact: AbstractContact)
+    fun onChatItemSwiped(abstractContact: AbstractContact)
 }

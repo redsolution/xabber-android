@@ -14,11 +14,10 @@
         android:textStyle="bold"
         android:text="@string/archive_chat"
         android:textAllCaps="true"
-        android:gravity="right|center"
+        android:gravity="end|center"
         android:drawableRight="@drawable/ic_arcived"
         android:drawablePadding="12dp"
         android:background="?attr/action_with_chat_background"
-        android:visibility="gone"
         />
 
     <TextView
@@ -30,11 +29,10 @@
         android:textStyle="bold"
         android:text="@string/archive_chat"
         android:textAllCaps="true"
-        android:gravity="left|center"
+        android:gravity="start|center"
         android:drawableLeft="@drawable/ic_arcived"
         android:drawablePadding="12dp"
         android:background="?attr/action_with_chat_background"
-        android:visibility="gone"
         />
 
     <LinearLayout
