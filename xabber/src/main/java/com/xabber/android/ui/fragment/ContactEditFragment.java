@@ -113,6 +113,7 @@ public class ContactEditFragment extends GroupEditorFragment implements OnContac
         contactEditNickname.setHint(abstractContact.getName());
 
         subType = RosterManager.getInstance().getSubscriptionType(getAccount(), getUser());
+        boolean subPending = RosterManager.getInstance().hasSubscriptionPending(getAccount(), getUser());
         if (subType == null) {
             getActivity().finish();
         }
@@ -138,7 +139,7 @@ public class ContactEditFragment extends GroupEditorFragment implements OnContac
                 chkSendPresence.setChecked(!stateRestored || sendChecked);
                 tvSendPresence.setText(R.string.contact_subscription_send);
 
-                chkReceivePresence.setChecked(stateRestored && receiveChecked);
+                chkReceivePresence.setChecked(stateRestored ? receiveChecked : subPending);
                 tvReceivePresence.setText(R.string.contact_subscription_ask);
                 break;
             case none:
@@ -146,7 +147,7 @@ public class ContactEditFragment extends GroupEditorFragment implements OnContac
                 chkSendPresence.setChecked(stateRestored ? sendChecked : PresenceManager.getInstance().hasAutoAcceptSubscription(getAccount(), getUser()));
                 tvSendPresence.setText(R.string.contact_subscription_accept);
 
-                chkReceivePresence.setChecked(stateRestored && receiveChecked);
+                chkReceivePresence.setChecked(stateRestored ? receiveChecked : subPending);
                 tvReceivePresence.setText(R.string.contact_subscription_ask);
                 break;
         }

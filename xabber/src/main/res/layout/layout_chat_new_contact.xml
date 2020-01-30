@@ -1,75 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/new_contact_chat_panel"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="?attr/actionBarSize"
     android:background="?attr/chat_input_background"
-    android:orientation="vertical"
     android:elevation="8dp"
-    android:paddingTop="12dp">
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:gravity="center"
-        android:orientation="horizontal"
-        android:paddingLeft="16dp"
-        android:paddingRight="10dp">
-
-        <TextView
-            android:id="@+id/add_contact_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/subscription_request_message"
-            android:textColor="@color/black"
-            android:textSize="20sp" />
-
-        <ImageButton
-            android:id="@+id/close_new_contact_layout"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:background="@color/transparent"
-            app:srcCompat="?attr/standard_clear_icon" />
-    </LinearLayout>
+    android:gravity="center">
 
     <TextView
         android:id="@+id/add_contact_message"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:paddingLeft="16dp"
-        android:paddingTop="8dp"
-        android:paddingRight="32dp"
-        android:paddingBottom="8dp"
-        android:text="@string/chat_accept_contact"
-        android:textColor="@color/black"
-        android:textSize="18sp" />
+        android:layout_weight="5"
+        android:paddingLeft="12dp"
+        android:text="@string/chat_subscribe_request_incoming"
+        android:textAppearance="@style/ChatText"
+        android:textSize="14sp"
+        android:visibility="gone"
+        app:autoSizeMaxTextSize="14sp"
+        app:autoSizeMinTextSize="10sp" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/add_contact"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="3"
-        android:orientation="horizontal">
+        android:layout_weight="2"
+        android:paddingLeft="0dp"
+        android:paddingRight="0dp"
+        android:text="@string/contact_add" />
 
-        <Button
-            android:id="@+id/block_contact"
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="3"
-            android:text="@string/contact_bar_block" />
+    <TextView
+        android:id="@+id/block_contact"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="2"
+        android:text="@string/contact_bar_block" />
 
-        <Button
-            android:id="@+id/add_contact"
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="3"
-            android:text="Add contact" />
-
-    </LinearLayout>
+    <ImageButton
+        android:id="@+id/close_new_contact_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:alpha="0.5"
+        android:background="@color/transparent"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        app:srcCompat="?attr/standard_clear_icon" />
 
 </LinearLayout>

@@ -57,7 +57,7 @@
     <ViewStub
         android:id="@+id/stubNewContact"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="?attr/actionBarSize"
         android:layout_alignTop="@id/chat_messages_recycler_view"
         android:inflatedId="@+id/new_contact_chat_panel"
         android:layout="@layout/layout_chat_new_contact" />

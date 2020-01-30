@@ -16,12 +16,15 @@ import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.cs.ChatStateManager;
 import com.xabber.android.data.message.AbstractChat;
+import com.xabber.android.data.message.ChatContact;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.NotificationState;
 import com.xabber.android.data.notification.custom_notification.CustomNotifyPrefsManager;
 import com.xabber.android.data.notification.custom_notification.Key;
 import com.xabber.android.data.roster.AbstractContact;
+import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterContact;
+import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.color.ColorManager;
 
 
@@ -131,15 +134,74 @@ public class NewContactTitleInflater {
             statusText = ChatStateManager.getInstance().getFullChatStateString(
                     abstractContact.getAccount(), abstractContact.getUser());
             if (statusText == null) {
-                if (StatusMode.unavailable == abstractContact.getStatusMode())
-                    statusText = getLastActivity(abstractContact);
-                else statusText = abstractContact.getStatusText().trim();
+                if (abstractContact instanceof ChatContact) {
+                    if (PresenceManager.getInstance().hasSubscriptionRequest(abstractContact.getAccount(), abstractContact.getUser())) {
+                        //Contact not in our roster, but we have an incoming subscription request
+                        statusText = context.getString(R.string.contact_state_incoming_request);
+                    } else {
+                        //Contact not in our roster, and no subscription requests.
+                        statusText = context.getString(R.string.contact_state_not_in_contact_list);
+                    }
+                } else {
+                    //TODO this is way too messy, should do some cleanup later.
+                    if (abstractContact instanceof RosterContact) {
+                        boolean incomingSubscriptionRequest = PresenceManager.getInstance()
+                                .hasSubscriptionRequest(abstractContact.getAccount(), abstractContact.getUser());
+                        boolean outgoingSubscriptionRequest = RosterManager.getInstance()
+                                .hasSubscriptionPending(abstractContact.getAccount(), abstractContact.getUser());
 
-                if (statusText.toString().isEmpty())
-                    statusText = context.getString(abstractContact.getStatusMode().getStringID());
+                        switch (RosterManager.getInstance().getSubscriptionType(abstractContact.getAccount(), abstractContact.getUser())) {
+                            case both:
+                            case to:
+                                //Contact is in our roster, and we have an accepted subscription to their status(online/offline/busy/etc.)
+                                statusText = getNormalStatus(abstractContact);
+                                break;
+                            case from:
+                                //Contact is in our roster, and has an accepted subscription to our status
+                                if (outgoingSubscriptionRequest) {
+                                    //And we have an outgoing subscription request to contact's status
+                                    statusText = context.getString(R.string.contact_state_outgoing_request);
+                                } else {
+                                    //And there is no outgoing subscription request to contact's status
+                                    statusText = context.getString(R.string.contact_state_subscribed_to_account);
+                                }
+                                break;
+                            default:
+                                //Contact is in our roster, no one has a subscription
+                                if (outgoingSubscriptionRequest) {
+                                    //And we have an outgoing subscription request to contact's status
+                                    statusText = context.getString(R.string.contact_state_outgoing_request);
+                                } else {
+                                    if (incomingSubscriptionRequest) {
+                                        //And we have an incoming subscription request to our status
+                                        statusText = context.getString(R.string.contact_state_incoming_request);
+                                    } else {
+                                        //And there is no outgoing subscription request to contact's status
+                                        statusText = context.getString(R.string.contact_state_no_subscriptions);
+                                    }
+                                }
+                                break;
+                        }
+                    }
+
+                    if (statusText == null) {
+                        statusText = getNormalStatus(abstractContact);
+                    }
+
+                    if (statusText.toString().isEmpty())
+                        statusText = context.getString(abstractContact.getStatusMode().getStringID());
+                }
             }
         }
         statusTextView.setText(statusText);
+    }
+
+    private static String getNormalStatus(AbstractContact contact) {
+        if (StatusMode.unavailable == contact.getStatusMode()) {
+            return getLastActivity(contact);
+        } else {
+            return contact.getStatusText().trim();
+        }
     }
 
     private static boolean isContactOffline(int statusLevel) {

@@ -19,7 +19,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.text.Editable;
-import android.text.Html;
 import android.text.Spannable;
 import android.text.TextWatcher;
 import android.view.Gravity;
@@ -36,7 +35,6 @@ import android.view.WindowManager;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.Chronometer;
 import android.widget.EditText;
@@ -191,8 +189,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     private LinearLayout inputLayout;
     private ViewStub stubNewContact;
     private ViewGroup newContactLayout;
-    private Button addContact;
-    private Button blockContact;
+    private TextView addContact;
+    private TextView blockContact;
     private ImageButton closeNewContactLayout;
     private ViewStub stubJoin;
     private LinearLayout joinLayout;
@@ -1833,19 +1831,30 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
             return;
 
         AbstractChat chat = getChat();
-        if (RosterManager.getInstance().getRosterContact(account, user) == null
-                && chat != null && !chat.isAddContactSuggested()
-                || PresenceManager.getInstance().hasSubscriptionRequest(account, user)) {
+        int subscriptionState = RosterManager.getInstance().getSubscriptionState(account, user);
+        boolean inRoster = RosterManager.getInstance().getRosterContact(account, user) != null;
+
+        if ((subscriptionState == RosterManager.SubscriptionState.NONE && chat != null && !chat.isAddContactSuggested())
+                || subscriptionState == RosterManager.SubscriptionState.NONE_PENDING_IN
+                || subscriptionState == RosterManager.SubscriptionState.NONE_PENDING_IN_OUT
+                || subscriptionState == RosterManager.SubscriptionState.TO_PENDING_IN
+                || (subscriptionState == RosterManager.SubscriptionState.FROM && chat != null && !chat.isAddContactSuggested())) {
             if (newContactLayout == null)
-                inflateNewContactLayout();
+                inflateNewContactLayout(subscriptionState, inRoster);
             else {
                 newContactLayout.setVisibility(View.VISIBLE);
             }
         }
     }
 
-    private void inflateNewContactLayout() {
+    private void inflateNewContactLayout(final int subscriptionState, final boolean inRoster) {
         newContactLayout = (ViewGroup) stubNewContact.inflate();
+        newContactLayout.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                return true;
+            }
+        });
         manageToolbarElevation(true);
 
         final Transition transition = new Slide(Gravity.TOP);
@@ -1855,15 +1864,34 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         AbstractContact bestContact = RosterManager.getInstance().getBestContact(getAccount(), getUser());
         final String name = bestContact != null ? bestContact.getName() : getUser().toString();
 
-        final boolean incoming = PresenceManager.getInstance().hasSubscriptionRequest(account, user);
-
-        TextView addContactMessage = newContactLayout.findViewById(R.id.add_contact_message);
-        TextView addContactTitle = newContactLayout.findViewById(R.id.add_contact_title);
-
-        addContactMessage.setText(Html.fromHtml(getString(incoming ? R.string.chat_accept_contact : R.string.chat_add_contact, name)));
-        addContactTitle.setText(getString(incoming ? R.string.subscription_request_message : R.string.chat_add_contact_title));
-
         addContact = newContactLayout.findViewById(R.id.add_contact);
+        blockContact = newContactLayout.findViewById(R.id.block_contact);
+        closeNewContactLayout = newContactLayout.findViewById(R.id.close_new_contact_layout);
+
+        switch (subscriptionState) {
+            case RosterManager.SubscriptionState.FROM:
+            case RosterManager.SubscriptionState.NONE:
+                if (inRoster) {
+                    // FROM = contact is subscribed to our presence. No pending subscription requests. Only in roster.
+                    // NONE = No current subscriptions or requests. In roster.
+                    setNewContactSubscribeLayout();
+                } else {
+                    // NONE = No current subscriptions or requests. Not in roster.
+                    setNewContactAddLayout();
+                }
+                break;
+            case RosterManager.SubscriptionState.NONE_PENDING_IN_OUT:
+            case RosterManager.SubscriptionState.TO_PENDING_IN:
+                // NONE_PENDING_IN_OUT = No current subscriptions, pending requests to each other.
+                // TO_PENDING_IN = We are subscribed to contact's presence. Contact sent us a subscription request.
+                setNewContactAllowLayout();
+                break;
+            case RosterManager.SubscriptionState.NONE_PENDING_IN:
+                // NONE_PENDING_IN = No current subscriptions and a pending request from contact to us.
+                setNewContactAddLayout();
+                break;
+        }
+
         addContact.setTextColor(ColorManager.getInstance().getAccountPainter()
                 .getAccountMainColor(account));
         addContact.setOnClickListener(new View.OnClickListener() {
@@ -1872,11 +1900,17 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                 Application.getInstance().runInBackgroundUserRequest(new Runnable() {
                     @Override
                     public void run() {
-
                         try {
-                            if (RosterManager.getInstance().getRosterContact(account, user) == null)
+                            if (!inRoster) {
                                 RosterManager.getInstance().createContact(getAccount(), getUser(), name, new ArrayList<String>());
-                            PresenceManager.getInstance().addAutoAcceptSubscription(getAccount(), getUser());
+                            } else {
+                                if (subscriptionState != RosterManager.SubscriptionState.TO_PENDING_IN              // No current subscription to contact AND
+                                        && subscriptionState != RosterManager.SubscriptionState.NONE_PENDING_IN_OUT)// No pending outgoung subscription requests
+                                    PresenceManager.getInstance().subscribeForPresence(account, user);              // So we try to subscribe for contact's presence.
+                            }
+                            if (subscriptionState != RosterManager.SubscriptionState.FROM) {
+                                PresenceManager.getInstance().addAutoAcceptSubscription(account, user);
+                            }
                         } catch (SmackException.NotLoggedInException
                                 | XMPPException.XMPPErrorException
                                 | SmackException.NotConnectedException
@@ -1893,7 +1927,6 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
             }
         });
 
-        blockContact = newContactLayout.findViewById(R.id.block_contact);
         blockContact.setTextColor(SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.dark ?
                 getResources().getColor(R.color.red_700) : getResources().getColor(R.color.red_900));
         blockContact.setOnClickListener(new View.OnClickListener() {
@@ -1918,11 +1951,12 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
             }
         });
 
-        closeNewContactLayout = newContactLayout.findViewById(R.id.close_new_contact_layout);
         closeNewContactLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (incoming) {
+                if (subscriptionState == RosterManager.SubscriptionState.NONE_PENDING_IN_OUT
+                        || subscriptionState == RosterManager.SubscriptionState.TO_PENDING_IN
+                        || subscriptionState == RosterManager.SubscriptionState.NONE_PENDING_IN) {
                     try {
                         PresenceManager.getInstance().discardSubscription(account, user);
                     } catch (NetworkException e) {
@@ -1933,10 +1967,36 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                     getChat().setAddContactSuggested(true);
                 }
                 TransitionManager.beginDelayedTransition((ViewGroup) rootView, transition);
-                newContactLayout.setVisibility(View.GONE);
+                newContactLayout.setVisibility(View.INVISIBLE);
                 manageToolbarElevation(false);
             }
         });
+    }
+
+    private void setNewContactSubscribeLayout() {
+        TextView addContactMessage = newContactLayout.findViewById(R.id.add_contact_message);
+
+        addContact.setText(R.string.chat_subscribe);
+        addContactMessage.setText(R.string.chat_subscribe_request_outgoing);
+        addContactMessage.setVisibility(View.VISIBLE);
+        blockContact.setVisibility(View.GONE);
+    }
+
+    private void setNewContactAddLayout() {
+        TextView addContactMessage = newContactLayout.findViewById(R.id.add_contact_message);
+
+        addContactMessage.setVisibility(View.GONE);
+        addContact.setText(R.string.contact_add);
+        blockContact.setVisibility(View.VISIBLE);
+    }
+
+    private void setNewContactAllowLayout() {
+        TextView addContactMessage = newContactLayout.findViewById(R.id.add_contact_message);
+
+        addContact.setText(R.string.chat_allow);
+        addContactMessage.setText(R.string.chat_subscribe_request_incoming);
+        addContactMessage.setVisibility(View.VISIBLE);
+        blockContact.setVisibility(View.GONE);
     }
 
     private void manageToolbarElevation(boolean remove) {

@@ -221,6 +221,9 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
         return set.contains(user);
     }
 
+    /**
+     *  Check if we have an incoming subscription request
+     */
     public boolean hasSubscriptionRequest(AccountJid account, UserJid bareAddress) {
         return getSubscriptionRequest(account, bareAddress) != null;
     }

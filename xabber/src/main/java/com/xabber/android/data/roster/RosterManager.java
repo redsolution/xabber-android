@@ -178,6 +178,54 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
         return entry.getType();
     }
 
+    /**
+     *  Check if we have an outgoing subscription request
+     */
+    public boolean hasSubscriptionPending(AccountJid account, UserJid user) {
+        RosterEntry entry = getRoster(account).getEntry(user.getJid().asBareJid());
+        if (entry == null) {
+            return false;
+        }
+        return entry.isSubscriptionPending();
+    }
+
+    public int getSubscriptionState(AccountJid account, UserJid user) {
+        boolean outgoingRequest = hasSubscriptionPending(account, user);
+        boolean incomingRequest = PresenceManager.getInstance().hasSubscriptionRequest(account, user);
+        RosterPacket.ItemType subscription = getSubscriptionType(account, user);
+        if (subscription == null) {
+            return SubscriptionState.NONE;
+        }
+        switch (getSubscriptionType(account, user)) {
+            case both:
+                return SubscriptionState.BOTH;
+            case from:
+                if (outgoingRequest) {
+                    return SubscriptionState.FROM_PENDING_OUT;
+                } else {
+                    return SubscriptionState.FROM;
+                }
+            case to:
+                if (incomingRequest) {
+                    return SubscriptionState.TO_PENDING_IN;
+                } else {
+                    return SubscriptionState.TO;
+                }
+            case none:
+                if (incomingRequest && outgoingRequest) {
+                    return SubscriptionState.NONE_PENDING_IN_OUT;
+                } else if (incomingRequest) {
+                    return SubscriptionState.NONE_PENDING_IN;
+                } else if (outgoingRequest) {
+                    return SubscriptionState.NONE_PENDING_OUT;
+                } else {
+                    return SubscriptionState.NONE;
+                }
+            default:
+                return SubscriptionState.NONE;
+        }
+    }
+
     public Collection<RosterContact> getAccountRosterContacts(final AccountJid accountJid) {
         List<RosterContact> contactsCopy = new ArrayList<>(rosterContacts.getNested(accountJid.toString()).values());
         return Collections.unmodifiableCollection(contactsCopy);
@@ -721,5 +769,18 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
         }
 
         return author;
+    }
+
+
+    public static class SubscriptionState {
+        public static final int NONE = 0;
+        public static final int NONE_PENDING_IN = 1;
+        public static final int NONE_PENDING_OUT = 2;
+        public static final int NONE_PENDING_IN_OUT = 3;
+        public static final int TO = 4;
+        public static final int TO_PENDING_IN = 5;
+        public static final int FROM = 6;
+        public static final int FROM_PENDING_OUT = 7;
+        public static final int BOTH = 8;
     }
 }
