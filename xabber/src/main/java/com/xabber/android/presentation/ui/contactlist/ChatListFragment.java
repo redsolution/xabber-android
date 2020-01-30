@@ -573,10 +573,9 @@ public class ChatListFragment extends Fragment implements ChatListItemListener,
 
     }
 
-    public void onItemContextMenu(int adapterPosition, ContextMenu menu){
-        AbstractContact item = adapter.getAbstractContactFromPosition(adapterPosition);
-        AccountJid accountJid = item.getAccount();
-        UserJid userJid = item.getUser();
+    public void onItemContextMenu(ContextMenu menu, AbstractContact contact){
+        AccountJid accountJid = contact.getAccount();
+        UserJid userJid = contact.getUser();
         AbstractContact abstractContact = RosterManager.getInstance().getAbstractContact(accountJid, userJid);
         ContextMenuHelper.createContactContextMenu(getActivity(), this, abstractContact, menu);
     }

@@ -8,6 +8,7 @@ import android.graphics.drawable.Drawable
 import android.os.Build
 import android.text.Html
 import android.util.TypedValue
+import android.view.ContextMenu
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -32,7 +33,7 @@ import java.nio.charset.StandardCharsets
 import java.util.*
 
 class ChatListAdapter(val list: MutableList<AbstractContact>, val listener: ChatListItemListener) :
-        RecyclerView.Adapter<ChatViewHolder>(), View.OnClickListener {
+        RecyclerView.Adapter<ChatViewHolder>(), View.OnClickListener, View.OnCreateContextMenuListener {
 
     lateinit var recyclerView: RecyclerView
     lateinit var activity: Activity
@@ -45,6 +46,9 @@ class ChatListAdapter(val list: MutableList<AbstractContact>, val listener: Chat
     override fun getItemCount(): Int = list.size
 
     fun getAbstractContactFromPosition(position: Int) = list[position]
+
+    fun getAbstractContactFromView(v: View?) =
+            getAbstractContactFromPosition(recyclerView.getChildLayoutPosition(v!!))
 
     fun addItem(index: Int, item: AbstractContact) {
         this.list.add(index, item)
@@ -63,6 +67,9 @@ class ChatListAdapter(val list: MutableList<AbstractContact>, val listener: Chat
         else listener.onChatItemClick(list[recyclerView.getChildLayoutPosition(v)])
     }
 
+    override fun onCreateContextMenu(menu: ContextMenu?, v: View?, menuInfo: ContextMenu.ContextMenuInfo?) =
+        listener.onItemContextMenu(menu!!, getAbstractContactFromView(v))
+
     override fun onAttachedToRecyclerView(recycler: RecyclerView) {
         recyclerView = recycler
         super.onAttachedToRecyclerView(recyclerView)
@@ -71,7 +78,7 @@ class ChatListAdapter(val list: MutableList<AbstractContact>, val listener: Chat
     override fun onBindViewHolder(holder: ChatViewHolder, position: Int) {
         holder.itemView.setOnClickListener(this)
         holder.avatarIV.setOnClickListener(this)
-        holder.itemView.setOnCreateContextMenuListener(listener)
+        holder.itemView.setOnCreateContextMenuListener(this)
         val contact = list[position]
         setupAccountColorIndicator(holder, contact)
         setupContactAvatar(holder, contact)
