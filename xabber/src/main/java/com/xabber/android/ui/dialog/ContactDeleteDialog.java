@@ -17,8 +17,6 @@ import androidx.fragment.app.DialogFragment;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
-import com.xabber.android.data.SettingsManager;
-import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.message.MessageManager;
@@ -63,12 +61,8 @@ public class ContactDeleteDialog extends DialogFragment implements View.OnClickL
         account = args.getParcelable(ARGUMENT_ACCOUNT);
         user = args.getParcelable(ARGUMENT_USER);
         String contactName = RosterManager.getInstance().getBestContact(account, user).getName();
-        String accountName = AccountManager.getInstance().getVerboseName(account);
         int colorIndicator = ColorManager.getInstance().getAccountPainter()
                 .getAccountMainColor(account);
-        int buttonColor = SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.dark ?
-                getResources().getColor(R.color.red_700) : getResources().getColor(R.color.red_900);
-
 
         ((TextView) view.findViewById(R.id.delete_contact_confirm))
                 .setText(Html.fromHtml(getString(R.string.contact_delete_confirm_short,

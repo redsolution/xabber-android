@@ -24,6 +24,8 @@ public class ChatDataRealm extends RealmObject {
     private NotificationStateRealm notificationState;
     private int lastPosition;
     private boolean historyRequestedAtStart;
+    private Long lastActionTimestamp;
+    private int chatStateMode;
 
     public ChatDataRealm(String accountJid, String userJid) {
         this.id = accountJid + "-" + userJid;
@@ -97,5 +99,21 @@ public class ChatDataRealm extends RealmObject {
 
     public void setHistoryRequestedAtStart(boolean historyRequestedAtStart) {
         this.historyRequestedAtStart = historyRequestedAtStart;
+    }
+
+    public Long getLastActionTimestamp() {
+        return lastActionTimestamp;
+    }
+
+    public void setLastActionTimestamp(Long lastActionTimestamp) {
+        this.lastActionTimestamp = lastActionTimestamp;
+    }
+
+    public int getChatstateMode() {
+        return chatStateMode;
+    }
+
+    public void setChatStateMode(int mode) {
+        chatStateMode = mode;
     }
 }

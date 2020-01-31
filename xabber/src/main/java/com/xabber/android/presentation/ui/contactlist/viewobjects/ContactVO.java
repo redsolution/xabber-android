@@ -178,6 +178,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
 
         if (lastMessage == null || lastMessage.getText() == null) {
             messageText = statusText;
+            if (chat.getLastActionTimestamp() != null) time = new Date(chat.getLastActionTimestamp());
         } else {
             if (ChatStateManager.getInstance().getFullChatStateString(contact.getAccount(), contact.getUser()) != null) {
                 String chatState = ChatStateManager.getInstance().getFullChatStateString(contact.getAccount(), contact.getUser());

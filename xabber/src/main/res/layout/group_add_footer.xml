@@ -17,7 +17,7 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:id="@+id/group_add_input"
         android:layout_weight="1"
-        android:hint="@string/add_new_group"
+        android:hint="@string/add_new_circle"
         android:textColorHint="@color/grey_400"
         android:singleLine="true" />
 

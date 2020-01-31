@@ -54,4 +54,7 @@
     <dimen name="message_padding">50dp</dimen>
 
     <dimen tools:override="true" name="design_fab_size_normal">40dp</dimen>
+
+    <dimen name="input_view_height">52dp</dimen>
+    <dimen name="bottom_navigation_height">56dp</dimen>
 </resources>

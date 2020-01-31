@@ -305,7 +305,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
             @Override
             public void onClick(View v) {
                 if (!CrowdfundingChat.USER.equals(user.getBareJid().toString())){
-                    startActivity(ContactEditActivity.createIntent(ChatActivity.this, account,user));
+                    startActivity(ContactViewerActivity.createIntent(ChatActivity.this, account,user));
                 }
             }
         });
@@ -597,6 +597,10 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
 
     }
 
+    public Toolbar getToolbar() {
+        return toolbar;
+    }
+
 
     private void updateStatusBar() {
         if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light)
@@ -726,6 +730,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
 
     private void setUpMUCInfoMenu(Menu menu, AbstractChat abstractChat) {
         RoomState chatState = ((RoomChat) abstractChat).getState();
+        menu.setGroupVisible(R.id.group_conference_actions, true);
         if (chatState == RoomState.unavailable)
             menu.findItem(R.id.action_join_conference).setVisible(true);
         else {
@@ -736,14 +741,8 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
             }
         }
 
-        menu.findItem(R.id.action_remove_contact).setVisible(false);
+        menu.setGroupVisible(R.id.roster_actions, false);
         menu.findItem(R.id.action_delete_conference).setVisible(true);
-
-        menu.findItem(R.id.action_generate_qrcode).setVisible(false);
-        menu.findItem(R.id.action_send_contact).setVisible(false);
-        menu.findItem(R.id.action_edit_alias).setVisible(false);
-        menu.findItem(R.id.action_edit_groups).setVisible(false);
-        menu.findItem(R.id.action_block_contact).setVisible(false);
     }
 
     private void setUpMUCMenu(Menu menu, AbstractChat abstractChat) {
@@ -923,12 +922,8 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
                 return true;
 
             /* contact info menu */
-            case R.id.action_edit_alias:
-                editAlias();
-                return true;
-
-            case R.id.action_edit_groups:
-                startActivity(GroupEditActivity.createIntent(this, account, user));
+            case R.id.action_edit_contact:
+                startActivity(ContactEditActivity.createIntent(this, account, user));
                 return true;
 
             case R.id.action_delete_conference:

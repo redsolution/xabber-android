@@ -55,6 +55,14 @@
         />
 
     <ViewStub
+        android:id="@+id/stubNewContact"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:layout_alignTop="@id/chat_messages_recycler_view"
+        android:inflatedId="@+id/new_contact_chat_panel"
+        android:layout="@layout/layout_chat_new_contact" />
+
+    <ViewStub
         android:id="@+id/stubNotify"
         android:inflatedId="@+id/notifyLayout"
         android:layout="@layout/layout_chat_notify"
@@ -109,7 +117,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
             android:backgroundTint="?attr/chat_input_background"
-            android:src="@drawable/ic_arrow_down"
+            app:srcCompat="@drawable/ic_arrow_down"
             android:tint="?attr/chat_input_button_color"
             app:borderWidth="0dp"
             />

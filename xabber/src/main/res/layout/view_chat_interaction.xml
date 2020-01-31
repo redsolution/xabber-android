@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/interactionView"
     android:layout_width="match_parent"
@@ -11,14 +12,13 @@
     <ImageView
         android:id="@+id/ivClose"
         android:layout_width="52dp"
-        android:layout_height="52dp"
-        android:padding="14dp"
-        android:src="@drawable/ic_close"
-        android:tint="@color/grey_600"
+        android:layout_height="@dimen/input_view_height"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:clickable="true"
         android:focusable="true"
-        />
+        android:padding="14dp"
+        app:srcCompat="@drawable/ic_close"
+        android:tint="@color/grey_600" />
 
     <TextView
         android:id="@+id/tvCount"
@@ -46,7 +46,7 @@
             android:layout_width="52dp"
             android:layout_height="52dp"
             android:padding="12dp"
-            android:src="@drawable/ic_edit_grey_24dp"
+            app:srcCompat="@drawable/ic_edit_grey_24dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
             android:focusable="true"
@@ -56,42 +56,42 @@
         <ImageView
             android:id="@+id/ivDelete"
             android:layout_width="48dp"
-            android:layout_height="52dp"
+            android:layout_height="@dimen/input_view_height"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
             android:focusable="true"
             android:padding="12dp"
-            android:src="@drawable/ic_delete_grey" />
+            app:srcCompat="@drawable/ic_delete_grey" />
 
         <ImageView
             android:id="@+id/ivCopy"
             android:layout_width="48dp"
-            android:layout_height="52dp"
+            android:layout_height="@dimen/input_view_height"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
             android:focusable="true"
             android:padding="12dp"
-            android:src="@drawable/ic_copy" />
+            app:srcCompat="@drawable/ic_copy" />
 
         <ImageView
             android:id="@+id/ivReply"
             android:layout_width="48dp"
-            android:layout_height="52dp"
+            android:layout_height="@dimen/input_view_height"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
             android:focusable="true"
             android:padding="12dp"
-            android:src="@drawable/ic_message_forwarded_14dp" />
+            app:srcCompat="@drawable/ic_message_forwarded_14dp" />
 
         <ImageView
             android:id="@+id/ivForward"
             android:layout_width="48dp"
-            android:layout_height="52dp"
+            android:layout_height="@dimen/input_view_height"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
             android:focusable="true"
             android:padding="12dp"
-            android:src="@drawable/ic_forward" />
+            app:srcCompat="@drawable/ic_forward" />
 
     </LinearLayout>
 

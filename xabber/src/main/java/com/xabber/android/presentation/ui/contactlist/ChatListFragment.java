@@ -14,19 +14,20 @@ import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.ContextMenu;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.PopupMenu;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.PopupMenu;
 import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.Fragment;
@@ -217,7 +218,6 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
         Application.getInstance().addUIListener(OnContactChangedListener.class, this);
         Application.getInstance().addUIListener(OnChatStateListener.class, this);
-        updateUnreadCount();
         if (MessageDatabaseManager.getAllUnreadMessagesCount() == 0){
             onStateSelected(ChatListState.recent);
         }
@@ -665,7 +665,9 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
                         MessageManager.getInstance().getChat(abstractContact.getAccount(), abstractContact.getUser()).markAsReadAll(true);
                     }
                     onStateSelected(ChatListFragment.ChatListState.recent);
-                    Toast.makeText(getActivity(), R.string.all_chats_were_market_as_read_toast, Toast.LENGTH_SHORT).show();
+                    Toast toast = Toast.makeText(getActivity(), R.string.all_chats_were_market_as_read_toast, Toast.LENGTH_SHORT);
+                    toast.setGravity(Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, (int)(getResources().getDimension(R.dimen.bottom_navigation_height) * 1.2f));
+                    toast.show();
                 }
             });
         }
@@ -684,7 +686,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         List<AbstractChat> newChats = new ArrayList<>();
         for (AbstractChat abstractChat : chats) {
             MessageItem lastMessage = abstractChat.getLastMessage();
-            if (lastMessage != null) {
+            if (lastMessage != null || abstractChat.getChatstateMode() == AbstractChat.ChatstateType.CLEARED_HISTORY) {
                 switch (state) {
                     case unread:
                         if (!abstractChat.isArchived() && abstractChat.getUnreadMessageCount() > 0)

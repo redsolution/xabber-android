@@ -129,12 +129,7 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
         Presence packet = new Presence(Presence.Type.subscribe);
         packet.setTo(user.getJid());
         StanzaSender.sendStanza(account, packet);
-        Set<UserJid> set = requestedSubscriptions.get(account);
-        if (set == null) {
-            set = new HashSet<>();
-            requestedSubscriptions.put(account, set);
-        }
-        set.add(user);
+        addRequestedSubscription(account, user);
         if (createChat) createChatForNewContact(account, user);
     }
 
@@ -143,6 +138,15 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
         if (set != null) {
             set.remove(user);
         }
+    }
+
+    private void addRequestedSubscription(AccountJid account, UserJid user) {
+        Set<UserJid> set = requestedSubscriptions.get(account);
+        if (set == null) {
+            set = new HashSet<>();
+            requestedSubscriptions.put(account, set);
+        }
+        set.add(user);
     }
 
     /**
@@ -175,6 +179,51 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
         removeRequestedSubscription(account, user);
     }
 
+    /**
+     * Subscribe for contact's presence (has no bearing on own presence sharing)
+     */
+    public void subscribeForPresence(AccountJid account, UserJid user) throws NetworkException {
+        Presence packet = new Presence(Presence.Type.subscribe);
+        packet.setTo(user.getJid());
+        StanzaSender.sendStanza(account, packet);
+    }
+
+    /**
+     * Unsubscribe from contact's presence (has no bearing on own presence sharing)
+     */
+    public void unsubscribeFromPresence(AccountJid account, UserJid user) throws NetworkException {
+        Presence packet = new Presence(Presence.Type.unsubscribe);
+        packet.setTo(user.getJid());
+        StanzaSender.sendStanza(account, packet);
+    }
+
+    public void addAutoAcceptSubscription(AccountJid account, UserJid user) throws NetworkException {
+        if(subscriptionRequestProvider.get(account, user) != null) {
+            acceptSubscription(account, user);
+        } else {
+            addRequestedSubscription(account, user);
+        }
+    }
+
+    public void removeAutoAcceptSubscription(AccountJid account, UserJid user) {
+        removeRequestedSubscription(account, user);
+    }
+
+    //public void addAutoAcceptSubscription(AccountJid account, UserJid user) {
+    //    addRequestedSubscription(account, user);
+    //}
+
+    public boolean hasAutoAcceptSubscription(AccountJid account, UserJid user) {
+        Set<UserJid> set = requestedSubscriptions.get(account);
+        if (set == null) {
+            return false;
+        }
+        return set.contains(user);
+    }
+
+    /**
+     *  Check if we have an incoming subscription request
+     */
     public boolean hasSubscriptionRequest(AccountJid account, UserJid bareAddress) {
         return getSubscriptionRequest(account, bareAddress) != null;
     }
@@ -383,7 +432,7 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
             }
             subscriptionRequestProvider.remove(account, from);
         } else {
-            if (notInContactRoster(account, from))
+            if (!RosterManager.getInstance().contactIsSubscribedTo(account, from))
                 subscriptionRequestProvider.add(new SubscriptionRequest(account, from), null);
         }
     }
@@ -408,15 +457,6 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
                 e.printStackTrace();
             }
         }
-    }
-
-    private boolean notInContactRoster(AccountJid account, UserJid user) {
-        for (RosterContact contact : RosterManager.getInstance().getAccountRosterContacts(account)) {
-            if (contact.getUser().getBareJid().equals(user.getBareJid().toString())) {
-                return false;
-            }
-        }
-        return true;
     }
 
     public static void sortPresencesByPriority(List<Presence> allPresences) {

@@ -113,6 +113,18 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
      */
     private String threadId;
 
+    /**
+     *  Last known "chatstate", i.e. "deleted chat", "chat with cleared history", "normal chat".
+     *  TODO: tie this state with the lastActionTimestamp and archive loading to avoid showing "cleared messages" in chat or showing a "deleted" chat.
+     */
+    private int chatstateType;
+
+    /**
+     *  The timestamp of the last chat action, such as: deletion, history clear, etc.
+     */
+    private Long lastActionTimestamp;
+
+
     private int lastPosition;
     private boolean archived;
     protected NotificationState notificationState;
@@ -128,6 +140,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     private MessageItem lastMessage;
     private RealmResults<MessageItem> messages;
     private String lastMessageId = null;
+    private boolean addContactSuggested = false;
     private boolean historyIsFull = false;
     private boolean historyRequestedAtStart = false;
     protected boolean isGroupchat = false;
@@ -601,8 +614,26 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         if (lastMessage != null) {
             return new Date(lastMessage.getTimestamp());
         } else {
+            if (lastActionTimestamp != null) {
+                return new Date(getLastActionTimestamp());
+            }
             return null;
         }
+    }
+
+    public Long getLastActionTimestamp() {
+        return lastActionTimestamp;
+    }
+
+    public void setLastActionTimestamp() {
+        MessageItem lastMessage = getLastMessage();
+        if (lastMessage != null) {
+            lastActionTimestamp = lastMessage.getTimestamp();
+        }
+    }
+
+    public void setLastActionTimestamp(Long timestamp) {
+        lastActionTimestamp = timestamp;
     }
 
     public Message createMessagePacket(String body, String stanzaId) {
@@ -935,21 +966,21 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         EventBus.getDefault().post(new MessageUpdateEvent(account, user));
     }
 
-    public void markAsRead(String messageId, boolean trySendDisplay) {
-        MessageItem message = Realm.getDefaultInstance()
-                .where(MessageItem.class)
-                .equalTo(MessageItem.Fields.STANZA_ID, messageId)
-                .findFirst();
-        if (message != null) executeRead(message, trySendDisplay);
+    //public void markAsRead(String messageId, boolean trySendDisplay) {
+    //    MessageItem message = Realm.getDefaultInstance()
+    //            .where(MessageItem.class)
+    //            .equalTo(MessageItem.Fields.STANZA_ID, messageId)
+    //            .findFirst();
+    //    if (message != null) executeRead(message, trySendDisplay);
+    //}
+
+    public void markAsRead(String messageId, ArrayList<String> stanzaId, boolean trySendDisplay) {
+        executeRead(messageId, stanzaId, trySendDisplay);
     }
 
-    public void markAsReadTest(String messageId, ArrayList<String> stanzaId, boolean trySendDisplay) {
-        executeReadTest(messageId, stanzaId, trySendDisplay);
-    }
-
-    private void executeReadTest(String messageId, ArrayList<String> stanzaId, boolean trySendDisplay) {
+    private void executeRead(String messageId, ArrayList<String> stanzaId, boolean trySendDisplay) {
         EventBus.getDefault().post(new MessageUpdateEvent(account, user));
-        BackpressureMessageReader.getInstance().markAsReadTest(messageId, stanzaId, account, user, trySendDisplay);
+        BackpressureMessageReader.getInstance().markAsRead(messageId, stanzaId, account, user, trySendDisplay);
     }
 
     public void markAsRead(MessageItem messageItem, boolean trySendDisplay) {
@@ -997,6 +1028,14 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     public void setArchived(boolean archived, boolean needSaveToRealm) {
         this.archived = archived;
         if (needSaveToRealm) ChatManager.getInstance().saveOrUpdateChatDataToRealm(this);
+    }
+
+    public void setAddContactSuggested(boolean suggested) {
+        addContactSuggested = suggested;
+    }
+
+    public boolean isAddContactSuggested() {
+        return addContactSuggested;
     }
 
     public NotificationState getNotificationState() {
@@ -1111,5 +1150,19 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
 
     public boolean isGroupchat() {
         return isGroupchat;
+    }
+
+    public int getChatstateMode() {
+        return chatstateType;
+    }
+
+    public void setChatstate(int chatstateType) {
+        this.chatstateType = chatstateType;
+    }
+
+    public static class ChatstateType {
+        public static final int NORMAL = 0;
+        public static final int CLEARED_HISTORY = 1;
+        public static final int DELETED = 2;
     }
 }

@@ -16,6 +16,7 @@ package com.xabber.android.data.message.chat;
 
 import android.database.Cursor;
 import android.net.Uri;
+
 import androidx.annotation.Nullable;
 
 import com.xabber.android.data.Application;
@@ -512,6 +513,8 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
                         chatRealm.setLastPosition(chat.getLastPosition());
                         chatRealm.setArchived(chat.isArchived());
                         chatRealm.setHistoryRequestedAtStart(chat.isHistoryRequestedAtStart());
+                        chatRealm.setLastActionTimestamp(chat.getLastActionTimestamp());
+                        chatRealm.setChatStateMode(chat.getChatstateMode());
 
                         NotificationStateRealm notificationStateRealm = chatRealm.getNotificationState();
                         if (notificationStateRealm == null)
@@ -559,7 +562,9 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
                     realmChat.isArchived(),
                     notificationState,
                     realmChat.getLastPosition(),
-                    realmChat.isHistoryRequestedAtStart());
+                    realmChat.isHistoryRequestedAtStart(),
+                    realmChat.getLastActionTimestamp(),
+                    realmChat.getChatstateMode());
         }
 
         realm.close();

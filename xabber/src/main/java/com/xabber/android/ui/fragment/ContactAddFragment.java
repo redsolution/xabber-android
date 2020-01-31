@@ -197,7 +197,7 @@ public class ContactAddFragment extends GroupEditorFragment
     public void onClick(View view){
         switch (view.getId()){
             case R.id.imgQRcode:
-                integrator = IntentIntegrator.forFragment(this);
+                integrator = IntentIntegrator.forSupportFragment(this);
                 integrator.setOrientationLocked(false)
                         .setBeepEnabled(false)
                         .setCameraId(0)

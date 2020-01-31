@@ -14,9 +14,10 @@
  */
 package com.xabber.android.data.roster;
 
+import android.text.TextUtils;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import android.text.TextUtils;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
@@ -151,12 +152,77 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
         }
     }
 
-    public boolean isSubscribed(AccountJid account, UserJid user) {
+    public boolean accountIsSubscribedTo(AccountJid account, UserJid user) {
         final Roster roster = getRoster(account);
         if (roster == null) {
             return false;
         } else {
             return roster.iAmSubscribedTo(user.getJid());
+        }
+    }
+
+    public boolean contactIsSubscribedTo(AccountJid account, UserJid user) {
+        final Roster roster = getRoster(account);
+        if (roster == null) {
+            return false;
+        } else {
+            return roster.isSubscribedToMyPresence(user.getJid());
+        }
+    }
+
+    public RosterPacket.ItemType getSubscriptionType(AccountJid account, UserJid user) {
+        RosterEntry entry = getRoster(account).getEntry(user.getJid().asBareJid());
+        if (entry == null) {
+            return null;
+        }
+        return entry.getType();
+    }
+
+    /**
+     *  Check if we have an outgoing subscription request
+     */
+    public boolean hasSubscriptionPending(AccountJid account, UserJid user) {
+        RosterEntry entry = getRoster(account).getEntry(user.getJid().asBareJid());
+        if (entry == null) {
+            return false;
+        }
+        return entry.isSubscriptionPending();
+    }
+
+    public int getSubscriptionState(AccountJid account, UserJid user) {
+        boolean outgoingRequest = hasSubscriptionPending(account, user);
+        boolean incomingRequest = PresenceManager.getInstance().hasSubscriptionRequest(account, user);
+        RosterPacket.ItemType subscription = getSubscriptionType(account, user);
+        if (subscription == null) {
+            return SubscriptionState.NONE;
+        }
+        switch (getSubscriptionType(account, user)) {
+            case both:
+                return SubscriptionState.BOTH;
+            case from:
+                if (outgoingRequest) {
+                    return SubscriptionState.FROM_PENDING_OUT;
+                } else {
+                    return SubscriptionState.FROM;
+                }
+            case to:
+                if (incomingRequest) {
+                    return SubscriptionState.TO_PENDING_IN;
+                } else {
+                    return SubscriptionState.TO;
+                }
+            case none:
+                if (incomingRequest && outgoingRequest) {
+                    return SubscriptionState.NONE_PENDING_IN_OUT;
+                } else if (incomingRequest) {
+                    return SubscriptionState.NONE_PENDING_IN;
+                } else if (outgoingRequest) {
+                    return SubscriptionState.NONE_PENDING_OUT;
+                } else {
+                    return SubscriptionState.NONE;
+                }
+            default:
+                return SubscriptionState.NONE;
         }
     }
 
@@ -703,5 +769,18 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
         }
 
         return author;
+    }
+
+
+    public static class SubscriptionState {
+        public static final int NONE = 0;
+        public static final int NONE_PENDING_IN = 1;
+        public static final int NONE_PENDING_OUT = 2;
+        public static final int NONE_PENDING_IN_OUT = 3;
+        public static final int TO = 4;
+        public static final int TO_PENDING_IN = 5;
+        public static final int FROM = 6;
+        public static final int FROM_PENDING_OUT = 7;
+        public static final int BOTH = 8;
     }
 }

@@ -49,8 +49,8 @@ import com.xabber.android.data.roster.ShowOfflineMode;
 import com.xabber.android.ui.activity.AccountActivity;
 import com.xabber.android.ui.activity.ConferenceAddActivity;
 import com.xabber.android.ui.activity.ContactAddActivity;
+import com.xabber.android.ui.activity.ContactEditActivity;
 import com.xabber.android.ui.activity.ContactListActivity;
-import com.xabber.android.ui.activity.GroupEditActivity;
 import com.xabber.android.ui.activity.StatusEditActivity;
 import com.xabber.android.ui.dialog.BlockContactDialog;
 import com.xabber.android.ui.dialog.ChatDeleteDialog;
@@ -135,7 +135,7 @@ public class ContextMenuHelper {
                 new MenuItem.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
-                        activity.startActivity(GroupEditActivity.createIntent(activity, account, user));
+                        activity.startActivity(ContactEditActivity.createIntent(activity, account, user));
                         return true;
                     }
                 });
@@ -181,7 +181,7 @@ public class ContextMenuHelper {
                         } catch (NetworkException e) {
                             Application.getInstance().onError(e);
                         }
-                        activity.startActivity(GroupEditActivity.createIntent(activity, account, user));
+                        activity.startActivity(ContactEditActivity.createIntent(activity, account, user));
                         return true;
                     }
                 });
@@ -252,10 +252,13 @@ public class ContextMenuHelper {
                     menu.findItem(R.id.action_delete_chat).setVisible(false);
                 }
             } else {
+                menu.findItem(R.id.action_delete_chat).setVisible(false);
                 if (RosterManager.getInstance().getRosterContact(account, user) == null) {
                     menu.findItem(R.id.action_delete_contact).setVisible(false);
                 }
             }
+
+            menu.findItem(R.id.action_configure_notifications).setVisible(false);
 
             Boolean supported = BlockingManager.getInstance().isSupported(account);
 

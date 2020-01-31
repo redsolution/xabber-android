@@ -112,7 +112,7 @@ public class ContactAddActivity extends ManagedActivity implements ContactAddFra
         }else
         */
         if (savedInstanceState == null) {
-            getFragmentManager()
+            getSupportFragmentManager()
                     .beginTransaction()
                     .add(R.id.fragment_container, ContactAddFragment.newInstance(getAccount(intent), getUser(intent)))
                     .commit();
@@ -121,7 +121,7 @@ public class ContactAddActivity extends ManagedActivity implements ContactAddFra
     }
 
     private void addContact() {
-        ((ContactAdder) getFragmentManager().findFragmentById(R.id.fragment_container)).addContact();
+        ((ContactAdder) getSupportFragmentManager().findFragmentById(R.id.fragment_container)).addContact();
     }
 
     @Override
@@ -158,7 +158,7 @@ public class ContactAddActivity extends ManagedActivity implements ContactAddFra
     }
 
     public void toolbarSetEnabled(boolean active){
-            toolbar.getMenu().findItem(R.id.action_add_contact).setEnabled(active ? true : false);
+            toolbar.getMenu().findItem(R.id.action_add_contact).setEnabled(active);
             View view = findViewById(R.id.action_add_contact);
             if (view instanceof TextView)
                 ((TextView) view).setTextColor(((TextView) view).getTextColors().withAlpha(active ? 255 : 127));

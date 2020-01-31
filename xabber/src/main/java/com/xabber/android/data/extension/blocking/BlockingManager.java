@@ -21,6 +21,7 @@ import org.jivesoftware.smackx.blocking.BlockingCommandManager;
 import org.jxmpp.jid.Jid;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -178,6 +179,16 @@ public class BlockingManager {
     private void updateCachedBlockedContacts(AccountJid account, List<UserJid> blockedContacts) {
         cachedBlockedContacts.remove(account);
         cachedBlockedContacts.put(account, blockedContacts);
+    }
+
+    public boolean contactIsBlocked(AccountJid account, UserJid user) {
+        Collection<UserJid> blockedContacts = BlockingManager.getInstance().getBlockedContacts(account);
+        for (UserJid blockedContact : blockedContacts) {
+            if (blockedContact.getBareJid().equals(user.getBareJid())) {
+                return true;
+            }
+        }
+        return  false;
     }
 
     public List<UserJid> getBlockedContacts(AccountJid account) {

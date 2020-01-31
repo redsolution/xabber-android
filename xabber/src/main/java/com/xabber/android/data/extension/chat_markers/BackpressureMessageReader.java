@@ -33,7 +33,7 @@ public class BackpressureMessageReader {
 
     private static BackpressureMessageReader instance;
     private Map<AbstractContact, PublishSubject<MessageHolder>> queries = new HashMap<>();
-    private Map<AbstractContact, PublishSubject<MessageHolderTest>> queriesTest = new HashMap<>();
+    private Map<AbstractContact, PublishSubject<MessageDataHolder>> queriesNew = new HashMap<>();
 
     public static BackpressureMessageReader getInstance() {
         if (instance == null) {
@@ -43,23 +43,31 @@ public class BackpressureMessageReader {
     }
 
     public void markAsRead(MessageItem messageItem, boolean trySendDisplayed) {
-        AbstractContact contact = RosterManager.getInstance().getAbstractContact(messageItem.getAccount(), messageItem.getUser());
-        PublishSubject<MessageHolder> subject = queries.get(contact);
-        if (subject == null) subject = createSubject(contact);
-        subject.onNext(new MessageHolder(messageItem, trySendDisplayed));
+        PublishSubject<MessageDataHolder> subject = createSubjectIfNeeded(messageItem.getAccount(), messageItem.getUser());
+        subject.onNext(new MessageDataHolder(messageItem, trySendDisplayed));
     }
 
-    private PublishSubject<MessageHolder> createSubject(final AbstractContact contact) {
-        PublishSubject<MessageHolder> subject = PublishSubject.create();
+    public void markAsRead(String messageId, @Nullable ArrayList<String> stanzaId, AccountJid accountJid, UserJid userJid, boolean trySendDisplayed) {
+        PublishSubject<MessageDataHolder> subject = createSubjectIfNeeded(accountJid, userJid);
+        subject.onNext(new MessageDataHolder(messageId, null, stanzaId, accountJid, userJid, trySendDisplayed));
+    }
+
+    private PublishSubject<MessageDataHolder> createSubjectIfNeeded(AccountJid accountJid, UserJid userJid) {
+        AbstractContact contact = RosterManager.getInstance().getAbstractContact(accountJid, userJid);
+        PublishSubject<MessageDataHolder> subject = queriesNew.get(contact);
+        if (subject == null) subject = createSubject(contact);
+        return subject;
+    }
+
+    private PublishSubject<MessageDataHolder> createSubject(final AbstractContact contact) {
+        PublishSubject<MessageDataHolder> subject = PublishSubject.create();
         subject.debounce(2000, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<MessageHolder>() {
+                .subscribe(new Action1<MessageDataHolder>() {
                     @Override
-                    public void call(MessageHolder holder) {
-                        final MessageItem message = holder.messageItem;
+                    public void call(final MessageDataHolder holder) {
                         final List<String> ids = new ArrayList<>();
-                        if (holder.trySendDisplayed)
-                            ChatMarkerManager.getInstance().sendDisplayed(message);
+
                         Application.getInstance().runInBackground(new Runnable() {
                             @Override
                             public void run() {
@@ -69,10 +77,16 @@ public class BackpressureMessageReader {
                                     realm.executeTransaction(new Realm.Transaction() {
                                         @Override
                                         public void execute(Realm realm) {
-                                            RealmResults<MessageItem> messages = getPreviousUnreadMessages(realm, message);
-                                            for (MessageItem mes : messages) {
-                                                mes.setRead(true);
-                                                ids.add(mes.getUniqueId());
+                                            MessageItem message = getMessageById(realm, holder);
+                                            if (message != null) {
+                                                if (holder.trySendDisplayed)
+                                                    ChatMarkerManager.getInstance().sendDisplayed(message);
+
+                                                RealmResults<MessageItem> messages = getPreviousUnreadMessages(realm, message);
+                                                for (MessageItem mes : messages) {
+                                                    mes.setRead(true);
+                                                    ids.add(mes.getUniqueId());
+                                                }
                                             }
                                         }
                                     });
@@ -82,7 +96,7 @@ public class BackpressureMessageReader {
                             }
                         });
 
-                        AbstractChat chat = MessageManager.getInstance().getOrCreateChat(message.getAccount(), message.getUser());
+                        AbstractChat chat = MessageManager.getInstance().getOrCreateChat(holder.account, holder.user);
                         if (chat != null) chat.approveRead(ids);
                     }
                 }, new Action1<Throwable>() {
@@ -90,35 +104,30 @@ public class BackpressureMessageReader {
                     public void call(Throwable throwable) {
                         LogManager.exception(this, throwable);
                         LogManager.d(this, "Exception is thrown. Subject was deleted.");
-                        queries.remove(contact);
+                        queriesNew.remove(contact);
                     }
                 });
-        queries.put(contact, subject);
+        queriesNew.put(contact, subject);
         return subject;
     }
 
-    public void markAsReadTest(String messageId, @Nullable ArrayList<String> stanzaId, AccountJid accountJid, UserJid userJid, boolean trySendDisplayed) {
-        AbstractContact contact = RosterManager.getInstance().getAbstractContact(accountJid, userJid);
-        PublishSubject<MessageHolderTest> subject = queriesTest.get(contact);
-        if (subject == null) subject = createSubjectTest(contact);
-        subject.onNext(new MessageHolderTest(messageId, stanzaId, trySendDisplayed, accountJid));
-    }
-
-    private PublishSubject<MessageHolderTest> createSubjectTest(final AbstractContact contact) {
-        PublishSubject<MessageHolderTest> subject = PublishSubject.create();
+/*
+    private PublishSubject<MessageDataHolder> createSubjectTest(final AbstractContact contact) {
+        PublishSubject<MessageDataHolder> subject = PublishSubject.create();
         subject.debounce(2000, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<MessageHolderTest>() {
+                .subscribe(new Action1<MessageDataHolder>() {
                     @Override
-                    public void call(MessageHolderTest holder) {
+                    public void call(MessageDataHolder holder) {
                         String messageId = holder.messageId;
-                        ArrayList<String> stanzaId = holder.stanzaId;
+                        String uniqueId = holder.uniqueId;
+                        ArrayList<String> stanzaIds = holder.stanzaId;
                         AccountJid accountJid = holder.account;
 
                         Realm realm = Realm.getDefaultInstance();
                         realm.beginTransaction();
 
-                        MessageItem message = getMessageById(realm, messageId, stanzaId, accountJid);
+                        MessageItem message = getMessageById(realm, messageId, uniqueId, stanzaIds, accountJid);
                         if (message != null) {
                             if (holder.trySendDisplayed) {
                                 ChatMarkerManager.getInstance().sendDisplayed(message);
@@ -141,19 +150,28 @@ public class BackpressureMessageReader {
                     public void call(Throwable throwable) {
                         LogManager.exception(this, throwable);
                         LogManager.d(this, "Exception is thrown. Subject was deleted.");
-                        queriesTest.remove(contact);
+                        queriesNew.remove(contact);
                     }
                 });
-        queriesTest.put(contact, subject);
+        queriesNew.put(contact, subject);
         return subject;
     }
+*/
 
-    private MessageItem getMessageById(Realm realm, String id, ArrayList<String> stanzaIds, AccountJid accountJid) {
+    private MessageItem getMessageById(Realm realm, MessageDataHolder data) {
+        return getMessageById(realm, data.messageId, data.uniqueId, data.stanzaId, data.account);
+    }
+
+    private MessageItem getMessageById(Realm realm, String id, String uniqueId, ArrayList<String> stanzaIds, AccountJid accountJid) {
         MessageItem message;
         RealmQuery<MessageItem> realmQuery = RealmQuery.createQuery(realm, MessageItem.class);
         realmQuery.equalTo(MessageItem.Fields.ACCOUNT, accountJid.toString());
         if (stanzaIds != null && stanzaIds.size()>0) {
             realmQuery.beginGroup();
+            if (uniqueId != null && !uniqueId.isEmpty()) {
+                realmQuery.equalTo(MessageItem.Fields.UNIQUE_ID, uniqueId);
+                realmQuery.or();
+            }
             realmQuery.equalTo(MessageItem.Fields.ORIGIN_ID, id);
             realmQuery.or();
             realmQuery.equalTo(MessageItem.Fields.STANZA_ID, id);
@@ -165,9 +183,15 @@ public class BackpressureMessageReader {
             message = realmQuery.findFirst();
 
         } else {
+            realmQuery.beginGroup();
+            if (uniqueId != null && !uniqueId.isEmpty()) {
+                realmQuery.equalTo(MessageItem.Fields.UNIQUE_ID, uniqueId);
+                realmQuery.or();
+            }
             realmQuery.equalTo(MessageItem.Fields.ORIGIN_ID, id);
             realmQuery.or();
             realmQuery.equalTo(MessageItem.Fields.STANZA_ID, id);
+            realmQuery.endGroup();
             message = realmQuery.findFirst();
         }
         return message;
@@ -182,17 +206,42 @@ public class BackpressureMessageReader {
                 .findAll();
     }
 
-    private class MessageHolderTest {
+    private class MessageDataHolder {
         final String messageId;
+        final String uniqueId;
         final ArrayList<String> stanzaId;
-        final boolean trySendDisplayed;
         final AccountJid account;
+        final UserJid user;
+        final boolean trySendDisplayed;
 
-        MessageHolderTest(String messageId, @Nullable ArrayList<String> stanzaId, boolean trySendDisplayed, AccountJid account) {
-            this.messageId = messageId;
-            this.stanzaId = stanzaId;
+        MessageDataHolder(MessageItem messageItem, boolean trySendDisplayed) {
+            this.messageId = messageItem.getOriginId();
+            this.uniqueId = messageItem.getUniqueId();
+            this.stanzaId = getStanzaIds(messageItem);
+            this.account = messageItem.getAccount();
+            this.user = messageItem.getUser();
             this.trySendDisplayed = trySendDisplayed;
+        }
+
+        MessageDataHolder(String messageId, @Nullable String uniqueId, @Nullable ArrayList<String> stanzaId,
+                          AccountJid account, UserJid user, boolean trySendDisplayed) {
+            this.messageId = messageId;
+            this.uniqueId = uniqueId;
+            this.stanzaId = stanzaId;
             this.account = account;
+            this.user = user;
+            this.trySendDisplayed = trySendDisplayed;
+        }
+
+        private ArrayList<String> getStanzaIds(MessageItem messageItem) {
+            ArrayList<String> stanzaIds = new ArrayList<>();
+            if (messageItem.getStanzaId() != null) {
+                stanzaIds.add(messageItem.getStanzaId());
+            }
+            if (messageItem.getArchivedId() != null && !messageItem.getArchivedId().equals(messageItem.getStanzaId())) {
+                stanzaIds.add(messageItem.getArchivedId());
+            }
+            return stanzaIds;
         }
     }
 

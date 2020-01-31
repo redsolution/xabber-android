@@ -15,17 +15,18 @@
 package com.xabber.android.ui.dialog;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Dialog;
-import androidx.fragment.app.DialogFragment;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.DialogFragment;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
@@ -35,10 +36,11 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.roster.RosterManager;
+import com.xabber.android.ui.color.ColorManager;
 
 import java.io.File;
 
-public class ChatExportDialogFragment extends DialogFragment implements DialogInterface.OnClickListener {
+public class ChatExportDialogFragment extends DialogFragment implements View.OnClickListener {
 
     public static final String ARGUMENT_ACCOUNT = "com.xabber.android.ui.dialog.ChatExportDialogFragment.ARGUMENT_ACCOUNT";
     public static final String ARGUMENT_USER = "com.xabber.android.ui.dialog.ChatExportDialogFragment.ARGUMENT_USER";
@@ -64,24 +66,31 @@ public class ChatExportDialogFragment extends DialogFragment implements DialogIn
         Bundle args = getArguments();
         account = args.getParcelable(ARGUMENT_ACCOUNT);
         user = args.getParcelable(ARGUMENT_USER);
+        int colorIndicator = ColorManager.getInstance().getAccountPainter()
+                .getAccountMainColor(account);
 
-        View layout = getActivity().getLayoutInflater().inflate(R.layout.export_chat, null);
+
+        View layout = getActivity().getLayoutInflater().inflate(R.layout.dialog_export_chat, null);
         nameView = (EditText) layout.findViewById(R.id.name);
         sendView = (CheckBox) layout.findViewById(R.id.send);
         nameView.setText(getString(R.string.export_chat_mask,
                 AccountManager.getInstance().getVerboseName(account),
                 RosterManager.getInstance().getName(account, user)));
 
+        ((Button) layout.findViewById(R.id.export)).setTextColor(colorIndicator);
+
+        layout.findViewById(R.id.cancel_export).setOnClickListener(this);
+        layout.findViewById(R.id.export).setOnClickListener(this);
+
         return new AlertDialog.Builder(getActivity())
                 .setTitle(R.string.export_chat_title)
-                .setView(layout)
-                .setPositiveButton(R.string.export_chat, this)
-                .setNegativeButton(android.R.string.cancel, this).create();
+                .setView(layout).create();
     }
 
     @Override
-    public void onClick(DialogInterface dialog, int which) {
-        if (which != Dialog.BUTTON_POSITIVE) {
+    public void onClick(View v) {
+        if (v.getId() == R.id.cancel_export) {
+            dismiss();
             return;
         }
 
@@ -121,6 +130,5 @@ public class ChatExportDialogFragment extends DialogFragment implements DialogIn
                 }
             }
         });
-
     }
 }
