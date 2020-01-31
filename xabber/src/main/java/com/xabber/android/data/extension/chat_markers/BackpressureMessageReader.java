@@ -111,53 +111,6 @@ public class BackpressureMessageReader {
         return subject;
     }
 
-/*
-    private PublishSubject<MessageDataHolder> createSubjectTest(final AbstractContact contact) {
-        PublishSubject<MessageDataHolder> subject = PublishSubject.create();
-        subject.debounce(2000, TimeUnit.MILLISECONDS)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<MessageDataHolder>() {
-                    @Override
-                    public void call(MessageDataHolder holder) {
-                        String messageId = holder.messageId;
-                        String uniqueId = holder.uniqueId;
-                        ArrayList<String> stanzaIds = holder.stanzaId;
-                        AccountJid accountJid = holder.account;
-
-                        Realm realm = Realm.getDefaultInstance();
-                        realm.beginTransaction();
-
-                        MessageItem message = getMessageById(realm, messageId, uniqueId, stanzaIds, accountJid);
-                        if (message != null) {
-                            if (holder.trySendDisplayed) {
-                                ChatMarkerManager.getInstance().sendDisplayed(message);
-                            }
-                            RealmResults<MessageItem> messages = getPreviousUnreadMessages(realm, message);
-                            List<String> ids = new ArrayList<>();
-                            for (MessageItem mes : messages) {
-                                mes.setRead(true);
-                                ids.add(mes.getUniqueId());
-                            }
-                            realm.commitTransaction();
-                            AbstractChat chat = MessageManager.getInstance().getOrCreateChat(message.getAccount(), message.getUser());
-                            if (chat != null) chat.approveRead(ids);
-                        }
-                        if (realm.isInTransaction())
-                            realm.commitTransaction();
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        LogManager.exception(this, throwable);
-                        LogManager.d(this, "Exception is thrown. Subject was deleted.");
-                        queriesNew.remove(contact);
-                    }
-                });
-        queriesNew.put(contact, subject);
-        return subject;
-    }
-*/
-
     private MessageItem getMessageById(Realm realm, MessageDataHolder data) {
         return getMessageById(realm, data.messageId, data.uniqueId, data.stanzaId, data.account);
     }

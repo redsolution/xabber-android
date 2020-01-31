@@ -91,38 +91,45 @@ public class BackpressureMessageSaver {
             realm = Realm.getDefaultInstance();
 
             realm.beginTransaction();
-            MessageItem item = realm.where(MessageItem.class)
-                    .equalTo(MessageItem.Fields.UNIQUE_ID, newIncomingMessageItem.getUniqueId())
-                    .equalTo(MessageItem.Fields.ACCOUNT, newIncomingMessageItem.getAccount().toString())
-                    .findFirst();
-            if (item != null && !newIncomingMessageItem.isForwarded()){
-                result=true;
-                LogManager.d(LOG_TAG,
-                        "Received message, but we already have message with same ID! \n Message stanza: "
-                                + newIncomingMessageItem.getOriginalStanza() + "\nMessage already in database stanza: "
-                                + item.getOriginalStanza());
+            MessageItem item;
+            if (newIncomingMessageItem.getUniqueId() != null) {
+                item = realm.where(MessageItem.class)
+                        .equalTo(MessageItem.Fields.UNIQUE_ID, newIncomingMessageItem.getUniqueId())
+                        .equalTo(MessageItem.Fields.ACCOUNT, newIncomingMessageItem.getAccount().toString())
+                        .findFirst();
+                if (item != null && !newIncomingMessageItem.isForwarded()) {
+                    result = true;
+                    LogManager.d(LOG_TAG,
+                            "Received message, but we already have message with same ID! \n Message stanza: "
+                                    + newIncomingMessageItem.getOriginalStanza() + "\nMessage already in database stanza: "
+                                    + item.getOriginalStanza());
+                }
             }
-            item = realm.where(MessageItem.class)
-                    .equalTo(MessageItem.Fields.STANZA_ID, newIncomingMessageItem.getStanzaId())
-                    .equalTo(MessageItem.Fields.ACCOUNT, newIncomingMessageItem.getAccount().toString())
-                    .findFirst();
-            if (item != null && !newIncomingMessageItem.isForwarded()){
-                result=true;
-                LogManager.d(LOG_TAG,
-                        "Received message, but we already have message with same ID! \n Message stanza: "
-                                + newIncomingMessageItem.getOriginalStanza() + "\nMessage already in database stanza: "
-                                + item.getOriginalStanza());
+            if (newIncomingMessageItem.getStanzaId() != null) {
+                item = realm.where(MessageItem.class)
+                        .equalTo(MessageItem.Fields.STANZA_ID, newIncomingMessageItem.getStanzaId())
+                        .equalTo(MessageItem.Fields.ACCOUNT, newIncomingMessageItem.getAccount().toString())
+                        .findFirst();
+                if (item != null && !newIncomingMessageItem.isForwarded()) {
+                    result = true;
+                    LogManager.d(LOG_TAG,
+                            "Received message, but we already have message with same ID! \n Message stanza: "
+                                    + newIncomingMessageItem.getOriginalStanza() + "\nMessage already in database stanza: "
+                                    + item.getOriginalStanza());
+                }
             }
-            item = realm.where(MessageItem.class)
-                    .equalTo(MessageItem.Fields.ORIGIN_ID, newIncomingMessageItem.getOriginId())
-                    .equalTo(MessageItem.Fields.ACCOUNT, newIncomingMessageItem.getAccount().toString())
-                    .findFirst();
-            if (item != null && !newIncomingMessageItem.isForwarded()){
-                result = true;
-                LogManager.d(LOG_TAG,
-                        "Received message, but we already have message with same ID! \n Message stanza: "
-                                + newIncomingMessageItem.getOriginalStanza() + "\nMessage already in database stanza: "
-                                + item.getOriginalStanza());
+            if (newIncomingMessageItem.getOriginId() != null) {
+                item = realm.where(MessageItem.class)
+                        .equalTo(MessageItem.Fields.ORIGIN_ID, newIncomingMessageItem.getOriginId())
+                        .equalTo(MessageItem.Fields.ACCOUNT, newIncomingMessageItem.getAccount().toString())
+                        .findFirst();
+                if (item != null && !newIncomingMessageItem.isForwarded()) {
+                    result = true;
+                    LogManager.d(LOG_TAG,
+                            "Received message, but we already have message with same ID! \n Message stanza: "
+                                    + newIncomingMessageItem.getOriginalStanza() + "\nMessage already in database stanza: "
+                                    + item.getOriginalStanza());
+                }
             }
             realm.commitTransaction();
         } catch (Exception e) { LogManager.exception(LOG_TAG, e); }
