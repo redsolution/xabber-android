@@ -160,8 +160,8 @@ public class ContactEditActivity extends ManagedActivity implements OnContactCha
         switch (item.getItemId()) {
             case R.id.action_save:
                 ((ContactEditFragment)getSupportFragmentManager().findFragmentById(R.id.fragment_container)).saveChanges();
+                finish();
         }
         return false;
     }
-
 }
