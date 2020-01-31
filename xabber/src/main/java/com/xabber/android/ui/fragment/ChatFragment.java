@@ -104,6 +104,7 @@ import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterManager;
+import com.xabber.android.data.roster.RosterManager.SubscriptionState;
 import com.xabber.android.ui.activity.ChatActivity;
 import com.xabber.android.ui.activity.ContactActivity;
 import com.xabber.android.ui.activity.ContactViewerActivity;
@@ -1831,14 +1832,35 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
             return;
 
         AbstractChat chat = getChat();
-        int subscriptionState = RosterManager.getInstance().getSubscriptionState(account, user);
+        SubscriptionState subscriptionState = RosterManager.getInstance().getSubscriptionState(account, user);
         boolean inRoster = RosterManager.getInstance().getRosterContact(account, user) != null;
+        boolean show = false;
 
-        if ((subscriptionState == RosterManager.SubscriptionState.NONE && chat != null && !chat.isAddContactSuggested())
-                || subscriptionState == RosterManager.SubscriptionState.NONE_PENDING_IN
-                || subscriptionState == RosterManager.SubscriptionState.NONE_PENDING_IN_OUT
-                || subscriptionState == RosterManager.SubscriptionState.TO_PENDING_IN
-                || (subscriptionState == RosterManager.SubscriptionState.FROM && chat != null && !chat.isAddContactSuggested())) {
+        switch (subscriptionState.getSubscriptionType()) {
+            case SubscriptionState.FROM:
+            case SubscriptionState.NONE:
+                //check both FROM and NONE types for the absence of pending subscriptions,
+                //and whether or not user already closed this "suggestion" dialog
+                if (subscriptionState.getPendingSubscription() == SubscriptionState.PENDING_NONE) {
+                    if (chat != null && !chat.isAddContactSuggested()) {
+                        show = true;
+                    }
+                }
+                //Since we need to check other pending subscription states of NONE, we skip a break; here
+            case SubscriptionState.TO:
+                //check all states for incoming + incoming & outgoinig types of pending subscriptions.
+                //
+                // NONE can be valid with both IN and IN_OUT
+                // TO can be valid only with IN.(TO && any type of OUT request are incompatible).
+                // FROM can not be valid with these checks. (FROM && any type of IN request are incompatible).
+                if (subscriptionState.getPendingSubscription() == SubscriptionState.PENDING_IN
+                        || subscriptionState.getPendingSubscription() == SubscriptionState.PENDING_IN_OUT) {
+                    show = true;
+                }
+                break;
+        }
+
+        if (show) {
             if (newContactLayout == null)
                 inflateNewContactLayout(subscriptionState, inRoster);
             else {
@@ -1847,7 +1869,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         }
     }
 
-    private void inflateNewContactLayout(final int subscriptionState, final boolean inRoster) {
+    private void inflateNewContactLayout(final SubscriptionState subscriptionState,
+                                         final boolean inRoster) {
         newContactLayout = (ViewGroup) stubNewContact.inflate();
         newContactLayout.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -1856,6 +1879,9 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
             }
         });
         manageToolbarElevation(true);
+        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.dark) {
+            newContactLayout.setBackgroundResource(R.color.grey_950);
+        }
 
         final Transition transition = new Slide(Gravity.TOP);
         transition.setDuration(300);
@@ -1868,28 +1894,33 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         blockContact = newContactLayout.findViewById(R.id.block_contact);
         closeNewContactLayout = newContactLayout.findViewById(R.id.close_new_contact_layout);
 
-        switch (subscriptionState) {
-            case RosterManager.SubscriptionState.FROM:
-            case RosterManager.SubscriptionState.NONE:
-                if (inRoster) {
-                    // FROM = contact is subscribed to our presence. No pending subscription requests. Only in roster.
-                    // NONE = No current subscriptions or requests. In roster.
-                    setNewContactSubscribeLayout();
-                } else {
-                    // NONE = No current subscriptions or requests. Not in roster.
+        switch (subscriptionState.getSubscriptionType()) {
+            case SubscriptionState.FROM:
+            case SubscriptionState.NONE:
+                if (subscriptionState.getPendingSubscription() == SubscriptionState.PENDING_NONE) {
+                    if (inRoster) {
+                        // FROM = contact is subscribed to our presence. No pending subscription requests. Only in roster.
+                        // NONE = No current subscriptions or requests. In roster.
+                        setNewContactSubscribeLayout();
+                    } else {
+                        // NONE = No current subscriptions or requests. Not in roster.
+                        setNewContactAddLayout();
+                    }
+                }
+                if (subscriptionState.getPendingSubscription() == SubscriptionState.PENDING_IN) {
+                    // NONE + PENDING_IN = No current subscriptions and a pending request from contact to us.
                     setNewContactAddLayout();
                 }
+                if (subscriptionState.getPendingSubscription() == SubscriptionState.PENDING_IN_OUT) {
+                    // NONE + PENDING_IN_OUT = No current subscriptions, pending requests to each other.
+                    setNewContactAllowLayout();
+                }
                 break;
-            case RosterManager.SubscriptionState.NONE_PENDING_IN_OUT:
-            case RosterManager.SubscriptionState.TO_PENDING_IN:
-                // NONE_PENDING_IN_OUT = No current subscriptions, pending requests to each other.
-                // TO_PENDING_IN = We are subscribed to contact's presence. Contact sent us a subscription request.
-                setNewContactAllowLayout();
-                break;
-            case RosterManager.SubscriptionState.NONE_PENDING_IN:
-                // NONE_PENDING_IN = No current subscriptions and a pending request from contact to us.
-                setNewContactAddLayout();
-                break;
+            case SubscriptionState.TO:
+                if (subscriptionState.getPendingSubscription() == SubscriptionState.PENDING_IN) {
+                    // TO + PENDING_IN = We are subscribed to contact's presence. Contact sent us a subscription request.
+                    setNewContactAllowLayout();
+                }
         }
 
         addContact.setTextColor(ColorManager.getInstance().getAccountPainter()
@@ -1904,12 +1935,19 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                             if (!inRoster) {
                                 RosterManager.getInstance().createContact(getAccount(), getUser(), name, new ArrayList<String>());
                             } else {
-                                if (subscriptionState != RosterManager.SubscriptionState.TO_PENDING_IN              // No current subscription to contact AND
-                                        && subscriptionState != RosterManager.SubscriptionState.NONE_PENDING_IN_OUT)// No pending outgoung subscription requests
-                                    PresenceManager.getInstance().subscribeForPresence(account, user);              // So we try to subscribe for contact's presence.
+                                if (subscriptionState.getSubscriptionType() == SubscriptionState.FROM                           // Either only an active subscription to us OR
+                                        || subscriptionState.getSubscriptionType() == SubscriptionState.NONE) {                 // No active subscriptions.
+
+                                    if (subscriptionState.getPendingSubscription() == SubscriptionState.PENDING_NONE            // Either no pending subscription requests OR
+                                            || subscriptionState.getPendingSubscription() == SubscriptionState.PENDING_IN) {    // Only incoming subscription request
+
+                                        PresenceManager.getInstance().subscribeForPresence(account, user);                      // So we try to subscribe for contact's presence.
+                                    }
+                                }
                             }
-                            if (subscriptionState != RosterManager.SubscriptionState.FROM) {
-                                PresenceManager.getInstance().addAutoAcceptSubscription(account, user);
+                            if (subscriptionState.getSubscriptionType() != SubscriptionState.FROM              // No current subscription from contact to us.
+                                    && subscriptionState.getSubscriptionType() != SubscriptionState.BOTH) {
+                                PresenceManager.getInstance().addAutoAcceptSubscription(account, user);        // So we add contact to automatically accepted sub-requests
                             }
                         } catch (SmackException.NotLoggedInException
                                 | XMPPException.XMPPErrorException
@@ -1940,6 +1978,13 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                             if (newContactLayout.getVisibility() == View.VISIBLE)
                                 newContactLayout.setVisibility(View.GONE);
                         }
+                        try {
+                            // discard subscription
+                            PresenceManager.getInstance().discardSubscription(account, user);
+                        } catch (NetworkException e) {
+                            Application.getInstance().onError(R.string.CONNECTION_FAILED);
+                        }
+                        getActivity().finish();
                     }
 
                     @Override
@@ -1954,17 +1999,16 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         closeNewContactLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (subscriptionState == RosterManager.SubscriptionState.NONE_PENDING_IN_OUT
-                        || subscriptionState == RosterManager.SubscriptionState.TO_PENDING_IN
-                        || subscriptionState == RosterManager.SubscriptionState.NONE_PENDING_IN) {
+                if (subscriptionState.getPendingSubscription() == SubscriptionState.PENDING_IN_OUT          // check if we have an incoming (IN) subscription
+                        || subscriptionState.getPendingSubscription() == SubscriptionState.PENDING_IN) {
                     try {
-                        PresenceManager.getInstance().discardSubscription(account, user);
+                        PresenceManager.getInstance().discardSubscription(account, user);                   // discard it on "X"-press
                     } catch (NetworkException e) {
                         e.printStackTrace();
                     }
                 }
                 if (getChat() != null) {
-                    getChat().setAddContactSuggested(true);
+                    getChat().setAddContactSuggested(true);                                                 // remember "X"-press
                 }
                 TransitionManager.beginDelayedTransition((ViewGroup) rootView, transition);
                 newContactLayout.setVisibility(View.INVISIBLE);

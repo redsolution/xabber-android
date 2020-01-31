@@ -189,41 +189,14 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
         return entry.isSubscriptionPending();
     }
 
-    public int getSubscriptionState(AccountJid account, UserJid user) {
+    public SubscriptionState getSubscriptionState(AccountJid account, UserJid user) {
         boolean outgoingRequest = hasSubscriptionPending(account, user);
         boolean incomingRequest = PresenceManager.getInstance().hasSubscriptionRequest(account, user);
         RosterPacket.ItemType subscription = getSubscriptionType(account, user);
-        if (subscription == null) {
-            return SubscriptionState.NONE;
-        }
-        switch (getSubscriptionType(account, user)) {
-            case both:
-                return SubscriptionState.BOTH;
-            case from:
-                if (outgoingRequest) {
-                    return SubscriptionState.FROM_PENDING_OUT;
-                } else {
-                    return SubscriptionState.FROM;
-                }
-            case to:
-                if (incomingRequest) {
-                    return SubscriptionState.TO_PENDING_IN;
-                } else {
-                    return SubscriptionState.TO;
-                }
-            case none:
-                if (incomingRequest && outgoingRequest) {
-                    return SubscriptionState.NONE_PENDING_IN_OUT;
-                } else if (incomingRequest) {
-                    return SubscriptionState.NONE_PENDING_IN;
-                } else if (outgoingRequest) {
-                    return SubscriptionState.NONE_PENDING_OUT;
-                } else {
-                    return SubscriptionState.NONE;
-                }
-            default:
-                return SubscriptionState.NONE;
-        }
+
+        SubscriptionState state = new SubscriptionState(subscription);
+        state.setPendingSubscriptions(incomingRequest, outgoingRequest);
+        return state;
     }
 
     public Collection<RosterContact> getAccountRosterContacts(final AccountJid accountJid) {
@@ -771,16 +744,93 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
         return author;
     }
 
-
+    //A wrapper for the current subscription type and any current
+    //pending subscription requests between contact and user.
     public static class SubscriptionState {
+
+        //Subscription types
+        //no subscriptions
         public static final int NONE = 0;
-        public static final int NONE_PENDING_IN = 1;
-        public static final int NONE_PENDING_OUT = 2;
-        public static final int NONE_PENDING_IN_OUT = 3;
+
+        //subscription from us to contact
         public static final int TO = 4;
-        public static final int TO_PENDING_IN = 5;
+
+        //subscription from contact to us
         public static final int FROM = 6;
-        public static final int FROM_PENDING_OUT = 7;
+
+        //2-way subscription
         public static final int BOTH = 8;
+
+
+        //Current state of pending subscriptions
+        //no pending subscriptions
+        public static final int PENDING_NONE = -1;
+
+        //pending incoming subscription
+        public static final int PENDING_IN = -2;
+
+        //pending outgoing subscription
+        public static final int PENDING_OUT = -3;
+
+        //pending outgoing and incoming subscription
+        public static final int PENDING_IN_OUT = -4;
+
+
+        private int subscriptionType;
+        private int pendingSubscription;
+
+        public SubscriptionState() {}
+
+        public SubscriptionState(RosterPacket.ItemType type) {
+            if (type == null) {
+                subscriptionType = NONE;
+            } else
+                switch (type) {
+                    case both:
+                        subscriptionType = BOTH;
+                        break;
+                    case to:
+                        subscriptionType = TO;
+                        break;
+                    case from:
+                        subscriptionType = FROM;
+                        break;
+                    default:
+                        subscriptionType = NONE;
+                        break;
+                }
+        }
+
+        public int getSubscriptionType() {
+            return subscriptionType;
+        }
+
+        public void setSubscriptionType(int subscriptionType) {
+            this.subscriptionType = subscriptionType;
+        }
+
+        public int getPendingSubscription() {
+            return pendingSubscription;
+        }
+
+        public void setPendingSubscription(int pendingSubscription) {
+            this.pendingSubscription = pendingSubscription;
+        }
+
+        public void setPendingSubscriptions(boolean incoming, boolean outgoing) {
+            if (incoming && outgoing) {
+                pendingSubscription = PENDING_IN_OUT;
+                return;
+            }
+            if (incoming) {
+                pendingSubscription = PENDING_IN;
+                return;
+            }
+            if (outgoing) {
+                pendingSubscription = PENDING_OUT;
+                return;
+            }
+            pendingSubscription = PENDING_NONE;
+        }
     }
 }

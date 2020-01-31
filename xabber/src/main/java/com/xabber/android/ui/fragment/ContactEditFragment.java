@@ -24,6 +24,7 @@ import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
+import com.xabber.android.data.roster.RosterManager.SubscriptionState;
 import com.xabber.android.ui.activity.ContactEditActivity;
 import com.xabber.android.ui.color.ColorManager;
 
@@ -41,8 +42,8 @@ public class ContactEditFragment extends GroupEditorFragment implements OnContac
 
     private EditText contactEditNickname;
     private TextView userJid;
-    private CheckBox chkSendPresence;
-    private CheckBox chkReceivePresence;
+    private CheckBox chkSendPresence; //responsible for both sending presence and auto-approving requests.
+    private CheckBox chkReceivePresence; //responsible for receiving presence and requesting subscription.
     private TextView tvSendPresence;
     private TextView tvReceivePresence;
     private ImageView avatar;
@@ -51,6 +52,7 @@ public class ContactEditFragment extends GroupEditorFragment implements OnContac
     private boolean sendChecked;
     private boolean receiveChecked;
     private RosterPacket.ItemType subType;
+    private SubscriptionState subscriptionState;
     private ArrayList<String> contactGroups = new ArrayList<>();
 
     public static ContactEditFragment newInstance(AccountJid account, UserJid user) {
@@ -101,7 +103,6 @@ public class ContactEditFragment extends GroupEditorFragment implements OnContac
             receiveChecked = savedInstanceState.getBoolean(SAVED_RECEIVE_PRESENCE);
             stateRestored = true;
         }
-        updateContact();
     }
 
     private void updateContact() {
@@ -112,45 +113,9 @@ public class ContactEditFragment extends GroupEditorFragment implements OnContac
         userJid.setText(getUser().getBareJid().toString());
         contactEditNickname.setHint(abstractContact.getName());
 
-        subType = RosterManager.getInstance().getSubscriptionType(getAccount(), getUser());
-        boolean subPending = RosterManager.getInstance().hasSubscriptionPending(getAccount(), getUser());
-        if (subType == null) {
-            getActivity().finish();
-        }
-        switch (subType) {
-            case both:
-                //both see each other's presence
-                chkSendPresence.setChecked(!stateRestored || sendChecked);
-                tvSendPresence.setText(R.string.contact_subscription_send);
+        subscriptionState = RosterManager.getInstance().getSubscriptionState(getAccount(), getUser());
 
-                chkReceivePresence.setChecked(!stateRestored || receiveChecked);
-                tvReceivePresence.setText(R.string.contact_subscription_receive);
-                break;
-            case to:
-                //account can see contact's presence
-                chkSendPresence.setChecked(stateRestored ? sendChecked : PresenceManager.getInstance().hasAutoAcceptSubscription(getAccount(), getUser()));
-                tvSendPresence.setText(R.string.contact_subscription_accept);
-
-                chkReceivePresence.setChecked(!stateRestored || receiveChecked);
-                tvReceivePresence.setText(R.string.contact_subscription_receive);
-                break;
-            case from:
-                //contact can see account's presence
-                chkSendPresence.setChecked(!stateRestored || sendChecked);
-                tvSendPresence.setText(R.string.contact_subscription_send);
-
-                chkReceivePresence.setChecked(stateRestored ? receiveChecked : subPending);
-                tvReceivePresence.setText(R.string.contact_subscription_ask);
-                break;
-            case none:
-                //no presence sharing
-                chkSendPresence.setChecked(stateRestored ? sendChecked : PresenceManager.getInstance().hasAutoAcceptSubscription(getAccount(), getUser()));
-                tvSendPresence.setText(R.string.contact_subscription_accept);
-
-                chkReceivePresence.setChecked(stateRestored ? receiveChecked : subPending);
-                tvReceivePresence.setText(R.string.contact_subscription_ask);
-                break;
-        }
+        setPresenceSettings();
 
         chkSendPresence.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -173,11 +138,63 @@ public class ContactEditFragment extends GroupEditorFragment implements OnContac
         contactGroups = new ArrayList<String>(RosterManager.getInstance().getGroups(getAccount(), getUser()));
     }
 
+    // Either set or restore checkbox values
+    // and the text of TextViews paired with them.
+    private void setPresenceSettings() {
+        int pendingSubscription = subscriptionState.getPendingSubscription();
+        boolean hasAutoAcceptSubscription = PresenceManager.getInstance().hasAutoAcceptSubscription(getAccount(), getUser());
+        switch (subscriptionState.getSubscriptionType()) {
+            case SubscriptionState.BOTH:
+                setSendSubscriptionField(true, R.string.contact_subscription_send);
+                setReceiveSubscriptionField(true, R.string.contact_subscription_receive);
+                break;
+
+            case SubscriptionState.TO:
+                if (pendingSubscription == SubscriptionState.PENDING_IN) {
+                    setSendSubscriptionField(false, R.string.contact_subscription_send);
+                } else {
+                    setSendSubscriptionField(hasAutoAcceptSubscription, R.string.contact_subscription_accept);
+                }
+                setReceiveSubscriptionField(true, R.string.contact_subscription_receive);
+                break;
+
+            case SubscriptionState.FROM:
+                setSendSubscriptionField(true, R.string.contact_subscription_send);
+                setReceiveSubscriptionField(pendingSubscription == SubscriptionState.PENDING_OUT,
+                        R.string.contact_subscription_ask);
+                break;
+
+            case SubscriptionState.NONE:
+                if (pendingSubscription == SubscriptionState.PENDING_IN_OUT
+                        || pendingSubscription == SubscriptionState.PENDING_IN) {
+                    setSendSubscriptionField(true, R.string.contact_subscription_send);
+                } else {
+                    setSendSubscriptionField(hasAutoAcceptSubscription, R.string.contact_subscription_accept);
+                }
+                setReceiveSubscriptionField(pendingSubscription == SubscriptionState.PENDING_IN_OUT
+                        || pendingSubscription == SubscriptionState.PENDING_OUT, R.string.contact_subscription_ask);
+        }
+    }
+
+    private boolean getRestoredCheckIfNeeded(boolean originalValue, boolean restoredValue) {
+        return stateRestored ? restoredValue : originalValue;
+    }
+
+    private void setReceiveSubscriptionField(boolean originalValue, int stringId) {
+        chkReceivePresence.setChecked(getRestoredCheckIfNeeded(originalValue, receiveChecked));
+        tvReceivePresence.setText(stringId);
+    }
+
+    private void setSendSubscriptionField(boolean originalValue, int stringId) {
+        chkSendPresence.setChecked(getRestoredCheckIfNeeded(originalValue, sendChecked));
+        tvSendPresence.setText(stringId);
+    }
 
     @Override
     public void onResume() {
         super.onResume();
         Application.getInstance().addUIListener(OnContactChangedListener.class, this);
+        updateContact();
     }
 
     @Override
@@ -204,32 +221,38 @@ public class ContactEditFragment extends GroupEditorFragment implements OnContac
         }
 
         //Subscription settings
-        if (chkSendPresence.isChecked() && chkReceivePresence.isChecked()) {
-            if (subType != RosterPacket.ItemType.both) {
-                ((ContactEditActivity)getActivity()).toolbarSetEnabled(true);
-                return;
-            }
-        }
+        boolean hasOutgoingSubscription = subscriptionState.getPendingSubscription() == SubscriptionState.PENDING_OUT
+                || subscriptionState.getPendingSubscription() == SubscriptionState.PENDING_IN_OUT;
+        boolean hasAutoAcceptSubscription = PresenceManager.getInstance().hasAutoAcceptSubscription(getAccount(), getUser());
 
-        if (chkSendPresence.isChecked() && !chkReceivePresence.isChecked()) {
-            if (subType != RosterPacket.ItemType.from) {
-                ((ContactEditActivity)getActivity()).toolbarSetEnabled(true);
-                return;
-            }
-        }
+        switch (subscriptionState.getSubscriptionType()) {
+            case SubscriptionState.BOTH:
+                if (!chkSendPresence.isChecked() || !chkReceivePresence.isChecked()) {
 
-        if (!chkSendPresence.isChecked() && chkReceivePresence.isChecked()) {
-            if (subType != RosterPacket.ItemType.to) {
-                ((ContactEditActivity)getActivity()).toolbarSetEnabled(true);
-                return;
-            }
-        }
+                    ((ContactEditActivity)getActivity()).toolbarSetEnabled(true);
+                    return;
+                }
+            case SubscriptionState.TO:
+                if ((hasAutoAcceptSubscription != chkSendPresence.isChecked())
+                        || !chkReceivePresence.isChecked()) {
 
-        if (!chkSendPresence.isChecked() && !chkReceivePresence.isChecked()) {
-            if (subType != RosterPacket.ItemType.none) {
-                ((ContactEditActivity)getActivity()).toolbarSetEnabled(true);
-                return;
-            }
+                    ((ContactEditActivity)getActivity()).toolbarSetEnabled(true);
+                    return;
+                }
+            case SubscriptionState.FROM:
+                if ((hasOutgoingSubscription != chkReceivePresence.isChecked())
+                        || !chkSendPresence.isChecked()) {
+
+                    ((ContactEditActivity)getActivity()).toolbarSetEnabled(true);
+                    return;
+                }
+            case SubscriptionState.NONE:
+                if ((hasAutoAcceptSubscription != chkSendPresence.isChecked())
+                        || (hasOutgoingSubscription != chkReceivePresence.isChecked())) {
+
+                    ((ContactEditActivity) getActivity()).toolbarSetEnabled(true);
+                    return;
+                }
         }
 
         //Circles
@@ -262,8 +285,8 @@ public class ContactEditFragment extends GroupEditorFragment implements OnContac
     }
 
     private void saveSubscriptionSettings() {
-        switch (subType) {
-            case both:
+        switch (subscriptionState.getSubscriptionType()) {
+            case SubscriptionState.BOTH:
                 if (chkSendPresence.isChecked() && chkReceivePresence.isChecked()) {
                     break;
                 }
@@ -278,10 +301,7 @@ public class ContactEditFragment extends GroupEditorFragment implements OnContac
                     e.printStackTrace();
                 }
                 break;
-            case to:
-                //if (!chkSendPresence.isChecked() && chkReceivePresence.isChecked()) {
-                //    break;
-                //}
+            case SubscriptionState.TO:
                 try {
                     if (chkSendPresence.isChecked()) {
                         PresenceManager.getInstance().addAutoAcceptSubscription(getAccount(), getUser());
@@ -295,25 +315,25 @@ public class ContactEditFragment extends GroupEditorFragment implements OnContac
                     e.printStackTrace();
                 }
                 break;
-            case from:
-                if (chkSendPresence.isChecked() && !chkReceivePresence.isChecked()) {
-                    break;
-                }
+            case SubscriptionState.FROM:
                 try {
                     if (!chkSendPresence.isChecked()) {
                         PresenceManager.getInstance().discardSubscription(getAccount(), getUser());
                     }
                     if (chkReceivePresence.isChecked()) {
-                        PresenceManager.getInstance().subscribeForPresence(getAccount(), getUser());
+                        if (subscriptionState.getPendingSubscription() != SubscriptionState.PENDING_OUT) {
+                            PresenceManager.getInstance().subscribeForPresence(getAccount(), getUser());
+                        }
+                    } else {
+                        if (subscriptionState.getPendingSubscription() == SubscriptionState.PENDING_OUT) {
+                            PresenceManager.getInstance().unsubscribeFromPresence(getAccount(), getUser());
+                        }
                     }
                 } catch (NetworkException e) {
                     e.printStackTrace();
                 }
                 break;
-            case none:
-                //if (!chkSendPresence.isChecked() && !chkReceivePresence.isChecked()) {
-                //    break;
-                //}
+            case SubscriptionState.NONE:
                 try {
                     if (chkSendPresence.isChecked()) {
                         PresenceManager.getInstance().addAutoAcceptSubscription(getAccount(), getUser());
@@ -321,7 +341,15 @@ public class ContactEditFragment extends GroupEditorFragment implements OnContac
                         PresenceManager.getInstance().removeAutoAcceptSubscription(getAccount(), getUser());
                     }
                     if (chkReceivePresence.isChecked()) {
-                        PresenceManager.getInstance().subscribeForPresence(getAccount(), getUser());
+                        if (subscriptionState.getPendingSubscription() == SubscriptionState.PENDING_NONE
+                                || subscriptionState.getPendingSubscription() == SubscriptionState.PENDING_IN) {
+                            PresenceManager.getInstance().subscribeForPresence(getAccount(), getUser());
+                        }
+                    } else {
+                        if (subscriptionState.getPendingSubscription() == SubscriptionState.PENDING_IN_OUT
+                                || subscriptionState.getPendingSubscription() == SubscriptionState.PENDING_OUT)  {
+                            PresenceManager.getInstance().unsubscribeFromPresence(getAccount(), getUser());
+                        }
                     }
                 } catch (NetworkException e) {
                     e.printStackTrace();
