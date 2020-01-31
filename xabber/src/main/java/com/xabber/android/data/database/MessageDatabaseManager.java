@@ -111,6 +111,8 @@ public class MessageDatabaseManager {
         for (AbstractChat abstractChat : MessageManager.getInstance().getChatsOfEnabledAccount()) {
             if (abstractChat.notifyAboutMessage() && !abstractChat.isArchived())
                 waitToRead += abstractChat.getwaitToMarkAsReadCount();
+            if (abstractChat.isArchived())
+                unreadCount -= abstractChat.getUnreadMessageCount();
         }
         unreadCount -= waitToRead;
         return unreadCount > 0 ? unreadCount : 0;

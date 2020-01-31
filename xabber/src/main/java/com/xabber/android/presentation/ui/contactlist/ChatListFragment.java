@@ -140,7 +140,6 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         void onChatClick(AbstractContact contact);
         void onChatListStateChanged(ChatListState chatListState);
         void onUnreadChanged(int unread);
-        void onManageAccountsClick();
     }
 
     @Override
@@ -531,26 +530,6 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         updateBackpressure.refreshRequest();
     }
 
-//    public void onItemSwipe(int position, int direction) {
-//        Object itemAtPosition = adapter.getItem(position);
-//        if (itemAtPosition != null && itemAtPosition instanceof ChatVO) {
-//            // backup of removed item for undo purpose
-//            final ChatVO deletedItem = (ChatVO) itemAtPosition;
-//            // update value
-//            setChatArchived(deletedItem, !(deletedItem).isArchived());
-//            // remove the item from recycler view
-//            adapter.removeItem(position);
-//            // update unread count
-//            updateUnreadCount();
-//            items.remove(itemAtPosition);
-//            ChatListState previousChatListState = currentChatsState;
-//            if (currentChatsState != ChatListState.recent && items.size() == 0)
-//                onStateSelected(ChatListState.recent);
-//            // showing snackbar with Undo option
-//            showSnackbar(deletedItem, position, previousChatListState);
-//        }
-//    }
-
     @Override
     public void onChatItemSwiped(@NotNull AbstractContact abstractContact) {
         AbstractChat abstractChat = MessageManager.getInstance()
@@ -770,6 +749,49 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         return baseEntities;
     }
 
+    private void showPlaceholder(String message, @Nullable String buttonMessage){
+        placeholderMessage.setText(message);
+        if (buttonMessage != null){
+            placeholderButton.setVisibility(View.VISIBLE);
+            placeholderButton.setText(buttonMessage);
+        }
+        placeholderView.setVisibility(View.VISIBLE);
+    }
+
+    private void hidePlaceholder(){
+        recyclerView.setVisibility(View.VISIBLE);
+        placeholderView.setVisibility(View.GONE);
+        placeholderButton.setVisibility(View.GONE);
+    }
+
+    private void showSnackbar(final AbstractContact deletedItem, final ChatListState previousState) {
+        if (snackbar != null) snackbar.dismiss();
+        final AbstractChat abstractChat = MessageManager.getInstance().getChat(deletedItem.getAccount(), deletedItem.getUser());
+        final boolean archived = abstractChat.isArchived();
+        snackbar = Snackbar.make(coordinatorLayout, !archived ? R.string.chat_was_unarchived
+                : R.string.chat_was_archived, Snackbar.LENGTH_LONG);
+        snackbar.setAction(R.string.undo, new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                abstractChat.setArchived(!archived, true);
+                onStateSelected(previousState);
+            }
+        });
+        snackbar.setActionTextColor(Color.YELLOW);
+        snackbar.show();
+    }
+
+    private void closeSnackbar() {
+        if (snackbar != null) snackbar.dismiss();
+    }
+
+    public enum ChatListState {
+        recent,
+        unread,
+        archived,
+        all
+    }
+
     private class ComparatorBySubstringPosition implements Comparator<AbstractContact>{
         String substring;
 
@@ -789,50 +811,6 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
             else if (statusComparing != 0) return statusComparing;
             else return (firstString.compareTo(secondString));
         }
-    }
-
-    public enum ChatListState {
-        recent,
-        unread,
-        archived,
-        all
-    }
-
-    private void showPlaceholder(String message, @Nullable String buttonMessage){
-        placeholderMessage.setText(message);
-        if (buttonMessage != null){
-            placeholderButton.setVisibility(View.VISIBLE);
-            placeholderButton.setText(buttonMessage);
-        }
-        placeholderView.setVisibility(View.VISIBLE);
-    }
-
-    private void hidePlaceholder(){
-        recyclerView.setVisibility(View.VISIBLE);
-        placeholderView.setVisibility(View.GONE);
-        placeholderButton.setVisibility(View.GONE);
-    }
-
-    public void showSnackbar(final AbstractContact deletedItem, final ChatListState previoustState) {
-        if (snackbar != null) snackbar.dismiss();
-        final AbstractChat abstractChat = MessageManager.getInstance().getChat(deletedItem.getAccount(), deletedItem.getUser());
-        final boolean archived = abstractChat.isArchived();
-        snackbar = Snackbar.make(coordinatorLayout, !archived ? R.string.chat_was_unarchived
-                : R.string.chat_was_archived, Snackbar.LENGTH_LONG);
-        snackbar.setAction(R.string.undo, new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                abstractChat.setArchived(!archived, true);
-                onStateSelected(previoustState);
-            }
-        });
-        snackbar.setActionTextColor(Color.YELLOW);
-        snackbar.show();
-    }
-
-    public void closeSnackbar() {
-        if (snackbar != null) snackbar.dismiss();
     }
 
 }
