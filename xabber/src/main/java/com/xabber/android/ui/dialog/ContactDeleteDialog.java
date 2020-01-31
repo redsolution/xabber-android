@@ -109,6 +109,7 @@ public class ContactDeleteDialog extends DialogFragment implements View.OnClickL
                 // remove roster contact
                 RosterManager.getInstance().removeContact(account, user);
 
+                dismiss();
                 if (getActivity() instanceof ContactActivity) {
                     startActivity(ContactListActivity.createIntent(getActivity()));
                 }

@@ -108,6 +108,7 @@ public class BlockContactDialog extends DialogFragment implements BlockingManage
     @Override
     public void onSuccessBlock() {
         Toast.makeText(Application.getInstance(), R.string.contact_blocked_successfully, Toast.LENGTH_SHORT).show();
+        discardSubscription();
         if (andDelete){
             deleteContact();
         }
@@ -120,15 +121,17 @@ public class BlockContactDialog extends DialogFragment implements BlockingManage
         dismiss();
     }
 
-    private void deleteContact() {
-        MessageManager.getInstance().closeChat(account, user);
-
+    private void discardSubscription() {
         try {
             // discard subscription
             PresenceManager.getInstance().discardSubscription(account, user);
         } catch (NetworkException e) {
             Application.getInstance().onError(R.string.CONNECTION_FAILED);
         }
+    }
+
+    private void deleteContact() {
+        MessageManager.getInstance().closeChat(account, user);
 
         // delete chat
         AbstractChat chat = MessageManager.getInstance().getChat(account, user);
