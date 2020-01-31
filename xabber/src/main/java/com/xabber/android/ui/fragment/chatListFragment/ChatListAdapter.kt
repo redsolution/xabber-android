@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.xabber.android.R
+import com.xabber.android.data.log.LogManager
 import com.xabber.android.data.roster.AbstractContact
 
 class ChatListAdapter(val list: MutableList<AbstractContact>, val listener: ChatListItemListener) :
@@ -15,11 +16,6 @@ class ChatListAdapter(val list: MutableList<AbstractContact>, val listener: Chat
 
     lateinit var recyclerView: RecyclerView
     lateinit var activity: Activity
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChatViewHolder =
-            ChatViewHolder(LayoutInflater
-                    .from(parent.context)
-                    .inflate(R.layout.item_chat_in_contact_list, parent, false))
 
     override fun getItemCount(): Int = list.size
 
@@ -33,6 +29,11 @@ class ChatListAdapter(val list: MutableList<AbstractContact>, val listener: Chat
         notifyItemChanged(index)
     }
 
+    fun addItems(newItemsList: MutableList<AbstractContact>){
+        this.list.clear()
+        this.list.addAll(newItemsList)
+    }
+
     fun deleteItemByPosition(position: Int) = list.removeAt(position)
 
     fun deleteItemByAbstractContact(contact: AbstractContact) = deleteItemByPosition(list.indexOf(contact))
@@ -44,12 +45,6 @@ class ChatListAdapter(val list: MutableList<AbstractContact>, val listener: Chat
         if (itemCount == 0) listener.onListBecomeEmpty()
     }
 
-    fun changeItems(newItemsList: MutableList<AbstractContact>){
-        this.list.clear()
-        this.list.addAll(newItemsList)
-        notifyDataSetChanged()
-    }
-
     override fun onClick(v: View?) {
         if (v!!.id == R.id.ivAvatar) listener.onChatAvatarClick(
                 list[recyclerView.getChildLayoutPosition(v.parent.parent.parent.parent as View)])
@@ -58,6 +53,11 @@ class ChatListAdapter(val list: MutableList<AbstractContact>, val listener: Chat
 
     override fun onCreateContextMenu(menu: ContextMenu?, v: View?, menuInfo: ContextMenu.ContextMenuInfo?) =
         listener.onChatItemContextMenu(menu!!, getAbstractContactFromView(v))
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChatViewHolder =
+            ChatViewHolder(LayoutInflater
+                    .from(parent.context)
+                    .inflate(R.layout.item_chat_in_contact_list, parent, false))
 
     override fun onAttachedToRecyclerView(recycler: RecyclerView) {
         recyclerView = recycler
@@ -70,8 +70,9 @@ class ChatListAdapter(val list: MutableList<AbstractContact>, val listener: Chat
         holder.avatarIV.setOnClickListener(this)
         holder.itemView.setOnCreateContextMenuListener(this)
 
-        val contact = list[position]
-        SetupChatItemViewHolderHelper(holder, contact).setup()
+        SetupChatItemViewHolderHelper(holder, list[position]).setup()
+
+        LogManager.i(this.javaClass.simpleName, "Changed element: $position")
     }
 
 }

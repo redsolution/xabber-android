@@ -11,6 +11,9 @@ import github.ankushsachdeva.emojicon.EmojiconTextView
 
 class ChatViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
 
+
+    var statusLevel = 0
+
     val avatarIV = itemView.findViewById<ImageView>(R.id.ivAvatar)
     val statusGroupchatIV = itemView.findViewById<ImageView>(R.id.ivStatusGroupchat)
     val statusIV = itemView.findViewById<ImageView>(R.id.ivStatus)

@@ -72,6 +72,7 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
 
     private fun setupRosterStatus(holder: ChatViewHolder, contact: AbstractContact) {
         val statusLevel = contact.statusMode.statusLevel
+        holder.statusLevel = statusLevel
         val mucIndicatorLevel = if (MUCManager.getInstance().hasRoom(contact.account, contact.user)) 1
         else if (MUCManager.getInstance().isMucPrivateChat(contact.account, contact.user)) 3
         else 0

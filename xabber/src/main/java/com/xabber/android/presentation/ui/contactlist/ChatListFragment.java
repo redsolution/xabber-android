@@ -30,6 +30,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -79,6 +80,7 @@ import com.xabber.android.ui.adapter.contactlist.AccountConfiguration;
 import com.xabber.android.ui.adapter.contactlist.GroupConfiguration;
 import com.xabber.android.ui.color.AccountPainter;
 import com.xabber.android.ui.color.ColorManager;
+import com.xabber.android.ui.fragment.chatListFragment.ChatItemDiffUtil;
 import com.xabber.android.ui.fragment.chatListFragment.ChatListAdapter;
 import com.xabber.android.ui.fragment.chatListFragment.ChatListItemListener;
 import com.xabber.android.ui.helper.ContextMenuHelper;
@@ -457,8 +459,8 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
     /**
     Update chat items in adapter
      */
-    private void updateItems(List<AbstractContact> items){
-         if (items.size() == 0 && showPlaceholders >= 3) {
+    private void updateItems(List<AbstractContact> newItems){
+         if (newItems.size() == 0 && showPlaceholders >= 3) {
             switch (currentChatsState) {
                 case unread:
                     showPlaceholder(Application.getInstance().getApplicationContext().getString(R.string.placeholder_no_unread), null);
@@ -480,9 +482,11 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         } else hidePlaceholder();
 
         /* Update items in RecyclerView */
-        this.items.clear();
-        this.items.addAll(items);
-        adapter.changeItems(items);
+        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new ChatItemDiffUtil(items, newItems, adapter), false);
+        items.clear();
+        items.addAll(newItems);
+        adapter.addItems(newItems);
+        diffResult.dispatchUpdatesTo(adapter);
     }
 
     @Override
@@ -587,7 +591,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
     @Override
     public void update(){
         /* List for store final method result */
-        List<AbstractContact> items = new ArrayList<>();
+        List<AbstractContact> newList = new ArrayList<>();
         showPlaceholders++;
         /* Map of accounts*/
         final Map<AccountJid, AccountConfiguration> accounts = new TreeMap<>();
@@ -598,9 +602,9 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         /* If filterString is empty, build regular chat list */
         if (filterString == null || filterString.equals("")){
             final GroupConfiguration chatsGroup = getChatsGroup(currentChatsState);
-            items.clear();
+            newList.clear();
             if (!chatsGroup.isEmpty()) {
-                items.addAll(chatsGroup.getAbstractContacts());
+                newList.addAll(chatsGroup.getAbstractContacts());
 
             }
         } else {
@@ -639,12 +643,12 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
                 } else rosterContacts.add(contact);
             }
             final ArrayList<AbstractContact> baseEntities = getSearchResults(rosterContacts, abstractChats);
-            items.clear();
-            items.addAll(baseEntities);
+            newList.clear();
+            newList.addAll(baseEntities);
         }
 
         /* Mark all the read button setup */
-        if (currentChatsState == ChatListState.unread && items.size() > 0){
+        if (currentChatsState == ChatListState.unread && newList.size() > 0){
             if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light){
                 markAllReadBackground.setColorFilter(ColorManager.getInstance().getAccountPainter().getDefaultMainColor(), PorterDuff.Mode.SRC_ATOP);
                 markAllAsReadButton.setTextColor(getContext().getResources().getColor(R.color.white));
@@ -669,7 +673,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
 
         /* Update another elements */
         updateUnreadCount();
-        updateItems(items);
+        updateItems(newList);
         updateToolbar();
     }
 
