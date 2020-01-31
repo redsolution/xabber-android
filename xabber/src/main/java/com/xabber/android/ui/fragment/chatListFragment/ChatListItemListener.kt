@@ -9,4 +9,5 @@ interface ChatListItemListener: View.OnCreateContextMenuListener{
     fun onChatAvatarClick(contact: AbstractContact)
     fun onChatItemContextMenu(menu: ContextMenu, contact: AbstractContact)
     fun onChatItemSwiped(abstractContact: AbstractContact)
+    fun onListBecomeEmpty()
 }

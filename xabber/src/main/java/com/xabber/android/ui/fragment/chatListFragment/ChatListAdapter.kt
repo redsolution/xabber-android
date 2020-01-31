@@ -61,7 +61,10 @@ class ChatListAdapter(val list: MutableList<AbstractContact>, val listener: Chat
     fun deleteItemByAbstractContact(contact: AbstractContact) = deleteItemByPosition(list.indexOf(contact))
 
     fun onSwipeChatItem(holder: ChatViewHolder){
-        listener.onChatItemSwiped(getAbstractContactFromView(holder.itemView))
+        val backupContact = getAbstractContactFromView(holder.itemView)
+        deleteItemByAbstractContact(getAbstractContactFromView(holder.itemView))
+        listener.onChatItemSwiped(backupContact)
+        if (itemCount == 0) listener.onListBecomeEmpty()
     }
 
     fun changeItems(newItemsList: MutableList<AbstractContact>){
@@ -89,7 +92,9 @@ class ChatListAdapter(val list: MutableList<AbstractContact>, val listener: Chat
         holder.itemView.setOnClickListener(this)
         holder.avatarIV.setOnClickListener(this)
         holder.itemView.setOnCreateContextMenuListener(this)
+
         val contact = list[position]
+
         setupAccountColorIndicator(holder, contact)
         setupContactAvatar(holder, contact)
         setupRosterStatus(holder, contact)

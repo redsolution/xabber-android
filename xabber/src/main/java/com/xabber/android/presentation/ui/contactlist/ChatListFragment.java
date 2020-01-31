@@ -98,10 +98,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 
-import eu.davidea.flexibleadapter.FlexibleAdapter;
-
-public class ChatListFragment extends Fragment implements ChatListItemListener,
-        FlexibleAdapter.OnItemSwipeListener, View.OnClickListener,
+public class ChatListFragment extends Fragment implements ChatListItemListener, View.OnClickListener,
         OnContactChangedListener, OnAccountChangedListener, OnChatStateListener, UpdateBackpressure.UpdatableObject,
         PopupMenu.OnMenuItemClickListener, ContextMenuHelper.ListPresenter {
 
@@ -533,8 +530,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener,
         updateBackpressure.refreshRequest();
     }
 
-    @Override
-    public void onItemSwipe(int position, int direction) {
+//    public void onItemSwipe(int position, int direction) {
 //        Object itemAtPosition = adapter.getItem(position);
 //        if (itemAtPosition != null && itemAtPosition instanceof ChatVO) {
 //            // backup of removed item for undo purpose
@@ -552,7 +548,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener,
 //            // showing snackbar with Undo option
 //            showSnackbar(deletedItem, position, previousChatListState);
 //        }
-    }
+//    }
 
     @Override
     public void onChatItemSwiped(@NotNull AbstractContact abstractContact) {
@@ -586,6 +582,12 @@ public class ChatListFragment extends Fragment implements ChatListItemListener,
         UserJid userJid = contact.getUser();
         AbstractContact abstractContact = RosterManager.getInstance().getAbstractContact(accountJid, userJid);
         ContextMenuHelper.createContactContextMenu(getActivity(), this, abstractContact, menu);
+    }
+
+    @Override
+    public void onListBecomeEmpty() {
+        if (currentChatsState != ChatListState.recent) currentChatsState = ChatListState.recent;
+        updateBackpressure.refreshRequest();
     }
 
     public void updateUnreadCount() {
@@ -809,9 +811,9 @@ public class ChatListFragment extends Fragment implements ChatListItemListener,
         placeholderButton.setVisibility(View.GONE);
     }
 
-    public void showSnackbar(final AbstractContact deletedItem, final int deletedIndex, final ChatListState previoustState) {
-        if (snackbar != null) snackbar.dismiss();
-//        final boolean archived = (deletedItem).isArchived();
+//    public void showSnackbar(final AbstractContact deletedItem, final int deletedIndex, final ChatListState previoustState) {
+//        if (snackbar != null) snackbar.dismiss();
+//        final boolean archived = MessageManager.getInstance().getChat(deletedItem.)deletedItem.isArchived();
 //        snackbar = Snackbar.make(coordinatorLayout, archived ? R.string.chat_was_unarchived
 //                : R.string.chat_was_archived, Snackbar.LENGTH_LONG);
 //        snackbar.setAction(R.string.undo, new View.OnClickListener() {
@@ -832,13 +834,10 @@ public class ChatListFragment extends Fragment implements ChatListItemListener,
 //        });
 //        snackbar.setActionTextColor(Color.YELLOW);
 //        snackbar.show();
-    }
+//    }
 
     public void closeSnackbar() {
         if (snackbar != null) snackbar.dismiss();
     }
-
-    @Override
-    public void onActionStateChanged(RecyclerView.ViewHolder viewHolder, int actionState) { }
 
 }
