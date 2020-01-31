@@ -3,6 +3,7 @@ package com.xabber.android.presentation.ui.contactlist;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.media.AudioAttributes;
@@ -237,7 +238,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         updateBackpressure.run();
         chatListFragmentListener.onChatListStateChanged(state);
         toolbarAppBarLayout.setExpanded(true, false);
-        this.closeSnackbar();
+        closeSnackbar();
     }
 
     public ChatListState getCurrentChatsState(){
@@ -557,6 +558,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         MessageManager.getInstance().getChat(abstractContact.getAccount(), abstractContact.getUser())
                 .setArchived(!abstractChat.isArchived(), true);
         updateBackpressure.refreshRequest();
+        showSnackbar(abstractContact, currentChatsState);
     }
 
     @Override
@@ -811,30 +813,23 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         placeholderButton.setVisibility(View.GONE);
     }
 
-//    public void showSnackbar(final AbstractContact deletedItem, final int deletedIndex, final ChatListState previoustState) {
-//        if (snackbar != null) snackbar.dismiss();
-//        final boolean archived = MessageManager.getInstance().getChat(deletedItem.)deletedItem.isArchived();
-//        snackbar = Snackbar.make(coordinatorLayout, archived ? R.string.chat_was_unarchived
-//                : R.string.chat_was_archived, Snackbar.LENGTH_LONG);
-//        snackbar.setAction(R.string.undo, new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//
-//                // update value
-//                setChatArchived((ChatVO) deletedItem, archived);
-//
-//                // undo is selected, restore the deleted item
-//                adapter.addItem(deletedIndex, deletedItem);
-//
-//                // update unread count
-//                updateUnreadCount();
-//
-//                onStateSelected(previoustState);
-//            }
-//        });
-//        snackbar.setActionTextColor(Color.YELLOW);
-//        snackbar.show();
-//    }
+    public void showSnackbar(final AbstractContact deletedItem, final ChatListState previoustState) {
+        if (snackbar != null) snackbar.dismiss();
+        final AbstractChat abstractChat = MessageManager.getInstance().getChat(deletedItem.getAccount(), deletedItem.getUser());
+        final boolean archived = abstractChat.isArchived();
+        snackbar = Snackbar.make(coordinatorLayout, !archived ? R.string.chat_was_unarchived
+                : R.string.chat_was_archived, Snackbar.LENGTH_LONG);
+        snackbar.setAction(R.string.undo, new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                abstractChat.setArchived(!archived, true);
+                onStateSelected(previoustState);
+            }
+        });
+        snackbar.setActionTextColor(Color.YELLOW);
+        snackbar.show();
+    }
 
     public void closeSnackbar() {
         if (snackbar != null) snackbar.dismiss();
