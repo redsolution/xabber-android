@@ -167,6 +167,12 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
                 ChatAction.available, false);
     }
 
+    private void createChatForIncomingRequest(AccountJid account, UserJid user) {
+        AbstractChat chat = MessageManager.getInstance().getOrCreateChat(account, user);
+        chat.newAction(null, Application.getInstance().getResources().getString(R.string.action_new_subscription_request),
+                ChatAction.available, false);
+    }
+
     /**
      * Discards subscription request from the entity (deny own presence
      * sharing).
@@ -197,6 +203,10 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
         StanzaSender.sendStanza(account, packet);
     }
 
+    /**
+     * Either accepts the current subscription request from the contact(if present), or adds
+     * an automatic acceptance of the incoming request
+     */
     public void addAutoAcceptSubscription(AccountJid account, UserJid user) throws NetworkException {
         if(subscriptionRequestProvider.get(account, user) != null) {
             acceptSubscription(account, user);
@@ -432,8 +442,10 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
             }
             subscriptionRequestProvider.remove(account, from);
         } else {
-            if (!RosterManager.getInstance().contactIsSubscribedTo(account, from))
+            if (!RosterManager.getInstance().contactIsSubscribedTo(account, from)) {
                 subscriptionRequestProvider.add(new SubscriptionRequest(account, from), null);
+                createChatForIncomingRequest(account, from);
+            }
         }
     }
 

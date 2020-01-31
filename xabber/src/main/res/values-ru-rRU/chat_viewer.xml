@@ -16,8 +16,14 @@
     <string name="clear_chat_history_dialog_warning">Эта операция необратима.</string>
     <string name="clear_chat_history_for_companion_checkbox">Попробовать отозвать удаленные сообщения из чата собеседника</string>
     <string name="contact_state_not_in_contact_list">Не в ваших контактах</string>
+    <string name="contact_state_no_subscriptions">Нет подписок</string>
+    <string name="contact_state_incoming_request">Входящий запрос подписки…</string>
+    <string name="contact_state_outgoing_request">Запрос подписки отправлен…</string>
+    <string name="contact_state_subscribed_to_account">Подписан на ваш статус</string>
     <string name="chat_add_contact">Добавить &lt;b&gt;%s&lt;/b&gt; в список контактов. Если запрос будет принят, то у каждого из вас будет доступ к информации присутствия собеседника.</string>
     <string name="chat_subscribe_request_incoming">Контакт запрашивает доступ к вашей информации присутствия</string>
+    <string name="chat_subscribe_request_outgoing">Подпишитесь чтобы получить доступ к информации присутствия</string>
+    <string name="chat_subscribe">Подписаться</string>
     <string name="chat_allow">Разрешить</string>
     <string name="delete_chat_confirm">Вы уверены что хотите удалить чат с &lt;b&gt;%s&lt;/b&gt;? История сообщений будет удалена в том числе.</string>
     <string name="delete_chat_warning">Эта операция необратима.</string>
