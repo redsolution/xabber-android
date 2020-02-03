@@ -25,6 +25,7 @@ import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
+import com.xabber.android.data.roster.RosterManager.SubscriptionState;
 import com.xabber.android.ui.color.ColorManager;
 
 
@@ -145,20 +146,16 @@ public class NewContactTitleInflater {
                 } else {
                     //TODO this is way too messy, should do some cleanup later.
                     if (abstractContact instanceof RosterContact) {
-                        boolean incomingSubscriptionRequest = PresenceManager.getInstance()
-                                .hasSubscriptionRequest(abstractContact.getAccount(), abstractContact.getUser());
-                        boolean outgoingSubscriptionRequest = RosterManager.getInstance()
-                                .hasSubscriptionPending(abstractContact.getAccount(), abstractContact.getUser());
-
-                        switch (RosterManager.getInstance().getSubscriptionType(abstractContact.getAccount(), abstractContact.getUser())) {
-                            case both:
-                            case to:
+                        SubscriptionState state = RosterManager.getInstance().getSubscriptionState(abstractContact.getAccount(), abstractContact.getUser());
+                        switch (state.getSubscriptionType()) {
+                            case SubscriptionState.BOTH:
+                            case SubscriptionState.TO:
                                 //Contact is in our roster, and we have an accepted subscription to their status(online/offline/busy/etc.)
                                 statusText = getNormalStatus(abstractContact);
                                 break;
-                            case from:
+                            case SubscriptionState.FROM:
                                 //Contact is in our roster, and has an accepted subscription to our status
-                                if (outgoingSubscriptionRequest) {
+                                if (state.hasOutgoingSubscription()) {
                                     //And we have an outgoing subscription request to contact's status
                                     statusText = context.getString(R.string.contact_state_outgoing_request);
                                 } else {
@@ -168,11 +165,11 @@ public class NewContactTitleInflater {
                                 break;
                             default:
                                 //Contact is in our roster, no one has a subscription
-                                if (outgoingSubscriptionRequest) {
+                                if (state.hasOutgoingSubscription()) {
                                     //And we have an outgoing subscription request to contact's status
                                     statusText = context.getString(R.string.contact_state_outgoing_request);
                                 } else {
-                                    if (incomingSubscriptionRequest) {
+                                    if (state.hasIncomingSubscription()) {
                                         //And we have an incoming subscription request to our status
                                         statusText = context.getString(R.string.contact_state_incoming_request);
                                     } else {

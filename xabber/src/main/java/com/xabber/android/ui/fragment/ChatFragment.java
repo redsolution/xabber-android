@@ -1198,6 +1198,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     public void updateContact() {
         updateSecurityButton();
         updateSendButtonSecurityLevel();
+        showNewContactLayoutIfNeed();
     }
 
     private void onScrollDownClick() {
@@ -1853,25 +1854,25 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                 // NONE can be valid with both IN and IN_OUT
                 // TO can be valid only with IN.(TO && any type of OUT request are incompatible).
                 // FROM can not be valid with these checks. (FROM && any type of IN request are incompatible).
-                if (subscriptionState.getPendingSubscription() == SubscriptionState.PENDING_IN
-                        || subscriptionState.getPendingSubscription() == SubscriptionState.PENDING_IN_OUT) {
+                if (subscriptionState.hasIncomingSubscription()) {
                     show = true;
                 }
                 break;
         }
 
         if (show) {
-            if (newContactLayout == null)
-                inflateNewContactLayout(subscriptionState, inRoster);
-            else {
-                newContactLayout.setVisibility(View.VISIBLE);
-            }
+            inflateNewContactLayout(subscriptionState, inRoster);
         }
     }
 
     private void inflateNewContactLayout(final SubscriptionState subscriptionState,
                                          final boolean inRoster) {
-        newContactLayout = (ViewGroup) stubNewContact.inflate();
+        if (newContactLayout == null) {
+            newContactLayout = (ViewGroup) stubNewContact.inflate();
+        } else {
+            newContactLayout.setVisibility(View.VISIBLE);
+        }
+        //intercept touch events to avoid clicking on the messages behind the panel.
         newContactLayout.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -1933,21 +1934,25 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                     public void run() {
                         try {
                             if (!inRoster) {
-                                RosterManager.getInstance().createContact(getAccount(), getUser(), name, new ArrayList<String>());
+                                RosterManager.getInstance()                                                            // Create contact if not in roster.
+                                        .createContact(getAccount(), getUser(), name, new ArrayList<String>());        // (subscription request is sent automatically)
                             } else {
-                                if (subscriptionState.getSubscriptionType() == SubscriptionState.FROM                           // Either only an active subscription to us OR
-                                        || subscriptionState.getSubscriptionType() == SubscriptionState.NONE) {                 // No active subscriptions.
+                                if (subscriptionState.getSubscriptionType() == SubscriptionState.FROM                  // Either only an active subscription to us OR
+                                        || subscriptionState.getSubscriptionType() == SubscriptionState.NONE) {        // No active subscriptions.
 
-                                    if (subscriptionState.getPendingSubscription() == SubscriptionState.PENDING_NONE            // Either no pending subscription requests OR
-                                            || subscriptionState.getPendingSubscription() == SubscriptionState.PENDING_IN) {    // Only incoming subscription request
-
-                                        PresenceManager.getInstance().subscribeForPresence(account, user);                      // So we try to subscribe for contact's presence.
+                                    if (!subscriptionState.hasOutgoingSubscription()) {                                // No outgoing subscription at the moment
+                                        PresenceManager.getInstance().subscribeForPresence(account, user);             // So we try to subscribe for contact's presence.
                                     }
                                 }
                             }
-                            if (subscriptionState.getSubscriptionType() != SubscriptionState.FROM              // No current subscription from contact to us.
-                                    && subscriptionState.getSubscriptionType() != SubscriptionState.BOTH) {
-                                PresenceManager.getInstance().addAutoAcceptSubscription(account, user);        // So we add contact to automatically accepted sub-requests
+                            if (subscriptionState.getSubscriptionType() == SubscriptionState.TO) {                   // If we are currently subscribed to contact
+                                PresenceManager.getInstance().addAutoAcceptSubscription(account, user);              // Preemptively allow incoming subscription request.
+                            } else if (subscriptionState.getSubscriptionType() == SubscriptionState.NONE) {          // If there are no subscriptions
+                                if (subscriptionState.hasIncomingSubscription()) {                                   // If we have incoming subscription request
+                                    PresenceManager.getInstance().acceptSubscription(account, user, false);  // "quietly" accept it (since we are in the process of
+                                } else {                                                                             // adding a contact, we don't need to create unnecessary Action messages
+                                    PresenceManager.getInstance().addAutoAcceptSubscription(account, user);          // or Preemptively allow incoming request.
+                                }
                             }
                         } catch (SmackException.NotLoggedInException
                                 | XMPPException.XMPPErrorException
@@ -1999,16 +2004,15 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         closeNewContactLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (subscriptionState.getPendingSubscription() == SubscriptionState.PENDING_IN_OUT          // check if we have an incoming (IN) subscription
-                        || subscriptionState.getPendingSubscription() == SubscriptionState.PENDING_IN) {
+                if (subscriptionState.hasIncomingSubscription()) {                              // check if we have an incoming (IN) subscription
                     try {
-                        PresenceManager.getInstance().discardSubscription(account, user);                   // discard it on "X"-press
+                        PresenceManager.getInstance().discardSubscription(account, user);       // discard it on "X"-press
                     } catch (NetworkException e) {
                         e.printStackTrace();
                     }
                 }
                 if (getChat() != null) {
-                    getChat().setAddContactSuggested(true);                                                 // remember "X"-press
+                    getChat().setAddContactSuggested(true);                                     // remember "X"-press
                 }
                 TransitionManager.beginDelayedTransition((ViewGroup) rootView, transition);
                 newContactLayout.setVisibility(View.INVISIBLE);
@@ -2043,6 +2047,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         blockContact.setVisibility(View.GONE);
     }
 
+    // remove/recreate activity's toolbar elevation.
     private void manageToolbarElevation(boolean remove) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             if (((ChatActivity) getActivity()).getToolbar().getElevation() != 0f)
