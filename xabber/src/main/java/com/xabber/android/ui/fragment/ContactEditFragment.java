@@ -19,6 +19,8 @@ import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.message.AbstractChat;
+import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.PresenceManager;
@@ -167,7 +169,7 @@ public class ContactEditFragment extends GroupEditorFragment implements OnContac
             case SubscriptionState.NONE:
                 if (pendingSubscription == SubscriptionState.PENDING_IN_OUT
                         || pendingSubscription == SubscriptionState.PENDING_IN) {
-                    setSendSubscriptionField(true, R.string.contact_subscription_send);
+                    setSendSubscriptionField(false, R.string.contact_subscription_send);
                 } else {
                     setSendSubscriptionField(hasAutoAcceptSubscription, R.string.contact_subscription_accept);
                 }
@@ -296,6 +298,8 @@ public class ContactEditFragment extends GroupEditorFragment implements OnContac
                     }
                     if (!chkReceivePresence.isChecked()) {
                         PresenceManager.getInstance().unsubscribeFromPresence(getAccount(), getUser());
+                        AbstractChat chat = MessageManager.getInstance().getChat(getAccount(), getUser());
+                        if (chat != null) chat.setAddContactSuggested(true);
                     }
                 } catch (NetworkException e) {
                     e.printStackTrace();
@@ -310,6 +314,8 @@ public class ContactEditFragment extends GroupEditorFragment implements OnContac
                     }
                     if (!chkReceivePresence.isChecked()) {
                         PresenceManager.getInstance().unsubscribeFromPresence(getAccount(), getUser());
+                        AbstractChat chat = MessageManager.getInstance().getChat(getAccount(), getUser());
+                        if (chat != null) chat.setAddContactSuggested(true);
                     }
                 } catch (NetworkException e) {
                     e.printStackTrace();
@@ -327,6 +333,8 @@ public class ContactEditFragment extends GroupEditorFragment implements OnContac
                     } else {
                         if (subscriptionState.getPendingSubscription() == SubscriptionState.PENDING_OUT) {
                             PresenceManager.getInstance().unsubscribeFromPresence(getAccount(), getUser());
+                            AbstractChat chat = MessageManager.getInstance().getChat(getAccount(), getUser());
+                            if (chat != null) chat.setAddContactSuggested(true);
                         }
                     }
                 } catch (NetworkException e) {
@@ -349,6 +357,8 @@ public class ContactEditFragment extends GroupEditorFragment implements OnContac
                         if (subscriptionState.getPendingSubscription() == SubscriptionState.PENDING_IN_OUT
                                 || subscriptionState.getPendingSubscription() == SubscriptionState.PENDING_OUT)  {
                             PresenceManager.getInstance().unsubscribeFromPresence(getAccount(), getUser());
+                            AbstractChat chat = MessageManager.getInstance().getChat(getAccount(), getUser());
+                            if (chat != null) chat.setAddContactSuggested(true);
                         }
                     }
                 } catch (NetworkException e) {
