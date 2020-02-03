@@ -174,7 +174,11 @@ public enum ChatAction {
     /**
      * Request attention.
      */
-    attention_requested;
+    attention_requested,
+    subscription_sent,
+    subscription_received,
+    subscription_sent_accepted,
+    subscription_received_accepted;
 
     public static ChatAction getChatAction(StatusMode statusMode) {
         if (statusMode == StatusMode.unavailable)
@@ -241,6 +245,14 @@ public enum ChatAction {
         else if (this == ChatAction.xa)
             return context.getString(R.string.action_status_xa, name)
                     + getOptionalText(text);
+        else if (this == ChatAction.subscription_sent)
+            return context.getString(R.string.action_subscription_sent);
+        else if (this == ChatAction.subscription_received)
+            return context.getString(R.string.action_subscription_received);
+        else if (this == ChatAction.subscription_sent_accepted)
+            return context.getString(R.string.action_subscription_sent_add, name);
+        else if (this == ChatAction.subscription_received_accepted)
+            return context.getString(R.string.action_subscription_received_add, name);
         else if (this == ChatAction.status && "".equals(text))
             return context.getString(R.string.action_status_text_none, name);
         else if (this == ChatAction.status)

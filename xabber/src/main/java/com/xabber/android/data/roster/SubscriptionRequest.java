@@ -40,7 +40,7 @@ public class SubscriptionRequest extends BaseEntity implements EntityNotificatio
     @Override
     public String getText() {
         return Application.getInstance().getString(
-                R.string.subscription_request_message);
+                R.string.action_subscription_received);
     }
 
     @Override

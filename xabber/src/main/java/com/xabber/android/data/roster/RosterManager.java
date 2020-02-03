@@ -832,5 +832,13 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
             }
             pendingSubscription = PENDING_NONE;
         }
+
+        public boolean hasOutgoingSubscription() {
+            return pendingSubscription == PENDING_OUT || pendingSubscription == PENDING_IN_OUT;
+        }
+
+        public boolean hasIncomingSubscription() {
+            return pendingSubscription == PENDING_IN || pendingSubscription == PENDING_IN_OUT;
+        }
     }
 }
