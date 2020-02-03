@@ -602,7 +602,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
                 .equalTo(MessageItem.Fields.USER, user.toString())
                 .isNull(MessageItem.Fields.PARENT_MESSAGE_ID)
                 .isNotNull(MessageItem.Fields.TEXT)
-                .equalTo(MessageItem.Fields.ACTION, ChatAction.available.toString())
+                .isNotNull(MessageItem.Fields.ACTION)
                 .findAllSorted(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING).last(null);
     }
 
