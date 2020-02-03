@@ -197,7 +197,6 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
     @Override
     public void onDetach() {
         chatListFragmentListener = null;
-        EventBus.getDefault().unregister(this);
         updateBackpressure.removeRefreshRequests();
         super.onDetach();
     }

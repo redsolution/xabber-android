@@ -30,6 +30,8 @@ import java.util.*
 class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: AbstractContact){
 
     fun setup(){
+        holder.messageItem = MessageManager.getInstance()
+                .getOrCreateChat(contact.account, contact.user).lastMessage
         setupAccountColorIndicator(holder, contact)
         setupContactAvatar(holder, contact)
         setupRosterStatus(holder, contact)
@@ -39,7 +41,6 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
         setupNotificationMuteIcon(holder, contact)
         setupUnreadCount(holder, contact)
         setupTime(holder, contact)
-        setupSenderName(holder, contact)
         setupMessageText(holder, contact)
         setupMessageStatus(holder, contact)
         setupSwipeBackground(holder, contact)
@@ -72,12 +73,11 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
 
     private fun setupRosterStatus(holder: ChatViewHolder, contact: AbstractContact) {
         val statusLevel = contact.statusMode.statusLevel
-        holder.statusLevel = statusLevel
+        holder.rosterStatus = statusLevel
         val mucIndicatorLevel = if (MUCManager.getInstance().hasRoom(contact.account, contact.user)) 1
-        else if (MUCManager.getInstance().isMucPrivateChat(contact.account, contact.user)) 3
-        else 0
+        else if (MUCManager.getInstance().isMucPrivateChat(contact.account, contact.user)) 3 else 0
 
-        if ((statusLevel == 6 && contact.user.jid.isDomainBareJid) ||
+        if ((statusLevel == 6 || contact.user.jid.isDomainBareJid) ||
                 (mucIndicatorLevel != 0 && statusLevel != 1))
             holder.statusIV.visibility = View.INVISIBLE
         else if (SettingsManager.contactsShowAvatars()) holder.statusIV.visibility = View.VISIBLE
@@ -172,23 +172,6 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
         holder.timeTV.visibility = View.VISIBLE
     }
 
-    private fun setupSenderName(holder: ChatViewHolder, contact: AbstractContact) { //TODO RABOTAET KAK GOVNO
-        val lastMessage = MessageManager.getInstance().getOrCreateChat(contact.account, contact.user)
-                .lastMessage
-        val messageOwner = lastMessage?.resource.toString()
-        val color = ColorManager.getInstance().accountPainter.getAccountMainColor(contact.account)
-        if (lastMessage!!.isIncoming) {
-            holder.outgoingMessageTV.text = ""
-            holder.outgoingMessageTV.visibility = View.VISIBLE
-            holder.outgoingMessageTV.setTextColor(color)
-        }
-        if (!messageOwner.trim().isEmpty()) {
-            holder.outgoingMessageTV.text = messageOwner + ": "
-            holder.outgoingMessageTV.visibility = View.VISIBLE
-            holder.outgoingMessageTV.setTextColor(color)
-        }
-    }
-
     private fun setupMessageText(holder: ChatViewHolder, contact: AbstractContact) {
         val lastMessage = MessageManager.getInstance().getOrCreateChat(contact.account, contact.user)
                 .lastMessage
@@ -216,7 +199,7 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
                             holder.messageTextTV.text = Html.fromHtml(text)
                         }
                     } else holder.messageTextTV.text = text
-                } catch (e: Exception) {
+                } catch (e: Throwable) {
                     LogManager.exception(this.javaClass.simpleName, e)
                     holder.messageTextTV.text = text
                 }
@@ -226,26 +209,30 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
     }
 
     private fun setupMessageStatus(holder: ChatViewHolder, contact: AbstractContact) {
+
         val lastMessage = MessageManager.getInstance()
                 .getOrCreateChat(contact.account, contact.user).lastMessage
         holder.messageStatusTV.visibility = if (lastMessage?.text!!.isEmpty() || lastMessage.isIncoming)
             View.INVISIBLE else View.VISIBLE
-        if (!lastMessage.isIncoming) {
-            if (MessageItem.isUploadFileMessage(lastMessage) && !lastMessage.isSent
-                    && System.currentTimeMillis() - lastMessage.timestamp > 1000)
-                holder.messageStatusTV.setImageResource(R.drawable.ic_message_not_sent_14dp)
-            else if (lastMessage.isDisplayed || lastMessage.isReceivedFromMessageArchive)
-                holder.messageStatusTV.setImageResource(R.drawable.ic_message_displayed)
-            else if (lastMessage.isDelivered)
-                holder.messageStatusTV.setImageResource(R.drawable.ic_message_delivered_14dp)
-            else if (lastMessage.isError)
-                holder.messageStatusTV.setImageResource(R.drawable.ic_message_has_error_14dp)
-            else if (lastMessage.isAcknowledged || lastMessage.isForwarded)
-                holder.messageStatusTV.setImageResource(R.drawable.ic_message_acknowledged_14dp)
-            else holder.messageStatusTV.setImageResource(R.drawable.ic_message_not_sent_14dp)
-        }
+        holder.messageStatusTV.setImageResource(getMEssageStatusImage(lastMessage))
     }
 
+    fun getMEssageStatusImage(messageItem: MessageItem): Int{
+        if (!messageItem.isIncoming) {
+            if (MessageItem.isUploadFileMessage(messageItem) && !messageItem.isSent
+                    && System.currentTimeMillis() - messageItem.timestamp > 1000)
+                return R.drawable.ic_message_not_sent_14dp
+            else if (messageItem.isDisplayed || messageItem.isReceivedFromMessageArchive)
+                return R.drawable.ic_message_displayed
+            else if (messageItem.isDelivered)
+                return R.drawable.ic_message_delivered_14dp
+            else if (messageItem.isError)
+                return R.drawable.ic_message_has_error_14dp
+            else if (messageItem.isAcknowledged || messageItem.isForwarded)
+                return R.drawable.ic_message_acknowledged_14dp
+            else return R.drawable.ic_message_not_sent_14dp
+        } else return R.drawable.ic_message_not_sent_14dp
+    }
 
     //TODO delete this
     fun setupSwipeBackground(holder: ChatViewHolder, contact: AbstractContact){

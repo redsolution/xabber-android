@@ -16,6 +16,7 @@ class ChatListAdapter(val list: MutableList<AbstractContact>, val listener: Chat
 
     lateinit var recyclerView: RecyclerView
     lateinit var activity: Activity
+    val holdersMap: HashMap<Int, ChatViewHolder> = HashMap()
 
     override fun getItemCount(): Int = list.size
 
@@ -34,7 +35,11 @@ class ChatListAdapter(val list: MutableList<AbstractContact>, val listener: Chat
         this.list.addAll(newItemsList)
     }
 
-    fun deleteItemByPosition(position: Int) = list.removeAt(position)
+    fun deleteItemByPosition(position: Int) {
+        list.removeAt(position)
+        holdersMap.remove(position)
+        notifyDataSetChanged()
+    }
 
     fun deleteItemByAbstractContact(contact: AbstractContact) = deleteItemByPosition(list.indexOf(contact))
 
@@ -71,6 +76,7 @@ class ChatListAdapter(val list: MutableList<AbstractContact>, val listener: Chat
         holder.itemView.setOnCreateContextMenuListener(this)
 
         SetupChatItemViewHolderHelper(holder, list[position]).setup()
+        holdersMap.put(position, holder)
 
         LogManager.i(this.javaClass.simpleName, "Changed element: $position")
     }

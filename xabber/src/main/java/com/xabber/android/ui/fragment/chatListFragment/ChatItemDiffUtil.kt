@@ -4,7 +4,10 @@ import androidx.recyclerview.widget.DiffUtil
 import com.xabber.android.data.message.MessageManager
 import com.xabber.android.data.roster.AbstractContact
 
-class ChatItemDiffUtil(private val oldList: List<AbstractContact>, private val newList: List<AbstractContact>, val adapter: ChatListAdapter) :DiffUtil.Callback(){
+class ChatItemDiffUtil(private val oldList: List<AbstractContact>,
+                       private val newList: List<AbstractContact>,
+                       val adapter: ChatListAdapter) :DiffUtil.Callback(){
+
     override fun getOldListSize(): Int = oldList.size
 
     override fun getNewListSize(): Int = newList.size
@@ -13,17 +16,18 @@ class ChatItemDiffUtil(private val oldList: List<AbstractContact>, private val n
             oldList[oldItemPosition] == newList[newItemPosition]
 
     override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-        val view = adapter.recyclerView.getChildAt(oldItemPosition)
+        val oldItemHolder = adapter.holdersMap[oldItemPosition]
+        val newAbstractContact = newList[newItemPosition]
+        val newMessageItem = MessageManager.getInstance()
+                .getOrCreateChat(newAbstractContact.account, newAbstractContact.user).lastMessage
 
-        val oldViewHolder = if (view != null) adapter.recyclerView.getChildViewHolder(view) as ChatViewHolder else return false
-        val newContact = newList[newItemPosition]
-        val newMessage = MessageManager.getInstance()
-                .getOrCreateChat(newContact.account, newContact.user)
-                .lastMessage
-        val isTextMessageEqual = oldViewHolder.messageTextTV.text == newMessage?.text
-        val isAvatarEqual = oldViewHolder.avatarIV.drawable == newContact.avatar
-        val isPresenceEqual = oldViewHolder.statusLevel == newContact.statusMode.statusLevel
-        val isContactNameEqual = oldViewHolder.contactNameTV.text == newContact.name
-        return  isAvatarEqual && isTextMessageEqual && isPresenceEqual && isContactNameEqual
+        if (oldItemHolder == null || newMessageItem == null) return false
+
+        val isMessagesAreEqual = oldItemHolder.messageItem!!.isUiEqual(newMessageItem)
+        val isStatusesAreEqual = oldItemHolder.rosterStatus == newAbstractContact.statusMode.statusLevel
+        val isAvatarsAreEqual = oldItemHolder.avatarIV.drawable == newAbstractContact.avatar
+        //TODO think about colorIndicator comparing
+
+        return isMessagesAreEqual && isStatusesAreEqual && isAvatarsAreEqual
     }
 }

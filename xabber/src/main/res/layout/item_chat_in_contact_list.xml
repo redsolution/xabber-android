@@ -75,22 +75,12 @@
 
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/tvOutgoingMessage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_toRightOf="@id/avatarView"
-            android:layout_marginBottom="12dp"
-            android:text="@string/sender_is_you"
-            android:textColor="@color/green_500" />
-
         <github.ankushsachdeva.emojicon.EmojiconTextView
             android:id="@+id/tvMessageText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:layout_toRightOf="@id/tvOutgoingMessage"
+            android:layout_toRightOf="@id/avatarView"
             android:layout_toLeftOf="@+id/rlUnread"
             android:layout_marginBottom="12dp"
             android:layout_marginRight="8dp"
