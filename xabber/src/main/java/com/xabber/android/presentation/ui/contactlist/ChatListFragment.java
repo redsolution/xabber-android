@@ -31,6 +31,7 @@ import androidx.appcompat.widget.PopupMenu;
 import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -52,7 +53,6 @@ import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.muc.RoomChat;
 import com.xabber.android.data.extension.muc.RoomContact;
-import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.ChatContact;
 import com.xabber.android.data.message.MessageManager;
@@ -68,15 +68,12 @@ import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.presentation.mvp.contactlist.ContactListPresenter;
 import com.xabber.android.presentation.mvp.contactlist.UpdateBackpressure;
-import com.xabber.android.presentation.ui.contactlist.viewobjects.ChatVO;
-import com.xabber.android.presentation.ui.contactlist.viewobjects.ContactVO;
-import com.xabber.android.presentation.ui.contactlist.viewobjects.ExtContactVO;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.GroupVO;
 import com.xabber.android.ui.activity.ConferenceSelectActivity;
 import com.xabber.android.ui.activity.ContactActivity;
 import com.xabber.android.ui.activity.ContactAddActivity;
+import com.xabber.android.ui.activity.ContactEditActivity;
 import com.xabber.android.ui.activity.ContactListActivity;
-import com.xabber.android.ui.activity.ContactViewerActivity;
 import com.xabber.android.ui.activity.SearchActivity;
 import com.xabber.android.ui.activity.StatusEditActivity;
 import com.xabber.android.ui.adapter.ChatComparator;
@@ -84,7 +81,9 @@ import com.xabber.android.ui.adapter.contactlist.AccountConfiguration;
 import com.xabber.android.ui.adapter.contactlist.GroupConfiguration;
 import com.xabber.android.ui.color.AccountPainter;
 import com.xabber.android.ui.color.ColorManager;
-import com.xabber.android.ui.fragment.ChatFragment;
+import com.xabber.android.ui.fragment.chatListFragment.ChatItemDiffUtil;
+import com.xabber.android.ui.fragment.chatListFragment.ChatListAdapter;
+import com.xabber.android.ui.fragment.chatListFragment.ChatListItemListener;
 import com.xabber.android.ui.helper.ContextMenuHelper;
 import com.xabber.android.ui.widget.ShortcutBuilder;
 import com.xabber.android.utils.StringUtils;
@@ -92,6 +91,7 @@ import com.xabber.android.utils.StringUtils;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -102,17 +102,13 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 
-import eu.davidea.flexibleadapter.FlexibleAdapter;
-import eu.davidea.flexibleadapter.items.IFlexible;
-
-public class ChatListFragment extends Fragment implements ContactVO.ContactClickListener,
-        FlexibleAdapter.OnItemClickListener, FlexibleAdapter.OnItemSwipeListener, View.OnClickListener,
+public class ChatListFragment extends Fragment implements ChatListItemListener, View.OnClickListener,
         OnContactChangedListener, OnAccountChangedListener, OnChatStateListener, UpdateBackpressure.UpdatableObject,
         PopupMenu.OnMenuItemClickListener, ContextMenuHelper.ListPresenter {
 
     private UpdateBackpressure updateBackpressure;
-    private FlexibleAdapter<IFlexible> adapter;
-    private List<IFlexible> items;
+    private ChatListAdapter adapter;
+    private List<AbstractContact> items;
     private Snackbar snackbar;
     private CoordinatorLayout coordinatorLayout;
     private LinearLayoutManager linearLayoutManager;
@@ -147,7 +143,6 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         void onChatClick(AbstractContact contact);
         void onChatListStateChanged(ChatListState chatListState);
         void onUnreadChanged(int unread);
-        void onManageAccountsClick();
     }
 
     @Override
@@ -202,7 +197,6 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
     @Override
     public void onDetach() {
         chatListFragmentListener = null;
-        EventBus.getDefault().unregister(this);
         updateBackpressure.removeRefreshRequests();
         super.onDetach();
     }
@@ -223,7 +217,6 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
         Application.getInstance().addUIListener(OnContactChangedListener.class, this);
         Application.getInstance().addUIListener(OnChatStateListener.class, this);
-        updateUnreadCount();
         if (MessageDatabaseManager.getAllUnreadMessagesCount() == 0){
             onStateSelected(ChatListState.recent);
         }
@@ -245,7 +238,7 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         updateBackpressure.run();
         chatListFragmentListener.onChatListStateChanged(state);
         toolbarAppBarLayout.setExpanded(true, false);
-        this.closeSnackbar();
+        closeSnackbar();
     }
 
     public ChatListState getCurrentChatsState(){
@@ -289,15 +282,9 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         placeholderButton = view.findViewById(R.id.chatlist_placeholder_button);
 
         items = new ArrayList<>();
-        adapter = new FlexibleAdapter<>(items, null, false);
+        adapter = new ChatListAdapter(items, this);
         recyclerView.setAdapter(adapter);
         recyclerView.setItemAnimator(null);
-        adapter.setDisplayHeadersAtStartUp(true);
-        adapter.setSwipeEnabled(true);
-        adapter.expandItemsAtStartUp();
-        adapter.setStickyHeaders(true);
-        adapter.addListener(this);
-        adapter.setAnimateChangesWithDiffUtil(false);
         MessageNotificationManager.getInstance().removeAllMessageNotifications();
         chatListFragmentListener.onChatListStateChanged(currentChatsState);
 
@@ -416,7 +403,7 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
 
     /** @return  Return true when first element on the top of list*/
     public boolean isOnTop(){
-        return adapter.getFlexibleLayoutManager().findFirstCompletelyVisibleItemPosition() == 0;
+        return linearLayoutManager.findLastCompletelyVisibleItemPosition() == 0;
     }
 
     /** @return Size of list */
@@ -471,8 +458,8 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
     /**
     Update chat items in adapter
      */
-    private void updateItems(List<IFlexible> items){
-         if (items.size() == 0 && showPlaceholders >= 3) {
+    private void updateItems(List<AbstractContact> newItems){
+         if (newItems.size() == 0 && showPlaceholders >= 3) {
             switch (currentChatsState) {
                 case unread:
                     showPlaceholder(Application.getInstance().getApplicationContext().getString(R.string.placeholder_no_unread), null);
@@ -494,19 +481,11 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         } else hidePlaceholder();
 
         /* Update items in RecyclerView */
-        List<Integer> list = getDifferentElementsPositions(this.items, items);
-        if ( list.size() == 0 || list.get(0) == -1) {
-            adapter.updateDataSet(items);
-            this.items.clear();
-            this.items.addAll(items);
-        } else {
-            for (int i : list){
-                this.items.set(i, items.get(i));
-                adapter.addItem(i, items.get(i));
-                adapter.removeItem(i+1);
-                adapter.notifyItemChanged(i);
-            }
-        }
+        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new ChatItemDiffUtil(items, newItems, adapter), false);
+        items.clear();
+        items.addAll(newItems);
+        adapter.addItems(newItems);
+        diffResult.dispatchUpdatesTo(adapter);
     }
 
     @Override
@@ -555,66 +534,44 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
     }
 
     @Override
-    public void onItemSwipe(int position, int direction) {
-        Object itemAtPosition = adapter.getItem(position);
-        if (itemAtPosition != null && itemAtPosition instanceof ChatVO) {
-            // backup of removed item for undo purpose
-            final ChatVO deletedItem = (ChatVO) itemAtPosition;
-            // update value
-            setChatArchived(deletedItem, !(deletedItem).isArchived());
-            // remove the item from recycler view
-            adapter.removeItem(position);
-            // update unread count
-            updateUnreadCount();
-            items.remove(itemAtPosition);
-            ChatListState previousChatListState = currentChatsState;
-            if (currentChatsState != ChatListState.recent && items.size() == 0)
-                onStateSelected(ChatListState.recent);
-            // showing snackbar with Undo option
-            showSnackbar(deletedItem, position, previousChatListState);
-        }
+    public void onChatItemSwiped(@NotNull AbstractContact abstractContact) {
+        AbstractChat abstractChat = MessageManager.getInstance()
+                .getChat(abstractContact.getAccount(), abstractContact.getUser());
+        MessageManager.getInstance().getChat(abstractContact.getAccount(), abstractContact.getUser())
+                .setArchived(!abstractChat.isArchived(), true);
+        updateBackpressure.refreshRequest();
+        showSnackbar(abstractContact, currentChatsState);
     }
 
     @Override
-    public void onContactAvatarClick(int adapterPosition) {
-        IFlexible item = adapter.getItem(adapterPosition);
-        if (item != null && item instanceof ContactVO) {
-            Intent intent;
-            AccountJid accountJid = ((ContactVO) item).getAccountJid();
-            UserJid userJid = ((ContactVO) item).getUserJid();
-            if (MUCManager.getInstance().hasRoom(accountJid, userJid)) {
-                intent = ContactActivity.createIntent(getActivity(), accountJid, userJid);
-            } else {
-                intent = ContactViewerActivity.createIntent(getActivity(), accountJid, userJid);
-            }
-            getActivity().startActivity(intent);
+    public void onChatAvatarClick(AbstractContact item) {
+        Intent intent;
+        AccountJid accountJid = item.getAccount();
+        UserJid userJid = item.getUser();
+        if (MUCManager.getInstance().hasRoom(accountJid, userJid)) {
+            intent = ContactActivity.createIntent(getActivity(), accountJid, userJid);
+        } else {
+            intent = ContactEditActivity.createIntent(getActivity(), accountJid, userJid);
         }
+        getActivity().startActivity(intent);
     }
 
     @Override
-    public void onContactCreateContextMenu(int adapterPosition, ContextMenu menu) {
-        onItemContextMenu(adapterPosition, menu);
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
     }
 
-    public void onItemContextMenu(int adapterPosition, ContextMenu menu){
-        IFlexible item = adapter.getItem(adapterPosition);
-        if (item instanceof ContactVO) {
-            AccountJid accountJid = ((ContactVO) item).getAccountJid();
-            UserJid userJid = ((ContactVO) item).getUserJid();
-            AbstractContact abstractContact = RosterManager.getInstance().getAbstractContact(accountJid, userJid);
-            ContextMenuHelper.createContactContextMenu(getActivity(), this, abstractContact, menu);
-            return;
-        }
+    public void onChatItemContextMenu(ContextMenu menu, AbstractContact contact){
+        AccountJid accountJid = contact.getAccount();
+        UserJid userJid = contact.getUser();
+        AbstractContact abstractContact = RosterManager.getInstance().getAbstractContact(accountJid, userJid);
+        ContextMenuHelper.createContactContextMenu(getActivity(), this, abstractContact, menu);
     }
 
     @Override
-    public void onContactButtonClick(int adapterPosition) {
-        //TODO
-    }
-
-    public void setChatArchived(ChatVO chatVO, boolean archived) {
-        AbstractChat chat = MessageManager.getInstance().getChat(chatVO.getAccountJid(), chatVO.getUserJid());
-        if (chat != null) chat.setArchived(archived, true);
+    public void onListBecomeEmpty() {
+        if (currentChatsState != ChatListState.recent) currentChatsState = ChatListState.recent;
+        updateBackpressure.refreshRequest();
     }
 
     public void updateUnreadCount() {
@@ -624,21 +581,16 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
     }
 
     @Override
-    public boolean onItemClick(View view, int position) {
-        adapter.notifyItemChanged(position);
-        IFlexible item = adapter.getItem(position);
-        if (item instanceof  ContactVO){
-            AccountJid accountJid = ((ContactVO)item).getAccountJid();
-            UserJid userJid = ((ContactVO) item).getUserJid();
-            chatListFragmentListener.onChatClick(RosterManager.getInstance().getAbstractContact(accountJid, userJid));
-        }
-        return true;
+    public void onChatItemClick(AbstractContact item) {
+        AccountJid accountJid = item.getAccount();
+        UserJid userJid = item.getUser();
+        chatListFragmentListener.onChatClick(RosterManager.getInstance().getAbstractContact(accountJid, userJid));
     }
 
     @Override
     public void update(){
         /* List for store final method result */
-        List<IFlexible> items = new ArrayList<>();
+        List<AbstractContact> newList = new ArrayList<>();
         showPlaceholders++;
         /* Map of accounts*/
         final Map<AccountJid, AccountConfiguration> accounts = new TreeMap<>();
@@ -649,11 +601,9 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         /* If filterString is empty, build regular chat list */
         if (filterString == null || filterString.equals("")){
             final GroupConfiguration chatsGroup = getChatsGroup(currentChatsState);
-            items.clear();
+            newList.clear();
             if (!chatsGroup.isEmpty()) {
-                for (AbstractContact contact : chatsGroup.getAbstractContacts()) {
-                    items.add(ChatVO.convert(contact, this, null));
-                }
+                newList.addAll(chatsGroup.getAbstractContacts());
 
             }
         } else {
@@ -692,14 +642,12 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
                 } else rosterContacts.add(contact);
             }
             final ArrayList<AbstractContact> baseEntities = getSearchResults(rosterContacts, abstractChats);
-            items.clear();
-            items.addAll(SettingsManager.contactsShowMessages()
-                    ? ExtContactVO.convert(baseEntities, this)
-                    : ContactVO.convert(baseEntities, this));
+            newList.clear();
+            newList.addAll(baseEntities);
         }
 
         /* Mark all the read button setup */
-        if (currentChatsState == ChatListState.unread && items.size() > 0){
+        if (currentChatsState == ChatListState.unread && newList.size() > 0){
             if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light){
                 markAllReadBackground.setColorFilter(ColorManager.getInstance().getAccountPainter().getDefaultMainColor(), PorterDuff.Mode.SRC_ATOP);
                 markAllAsReadButton.setTextColor(getContext().getResources().getColor(R.color.white));
@@ -726,7 +674,7 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
 
         /* Update another elements */
         updateUnreadCount();
-        updateItems(items);
+        updateItems(newList);
         updateToolbar();
     }
 
@@ -806,6 +754,49 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
         return baseEntities;
     }
 
+    private void showPlaceholder(String message, @Nullable String buttonMessage){
+        placeholderMessage.setText(message);
+        if (buttonMessage != null){
+            placeholderButton.setVisibility(View.VISIBLE);
+            placeholderButton.setText(buttonMessage);
+        }
+        placeholderView.setVisibility(View.VISIBLE);
+    }
+
+    private void hidePlaceholder(){
+        recyclerView.setVisibility(View.VISIBLE);
+        placeholderView.setVisibility(View.GONE);
+        placeholderButton.setVisibility(View.GONE);
+    }
+
+    private void showSnackbar(final AbstractContact deletedItem, final ChatListState previousState) {
+        if (snackbar != null) snackbar.dismiss();
+        final AbstractChat abstractChat = MessageManager.getInstance().getChat(deletedItem.getAccount(), deletedItem.getUser());
+        final boolean archived = abstractChat.isArchived();
+        snackbar = Snackbar.make(coordinatorLayout, !archived ? R.string.chat_was_unarchived
+                : R.string.chat_was_archived, Snackbar.LENGTH_LONG);
+        snackbar.setAction(R.string.undo, new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                abstractChat.setArchived(!archived, true);
+                onStateSelected(previousState);
+            }
+        });
+        snackbar.setActionTextColor(Color.YELLOW);
+        snackbar.show();
+    }
+
+    private void closeSnackbar() {
+        if (snackbar != null) snackbar.dismiss();
+    }
+
+    public enum ChatListState {
+        recent,
+        unread,
+        archived,
+        all
+    }
+
     private class ComparatorBySubstringPosition implements Comparator<AbstractContact>{
         String substring;
 
@@ -826,86 +817,5 @@ public class ChatListFragment extends Fragment implements ContactVO.ContactClick
             else return (firstString.compareTo(secondString));
         }
     }
-
-    public enum ChatListState {
-        recent,
-        unread,
-        archived,
-        all
-    }
-
-    private void showPlaceholder(String message, @Nullable String buttonMessage){
-        placeholderMessage.setText(message);
-        if (buttonMessage != null){
-            placeholderButton.setVisibility(View.VISIBLE);
-            placeholderButton.setText(buttonMessage);
-        }
-        placeholderView.setVisibility(View.VISIBLE);
-    }
-
-    private void hidePlaceholder(){
-        recyclerView.setVisibility(View.VISIBLE);
-        placeholderView.setVisibility(View.GONE);
-        placeholderButton.setVisibility(View.GONE);
-    }
-
-    public void showSnackbar(final ChatVO deletedItem, final int deletedIndex, final ChatListState previoustState) {
-        if (snackbar != null) snackbar.dismiss();
-        final boolean archived = (deletedItem).isArchived();
-        snackbar = Snackbar.make(coordinatorLayout, archived ? R.string.chat_was_unarchived
-                : R.string.chat_was_archived, Snackbar.LENGTH_LONG);
-        snackbar.setAction(R.string.undo, new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                // update value
-                setChatArchived((ChatVO) deletedItem, archived);
-
-                // undo is selected, restore the deleted item
-                adapter.addItem(deletedIndex, deletedItem);
-
-                // update unread count
-                updateUnreadCount();
-
-                onStateSelected(previoustState);
-            }
-        });
-        snackbar.setActionTextColor(Color.YELLOW);
-        snackbar.show();
-    }
-
-    public void closeSnackbar() {
-        if (snackbar != null) snackbar.dismiss();
-    }
-
-    private List<Integer> getDifferentElementsPositions(List<IFlexible> oldList, List<IFlexible> newList){
-        ArrayList<Integer> result = new ArrayList<Integer>();
-        if (oldList.size() != newList.size()) result.add(-1);
-        if (oldList.size() <= 1 && newList.size() <= 1) result.add(-1);
-        else
-            for (IFlexible oldFlexible : oldList){
-                try {
-                    ExtContactVO oldExtContactVO = (ExtContactVO) oldFlexible;
-                    ExtContactVO newExtContactVO = (ExtContactVO) newList.get(oldList.indexOf(oldFlexible));
-                    if (!oldExtContactVO.getAccountJid().equals(newExtContactVO.getAccountJid())
-                            || !oldExtContactVO.getAvatar().equals(newExtContactVO.getAvatar())
-                            || !oldExtContactVO.getMessageText().equals(newExtContactVO.getMessageText())
-                            || !oldExtContactVO.getUserJid().equals(newExtContactVO.getUserJid())
-                            || !oldExtContactVO.getName().equals(newExtContactVO.getName())
-                            || oldExtContactVO.getStatusLevel() != newExtContactVO.getStatusLevel())
-                        result.add(oldList.indexOf(oldFlexible));
-                } catch (Exception e) {
-                    LogManager.exception(ChatFragment.class.getSimpleName(), e);
-                    result.clear();
-                    result.add(-1);
-                }
-
-            }
-        LogManager.i("AAAAAAAA", "New items: " + result.size() );
-        return result;
-    }
-
-    @Override
-    public void onActionStateChanged(RecyclerView.ViewHolder viewHolder, int actionState) { }
 
 }

@@ -14,11 +14,10 @@
         android:textStyle="bold"
         android:text="@string/archive_chat"
         android:textAllCaps="true"
-        android:gravity="right|center"
+        android:gravity="end|center"
         android:drawableRight="@drawable/ic_arcived"
         android:drawablePadding="12dp"
         android:background="?attr/action_with_chat_background"
-        android:visibility="gone"
         />
 
     <TextView
@@ -30,11 +29,10 @@
         android:textStyle="bold"
         android:text="@string/archive_chat"
         android:textAllCaps="true"
-        android:gravity="left|center"
+        android:gravity="start|center"
         android:drawableLeft="@drawable/ic_arcived"
         android:drawablePadding="12dp"
         android:background="?attr/action_with_chat_background"
-        android:visibility="gone"
         />
 
     <LinearLayout
@@ -77,22 +75,12 @@
 
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/tvOutgoingMessage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_toRightOf="@id/avatarView"
-            android:layout_marginBottom="12dp"
-            android:text="@string/sender_is_you"
-            android:textColor="@color/green_500" />
-
         <github.ankushsachdeva.emojicon.EmojiconTextView
             android:id="@+id/tvMessageText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:layout_toRightOf="@id/tvOutgoingMessage"
+            android:layout_toRightOf="@id/avatarView"
             android:layout_toLeftOf="@+id/rlUnread"
             android:layout_marginBottom="12dp"
             android:layout_marginRight="8dp"
