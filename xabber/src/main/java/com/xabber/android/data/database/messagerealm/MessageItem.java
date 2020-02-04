@@ -536,4 +536,16 @@ public class MessageItem extends RealmObject {
         }
         return false;
     }
+
+    public boolean isUiEqual(MessageItem comparableMessageItem){
+        return this.getText().equals(comparableMessageItem.getText())
+                && this.isIncoming() == comparableMessageItem.isIncoming()
+                && this.getTimestamp().equals(comparableMessageItem.getTimestamp())
+                && this.isError() == comparableMessageItem.isError()
+                && this.isDelivered() == comparableMessageItem.isDelivered()
+                && this.isDisplayed() == comparableMessageItem.isDisplayed()
+                && this.isSent() == comparableMessageItem.isSent()
+                && this.isRead() == comparableMessageItem.isRead()
+                && this.isAcknowledged() == comparableMessageItem.isAcknowledged();
+    }
 }
