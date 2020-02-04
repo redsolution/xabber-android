@@ -85,7 +85,7 @@
                 android:autoLink="all"
                 android:textColor="@color/black_text"
                 android:visibility="gone"
-                app:lineHeight="20dp"
+                app:lineHeight="18dp"
                 tools:text="Some text" />
 
             <LinearLayout
