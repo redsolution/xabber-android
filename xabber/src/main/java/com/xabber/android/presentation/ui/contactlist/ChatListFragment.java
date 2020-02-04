@@ -43,7 +43,6 @@ import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.CommonState;
-import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.database.MessageDatabaseManager;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
@@ -56,18 +55,12 @@ import com.xabber.android.data.extension.muc.RoomContact;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.ChatContact;
 import com.xabber.android.data.message.MessageManager;
-import com.xabber.android.data.message.MessageUpdateEvent;
-import com.xabber.android.data.message.NewIncomingMessageEvent;
-import com.xabber.android.data.message.NewMessageEvent;
 import com.xabber.android.data.notification.MessageNotificationManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.GroupManager;
 import com.xabber.android.data.roster.OnChatStateListener;
-import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
-import com.xabber.android.presentation.mvp.contactlist.ContactListPresenter;
-import com.xabber.android.presentation.mvp.contactlist.UpdateBackpressure;
 import com.xabber.android.presentation.ui.contactlist.viewobjects.GroupVO;
 import com.xabber.android.ui.activity.ConferenceSelectActivity;
 import com.xabber.android.ui.activity.ContactActivity;
@@ -88,9 +81,6 @@ import com.xabber.android.ui.helper.ContextMenuHelper;
 import com.xabber.android.ui.widget.ShortcutBuilder;
 import com.xabber.android.utils.StringUtils;
 
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -101,12 +91,13 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.concurrent.TimeUnit;
+
+import rx.android.schedulers.AndroidSchedulers;
 
 public class ChatListFragment extends Fragment implements ChatListItemListener, View.OnClickListener,
-        OnContactChangedListener, OnAccountChangedListener, OnChatStateListener, UpdateBackpressure.UpdatableObject,
-        PopupMenu.OnMenuItemClickListener, ContextMenuHelper.ListPresenter {
+        OnChatStateListener, PopupMenu.OnMenuItemClickListener, ContextMenuHelper.ListPresenter {
 
-    private UpdateBackpressure updateBackpressure;
     private ChatListAdapter adapter;
     private List<AbstractContact> items;
     private Snackbar snackbar;
@@ -148,7 +139,6 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
     @Override
     public void onAttach(Context context) {
         chatListFragmentListener = (ChatListFragmentListener) context;
-        EventBus.getDefault().register(this);
         chatListFragmentListener.onChatListStateChanged(currentChatsState);
         super.onAttach(context);
     }
@@ -177,50 +167,24 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         });
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onNewMessageEvent(NewMessageEvent event) {
-        updateBackpressure.refreshRequest();
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(NewIncomingMessageEvent event){
-        playMessageSound();
-        MessageNotificationManager.getInstance().removeAllMessageNotifications();
-        updateBackpressure.refreshRequest();
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(MessageUpdateEvent event) {
-        updateBackpressure.refreshRequest();
-    }
-
     @Override
     public void onDetach() {
         chatListFragmentListener = null;
-        updateBackpressure.removeRefreshRequests();
         super.onDetach();
     }
 
     @Override
     public void onStop() {
-        Application.getInstance().removeUIListener(OnAccountChangedListener.class, this);
-        Application.getInstance().removeUIListener(OnContactChangedListener.class,this);
         Application.getInstance().removeUIListener(OnChatStateListener.class, this);
-        EventBus.getDefault().unregister(this);
         super.onStop();
     }
 
     @Override
     public void onResume() {
-        if (!EventBus.getDefault().isRegistered(this))
-            EventBus.getDefault().register(this);
-        Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
-        Application.getInstance().addUIListener(OnContactChangedListener.class, this);
         Application.getInstance().addUIListener(OnChatStateListener.class, this);
         if (MessageDatabaseManager.getAllUnreadMessagesCount() == 0){
             onStateSelected(ChatListState.recent);
         }
-        updateBackpressure.refreshRequest();
         super.onResume();
     }
 
@@ -235,9 +199,9 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
 
     public void onStateSelected(ChatListState state) {
         this.currentChatsState = state;
-        updateBackpressure.run();
         chatListFragmentListener.onChatListStateChanged(state);
         toolbarAppBarLayout.setExpanded(true, false);
+        update();
         closeSnackbar();
     }
 
@@ -256,12 +220,6 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
             recyclerView.scrollToPosition(0);
             toolbarAppBarLayout.setExpanded(true, false);
         }
-    }
-
-    // TEMPORARY to use context menu with ContactList
-    @Override
-    public void updateContactList() {
-        updateBackpressure.refreshRequest();
     }
 
     @Nullable
@@ -313,10 +271,19 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         maxItemsOnScreen = Math.round((dpHeight - 56 - 56) / 64);
         showPlaceholders = 0;
 
-        /* Initialize and run UpdateBackpressure */
-        updateBackpressure = new UpdateBackpressure(this);
-        updateBackpressure.run();
+        MessageDatabaseManager.getInstance().getObservableListener()
+                .debounce(250, TimeUnit.MILLISECONDS)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(realm -> update());
+
+        update();
+
         return view;
+    }
+
+    @Override
+    public void updateContactList() {
+        update();
     }
 
     /** Update toolbarRelativeLayout via current state */
@@ -452,7 +419,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
     /** Show contacts filtered by filterString */
     public void search(String filterString){
         this.filterString = filterString;
-        updateBackpressure.refreshRequest();
+        //TODO implement search
     }
 
     /**
@@ -489,13 +456,8 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
     }
 
     @Override
-    public void onContactsChanged(Collection<RosterContact> entities) {
-        updateBackpressure.refreshRequest();
-    }
-
-    @Override
     public void onChatStateChanged(Collection<RosterContact> entities) {
-        updateBackpressure.refreshRequest();
+        update();
     }
 
     /**
@@ -529,17 +491,11 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
     }
 
     @Override
-    public void onAccountsChanged(Collection<AccountJid> accounts) {
-        updateBackpressure.refreshRequest();
-    }
-
-    @Override
     public void onChatItemSwiped(@NotNull AbstractContact abstractContact) {
         AbstractChat abstractChat = MessageManager.getInstance()
                 .getChat(abstractContact.getAccount(), abstractContact.getUser());
         MessageManager.getInstance().getChat(abstractContact.getAccount(), abstractContact.getUser())
                 .setArchived(!abstractChat.isArchived(), true);
-        updateBackpressure.refreshRequest();
         showSnackbar(abstractContact, currentChatsState);
     }
 
@@ -571,12 +527,11 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
     @Override
     public void onListBecomeEmpty() {
         if (currentChatsState != ChatListState.recent) currentChatsState = ChatListState.recent;
-        updateBackpressure.refreshRequest();
+            update();
     }
 
     public void updateUnreadCount() {
         int unreadCount = MessageDatabaseManager.getAllUnreadMessagesCount();
-        EventBus.getDefault().post(new ContactListPresenter.UpdateUnreadCountEvent(unreadCount));
         if (chatListFragmentListener != null) chatListFragmentListener.onUnreadChanged(unreadCount);
     }
 
@@ -587,8 +542,8 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         chatListFragmentListener.onChatClick(RosterManager.getInstance().getAbstractContact(accountJid, userJid));
     }
 
-    @Override
     public void update(){
+
         /* List for store final method result */
         List<AbstractContact> newList = new ArrayList<>();
         showPlaceholders++;
@@ -745,7 +700,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
                 if (abstractContact.getName().toLowerCase(Locale.getDefault()).contains(filterString)
                         || abstractContact.getUser().toString().toLowerCase(Locale.getDefault()).contains(filterString)
                         || abstractContact.getName().toLowerCase(Locale.getDefault()).contains(transliterated)
-                        || abstractContact.getUser().toString().toLowerCase(Locale.getDefault()).contains(transliterated))                 {
+                        || abstractContact.getUser().toString().toLowerCase(Locale.getDefault()).contains(transliterated)){
                     baseEntities.add(abstractContact);
                 }
             }
@@ -769,7 +724,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         placeholderButton.setVisibility(View.GONE);
     }
 
-    private void showSnackbar(final AbstractContact deletedItem, final ChatListState previousState) {
+    private void showSnackbar(final AbstractContact deletedItem, final ChatListState previousState){
         if (snackbar != null) snackbar.dismiss();
         final AbstractChat abstractChat = MessageManager.getInstance().getChat(deletedItem.getAccount(), deletedItem.getUser());
         final boolean archived = abstractChat.isArchived();
@@ -780,6 +735,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
             public void onClick(View view) {
                 abstractChat.setArchived(!archived, true);
                 onStateSelected(previousState);
+                update();
             }
         });
         snackbar.setActionTextColor(Color.YELLOW);
