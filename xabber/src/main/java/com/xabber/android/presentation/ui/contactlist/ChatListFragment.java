@@ -94,7 +94,6 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
 
-import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 
@@ -196,6 +195,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         realmChangeListenerSubscription = MessageDatabaseManager.getInstance().getObservableListener()
                 .debounce(250, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(AndroidSchedulers.mainThread())
                 .doOnError(throwable -> LogManager.exception("ChatListFragment", throwable))
                 .subscribe(realm -> update());
 
@@ -540,13 +540,8 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
     }
 
     public void updateUnreadCount() {
-        Observable.create(emitter -> {
-            int unreadCount = MessageDatabaseManager.getAllUnreadMessagesCount();
-            emitter.onNext(unreadCount); })
-                .subscribeOn(AndroidSchedulers.mainThread())
-                .subscribe(o -> {
-                    if (chatListFragmentListener != null)
-                        chatListFragmentListener.onUnreadChanged((int) o);});
+        if (chatListFragmentListener != null)
+            chatListFragmentListener.onUnreadChanged(MessageDatabaseManager.getAllUnreadMessagesCount());
     }
 
     @Override
