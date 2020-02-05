@@ -22,8 +22,21 @@ import java.util.Date;
 public class Utils {
 
     public static int dipToPx(float dip, Context context) {
-        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
+        return (int) dipToPxFloat(dip, context);
+    }
+
+    public static float dipToPxFloat(float dip, Context context) {
+        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
                 dip, context.getResources().getDisplayMetrics());
+    }
+
+    public static int spToPx(float sp, Context context) {
+        return (int) spToPxFloat(sp, context);
+    }
+
+    public static float spToPxFloat(float sp, Context context) {
+        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP,
+                sp, context.getResources().getDisplayMetrics());
     }
 
     public static int longToInt(long number) {

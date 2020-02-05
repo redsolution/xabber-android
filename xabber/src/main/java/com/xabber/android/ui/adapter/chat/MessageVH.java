@@ -6,7 +6,6 @@ import android.os.Build;
 import android.text.Html;
 import android.text.Spanned;
 import android.view.View;
-import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -23,7 +22,6 @@ import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.groupchat.GroupchatUser;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.ui.color.ColorManager;
-import com.xabber.android.ui.fragment.ChatFragment;
 import com.xabber.android.ui.text.ClickTagHandler;
 import com.xabber.android.ui.widget.CorrectlyMeasuringTextView;
 import com.xabber.android.utils.StringUtils;
@@ -42,6 +40,8 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
     private static final String LOG_TAG = MessageVH.class.getSimpleName();
     private MessageClickListener listener;
     private MessageLongClickListener longClickListener;
+    public boolean needDate;
+    public String date;
 
     TextView tvFirstUnread;
     TextView tvDate;
@@ -177,26 +177,28 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
             tvFirstUnread.setVisibility(extraData.isUnread() ? View.VISIBLE : View.GONE);
 
         // setup DATE
-        if (tvDate != null) {
-            if (extraData.isNeedDate()) {
-                tvDate.setText(StringUtils.getDateStringForMessage(messageItem.getTimestamp()));
-                tvDate.setVisibility(View.VISIBLE);
-            } else tvDate.setVisibility(View.GONE);
-        }
+        //if (tvDate != null) {
+        //    if (extraData.isNeedDate()) {
+        //        tvDate.setText(StringUtils.getDateStringForMessage(messageItem.getTimestamp()));
+        //        tvDate.setVisibility(View.VISIBLE);
+        //    } else tvDate.setVisibility(View.GONE);
+        //}
+        needDate = extraData.isNeedDate();
+        date = StringUtils.getDateStringForMessage(messageItem.getTimestamp());
 
         // set DATE alpha
-        if (tvDate != null && extraData.isNeedDate() && extraData.getAnchorHolder() != null) {
-            final MessagesAdapter.MessageExtraData lExtraData = extraData;
-            tvDate.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                @Override
-                public void onGlobalLayout() {
-                    /** Work only with
-                     *  @see ChatFragment#updateTopDateIfNeed()
-                     *  called in recyclerView.onScrolled */
-                    setDateAlpha(tvDate, lExtraData.getAnchorHolder().getAnchor());
-                }
-            });
-        }
+        //if (tvDate != null && extraData.isNeedDate() && extraData.getAnchorHolder() != null) {
+        //    final MessagesAdapter.MessageExtraData lExtraData = extraData;
+        //    tvDate.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+        //        @Override
+        //        public void onGlobalLayout() {
+        //            /** Work only with
+        //             *  @see ChatFragment#updateTopDateIfNeed()
+        //             *  called in recyclerView.onScrolled */
+        //            setDateAlpha(tvDate, lExtraData.getAnchorHolder().getAnchor());
+        //        }
+        //    });
+        //}
 
         // setup CHECKED
         if (extraData.isChecked()) itemView.setBackgroundColor(extraData.getContext().getResources()
@@ -279,23 +281,23 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
 
     }
 
-    private void setDateAlpha(View viewDate, View viewAnchor) {
-        if (viewDate != null && viewAnchor != null) {
-            int specialCoordinates[] = new int[2];
-            int titleCoordinates[] = new int[2];
-            viewAnchor.getLocationOnScreen(titleCoordinates);
-            viewDate.getLocationOnScreen(specialCoordinates);
-            int deltaY = titleCoordinates[1] - specialCoordinates[1];
-            if (deltaY < 0) deltaY *= -1;
-
-            int total = viewAnchor.getMeasuredHeight();
-            int step = total / 100;
-            if (step == 0) step = 1;
-
-            if (deltaY < total * 2) {
-                if (deltaY < total) viewDate.setAlpha(0);
-                else viewDate.setAlpha((float) (deltaY - total / step)/100);
-            } else viewDate.setAlpha(1);
-        }
-    }
+    //private void setDateAlpha(View viewDate, View viewAnchor) {
+    //    if (viewDate != null && viewAnchor != null) {
+    //        int specialCoordinates[] = new int[2];
+    //        int titleCoordinates[] = new int[2];
+    //        viewAnchor.getLocationOnScreen(titleCoordinates);
+    //        viewDate.getLocationOnScreen(specialCoordinates);
+    //        int deltaY = titleCoordinates[1] - specialCoordinates[1];
+    //        if (deltaY < 0) deltaY *= -1;
+//
+    //        int total = viewAnchor.getMeasuredHeight();
+    //        int step = total / 100;
+    //        if (step == 0) step = 1;
+//
+    //        if (deltaY < total * 2) {
+    //            if (deltaY < total) viewDate.setAlpha(0);
+    //            else viewDate.setAlpha((float) (deltaY - total / step)/100);
+    //        } else viewDate.setAlpha(1);
+    //    }
+    //}
 }
