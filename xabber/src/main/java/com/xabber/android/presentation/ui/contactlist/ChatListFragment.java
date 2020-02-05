@@ -197,9 +197,9 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .doOnError(throwable -> LogManager.exception("ChatListFragment", throwable))
-                .subscribe(realm -> update());
-
-        update();
+                .subscribe(realm -> {
+                    try {update();} catch (Exception e) {LogManager.exception("ChatList", e);}
+                });
 
         super.onResume();
     }
@@ -350,10 +350,8 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
             toolbarAccountColorIndicatorBack.setBackgroundColor(
                     ColorManager.getInstance().getAccountPainter().getDefaultIndicatorBackColor());
         } else {
-            toolbarAccountColorIndicator.setBackgroundColor(
-                    getResources().getColor(R.color.transparent));
-            toolbarAccountColorIndicatorBack.setBackgroundColor(
-                    getResources().getColor(R.color.transparent));
+            toolbarAccountColorIndicator.setBackgroundColor(Color.TRANSPARENT);
+            toolbarAccountColorIndicatorBack.setBackgroundColor(Color.TRANSPARENT);
         }
         setupToolbarLayout();
     }
