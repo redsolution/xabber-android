@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.graphics.PorterDuff;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
@@ -120,9 +121,10 @@ import com.xabber.android.ui.dialog.ChatHistoryClearDialog;
 import com.xabber.android.ui.helper.PermissionsRequester;
 import com.xabber.android.ui.widget.BottomMessagesPanel;
 import com.xabber.android.ui.widget.CustomMessageMenu;
+import com.xabber.android.ui.widget.DateViewDecoration;
+import com.xabber.android.ui.widget.IntroViewDecoration;
 import com.xabber.android.ui.widget.PlayerVisualizerView;
 import com.xabber.android.ui.widget.ReplySwipeCallback;
-import com.xabber.android.utils.StringUtils;
 import com.xabber.android.utils.Utils;
 import com.xabber.xmpp.uuu.ChatStateSubtype;
 
@@ -150,6 +152,7 @@ import java.util.concurrent.TimeUnit;
 import github.ankushsachdeva.emojicon.EmojiconGridView;
 import github.ankushsachdeva.emojicon.EmojiconsPopup;
 import github.ankushsachdeva.emojicon.emoji.Emojicon;
+import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
 import rx.Subscription;
 import rx.functions.Action1;
@@ -646,7 +649,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                 /** Necessary for
                  *  @see MessageVH#bind ()
                  *  and set DATE alpha */
-                updateTopDateIfNeed();
+                //updateTopDateIfNeed();
             }
         });
 
@@ -680,6 +683,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         placeholder.setOnClickListener(this);
 
         tvTopDate = view.findViewById(R.id.tvTopDate);
+        tvTopDate.setVisibility(View.INVISIBLE);
         tvTopDate.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
@@ -687,7 +691,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                     tvTopDate.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                 }
                 else tvTopDate.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-                updateTopDateIfNeed();
+                //updateTopDateIfNeed();
                 //measurements for the recording layout animations.
                 rootViewHeight = rootView.getHeight();
                 rootViewWidth = rootView.getWidth();
@@ -717,6 +721,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                 this);
         realmRecyclerView.setAdapter(chatMessageAdapter);
         realmRecyclerView.setItemAnimator(null);
+        realmRecyclerView.addItemDecoration(new DateViewDecoration());
 
         replySwipe = new ReplySwipeCallback(new ReplySwipeCallback.SwipeAction() {
             @Override
@@ -1829,8 +1834,10 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         if (getChat() instanceof RoomChat)
             return;
 
-        if (BlockingManager.getInstance().contactIsBlocked(account, user))
+        if (BlockingManager.getInstance().contactIsBlocked(account, user)) {
+            if (newContactLayout != null) newContactLayout.setVisibility(View.GONE);
             return;
+        }
 
         AbstractChat chat = getChat();
         SubscriptionState subscriptionState = RosterManager.getInstance().getSubscriptionState(account, user);
@@ -1862,6 +1869,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
         if (show) {
             inflateNewContactLayout(subscriptionState, inRoster);
+        } else {
+            if (newContactLayout != null) newContactLayout.setVisibility(View.GONE);
         }
     }
 
@@ -2056,14 +2065,14 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         }
     }
 
-    private void updateTopDateIfNeed() {
-        int position = layoutManager.findFirstVisibleItemPosition();
-        MessageItem message = chatMessageAdapter.getMessageItem(position);
-        if (message != null) {
-            tvTopDate.setSingleLine(true);
-            tvTopDate.setText(StringUtils.getDateStringForMessage(message.getTimestamp()));
-        }
-    }
+    //private void updateTopDateIfNeed() {
+    //    int position = layoutManager.findFirstVisibleItemPosition();
+    //    MessageItem message = chatMessageAdapter.getMessageItem(position);
+    //    if (message != null) {
+    //        tvTopDate.setSingleLine(true);
+    //        tvTopDate.setText(StringUtils.getDateStringForMessage(message.getTimestamp()));
+    //    }
+    //}
 
     @Override
     public void onBind(MessageItem message) {
