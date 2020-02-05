@@ -93,6 +93,7 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
 
+import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 
 public class ChatListFragment extends Fragment implements ChatListItemListener, View.OnClickListener,
@@ -129,6 +130,8 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
     private ImageView toolbarAvatarIv;
     private ImageView toolbarStatusIv;
     private ImageView toolbarSearchIv;
+
+    private Subscription realmChangeListenerSubscription;
 
     public interface ChatListFragmentListener{
         void onChatClick(AbstractContact contact);
@@ -175,6 +178,8 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
 
     @Override
     public void onStop() {
+        if (realmChangeListenerSubscription != null && realmChangeListenerSubscription.isUnsubscribed())
+            realmChangeListenerSubscription.unsubscribe();
         Application.getInstance().removeUIListener(OnChatStateListener.class, this);
         super.onStop();
     }
@@ -185,6 +190,14 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         if (MessageDatabaseManager.getAllUnreadMessagesCount() == 0){
             onStateSelected(ChatListState.recent);
         }
+
+        realmChangeListenerSubscription = MessageDatabaseManager.getInstance().getObservableListener()
+                .debounce(250, TimeUnit.MILLISECONDS)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(realm -> update());
+
+        update();
+
         super.onResume();
     }
 
@@ -271,13 +284,6 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         maxItemsOnScreen = Math.round((dpHeight - 56 - 56) / 64);
         showPlaceholders = 0;
 
-        MessageDatabaseManager.getInstance().getObservableListener()
-                .debounce(250, TimeUnit.MILLISECONDS)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(realm -> update());
-
-        update();
-
         return view;
     }
 
@@ -327,7 +333,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
                 AccountPainter.getFirstAccount() != null)
             toolbarRelativeLayout.setBackgroundColor(ColorManager.getInstance().getAccountPainter().
                     getAccountRippleColor(AccountPainter.getFirstAccount()));
-        else {
+        else if (getContext() != null){
             TypedValue typedValue = new TypedValue();
             Resources.Theme theme = getContext().getTheme();
             theme.resolveAttribute(R.attr.bars_color, typedValue, true);
