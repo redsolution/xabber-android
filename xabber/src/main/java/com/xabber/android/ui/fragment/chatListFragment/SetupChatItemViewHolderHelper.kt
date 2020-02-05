@@ -25,7 +25,6 @@ import com.xabber.android.ui.color.ColorManager
 import com.xabber.android.utils.StringUtils
 import java.net.URLDecoder
 import java.nio.charset.StandardCharsets
-import java.util.*
 
 class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: AbstractContact){
 
@@ -168,10 +167,8 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
     }
 
     private fun setupTime(holder: ChatViewHolder, contact: AbstractContact) {
-        val context = holder.itemView.context
         val chat = MessageManager.getInstance().getOrCreateChat(contact.account, contact.user)
-        val date = Date(chat.lastMessage!!.timestamp)
-        holder.timeTV.text = StringUtils.getSmartTimeTextForRoster(context, date)
+        holder.timeTV.text = StringUtils.getSmartTimeTextForRoster(holder.itemView.context, chat.lastTime)
         holder.timeTV.visibility = View.VISIBLE
     }
 
