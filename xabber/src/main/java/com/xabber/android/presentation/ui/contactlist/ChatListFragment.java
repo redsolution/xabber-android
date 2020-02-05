@@ -93,6 +93,7 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
 
+import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 
@@ -537,8 +538,13 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
     }
 
     public void updateUnreadCount() {
-        int unreadCount = MessageDatabaseManager.getAllUnreadMessagesCount();
-        if (chatListFragmentListener != null) chatListFragmentListener.onUnreadChanged(unreadCount);
+        Observable.create(emitter -> {
+            int unreadCount = MessageDatabaseManager.getAllUnreadMessagesCount();
+            emitter.onNext(unreadCount); })
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribe(o -> {
+                    if (chatListFragmentListener != null)
+                        chatListFragmentListener.onUnreadChanged((int) o);});
     }
 
     @Override
@@ -607,8 +613,16 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
             newList.addAll(baseEntities);
         }
 
-        /* Mark all the read button setup */
-        if (currentChatsState == ChatListState.unread && newList.size() > 0){
+        setupMarkAllTheReadButton(newList.size());
+
+        /* Update another elements */
+        updateUnreadCount();
+        updateItems(newList);
+        updateToolbar();
+    }
+
+    private void setupMarkAllTheReadButton(int listSize){
+        if (currentChatsState == ChatListState.unread && listSize > 0){
             if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light){
                 markAllReadBackground.setColorFilter(ColorManager.getInstance().getAccountPainter().getDefaultMainColor(), PorterDuff.Mode.SRC_ATOP);
                 markAllAsReadButton.setTextColor(getContext().getResources().getColor(R.color.white));
@@ -618,25 +632,17 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
             }
 
             markAllAsReadButton.setVisibility(View.VISIBLE);
-            markAllAsReadButton.setOnClickListener(new View.OnClickListener(){
-                @Override
-                public void onClick(View v) {
-                    for (AbstractContact abstractContact : getChatsGroup(ChatListState.recent).getAbstractContacts()){
-                        MessageManager.getInstance().getChat(abstractContact.getAccount(), abstractContact.getUser()).markAsReadAll(true);
-                    }
-                    onStateSelected(ChatListFragment.ChatListState.recent);
-                    Toast toast = Toast.makeText(getActivity(), R.string.all_chats_were_market_as_read_toast, Toast.LENGTH_SHORT);
-                    toast.setGravity(Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, (int)(getResources().getDimension(R.dimen.bottom_navigation_height) * 1.2f));
-                    toast.show();
+            markAllAsReadButton.setOnClickListener(v -> {
+                for (AbstractContact abstractContact : getChatsGroup(ChatListState.recent).getAbstractContacts()){
+                    MessageManager.getInstance().getChat(abstractContact.getAccount(), abstractContact.getUser()).markAsReadAll(true);
                 }
+                onStateSelected(ChatListFragment.ChatListState.recent);
+                Toast toast = Toast.makeText(getActivity(), R.string.all_chats_were_market_as_read_toast, Toast.LENGTH_SHORT);
+                toast.setGravity(Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, (int)(getResources().getDimension(R.dimen.bottom_navigation_height) * 1.2f));
+                toast.show();
             });
         }
         else markAllAsReadButton.setVisibility(View.GONE);
-
-        /* Update another elements */
-        updateUnreadCount();
-        updateItems(newList);
-        updateToolbar();
     }
 
     private GroupConfiguration getChatsGroup(ChatListState state) {
@@ -668,8 +674,8 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
             chatsGroup.addAbstractContact(RosterManager.getInstance() .getBestContact(chat.getAccount(), chat.getUser()));
             chatsGroup.increment(true);
         }
-        ShortcutBuilder.updateShortcuts(Application.getInstance(),
-                new ArrayList<>(chatsGroup.getAbstractContacts()));
+        Application.getInstance().runInBackground(() -> {ShortcutBuilder.updateShortcuts(Application.getInstance(),
+                new ArrayList<>(chatsGroup.getAbstractContacts()));});
         return chatsGroup;
     }
 

@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.xabber.android.R
-import com.xabber.android.data.log.LogManager
 import com.xabber.android.data.roster.AbstractContact
 
 class ChatListAdapter(val list: MutableList<AbstractContact>, val listener: ChatListItemListener) :
@@ -41,7 +40,8 @@ class ChatListAdapter(val list: MutableList<AbstractContact>, val listener: Chat
         notifyDataSetChanged()
     }
 
-    fun deleteItemByAbstractContact(contact: AbstractContact) = deleteItemByPosition(list.indexOf(contact))
+    fun deleteItemByAbstractContact(contact: AbstractContact) =
+            deleteItemByPosition(list.indexOf(contact))
 
     fun onSwipeChatItem(holder: ChatViewHolder){
         val swipedContact = getAbstractContactFromView(holder.itemView)
@@ -77,8 +77,6 @@ class ChatListAdapter(val list: MutableList<AbstractContact>, val listener: Chat
 
         SetupChatItemViewHolderHelper(holder, list[position]).setup()
         holdersMap.put(position, holder)
-
-        LogManager.i(this.javaClass.simpleName, "Changed element: $position")
     }
 
 }
