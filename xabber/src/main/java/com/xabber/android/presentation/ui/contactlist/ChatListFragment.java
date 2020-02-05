@@ -52,6 +52,7 @@ import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.muc.RoomChat;
 import com.xabber.android.data.extension.muc.RoomContact;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.ChatContact;
 import com.xabber.android.data.message.MessageManager;
@@ -195,6 +196,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         realmChangeListenerSubscription = MessageDatabaseManager.getInstance().getObservableListener()
                 .debounce(250, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
+                .doOnError(throwable -> LogManager.exception("ChatListFragment", throwable))
                 .subscribe(realm -> update());
 
         update();
@@ -622,9 +624,10 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
     }
 
     private void setupMarkAllTheReadButton(int listSize){
-        if (currentChatsState == ChatListState.unread && listSize > 0){
+        if (currentChatsState == ChatListState.unread && listSize > 0 && getContext() != null){
             if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light){
-                markAllReadBackground.setColorFilter(ColorManager.getInstance().getAccountPainter().getDefaultMainColor(), PorterDuff.Mode.SRC_ATOP);
+                markAllReadBackground.setColorFilter(ColorManager.getInstance().getAccountPainter()
+                        .getDefaultMainColor(), PorterDuff.Mode.SRC_ATOP);
                 markAllAsReadButton.setTextColor(getContext().getResources().getColor(R.color.white));
             } else {
                 markAllReadBackground.setColorFilter(getContext().getResources().getColor(R.color.grey_900), PorterDuff.Mode.SRC_ATOP);
