@@ -122,7 +122,6 @@ import com.xabber.android.ui.helper.PermissionsRequester;
 import com.xabber.android.ui.widget.BottomMessagesPanel;
 import com.xabber.android.ui.widget.CustomMessageMenu;
 import com.xabber.android.ui.widget.DateViewDecoration;
-import com.xabber.android.ui.widget.IntroViewDecoration;
 import com.xabber.android.ui.widget.PlayerVisualizerView;
 import com.xabber.android.ui.widget.ReplySwipeCallback;
 import com.xabber.android.utils.Utils;
