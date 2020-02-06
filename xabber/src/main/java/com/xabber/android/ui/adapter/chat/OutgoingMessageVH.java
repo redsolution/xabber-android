@@ -147,6 +147,8 @@ public class OutgoingMessageVH extends FileMessageVH {
 
         if (!isFileUploadInProgress && !messageItem.isSent()) {
             messageIcon = R.drawable.ic_message_not_sent_14dp;
+        } else if (messageItem.isError()) {
+            messageIcon = R.drawable.ic_message_has_error_14dp;
         } else if (messageItem.isDisplayed() || messageItem.isReceivedFromMessageArchive()) {
             if(messageItem.isAttachmentImageOnly())
                 messageIcon = R.drawable.ic_message_displayed_image;
@@ -155,13 +157,10 @@ public class OutgoingMessageVH extends FileMessageVH {
             if(messageItem.isAttachmentImageOnly())
                 messageIcon = R.drawable.ic_message_delivered_image_14dp;
             else messageIcon = R.drawable.ic_message_delivered_14dp;
-        } else if (messageItem.isError()) {
-            messageIcon = R.drawable.ic_message_has_error_14dp;
         } else if (messageItem.isAcknowledged() || messageItem.isForwarded()) {
             if(messageItem.isAttachmentImageOnly())
                 messageIcon = R.drawable.ic_message_acknowledged_image_14dp;
             else{
-
                 if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light)
                     messageIcon = R.drawable.ic_message_acknowledged_14dp;
                 else messageIcon = R.drawable.ic_message_acknowledged_dark_14dp;
