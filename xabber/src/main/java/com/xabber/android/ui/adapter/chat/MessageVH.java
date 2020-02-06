@@ -40,8 +40,6 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
     private static final String LOG_TAG = MessageVH.class.getSimpleName();
     private MessageClickListener listener;
     private MessageLongClickListener longClickListener;
-    public boolean needDate;
-    public String date;
 
     TextView tvFirstUnread;
     TextView tvDate;

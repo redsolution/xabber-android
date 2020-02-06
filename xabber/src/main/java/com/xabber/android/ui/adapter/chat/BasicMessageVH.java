@@ -1,15 +1,18 @@
 package com.xabber.android.ui.adapter.chat;
 
-import androidx.annotation.StyleRes;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
+
+import androidx.annotation.StyleRes;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.xabber.android.R;
 
 public class BasicMessageVH extends RecyclerView.ViewHolder {
 
     TextView messageText;
+    public boolean needDate;
+    public String date;
 
     BasicMessageVH(View itemView, @StyleRes int appearance) {
         super(itemView);

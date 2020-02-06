@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/chat_intro_background"
+    android:orientation="vertical"
+    android:paddingTop="10dp"
+    android:paddingRight="10dp"
+    android:paddingBottom="10dp"
+    app:layout_anchorGravity="center">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:paddingBottom="5dp">
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="26dp"
+            android:background="@color/transparent"
+            android:tint="@color/white"
+            app:srcCompat="@drawable/ic_expander_indicator_right_black_24dp" />
+
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Hello helooldllol helo hello hel yptp fasfaf  afasj asldkjj jd jas jlgkajsgo"
+            android:textAppearance="@style/ChatText.Large"
+            android:textColor="@color/white" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:paddingBottom="5dp">
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="26dp"
+            android:background="@color/transparent"
+            android:tint="@color/white"
+            app:srcCompat="@drawable/ic_expander_indicator_right_black_24dp" />
+
+        <TextView
+            android:id="@+id/textView4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="loremIpsum lorem Ipsum loremIpsum"
+            android:textAppearance="@style/ChatText.Large"
+            android:textColor="@color/white" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:paddingBottom="5dp">
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="26dp"
+            android:background="@color/transparent"
+            android:tint="@color/white"
+            app:srcCompat="@drawable/ic_expander_indicator_right_black_24dp" />
+
+        <TextView
+            android:id="@+id/textView5"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="loremIpsum loremIpsum lore mIpsuml oremIpsum"
+            android:textAppearance="@style/ChatText.Large"
+            android:textColor="@color/white" />
+    </LinearLayout>
+
+</LinearLayout>
