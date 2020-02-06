@@ -28,7 +28,6 @@ data class ChatItemVO(val contact: AbstractContact){
         val notificationMuteIcon = getNotificationMuteIcon()
         val unreadCount = getUnreadCount()
         val unreadCountVisibility = getUnreadCountVisibility()
-        val is
 
     }
 
