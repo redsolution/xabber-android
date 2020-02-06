@@ -122,6 +122,7 @@ import com.xabber.android.ui.helper.PermissionsRequester;
 import com.xabber.android.ui.widget.BottomMessagesPanel;
 import com.xabber.android.ui.widget.CustomMessageMenu;
 import com.xabber.android.ui.widget.DateViewDecoration;
+import com.xabber.android.ui.widget.IntroViewDecoration;
 import com.xabber.android.ui.widget.PlayerVisualizerView;
 import com.xabber.android.ui.widget.ReplySwipeCallback;
 import com.xabber.android.utils.Utils;
@@ -190,6 +191,8 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     private ReplySwipeCallback replySwipe;
     private View placeholder;
     private LinearLayout inputLayout;
+    private ViewStub stubIntro;
+    private ViewGroup chatIntroLayout;
     private ViewStub stubNewContact;
     private ViewGroup newContactLayout;
     private TextView addContact;
@@ -655,6 +658,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         stubNotify = (ViewStub) view.findViewById(R.id.stubNotify);
         stubJoin = (ViewStub) view.findViewById(R.id.stubJoin);
         stubNewContact = (ViewStub) view.findViewById(R.id.stubNewContact);
+        stubIntro = (ViewStub) view.findViewById(R.id.stubIntro);
         NotificationManager.getInstance().removeMessageNotification(account, user);
         setChat(account, user);
         if (savedInstanceState != null) {
@@ -714,6 +718,20 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         if (abstractChat != null) {
             messageItems = abstractChat.getMessages();
         }
+        if (messageItems.size() > 0) {
+            setIntroView();
+            inflateIntroView(false);
+        } else {
+            messageItems.addChangeListener(new RealmChangeListener<RealmResults<MessageItem>>() {
+                @Override
+                public void onChange(RealmResults<MessageItem> element) {
+                    setIntroView();
+                    inflateIntroView(false);
+                    messageItems.removeChangeListener(this);
+                }
+            });
+            inflateIntroView(true);
+        }
 
         chatMessageAdapter = new MessagesAdapter(getActivity(), messageItems, abstractChat,
                 this, this, this, this, this,
@@ -750,6 +768,41 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         restoreInputState();
 
         updateContact();
+    }
+
+    private void setIntroView() {
+        View introView = LayoutInflater.from(realmRecyclerView.getContext()).inflate(R.layout.chat_intro_helper_view, null);
+        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.dark) {
+            introView.getBackground().setLevel(1);
+        } else {
+            introView.getBackground().setLevel(0);
+        }
+        realmRecyclerView.addItemDecoration(new IntroViewDecoration(introView));
+    }
+
+    public void inflateIntroView(boolean show) {
+        if (chatIntroLayout == null) {
+            if (show){
+                chatIntroLayout = (ViewGroup) stubIntro.inflate();
+                if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.dark) {
+                    chatIntroLayout.getBackground().setLevel(1);
+                } else {
+                    chatIntroLayout.getBackground().setLevel(0);
+                }
+                RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) chatIntroLayout.getLayoutParams();
+                Point size = new Point();
+                getActivity().getWindowManager().getDefaultDisplay().getSize(size);
+                lp.leftMargin = size.x / 10;
+                lp.rightMargin = size.x / 10;
+                chatIntroLayout.setLayoutParams(lp);
+            }
+        } else {
+            if (show) {
+                chatIntroLayout.setVisibility(View.VISIBLE);
+            } else {
+                chatIntroLayout.setVisibility(View.GONE);
+            }
+        }
     }
 
     @Override

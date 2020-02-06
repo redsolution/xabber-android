@@ -42,10 +42,11 @@ public class DateViewDecoration extends RecyclerView.ItemDecoration {
     private RecyclerView parent;
 
     private int dateViewXMargin;
-    private int backgroundDrawableHeight = 65;
-    private int backgroundDrawableXPadding = 22;
-    private int backgroundDrawableYMargin = 10;
-    private int dateLayoutHeight = 2 * backgroundDrawableYMargin + backgroundDrawableHeight;
+    private static final int backgroundDrawableHeight = 65;
+    private static final int backgroundDrawableXPadding = 22;
+    private static final int backgroundDrawableYMargin = 10;
+    private static final int dateLayoutHeight = 2 * backgroundDrawableYMargin + backgroundDrawableHeight;
+    private static final int alphaThreshold = dateLayoutHeight * 6 / 10;
 
     private int stickyDrawableTopBound = 2 * backgroundDrawableYMargin;
     private int stickyDrawableBottomBound = dateLayoutHeight;
@@ -178,6 +179,13 @@ public class DateViewDecoration extends RecyclerView.ItemDecoration {
         return child1.getBottom() > stickyDrawableBottomBound + backgroundDrawableYMargin;
     }
 
+    // Check if we should make the date view disappear or not
+    private boolean shouldAnimateAlpha(Rect date, int messageTopBound) {
+        // The bigger alphaThreshold constant is, the bigger the area that date
+        // has to occupy within the bounds of message to start disappearing
+        return date.bottom - messageTopBound > alphaThreshold;
+    }
+
     // Draws a date that appears at the top of chat window, either as a sticky date
     // that stays in one place, or a date of the partially visible message
     private void drawDateStickyHeader(Canvas c, RecyclerView parent, View child, BasicMessageVH holder, boolean forceDrawAsSticky) {
@@ -214,7 +222,7 @@ public class DateViewDecoration extends RecyclerView.ItemDecoration {
                 // if not, set state to SCROLL_IDLE_NO_ANIMATION;
                 int childTopBound = child.getTop();
 
-                if (drawableBounds.bottom - childTopBound > dateLayoutHeight / 2) {
+                if (shouldAnimateAlpha(drawableBounds, childTopBound)) {
                     handler.postDelayed(runAlphaAnimation, 500);
                     currentDateState = DateState.INITIATED_ANIMATION;
                 } else {
