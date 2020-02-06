@@ -5,7 +5,6 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.xabber.android.R;
-import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.message.ChatAction;
@@ -24,9 +23,9 @@ public class ActionMessageVH extends BasicMessageVH {
         messageTime = itemView.findViewById(R.id.message_time);
     }
 
-    public void bind(MessageItem messageItem, Context context, AccountJid account, boolean isMUC) {
+    public void bind(MessageItem messageItem, Context context, AccountJid account, boolean isMUC, boolean needDate) {
         ChatAction action = MessageItem.getChatAction(messageItem);
-        String time = StringUtils.getSmartTimeText(context, new Date(messageItem.getTimestamp()));
+        String time = StringUtils.getTimeText(new Date(messageItem.getTimestamp()));
 
         String name;
         if (isMUC) {
@@ -34,13 +33,9 @@ public class ActionMessageVH extends BasicMessageVH {
         } else {
             name = RosterManager.getInstance().getBestContact(account, messageItem.getUser()).getName();
         }
-        int color;
-        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.dark) {
-            color = messageText.getContext().getResources().getColor(R.color.grey_700);
-        } else {
-            color = messageText.getContext().getResources().getColor(R.color.grey_500);
-        }
         messageText.setText(action.getText(context, name, MessageItem.getSpannable(messageItem).toString()));
         messageTime.setText(time);
+        this.needDate = needDate;
+        date = StringUtils.getDateStringForMessage(messageItem.getTimestamp());
     }
 }

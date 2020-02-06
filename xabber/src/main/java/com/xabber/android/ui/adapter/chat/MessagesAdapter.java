@@ -274,7 +274,7 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
 
         switch (viewType) {
             case VIEW_TYPE_ACTION_MESSAGE:
-                ((ActionMessageVH)holder).bind(messageItem, context, account, isMUC);
+                ((ActionMessageVH)holder).bind(messageItem, context, account, isMUC, needDate);
                 break;
 
             case VIEW_TYPE_INCOMING_MESSAGE:
