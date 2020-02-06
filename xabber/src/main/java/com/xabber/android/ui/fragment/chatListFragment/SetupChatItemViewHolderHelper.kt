@@ -12,6 +12,7 @@ import com.xabber.android.R
 import com.xabber.android.data.SettingsManager
 import com.xabber.android.data.account.AccountManager
 import com.xabber.android.data.database.messagerealm.MessageItem
+import com.xabber.android.data.extension.cs.ChatStateManager
 import com.xabber.android.data.extension.muc.MUCManager
 import com.xabber.android.data.extension.muc.RoomChat
 import com.xabber.android.data.extension.otr.OTRManager
@@ -25,7 +26,6 @@ import com.xabber.android.ui.color.ColorManager
 import com.xabber.android.utils.StringUtils
 import java.net.URLDecoder
 import java.nio.charset.StandardCharsets
-import java.util.*
 
 class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: AbstractContact){
 
@@ -52,7 +52,10 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
                     .getAccountMainColor(contact.account)
             holder.accountColorIndicatorView.setBackgroundColor(color)
             holder.accountColorIndicatorBackView.setBackgroundColor(color)
-        } else { //TODO maybe should make it transparent (not invisible)
+            holder.accountColorIndicator = color
+            holder.accountColorIndicatorView.visibility = View.VISIBLE
+            holder.accountColorIndicatorBackView.visibility = View.VISIBLE
+        } else {
             holder.accountColorIndicatorView.visibility = View.INVISIBLE
             holder.accountColorIndicatorBackView.visibility = View.INVISIBLE
         }
@@ -61,9 +64,8 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
     private fun setupContactAvatar(holder: ChatViewHolder, contact: AbstractContact) {
         if (SettingsManager.contactsShowAvatars()) {
             holder.avatarIV.visibility = View.VISIBLE
-            holder.statusIV.visibility = View.VISIBLE
             holder.onlyStatusIV.visibility = View.GONE
-            holder.avatarIV.setImageDrawable(contact.avatar)
+            holder.avatarIV.setImageDrawable(contact.getAvatar(true))
         } else {
             holder.avatarIV.visibility = View.GONE
             holder.statusIV.visibility = View.GONE
@@ -165,10 +167,8 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
     }
 
     private fun setupTime(holder: ChatViewHolder, contact: AbstractContact) {
-        val context = holder.itemView.context
         val chat = MessageManager.getInstance().getOrCreateChat(contact.account, contact.user)
-        val date = Date(chat.lastMessage!!.timestamp)
-        holder.timeTV.text = StringUtils.getSmartTimeTextForRoster(context, date)
+        holder.timeTV.text = StringUtils.getSmartTimeTextForRoster(holder.itemView.context, chat.lastTime)
         holder.timeTV.visibility = View.VISIBLE
     }
 
@@ -179,8 +179,12 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
         val text = lastMessage?.text
         val forwardedCount = lastMessage?.forwardedIds?.size
         if (text!!.isEmpty()) {
-            if (forwardedCount!! > 0) holder.messageTextTV.text = String
+            if (ChatStateManager.getInstance().getFullChatStateString(contact.account, contact.user) != null)
+                holder.messageTextTV.text = ChatStateManager.getInstance()
+                        .getFullChatStateString(contact.account, contact.user)
+            else if (forwardedCount!! > 0) holder.messageTextTV.text = String
                     .format(context.resources.getString(R.string.forwarded_messages_count), forwardedCount)
+            else if (lastMessage.haveAttachments()) holder.messageTextTV.text = lastMessage.attachments[0].title
             else holder.messageTextTV.text = context.resources.getString(R.string.no_messages)
             holder.messageTextTV.setTypeface(holder.messageTextTV.typeface, Typeface.ITALIC)
         } else {

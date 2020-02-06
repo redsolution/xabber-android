@@ -27,6 +27,7 @@ import io.realm.DynamicRealm;
 import io.realm.DynamicRealmObject;
 import io.realm.FieldAttribute;
 import io.realm.Realm;
+import io.realm.RealmChangeListener;
 import io.realm.RealmConfiguration;
 import io.realm.RealmMigration;
 import io.realm.RealmObjectSchema;
@@ -35,6 +36,8 @@ import io.realm.RealmResults;
 import io.realm.RealmSchema;
 import io.realm.Sort;
 import io.realm.annotations.RealmModule;
+import rx.Emitter;
+import rx.Observable;
 
 public class MessageDatabaseManager {
 
@@ -54,6 +57,7 @@ public class MessageDatabaseManager {
         return instance;
     }
 
+    private Observable<Realm> observableListenerInstance;
     private MessageDatabaseManager() {
         Realm.init(Application.getInstance());
         realmConfiguration = createRealmConfiguration();
@@ -70,6 +74,7 @@ public class MessageDatabaseManager {
      * @return new realm instance
      * @throws 'IllegalStateException' if called from UI (main) thread
      */
+    @Deprecated
     public Realm getNewBackgroundRealm() {
         if (Looper.myLooper() == Looper.getMainLooper()) {
             throw new IllegalStateException("Request background thread message realm from UI thread");
@@ -84,6 +89,7 @@ public class MessageDatabaseManager {
      * @return realm instance for UI thread
      * @throws 'IllegalStateException' if called from background thread
      */
+    @Deprecated
     public Realm getRealmUiThread() {
         if (Looper.myLooper() != Looper.getMainLooper()) {
             throw new IllegalStateException("Request UI thread message realm from non UI thread");
@@ -93,6 +99,16 @@ public class MessageDatabaseManager {
             realmUiThread = Realm.getInstance(realmConfiguration);
         }
         return Realm.getDefaultInstance();
+    }
+
+    public Observable<Realm> getObservableListener(){
+        if (observableListenerInstance == null) observableListenerInstance = Observable.create(realmEmitter -> {
+            final Realm observableRealm = Realm.getDefaultInstance();
+            final RealmChangeListener<Realm> listener = realmEmitter::onNext;
+            observableRealm.addChangeListener(listener);
+            realmEmitter.onNext(observableRealm);
+        }, Emitter.BackpressureMode.LATEST);
+        return observableListenerInstance;
     }
 
     public static int getAllUnreadMessagesCount(){

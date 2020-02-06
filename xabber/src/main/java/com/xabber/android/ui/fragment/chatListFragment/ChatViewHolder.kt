@@ -12,6 +12,7 @@ class ChatViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
 
     var messageItem: MessageItem? = null
     var rosterStatus: Int? = null
+    var accountColorIndicator: Int? = null
 
     val avatarIV = itemView.findViewById<ImageView>(R.id.ivAvatar)
     val statusGroupchatIV = itemView.findViewById<ImageView>(R.id.ivStatusGroupchat)

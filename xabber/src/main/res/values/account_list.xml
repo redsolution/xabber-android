@@ -10,7 +10,7 @@
     <string name="account_state_registration">Registering</string>
     <string name="account_state_authentication">Authorizing</string>
     <string name="account_state_connected">Online</string>
-    <string name="account_state_connecting">Connecting</string>
+    <string name="account_state_connecting">Connecting...</string>
     <string name="account_state_disconnecting">Disconnecting</string>
     <string name="account_state_offline">Offline</string>
     <string name="account_state_waiting">Waiting to reconnect</string>
