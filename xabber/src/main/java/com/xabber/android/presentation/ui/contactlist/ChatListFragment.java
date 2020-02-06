@@ -200,6 +200,8 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
                     try {update();} catch (Exception e) {LogManager.exception("ChatList", e);}
                 });
 
+        update();
+
         super.onResume();
     }
 
