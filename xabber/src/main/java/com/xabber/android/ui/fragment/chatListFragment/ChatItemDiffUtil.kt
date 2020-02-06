@@ -29,7 +29,9 @@ class ChatItemDiffUtil(private val oldList: List<AbstractContact>,
         val isAvatarsAreEqual = oldItemHolder.avatarIV.drawable == newAbstractContact.avatar
         val isColorIndicatorsAreEqual = oldItemHolder.accountColorIndicator == ColorManager
                 .getInstance().accountPainter.getAccountMainColor(newAbstractContact.account)
+        val isTextEqual = oldItemHolder.messageTextTV.text == newMessageItem.text
 
-        return isMessagesAreEqual && isStatusesAreEqual && isAvatarsAreEqual && isColorIndicatorsAreEqual
+        return isMessagesAreEqual && isStatusesAreEqual && isAvatarsAreEqual
+                && isColorIndicatorsAreEqual && isTextEqual
     }
 }

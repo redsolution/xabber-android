@@ -57,6 +57,7 @@ public class MessageDatabaseManager {
         return instance;
     }
 
+    private Observable<Realm> observableListenerInstance;
     private MessageDatabaseManager() {
         Realm.init(Application.getInstance());
         realmConfiguration = createRealmConfiguration();
@@ -101,12 +102,13 @@ public class MessageDatabaseManager {
     }
 
     public Observable<Realm> getObservableListener(){
-        return Observable.create(realmEmitter -> {
+        if (observableListenerInstance == null) observableListenerInstance = Observable.create(realmEmitter -> {
             final Realm observableRealm = Realm.getDefaultInstance();
             final RealmChangeListener<Realm> listener = realmEmitter::onNext;
             observableRealm.addChangeListener(listener);
             realmEmitter.onNext(observableRealm);
         }, Emitter.BackpressureMode.LATEST);
+        return observableListenerInstance;
     }
 
     public static int getAllUnreadMessagesCount(){

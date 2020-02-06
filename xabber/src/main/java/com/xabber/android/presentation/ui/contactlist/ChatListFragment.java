@@ -195,7 +195,6 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         realmChangeListenerSubscription = MessageDatabaseManager.getInstance().getObservableListener()
                 .debounce(250, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(AndroidSchedulers.mainThread())
                 .doOnError(throwable -> LogManager.exception("ChatListFragment", throwable))
                 .subscribe(realm -> {
                     try {update();} catch (Exception e) {LogManager.exception("ChatList", e);}
