@@ -30,8 +30,6 @@ import java.nio.charset.StandardCharsets
 class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: AbstractContact){
 
     fun setup(){
-        holder.messageItem = MessageManager.getInstance()
-                .getOrCreateChat(contact.account, contact.user).lastMessage
         setupAccountColorIndicator(holder, contact)
         setupContactAvatar(holder, contact)
         setupRosterStatus(holder, contact)
@@ -52,7 +50,6 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
                     .getAccountMainColor(contact.account)
             holder.accountColorIndicatorView.setBackgroundColor(color)
             holder.accountColorIndicatorBackView.setBackgroundColor(color)
-            holder.accountColorIndicator = color
             holder.accountColorIndicatorView.visibility = View.VISIBLE
             holder.accountColorIndicatorBackView.visibility = View.VISIBLE
         } else {
@@ -75,7 +72,6 @@ class SetupChatItemViewHolderHelper(val holder: ChatViewHolder, val contact: Abs
 
     private fun setupRosterStatus(holder: ChatViewHolder, contact: AbstractContact) {
         val statusLevel = contact.statusMode.statusLevel
-        holder.rosterStatus = statusLevel
         val mucIndicatorLevel = if (MUCManager.getInstance().hasRoom(contact.account, contact.user)) 1
         else if (MUCManager.getInstance().isMucPrivateChat(contact.account, contact.user)) 3 else 0
 

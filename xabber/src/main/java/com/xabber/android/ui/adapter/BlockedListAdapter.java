@@ -61,7 +61,7 @@ public class BlockedListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             viewHolder.avatar.setImageDrawable(rosterContact.getAvatar());
         }
 
-        viewHolder.name.setText(rosterContact.getName());
+        viewHolder.name.setText(contact.getJid());
         viewHolder.name.setVisibility(View.VISIBLE);
 
         viewHolder.checkBox.setChecked(checkedContacts.contains(contact));

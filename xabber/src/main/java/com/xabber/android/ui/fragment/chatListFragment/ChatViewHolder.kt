@@ -10,12 +10,8 @@ import github.ankushsachdeva.emojicon.EmojiconTextView
 
 class ChatViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
 
-    var messageItem: MessageItem? = null
-    var rosterStatus: Int? = null
-    var accountColorIndicator: Int? = null
-
-    val avatarIV = itemView.findViewById<ImageView>(R.id.ivAvatar)
-    val statusGroupchatIV = itemView.findViewById<ImageView>(R.id.ivStatusGroupchat)
+    val avatarIV = itemView.findViewById<ImageView>(R.id.ivAvatar)//
+    val statusGroupchatIV = itemView.findViewById<ImageView>(R.id.ivStatusGroupchat)//
     val statusIV = itemView.findViewById<ImageView>(R.id.ivStatus)
     val onlyStatusIV = itemView.findViewById<ImageView>(R.id.ivOnlyStatus)
     val actionTV = itemView.findViewById<TextView>(R.id.tvAction)
