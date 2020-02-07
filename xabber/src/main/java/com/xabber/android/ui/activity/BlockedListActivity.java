@@ -226,6 +226,7 @@ public class BlockedListActivity extends ManagedActivity implements BlockedListA
 
     @Override
     public void onSuccessUnblock() {
+        update();
         Toast.makeText(BlockedListActivity.this, getString(R.string.contacts_unblocked_successfully), Toast.LENGTH_SHORT).show();
     }
 
