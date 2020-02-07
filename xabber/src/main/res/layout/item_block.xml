@@ -44,17 +44,16 @@
         android:id="@+id/contact_list_item_name"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:singleLine="true"
-        android:ellipsize="marquee"
-        android:text="Contact list item name"
-        android:textColor="?android:attr/textColorPrimary"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:textStyle="bold"
-        android:layout_toRightOf="@id/avatarView"
         android:layout_toLeftOf="@id/block_list_contact_checkbox"
+        android:layout_toRightOf="@id/avatarView"
+        android:layout_weight="1"
+        android:ellipsize="marquee"
         android:gravity="center_vertical"
-        />
+        android:singleLine="false"
+        android:text="Contact list item name"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textColor="?android:attr/textColorPrimary"
+        android:textStyle="bold" />
 
     <View
         android:layout_width="match_parent"

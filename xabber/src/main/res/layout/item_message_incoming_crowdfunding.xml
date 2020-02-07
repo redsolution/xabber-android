@@ -7,8 +7,6 @@
 
     <include layout="@layout/item_first_unread_message"/>
 
-    <include layout="@layout/item_message_date"/>
-
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/avatarBackground"
         android:layout_width="32dp"

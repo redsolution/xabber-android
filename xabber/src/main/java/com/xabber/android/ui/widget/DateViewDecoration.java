@@ -42,11 +42,12 @@ public class DateViewDecoration extends RecyclerView.ItemDecoration {
     private RecyclerView parent;
 
     private int dateViewXMargin;
-    private static final int backgroundDrawableHeight = 65;
-    private static final int backgroundDrawableXPadding = 22;
-    private static final int backgroundDrawableYMargin = 10;
+    private static final int backgroundDrawableHeight = Utils.dipToPx(24f, Application.getInstance());
+    private static final int backgroundDrawableXPadding = Utils.dipToPx(8f, Application.getInstance());
+    private static final int backgroundDrawableYMargin = Utils.dipToPx(3.64f, Application.getInstance());
     private static final int dateLayoutHeight = 2 * backgroundDrawableYMargin + backgroundDrawableHeight;
     private static final int alphaThreshold = dateLayoutHeight * 6 / 10;
+    private static final int dateTextBaseline = backgroundDrawableHeight * 3 / 11;
 
     private int stickyDrawableTopBound = 2 * backgroundDrawableYMargin;
     private int stickyDrawableBottomBound = dateLayoutHeight;
@@ -103,6 +104,9 @@ public class DateViewDecoration extends RecyclerView.ItemDecoration {
         }
     };
 
+    // Adding a scroll listener, saving the RecyclerView reference
+    // and setting current scroll state if possible.
+    // Mainly needed for the transparency animation.
     private void attachRecyclerViewData(RecyclerView parent) {
         parent.removeOnScrollListener(scrollListener);
         attached = true;
@@ -132,51 +136,54 @@ public class DateViewDecoration extends RecyclerView.ItemDecoration {
                 }
             }
             if (i == 0) {
-                if (holder instanceof BasicMessageVH) {
-                    if (parent.getChildCount() > 1) {
-                        View child1 = parent.getChildAt(1);
-                        RecyclerView.ViewHolder holder1 = parent.getChildViewHolder(child1);
-                        if (holder1 instanceof BasicMessageVH) {
-                            // check if the date of appearing child(0) is the
-                            // same as the date of the visible child(1)
-                            if (((BasicMessageVH) holder).date.equals(((BasicMessageVH) holder1).date)) {
-                                // if same, make sure we have enough space to draw the sticky header
-                                if (checkIfStickyHeaderFitsAboveNextChild(child1))
-                                    drawDateStickyHeader(c, parent, child, (BasicMessageVH)holder, true);
-                                else {
-                                    // if not, draw the header from the point of view of the next child and let it
-                                    // calculate whether or not that child can show it as a sticky header or not.
-                                    drawDateStickyHeader(c, parent, child1, (BasicMessageVH)holder1, false);
-                                }
-                                // this also means that there's no need in showing
-                                // the date for the child(1), so we can skip it
-
-                                i++;        // increment index to skip calling getChildAt(1)
-                                continue;   // and skip the rest of the loop.
-                            } else {
-                                // If the dates are different, then that means that the child(1) is the
-                                // first message with the different date,
-                                // which means that we have to draw its' date
-                                drawDateMessageHeader(c, parent, child1, (BasicMessageVH)holder1);
-                                i++;
-                                // we don't skip the loop here because in this
-                                // else statement we still haven't drawn child(0)'s date
-                            }
-                        }
-                    }
-                    // And if we didn't leave the first iteration of the loop,
-                    // just draw the sticky date normally and calculate
-                    // whether we need to draw it as sticky or not.
-                    drawDateStickyHeader(c, parent, child, (BasicMessageVH)holder, false);
-                }
+                i = measureFirstChildren(c, parent, child, (BasicMessageVH)holder, 0);
             }
         }
     }
 
+    // A recursive check that measures whether we can draw the date as a sticky properly or not.
+    // Since this check starts in a for loop, we return the iteration at which we stopped here to the main loop
+    // To skip the iterations we already checked here.
+    private int measureFirstChildren(Canvas c, RecyclerView parent, View originalChild, BasicMessageVH holder, int currentLoopIteration) {
+        if (parent.getChildCount() > currentLoopIteration + 1) {
+            View nextChild = parent.getChildAt(currentLoopIteration + 1);
+            RecyclerView.ViewHolder nextHolder = parent.getChildViewHolder(nextChild);
+            if (nextHolder instanceof BasicMessageVH) {
+                // Check if the date of the originalChild is
+                // the same as the date of the nextChild
+                if (holder.date.equals(((BasicMessageVH) nextHolder).date)) {
+                    // if same, make sure we have enough space to draw the sticky header
+                    if (checkIfStickyHeaderFitsAboveNextChild(nextChild)) {
+                        drawDateStickyHeader(c, parent, originalChild, holder, true);
+                        // after drawing it, leave the recursive call with the current loop + 1,
+                        // since we checked both the originalChild (currentLoopIteration)
+                        // and nextChild (currentLoopIteration + 1)
+                        return currentLoopIteration + 1;
+                    } else {
+                        // Since sticky doesn't fit, we can't do much at this loop.
+                        // Just return the call to the method, while iterating the current loop by 1
+                        return measureFirstChildren(c, parent, nextChild, (BasicMessageVH) nextHolder, currentLoopIteration + 1);
+                    }
+                } else {
+                    // If the dates are different, then that means that the next child
+                    // is the first message with a different date, i.e. it needs a date header.
+                    drawDateMessageHeader(c, parent, nextChild, (BasicMessageVH)nextHolder);
+                    // We did what we needed with nextChild, so we bump the loop iteration by 1,
+                    // but since we didn't do anything with the originalChild, we can't return yet.
+                    currentLoopIteration++;
+                }
+            }
+        }
+        // Here we draw the sticky date that isn't forced to be drawn at the same position.
+        // Either when we ran out of items to check, or the nextChild is of a different date than originalChild.
+        drawDateStickyHeader(c, parent, originalChild, holder, false);
+        return currentLoopIteration;
+    }
+
     // Check if the sticky date of child(0) will be above the lower bound of child(1)
-    // This is important if we have only 2 message views with a small height with the same date.
-    private boolean checkIfStickyHeaderFitsAboveNextChild(View child1) {
-        return child1.getBottom() > stickyDrawableBottomBound + backgroundDrawableYMargin;
+    // This is important if we have 2 message views with a small height with the same date.
+    private boolean checkIfStickyHeaderFitsAboveNextChild(View nextChild) {
+        return nextChild.getBottom() > stickyDrawableBottomBound + backgroundDrawableYMargin;
     }
 
     // Check if we should make the date view disappear or not
@@ -309,8 +316,7 @@ public class DateViewDecoration extends RecyclerView.ItemDecoration {
         drawable.setBounds(bounds);
 
         drawable.draw(c);
-        c.drawText(date, dateViewXMargin, bounds.bottom - 18f, paintFont);
-
+        c.drawText(date, dateViewXMargin, bounds.bottom - dateTextBaseline, paintFont);
     }
 
     private int measureText(Paint paint, CharSequence text, int start, int end) {

@@ -296,7 +296,7 @@ public class BlockingManager {
                 if (blockingCommandManager != null) {
                     List<Jid> jidsToUnblock = new ArrayList<>(contacts.size());
                     for (UserJid userJid : contacts) {
-                        jidsToUnblock.add(userJid.getBareJid());
+                        jidsToUnblock.add(userJid.getJid());
                     }
 
 
@@ -314,6 +314,9 @@ public class BlockingManager {
                     @Override
                     public void run() {
                         if (finalSuccess) {
+                            if (cachedBlockedContacts.get(account) != null) {
+                                cachedBlockedContacts.get(account).removeAll(contacts);
+                            }
                             listener.onSuccessUnblock();
                         } else {
                             listener.onErrorUnblock();
