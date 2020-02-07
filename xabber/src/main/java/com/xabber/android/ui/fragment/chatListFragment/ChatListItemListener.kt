@@ -2,12 +2,11 @@ package com.xabber.android.ui.fragment.chatListFragment
 
 import android.view.ContextMenu
 import android.view.View
-import com.xabber.android.data.roster.AbstractContact
 
 interface ChatListItemListener: View.OnCreateContextMenuListener{
-    fun onChatItemClick(contact: AbstractContact)
-    fun onChatAvatarClick(contact: AbstractContact)
-    fun onChatItemContextMenu(menu: ContextMenu, contact: AbstractContact)
-    fun onChatItemSwiped(abstractContact: AbstractContact)
+    fun onChatItemClick(chatItemVO: ChatItemVO)
+    fun onChatAvatarClick(chatItemVO: ChatItemVO)
+    fun onChatItemContextMenu(menu: ContextMenu, chatItemVO: ChatItemVO)
+    fun onChatItemSwiped(chatItemVO: ChatItemVO)
     fun onListBecomeEmpty()
 }

@@ -8,14 +8,12 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.xabber.android.R
-import com.xabber.android.data.roster.AbstractContact
 
-class ChatListAdapter(val list: MutableList<AbstractContact>, val listener: ChatListItemListener) :
+class ChatListAdapter(val list: MutableList<ChatItemVO>, val listener: ChatListItemListener) :
         RecyclerView.Adapter<ChatViewHolder>(), View.OnClickListener, View.OnCreateContextMenuListener{
 
     lateinit var recyclerView: RecyclerView
     lateinit var activity: Activity
-    val holdersMap: HashMap<Int, ChatViewHolder> = HashMap()
 
     override fun getItemCount(): Int = list.size
 
@@ -24,23 +22,22 @@ class ChatListAdapter(val list: MutableList<AbstractContact>, val listener: Chat
     fun getAbstractContactFromView(v: View?) =
             getAbstractContactFromPosition(recyclerView.getChildLayoutPosition(v!!))
 
-    fun addItem(index: Int, item: AbstractContact) {
+    fun addItem(index: Int, item: ChatItemVO) {
         this.list.add(index, item)
         notifyItemChanged(index)
     }
 
-    fun addItems(newItemsList: MutableList<AbstractContact>){
+    fun addItems(newItemsList: MutableList<ChatItemVO>){
         this.list.clear()
         this.list.addAll(newItemsList)
     }
 
     fun deleteItemByPosition(position: Int) {
         list.removeAt(position)
-        holdersMap.remove(position)
         notifyDataSetChanged()
     }
 
-    fun deleteItemByAbstractContact(contact: AbstractContact) =
+    fun deleteItemByAbstractContact(contact: ChatItemVO) =
             deleteItemByPosition(list.indexOf(contact))
 
     fun onSwipeChatItem(holder: ChatViewHolder){
@@ -75,8 +72,46 @@ class ChatListAdapter(val list: MutableList<AbstractContact>, val listener: Chat
         holder.avatarIV.setOnClickListener(this)
         holder.itemView.setOnCreateContextMenuListener(this)
 
-        SetupChatItemViewHolderHelper(holder, list[position]).setup()
-        holdersMap.put(position, holder)
+        val chatItemVO = list[position]
+
+        holder.avatarIV.setImageDrawable(chatItemVO.contactAvatarDrawable)
+        holder.avatarIV.visibility = chatItemVO.contactAvatarVisibility
+
+        holder.statusGroupchatIV.setImageDrawable(chatItemVO.groupchatIndicatorDrawable)
+        holder.statusGroupchatIV.visibility = chatItemVO.groupchatIndicatorVisibility
+
+        holder.messageStatusTV.setImageDrawable(chatItemVO.messageStatusDrawable)
+        holder.messageStatusTV.visibility = chatItemVO.messageStatusDrawableVisibility
+
+        holder.accountColorIndicatorView.setBackgroundColor(chatItemVO.accountColorIndicator)
+        holder.accountColorIndicatorView.visibility = chatItemVO.accountColorIndicatorVisibility
+
+        holder.accountColorIndicatorBackView.setBackgroundColor(chatItemVO.accountColorIndicator)
+        holder.accountColorIndicatorBackView.visibility = chatItemVO.accountColorIndicatorVisibility
+
+        holder.onlyStatusIV.visibility = chatItemVO.contactOnlyStatusVisibility
+
+        holder.statusIV.setImageLevel(chatItemVO.contactStatusLevel)
+        holder.statusIV.visibility = chatItemVO.contactStatusVisibility
+
+        holder.contactNameTV.text = chatItemVO.contactName
+
+        if (chatItemVO.notificationMuteIcon != null)
+            holder.contactNameTV.setCompoundDrawablesWithIntrinsicBounds(null, null,
+                    if (chatItemVO.notificationMuteIcon != 0)
+                        holder.itemView.resources.getDrawable(chatItemVO.notificationMuteIcon) else null,
+                    null)
+
+        holder.messageTextTV.text = chatItemVO.messageSpannedText?: chatItemVO.messageText
+        if (chatItemVO.messageTextColor != null)
+            holder.messageTextTV.setTextColor(chatItemVO.messageTextColor)
+
+        holder.timeTV.text = chatItemVO.lastMessageTime
+
+        holder.unreadCountTV.text = chatItemVO.unreadCount.toString()
+        holder.unreadCountTV.visibility = chatItemVO.unreadCountVisibility
+
+
     }
 
 }
