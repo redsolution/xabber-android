@@ -49,6 +49,7 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.blocking.BlockingManager;
+import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.muc.RoomChat;
 import com.xabber.android.data.extension.muc.RoomContact;
 import com.xabber.android.data.log.LogManager;
@@ -65,6 +66,7 @@ import com.xabber.android.presentation.ui.contactlist.viewobjects.GroupVO;
 import com.xabber.android.ui.activity.ConferenceSelectActivity;
 import com.xabber.android.ui.activity.ContactActivity;
 import com.xabber.android.ui.activity.ContactAddActivity;
+import com.xabber.android.ui.activity.ContactEditActivity;
 import com.xabber.android.ui.activity.ContactListActivity;
 import com.xabber.android.ui.activity.SearchActivity;
 import com.xabber.android.ui.activity.StatusEditActivity;
@@ -74,7 +76,6 @@ import com.xabber.android.ui.adapter.contactlist.GroupConfiguration;
 import com.xabber.android.ui.color.AccountPainter;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.fragment.chatListFragment.ChatItemDiffUtil;
-import com.xabber.android.ui.fragment.chatListFragment.ChatItemVO;
 import com.xabber.android.ui.fragment.chatListFragment.ChatListAdapter;
 import com.xabber.android.ui.fragment.chatListFragment.ChatListItemListener;
 import com.xabber.android.ui.helper.ContextMenuHelper;
@@ -100,7 +101,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         OnChatStateListener, PopupMenu.OnMenuItemClickListener, ContextMenuHelper.ListPresenter {
 
     private ChatListAdapter adapter;
-    private List<ChatItemVO> items;
+    private List<AbstractContact> items;
     private Snackbar snackbar;
     private CoordinatorLayout coordinatorLayout;
     private LinearLayoutManager linearLayoutManager;
@@ -432,7 +433,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
     /**
     Update chat items in adapter
      */
-    private void updateItems(List<ChatItemVO> newItems){
+    private void updateItems(List<AbstractContact> newItems){
          if (newItems.size() == 0 && showPlaceholders >= 3) {
             switch (currentChatsState) {
                 case unread:
@@ -498,23 +499,24 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
     }
 
     @Override
-    public void onChatItemSwiped(@NotNull ChatItemVO chatItemVO) {
-        AbstractContact abstractContact = chatItemVO.getContact();
-        AccountJid accountJid = abstractContact.getAccount();
-        UserJid userJid = abstractContact.getUser();
+    public void onChatItemSwiped(@NotNull AbstractContact abstractContact) {
         AbstractChat abstractChat = MessageManager.getInstance()
-                .getChat(accountJid, userJid);
-        MessageManager.getInstance().getChat(accountJid, userJid)
+                .getChat(abstractContact.getAccount(), abstractContact.getUser());
+        MessageManager.getInstance().getChat(abstractContact.getAccount(), abstractContact.getUser())
                 .setArchived(!abstractChat.isArchived(), true);
         showSnackbar(abstractContact, currentChatsState);
     }
 
     @Override
-    public void onChatAvatarClick(ChatItemVO chatItemVO) {
+    public void onChatAvatarClick(AbstractContact item) {
         Intent intent;
-        AccountJid accountJid = chatItemVO.getContact().getAccount();
-        UserJid userJid = chatItemVO.getContact().getUser();
-        intent = ContactActivity.createIntent(getActivity(), accountJid, userJid);
+        AccountJid accountJid = item.getAccount();
+        UserJid userJid = item.getUser();
+        if (MUCManager.getInstance().hasRoom(accountJid, userJid)) {
+            intent = ContactActivity.createIntent(getActivity(), accountJid, userJid);
+        } else {
+            intent = ContactEditActivity.createIntent(getActivity(), accountJid, userJid);
+        }
         getActivity().startActivity(intent);
     }
 
@@ -523,9 +525,9 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         super.onCreateContextMenu(menu, v, menuInfo);
     }
 
-    public void onChatItemContextMenu(ContextMenu menu, ChatItemVO chatItemVO){
-        AccountJid accountJid = chatItemVO.getContact().getAccount();
-        UserJid userJid = chatItemVO.getContact().getUser();
+    public void onChatItemContextMenu(ContextMenu menu, AbstractContact contact){
+        AccountJid accountJid = contact.getAccount();
+        UserJid userJid = contact.getUser();
         AbstractContact abstractContact = RosterManager.getInstance().getAbstractContact(accountJid, userJid);
         ContextMenuHelper.createContactContextMenu(getActivity(), this, abstractContact, menu);
     }
@@ -542,35 +544,33 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
     }
 
     @Override
-    public void onChatItemClick(ChatItemVO chatItemVO) {
-        AccountJid accountJid = chatItemVO.getContact().getAccount();
-        UserJid userJid = chatItemVO.getContact().getUser();
+    public void onChatItemClick(AbstractContact item) {
+        AccountJid accountJid = item.getAccount();
+        UserJid userJid = item.getUser();
         chatListFragmentListener.onChatClick(RosterManager.getInstance().getAbstractContact(accountJid, userJid));
     }
 
     public void update(){
 
         /* List for store final method result */
-        List<ChatItemVO> newList = new ArrayList<>();
+        List<AbstractContact> newList = new ArrayList<>();
         showPlaceholders++;
+        /* Map of accounts*/
+        final Map<AccountJid, AccountConfiguration> accounts = new TreeMap<>();
+        for (AccountJid account : AccountManager.getInstance().getEnabledAccounts()) {
+            accounts.put(account, null);
+        }
 
         /* If filterString is empty, build regular chat list */
         if (filterString == null || filterString.equals("")){
             final GroupConfiguration chatsGroup = getChatsGroup(currentChatsState);
             newList.clear();
             if (!chatsGroup.isEmpty()) {
-                for (AbstractContact abstractContact : chatsGroup.getAbstractContacts())
-                newList.add(new ChatItemVO(abstractContact));
+                newList.addAll(chatsGroup.getAbstractContacts());
 
             }
         } else {
             /* If filterString not empty, perform a search */
-
-            /* Map of accounts*/
-            final Map<AccountJid, AccountConfiguration> accounts = new TreeMap<>();
-            for (AccountJid account : AccountManager.getInstance().getEnabledAccounts()) {
-                accounts.put(account, null);
-            }
 
             /*  Make list of rooms and active chats grouped by users inside accounts */
             final Map<AccountJid, Map<UserJid, AbstractChat>> abstractChats = new TreeMap<>();
@@ -606,8 +606,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
             }
             final ArrayList<AbstractContact> baseEntities = getSearchResults(rosterContacts, abstractChats);
             newList.clear();
-            for(AbstractContact abstractContact : baseEntities)
-                newList.add(new ChatItemVO(abstractContact));
+            newList.addAll(baseEntities);
         }
 
         setupMarkAllTheReadButton(newList.size());
