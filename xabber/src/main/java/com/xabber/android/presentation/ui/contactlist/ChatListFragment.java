@@ -66,8 +66,8 @@ import com.xabber.android.presentation.ui.contactlist.viewobjects.GroupVO;
 import com.xabber.android.ui.activity.ConferenceSelectActivity;
 import com.xabber.android.ui.activity.ContactActivity;
 import com.xabber.android.ui.activity.ContactAddActivity;
-import com.xabber.android.ui.activity.ContactEditActivity;
 import com.xabber.android.ui.activity.ContactListActivity;
+import com.xabber.android.ui.activity.ContactViewerActivity;
 import com.xabber.android.ui.activity.SearchActivity;
 import com.xabber.android.ui.activity.StatusEditActivity;
 import com.xabber.android.ui.adapter.ChatComparator;
@@ -179,8 +179,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
 
     @Override
     public void onStop() {
-        if (realmChangeListenerSubscription != null && realmChangeListenerSubscription.isUnsubscribed())
-            realmChangeListenerSubscription.unsubscribe();
+        if (realmChangeListenerSubscription != null) realmChangeListenerSubscription.unsubscribe();
         Application.getInstance().removeUIListener(OnChatStateListener.class, this);
         super.onStop();
     }
@@ -193,7 +192,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         }
 
         realmChangeListenerSubscription = MessageDatabaseManager.getInstance().getObservableListener()
-                .debounce(250, TimeUnit.MILLISECONDS)
+                .debounce(500, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnError(throwable -> LogManager.exception("ChatListFragment", throwable))
                 .subscribe(realm -> {
@@ -515,7 +514,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         if (MUCManager.getInstance().hasRoom(accountJid, userJid)) {
             intent = ContactActivity.createIntent(getActivity(), accountJid, userJid);
         } else {
-            intent = ContactEditActivity.createIntent(getActivity(), accountJid, userJid);
+            intent = ContactViewerActivity.createIntent(getActivity(), accountJid, userJid);
         }
         getActivity().startActivity(intent);
     }
