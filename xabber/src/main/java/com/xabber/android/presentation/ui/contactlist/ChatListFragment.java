@@ -93,10 +93,8 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
 
-import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 public class ChatListFragment extends Fragment implements ChatListItemListener, View.OnClickListener,
         OnChatStateListener, PopupMenu.OnMenuItemClickListener, ContextMenuHelper.ListPresenter {
@@ -141,6 +139,71 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         void onUnreadChanged(int unread);
     }
 
+    @Override
+    public void onAttach(Context context) {
+        chatListFragmentListener = (ChatListFragmentListener) context;
+        chatListFragmentListener.onChatListStateChanged(currentChatsState);
+        super.onAttach(context);
+    }
+
+    public void playMessageSound() {
+        if (!SettingsManager.eventsInChatSounds()) return;
+
+        final MediaPlayer mp;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            AudioAttributes attr = new AudioAttributes.Builder()
+                    .setContentType(AudioAttributes.CONTENT_TYPE_UNKNOWN)
+                    .setUsage(AudioAttributes.USAGE_NOTIFICATION_EVENT).build();
+            mp = MediaPlayer.create(getActivity(), R.raw.message_alert,
+                    attr, AudioManager.AUDIO_SESSION_ID_GENERATE);
+        } else {
+            mp = MediaPlayer.create(getActivity(), R.raw.message_alert);
+            mp.setAudioStreamType(AudioManager.STREAM_NOTIFICATION);
+        }
+
+        mp.start();
+        mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mediaPlayer) {
+                mp.release();
+            }
+        });
+    }
+
+    @Override
+    public void onDetach() {
+        chatListFragmentListener = null;
+        super.onDetach();
+    }
+
+    @Override
+    public void onStop() {
+        if (realmChangeListenerSubscription != null && realmChangeListenerSubscription.isUnsubscribed())
+            realmChangeListenerSubscription.unsubscribe();
+        Application.getInstance().removeUIListener(OnChatStateListener.class, this);
+        super.onStop();
+    }
+
+    @Override
+    public void onResume() {
+        Application.getInstance().addUIListener(OnChatStateListener.class, this);
+        if (MessageDatabaseManager.getAllUnreadMessagesCount() == 0){
+            onStateSelected(ChatListState.recent);
+        }
+
+        realmChangeListenerSubscription = MessageDatabaseManager.getInstance().getObservableListener()
+                .debounce(250, TimeUnit.MILLISECONDS)
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnError(throwable -> LogManager.exception("ChatListFragment", throwable))
+                .subscribe(realm -> {
+                    try {update();} catch (Exception e) {LogManager.exception("ChatList", e);}
+                });
+
+        update();
+
+        super.onResume();
+    }
+
     public static ChatListFragment newInstance(@Nullable AccountJid account){
         ChatListFragment fragment = new ChatListFragment();
         Bundle args = new Bundle();
@@ -150,11 +213,29 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         return fragment;
     }
 
+    public void onStateSelected(ChatListState state) {
+        this.currentChatsState = state;
+        chatListFragmentListener.onChatListStateChanged(state);
+        toolbarAppBarLayout.setExpanded(true, false);
+        update();
+        closeSnackbar();
+    }
+
+    public ChatListState getCurrentChatsState(){
+        return currentChatsState;
+    }
+
     @Override
-    public void onAttach(Context context) {
-        chatListFragmentListener = (ChatListFragmentListener) context;
-        chatListFragmentListener.onChatListStateChanged(currentChatsState);
-        super.onAttach(context);
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        //TODO implement scroll to account if it need;
+    }
+
+    public void scrollToTop(){
+        if (recyclerView != null && recyclerView.getAdapter().getItemCount() != 0){
+            recyclerView.scrollToPosition(0);
+            toolbarAppBarLayout.setExpanded(true, false);
+        }
     }
 
     @Nullable
@@ -210,84 +291,69 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
     }
 
     @Override
-    public void onResume() {
-        Application.getInstance().addUIListener(OnChatStateListener.class, this);
-        if (MessageDatabaseManager.getAllUnreadMessagesCount() == 0){
-            onStateSelected(ChatListState.recent);
+    public void updateContactList() {
+        update();
+    }
+
+    /** Update toolbarRelativeLayout via current state */
+    public void updateToolbar(){
+        /* Update ChatState TextView display via current chat and connection state */
+        if (AccountManager.getInstance().getCommonState() == CommonState.connecting)
+            toolbarTitleTv.setText(Application.getInstance().getApplicationContext().getString(R.string.account_state_connecting));
+        else switch (currentChatsState) {
+            case unread:
+                toolbarTitleTv.setText(R.string.unread_chats);
+                break;
+            case archived:
+                toolbarTitleTv.setText(R.string.archived_chats);
+                break;
+            case all:
+                toolbarTitleTv.setText(R.string.all_chats);
+                break;
+            default:
+                toolbarTitleTv.setText("Xabber");
+                break;
         }
 
-        realmChangeListenerSubscription = MessageDatabaseManager.getInstance().getObservableListener()
-                .debounce(250, TimeUnit.MILLISECONDS)
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnError(throwable -> LogManager.exception("ChatListFragment", throwable))
-                .subscribe(realm -> {
-                    try {
-                        updateContactListAsync();} catch (Exception e) {LogManager.exception("ChatList", e);}
-                });
-
-        updateContactList();
-
-        super.onResume();
-    }
-
-    @Override
-    public void onStop() {
-        if (realmChangeListenerSubscription != null && realmChangeListenerSubscription.isUnsubscribed())
-            realmChangeListenerSubscription.unsubscribe();
-        Application.getInstance().removeUIListener(OnChatStateListener.class, this);
-        super.onStop();
-    }
-
-    @Override
-    public void onDetach() {
-        chatListFragmentListener = null;
-        super.onDetach();
-    }
-
-    public ChatListState getCurrentChatsState(){
-        return currentChatsState;
-    }
-
-    /** @return Size of list of chats*/
-    public int getListSize(){ return items.size(); }
-
-    public void playMessageSound() {
-        if (!SettingsManager.eventsInChatSounds()) return;
-
-        final MediaPlayer mp;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-            AudioAttributes attr = new AudioAttributes.Builder()
-                    .setContentType(AudioAttributes.CONTENT_TYPE_UNKNOWN)
-                    .setUsage(AudioAttributes.USAGE_NOTIFICATION_EVENT).build();
-            mp = MediaPlayer.create(getActivity(), R.raw.message_alert,
-                    attr, AudioManager.AUDIO_SESSION_ID_GENERATE);
+        /* Update avatar and status ImageViews via current settings and main user */
+        if (SettingsManager.contactsShowAvatars() && AccountManager.getInstance().getEnabledAccounts().size() != 0){
+            toolbarAvatarIv.setVisibility(View.VISIBLE);
+            toolbarStatusIv.setVisibility(View.VISIBLE);
+            AccountJid mainAccountJid = AccountPainter.getFirstAccount();
+            AccountItem mainAccountItem = AccountManager.getInstance().getAccount(mainAccountJid);
+            Drawable mainAccountAvatar = AvatarManager.getInstance().getAccountAvatar(mainAccountJid);
+            int mainAccountStatusMode = mainAccountItem.getDisplayStatusMode().getStatusLevel();
+            toolbarAvatarIv.setImageDrawable(mainAccountAvatar);
+            toolbarStatusIv.setImageLevel(mainAccountStatusMode);
         } else {
-            mp = MediaPlayer.create(getActivity(), R.raw.message_alert);
-            mp.setAudioStreamType(AudioManager.STREAM_NOTIFICATION);
+            toolbarAvatarIv.setVisibility(View.GONE);
+            toolbarStatusIv.setVisibility(View.GONE);
         }
 
-        mp.start();
-        mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mediaPlayer) {
-                mp.release();
-            }
-        });
-    }
+        /* Update background color via current main user and theme; */
 
-    public void onStateSelected(ChatListState state) {
-        this.currentChatsState = state;
-        chatListFragmentListener.onChatListStateChanged(state);
-        toolbarAppBarLayout.setExpanded(true, false);
-        updateContactList();
-        closeSnackbar();
-    }
-
-    public void scrollToTop(){
-        if (recyclerView != null && recyclerView.getAdapter().getItemCount() != 0){
-            recyclerView.scrollToPosition(0);
-            toolbarAppBarLayout.setExpanded(true, false);
+        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light &&
+                AccountPainter.getFirstAccount() != null)
+            toolbarRelativeLayout.setBackgroundColor(ColorManager.getInstance().getAccountPainter().
+                    getAccountRippleColor(AccountPainter.getFirstAccount()));
+        else if (getContext() != null){
+            TypedValue typedValue = new TypedValue();
+            Resources.Theme theme = getContext().getTheme();
+            theme.resolveAttribute(R.attr.bars_color, typedValue, true);
+            toolbarRelativeLayout.setBackgroundColor(typedValue.data);
         }
+
+        /* Update left color indicator via current main user */
+        if (AccountManager.getInstance().getEnabledAccounts().size() > 1){
+            toolbarAccountColorIndicator.setBackgroundColor(
+                    ColorManager.getInstance().getAccountPainter().getDefaultMainColor());
+            toolbarAccountColorIndicatorBack.setBackgroundColor(
+                    ColorManager.getInstance().getAccountPainter().getDefaultIndicatorBackColor());
+        } else {
+            toolbarAccountColorIndicator.setBackgroundColor(Color.TRANSPARENT);
+            toolbarAccountColorIndicatorBack.setBackgroundColor(Color.TRANSPARENT);
+        }
+        setupToolbarLayout();
     }
 
     /** OnClickListener for Toolbar */
@@ -313,6 +379,9 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
     public boolean isOnTop(){
         return linearLayoutManager.findLastCompletelyVisibleItemPosition() == 0;
     }
+
+    /** @return Size of list */
+    public int getListSize(){ return items.size(); }
 
     /** Show menu Add contact / Add conference */
     private void showToolbarPopup(View v) {
@@ -360,9 +429,42 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         //TODO implement search
     }
 
+    /**
+    Update chat items in adapter
+     */
+    private void updateItems(List<ChatItemVO> newItems){
+         if (newItems.size() == 0 && showPlaceholders >= 3) {
+            switch (currentChatsState) {
+                case unread:
+                    showPlaceholder(Application.getInstance().getApplicationContext().getString(R.string.placeholder_no_unread), null);
+                    break;
+                case archived:
+                    showPlaceholder(Application.getInstance().getApplicationContext().getString(R.string.placeholder_no_archived), null);
+                    break;
+                default:
+                    showPlaceholder(Application.getInstance().getApplicationContext().getString(R.string.application_state_no_contacts),
+                            Application.getInstance().getApplicationContext().getString(R.string.application_action_no_contacts));
+                    placeholderButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            startActivity(ContactAddActivity.createIntent(getActivity()));
+                        }
+                    });
+                    break;
+            }
+        } else hidePlaceholder();
+
+        /* Update items in RecyclerView */
+        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new ChatItemDiffUtil(items, newItems, adapter), false);
+        items.clear();
+        items.addAll(newItems);
+        adapter.addItems(newItems);
+        diffResult.dispatchUpdatesTo(adapter);
+    }
+
     @Override
     public void onChatStateChanged(Collection<RosterContact> entities) {
-        updateContactList();
+        update();
     }
 
     /**
@@ -431,7 +533,12 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
     @Override
     public void onListBecomeEmpty() {
         if (currentChatsState != ChatListState.recent) currentChatsState = ChatListState.recent;
-            updateContactList();
+            update();
+    }
+
+    public void updateUnreadCount() {
+        if (chatListFragmentListener != null)
+            chatListFragmentListener.onUnreadChanged(MessageDatabaseManager.getAllUnreadMessagesCount());
     }
 
     @Override
@@ -441,145 +548,8 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
         chatListFragmentListener.onChatClick(RosterManager.getInstance().getAbstractContact(accountJid, userJid));
     }
 
-    public void updateContactListAsync() {
-        updateContactList();
-//        Observable.create(subscriber -> {
-//            if (!subscriber.isUnsubscribed()){
-//                subscriber.onNext(getChatListItemsList());
-//                subscriber.onCompleted();
-//            }})
-//                .subscribeOn(Schedulers.computation())
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .subscribe(o -> {
-//                    updateItemsInAdapter((List<ChatItemVO>) o);
-//                    setupMarkAllTheReadButton(((List<ChatItemVO>) o).size());
-//                });
-//        updateUnreadCount();
-//        updateToolbar();
-    }
+    public void update(){
 
-    @Override
-    public void updateContactList(){
-        List<ChatItemVO> newList = getChatListItemsList();
-        updateItemsInAdapter(newList);
-        setupMarkAllTheReadButton(newList.size());
-        //updateUnreadCount();
-        updateToolbar();
-    }
-
-    /** Update toolbarRelativeLayout via current state */
-    public void updateToolbar(){
-        /* Update ChatState TextView display via current chat and connection state */
-        if (AccountManager.getInstance().getCommonState() == CommonState.connecting)
-            toolbarTitleTv.setText(Application.getInstance().getApplicationContext().getString(R.string.account_state_connecting));
-        else switch (currentChatsState) {
-            case unread:
-                toolbarTitleTv.setText(R.string.unread_chats);
-                break;
-            case archived:
-                toolbarTitleTv.setText(R.string.archived_chats);
-                break;
-            case all:
-                toolbarTitleTv.setText(R.string.all_chats);
-                break;
-            default:
-                toolbarTitleTv.setText("Xabber");
-                break;
-        }
-
-        /* Update avatar and status ImageViews via current settings and main user */
-        if (SettingsManager.contactsShowAvatars() && AccountManager.getInstance().getEnabledAccounts().size() != 0){
-            toolbarAvatarIv.setVisibility(View.VISIBLE);
-            toolbarStatusIv.setVisibility(View.VISIBLE);
-            AccountJid mainAccountJid = AccountPainter.getFirstAccount();
-            AccountItem mainAccountItem = AccountManager.getInstance().getAccount(mainAccountJid);
-            Drawable mainAccountAvatar = AvatarManager.getInstance().getAccountAvatar(mainAccountJid);
-            int mainAccountStatusMode = mainAccountItem.getDisplayStatusMode().getStatusLevel();
-            toolbarAvatarIv.setImageDrawable(mainAccountAvatar);
-            toolbarStatusIv.setImageLevel(mainAccountStatusMode);
-        } else {
-            toolbarAvatarIv.setVisibility(View.GONE);
-            toolbarStatusIv.setVisibility(View.GONE);
-        }
-
-        /* Update background color via current main user and theme; */
-
-        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light &&
-                AccountPainter.getFirstAccount() != null)
-            toolbarRelativeLayout.setBackgroundColor(ColorManager.getInstance().getAccountPainter().
-                    getAccountRippleColor(AccountPainter.getFirstAccount()));
-        else if (getContext() != null){
-            TypedValue typedValue = new TypedValue();
-            Resources.Theme theme = getContext().getTheme();
-            theme.resolveAttribute(R.attr.bars_color, typedValue, true);
-            toolbarRelativeLayout.setBackgroundColor(typedValue.data);
-        }
-
-        /* Update left color indicator via current main user */
-        if (AccountManager.getInstance().getEnabledAccounts().size() > 1){
-            toolbarAccountColorIndicator.setBackgroundColor(
-                    ColorManager.getInstance().getAccountPainter().getDefaultMainColor());
-            toolbarAccountColorIndicatorBack.setBackgroundColor(
-                    ColorManager.getInstance().getAccountPainter().getDefaultIndicatorBackColor());
-        } else {
-            toolbarAccountColorIndicator.setBackgroundColor(Color.TRANSPARENT);
-            toolbarAccountColorIndicatorBack.setBackgroundColor(Color.TRANSPARENT);
-        }
-        setupToolbarLayout();
-    }
-
-    /**
-     Update chat items in adapter
-     */
-    private void updateItemsInAdapter(List<ChatItemVO> newItems){
-        if (newItems.size() == 0 && showPlaceholders >= 3) {
-            switch (currentChatsState) {
-                case unread:
-                    showPlaceholder(Application.getInstance().getApplicationContext().getString(R.string.placeholder_no_unread), null);
-                    break;
-                case archived:
-                    showPlaceholder(Application.getInstance().getApplicationContext().getString(R.string.placeholder_no_archived), null);
-                    break;
-                default:
-                    showPlaceholder(Application.getInstance().getApplicationContext().getString(R.string.application_state_no_contacts),
-                            Application.getInstance().getApplicationContext().getString(R.string.application_action_no_contacts));
-                    placeholderButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            startActivity(ContactAddActivity.createIntent(getActivity()));
-                        }
-                    });
-                    break;
-            }
-        } else hidePlaceholder();
-
-        /* Update items in RecyclerView */
-        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new ChatItemDiffUtil(items, newItems, adapter), false);
-        items.clear();
-        items.addAll(newItems);
-        adapter.addItems(newItems);
-        diffResult.dispatchUpdatesTo(adapter);
-    }
-
-    public void updateUnreadCount() {
-        Observable.create(subscriber -> {
-            if (!subscriber.isUnsubscribed()){
-                int unreadCount = 0;
-                for (AbstractChat abstractChat : MessageManager.getInstance().getChatsOfEnabledAccount())
-                    if (abstractChat.notifyAboutMessage() && !abstractChat.isArchived())
-                        unreadCount+= abstractChat.getUnreadMessageCount();
-                    subscriber.onNext(unreadCount);
-                    subscriber.onCompleted();
-            }})
-                .subscribeOn(Schedulers.computation())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(o -> {
-                    if (chatListFragmentListener != null)
-                        chatListFragmentListener.onUnreadChanged((int) o);
-                });
-    }
-
-    private List<ChatItemVO> getChatListItemsList(){
         /* List for store final method result */
         List<ChatItemVO> newList = new ArrayList<>();
         showPlaceholders++;
@@ -590,7 +560,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
             newList.clear();
             if (!chatsGroup.isEmpty()) {
                 for (AbstractContact abstractContact : chatsGroup.getAbstractContacts())
-                    newList.add(new ChatItemVO(abstractContact));
+                newList.add(new ChatItemVO(abstractContact));
 
             }
         } else {
@@ -639,7 +609,13 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
             for(AbstractContact abstractContact : baseEntities)
                 newList.add(new ChatItemVO(abstractContact));
         }
-        return newList;
+
+        setupMarkAllTheReadButton(newList.size());
+
+        /* Update another elements */
+        updateUnreadCount();
+        updateItems(newList);
+        updateToolbar();
     }
 
     private void setupMarkAllTheReadButton(int listSize){
@@ -769,7 +745,7 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
             public void onClick(View view) {
                 abstractChat.setArchived(!archived, true);
                 onStateSelected(previousState);
-                updateContactList();
+                update();
             }
         });
         snackbar.setActionTextColor(Color.YELLOW);
