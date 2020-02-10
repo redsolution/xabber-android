@@ -538,8 +538,12 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
     }
 
     public void updateUnreadCount() {
-        if (chatListFragmentListener != null)
-            chatListFragmentListener.onUnreadChanged(MessageDatabaseManager.getAllUnreadMessagesCount());
+//        int unreadCount = 0;
+//        for (AbstractChat abstractChat : MessageManager.getInstance().getChatsOfEnabledAccount())
+//            if (abstractChat.notifyAboutMessage() && !abstractChat.isArchived())
+//                unreadCount += abstractChat.getUnreadMessageCount();
+//        if (chatListFragmentListener != null)
+//            chatListFragmentListener.onUnreadChanged(unreadCount);
     }
 
     @Override
