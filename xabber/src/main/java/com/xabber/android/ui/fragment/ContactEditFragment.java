@@ -234,6 +234,7 @@ public class ContactEditFragment extends GroupEditorFragment implements OnContac
                     ((ContactEditActivity)getActivity()).toolbarSetEnabled(true);
                     return;
                 }
+                break;
             case SubscriptionState.TO:
                 if ((hasAutoAcceptSubscription != chkSendPresence.isChecked())
                         || !chkReceivePresence.isChecked()) {
@@ -241,6 +242,7 @@ public class ContactEditFragment extends GroupEditorFragment implements OnContac
                     ((ContactEditActivity)getActivity()).toolbarSetEnabled(true);
                     return;
                 }
+                break;
             case SubscriptionState.FROM:
                 if ((hasOutgoingSubscription != chkReceivePresence.isChecked())
                         || !chkSendPresence.isChecked()) {
@@ -248,6 +250,7 @@ public class ContactEditFragment extends GroupEditorFragment implements OnContac
                     ((ContactEditActivity)getActivity()).toolbarSetEnabled(true);
                     return;
                 }
+                break;
             case SubscriptionState.NONE:
                 if ((hasAutoAcceptSubscription != chkSendPresence.isChecked())
                         || (hasOutgoingSubscription != chkReceivePresence.isChecked())) {
@@ -255,6 +258,7 @@ public class ContactEditFragment extends GroupEditorFragment implements OnContac
                     ((ContactEditActivity) getActivity()).toolbarSetEnabled(true);
                     return;
                 }
+                break;
         }
 
         //Circles

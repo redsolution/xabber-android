@@ -22,7 +22,7 @@ public class IntroViewDecoration extends RecyclerView.ItemDecoration {
     public void onDraw(@NonNull Canvas c, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
         super.onDraw(c, parent, state);
 
-        int dx = parent.getMeasuredWidth() / 10;
+        int dx = parent.getMeasuredWidth() / 14;
 
         introView.layout(parent.getLeft() + dx, 0, parent.getRight() - dx, introView.getMeasuredHeight());
         View firstItem = parent.getChildAt(0);

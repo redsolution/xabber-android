@@ -121,8 +121,8 @@ import com.xabber.android.ui.dialog.ChatHistoryClearDialog;
 import com.xabber.android.ui.helper.PermissionsRequester;
 import com.xabber.android.ui.widget.BottomMessagesPanel;
 import com.xabber.android.ui.widget.CustomMessageMenu;
-import com.xabber.android.ui.widget.DateViewDecoration;
 import com.xabber.android.ui.widget.IntroViewDecoration;
+import com.xabber.android.ui.widget.MessageHeaderViewDecoration;
 import com.xabber.android.ui.widget.PlayerVisualizerView;
 import com.xabber.android.ui.widget.ReplySwipeCallback;
 import com.xabber.android.utils.Utils;
@@ -738,7 +738,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                 this);
         realmRecyclerView.setAdapter(chatMessageAdapter);
         realmRecyclerView.setItemAnimator(null);
-        realmRecyclerView.addItemDecoration(new DateViewDecoration());
+        realmRecyclerView.addItemDecoration(new MessageHeaderViewDecoration());
 
         replySwipe = new ReplySwipeCallback(new ReplySwipeCallback.SwipeAction() {
             @Override
@@ -773,9 +773,12 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     private void setIntroView() {
         View introView = LayoutInflater.from(realmRecyclerView.getContext()).inflate(R.layout.chat_intro_helper_view, null);
         if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.dark) {
-            introView.getBackground().setLevel(1);
+            introView.getBackground().setLevel(0);
         } else {
             introView.getBackground().setLevel(0);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                introView.getBackground().setTint(ColorManager.getInstance().getAccountPainter().getAccountSendButtonColor(account));
+            }
         }
         realmRecyclerView.addItemDecoration(new IntroViewDecoration(introView));
     }
@@ -2036,6 +2039,13 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         blockContact.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                try {
+                    // fully discard subscription
+                    PresenceManager.getInstance().discardSubscription(account, user);
+                    PresenceManager.getInstance().unsubscribeFromPresence(account, user);
+                } catch (NetworkException e) {
+                    Application.getInstance().onError(R.string.CONNECTION_FAILED);
+                }
                 BlockingManager.getInstance().blockContact(account, user, new BlockingManager.BlockContactListener() {
                     @Override
                     public void onSuccessBlock() {
@@ -2043,12 +2053,6 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                         if (newContactLayout != null) {
                             if (newContactLayout.getVisibility() == View.VISIBLE)
                                 newContactLayout.setVisibility(View.GONE);
-                        }
-                        try {
-                            // discard subscription
-                            PresenceManager.getInstance().discardSubscription(account, user);
-                        } catch (NetworkException e) {
-                            Application.getInstance().onError(R.string.CONNECTION_FAILED);
                         }
                         getActivity().finish();
                     }
@@ -2076,7 +2080,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                     getChat().setAddContactSuggested(true);                                     // remember "X"-press
                 }
                 TransitionManager.beginDelayedTransition((ViewGroup) rootView, transition);
-                newContactLayout.setVisibility(View.INVISIBLE);
+                newContactLayout.setVisibility(View.GONE);
                 manageToolbarElevation(false);
             }
         });
