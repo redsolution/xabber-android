@@ -16,12 +16,18 @@ import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.ui.adapter.chat.BasicMessageVH;
+import com.xabber.android.ui.adapter.chat.MessageVH;
 import com.xabber.android.utils.Utils;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-public class DateViewDecoration extends RecyclerView.ItemDecoration {
+
+/**
+ * ChatList Item Decoration responsible for drawing "Date" and "Unread Message"
+ * headers directly above messages and/or over the chat itself.
+ */
+public class MessageHeaderViewDecoration extends RecyclerView.ItemDecoration {
 
     @IntDef({DateState.SCROLL_ACTIVE, DateState.SCROLL_IDLE,
             DateState.SCROLL_IDLE_NO_ANIMATION, DateState.INITIATED_ANIMATION,
@@ -41,13 +47,14 @@ public class DateViewDecoration extends RecyclerView.ItemDecoration {
     private Handler handler;
     private RecyclerView parent;
 
-    private int dateViewXMargin;
+    private int headerViewXMargin;
     private static final int backgroundDrawableHeight = Utils.dipToPx(24f, Application.getInstance());
     private static final int backgroundDrawableXPadding = Utils.dipToPx(8f, Application.getInstance());
     private static final int backgroundDrawableYMargin = Utils.dipToPx(3.64f, Application.getInstance());
     private static final int dateLayoutHeight = 2 * backgroundDrawableYMargin + backgroundDrawableHeight;
     private static final int alphaThreshold = dateLayoutHeight * 6 / 10;
     private static final int dateTextBaseline = backgroundDrawableHeight * 3 / 11;
+    private static final String unread = Application.getInstance().getResources().getString(R.string.unread_messages);
 
     private int stickyDrawableTopBound = 2 * backgroundDrawableYMargin;
     private int stickyDrawableBottomBound = dateLayoutHeight;
@@ -61,7 +68,7 @@ public class DateViewDecoration extends RecyclerView.ItemDecoration {
     private long originTime;
     private long frameTime;
 
-    public DateViewDecoration() {
+    public MessageHeaderViewDecoration() {
         drawable = Application.getInstance().getResources()
                 .getDrawable(SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.dark ?
                         R.drawable.rounded_background_grey_transparent_dark : R.drawable.rounded_background_grey_transparent);
@@ -134,6 +141,9 @@ public class DateViewDecoration extends RecyclerView.ItemDecoration {
                     // as the sticky date, they will simply be directly tied to the message.
                     drawDateMessageHeader(c, parent, child, (BasicMessageVH) holder);
                 }
+                if (holder instanceof MessageVH && ((MessageVH)holder).isUnread) {
+                    drawUnreadMessageHeader(c, parent, child, (MessageVH) holder);
+                }
             }
             if (i == 0) {
                 i = measureFirstChildren(c, parent, child, (BasicMessageVH)holder, 0);
@@ -145,9 +155,14 @@ public class DateViewDecoration extends RecyclerView.ItemDecoration {
     // Since this check starts in a for loop, we return the iteration at which we stopped here to the main loop
     // To skip the iterations we already checked here.
     private int measureFirstChildren(Canvas c, RecyclerView parent, View originalChild, BasicMessageVH holder, int currentLoopIteration) {
+        // Check if we need to draw an "Unread messages" header above originalChild message
+        if (needToDrawUnreadHeader(holder)) {
+            drawUnreadMessageHeader(c, parent, originalChild, (MessageVH) holder);
+        }
         if (parent.getChildCount() > currentLoopIteration + 1) {
             View nextChild = parent.getChildAt(currentLoopIteration + 1);
             RecyclerView.ViewHolder nextHolder = parent.getChildViewHolder(nextChild);
+
             if (nextHolder instanceof BasicMessageVH) {
                 // Check if the date of the originalChild is
                 // the same as the date of the nextChild
@@ -155,6 +170,14 @@ public class DateViewDecoration extends RecyclerView.ItemDecoration {
                     // if same, make sure we have enough space to draw the sticky header
                     if (checkIfStickyHeaderFitsAboveNextChild(nextChild)) {
                         drawDateStickyHeader(c, parent, originalChild, holder, true);
+
+                        // We only try to examine nextChild for unread message header if we will not
+                        // recursively call measureFirstChild again, to avoid a double check
+                        // (as nextChild in the first loop, and as originalChild in the next one).
+                        if (needToDrawUnreadHeader((BasicMessageVH) nextHolder)) {
+                            drawUnreadMessageHeader(c, parent, nextChild, (MessageVH) nextHolder);
+                        }
+
                         // after drawing it, leave the recursive call with the current loop + 1,
                         // since we checked both the originalChild (currentLoopIteration)
                         // and nextChild (currentLoopIteration + 1)
@@ -170,6 +193,12 @@ public class DateViewDecoration extends RecyclerView.ItemDecoration {
                     drawDateMessageHeader(c, parent, nextChild, (BasicMessageVH)nextHolder);
                     // We did what we needed with nextChild, so we bump the loop iteration by 1,
                     // but since we didn't do anything with the originalChild, we can't return yet.
+
+                    // Same as above nextHolder Unread check. Just avoiding repeated same checks.
+                    if (needToDrawUnreadHeader((BasicMessageVH) nextHolder)) {
+                        drawUnreadMessageHeader(c, parent, nextChild, (MessageVH) nextHolder);
+                    }
+
                     currentLoopIteration++;
                 }
             }
@@ -193,17 +222,21 @@ public class DateViewDecoration extends RecyclerView.ItemDecoration {
         return date.bottom - messageTopBound > alphaThreshold;
     }
 
+    private boolean needToDrawUnreadHeader(BasicMessageVH holder) {
+        return holder instanceof MessageVH && ((MessageVH)holder).isUnread;
+    }
+
     // Draws a date that appears at the top of chat window, either as a sticky date
     // that stays in one place, or a date of the partially visible message
     private void drawDateStickyHeader(Canvas c, RecyclerView parent, View child, BasicMessageVH holder, boolean forceDrawAsSticky) {
         int width = measureText(paintFont, holder.date);
 
-        dateViewXMargin = (parent.getMeasuredWidth() - width)/2;
+        headerViewXMargin = (parent.getMeasuredWidth() - width)/2;
 
         Rect drawableBounds = new Rect();
 
-        drawableBounds.left = dateViewXMargin - backgroundDrawableXPadding;
-        drawableBounds.right = dateViewXMargin + width + backgroundDrawableXPadding;
+        drawableBounds.left = headerViewXMargin - backgroundDrawableXPadding;
+        drawableBounds.right = headerViewXMargin + width + backgroundDrawableXPadding;
 
         // Check to see if the bottom of the first view is less than the full size of date layout.
         //
@@ -277,22 +310,28 @@ public class DateViewDecoration extends RecyclerView.ItemDecoration {
                 break;
         }
 
-        drawDate(c, holder.date, drawableBounds, alpha);
+        drawString(c, holder.date, drawableBounds, alpha);
     }
 
     // Draws a date that appears on top of the first message of the day.
     // This date nearly always stays directly tied to the message position.
     private void drawDateMessageHeader(Canvas c, RecyclerView parent, View child, BasicMessageVH holder) {
         int width = measureText(paintFont, holder.date);
+        // additional vertical offset for the Date header.
+        int additionalOffset = 0;
 
-        dateViewXMargin = (parent.getMeasuredWidth() - width)/2;
+        headerViewXMargin = (parent.getMeasuredWidth() - width)/2;
 
         Rect drawableBounds = new Rect();
 
-        drawableBounds.left = dateViewXMargin - backgroundDrawableXPadding;
-        drawableBounds.right = dateViewXMargin + width + backgroundDrawableXPadding;
+        if(needToDrawUnreadHeader(holder)) {
+            additionalOffset = dateLayoutHeight;
+        }
 
-        drawableBounds.bottom = child.getTop() - backgroundDrawableYMargin;
+        drawableBounds.left = headerViewXMargin - backgroundDrawableXPadding;
+        drawableBounds.right = headerViewXMargin + width + backgroundDrawableXPadding;
+
+        drawableBounds.bottom = child.getTop() - backgroundDrawableYMargin - additionalOffset;
 
         // Check if the background drawable's vertical position is closer to the top than
         // the position of the sticky drawable.
@@ -302,21 +341,51 @@ public class DateViewDecoration extends RecyclerView.ItemDecoration {
             drawableBounds.bottom = stickyDrawableBottomBound;
             drawableBounds.top = stickyDrawableTopBound;
         } else {
-            drawableBounds.top = child.getTop() - backgroundDrawableHeight - backgroundDrawableYMargin;
+            drawableBounds.top = child.getTop() - backgroundDrawableHeight - backgroundDrawableYMargin - additionalOffset;
         }
 
-        drawDate(c, holder.date, drawableBounds, 255);
+        drawString(c, holder.date, drawableBounds, 255);
+    }
+
+    private void drawUnreadMessageHeader(Canvas c, RecyclerView parent, View child, MessageVH holder) {
+        int width = measureText(paintFont, unread);
+        int alpha;
+
+        headerViewXMargin = (parent.getMeasuredWidth() - width)/2;
+
+        Rect drawableBounds = new Rect();
+
+        drawableBounds.left = headerViewXMargin - backgroundDrawableXPadding;
+        drawableBounds.right = headerViewXMargin + width + backgroundDrawableXPadding;
+
+        drawableBounds.top = child.getTop() - backgroundDrawableHeight - backgroundDrawableYMargin;
+        drawableBounds.bottom = child.getTop() - backgroundDrawableYMargin;
+
+        // if top of unread is too close to the top, we
+        // change alpha depending on how close it is to the top
+        if (drawableBounds.top > stickyDrawableBottomBound + (backgroundDrawableHeight / 2)) {
+            alpha = 255;
+        } else {
+            alpha = (drawableBounds.top - stickyDrawableBottomBound) * 255 / (backgroundDrawableHeight / 2);
+            if (alpha <= 0) {
+                alpha = 0;
+            } else if (alpha > 255){
+                alpha = 255;
+            }
+        }
+
+        drawString(c, unread, drawableBounds, alpha);
     }
 
     // Drawing the date itself with provided parameters
-    private void drawDate(Canvas c, String date, Rect bounds, int alpha) {
+    private void drawString(Canvas c, String string, Rect bounds, int alpha) {
         paintFont.setAlpha(alpha);
         drawable.setAlpha(alpha);
 
         drawable.setBounds(bounds);
 
         drawable.draw(c);
-        c.drawText(date, dateViewXMargin, bounds.bottom - dateTextBaseline, paintFont);
+        c.drawText(string, headerViewXMargin, bounds.bottom - dateTextBaseline, paintFont);
     }
 
     private int measureText(Paint paint, CharSequence text, int start, int end) {
@@ -328,14 +397,17 @@ public class DateViewDecoration extends RecyclerView.ItemDecoration {
     }
 
     // Setting the additional top offset for the views that
-    // require a Date decoration to be attached above the message
+    // require some header decoration to be attached above the message
     @Override
     public void getItemOffsets(@NonNull Rect outRect, @NonNull View view, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
         RecyclerView.ViewHolder holder = parent.getChildViewHolder(view);
+        int topOffset = 0;
         if (holder instanceof BasicMessageVH && ((BasicMessageVH) holder).needDate) {
-            outRect.set(0, dateLayoutHeight, 0, 0);
-        } else {
-            outRect.setEmpty();
+            topOffset += dateLayoutHeight;
         }
+        if (holder instanceof MessageVH && ((MessageVH)holder).isUnread) {
+            topOffset += dateLayoutHeight;
+        }
+        outRect.set(0, topOffset, 0, 0);
     }
 }

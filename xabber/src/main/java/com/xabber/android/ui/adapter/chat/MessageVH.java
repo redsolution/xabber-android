@@ -40,6 +40,7 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
     private static final String LOG_TAG = MessageVH.class.getSimpleName();
     private MessageClickListener listener;
     private MessageLongClickListener longClickListener;
+    public boolean isUnread;
 
     TextView tvFirstUnread;
     TextView tvDate;
@@ -71,7 +72,7 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
         this.longClickListener = longClickListener;
 
         tvFirstUnread = itemView.findViewById(R.id.tvFirstUnread);
-        tvDate = itemView.findViewById(R.id.tvDate);
+        //tvDate = itemView.findViewById(R.id.tvDate);
         messageInfo = itemView.findViewById(R.id.message_info);
         messageTime = itemView.findViewById(R.id.message_time);
         messageHeader = itemView.findViewById(R.id.message_header);
@@ -171,8 +172,9 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
         messageTime.setText(time);
 
         // setup UNREAD
-        if (tvFirstUnread != null)
-            tvFirstUnread.setVisibility(extraData.isUnread() ? View.VISIBLE : View.GONE);
+        //if (tvFirstUnread != null)
+        //    tvFirstUnread.setVisibility(extraData.isUnread() ? View.VISIBLE : View.GONE);
+        isUnread = extraData.isUnread();
 
         // setup DATE
         //if (tvDate != null) {
