@@ -2039,6 +2039,13 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         blockContact.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                try {
+                    // fully discard subscription
+                    PresenceManager.getInstance().discardSubscription(account, user);
+                    PresenceManager.getInstance().unsubscribeFromPresence(account, user);
+                } catch (NetworkException e) {
+                    Application.getInstance().onError(R.string.CONNECTION_FAILED);
+                }
                 BlockingManager.getInstance().blockContact(account, user, new BlockingManager.BlockContactListener() {
                     @Override
                     public void onSuccessBlock() {
@@ -2046,12 +2053,6 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                         if (newContactLayout != null) {
                             if (newContactLayout.getVisibility() == View.VISIBLE)
                                 newContactLayout.setVisibility(View.GONE);
-                        }
-                        try {
-                            // discard subscription
-                            PresenceManager.getInstance().discardSubscription(account, user);
-                        } catch (NetworkException e) {
-                            Application.getInstance().onError(R.string.CONNECTION_FAILED);
                         }
                         getActivity().finish();
                     }
@@ -2079,7 +2080,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
                     getChat().setAddContactSuggested(true);                                     // remember "X"-press
                 }
                 TransitionManager.beginDelayedTransition((ViewGroup) rootView, transition);
-                newContactLayout.setVisibility(View.INVISIBLE);
+                newContactLayout.setVisibility(View.GONE);
                 manageToolbarElevation(false);
             }
         });

@@ -5,78 +5,184 @@
     android:layout_height="wrap_content"
     android:background="@drawable/chat_intro_background"
     android:orientation="vertical"
-    android:paddingTop="10dp"
-    android:paddingRight="10dp"
-    android:paddingBottom="10dp"
+    android:paddingLeft="12dp"
+    android:paddingTop="12dp"
+    android:paddingRight="12dp"
+    android:paddingBottom="12dp"
     app:layout_anchorGravity="center">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal"
-        android:paddingBottom="5dp">
+        android:paddingBottom="4dp">
 
         <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="26dp"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginRight="12dp"
             android:background="@color/transparent"
+            android:scaleType="fitXY"
             android:tint="@color/white"
-            app:srcCompat="@drawable/ic_expander_indicator_right_black_24dp" />
+            app:srcCompat="@drawable/ic_security_grey_24dp" />
 
         <TextView
-            android:id="@+id/textView3"
+            android:id="@+id/point1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Hello helooldllol helo hello hel yptp fasfaf  afasj asldkjj jd jas jlgkajsgo"
+            android:alpha="0.6"
+            android:text="Messages in this chat are not encrypted. This allows easy device sync and searching, but adds privacy risks."
             android:textAppearance="@style/ChatText.Large"
-            android:textColor="@color/white" />
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            app:lineHeight="18dp" />
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal"
-        android:paddingBottom="5dp">
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp">
 
         <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="26dp"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginRight="12dp"
             android:background="@color/transparent"
-            android:tint="@color/white"
-            app:srcCompat="@drawable/ic_expander_indicator_right_black_24dp" />
+            android:scaleType="fitXY"
+            app:srcCompat="@drawable/ic_server_network" />
 
         <TextView
-            android:id="@+id/textView4"
+            android:id="@+id/point2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="loremIpsum lorem Ipsum loremIpsum"
+            android:alpha="0.6"
+            android:text="Most modern servers store chat history in server database. When you clear chat history on a client device, it stays there."
             android:textAppearance="@style/ChatText.Large"
-            android:textColor="@color/white" />
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            app:lineHeight="18dp" />
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal"
-        android:paddingBottom="5dp">
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp">
 
         <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="26dp"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginRight="12dp"
             android:background="@color/transparent"
-            android:tint="@color/white"
-            app:srcCompat="@drawable/ic_expander_indicator_right_black_24dp" />
+            android:scaleType="fitXY"
+            app:srcCompat="@drawable/ic_sync_white_24dp" />
 
         <TextView
-            android:id="@+id/textView5"
+            android:id="@+id/point3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="loremIpsum loremIpsum lore mIpsuml oremIpsum"
-            android:textAppearance="@style/ChatText.Large"
-            android:textColor="@color/white" />
+            android:alpha="0.6"
+            android:text="Messages are seamlessly synchronized with other client devices."
+            android:textAppearance="@style/ChatText"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            app:lineHeight="18dp" />
     </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp">
+
+        <ImageButton
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginRight="12dp"
+            android:background="@color/transparent"
+            android:scaleType="fitXY"
+            app:srcCompat="@drawable/ic_cloud_search" />
+
+        <TextView
+            android:id="@+id/point4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:alpha="0.6"
+            android:text="You can use server side message search without downloading all chat history."
+            android:textAppearance="@style/ChatText"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            app:lineHeight="18dp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp">
+
+        <ImageButton
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginRight="12dp"
+            android:background="@color/transparent"
+            android:scaleType="fitXY"
+            app:srcCompat="@drawable/ic_image_white" />
+
+        <TextView
+            android:id="@+id/point5"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:alpha="0.6"
+            android:text="You can send images, audio and video messages and other types of files."
+            android:textAppearance="@style/ChatText"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            app:lineHeight="18dp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:paddingTop="4dp">
+
+        <ImageButton
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginRight="12dp"
+            android:background="@color/transparent"
+            android:scaleType="fitXY"
+            app:srcCompat="@drawable/ic_edit_white_24dp" />
+
+        <TextView
+            android:id="@+id/point6"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:alpha="0.6"
+            android:text="Messages can be edited after sending, but it will work only if your chat partner uses a compatible client."
+            android:textAppearance="@style/ChatText"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            app:lineHeight="18dp" />
+    </LinearLayout>
+
 
 </LinearLayout>

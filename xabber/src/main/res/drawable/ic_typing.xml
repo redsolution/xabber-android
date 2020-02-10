@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="16dp"
+    android:viewportHeight="24"
+    android:viewportWidth="36">
+
+    <group android:name="dots">
+        <group android:name="dot1"
+            android:pivotX="6"
+            android:pivotY="6">
+            <path
+                android:name="dot1_"
+                android:fillColor="@color/grey_500"
+                android:fillAlpha="0.3"
+                android:pathData="
+                M 2,6
+                C 2,3.8     3.8,2       6,2
+                C 8.2,2     10,3.8      10,6
+                C 10,8.2    8.2,10      6,10
+                C 3.8,10    2,8.2       2,6z"
+            />
+        </group>
+        <group android:name="dot2"
+            android:pivotX="6"
+            android:pivotY="6">
+            <path
+                android:name="dot2_"
+                android:fillColor="@color/grey_500"
+                android:fillAlpha="0.3"
+                android:pathData="
+                M 12,6
+                C 12,3.8    13.8,2      16,2
+                C 18.2,2    20,3.8      20,6
+                C 20,8.2    18.2,10     16,10
+                C 13.8,10   12,8.2      12,6z"
+            />
+        </group>
+        <group android:name="dot3"
+            android:pivotX="6"
+            android:pivotY="6">
+            <path
+                android:name="dot3_"
+                android:fillColor="@color/grey_500"
+                android:fillAlpha="0.3"
+                android:pathData="
+                M 22,6
+                C 22,3.8    23.8,2      26,2
+                C 28.2,2    30,3.8      30,6
+                C 30,8.2    28.2,10     26,10
+                C 23.8,10   22,8.2      22,6z"
+            />
+        </group>
+    </group>
+</vector>
