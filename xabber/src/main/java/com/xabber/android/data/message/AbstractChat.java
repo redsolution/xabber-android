@@ -582,7 +582,6 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
 
     @Nullable
     public synchronized MessageItem getLastMessage() {
-        //updateLastMessage();
         return lastMessage;
     }
 
@@ -604,8 +603,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
                 .isNull(MessageItem.Fields.PARENT_MESSAGE_ID)
                 .isNotNull(MessageItem.Fields.TEXT)
                 .isNotNull(MessageItem.Fields.ACTION)
-                .findAllSorted(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING)
-                .last(null);
+                .findAllSorted(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING).last(null);
     }
 
     /**

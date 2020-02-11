@@ -101,7 +101,6 @@
     <string name="otr_unreadable_message">The encrypted message you sent is unreadable</string>
     <string name="otr_not_decrypted_message">Message cannot be decrypted</string>
     <string name="forwarded_messages_count">%d forwarded message</string>
-    <string name="message_has_many_attachments">%d attachments</string>
     <string name="forwarded_support_text" translatable="false">%d forwarded messages. Use advanced client like Xabber to view them.</string>
     <string name="otr_verification">OTR verification</string>
     <string name="otr_verify_fingerprint">Verify with fingerprint</string>
