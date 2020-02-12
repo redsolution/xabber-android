@@ -156,6 +156,7 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
     @Override
     public void onLoad() {
         final NestedNestedMaps<String, Boolean> fingerprints = new NestedNestedMaps<>();
+        OTRTable.getInstance();
         Cursor cursor = OTRTable.getInstance().list();
         try {
             if (cursor.moveToFirst()) {

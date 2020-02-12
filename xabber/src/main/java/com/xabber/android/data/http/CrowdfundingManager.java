@@ -4,7 +4,6 @@ import android.util.Log;
 
 import com.xabber.android.BuildConfig;
 import com.xabber.android.data.SettingsManager;
-import com.xabber.android.data.database.RealmManager;
 import com.xabber.android.data.database.realm.CrowdfundingMessage;
 import com.xabber.android.data.message.NewMessageEvent;
 
@@ -116,7 +115,7 @@ public class CrowdfundingManager {
             realmMessages.add(messageToRealm(message));
         }
 
-        Realm realm = RealmManager.getInstance().getNewRealm();
+        Realm realm = Realm.getDefaultInstance();
         realm.beginTransaction();
         List<CrowdfundingMessage> result = realm.copyToRealmOrUpdate(realmMessages);
         realm.commitTransaction();
@@ -149,21 +148,21 @@ public class CrowdfundingManager {
     }
 
     public boolean haveDelayedMessages() {
-        Realm realm = RealmManager.getInstance().getNewRealm();
+        Realm realm = Realm.getDefaultInstance();
         CrowdfundingMessage message = realm.where(CrowdfundingMessage.class)
                 .notEqualTo(CrowdfundingMessage.Fields.DELAY, 0).findFirst();
         return message != null;
     }
 
     public RealmResults<CrowdfundingMessage> getMessagesWithDelay(int delay) {
-        Realm realm = RealmManager.getInstance().getNewRealm();
+        Realm realm = Realm.getDefaultInstance();
         return realm.where(CrowdfundingMessage.class)
                 .lessThanOrEqualTo(CrowdfundingMessage.Fields.DELAY, delay)
                 .findAllSorted(CrowdfundingMessage.Fields.TIMESTAMP);
     }
 
     public void removeDelay(int delay) {
-        Realm realm = RealmManager.getInstance().getNewRealm();
+        Realm realm = Realm.getDefaultInstance();
         RealmResults<CrowdfundingMessage> messages = getMessagesWithDelay(delay);
         realm.beginTransaction();
         for (CrowdfundingMessage message : messages) {
@@ -176,7 +175,7 @@ public class CrowdfundingManager {
     }
 
     public CrowdfundingMessage getLastMessageFromRealm() {
-        Realm realm = RealmManager.getInstance().getNewRealm();
+        Realm realm = Realm.getDefaultInstance();
         RealmResults<CrowdfundingMessage> messages = realm.where(CrowdfundingMessage.class)
                 .findAllSorted(CrowdfundingMessage.Fields.TIMESTAMP);
         if (messages != null && !messages.isEmpty()) return messages.last();
@@ -184,7 +183,7 @@ public class CrowdfundingManager {
     }
 
     public CrowdfundingMessage getLastNotDelayedMessageFromRealm() {
-        Realm realm = RealmManager.getInstance().getNewRealm();
+        Realm realm = Realm.getDefaultInstance();
         RealmResults<CrowdfundingMessage> messages = realm.where(CrowdfundingMessage.class)
                 .equalTo(CrowdfundingMessage.Fields.DELAY, 0)
                 .findAllSorted(CrowdfundingMessage.Fields.TIMESTAMP);
@@ -193,14 +192,14 @@ public class CrowdfundingManager {
     }
 
     public int getUnreadMessageCount() {
-        Realm realm = RealmManager.getInstance().getNewRealm();
+        Realm realm = Realm.getDefaultInstance();
         Long count = realm.where(CrowdfundingMessage.class).equalTo(CrowdfundingMessage.Fields.READ, false)
                 .equalTo(CrowdfundingMessage.Fields.DELAY, 0).count();
         return count.intValue();
     }
 
     public Observable<RealmResults<CrowdfundingMessage>> getUnreadMessageCountAsObservable() {
-        Realm realm = RealmManager.getInstance().getNewRealm();
+        Realm realm = Realm.getDefaultInstance();
         return realm.where(CrowdfundingMessage.class).equalTo(CrowdfundingMessage.Fields.READ, false)
                 .equalTo(CrowdfundingMessage.Fields.DELAY, 0).findAll().asObservable();
     }
@@ -221,7 +220,7 @@ public class CrowdfundingManager {
 
     public void markMessagesAsRead(String[] ids) {
         if (ids.length == 0) return;
-        Realm realm = RealmManager.getInstance().getNewRealm();
+        Realm realm = Realm.getDefaultInstance();
         RealmResults<CrowdfundingMessage> messages = realm.where(CrowdfundingMessage.class)
                 .equalTo(CrowdfundingMessage.Fields.READ, false).in(CrowdfundingMessage.Fields.ID, ids).findAll();
 
@@ -233,7 +232,7 @@ public class CrowdfundingManager {
     }
 
     private void removeAllMessages() {
-        Realm realm = RealmManager.getInstance().getNewRealm();
+        Realm realm = Realm.getDefaultInstance();
         RealmResults<CrowdfundingMessage> messages = realm.where(CrowdfundingMessage.class).findAll();
         realm.beginTransaction();
         for (CrowdfundingMessage message : messages)

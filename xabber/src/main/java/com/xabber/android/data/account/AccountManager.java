@@ -40,8 +40,8 @@ import com.xabber.android.data.connection.ConnectionState;
 import com.xabber.android.data.connection.ProxyType;
 import com.xabber.android.data.connection.ReconnectionManager;
 import com.xabber.android.data.connection.TLSMode;
-import com.xabber.android.data.database.MessageDatabaseManager;
 import com.xabber.android.data.database.realm.AccountRealm;
+import com.xabber.android.data.database.repositories.MessageRepository;
 import com.xabber.android.data.database.sqlite.AccountTable;
 import com.xabber.android.data.database.sqlite.StatusTable;
 import com.xabber.android.data.entity.AccountJid;
@@ -1275,7 +1275,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
         for (AccountItem accountItem : allAccountItems) {
             if (accountItem.isClearHistoryOnExit()) {
                 LogManager.i(LOG_TAG, "Removing all history for account " + accountItem.getAccount());
-                MessageDatabaseManager.getInstance().removeAccountMessages(accountItem.getAccount());
+                MessageRepository.removeAccountMessages(accountItem.getAccount());
             }
         }
     }

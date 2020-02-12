@@ -5,7 +5,6 @@ import android.util.Log;
 
 import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.SettingsManager;
-import com.xabber.android.data.database.RealmManager;
 import com.xabber.android.data.database.realm.PatreonGoalRealm;
 import com.xabber.android.data.database.realm.PatreonRealm;
 import com.xabber.android.data.log.LogManager;

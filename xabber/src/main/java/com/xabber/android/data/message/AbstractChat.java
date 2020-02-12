@@ -23,10 +23,10 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.connection.StanzaSender;
-import com.xabber.android.data.database.MessageDatabaseManager;
 import com.xabber.android.data.database.messagerealm.Attachment;
 import com.xabber.android.data.database.messagerealm.ForwardId;
 import com.xabber.android.data.database.messagerealm.MessageItem;
+import com.xabber.android.data.database.repositories.MessageRepository;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.UserJid;
@@ -208,7 +208,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
 
     public RealmResults<MessageItem> getMessages() {
         if (messages == null) {
-            messages = MessageDatabaseManager.getChatMessages(Realm.getDefaultInstance(), account, user);
+            messages = MessageRepository.getChatMessages(account, user);
             updateLastMessage();
 
             messages.addChangeListener(this);

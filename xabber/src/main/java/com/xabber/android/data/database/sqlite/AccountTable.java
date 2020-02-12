@@ -536,7 +536,6 @@ public class AccountTable extends AbstractTable {
 
         SQLiteDatabase db = databaseManager.getWritableDatabase();
         db.delete(NAME, Fields._ID + " = ?", new String[]{ String.valueOf(id) });
-        databaseManager.removeAccount(account);
     }
 
     public int removeAllAccounts() {

@@ -36,10 +36,10 @@ import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.StanzaSender;
 import com.xabber.android.data.connection.listeners.OnDisconnectListener;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
-import com.xabber.android.data.database.MessageDatabaseManager;
 import com.xabber.android.data.database.messagerealm.Attachment;
 import com.xabber.android.data.database.messagerealm.ForwardId;
 import com.xabber.android.data.database.messagerealm.MessageItem;
+import com.xabber.android.data.database.repositories.MessageRepository;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.NestedMap;
@@ -950,7 +950,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
                 final String userName = RosterManager.getInstance().getName(account, user);
 
                 Realm realm = Realm.getDefaultInstance();
-                RealmResults<MessageItem> messageItems = MessageDatabaseManager.getChatMessages(realm, account, user);
+                RealmResults<MessageItem> messageItems = MessageRepository.getChatMessages(account, user);
 
                 for (MessageItem messageItem : messageItems) {
                     if (messageItem.getAction() != null) {
