@@ -19,7 +19,6 @@ import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.listeners.OnAccountRemovedListener;
 import com.xabber.android.data.connection.ConnectionItem;
-import com.xabber.android.data.database.RealmManager;
 import com.xabber.android.data.database.messagerealm.Attachment;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
@@ -417,42 +416,46 @@ public class HttpFileUploadManager implements OnLoadListener, OnAccountRemovedLi
     // Realm
 
     private void saveOrUpdateToRealm(final BareJid account, final Jid server) {
-        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
-            @Override
-            public void run() {
-                Realm realm = RealmManager.getInstance().getNewRealm();
-                UploadServer item = realm.where(UploadServer.class)
-                        .equalTo(UploadServer.Fields.ACCOUNT, account.toString()).findFirst();
-                realm.beginTransaction();
-                if (item == null) item = new UploadServer(account, server);
-                else item.setServer(server);
-                realm.copyToRealmOrUpdate(item);
-                realm.commitTransaction();
-            }
+        Application.getInstance().runInBackground(() -> {
+            Realm realm = null;
+            try {
+                realm = Realm.getDefaultInstance();
+                realm.executeTransaction(realm1 -> {
+                    UploadServer item = realm1.where(UploadServer.class)
+                            .equalTo(UploadServer.Fields.ACCOUNT, account.toString()).findFirst();
+                    if (item == null) item = new UploadServer(account, server);
+                    else item.setServer(server);
+                    realm1.copyToRealmOrUpdate(item);
+                });
+            } catch (Exception e) {
+                LogManager.exception("HttpFileUploadManager", e);
+            } finally { if (realm != null) realm.close(); }
         });
     }
 
     private void removeFromRealm(final BareJid account) {
-        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
-            @Override
-            public void run() {
-                Realm realm = RealmManager.getInstance().getNewRealm();
-                UploadServer item = realm.where(UploadServer.class)
-                        .equalTo(UploadServer.Fields.ACCOUNT, account.toString()).findFirst();
-                realm.beginTransaction();
-                if (item != null) item.deleteFromRealm();
-                realm.commitTransaction();
-            }
+        Application.getInstance().runInBackground(() -> {
+            Realm realm = null;
+            try {
+                realm = Realm.getDefaultInstance();
+                realm.executeTransaction(realm1 -> {
+                    UploadServer item = realm1.where(UploadServer.class)
+                            .equalTo(UploadServer.Fields.ACCOUNT, account.toString()).findFirst();
+                    if (item != null) item.deleteFromRealm();
+                });
+            } catch (Exception e) {
+                LogManager.exception("HttpFileUploadManager", e);
+            } finally { if (realm != null) realm.close(); }
         });
     }
 
     private void loadAllFromRealm(Map<BareJid, Jid> uploadServers) {
         uploadServers.clear();
-        Realm realm = RealmManager.getInstance().getNewRealm();
-        RealmResults<UploadServer> items = realm.where(UploadServer.class).findAll();
+        RealmResults<UploadServer> items = Realm.getDefaultInstance()
+                .where(UploadServer.class)
+                .findAll();
         for (UploadServer item : items) {
             uploadServers.put(item.getAccount(), item.getServer());
         }
-        realm.close();
     }
 }

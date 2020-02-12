@@ -29,10 +29,10 @@ import com.xabber.android.data.connection.ConnectionSettings;
 import com.xabber.android.data.connection.ProxyType;
 import com.xabber.android.data.connection.TLSMode;
 import com.xabber.android.data.database.DatabaseManager;
-import com.xabber.android.data.database.RealmManager;
 import com.xabber.android.data.database.realm.AccountRealm;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.xtoken.XTokenManager;
+import com.xabber.android.data.log.LogManager;
 
 import java.security.KeyFactory;
 import java.security.KeyPair;
@@ -491,11 +491,18 @@ public class AccountTable extends AbstractTable {
         accountRealm.setPushEnabled(accountItem.isPushEnabled());
         accountRealm.setPushWasEnabled(accountItem.isPushWasEnabled());
 
-        Realm realm = RealmManager.getInstance().getNewBackgroundRealm();
-        realm.beginTransaction();
-        realm.copyToRealmOrUpdate(accountRealm);
-        realm.commitTransaction();
-        realm.close();
+        Application.getInstance().runInBackground(() -> {
+            Realm realm = null;
+            try {
+                realm = Realm.getDefaultInstance();
+                realm.executeTransaction(realm1 -> {
+                    realm1.copyToRealmOrUpdate(accountRealm);
+                });
+            } catch (Exception e) {
+                LogManager.exception("AccountTable", e);
+            } finally { if (realm != null ) realm.close(); }
+        });
+
     }
 
     public void write(String id, AccountItem accountItem) {
@@ -508,23 +515,27 @@ public class AccountTable extends AbstractTable {
      * @return <b>True</b> if record was removed.
      */
     public void remove(AccountJid account, String id) {
-        Realm realm = RealmManager.getInstance().getNewBackgroundRealm();
-        realm.beginTransaction();
-        AccountRealm accountRealm = realm
-                .where(AccountRealm.class)
-                .equalTo(AccountRealm.Fields.ID, id)
-                .findFirst();
+        Application.getInstance().runInBackground(() -> {
+            Realm realm = null;
+            try {
+                realm = Realm.getDefaultInstance();
+                realm.executeTransaction(realm1 -> {
+                    AccountRealm accountRealm = realm1
+                            .where(AccountRealm.class)
+                            .equalTo(AccountRealm.Fields.ID, id)
+                            .findFirst();
 
-        if (accountRealm != null) {
-            accountRealm.deleteFromRealm();
-        }
-        realm.commitTransaction();
-
-        realm.close();
+                    if (accountRealm != null) {
+                        accountRealm.deleteFromRealm();
+                    }
+                });
+            } catch (Exception e) {
+                LogManager.exception("AccountTable", e);
+            } finally { if (realm != null) realm.close(); }
+        });
 
         SQLiteDatabase db = databaseManager.getWritableDatabase();
         db.delete(NAME, Fields._ID + " = ?", new String[]{ String.valueOf(id) });
-        databaseManager.removeAccount(account);
     }
 
     public int removeAllAccounts() {

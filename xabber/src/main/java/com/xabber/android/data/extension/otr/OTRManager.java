@@ -16,15 +16,12 @@ package com.xabber.android.data.extension.otr;
 
 import android.content.Intent;
 import android.database.Cursor;
+
 import androidx.annotation.Nullable;
 
 import com.xabber.android.BuildConfig;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
-import com.xabber.android.data.connection.ConnectionItem;
-import com.xabber.android.data.connection.listeners.OnConnectedListener;
-import com.xabber.android.data.extension.carbons.CarbonManager;
-import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.OnCloseListener;
 import com.xabber.android.data.OnLoadListener;
@@ -34,14 +31,18 @@ import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.listeners.OnAccountAddedListener;
 import com.xabber.android.data.account.listeners.OnAccountRemovedListener;
+import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.StanzaSender;
+import com.xabber.android.data.connection.listeners.OnConnectedListener;
 import com.xabber.android.data.database.sqlite.OTRTable;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.NestedMap;
 import com.xabber.android.data.entity.NestedMap.Entry;
 import com.xabber.android.data.entity.NestedNestedMaps;
 import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.extension.carbons.CarbonManager;
 import com.xabber.android.data.extension.ssn.SSNManager;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.ChatAction;
 import com.xabber.android.data.message.MessageManager;

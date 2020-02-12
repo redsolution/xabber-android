@@ -40,15 +40,15 @@ import com.xabber.android.data.connection.ConnectionState;
 import com.xabber.android.data.connection.ProxyType;
 import com.xabber.android.data.connection.ReconnectionManager;
 import com.xabber.android.data.connection.TLSMode;
-import com.xabber.android.data.database.MessageDatabaseManager;
-import com.xabber.android.data.database.RealmManager;
 import com.xabber.android.data.database.realm.AccountRealm;
+import com.xabber.android.data.database.repositories.MessageRepository;
 import com.xabber.android.data.database.sqlite.AccountTable;
 import com.xabber.android.data.database.sqlite.StatusTable;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.mam.LoadHistorySettings;
 import com.xabber.android.data.extension.mam.NextMamManager;
 import com.xabber.android.data.extension.vcard.VCardManager;
+import com.xabber.android.data.extension.xtoken.XToken;
 import com.xabber.android.data.extension.xtoken.XTokenManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.notification.BaseAccountNotificationProvider;
@@ -58,7 +58,6 @@ import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterCacheManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.data.xaccount.XabberAccountManager;
-import com.xabber.android.data.extension.xtoken.XToken;
 
 import org.jivesoftware.smack.util.StringUtils;
 import org.jivesoftware.smackx.mam.element.MamPrefsIQ;
@@ -146,8 +145,8 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
     }
 
     public void onPreInitialize() {
-        Realm realm = RealmManager.getInstance().getRealmUiThread();
-        RealmResults<AccountRealm> accountRealms = realm.where(AccountRealm.class).findAll();
+        RealmResults<AccountRealm> accountRealms = Realm.getDefaultInstance()
+                .where(AccountRealm.class).findAll();
 
         for (AccountRealm accountRealm : accountRealms) {
             DomainBareJid serverName = null;
@@ -189,9 +188,9 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
 
 
         final Collection<AccountItem> accountItems = new ArrayList<>();
-        Realm realm = RealmManager.getInstance().getNewBackgroundRealm();
 
-        RealmResults<AccountRealm> accountRealms = realm.where(AccountRealm.class).findAll();
+        RealmResults<AccountRealm> accountRealms = Realm.getDefaultInstance()
+                .where(AccountRealm.class).findAll();
 
         LogManager.i(LOG_TAG, "onLoad got realm accounts: " + accountRealms.size());
 
@@ -283,8 +282,6 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
             accountItems.add(accountItem);
 
         }
-
-        realm.close();
 
         Application.getInstance().runOnUiThread(new Runnable() {
             @Override
@@ -799,9 +796,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
     }
 
     public boolean checkAccounts() {
-        Realm realm = RealmManager.getInstance().getRealmUiThread();
-        RealmResults<AccountRealm> accountRealms = realm.where(AccountRealm.class).findAll();
-        return !accountRealms.isEmpty();
+        return !Realm.getDefaultInstance().where(AccountRealm.class).findAll().isEmpty();
     }
 
     /**
@@ -1280,7 +1275,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
         for (AccountItem accountItem : allAccountItems) {
             if (accountItem.isClearHistoryOnExit()) {
                 LogManager.i(LOG_TAG, "Removing all history for account " + accountItem.getAccount());
-                MessageDatabaseManager.getInstance().removeAccountMessages(accountItem.getAccount());
+                MessageRepository.removeAccountMessages(accountItem.getAccount());
             }
         }
     }

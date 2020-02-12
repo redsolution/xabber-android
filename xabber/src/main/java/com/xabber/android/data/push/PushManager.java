@@ -13,7 +13,6 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.listeners.OnConnectedListener;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
-import com.xabber.android.data.database.RealmManager;
 import com.xabber.android.data.database.realm.PushLogRecord;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
@@ -21,12 +20,12 @@ import com.xabber.android.data.http.PushApiClient;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.utils.ExternalAPIs;
 import com.xabber.android.utils.Utils;
+import com.xabber.xmpp.smack.XMPPTCPConnection;
 
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Stanza;
-import com.xabber.xmpp.smack.XMPPTCPConnection;
 import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
 import org.jivesoftware.smackx.push_notifications.element.EnablePushNotificationsIQ;
 import org.jivesoftware.smackx.push_notifications.element.PushNotificationsElements;
@@ -187,18 +186,25 @@ public class PushManager implements OnConnectedListener, OnPacketListener {
     /** Log */
 
     private void addToPushLog(String message) {
-        Realm realm = RealmManager.getInstance().getNewBackgroundRealm();
-        PushLogRecord pushLogRecord = new PushLogRecord(System.currentTimeMillis(), message);
-        realm.beginTransaction();
-        realm.copyToRealm(pushLogRecord);
-        realm.commitTransaction();
-        realm.close();
+        Application.getInstance().runInBackground(() -> {
+            Realm realm = null;
+            try {
+                realm = Realm.getDefaultInstance();
+                realm.executeTransaction(realm1 -> {
+                    PushLogRecord pushLogRecord = new PushLogRecord(System.currentTimeMillis(), message);
+                    realm1.copyToRealm(pushLogRecord);
+                });
+            } catch (Exception e) {
+                LogManager.exception("PushManager", e);
+            } finally { if (realm != null) realm.close(); }
+        });
+
     }
 
     public static List<String> getPushLogs() {
-        Realm realm = RealmManager.getInstance().getRealmUiThread();
         List<String> logs = new ArrayList<>();
-        RealmResults<PushLogRecord> records = realm.where(PushLogRecord.class)
+        RealmResults<PushLogRecord> records = Realm.getDefaultInstance()
+                .where(PushLogRecord.class)
                 .findAllSorted(PushLogRecord.Fields.TIME, Sort.DESCENDING);
         for (PushLogRecord record : records) {
             String time = new SimpleDateFormat("yyyy.MM.dd - HH:mm:ss",
@@ -209,11 +215,19 @@ public class PushManager implements OnConnectedListener, OnPacketListener {
     }
 
     public static void clearPushLog() {
-        Realm realm = RealmManager.getInstance().getRealmUiThread();
-        RealmResults<PushLogRecord> records = realm.where(PushLogRecord.class).findAll();
-        realm.beginTransaction();
-        records.deleteAllFromRealm();
-        realm.commitTransaction();
+        Application.getInstance().runInBackground(() -> {
+            Realm realm = null;
+            try {
+                realm = Realm.getDefaultInstance();
+                realm.executeTransaction(realm1 -> {
+                    realm1.where(PushLogRecord.class)
+                            .findAll()
+                            .deleteAllFromRealm();
+                });
+            } catch (Exception e) {
+                LogManager.exception("PushLogManager", e);
+            } finally { if (realm != null) realm.close(); }
+        });
     }
 
     /** Private */

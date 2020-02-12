@@ -9,7 +9,7 @@ import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.CommonState;
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
-import com.xabber.android.data.database.MessageDatabaseManager;
+import com.xabber.android.data.database.repositories.MessageRepository;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.blocking.BlockingManager;
@@ -425,7 +425,7 @@ public class ContactListPresenter implements OnContactChangedListener, OnAccount
 
     public void updateUnreadCount() {
         EventBus.getDefault()
-                .post(new UpdateUnreadCountEvent(MessageDatabaseManager.getAllUnreadMessagesCount()));
+                .post(new UpdateUnreadCountEvent(MessageRepository.getAllUnreadMessagesCount()));
     }
 
     public static class UpdateUnreadCountEvent {

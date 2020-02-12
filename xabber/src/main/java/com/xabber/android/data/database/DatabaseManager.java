@@ -23,7 +23,6 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.OnClearListener;
 import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.OnMigrationListener;
-import com.xabber.android.data.database.sqlite.AbstractAccountTable;
 import com.xabber.android.data.database.sqlite.AccountTable;
 import com.xabber.android.data.database.sqlite.AvatarTable;
 import com.xabber.android.data.database.sqlite.AvatarXepTable;
@@ -42,14 +41,14 @@ import com.xabber.android.data.database.sqlite.StatusTable;
 import com.xabber.android.data.database.sqlite.Suppress100Table;
 import com.xabber.android.data.database.sqlite.VCardTable;
 import com.xabber.android.data.database.sqlite.VibroTable;
-import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.log.LogManager;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
+
+import io.realm.Realm;
 
 /**
  * Helps to open, create, and upgrade the database file.
@@ -70,21 +69,16 @@ public class DatabaseManager extends SQLiteOpenHelper implements
 
     private final ArrayList<DatabaseTable> registeredTables;
 
-
     public static DatabaseManager getInstance() {
         if (instance == null) {
             instance = new DatabaseManager();
         }
-
         return instance;
     }
 
     private DatabaseManager() {
         super(Application.getInstance(), DATABASE_NAME, null, DATABASE_VERSION);
         registeredTables = new ArrayList<>();
-
-        MessageDatabaseManager.getInstance();
-        RealmManager.getInstance();
     }
 
     public void addTables() {
@@ -153,39 +147,6 @@ public class DatabaseManager extends SQLiteOpenHelper implements
         execSQL(db, "ALTER TABLE " + table + " RENAME TO " + newTable + ";");
     }
 
-    public static String commaSeparatedFromCollection(Collection<String> strings) {
-        StringBuilder builder = new StringBuilder();
-        for (String value : strings) {
-            if (builder.length() > 0)
-                builder.append(",");
-            builder.append(value.replace("\\", "\\\\").replace(",", "\\,"));
-        }
-        return builder.toString();
-    }
-
-    public static Collection<String> collectionFromCommaSeparated(String value) {
-        Collection<String> collection = new ArrayList<String>();
-        boolean escape = false;
-        StringBuilder builder = new StringBuilder();
-        for (int index = 0; index < value.length(); index++) {
-            char chr = value.charAt(index);
-            if (!escape) {
-                if (chr == '\\') {
-                    escape = true;
-                    continue;
-                } else if (chr == ',') {
-                    collection.add(builder.toString());
-                    builder = new StringBuilder();
-                    continue;
-                }
-            }
-            escape = false;
-            builder.append(chr);
-        }
-        collection.add(builder.toString());
-        return Collections.unmodifiableCollection(collection);
-    }
-
     /**
      * Register new table.
      *
@@ -199,9 +160,6 @@ public class DatabaseManager extends SQLiteOpenHelper implements
     public void onLoad() {
         try {
             getWritableDatabase(); // Force onCreate or onUpgrade
-
-            RealmManager.getInstance().copyDataFromSqliteToRealm();
-            MessageDatabaseManager.getInstance().copyDataFromSqliteToRealm();
         } catch (SQLiteException e) {
             if (e == DOWNGRADE_EXCEPTION) {
                 // Downgrade occured
@@ -267,19 +225,7 @@ public class DatabaseManager extends SQLiteOpenHelper implements
             table.clear();
         }
 
-        MessageDatabaseManager.getInstance().deleteRealm();
-        RealmManager.getInstance().deleteRealm();
-    }
-
-    public void removeAccount(final AccountJid account) {
-        // TODO: replace with constraint.
-        for (DatabaseTable table : registeredTables) {
-            if (table instanceof AbstractAccountTable) {
-                ((AbstractAccountTable) table).removeAccount(account);
-            }
-        }
-
-        MessageDatabaseManager.getInstance().removeAccountMessages(account);
+        Realm.getDefaultInstance().deleteAll();
     }
 
 }
