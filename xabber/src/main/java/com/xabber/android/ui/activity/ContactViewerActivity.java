@@ -13,7 +13,6 @@ import android.os.Bundle;
 import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -65,10 +64,14 @@ public class ContactViewerActivity extends ContactActivity implements Toolbar.On
 
         toolbar.setOnMenuItemClickListener(this);
         toolbar.setOverflowIcon(getResources().getDrawable(R.drawable.ic_overflow_menu_white_24dp));
-        if (toolbar.getOverflowIcon() != null)
+        if (toolbar.getOverflowIcon() != null) {
             if (orientation == Configuration.ORIENTATION_LANDSCAPE
-                    && SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light)
+                    && SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light) {
                 toolbar.getOverflowIcon().setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_ATOP);
+            }
+        }
+
+        setSupportActionBar(toolbar);
 
         onCreateOptionsMenu(toolbar.getMenu());
     }
@@ -96,21 +99,13 @@ public class ContactViewerActivity extends ContactActivity implements Toolbar.On
             changeTextColor();
             manageAvailableUsernameSpace();
         } else {
-            getTitleView().findViewById(R.id.name).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    startActivity(ContactEditActivity.createIntent(v.getContext(), getAccount(), getUser()));
-                }
-            });
-            getTitleView().findViewById(R.id.address_text).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    startActivity(ContactEditActivity.createIntent(v.getContext(), getAccount(), getUser()));
-                }
-            });
+            getTitleView().findViewById(R.id.name).setOnClickListener(v ->
+                    startActivity(ContactEditActivity.createIntent(v.getContext(), getAccount(), getUser())));
+            getTitleView().findViewById(R.id.address_text).setOnClickListener(v ->
+                    startActivity(ContactEditActivity.createIntent(v.getContext(), getAccount(), getUser())));
             menu.findItem(R.id.action_add_contact).setVisible(false);
             menu.findItem(R.id.action_generate_qrcode).setVisible(orientation == Configuration.ORIENTATION_PORTRAIT);
-            menu.findItem(R.id.action_request_subscription).setVisible(!contact.isSubscribed());
+            menu.findItem(R.id.action_request_subscription).setVisible(!contact.isSubscribed() && !RosterManager.getInstance().hasSubscriptionPending(getAccount(), getUser()));
         }
     }
 
@@ -136,6 +131,18 @@ public class ContactViewerActivity extends ContactActivity implements Toolbar.On
 
         menu.setGroupVisible(R.id.roster_actions, false);
         menu.findItem(R.id.action_delete_conference).setVisible(true);
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        RosterContact rosterContact = RosterManager.getInstance().getRosterContact(getAccount(), getUser());
+        AbstractChat chat = MessageManager.getInstance().getChat(getAccount(), getUser());
+        if (chat instanceof RoomChat) {
+            setUpMUCInfoMenu(menu, chat);
+        } else {
+            setUpContactInfoMenu(menu, rosterContact);
+        }
+        return true;
     }
 
     @Override

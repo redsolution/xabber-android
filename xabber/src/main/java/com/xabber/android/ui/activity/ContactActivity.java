@@ -335,6 +335,7 @@ public class ContactActivity extends ManagedActivity implements
         final TextView contactNameView = (TextView) findViewById(R.id.name);
         final LinearLayout nameHolderView = (LinearLayout) findViewById(R.id.name_holder);
 
+        toolbar.setTitle("");
         toolbar.setBackgroundColor(Color.TRANSPARENT);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Window win = getWindow();

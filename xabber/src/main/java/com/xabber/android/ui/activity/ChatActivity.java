@@ -759,7 +759,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         // request subscription
         AbstractContact abstractContact = RosterManager.getInstance()
                 .getAbstractContact(abstractChat.getAccount(), abstractChat.getUser());
-        menu.findItem(R.id.action_request_subscription).setVisible(!abstractContact.isSubscribed());
+        menu.findItem(R.id.action_request_subscription).setVisible(!abstractContact.isSubscribed() && !RosterManager.getInstance().hasSubscriptionPending(account, user));
     }
 
     private void setUpOptionsMenu(Menu menu) {
