@@ -26,6 +26,7 @@ public class ChatDataRealm extends RealmObject {
     private boolean historyRequestedAtStart;
     private Long lastActionTimestamp;
     private int chatStateMode;
+    private boolean isGroupchat;
 
     public ChatDataRealm(String accountJid, String userJid) {
         this.id = accountJid + "-" + userJid;
@@ -115,5 +116,13 @@ public class ChatDataRealm extends RealmObject {
 
     public void setChatStateMode(int mode) {
         chatStateMode = mode;
+    }
+
+    public boolean isGroupchat() {
+        return isGroupchat;
+    }
+
+    public void setGroupchat(boolean groupchat) {
+        isGroupchat = groupchat;
     }
 }

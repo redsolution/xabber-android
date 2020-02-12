@@ -1152,6 +1152,10 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         return isGroupchat;
     }
 
+    public void setGroupchat(boolean isGroupchat) {
+        this.isGroupchat = isGroupchat;
+    }
+
     public int getChatstateMode() {
         return chatstateType;
     }

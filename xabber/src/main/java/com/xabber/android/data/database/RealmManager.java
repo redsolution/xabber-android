@@ -37,7 +37,7 @@ import io.realm.annotations.RealmModule;
 
 public class RealmManager {
     private static final String REALM_DATABASE_NAME = "realm_database.realm";
-    private static final int REALM_DATABASE_VERSION = 30;
+    private static final int REALM_DATABASE_VERSION = 31;
     private static final String LOG_TAG = RealmManager.class.getSimpleName();
     private final RealmConfiguration realmConfiguration;
 
@@ -390,6 +390,13 @@ public class RealmManager {
                             schema.get(ChatDataRealm.class.getSimpleName())
                                     .addField("lastActionTimestamp", Long.class)
                                     .addField("chatStateMode", int.class);
+
+                            oldVersion++;
+                        }
+
+                        if (oldVersion == 30) {
+                            schema.get(ChatDataRealm.class.getSimpleName())
+                                    .addField("isGroupchat", boolean.class);
 
                             oldVersion++;
                         }
