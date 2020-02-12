@@ -647,11 +647,6 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
                 if (dy < 0) loadHistoryIfNeed();
                 showScrollDownButtonIfNeed();
-
-                /** Necessary for
-                 *  @see MessageVH#bind ()
-                 *  and set DATE alpha */
-                //updateTopDateIfNeed();
             }
         });
 
