@@ -40,8 +40,8 @@ public class GroupDeleteDialogFragment extends DialogFragment implements DialogI
         group = args.getString(ARGUMENT_GROUP, null);
 
         return new AlertDialog.Builder(getActivity())
-                .setMessage(getString(R.string.group_remove_confirm, group))
-                .setPositiveButton(R.string.group_remove, this)
+                .setMessage(getString(R.string.circle_remove_confirm, group))
+                .setPositiveButton(R.string.circle_remove, this)
                 .setNegativeButton(android.R.string.cancel, this)
                 .create();
     }

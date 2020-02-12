@@ -304,7 +304,7 @@ public class ContextMenuHelper {
               final ListPresenter presenter, final AccountJid account, final String group, ContextMenu menu) {
         menu.setHeaderTitle(GroupManager.getInstance().getGroupName(account, group));
         if (!group.equals(GroupManager.ACTIVE_CHATS) && !group.equals(GroupManager.IS_ROOM)) {
-            menu.add(R.string.group_rename).setOnMenuItemClickListener(
+            menu.add(R.string.circle_rename).setOnMenuItemClickListener(
                     new MenuItem.OnMenuItemClickListener() {
 
                         @Override
@@ -318,7 +318,7 @@ public class ContextMenuHelper {
                         }
                     });
             if (!group.equals(GroupManager.NO_GROUP)) {
-                menu.add(R.string.group_remove).setOnMenuItemClickListener(
+                menu.add(R.string.circle_remove).setOnMenuItemClickListener(
                         new MenuItem.OnMenuItemClickListener() {
 
                             @Override

@@ -196,13 +196,13 @@ public class SettingsManager implements OnInitializedListener,
     }
 
     public static boolean contactsShowGroups() {
-        return getBoolean(R.string.contacts_show_groups_key,
-                R.bool.contacts_show_groups_default);
+        return getBoolean(R.string.contacts_show_circles_key,
+                R.bool.contacts_show_circles_default);
     }
 
     public static boolean contactsShowEmptyGroups() {
-        return getBoolean(R.string.contacts_show_empty_groups_key,
-                R.bool.contacts_show_empty_groups_default);
+        return getBoolean(R.string.contacts_show_empty_circles_key,
+                R.bool.contacts_show_empty_circles_default);
     }
 
     public static boolean contactsShowAccounts() {
