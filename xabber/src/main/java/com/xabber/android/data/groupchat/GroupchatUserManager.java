@@ -2,9 +2,9 @@ package com.xabber.android.data.groupchat;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.OnLoadListener;
-import com.xabber.android.data.database.RealmManager;
 import com.xabber.android.data.database.messagerealm.GroupchatUserRealm;
 import com.xabber.android.data.extension.references.RefUser;
+import com.xabber.android.data.log.LogManager;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -24,12 +24,11 @@ public class GroupchatUserManager implements OnLoadListener {
 
     @Override
     public void onLoad() {
-        Realm realm = RealmManager.getInstance().getNewBackgroundRealm();
-        RealmResults<GroupchatUserRealm> users = realm.where(GroupchatUserRealm.class).findAll();
+        RealmResults<GroupchatUserRealm> users = Realm.getDefaultInstance()
+                .where(GroupchatUserRealm.class).findAll();
         for (GroupchatUserRealm user : users) {
             this.users.put(user.getUniqueId(), realmUserToUser(user));
         }
-        realm.close();
     }
 
     public GroupchatUser getGroupchatUser(String id) {
@@ -54,16 +53,17 @@ public class GroupchatUserManager implements OnLoadListener {
     }
 
     private void saveGroupchatUserToRealm(final GroupchatUserRealm user, final long timestamp) {
-        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
-            @Override
-            public void run() {
-                user.setTimestamp(timestamp);
-                Realm realm = RealmManager.getInstance().getNewBackgroundRealm();
-                realm.beginTransaction();
-                realm.copyToRealmOrUpdate(user);
-                realm.commitTransaction();
-                realm.close();
-            }
+        Application.getInstance().runInBackground(() -> {
+            user.setTimestamp(timestamp);
+            Realm realm = null;
+            try {
+                realm = Realm.getDefaultInstance();
+                realm.executeTransaction(realm1 -> {
+                    realm1.copyToRealmOrUpdate(user);
+                });
+            } catch (Exception e) {
+                LogManager.exception("GroupchatUserManager", e);
+            } finally { if (realm != null) realm.close(); }
         });
     }
 

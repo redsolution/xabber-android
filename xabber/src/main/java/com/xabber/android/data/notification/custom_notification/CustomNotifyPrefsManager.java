@@ -7,9 +7,9 @@ import android.os.Build;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.OnLoadListener;
-import com.xabber.android.data.database.RealmManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.notification.MessageNotificationCreator;
 import com.xabber.android.data.notification.NotificationChannelUtils;
 
@@ -119,69 +119,74 @@ public class CustomNotifyPrefsManager implements OnLoadListener {
 
     private List<NotifyPrefs> findAllFromRealm() {
         List<NotifyPrefs> results = new ArrayList<>();
-        Realm realm = RealmManager.getInstance().getNewRealm();
-        RealmResults<NotifyPrefsRealm> items = realm.where(NotifyPrefsRealm.class).findAll();
+        RealmResults<NotifyPrefsRealm> items = Realm.getDefaultInstance()
+                .where(NotifyPrefsRealm.class)
+                .findAll();
         for (NotifyPrefsRealm item : items) {
             NotifyPrefs prefs = new NotifyPrefs(item.getId(), Key.createKey(item), item.getVibro(),
                     item.isShowPreview(), item.getSound());
             prefs.setChannelID(item.getChannelID());
             results.add(prefs);
         }
-        realm.close();
         return results;
     }
 
     private void removeFromRealm(final String id) {
-        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
-            @Override
-            public void run() {
-                Realm realm = RealmManager.getInstance().getNewRealm();
-                RealmResults<NotifyPrefsRealm> items = realm.where(NotifyPrefsRealm.class)
-                        .equalTo(NotifyPrefsRealm.Fields.ID, id).findAll();
-                removeFromRealm(realm, items);
-            }
+        Application.getInstance().runInBackground(() -> {
+            Realm realm = null;
+            try {
+                realm = Realm.getDefaultInstance();
+                realm.executeTransaction(realm1 -> {
+                    realm1.where(NotifyPrefsRealm.class)
+                            .equalTo(NotifyPrefsRealm.Fields.ID, id)
+                            .findAll()
+                            .deleteAllFromRealm();
+                });
+            } catch (Exception e) {
+                LogManager.exception("CustomNotifyPrefsManager", e);
+            } finally { if (realm != null) realm.close(); }
         });
     }
 
     private void removeAllFromRealm() {
-        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
-            @Override
-            public void run() {
-                Realm realm = RealmManager.getInstance().getNewRealm();
-                RealmResults<NotifyPrefsRealm> items = realm.where(NotifyPrefsRealm.class).findAll();
-                removeFromRealm(realm, items);
-            }
+        Application.getInstance().runInBackground(() -> {
+            Realm realm = null;
+            try {
+                realm = Realm.getDefaultInstance();
+                realm.executeTransaction(realm1 -> {
+                    realm1.where(NotifyPrefsRealm.class)
+                            .findAll()
+                            .deleteAllFromRealm();
+                });
+            } catch (Exception e) {
+                LogManager.exception("CustomNotifyPrefsManager", e);
+            } finally { if (realm != null) realm.close(); }
         });
     }
 
-    private void removeFromRealm(Realm realm, RealmResults<NotifyPrefsRealm> items) {
-        realm.beginTransaction();
-        for (NotifyPrefsRealm item : items) {
-            item.deleteFromRealm();
-        }
-        realm.commitTransaction();
-    }
-
     private void saveOrUpdateToRealm(final NotifyPrefs prefs) {
-        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
-            @Override
-            public void run() {
-                NotifyPrefsRealm prefsRealm = new NotifyPrefsRealm(prefs.getId());
-                prefsRealm.setType(prefs.getKey().getType().toString());
-                if (prefs.getKey().getAccount() != null) prefsRealm.setAccount(prefs.getKey().getAccount());
-                if (prefs.getKey().getUser() != null) prefsRealm.setUser(prefs.getKey().getUser());
-                prefsRealm.setGroup(prefs.getKey().getGroup());
-                prefsRealm.setPhraseID(prefs.getKey().getPhraseID());
-                prefsRealm.setChannelID(prefs.getChannelID());
-                prefsRealm.setShowPreview(prefs.isShowPreview());
-                prefsRealm.setSound(prefs.getSound());
-                prefsRealm.setVibro(prefs.getVibro());
+        Application.getInstance().runInBackground(() -> {
+            Realm realm = null;
+            try {
+                realm = Realm.getDefaultInstance();
+                realm.executeTransaction(realm1 -> {
+                    NotifyPrefsRealm prefsRealm = new NotifyPrefsRealm(prefs.getId());
 
-                Realm realm = RealmManager.getInstance().getNewRealm();
-                realm.beginTransaction();
-                NotifyPrefsRealm result = realm.copyToRealmOrUpdate(prefsRealm);
-                realm.commitTransaction();
-            }
+                    prefsRealm.setType(prefs.getKey().getType().toString());
+                    if (prefs.getKey().getAccount() != null) prefsRealm.setAccount(prefs.getKey().getAccount());
+                    if (prefs.getKey().getUser() != null) prefsRealm.setUser(prefs.getKey().getUser());
+                    prefsRealm.setGroup(prefs.getKey().getGroup());
+                    prefsRealm.setPhraseID(prefs.getKey().getPhraseID());
+                    prefsRealm.setChannelID(prefs.getChannelID());
+                    prefsRealm.setShowPreview(prefs.isShowPreview());
+                    prefsRealm.setSound(prefs.getSound());
+                    prefsRealm.setVibro(prefs.getVibro());
+
+                    NotifyPrefsRealm result = realm1.copyToRealmOrUpdate(prefsRealm);
+                });
+            } catch (Exception e) {
+                LogManager.exception("CustomNotifyPrefsManager", e);
+            } finally { if (realm != null) realm.close(); }
         });
     }
 

@@ -1,8 +1,9 @@
 package com.xabber.android.data.xaccount;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import android.util.Log;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
@@ -10,7 +11,6 @@ import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
-import com.xabber.android.data.database.RealmManager;
 import com.xabber.android.data.database.realm.EmailRealm;
 import com.xabber.android.data.database.realm.SocialBindingRealm;
 import com.xabber.android.data.database.realm.SyncStateRealm;
@@ -387,7 +387,7 @@ public class XabberAccountManager implements OnLoadListener {
         }
         xabberAccountRealm.setSocialBindings(realmSocials);
 
-        Realm realm = RealmManager.getInstance().getNewBackgroundRealm();
+        Realm realm = Realm.getDefaultInstance();
         realm.beginTransaction();
         XabberAccountRealm accountRealm = realm.copyToRealmOrUpdate(xabberAccountRealm);
         account = xabberAccountRealmToPOJO(accountRealm);
@@ -462,29 +462,32 @@ public class XabberAccountManager implements OnLoadListener {
     public XabberAccount loadXabberAccountFromRealm() {
         XabberAccount xabberAccount = null;
 
-        Realm realm = RealmManager.getInstance().getNewBackgroundRealm();
-        RealmResults<XabberAccountRealm> xabberAccounts = realm.where(XabberAccountRealm.class).findAll();
+        RealmResults<XabberAccountRealm> xabberAccounts = Realm.getDefaultInstance()
+                .where(XabberAccountRealm.class)
+                .findAll();
 
         for (XabberAccountRealm xabberAccountRealm : xabberAccounts) {
             xabberAccount = xabberAccountRealmToPOJO(xabberAccountRealm);
         }
 
-        realm.close();
         return xabberAccount;
     }
 
     public boolean deleteXabberAccountFromRealm() {
         final boolean[] success = new boolean[1];
-        Realm realm = RealmManager.getInstance().getNewBackgroundRealm();
-
-        final RealmResults<XabberAccountRealm> results = realm.where(XabberAccountRealm.class).findAll();
-        realm.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                success[0] = results.deleteAllFromRealm();
-            }
+        Application.getInstance().runInBackground(() -> {
+            Realm realm = null;
+            try {
+                realm = Realm.getDefaultInstance();
+                realm.executeTransaction(realm1 -> {
+                    success[0] = realm1.where(XabberAccountRealm.class)
+                            .findAll()
+                            .deleteAllFromRealm();
+                });
+            } catch (Exception e) {
+                LogManager.exception("XabberAccountManager", e);
+            } finally { if (realm != null) realm.close(); }
         });
-        realm.close();
         return success[0];
     }
 
@@ -649,28 +652,31 @@ public class XabberAccountManager implements OnLoadListener {
     public Map<String, Boolean> loadSyncStatesFromRealm() {
         Map<String, Boolean> resultMap = new HashMap<>();
 
-        Realm realm = RealmManager.getInstance().getNewBackgroundRealm();
-        RealmResults<SyncStateRealm> realmItems = realm.where(SyncStateRealm.class).findAll();
+        RealmResults<SyncStateRealm> realmItems = Realm.getDefaultInstance()
+                .where(SyncStateRealm.class)
+                .findAll();
         for (SyncStateRealm realmItem : realmItems) {
             resultMap.put(realmItem.getJid(), realmItem.isSync());
         }
-        realm.close();
 
         return resultMap;
     }
 
     public boolean deleteSyncStatesFromRealm() {
         final boolean[] success = new boolean[1];
-        Realm realm = RealmManager.getInstance().getNewBackgroundRealm();
-
-        final RealmResults<SyncStateRealm> results = realm.where(SyncStateRealm.class).findAll();
-        realm.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                success[0] = results.deleteAllFromRealm();
-            }
+        Application.getInstance().runInBackground(() -> {
+            Realm realm = null;
+            try {
+                realm = Realm.getDefaultInstance();
+                realm.executeTransaction(realm1 -> {
+                    success[0] = realm1.where(SyncStateRealm.class)
+                            .findAll()
+                            .deleteAllFromRealm();
+                });
+            } catch (Exception e) {
+                LogManager.exception("XabberAccountManager", e);
+            } finally { if (realm != null) realm.close(); }
         });
-        realm.close();
         return success[0];
     }
 
@@ -688,20 +694,27 @@ public class XabberAccountManager implements OnLoadListener {
 
         // TODO: 13.03.18 ANR - WRITE
         final long startTime = System.currentTimeMillis();
-        Realm realm = RealmManager.getInstance().getNewRealm();
-        realm.beginTransaction();
+        Application.getInstance().runInBackground(() -> {
+            Realm realm = null;
+            try {
+                realm = Realm.getDefaultInstance();
+                realm.executeTransaction(realm1 -> {
+                    List<SyncStateRealm> oldItems = realm1
+                            .where(SyncStateRealm.class)
+                            .findAll();
+                    for (SyncStateRealm item : oldItems)
+                        item.deleteFromRealm();
 
-        List<SyncStateRealm> oldItems = realm.where(SyncStateRealm.class).findAll();
-        for (SyncStateRealm item : oldItems)
-            item.deleteFromRealm();
+                    List<SyncStateRealm> resultRealm = realm1.copyToRealmOrUpdate(realmItems);
+                    LogManager.d(LOG_TAG, resultRealm.size() + " syncState items was saved to Realm");
+                });
+            } catch (Exception e){
+                LogManager.exception("XabberAccountManager", e);
+            } finally { if (realm != null) realm.close(); }
+        });
 
-        List<SyncStateRealm> resultRealm = realm.copyToRealmOrUpdate(realmItems);
-        realm.commitTransaction();
-        realm.close();
         LogManager.d("REALM", Thread.currentThread().getName()
                 + " save sync state: " + (System.currentTimeMillis() - startTime));
-
-        Log.d(LOG_TAG, resultRealm.size() + " syncState items was saved to Realm");
     }
 
     /**

@@ -43,8 +43,9 @@ import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.CommonState;
-import com.xabber.android.data.database.MessageDatabaseManager;
+import com.xabber.android.data.database.NewDatabaseManager;
 import com.xabber.android.data.database.messagerealm.MessageItem;
+import com.xabber.android.data.database.repositories.MessageRepository;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
@@ -187,11 +188,11 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
     @Override
     public void onResume() {
         Application.getInstance().addUIListener(OnChatStateListener.class, this);
-        if (MessageDatabaseManager.getAllUnreadMessagesCount() == 0){
+        if (MessageRepository.getAllUnreadMessagesCount() == 0){
             onStateSelected(ChatListState.recent);
         }
 
-        realmChangeListenerSubscription = MessageDatabaseManager.getInstance().getObservableListener()
+        realmChangeListenerSubscription = NewDatabaseManager.getInstance().getObservableListener()
                 .debounce(500, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnError(throwable -> LogManager.exception("ChatListFragment", throwable))

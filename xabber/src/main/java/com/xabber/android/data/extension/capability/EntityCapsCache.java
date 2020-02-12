@@ -1,6 +1,6 @@
 package com.xabber.android.data.extension.capability;
 
-import com.xabber.android.data.database.RealmManager;
+import com.xabber.android.data.Application;
 import com.xabber.android.data.database.realm.DiscoveryInfoCache;
 import com.xabber.android.data.log.LogManager;
 
@@ -22,14 +22,19 @@ class EntityCapsCache implements EntityCapsPersistentCache {
         }
 
         // TODO: 13.03.18 ANR - WRITE
-        Realm realm = RealmManager.getInstance().getNewRealm();
-        realm.beginTransaction();
+        Application.getInstance().runInBackground(() -> {
+            Realm realm = null;
+            try {
+                realm = Realm.getDefaultInstance();
+                realm.executeTransaction(realm1 -> {
+                    DiscoveryInfoCache discoveryInfoCache = new DiscoveryInfoCache(nodeVer, info);
+                    realm1.copyToRealmOrUpdate(discoveryInfoCache);
+                });
+            } catch (Exception e) {
+                LogManager.exception("EntityCapsCache", e);
+            } finally { if (realm != null) realm.close(); }
+        });
 
-        DiscoveryInfoCache discoveryInfoCache = new DiscoveryInfoCache(nodeVer, info);
-        realm.copyToRealmOrUpdate(discoveryInfoCache);
-
-        realm.commitTransaction();
-        realm.close();
         LogManager.d("REALM", Thread.currentThread().getName()
                 + " save discover info: " + (System.currentTimeMillis() - startTime));
 
@@ -37,9 +42,10 @@ class EntityCapsCache implements EntityCapsPersistentCache {
 
     @Override
     public DiscoverInfo lookup(String nodeVer) {
-        Realm realm = RealmManager.getInstance().getNewRealm();
+        Realm realm = Realm.getDefaultInstance();
 
-        DiscoveryInfoCache discoveryInfoCache = realm.where(DiscoveryInfoCache.class)
+        DiscoveryInfoCache discoveryInfoCache = Realm.getDefaultInstance()
+                .where(DiscoveryInfoCache.class)
                 .equalTo(DiscoveryInfoCache.Fields.NODE_VER, nodeVer)
                 .findFirst();
 
@@ -49,8 +55,6 @@ class EntityCapsCache implements EntityCapsPersistentCache {
             discoverInfo = realm.copyFromRealm(discoveryInfoCache).getDiscoveryInfo();
         }
 
-        realm.close();
-
         return discoverInfo;
     }
 
@@ -58,15 +62,21 @@ class EntityCapsCache implements EntityCapsPersistentCache {
     public void emptyCache() {
         final long startTime = System.currentTimeMillis();
         // TODO: 13.03.18 ANR - WRITE
-        Realm realm = RealmManager.getInstance().getNewRealm();
+        Application.getInstance().runInBackground(() -> {
+            Realm realm = null;
+            try {
+                realm = Realm.getDefaultInstance();
+                realm.executeTransaction(realm1 -> {
+                    realm1.where(DiscoveryInfoCache.class)
+                            .findAll()
+                            .deleteAllFromRealm();
+                });
+            } catch (Exception e) {
+                LogManager.exception("EntityCapsCache", e);
+            } finally { if (realm != null) realm.close(); }
 
-        realm.beginTransaction();
-        realm.where(DiscoveryInfoCache.class)
-                .findAll()
-                .deleteAllFromRealm();
-        realm.commitTransaction();
+        });
 
-        realm.close();
         LogManager.d("REALM", Thread.currentThread().getName()
                 + " delete discover cache: " + (System.currentTimeMillis() - startTime));
     }
