@@ -99,14 +99,14 @@
     <string name="contacts_show_offline_key">contacts_show_offline</string>
     <bool name="contacts_show_offline_default">true</bool>
 
-    <string name="contacts_show_groups_key">contacts_show_groups</string>
-    <bool name="contacts_show_groups_default">true</bool>
+    <string name="contacts_show_circles_key">contacts_show_circles</string>
+    <bool name="contacts_show_circles_default">true</bool>
 
     <string name="contacts_show_accounts_key">contacts_show_accounts</string>
     <bool name="contacts_show_accounts_default">true</bool>
 
-    <string name="contacts_show_empty_groups_key">contacts_show_empty_groups</string>
-    <bool name="contacts_show_empty_groups_default">false</bool>
+    <string name="contacts_show_empty_circles_key">contacts_show_empty_circles</string>
+    <bool name="contacts_show_empty_circles_default">false</bool>
 
     <string name="contacts_order_key">contacts_order</string>
     <string name="contacts_order_status_value">status</string>

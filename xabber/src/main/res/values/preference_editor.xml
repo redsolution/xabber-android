@@ -16,7 +16,9 @@
     <string name="contacts_show_avatars">Show avatars\nShows users\' avatars in contact list</string>
     <string name="contacts_show_messages">Show messages\nShows users\' messages in contact list</string>
     <string name="contacts_show_empty_groups">Show empty groups\nShow groups with no online contacts</string>
+    <string name="contacts_show_empty_circles">Show empty circles\nShow circles with no online contacts</string>
     <string name="contacts_show_groups">Show groups\nShow groups in contact list</string>
+    <string name="contacts_show_circles">Show circles\nShow circles in contact list</string>
     <string name="contacts_show_offline">Show offline contacts</string>
 
     <string name="debug_log">Write message text to log\nWarning: enabling this option carries a probable privacy risk. Message text will be stored in debug log. Do not let this log fall into the wrong hands.</string>
@@ -96,6 +98,8 @@
 
     <string name="contacts_reset_offline">Reset offline settings\nClear individual settings for groups and accounts</string>
     <string name="contacts_reset_offline_warning">Do you really want to clear individual settings for groups and accounts?</string>
+    <string name="contacts_reset_offline_circle">Reset offline settings\nClear individual settings for circles and accounts</string>
+    <string name="contacts_reset_offline_warning_circle">Do you really want to clear individual settings for circles and accounts?</string>
 
     <string name="events_first_only">Alert on first message</string>
     <string name="events_first_only_summary">Notify only on the first message in a chat</string>

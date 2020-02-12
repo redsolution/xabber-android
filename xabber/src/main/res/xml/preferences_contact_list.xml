@@ -32,9 +32,9 @@
             />
 
         <CheckBoxPreference
-            android:title="@string/contacts_show_groups"
-            android:key="@string/contacts_show_groups_key"
-            android:defaultValue="@bool/contacts_show_groups_default"
+            android:title="@string/contacts_show_circles"
+            android:key="@string/contacts_show_circles_key"
+            android:defaultValue="@bool/contacts_show_circles_default"
             />
 
     </PreferenceCategory>
@@ -48,9 +48,9 @@
             />
 
         <CheckBoxPreference
-            android:title="@string/contacts_show_empty_groups"
-            android:key="@string/contacts_show_empty_groups_key"
-            android:defaultValue="@bool/contacts_show_empty_groups_default"
+            android:title="@string/contacts_show_empty_circles"
+            android:key="@string/contacts_show_empty_circles_key"
+            android:defaultValue="@bool/contacts_show_empty_circles_default"
             />
 
     </PreferenceCategory>
@@ -58,9 +58,9 @@
         android:title="@string/category_reset">
 
         <com.xabber.android.ui.preferences.ContactResetOfflineSettingsDialog
-            android:title="@string/contacts_reset_offline"
+            android:title="@string/contacts_reset_offline_circle"
             android:key="@string/contacts_reset_offline_key"
-            android:dialogMessage="@string/contacts_reset_offline_warning"/>
+            android:dialogMessage="@string/contacts_reset_offline_warning_circle"/>
 
     </PreferenceCategory>
 
