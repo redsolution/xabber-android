@@ -53,49 +53,38 @@ public class ReliableMessageDeliveryManager implements OnPacketListener {
     public boolean isSupported(AccountJid accountJid) { return isSupported(AccountManager.getInstance().getAccount(accountJid)); }
 
     public void resendMessagesWithoutReceipt() {
-        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
-            @Override
-            public void run() {
-                Realm realm = null;
-                try {
-                    realm = Realm.getDefaultInstance();
-                    realm.executeTransaction(new Realm.Transaction() {
-                        @Override
-                        public void execute(Realm realm) {
-                            for (AccountJid accountJid : AccountManager.getInstance().getEnabledAccounts()){
-                                AccountItem accountItem = AccountManager.getInstance().getAccount(accountJid);
-                                if (isSupported(accountItem) && accountItem.isSuccessfulConnectionHappened()){
-                                    RealmResults<MessageItem> messagesUndelivered = realm.where(MessageItem.class)
-                                            .equalTo(MessageItem.Fields.ACCOUNT, accountJid.toString())
-                                            .equalTo(MessageItem.Fields.SENT, true)
-                                            .equalTo(MessageItem.Fields.INCOMING, false)
-                                            .equalTo(MessageItem.Fields.DELIVERED, false)
-                                            .equalTo(MessageItem.Fields.IS_RECEIVED_FROM_MAM, false)
-                                            .equalTo(MessageItem.Fields.READ, false)
-                                            .equalTo(MessageItem.Fields.DISPLAYED, false)
-                                            .findAllSorted(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
-                                    if (messagesUndelivered.size() == 0)
-                                        LogManager.d(LOG_TAG, "There are no messages without receipts!");
-                                    else
-                                        for (MessageItem messageItem : messagesUndelivered){
-                                            if (messageItem != null && !messageItem.getStanzaId().equals(messageItem.getOriginId())
-                                                    && messageItem.getTimestamp() + 5000 <= new Date(System.currentTimeMillis()).getTime()) {
-                                                MessageManager.getInstance().getChat(messageItem.getAccount(), messageItem.getUser()).sendMessage(messageItem);
-                                                LogManager.d(LOG_TAG, "Retry sending message with stanza: " + messageItem.getOriginalStanza());
-                                            }
+        Application.getInstance().runInBackgroundUserRequest(() -> {
+            Realm realm = null;
+            try {
+                realm = Realm.getDefaultInstance();
+                realm.executeTransaction(realm1 -> {
+                    for (AccountJid accountJid : AccountManager.getInstance().getEnabledAccounts()){
+                        AccountItem accountItem = AccountManager.getInstance().getAccount(accountJid);
+                        if (isSupported(accountItem) && accountItem.isSuccessfulConnectionHappened()){
+                            RealmResults<MessageItem> messagesUndelivered = realm1.where(MessageItem.class)
+                                    .equalTo(MessageItem.Fields.ACCOUNT, accountJid.toString())
+                                    .equalTo(MessageItem.Fields.SENT, true)
+                                    .equalTo(MessageItem.Fields.INCOMING, false)
+                                    .equalTo(MessageItem.Fields.DELIVERED, false)
+                                    .equalTo(MessageItem.Fields.IS_RECEIVED_FROM_MAM, false)
+                                    .equalTo(MessageItem.Fields.READ, false)
+                                    .equalTo(MessageItem.Fields.DISPLAYED, false)
+                                    .findAllSorted(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
+                            if (messagesUndelivered.size() != 0)
+                                for (MessageItem messageItem : messagesUndelivered){
+                                    if (messageItem != null
+                                            && !messageItem.getStanzaId().equals(messageItem.getOriginId())
+                                            && messageItem.getTimestamp() + 5000 <= new Date(System.currentTimeMillis()).getTime()) {
+                                        MessageManager.getInstance().getChat(messageItem.getAccount(), messageItem.getUser()).sendMessage(messageItem);
+                                        LogManager.d(LOG_TAG, "Retry sending message with stanza: " + messageItem.getOriginalStanza());
                                     }
                                 }
-                            }
                         }
-                    });
-                } catch (Exception e) {
-                    LogManager.exception(LOG_TAG, e);
-                } finally {
-                    if (realm != null){
-                        realm.close();
                     }
-                }
-            }
+                });
+            } catch (Exception e) {
+                LogManager.exception(LOG_TAG, e);
+            } finally { if (realm != null) realm.close(); }
         });
     }
 

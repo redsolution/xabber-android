@@ -63,9 +63,7 @@ public class RealmManager {
     }
 
     void deleteRealm() {
-        Realm realm = getNewBackgroundRealm();
-        Realm.deleteRealm(realm.getConfiguration());
-        realm.close();
+        Realm.getDefaultInstance().deleteAll();
     }
 
     @RealmModule(classes = {DiscoveryInfoCache.class, AccountRealm.class, XabberAccountRealm.class,
@@ -419,6 +417,7 @@ public class RealmManager {
      * @return new realm instance
      * @throws 'IllegalStateException' if called from UI (main) thread
      */
+    @Deprecated
     public Realm getNewBackgroundRealm() {
         if (Looper.myLooper() == Looper.getMainLooper()) {
             throw new IllegalStateException("Request background thread message realm from UI thread");
@@ -433,6 +432,7 @@ public class RealmManager {
      *
      * @return new realm instance
      */
+    @Deprecated
     public Realm getNewRealm() {
         return Realm.getInstance(realmConfiguration);
     }
@@ -444,6 +444,7 @@ public class RealmManager {
      * @return realm instance for UI thread
      * @throws 'IllegalStateException' if called from background thread
      */
+    @Deprecated
     public Realm getRealmUiThread() {
         if (Looper.myLooper() != Looper.getMainLooper()) {
             throw new IllegalStateException("Request UI thread message realm from non UI thread");
@@ -456,29 +457,4 @@ public class RealmManager {
         return realmUiThread;
     }
 
-
-    void copyDataFromSqliteToRealm() {
-        Realm realm = getNewBackgroundRealm();
-
-        realm.beginTransaction();
-
-        LogManager.i(LOG_TAG, "copying from SQLite to Realm");
-        long counter = 0;
-        Cursor cursor = AccountTable.getInstance().list();
-        while (cursor.moveToNext()) {
-            AccountRealm accountRealm = AccountTable.createAccountRealm(cursor);
-            realm.copyToRealm(accountRealm);
-
-            counter++;
-        }
-        cursor.close();
-        LogManager.i(LOG_TAG, counter + " accounts copied to Realm");
-
-        LogManager.i(LOG_TAG, "onSuccess. removing accounts from SQLite:");
-        int removedAccounts = AccountTable.getInstance().removeAllAccounts();
-        LogManager.i(LOG_TAG, removedAccounts + " accounts removed from SQLite");
-
-        realm.commitTransaction();
-        realm.close();
-    }
 }

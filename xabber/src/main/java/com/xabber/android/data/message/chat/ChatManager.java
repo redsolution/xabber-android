@@ -24,7 +24,6 @@ import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.listeners.OnAccountRemovedListener;
-import com.xabber.android.data.database.RealmManager;
 import com.xabber.android.data.database.realm.ChatDataRealm;
 import com.xabber.android.data.database.realm.NotificationStateRealm;
 import com.xabber.android.data.database.sqlite.NotifyVisibleTable;
@@ -495,7 +494,7 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
         Application.getInstance().runInBackground(new Runnable() {
             @Override
             public void run() {
-                Realm realm = RealmManager.getInstance().getNewRealm();
+                Realm realm = Realm.getDefaultInstance();
                 realm.executeTransaction(new Realm.Transaction() {
                     @Override
                     public void execute(Realm realm) {
@@ -527,6 +526,7 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
                         RealmObject realmObject = realm.copyToRealmOrUpdate(chatRealm);
                     }
                 });
+                realm.close();
             }
         });
         LogManager.d("REALM", Thread.currentThread().getName()
@@ -539,8 +539,8 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
         String userJid = chat.getUser().toString();
         ChatData chatData = null;
 
-        Realm realm = RealmManager.getInstance().getNewRealm();
-        ChatDataRealm realmChat = realm.where(ChatDataRealm.class)
+        ChatDataRealm realmChat = Realm.getDefaultInstance()
+                .where(ChatDataRealm.class)
                 .equalTo("accountJid", accountJid)
                 .equalTo("userJid", userJid)
                 .findFirst();
@@ -566,27 +566,34 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
                     realmChat.getLastActionTimestamp(),
                     realmChat.getChatstateMode());
         }
-
-        realm.close();
         return chatData;
     }
 
     public void clearUnusedNotificationStateFromRealm() {
         final long startTime = System.currentTimeMillis();
         // TODO: 13.03.18 ANR - WRITE
-        Realm realm = RealmManager.getInstance().getNewRealm();
-        realm.beginTransaction();
+        Application.getInstance().runInBackground(() -> {
+            Realm realm = null;
+            try {
+                realm = Realm.getDefaultInstance();
+                realm.executeTransaction(realm1 -> {
+                    RealmResults<NotificationStateRealm> results = realm1
+                            .where(NotificationStateRealm.class)
+                            .findAll();
 
-        RealmResults<NotificationStateRealm> results = realm.where(NotificationStateRealm.class).findAll();
+                    for (NotificationStateRealm notificationState : results) {
+                        ChatDataRealm chatDataRealm = realm1
+                                .where(ChatDataRealm.class)
+                                .equalTo("notificationState.id", notificationState.getId())
+                                .findFirst();
+                        if (chatDataRealm == null) notificationState.deleteFromRealm();
+                    }
+                });
+            } catch (Exception e) {
+                LogManager.exception("ChatManager", e);
+            } finally { if (realm != null) realm.close(); }
+        });
 
-        for (NotificationStateRealm notificationState : results) {
-            ChatDataRealm chatDataRealm = realm.where(ChatDataRealm.class)
-                    .equalTo("notificationState.id", notificationState.getId()).findFirst();
-            if (chatDataRealm == null) notificationState.deleteFromRealm();
-        }
-
-        realm.commitTransaction();
-        realm.close();
         LogManager.d("REALM", Thread.currentThread().getName()
                 + " clear unused notif. state: " + (System.currentTimeMillis() - startTime));
     }

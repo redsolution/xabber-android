@@ -104,7 +104,7 @@ public class PatreonManager implements OnLoadListener {
 
         // TODO: 13.03.18 ANR - WRITE
         final long startTime = System.currentTimeMillis();
-        Realm realm = RealmManager.getInstance().getNewRealm();
+        Realm realm = Realm.getDefaultInstance();
         realm.beginTransaction();
         PatreonRealm resultRealm = realm.copyToRealmOrUpdate(patreonRealm);
         realm.commitTransaction();
@@ -122,13 +122,13 @@ public class PatreonManager implements OnLoadListener {
     private XabberComClient.Patreon loadPatreonFromRealm() {
         XabberComClient.Patreon patreon = null;
 
-        Realm realm = RealmManager.getInstance().getNewRealm();
-        RealmResults<PatreonRealm> patreonRealms = realm.where(PatreonRealm.class).findAll();
+        RealmResults<PatreonRealm> patreonRealms = Realm.getDefaultInstance()
+                .where(PatreonRealm.class)
+                .findAll();
 
         if (patreonRealms.size() > 0)
             patreon = patreonRealmToDTO(patreonRealms.get(0));
 
-        realm.close();
         return patreon;
     }
 

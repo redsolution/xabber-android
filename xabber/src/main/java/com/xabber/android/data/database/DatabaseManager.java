@@ -51,6 +51,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 
+import io.realm.Realm;
+
 /**
  * Helps to open, create, and upgrade the database file.
  * <p/>
@@ -199,8 +201,6 @@ public class DatabaseManager extends SQLiteOpenHelper implements
     public void onLoad() {
         try {
             getWritableDatabase(); // Force onCreate or onUpgrade
-
-            RealmManager.getInstance().copyDataFromSqliteToRealm();
             MessageDatabaseManager.getInstance().copyDataFromSqliteToRealm();
         } catch (SQLiteException e) {
             if (e == DOWNGRADE_EXCEPTION) {
@@ -267,8 +267,7 @@ public class DatabaseManager extends SQLiteOpenHelper implements
             table.clear();
         }
 
-        MessageDatabaseManager.getInstance().deleteRealm();
-        RealmManager.getInstance().deleteRealm();
+        Realm.getDefaultInstance().deleteAll();
     }
 
     public void removeAccount(final AccountJid account) {
