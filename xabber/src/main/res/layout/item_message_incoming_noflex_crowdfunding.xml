@@ -5,8 +5,6 @@
     android:paddingRight="16dp"
     android:paddingEnd="16dp">
 
-    <include layout="@layout/item_first_unread_message"/>
-
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/avatarBackground"
         android:layout_width="32dp"
@@ -35,7 +33,7 @@
         android:layout_height="wrap_content"
         android:layout_toRightOf="@id/avatar"
         android:layout_toEndOf="@id/avatar"
-        android:layout_below="@id/tvDate"
+        android:layout_alignParentTop="true"
         android:orientation="vertical">
 
         <include
