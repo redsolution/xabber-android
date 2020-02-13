@@ -30,7 +30,6 @@ import com.xabber.android.data.database.sqlite.DatabaseTable;
 import com.xabber.android.data.database.sqlite.GroupTable;
 import com.xabber.android.data.database.sqlite.NotifyVisibleTable;
 import com.xabber.android.data.database.sqlite.OTRTable;
-import com.xabber.android.data.database.sqlite.PhraseTable;
 import com.xabber.android.data.database.sqlite.PrivateChatTable;
 import com.xabber.android.data.database.sqlite.RoomTable;
 import com.xabber.android.data.database.sqlite.StatusTable;
@@ -90,7 +89,6 @@ public class DatabaseManager extends SQLiteOpenHelper implements
         addTable(OTRTable.getInstance());
         addTable(VibroTable.getInstance());
         addTable(Suppress100Table.getInstance());
-        addTable(PhraseTable.getInstance());
     }
 
 
