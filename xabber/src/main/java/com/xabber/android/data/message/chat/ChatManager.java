@@ -28,7 +28,6 @@ import com.xabber.android.data.database.realmobjects.ChatDataRealm;
 import com.xabber.android.data.database.realmobjects.NotificationStateRealm;
 import com.xabber.android.data.database.sqlite.NotifyVisibleTable;
 import com.xabber.android.data.database.sqlite.PrivateChatTable;
-import com.xabber.android.data.database.sqlite.VibroTable;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.NestedMap;
@@ -74,10 +73,6 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
      */
     private final NestedMap<Boolean> notifyVisible;
     /**
-     * Whether vibro notification should be used for user in account.
-     */
-    private final NestedMap<Boolean> makeVibro;
-    /**
      * Whether 'This room is not anonymous'-messages (Status Code 100) should be suppressed
      */
     private final NestedMap<Boolean> suppress100;
@@ -97,7 +92,6 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
     private ChatManager() {
         chatInputs = new NestedMap<>();
         privateChats = new NestedMap<>();
-        makeVibro = new NestedMap<>();
         notifyVisible = new NestedMap<>();
         suppress100 = new NestedMap<>();
     }
@@ -106,7 +100,6 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
     public void onLoad() {
         final Set<BaseEntity> privateChats = new HashSet<>();
         final NestedMap<Boolean> notifyVisible = new NestedMap<>();
-        final NestedMap<Boolean> makeVibro = new NestedMap<>();
         final NestedMap<Boolean> suppress100 = new NestedMap<>();
         Cursor cursor;
         cursor = PrivateChatTable.getInstance().list();
@@ -141,38 +134,23 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
             cursor.close();
         }
 
-        cursor = VibroTable.getInstance().list();
-        try {
-            if (cursor.moveToFirst()) {
-                do {
-                    makeVibro.put(VibroTable.getAccount(cursor),
-                            VibroTable.getUser(cursor),
-                            VibroTable.getValue(cursor));
-                } while (cursor.moveToNext());
-            }
-        } finally {
-            cursor.close();
-        }
-
         clearUnusedNotificationStateFromRealm();
 
         Application.getInstance().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                onLoaded(privateChats, notifyVisible, makeVibro, suppress100);
+                onLoaded(privateChats, notifyVisible, suppress100);
             }
         });
     }
 
-    private void onLoaded(Set<BaseEntity> privateChats,
-                          NestedMap<Boolean> notifyVisible,
-                          NestedMap<Boolean> vibro, NestedMap<Boolean> suppress100) {
+    private void onLoaded(Set<BaseEntity> privateChats, NestedMap<Boolean> notifyVisible,
+                          NestedMap<Boolean> suppress100) {
         for (BaseEntity baseEntity : privateChats) {
             this.privateChats.put(baseEntity.getAccount().toString(),
                     baseEntity.getUser().toString(), PRIVATE_CHAT);
         }
         this.notifyVisible.addAll(notifyVisible);
-        this.makeVibro.addAll(vibro);
         this.suppress100.addAll(suppress100);
     }
 
@@ -180,7 +158,6 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
     public void onAccountRemoved(AccountItem accountItem) {
         chatInputs.clear(accountItem.getAccount().toString());
         privateChats.clear(accountItem.getAccount().toString());
-        makeVibro.clear(accountItem.getAccount().toString());
         notifyVisible.clear(accountItem.getAccount().toString());
         suppress100.clear(accountItem.getAccount().toString());
     }
@@ -302,20 +279,6 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
                 NotifyVisibleTable.getInstance().write(account.toString(), user.toString(), value);
             }
         });
-    }
-
-    /**
-     * @param account
-     * @param user
-     * @return Whether vibro should be used while notification. Common value if
-     * there is no user specific value.
-     */
-    public boolean isMakeVibro(AccountJid account, UserJid user) {
-        Boolean value = makeVibro.get(account.toString(), user.toString());
-        if (value == null) {
-            return true;
-        }
-        return value;
     }
 
     public void saveOrUpdateChatDataToRealm(final AbstractChat chat) {
