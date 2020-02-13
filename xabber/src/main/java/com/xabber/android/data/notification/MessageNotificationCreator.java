@@ -219,9 +219,7 @@ public class MessageNotificationCreator {
     private boolean isNeedShowTextInNotification(MessageNotificationManager.Chat chat) {
         NotifyPrefs prefs = getCustomPrefs(chat);
         if (prefs != null) return prefs.isShowPreview();
-        else return chat.isGroupChat() ?
-                ChatManager.getInstance().isShowTextOnMuc(chat.getAccountJid(), chat.getUserJid())
-                : ChatManager.getInstance().isShowText(chat.getAccountJid(), chat.getUserJid());
+        else return chat.isGroupChat() ? SettingsManager.eventsShowTextOnMuc() : SettingsManager.eventsShowText();
     }
 
     private int getMessageCount(List<MessageNotificationManager.Chat> chats) {

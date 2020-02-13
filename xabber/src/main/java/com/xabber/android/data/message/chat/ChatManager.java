@@ -28,7 +28,6 @@ import com.xabber.android.data.database.realmobjects.ChatDataRealm;
 import com.xabber.android.data.database.realmobjects.NotificationStateRealm;
 import com.xabber.android.data.database.sqlite.NotifyVisibleTable;
 import com.xabber.android.data.database.sqlite.PrivateChatTable;
-import com.xabber.android.data.database.sqlite.ShowTextTable;
 import com.xabber.android.data.database.sqlite.SoundTable;
 import com.xabber.android.data.database.sqlite.Suppress100Table;
 import com.xabber.android.data.database.sqlite.VibroTable;
@@ -77,11 +76,6 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
      */
     private final NestedMap<Boolean> notifyVisible;
     /**
-     * Whether text of incoming message should be shown in notification bar for
-     * user in account.
-     */
-    private final NestedMap<ShowMessageTextInNotification> showText;
-    /**
      * Whether vibro notification should be used for user in account.
      */
     private final NestedMap<Boolean> makeVibro;
@@ -110,7 +104,6 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
         chatInputs = new NestedMap<>();
         privateChats = new NestedMap<>();
         sounds = new NestedMap<>();
-        showText = new NestedMap<>();
         makeVibro = new NestedMap<>();
         notifyVisible = new NestedMap<>();
         suppress100 = new NestedMap<>();
@@ -120,7 +113,6 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
     public void onLoad() {
         final Set<BaseEntity> privateChats = new HashSet<>();
         final NestedMap<Boolean> notifyVisible = new NestedMap<>();
-        final NestedMap<ShowMessageTextInNotification> showText = new NestedMap<>();
         final NestedMap<Boolean> makeVibro = new NestedMap<>();
         final NestedMap<Uri> sounds = new NestedMap<>();
         final NestedMap<Boolean> suppress100 = new NestedMap<>();
@@ -151,19 +143,6 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
                     notifyVisible.put(NotifyVisibleTable.getAccount(cursor),
                             NotifyVisibleTable.getUser(cursor),
                             NotifyVisibleTable.getValue(cursor));
-                } while (cursor.moveToNext());
-            }
-        } finally {
-            cursor.close();
-        }
-
-        cursor = ShowTextTable.getInstance().list();
-        try {
-            if (cursor.moveToFirst()) {
-                do {
-                    showText.put(ShowTextTable.getAccount(cursor),
-                            ShowTextTable.getUser(cursor),
-                            ShowTextTable.getValue(cursor));
                 } while (cursor.moveToNext());
             }
         } finally {
@@ -214,21 +193,20 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
         Application.getInstance().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                onLoaded(privateChats, notifyVisible, showText, makeVibro,
+                onLoaded(privateChats, notifyVisible, makeVibro,
                         sounds, suppress100);
             }
         });
     }
 
     private void onLoaded(Set<BaseEntity> privateChats,
-                          NestedMap<Boolean> notifyVisible, NestedMap<ShowMessageTextInNotification> showText,
+                          NestedMap<Boolean> notifyVisible,
                           NestedMap<Boolean> vibro, NestedMap<Uri> sounds, NestedMap<Boolean> suppress100) {
         for (BaseEntity baseEntity : privateChats) {
             this.privateChats.put(baseEntity.getAccount().toString(),
                     baseEntity.getUser().toString(), PRIVATE_CHAT);
         }
         this.notifyVisible.addAll(notifyVisible);
-        this.showText.addAll(showText);
         this.makeVibro.addAll(vibro);
         this.sounds.addAll(sounds);
         this.suppress100.addAll(suppress100);
@@ -239,7 +217,6 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
         chatInputs.clear(accountItem.getAccount().toString());
         privateChats.clear(accountItem.getAccount().toString());
         sounds.clear(accountItem.getAccount().toString());
-        showText.clear(accountItem.getAccount().toString());
         makeVibro.clear(accountItem.getAccount().toString());
         notifyVisible.clear(accountItem.getAccount().toString());
         suppress100.clear(accountItem.getAccount().toString());
@@ -360,55 +337,6 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
             @Override
             public void run() {
                 NotifyVisibleTable.getInstance().write(account.toString(), user.toString(), value);
-            }
-        });
-    }
-
-    /**
-     * @param account
-     * @param user
-     * @return Whether text of messages must be shown in notification area.
-     * Common value if there is no user specific value.
-     */
-    public boolean isShowText(AccountJid account, UserJid user) {
-        switch (getShowText(account, user)) {
-            case show:
-                return true;
-            case hide:
-                return false;
-            case default_settings:
-            default:
-                return SettingsManager.eventsShowText();
-        }
-    }
-
-    public boolean isShowTextOnMuc(AccountJid account, UserJid user) {
-        switch (getShowText(account, user)) {
-            case show:
-                return true;
-            case hide:
-                return false;
-            case default_settings:
-            default:
-                return SettingsManager.eventsShowTextOnMuc();
-        }
-    }
-
-    public ShowMessageTextInNotification getShowText(AccountJid account, UserJid user) {
-        ShowMessageTextInNotification showMessageTextInNotification = showText.get(account.toString(), user.toString());
-        if (showMessageTextInNotification == null) {
-            return ShowMessageTextInNotification.default_settings;
-        } else {
-            return showMessageTextInNotification;
-        }
-    }
-
-    public void setShowText(final AccountJid account, final UserJid user, final ShowMessageTextInNotification value) {
-        showText.put(account.toString(), user.toString(), value);
-        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
-            @Override
-            public void run() {
-                ShowTextTable.getInstance().write(account.toString(), user.toString(), value);
             }
         });
     }
