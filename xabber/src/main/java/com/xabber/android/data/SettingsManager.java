@@ -782,6 +782,11 @@ public class SettingsManager implements OnInitializedListener,
                 R.string.interface_theme_dark_value));
     }
 
+    public static void setLightTheme() {
+        setString(R.string.interface_theme_key, Application.getInstance().getString(
+                R.string.interface_theme_light_value));
+    }
+
     public static boolean isBatteryOptimizationDisableSuggested() {
         return getBoolean(R.string.battery_optimization_disable_suggested_key, false);
     }

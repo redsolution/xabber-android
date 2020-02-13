@@ -2,14 +2,10 @@ package com.xabber.android.ui.fragment;
 
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.TypedArray;
-import android.os.Build;
 import android.os.Bundle;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,9 +15,16 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.bumptech.glide.Glide;
 import com.xabber.android.R;
+import com.xabber.android.data.ActivityManager;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
@@ -34,6 +37,7 @@ import com.xabber.android.data.xaccount.XabberAccountManager;
 import com.xabber.android.ui.activity.AccountActivity;
 import com.xabber.android.ui.activity.AccountAddActivity;
 import com.xabber.android.ui.activity.AccountListActivity;
+import com.xabber.android.ui.activity.ContactListActivity;
 import com.xabber.android.ui.activity.StatusEditActivity;
 import com.xabber.android.ui.adapter.AccountListPreferenceAdapter;
 import com.xabber.android.ui.color.AccountPainter;
@@ -61,6 +65,7 @@ public class ContactListDrawerFragment extends Fragment implements View.OnClickL
     private TextView tvAccountName;
     private TextView tvAccountEmail;
     private ImageView ivSync;
+    private ImageView ivTheme;
 
     private TextView tvPatreonTitle;
     private ProgressBar pbPatreon;
@@ -120,6 +125,8 @@ public class ContactListDrawerFragment extends Fragment implements View.OnClickL
         view.findViewById(R.id.drawer_header_action_xabber_account).setOnClickListener(this);
 
         ivSync = view.findViewById(R.id.ivSync);
+        ivTheme = view.findViewById(R.id.ivThemeChange);
+        ivTheme.setOnClickListener(this);
         tvAccountName = (TextView) view.findViewById(R.id.tvAccountName);
         tvAccountEmail = (TextView) view.findViewById(R.id.tvAccountEmail);
 
@@ -176,6 +183,9 @@ public class ContactListDrawerFragment extends Fragment implements View.OnClickL
                 break;
             case R.id.btnAddAccount:
                 startActivity(AccountAddActivity.createIntent(getActivity()));
+                break;
+            case R.id.ivThemeChange:
+                changeTheme();
                 break;
             default:
                 listener.onContactListDrawerListener(v.getId());
@@ -293,6 +303,21 @@ public class ContactListDrawerFragment extends Fragment implements View.OnClickL
     public void onDeleteAccount(AccountItem accountItem) {
         AccountDeleteDialog.newInstance(accountItem.getAccount()).show(getFragmentManager(),
                 AccountDeleteDialog.class.getName());
+    }
+
+    private void changeTheme() {
+        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.dark) {
+            SettingsManager.setLightTheme();
+        } else {
+            SettingsManager.setDarkTheme();
+        }
+        ActivityManager.getInstance().clearStack(true);
+        Activity activity = getActivity();
+        if (activity != null) {
+            Intent intent = ContactListActivity.createFragmentIntent(activity, ContactListActivity.ActiveFragment.SETTINGS);
+            startActivity(intent);
+            activity.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+        }
     }
 
     private void subscribeForXabberAccount() {
