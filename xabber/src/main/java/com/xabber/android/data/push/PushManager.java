@@ -259,22 +259,22 @@ public class PushManager implements OnConnectedListener, OnPacketListener {
         String token = ExternalAPIs.getPushEndpointToken();
         if (token == null) return;
 
-        compositeSubscription.add(
-                PushApiClient.deleteEndpoint(
-                        token, accountItem.getAccount().toString())
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(new Action1<ResponseBody>() {
-                            @Override
-                            public void call(ResponseBody responseBody) {
-                                Log.d(LOG_TAG, "Endpoint successfully unregistered");
-                            }
-                        }, new Action1<Throwable>() {
-                            @Override
-                            public void call(Throwable throwable) {
-                                Log.d(LOG_TAG, "Endpoint unregister failed: " + throwable.toString());
-                            }
-                        }));
+//        compositeSubscription.add(
+//                PushApiClient.deleteEndpoint(
+//                        token, accountItem.getAccount().toString())
+//                        .subscribeOn(Schedulers.io())
+//                        .observeOn(AndroidSchedulers.mainThread())
+//                        .subscribe(new Action1<ResponseBody>() {
+//                            @Override
+//                            public void call(ResponseBody responseBody) {
+//                                Log.d(LOG_TAG, "Endpoint successfully unregistered");
+//                            }
+//                        }, new Action1<Throwable>() {
+//                            @Override
+//                            public void call(Throwable throwable) {
+//                                Log.d(LOG_TAG, "Endpoint unregister failed: " + throwable.toString());
+//                            }
+//                        }));
     }
 
     private void sendEnablePushIQ(final AccountItem accountItem, final String pushServiceJid, final String node) {
