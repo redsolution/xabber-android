@@ -43,6 +43,9 @@
     <string name="group_active_chat">Active chats</string>
     <string name="group_none">No groups</string>
     <string name="no_group_contacts"><i>Contacts</i></string>
+    <string name="circle_remove">Delete circle</string>
+    <string name="circle_remove_confirm">Do you really want to delete circle %s? Users from this circle will stay in contact list.</string>
+    <string name="circle_rename">Rename circle</string>
     <string name="group_remove">Delete group</string>
     <string name="group_remove_confirm">Do you really want to delete group %s? Users from this group will stay in contact list.</string>
     <string name="group_rename">Rename group</string>

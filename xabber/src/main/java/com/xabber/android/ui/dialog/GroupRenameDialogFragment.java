@@ -62,9 +62,9 @@ public class GroupRenameDialogFragment extends DialogFragment implements DialogI
         nameView.setText(group == null ? "" : group);
 
         return new AlertDialog.Builder(getActivity())
-                .setTitle(R.string.group_rename)
+                .setTitle(R.string.circle_rename)
                 .setView(layout)
-                .setPositiveButton(R.string.group_rename, this)
+                .setPositiveButton(R.string.circle_rename, this)
                 .setNegativeButton(android.R.string.cancel, this)
                 .create();
     }
@@ -77,7 +77,7 @@ public class GroupRenameDialogFragment extends DialogFragment implements DialogI
 
         String newName = nameView.getText().toString();
         if ("".equals(newName)) {
-            Toast.makeText(getActivity(), getString(R.string.group_is_empty), Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity(), getString(R.string.circle_is_empty), Toast.LENGTH_LONG).show();
             return;
         }
         if (account == null) {

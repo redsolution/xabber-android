@@ -43,7 +43,6 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
     public boolean isUnread;
 
     TextView tvFirstUnread;
-    TextView tvDate;
     TextView messageTime;
     TextView messageHeader;
     TextView messageNotDecrypted;
@@ -72,7 +71,6 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
         this.longClickListener = longClickListener;
 
         tvFirstUnread = itemView.findViewById(R.id.tvFirstUnread);
-        //tvDate = itemView.findViewById(R.id.tvDate);
         messageInfo = itemView.findViewById(R.id.message_info);
         messageTime = itemView.findViewById(R.id.message_time);
         messageHeader = itemView.findViewById(R.id.message_header);
@@ -170,34 +168,12 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
 
         messageTime.setText(time);
 
-        // setup UNREAD
-        //if (tvFirstUnread != null)
-        //    tvFirstUnread.setVisibility(extraData.isUnread() ? View.VISIBLE : View.GONE);
+        // set unread status
         isUnread = extraData.isUnread();
 
-        // setup DATE
-        //if (tvDate != null) {
-        //    if (extraData.isNeedDate()) {
-        //        tvDate.setText(StringUtils.getDateStringForMessage(messageItem.getTimestamp()));
-        //        tvDate.setVisibility(View.VISIBLE);
-        //    } else tvDate.setVisibility(View.GONE);
-        //}
+        // set date
         needDate = extraData.isNeedDate();
         date = StringUtils.getDateStringForMessage(messageItem.getTimestamp());
-
-        // set DATE alpha
-        //if (tvDate != null && extraData.isNeedDate() && extraData.getAnchorHolder() != null) {
-        //    final MessagesAdapter.MessageExtraData lExtraData = extraData;
-        //    tvDate.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-        //        @Override
-        //        public void onGlobalLayout() {
-        //            /** Work only with
-        //             *  @see ChatFragment#updateTopDateIfNeed()
-        //             *  called in recyclerView.onScrolled */
-        //            setDateAlpha(tvDate, lExtraData.getAnchorHolder().getAnchor());
-        //        }
-        //    });
-        //}
 
         // setup CHECKED
         if (extraData.isChecked()) itemView.setBackgroundColor(extraData.getContext().getResources()
@@ -278,24 +254,4 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
         }
 
     }
-
-    //private void setDateAlpha(View viewDate, View viewAnchor) {
-    //    if (viewDate != null && viewAnchor != null) {
-    //        int specialCoordinates[] = new int[2];
-    //        int titleCoordinates[] = new int[2];
-    //        viewAnchor.getLocationOnScreen(titleCoordinates);
-    //        viewDate.getLocationOnScreen(specialCoordinates);
-    //        int deltaY = titleCoordinates[1] - specialCoordinates[1];
-    //        if (deltaY < 0) deltaY *= -1;
-//
-    //        int total = viewAnchor.getMeasuredHeight();
-    //        int step = total / 100;
-    //        if (step == 0) step = 1;
-//
-    //        if (deltaY < total * 2) {
-    //            if (deltaY < total) viewDate.setAlpha(0);
-    //            else viewDate.setAlpha((float) (deltaY - total / step)/100);
-    //        } else viewDate.setAlpha(1);
-    //    }
-    //}
 }

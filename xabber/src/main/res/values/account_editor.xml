@@ -82,10 +82,15 @@
     <string name="account_active_sessions_disabled">Server does not support X-Token</string>
     <string name="account_active_sessions_error">Failed to get a list of active sessions</string>
 
+    <string name="blocked_contact">Blocked contact</string>
+    <string name="blocked_group">Blocked group</string>
+    <string name="blocked_domain">Blocked domain</string>
     <string name="blocked_contacts">Blocked contacts</string>
     <string name="blocked_contacts_unknown">Could not determine support for blocking contacts.</string>
     <string name="blocked_contacts_not_supported">Blocking is not supported by server.</string>
     <string name="blocked_contacts_empty">No blocked contacts.</string>
+    <string name="blocked_group_invitations">Group invitations</string>
+    <string name="blocked_group_invitations_summary">Blocking is used to mark group invitations as \'read\'</string>
 
     <plurals name="blocked_contacts_number">
         <item quantity="one">%d contact blocked</item>

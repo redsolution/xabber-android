@@ -583,7 +583,8 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
         if (accountItem != null) {
             accountItem.setXToken(token);
             accountItem.setPassword("");
-            accountItem.recreateConnectionWithEnable(accountItem.getAccount());
+            accountItem.setConnectionIsOutdated(true);
+            //accountItem.recreateConnectionWithEnable(accountItem.getAccount());
             requestToWriteAccount(accountItem);
         }
     }

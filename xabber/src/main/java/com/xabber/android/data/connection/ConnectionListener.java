@@ -4,7 +4,6 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.listeners.OnConnectedListener;
 import com.xabber.android.data.connection.listeners.OnDisconnectListener;
-import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.bookmarks.BookmarksManager;
 import com.xabber.android.data.extension.carbons.CarbonManager;
@@ -90,6 +89,7 @@ class ConnectionListener implements org.jivesoftware.smack.ConnectionListener {
         Application.getInstance().runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                connectionItem.checkIfConnectionIsOutdated();
                 for (OnDisconnectListener listener
                         : Application.getInstance().getManagers(OnDisconnectListener.class)) {
                     listener.onDisconnect(connectionItem);
@@ -118,6 +118,7 @@ class ConnectionListener implements org.jivesoftware.smack.ConnectionListener {
         Application.getInstance().runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                connectionItem.checkIfConnectionIsOutdated();
                 /*
                   Send to chats action of disconnect
                   Then RoomChat set state in "waiting" which need for rejoin to room

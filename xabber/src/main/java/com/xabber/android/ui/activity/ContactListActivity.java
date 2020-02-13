@@ -156,6 +156,13 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
         return new Intent(context, ContactListActivity.class);
     }
 
+    public static Intent createFragmentIntent(Context context, ActiveFragment fragment) {
+        Intent intent = createIntent(context);
+        Bundle bundle = new Bundle();
+        bundle.putSerializable(ACTIVE_FRAGMENT, fragment);
+        return intent.putExtra(ACTIVE_FRAGMENT, bundle);
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
 
@@ -174,6 +181,11 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
         if (savedInstanceState != null) {
             currentActiveFragment = (ActiveFragment) savedInstanceState.getSerializable(ACTIVE_FRAGMENT);
             if (currentActiveFragment == null) currentActiveFragment = ActiveFragment.CHATS;
+        } else if (getIntent().hasExtra(ACTIVE_FRAGMENT)) {
+            Bundle bundle = getIntent().getBundleExtra(ACTIVE_FRAGMENT);
+            if (bundle != null) {
+                currentActiveFragment = (ActiveFragment) bundle.getSerializable(ACTIVE_FRAGMENT);
+            }
         }
 
 //        showcaseView = findViewById(R.id.showcaseView);

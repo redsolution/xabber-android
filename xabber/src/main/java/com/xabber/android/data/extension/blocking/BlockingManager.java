@@ -351,6 +351,9 @@ public class BlockingManager {
                     @Override
                     public void run() {
                         if (finalSuccess) {
+                            if (cachedBlockedContacts.get(account) != null) {
+                                cachedBlockedContacts.get(account).clear();
+                            }
                             listener.onSuccessUnblock();
                         } else {
                             listener.onErrorUnblock();
