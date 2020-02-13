@@ -23,6 +23,7 @@ public class NewDatabaseManager implements OnClearListener {
     private NewDatabaseManager(){
         Realm.init(Application.getInstance().getApplicationContext());
         realmConfiguration = createRealmConfiguration();
+        Realm.setDefaultConfiguration(realmConfiguration);
         Realm.compactRealm(realmConfiguration);
     }
 
