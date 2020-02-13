@@ -17,6 +17,8 @@ package com.xabber.android.data.message.phrase;
 import android.database.Cursor;
 import android.net.Uri;
 
+import androidx.annotation.Nullable;
+
 import com.xabber.android.data.Application;
 import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.database.sqlite.PhraseTable;
@@ -28,8 +30,6 @@ import com.xabber.android.data.roster.RosterManager;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
-import androidx.annotation.Nullable;
 
 /**
  * Manage custom notification based on message.
@@ -86,25 +86,6 @@ public class PhraseManager implements OnLoadListener {
 
     private void onLoaded(Collection<Phrase> phrases) {
         this.phrases.addAll(phrases);
-    }
-
-    /**
-     * @param text
-     * @return Sound associated with first matched phrase. Chat specific setting
-     * if no one matches .
-     */
-    @Deprecated
-    public Uri getSound(AccountJid account, UserJid user, String text, boolean isMUC) {
-        Collection<String> groups = RosterManager.getInstance().getGroups(
-                account, user);
-        for (Phrase phrase : phrases)
-            if (phrase.matches(text, user.toString(), groups)) {
-                Uri value = phrase.getSound();
-                if (ChatManager.EMPTY_SOUND.equals(value))
-                    return null;
-                return value;
-            }
-        return ChatManager.getInstance().getSound(account, user, isMUC);
     }
 
     public Long getPhraseID(AccountJid account, UserJid user, String text) {

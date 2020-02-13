@@ -28,7 +28,6 @@ import com.xabber.android.data.database.realmobjects.ChatDataRealm;
 import com.xabber.android.data.database.realmobjects.NotificationStateRealm;
 import com.xabber.android.data.database.sqlite.NotifyVisibleTable;
 import com.xabber.android.data.database.sqlite.PrivateChatTable;
-import com.xabber.android.data.database.sqlite.SoundTable;
 import com.xabber.android.data.database.sqlite.Suppress100Table;
 import com.xabber.android.data.database.sqlite.VibroTable;
 import com.xabber.android.data.entity.AccountJid;
@@ -80,10 +79,6 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
      */
     private final NestedMap<Boolean> makeVibro;
     /**
-     * Sound, associated with chat for user in account.
-     */
-    private final NestedMap<Uri> sounds;
-    /**
      * Whether 'This room is not anonymous'-messages (Status Code 100) should be suppressed
      */
     private final NestedMap<Boolean> suppress100;
@@ -103,7 +98,6 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
     private ChatManager() {
         chatInputs = new NestedMap<>();
         privateChats = new NestedMap<>();
-        sounds = new NestedMap<>();
         makeVibro = new NestedMap<>();
         notifyVisible = new NestedMap<>();
         suppress100 = new NestedMap<>();
@@ -114,7 +108,6 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
         final Set<BaseEntity> privateChats = new HashSet<>();
         final NestedMap<Boolean> notifyVisible = new NestedMap<>();
         final NestedMap<Boolean> makeVibro = new NestedMap<>();
-        final NestedMap<Uri> sounds = new NestedMap<>();
         final NestedMap<Boolean> suppress100 = new NestedMap<>();
         Cursor cursor;
         cursor = PrivateChatTable.getInstance().list();
@@ -162,19 +155,6 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
             cursor.close();
         }
 
-        cursor = SoundTable.getInstance().list();
-        try {
-            if (cursor.moveToFirst()) {
-                do {
-                    sounds.put(SoundTable.getAccount(cursor),
-                            SoundTable.getUser(cursor),
-                            SoundTable.getValue(cursor));
-                } while (cursor.moveToNext());
-            }
-        } finally {
-            cursor.close();
-        }
-
         cursor = Suppress100Table.getInstance().list();
         try {
             if (cursor.moveToFirst()) {
@@ -193,22 +173,20 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
         Application.getInstance().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                onLoaded(privateChats, notifyVisible, makeVibro,
-                        sounds, suppress100);
+                onLoaded(privateChats, notifyVisible, makeVibro, suppress100);
             }
         });
     }
 
     private void onLoaded(Set<BaseEntity> privateChats,
                           NestedMap<Boolean> notifyVisible,
-                          NestedMap<Boolean> vibro, NestedMap<Uri> sounds, NestedMap<Boolean> suppress100) {
+                          NestedMap<Boolean> vibro, NestedMap<Boolean> suppress100) {
         for (BaseEntity baseEntity : privateChats) {
             this.privateChats.put(baseEntity.getAccount().toString(),
                     baseEntity.getUser().toString(), PRIVATE_CHAT);
         }
         this.notifyVisible.addAll(notifyVisible);
         this.makeVibro.addAll(vibro);
-        this.sounds.addAll(sounds);
         this.suppress100.addAll(suppress100);
     }
 
@@ -216,7 +194,6 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
     public void onAccountRemoved(AccountItem accountItem) {
         chatInputs.clear(accountItem.getAccount().toString());
         privateChats.clear(accountItem.getAccount().toString());
-        sounds.clear(accountItem.getAccount().toString());
         makeVibro.clear(accountItem.getAccount().toString());
         notifyVisible.clear(accountItem.getAccount().toString());
         suppress100.clear(accountItem.getAccount().toString());
@@ -361,35 +338,6 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
             @Override
             public void run() {
                 VibroTable.getInstance().write(account.toString(), user.toString(), value);
-            }
-        });
-    }
-
-    /**
-     * @param account
-     * @param user
-     * @return Sound for notification. Common value if there is no user specific
-     * value.
-     */
-    public Uri getSound(AccountJid account, UserJid user, boolean isMUC) {
-        Uri value = sounds.get(account.toString(), user.toString());
-        if (value == null) {
-            if (isMUC) return SettingsManager.eventsSoundMuc();
-            return SettingsManager.eventsSound();
-        }
-        if (EMPTY_SOUND.equals(value)) {
-            return null;
-        }
-        return value;
-    }
-
-    public void setSound(final AccountJid account, final UserJid user, final Uri value) {
-        sounds.put(account.toString(), user.toString(), value == null ? EMPTY_SOUND : value);
-        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
-            @Override
-            public void run() {
-                SoundTable.getInstance().write(account.toString(), user.toString(),
-                        value == null ? EMPTY_SOUND : value);
             }
         });
     }
