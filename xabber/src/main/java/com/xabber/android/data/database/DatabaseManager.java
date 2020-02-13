@@ -33,7 +33,6 @@ import com.xabber.android.data.database.sqlite.OTRTable;
 import com.xabber.android.data.database.sqlite.PrivateChatTable;
 import com.xabber.android.data.database.sqlite.RoomTable;
 import com.xabber.android.data.database.sqlite.StatusTable;
-import com.xabber.android.data.database.sqlite.Suppress100Table;
 import com.xabber.android.data.database.sqlite.VCardTable;
 import com.xabber.android.data.database.sqlite.VibroTable;
 import com.xabber.android.data.log.LogManager;
@@ -88,7 +87,6 @@ public class DatabaseManager extends SQLiteOpenHelper implements
         addTable(StatusTable.getInstance());
         addTable(OTRTable.getInstance());
         addTable(VibroTable.getInstance());
-        addTable(Suppress100Table.getInstance());
     }
 
 

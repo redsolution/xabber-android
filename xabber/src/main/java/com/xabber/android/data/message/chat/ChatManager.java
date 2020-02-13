@@ -28,7 +28,6 @@ import com.xabber.android.data.database.realmobjects.ChatDataRealm;
 import com.xabber.android.data.database.realmobjects.NotificationStateRealm;
 import com.xabber.android.data.database.sqlite.NotifyVisibleTable;
 import com.xabber.android.data.database.sqlite.PrivateChatTable;
-import com.xabber.android.data.database.sqlite.Suppress100Table;
 import com.xabber.android.data.database.sqlite.VibroTable;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
@@ -149,19 +148,6 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
                     makeVibro.put(VibroTable.getAccount(cursor),
                             VibroTable.getUser(cursor),
                             VibroTable.getValue(cursor));
-                } while (cursor.moveToNext());
-            }
-        } finally {
-            cursor.close();
-        }
-
-        cursor = Suppress100Table.getInstance().list();
-        try {
-            if (cursor.moveToFirst()) {
-                do {
-                    makeVibro.put(Suppress100Table.getAccount(cursor),
-                            Suppress100Table.getUser(cursor),
-                            Suppress100Table.getValue(cursor));
                 } while (cursor.moveToNext());
             }
         } finally {
@@ -330,39 +316,6 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
             return true;
         }
         return value;
-    }
-
-    public void setMakeVibro(final AccountJid account, final UserJid user, final boolean value) {
-        makeVibro.put(account.toString(), user.toString(), value);
-        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
-            @Override
-            public void run() {
-                VibroTable.getInstance().write(account.toString(), user.toString(), value);
-            }
-        });
-    }
-
-    /**
-     * @param account
-     * @param user
-     * @return Whether 'This Room is not Anonymous'-messages (Status Code 100) should be suppressed.
-     */
-    public boolean isSuppress100(AccountJid account, UserJid user) {
-        Boolean value = suppress100.get(account.toString(), user.toString());
-        if (value == null)
-            return SettingsManager.eventsSuppress100();
-        return value;
-    }
-
-    public void setSuppress100(final AccountJid account, final UserJid user,
-                             final boolean value) {
-        suppress100.put(account.toString(), user.toString(), value);
-        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
-            @Override
-            public void run() {
-                Suppress100Table.getInstance().write(account.toString(), user.toString(), value);
-            }
-        });
     }
 
     public void saveOrUpdateChatDataToRealm(final AbstractChat chat) {
