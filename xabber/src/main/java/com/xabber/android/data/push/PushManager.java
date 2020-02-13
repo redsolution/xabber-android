@@ -13,7 +13,7 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.listeners.OnConnectedListener;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
-import com.xabber.android.data.database.realm.PushLogRecord;
+import com.xabber.android.data.database.realmobjects.PushLogRecord;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.http.PushApiClient;

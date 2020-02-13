@@ -12,8 +12,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
-import com.xabber.android.data.database.messagerealm.Attachment;
-import com.xabber.android.data.database.messagerealm.MessageItem;
+import com.xabber.android.data.database.realmobjects.Attachment;
+import com.xabber.android.data.database.realmobjects.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.muc.MUCManager;

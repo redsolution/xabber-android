@@ -44,7 +44,7 @@ import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.CommonState;
 import com.xabber.android.data.database.NewDatabaseManager;
-import com.xabber.android.data.database.messagerealm.MessageItem;
+import com.xabber.android.data.database.realmobjects.MessageItem;
 import com.xabber.android.data.database.repositories.MessageRepository;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;

@@ -1,6 +1,4 @@
-package com.xabber.android.data.database.realm;
-
-import com.xabber.android.data.database.messagerealm.MessageItem;
+package com.xabber.android.data.database.realmobjects;
 
 import java.util.UUID;
 

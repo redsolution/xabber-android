@@ -2,8 +2,8 @@ package com.xabber.android.data.message;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
-import com.xabber.android.data.database.messagerealm.Attachment;
-import com.xabber.android.data.database.messagerealm.MessageItem;
+import com.xabber.android.data.database.realmobjects.Attachment;
+import com.xabber.android.data.database.realmobjects.MessageItem;
 import com.xabber.android.data.filedownload.DownloadManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.push.SyncManager;

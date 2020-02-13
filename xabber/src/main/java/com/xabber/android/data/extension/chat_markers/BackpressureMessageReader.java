@@ -3,7 +3,7 @@ package com.xabber.android.data.extension.chat_markers;
 import androidx.annotation.Nullable;
 
 import com.xabber.android.data.Application;
-import com.xabber.android.data.database.messagerealm.MessageItem;
+import com.xabber.android.data.database.realmobjects.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.log.LogManager;

@@ -17,7 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.amulyakhare.textdrawable.util.ColorGenerator;
 import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
-import com.xabber.android.data.database.messagerealm.MessageItem;
+import com.xabber.android.data.database.realmobjects.MessageItem;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.groupchat.GroupchatUser;
 import com.xabber.android.data.log.LogManager;

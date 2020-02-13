@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
-import com.xabber.android.data.database.messagerealm.MessageItem;
+import com.xabber.android.data.database.realmobjects.MessageItem;
 import com.xabber.android.data.groupchat.GroupchatUser;
 import com.xabber.android.data.groupchat.GroupchatUserManager;
 import com.xabber.android.data.log.LogManager;

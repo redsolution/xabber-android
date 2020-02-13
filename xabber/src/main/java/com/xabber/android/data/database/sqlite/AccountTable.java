@@ -29,7 +29,7 @@ import com.xabber.android.data.connection.ConnectionSettings;
 import com.xabber.android.data.connection.ProxyType;
 import com.xabber.android.data.connection.TLSMode;
 import com.xabber.android.data.database.DatabaseManager;
-import com.xabber.android.data.database.realm.AccountRealm;
+import com.xabber.android.data.database.realmobjects.AccountRealm;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.xtoken.XTokenManager;
 import com.xabber.android.data.log.LogManager;

@@ -40,7 +40,7 @@ import com.xabber.android.data.connection.ConnectionState;
 import com.xabber.android.data.connection.ProxyType;
 import com.xabber.android.data.connection.ReconnectionManager;
 import com.xabber.android.data.connection.TLSMode;
-import com.xabber.android.data.database.realm.AccountRealm;
+import com.xabber.android.data.database.realmobjects.AccountRealm;
 import com.xabber.android.data.database.repositories.MessageRepository;
 import com.xabber.android.data.database.sqlite.AccountTable;
 import com.xabber.android.data.database.sqlite.StatusTable;
@@ -192,7 +192,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
         RealmResults<AccountRealm> accountRealms = Realm.getDefaultInstance()
                 .where(AccountRealm.class).findAll();
 
-        LogManager.i(LOG_TAG, "onLoad got realm accounts: " + accountRealms.size());
+        LogManager.i(LOG_TAG, "onLoad got realmobjects accounts: " + accountRealms.size());
 
         for (AccountRealm accountRealm : accountRealms) {
             DomainBareJid serverName = null;

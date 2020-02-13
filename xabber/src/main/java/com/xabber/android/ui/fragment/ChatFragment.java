@@ -67,7 +67,7 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
-import com.xabber.android.data.database.messagerealm.MessageItem;
+import com.xabber.android.data.database.realmobjects.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.UserJid;

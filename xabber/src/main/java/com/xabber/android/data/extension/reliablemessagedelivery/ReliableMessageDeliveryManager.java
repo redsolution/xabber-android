@@ -5,7 +5,7 @@ import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
-import com.xabber.android.data.database.messagerealm.MessageItem;
+import com.xabber.android.data.database.realmobjects.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.MessageManager;

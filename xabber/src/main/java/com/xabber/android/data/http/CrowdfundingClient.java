@@ -2,7 +2,7 @@ package com.xabber.android.data.http;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
-import com.xabber.android.data.database.realm.CrowdfundingMessage;
+import com.xabber.android.data.database.realmobjects.CrowdfundingMessage;
 import com.xabber.android.data.xaccount.HttpApiManager;
 
 import java.util.List;

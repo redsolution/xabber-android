@@ -3,8 +3,8 @@ package com.xabber.android.data.message;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.xabber.android.data.database.messagerealm.MessageItem;
-import com.xabber.android.data.database.realm.CrowdfundingMessage;
+import com.xabber.android.data.database.realmobjects.MessageItem;
+import com.xabber.android.data.database.realmobjects.CrowdfundingMessage;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 

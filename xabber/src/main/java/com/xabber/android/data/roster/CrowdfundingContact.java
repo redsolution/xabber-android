@@ -1,6 +1,6 @@
 package com.xabber.android.data.roster;
 
-import com.xabber.android.data.database.realm.CrowdfundingMessage;
+import com.xabber.android.data.database.realmobjects.CrowdfundingMessage;
 import com.xabber.android.data.message.CrowdfundingChat;
 
 import java.util.Date;

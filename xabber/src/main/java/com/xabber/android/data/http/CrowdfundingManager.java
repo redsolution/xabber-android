@@ -4,7 +4,7 @@ import android.util.Log;
 
 import com.xabber.android.BuildConfig;
 import com.xabber.android.data.SettingsManager;
-import com.xabber.android.data.database.realm.CrowdfundingMessage;
+import com.xabber.android.data.database.realmobjects.CrowdfundingMessage;
 import com.xabber.android.data.message.NewMessageEvent;
 
 import org.greenrobot.eventbus.EventBus;

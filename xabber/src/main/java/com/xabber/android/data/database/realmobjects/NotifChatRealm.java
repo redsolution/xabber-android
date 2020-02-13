@@ -1,4 +1,4 @@
-package com.xabber.android.data.database.realm;
+package com.xabber.android.data.database.realmobjects;
 
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;

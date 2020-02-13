@@ -1,9 +1,9 @@
 package com.xabber.android.data.roster;
 
 import com.xabber.android.data.Application;
-import com.xabber.android.data.database.messagerealm.MessageItem;
-import com.xabber.android.data.database.realm.ContactGroup;
-import com.xabber.android.data.database.realm.ContactRealm;
+import com.xabber.android.data.database.realmobjects.MessageItem;
+import com.xabber.android.data.database.realmobjects.ContactGroup;
+import com.xabber.android.data.database.realmobjects.ContactRealm;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.log.LogManager;
 

@@ -21,7 +21,7 @@ import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
-import com.xabber.android.data.database.messagerealm.Attachment;
+import com.xabber.android.data.database.realmobjects.Attachment;
 import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.ui.helper.RoundedBorders;
