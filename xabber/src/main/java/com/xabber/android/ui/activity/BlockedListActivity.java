@@ -12,7 +12,6 @@ import android.widget.Toast;
 
 import androidx.annotation.IntDef;
 import androidx.appcompat.widget.Toolbar;
-import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -29,6 +28,7 @@ import com.xabber.android.ui.adapter.BlockedListAdapter;
 import com.xabber.android.ui.color.BarPainter;
 import com.xabber.android.ui.dialog.BlockByJidDialog;
 import com.xabber.android.ui.dialog.UnblockAllContactsDialog;
+import com.xabber.android.ui.widget.DividerItemDecoration;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -81,7 +81,7 @@ public class BlockedListActivity extends ManagedActivity implements BlockedListA
 
         if (toolbar.getOverflowIcon() != null)
             toolbar.getOverflowIcon().setColorFilter(SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.dark ?
-                    Color.WHITE : Color.BLACK, PorterDuff.Mode.SRC_ATOP);
+                    Color.WHITE : Color.BLACK, PorterDuff.Mode.SRC_IN);
 
         toolbar.inflateMenu(R.menu.toolbar_block_list);
         toolbar.setOnMenuItemClickListener(this);
@@ -123,7 +123,9 @@ public class BlockedListActivity extends ManagedActivity implements BlockedListA
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
-        recyclerView.addItemDecoration(new DividerItemDecoration(recyclerView.getContext(), layoutManager.getOrientation()));
+        DividerItemDecoration divider = new DividerItemDecoration(recyclerView.getContext(), layoutManager.getOrientation());
+        divider.skipDividerOnLastItem(true);
+        recyclerView.addItemDecoration(divider);
     }
 
     @Override

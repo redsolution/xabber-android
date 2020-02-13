@@ -40,7 +40,7 @@ public class BlockedListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     private static final int BLOCKED_CONTACT = 0;
     private static final int GROUP_INVITE = 1;
-
+    private static final int GROUP_INVITE_SUMMARY_FOOTER = 2;
     private AccountJid account;
     @SuppressWarnings("WeakerAccess")
     List<UserJid> blockedContacts;
@@ -70,6 +70,9 @@ public class BlockedListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         if (viewType == 1) {
             return new BlockListGroupInvitesVH(LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.item_block_group_invites, parent, false));
+        } else if (viewType == 2) {
+            return new BlockListGroupSummaryVH(LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.item_block_group_invites_summary, parent, false));
         } else {
             return new BlockListItemViewHolder(LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.item_block, parent, false));
@@ -113,7 +116,7 @@ public class BlockedListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             viewHolder.jid.setText(contact.getJid());
 
             viewHolder.checkBox.setChecked(checkedContacts.contains(contact));
-        } else {
+        } else if (holder instanceof BlockListGroupInvitesVH) {
             BlockListGroupInvitesVH viewHolder = (BlockListGroupInvitesVH) holder;
             viewHolder.invite.setImageResource(R.drawable.ic_email_add_small);
             viewHolder.invite.setCircleBackgroundColor(ColorManager.getInstance().getAccountPainter().getAccountMainColor(account));
@@ -125,6 +128,8 @@ public class BlockedListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     public int getItemViewType(int position) {
         if (hasGroupInvites && position == blockedContacts.size() && currentBlockListState == BlockedListActivity.BLOCKED_LIST) {
             return GROUP_INVITE;
+        } else if (currentBlockListState == BlockedListActivity.GROUP_INVITES && position == blockedContacts.size()) {
+            return GROUP_INVITE_SUMMARY_FOOTER;
         } else {
             return BLOCKED_CONTACT;
         }
@@ -136,7 +141,8 @@ public class BlockedListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     }
 
     private int addToItemCountIfNeeded() {
-        return currentBlockListState == BlockedListActivity.BLOCKED_LIST && hasGroupInvites ? 1 : 0;
+        return (currentBlockListState == BlockedListActivity.BLOCKED_LIST && hasGroupInvites)
+                || currentBlockListState == BlockedListActivity.GROUP_INVITES ? 1 : 0;
     }
 
     @Override
@@ -274,6 +280,12 @@ public class BlockedListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             if (listener != null) {
                 listener.onGroupInvitesClick();
             }
+        }
+    }
+
+    private class BlockListGroupSummaryVH extends RecyclerView.ViewHolder {
+        BlockListGroupSummaryVH(View view) {
+            super(view);
         }
     }
 
