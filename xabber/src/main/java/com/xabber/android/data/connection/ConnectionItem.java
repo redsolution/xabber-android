@@ -71,6 +71,10 @@ public abstract class ConnectionItem {
      * Current state.
      */
     private ConnectionState state;
+    /**
+     * Whether the connection is outdated or not and needs to be recreated
+     */
+    private boolean connectionIsOutdated;
 
     @NonNull
     private final AccountRosterListener rosterListener;
@@ -145,10 +149,15 @@ public abstract class ConnectionItem {
     public boolean connect() {
         LogManager.i(logTag, "connect");
 
+        if(getState() == ConnectionState.disconnecting) {
+            // if we wanted to connect during the disconnection process, we
+            // need to make sure our connection settings aren't outdated.
+            checkIfConnectionIsOutdated();
+        }
         updateState(ConnectionState.connecting);
         if (connectionThread == null) {
             connectionThread = new ConnectionThread(connection, this);
-        };
+        }
 
         return connectionThread.start();
     }
@@ -214,12 +223,7 @@ public abstract class ConnectionItem {
                 updateState(ConnectionState.disconnecting);
                 connection.disconnect();
 
-                Application.getInstance().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        createNewConnection();
-                    }
-                });
+                Application.getInstance().runOnUiThread(() -> createNewConnection());
 
             }
 
@@ -290,6 +294,18 @@ public abstract class ConnectionItem {
         LogManager.i(logTag, "updateState. prev " + prevState + " new "  + newState);
 
         return prevState != state;
+    }
+
+    public void setConnectionIsOutdated(boolean outdated) {
+        connectionIsOutdated = outdated;
+    }
+
+    // recreates the connection if it's outdated
+    public void checkIfConnectionIsOutdated() {
+        if (connectionIsOutdated) {
+            connectionIsOutdated = false;
+            createNewConnection();
+        }
     }
 
 
