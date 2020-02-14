@@ -9,7 +9,7 @@
 
     <item
         android:id="@+id/action_block_manual"
-        android:icon="@drawable/ic_block_address_white"
+        android:icon="?attr/standard_block_address_icon"
         android:title="@string/contact_bar_block"
         app:showAsAction="always" />
 

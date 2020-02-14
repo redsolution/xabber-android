@@ -81,6 +81,7 @@
         <attr name="standard_overflow_icon" format="reference"/>
         <attr name="standard_delete_icon" format="reference"/>
         <attr name="standard_sync_icon" format="reference"/>
+        <attr name="standard_block_address_icon" format="reference"/>
 
         <attr name="standard_show_password_icon" format="reference"/>
         <attr name="standard_hide_password_icon" format="reference"/>

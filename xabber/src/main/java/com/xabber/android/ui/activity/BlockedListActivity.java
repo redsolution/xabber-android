@@ -2,7 +2,6 @@ package com.xabber.android.ui.activity;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.view.Menu;
@@ -73,15 +72,15 @@ public class BlockedListActivity extends ManagedActivity implements BlockedListA
         }
 
         setContentView(R.layout.activity_with_toolbar_and_container);
+        boolean lightTheme = SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light;
 
         toolbar = (Toolbar) findViewById(R.id.toolbar_default);
-        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light)
-            toolbar.setNavigationIcon(R.drawable.ic_arrow_left_grey_24dp);
-        else toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
-
-        if (toolbar.getOverflowIcon() != null)
-            toolbar.getOverflowIcon().setColorFilter(SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.dark ?
-                    Color.WHITE : Color.BLACK, PorterDuff.Mode.SRC_IN);
+        toolbar.setNavigationIcon(lightTheme ? R.drawable.ic_arrow_left_grey_24dp : R.drawable.ic_arrow_left_white_24dp);
+        if (toolbar.getOverflowIcon() != null) {
+            toolbar.getOverflowIcon().setColorFilter(lightTheme ?
+                    getResources().getColor(R.color.grey_900) : getResources().getColor(R.color.white),
+                    PorterDuff.Mode.SRC_IN);
+        }
 
         toolbar.inflateMenu(R.menu.toolbar_block_list);
         toolbar.setOnMenuItemClickListener(this);
@@ -138,11 +137,6 @@ public class BlockedListActivity extends ManagedActivity implements BlockedListA
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         final boolean checkContactsIsEmpty = adapter.getCheckedContacts().isEmpty();
-        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.dark) {
-            menu.findItem(R.id.action_block_manual).setIcon(R.drawable.ic_block_address_white);
-        } else {
-            menu.findItem(R.id.action_block_manual).setIcon(R.drawable.ic_block_address_black);
-        }
         menu.findItem(R.id.action_unblock_all).setVisible(adapter.getItemCount() > 0 && checkContactsIsEmpty);
         menu.findItem(R.id.action_unblock_selected).setVisible(!checkContactsIsEmpty);
         menu.findItem(R.id.action_block_manual).setVisible(adapter.getItemCount() > 0 && checkContactsIsEmpty && adapter.getCurrentBlockListState() == BLOCKED_LIST);

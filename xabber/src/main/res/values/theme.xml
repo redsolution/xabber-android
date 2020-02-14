@@ -103,6 +103,7 @@
         <item name="standard_overflow_icon">@drawable/ic_overflow_menu_grey_24dp</item>
         <item name="standard_delete_icon">@drawable/ic_delete_grey_24dp</item>
         <item name="standard_sync_icon">@drawable/ic_sync_grey_24dp</item>
+        <item name="standard_block_address_icon">@drawable/ic_block_address_grey_24dp</item>
 
         <item name="standard_show_password_icon">@drawable/ic_show_grey_24dp</item>
         <item name="standard_hide_password_icon">@drawable/ic_hide_grey_24dp</item>
@@ -206,6 +207,7 @@
         <item name="standard_overflow_icon">@drawable/ic_overflow_menu_white_24dp</item>
         <item name="standard_delete_icon">@drawable/ic_delete_white_24dp</item>
         <item name="standard_sync_icon">@drawable/ic_sync_white_24dp</item>
+        <item name="standard_block_address_icon">@drawable/ic_block_address_white_24dp</item>
 
         <item name="standard_show_password_icon">@drawable/ic_show_white_24dp</item>
         <item name="standard_hide_password_icon">@drawable/ic_hide_white_24dp</item>
