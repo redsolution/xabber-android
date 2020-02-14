@@ -106,7 +106,7 @@ public class DownloadService extends IntentService {
                     }
                 }
             }
-            if ("audio".equals(fileType)) {
+            if ("audio".equals(fileType) || extension.equals("ogg")) {
                 directory = new File(getAudioDownloadDirPath());
                 if (!directory.exists()) {
                     if (!directory.mkdir()) {
