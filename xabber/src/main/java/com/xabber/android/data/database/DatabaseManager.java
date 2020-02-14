@@ -32,7 +32,6 @@ import com.xabber.android.data.database.sqlite.NotifyVisibleTable;
 import com.xabber.android.data.database.sqlite.OTRTable;
 import com.xabber.android.data.database.sqlite.PrivateChatTable;
 import com.xabber.android.data.database.sqlite.RoomTable;
-import com.xabber.android.data.database.sqlite.VCardTable;
 import com.xabber.android.data.log.LogManager;
 
 import java.io.File;
@@ -79,7 +78,6 @@ public class DatabaseManager extends SQLiteOpenHelper implements
         addTable(GroupTable.getInstance());
         addTable(PrivateChatTable.getInstance());
         addTable(NotifyVisibleTable.getInstance());
-        addTable(VCardTable.getInstance());
         addTable(AvatarTable.getInstance());
         addTable(AvatarXepTable.getInstance());
         addTable(OTRTable.getInstance());

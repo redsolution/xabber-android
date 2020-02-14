@@ -14,8 +14,6 @@
  */
 package com.xabber.android.data.extension.vcard;
 
-import android.database.Cursor;
-
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.OnLoadListener;
@@ -26,7 +24,7 @@ import com.xabber.android.data.account.listeners.OnAccountRemovedListener;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.ConnectionManager;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
-import com.xabber.android.data.database.sqlite.VCardTable;
+import com.xabber.android.data.database.repositories.VCardRepository;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
@@ -50,8 +48,6 @@ import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jxmpp.jid.BareJid;
 import org.jxmpp.jid.Jid;
-import org.jxmpp.jid.impl.JidCreate;
-import org.jxmpp.stringprep.XmppStringprepException;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -104,38 +100,8 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
 
     @Override
     public void onLoad() {
-        final Map<Jid, StructuredName> names = new HashMap<>();
-        Cursor cursor = VCardTable.getInstance().list();
-        try {
-            if (cursor.moveToFirst()) {
-                do {
-                    try {
-                        names.put(
-                                JidCreate.from(VCardTable.getUser(cursor)),
-                                new StructuredName(VCardTable.getNickName(cursor),
-                                        VCardTable.getFormattedName(cursor),
-                                        VCardTable.getFirstName(cursor), VCardTable
-                                        .getMiddleName(cursor), VCardTable
-                                        .getLastName(cursor)));
-                    } catch (XmppStringprepException e) {
-                        LogManager.exception(this, e);
-                    }
-                } while (cursor.moveToNext());
-            }
-        } finally {
-            cursor.close();
-        }
-        Application.getInstance().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                onLoaded(names);
-            }
-        });
-    }
-
-    @SuppressWarnings("WeakerAccess")
-    void onLoaded(Map<Jid, StructuredName> names) {
-        this.names.putAll(names);
+        Application.getInstance().runOnUiThread(
+                () -> this.names.putAll(VCardRepository.getAllVCardsFromRealm()));
     }
 
     @Override
@@ -251,12 +217,9 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
                 .getManagers(OnRosterChangedListener.class)) {
             listener.onContactStructuredInfoChanged(rosterContact, name);
         }
-        Application.getInstance().runInBackground(new Runnable() {
-            @Override
-            public void run() {
-                VCardTable.getInstance().write(bareAddress.toString(), name);
-            }
-        });
+
+        VCardRepository.saveVCardToRealm(bareAddress, name);
+
         if (vCard.getFrom() == null) { // account it self
             AccountManager.getInstance().onAccountChanged(account);
         } else {

@@ -55,15 +55,18 @@ public class PhraseNotificationRepository {
             Realm realm = null;
             try {
                 realm = Realm.getDefaultInstance();
+                realm.executeTransaction(realm1 -> {
 
-                PhraseNotificationRealm phraseNotifRealm = new PhraseNotificationRealm(phrase.getId());
-                phraseNotifRealm.setValue(value);
-                phraseNotifRealm.setUser(user);
-                phraseNotifRealm.setGroup(group);
-                phraseNotifRealm.setRegexp(regexp);
-                phraseNotifRealm.setSound(sound == null ? ChatManager.EMPTY_SOUND.toString() : sound.toString());
+                    PhraseNotificationRealm phraseNotifRealm = new PhraseNotificationRealm(phrase.getId());
+                    phraseNotifRealm.setValue(value);
+                    phraseNotifRealm.setUser(user);
+                    phraseNotifRealm.setGroup(group);
+                    phraseNotifRealm.setRegexp(regexp);
+                    phraseNotifRealm.setSound(sound == null ? ChatManager.EMPTY_SOUND.toString()
+                            : sound.toString());
 
-                realm.copyToRealmOrUpdate(phraseNotifRealm);
+                    realm1.copyToRealmOrUpdate(phraseNotifRealm);
+                });
             } catch (Exception e) {
                 LogManager.exception("PhraseNotificationRepository", e);
             } finally { if (realm != null) realm.close(); }
