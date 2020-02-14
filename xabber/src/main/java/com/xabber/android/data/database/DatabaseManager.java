@@ -26,7 +26,6 @@ import com.xabber.android.data.OnMigrationListener;
 import com.xabber.android.data.database.sqlite.AvatarTable;
 import com.xabber.android.data.database.sqlite.AvatarXepTable;
 import com.xabber.android.data.database.sqlite.DatabaseTable;
-import com.xabber.android.data.database.sqlite.OTRTable;
 import com.xabber.android.data.log.LogManager;
 
 import java.io.File;
@@ -70,7 +69,6 @@ public class DatabaseManager extends SQLiteOpenHelper implements
     public void addTables() {
         addTable(AvatarTable.getInstance());
         addTable(AvatarXepTable.getInstance());
-        addTable(OTRTable.getInstance());
     }
 
 
