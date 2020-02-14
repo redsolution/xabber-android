@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.TypedArray;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,7 +21,6 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
 import com.xabber.android.R;
 import com.xabber.android.data.ActivityManager;
 import com.xabber.android.data.Application;
@@ -109,7 +109,9 @@ public class ContactListDrawerFragment extends Fragment implements View.OnClickL
         View view = inflater.inflate(R.layout.fragment_drawer, container, false);
 
         // to avoid strange bug on some 4.x androids
-        view.setBackgroundColor(ColorManager.getInstance().getNavigationDrawerBackgroundColor());
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
+            view.setBackgroundColor(ColorManager.getInstance().getNavigationDrawerBackgroundColor());
+        }
 
         try {
             ((TextView)view.findViewById(R.id.version))
@@ -121,6 +123,7 @@ public class ContactListDrawerFragment extends Fragment implements View.OnClickL
 
         View drawerHeader = view.findViewById(R.id.drawer_header);
         drawerHeaderImage = (ImageView) drawerHeader.findViewById(R.id.drawer_header_image);
+        drawerHeaderImage.setImageResource(headerImageResources[AccountPainter.getDefaultAccountColorLevel()]);
 
         view.findViewById(R.id.drawer_header_action_xabber_account).setOnClickListener(this);
 
@@ -199,10 +202,7 @@ public class ContactListDrawerFragment extends Fragment implements View.OnClickL
     }
 
     private void update() {
-        Glide.with(this)
-                .load(headerImageResources[AccountPainter.getDefaultAccountColorLevel()])
-                .fitCenter()
-                .into(drawerHeaderImage);
+        drawerHeaderImage.setImageResource(headerImageResources[AccountPainter.getDefaultAccountColorLevel()]);
 
         setupPatreonView();
         setupAccountList();
