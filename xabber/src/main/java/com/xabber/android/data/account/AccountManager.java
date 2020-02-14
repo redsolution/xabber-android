@@ -40,9 +40,9 @@ import com.xabber.android.data.connection.ProxyType;
 import com.xabber.android.data.connection.ReconnectionManager;
 import com.xabber.android.data.connection.TLSMode;
 import com.xabber.android.data.database.realmobjects.AccountRealm;
+import com.xabber.android.data.database.repositories.AccountRepository;
 import com.xabber.android.data.database.repositories.MessageRepository;
 import com.xabber.android.data.database.repositories.StatusRepository;
-import com.xabber.android.data.database.sqlite.AccountTable;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.mam.LoadHistorySettings;
 import com.xabber.android.data.extension.mam.NextMamManager;
@@ -357,18 +357,6 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
     }
 
     /**
-     * Save account item to database.
-     */
-    void requestToWriteAccount(final AccountItem accountItem) {
-        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
-            @Override
-            public void run() {
-                AccountTable.getInstance().write(accountItem.getId(), accountItem);
-            }
-        });
-    }
-
-    /**
      * Creates new account and starts connection.
      */
     private AccountItem addAccount(boolean custom, String host, int port,
@@ -386,7 +374,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
                 saslEnabled, tlsMode, compression, proxyType, proxyHost, proxyPort, proxyUser,
                 proxyPassword, syncable, keyPair, lastSync, archiveMode, true);
 
-        requestToWriteAccount(accountItem);
+        AccountRepository.saveAccountToRealm(accountItem);
         addAccount(accountItem);
         ReconnectionManager.getInstance().requestReconnect(accountItem.getAccount());
         return accountItem;
@@ -510,12 +498,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
             onAccountDisabled(accountItem);
         }
 
-        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
-            @Override
-            public void run() {
-                AccountTable.getInstance().remove(account, accountItem.getId());
-            }
-        });
+        AccountRepository.deleteAccountFromRealm(account.toString(), accountItem.getId());
 
         accountItems.remove(account);
         for (OnAccountRemovedListener listener : application.getManagers(OnAccountRemovedListener.class)) {
@@ -556,7 +539,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
 
         result.setPassword(pass);
         result.recreateConnectionWithEnable(result.getAccount());
-        requestToWriteAccount(result);
+        AccountRepository.saveAccountToRealm(result);
     }
 
     /** Set x-token to account and remove password */
@@ -567,7 +550,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
             accountItem.setPassword("");
             accountItem.setConnectionIsOutdated(true);
             //accountItem.recreateConnectionWithEnable(accountItem.getAccount());
-            requestToWriteAccount(accountItem);
+            AccountRepository.saveAccountToRealm(accountItem);
         }
     }
 
@@ -696,7 +679,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
                 }
                 onAccountDisabled(result);
             }
-            requestToWriteAccount(result);
+            AccountRepository.saveAccountToRealm(accountItem);
         } else {
             StatusMode statusMode = accountItem.getRawStatusMode();
             String statusText = accountItem.getStatusText();
@@ -732,7 +715,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
         AccountItem accountItem = getAccount(account);
         if (accountItem != null) {
             accountItem.setKeyPair(keyPair);
-            requestToWriteAccount(accountItem);
+            AccountRepository.saveAccountToRealm(accountItem);
         }
     }
 
@@ -749,7 +732,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
         if (!enabled) cachedEnabledAccounts.remove(account);
 
         accountItem.setEnabled(enabled);
-        requestToWriteAccount(accountItem);
+        AccountRepository.saveAccountToRealm(accountItem);
         PushManager.getInstance().updateEnabledPushNodes();
     }
 
@@ -1006,7 +989,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
         AccountItem accountItem = getAccount(accountJid);
         if (accountItem != null) {
             accountItem.setColorIndex(colorIndex);
-            requestToWriteAccount(accountItem);
+            AccountRepository.saveAccountToRealm(accountItem);
         }
     }
 
@@ -1014,7 +997,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
         AccountItem accountItem = getAccount(accountJid);
         if (accountItem != null) {
             accountItem.setOrder(order);
-            requestToWriteAccount(accountItem);
+            AccountRepository.saveAccountToRealm(accountItem);
         }
     }
 
@@ -1022,7 +1005,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
         AccountItem accountItem = getAccount(accountJid);
         if (accountItem != null) {
             accountItem.setTimestamp(timestamp);
-            requestToWriteAccount(accountItem);
+            AccountRepository.saveAccountToRealm(accountItem);
         }
     }
 
@@ -1030,7 +1013,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
         AccountItem accountItem = getAccount(accountJid);
         if (accountItem != null) {
             accountItem.setClearHistoryOnExit(clearHistoryOnExit);
-            requestToWriteAccount(accountItem);
+            AccountRepository.saveAccountToRealm(accountItem);
         }
     }
 
@@ -1042,7 +1025,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
 
         if (!accountItem.getMamDefaultBehaviour().equals(mamDefaultBehavior)) {
             accountItem.setMamDefaultBehaviour(mamDefaultBehavior);
-            requestToWriteAccount(accountItem);
+            AccountRepository.saveAccountToRealm(accountItem);
             NextMamManager.getInstance().onRequestUpdatePreferences(accountJid);
         }
     }
@@ -1055,7 +1038,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
 
         if (!accountItem.getLoadHistorySettings().equals(loadHistorySettings)) {
             accountItem.setLoadHistorySettings(loadHistorySettings);
-            requestToWriteAccount(accountItem);
+            AccountRepository.saveAccountToRealm(accountItem);
             // TODO request history if needed
         }
     }
@@ -1068,7 +1051,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
         }
 
         accountItem.setSuccessfulConnectionHappened(successfulConnectionHappened);
-        requestToWriteAccount(accountItem);
+        AccountRepository.saveAccountToRealm(accountItem);
     }
 
     /**
@@ -1076,7 +1059,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
      */
     private void setStatus(AccountItem accountItem, StatusMode statusMode, String statusText) {
         accountItem.setStatus(statusMode, statusText);
-        requestToWriteAccount(accountItem);
+        AccountRepository.saveAccountToRealm(accountItem);
     }
 
     /**
@@ -1229,7 +1212,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
 
     @Override
     public void onWipe() {
-        AccountTable.getInstance().wipe();
+        AccountRepository.clearAllAccountsFromRealm();
     }
 
     @Override
@@ -1250,7 +1233,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
     public void setAllAccountAutoLoginToXabber(boolean autoLogin) {
         for (AccountItem accountItem : getAllAccountItems()) {
             accountItem.setXabberAutoLoginEnabled(autoLogin);
-            requestToWriteAccount(accountItem);
+            AccountRepository.saveAccountToRealm(accountItem);
         }
     }
 
@@ -1273,12 +1256,12 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
     public void setPushNode(AccountItem account, String pushNode, String pushServiceJid) {
         account.setPushNode(pushNode);
         account.setPushServiceJid(pushServiceJid);
-        requestToWriteAccount(account);
+        AccountRepository.saveAccountToRealm(account);
     }
 
     public void setPushEnabled(final AccountItem accountItem, final boolean enabled) {
         accountItem.setPushEnabled(enabled);
-        requestToWriteAccount(accountItem);
+        AccountRepository.saveAccountToRealm(accountItem);
         Application.getInstance().runInBackground(new Runnable() {
             @Override
             public void run() {
@@ -1291,7 +1274,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
 
     public void setPushWasEnabled(AccountItem accountItem, boolean enabled) {
         accountItem.setPushWasEnabled(enabled);
-        requestToWriteAccount(accountItem);
+        AccountRepository.saveAccountToRealm(accountItem);
         PushManager.getInstance().updateEnabledPushNodes();
     }
 
