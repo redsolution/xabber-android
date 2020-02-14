@@ -14,19 +14,16 @@
  */
 package com.xabber.android.data.message.chat;
 
-import android.database.Cursor;
 import android.net.Uri;
 
 import androidx.annotation.Nullable;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.OnLoadListener;
-import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.listeners.OnAccountRemovedListener;
 import com.xabber.android.data.database.realmobjects.ChatDataRealm;
 import com.xabber.android.data.database.realmobjects.NotificationStateRealm;
-import com.xabber.android.data.database.sqlite.NotifyVisibleTable;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.NestedMap;
 import com.xabber.android.data.entity.UserJid;
@@ -57,10 +54,6 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
      */
     private final NestedMap<ChatInput> chatInputs;
     /**
-     * Whether notification in visible chat should be used for user in account.
-     */
-    private final NestedMap<Boolean> notifyVisible;
-    /**
      * chat scroll states - position of message list
      */
 
@@ -74,46 +67,17 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
 
     private ChatManager() {
         chatInputs = new NestedMap<>();
-        notifyVisible = new NestedMap<>();
     }
 
     @Override
     public void onLoad() {
-
-        final NestedMap<Boolean> notifyVisible = new NestedMap<>();
-        Cursor cursor;
-
-        cursor = NotifyVisibleTable.getInstance().list();
-        try {
-            if (cursor.moveToFirst()) {
-                do {
-                    notifyVisible.put(NotifyVisibleTable.getAccount(cursor),
-                            NotifyVisibleTable.getUser(cursor),
-                            NotifyVisibleTable.getValue(cursor));
-                } while (cursor.moveToNext());
-            }
-        } finally {
-            cursor.close();
-        }
-
         clearUnusedNotificationStateFromRealm();
-
-        Application.getInstance().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                onLoaded(notifyVisible);
-            }
-        });
     }
 
-    private void onLoaded(NestedMap<Boolean> notifyVisible) {
-        this.notifyVisible.addAll(notifyVisible);
-    }
 
     @Override
     public void onAccountRemoved(AccountItem accountItem) {
         chatInputs.clear(accountItem.getAccount().toString());
-        notifyVisible.clear(accountItem.getAccount().toString());
     }
 
     /**
@@ -172,30 +136,6 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
             chatInputs.put(account.toString(), user.toString(), chat);
         }
         chat.setTyped(typedMessage, selectionStart, selectionEnd);
-    }
-
-    /**
-     * @param account
-     * @param user
-     * @return Whether notification in visible chat must be shown. Common value
-     * if there is no user specific value.
-     */
-    public boolean isNotifyVisible(AccountJid account, UserJid user) {
-        Boolean value = notifyVisible.get(account.toString(), user.toString());
-        if (value == null) {
-            return SettingsManager.eventsVisibleChat();
-        }
-        return value;
-    }
-
-    public void setNotifyVisible(final AccountJid account, final UserJid user, final boolean value) {
-        notifyVisible.put(account.toString(), user.toString(), value);
-        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
-            @Override
-            public void run() {
-                NotifyVisibleTable.getInstance().write(account.toString(), user.toString(), value);
-            }
-        });
     }
 
     public void saveOrUpdateChatDataToRealm(final AbstractChat chat) {
