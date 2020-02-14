@@ -14,7 +14,6 @@
  */
 package com.xabber.android.data.account;
 
-import android.database.Cursor;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
@@ -42,8 +41,8 @@ import com.xabber.android.data.connection.ReconnectionManager;
 import com.xabber.android.data.connection.TLSMode;
 import com.xabber.android.data.database.realmobjects.AccountRealm;
 import com.xabber.android.data.database.repositories.MessageRepository;
+import com.xabber.android.data.database.repositories.StatusRepository;
 import com.xabber.android.data.database.sqlite.AccountTable;
-import com.xabber.android.data.database.sqlite.StatusTable;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.mam.LoadHistorySettings;
 import com.xabber.android.data.extension.mam.NextMamManager;
@@ -184,7 +183,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
 
     @Override
     public void onLoad() {
-        final Collection<SavedStatus> savedStatuses = loadSavedStatuses();
+        final Collection<SavedStatus> savedStatuses = StatusRepository.getAllSavedStatusesFromRealm();
 
 
         final Collection<AccountItem> accountItems = new ArrayList<>();
@@ -289,23 +288,6 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
                 onLoaded(savedStatuses, accountItems);
             }
         });
-    }
-
-    @NonNull
-    private Collection<SavedStatus> loadSavedStatuses() {
-        final Collection<SavedStatus> savedStatuses = new ArrayList<>();
-        Cursor cursor = StatusTable.getInstance().list();
-        try {
-            if (cursor.moveToFirst()) {
-                do {
-                    savedStatuses.add(new SavedStatus(StatusTable.getStatusMode(cursor),
-                            StatusTable.getStatusText(cursor)));
-                } while (cursor.moveToNext());
-            }
-        } finally {
-            cursor.close();
-        }
-        return savedStatuses;
     }
 
     private void onLoaded(Collection<SavedStatus> savedStatuses, Collection<AccountItem> accountItems) {
@@ -1129,12 +1111,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
             return;
         }
         savedStatuses.add(savedStatus);
-        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
-            @Override
-            public void run() {
-                StatusTable.getInstance().write(statusMode, statusText);
-            }
-        });
+        StatusRepository.saveStatusToRealm(savedStatus);
     }
 
     /**
@@ -1144,13 +1121,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
         if (!savedStatuses.remove(savedStatus)) {
             return;
         }
-        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
-            @Override
-            public void run() {
-                StatusTable.getInstance().remove(savedStatus.getStatusMode(),
-                        savedStatus.getStatusText());
-            }
-        });
+        StatusRepository.deleteSavedStatusFromRealm(savedStatus);
     }
 
     /**
@@ -1158,12 +1129,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
      */
     public void clearSavedStatuses() {
         savedStatuses.clear();
-        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
-            @Override
-            public void run() {
-                StatusTable.getInstance().clear();
-            }
-        });
+        StatusRepository.clearAllSavedStatusesInrealm();
     }
 
     /**
