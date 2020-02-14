@@ -23,8 +23,6 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.OnClearListener;
 import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.OnMigrationListener;
-import com.xabber.android.data.database.sqlite.AvatarTable;
-import com.xabber.android.data.database.sqlite.AvatarXepTable;
 import com.xabber.android.data.database.sqlite.DatabaseTable;
 import com.xabber.android.data.log.LogManager;
 
@@ -65,13 +63,6 @@ public class DatabaseManager extends SQLiteOpenHelper implements
         super(Application.getInstance(), DATABASE_NAME, null, DATABASE_VERSION);
         registeredTables = new ArrayList<>();
     }
-
-    public void addTables() {
-        addTable(AvatarTable.getInstance());
-        addTable(AvatarXepTable.getInstance());
-    }
-
-
 
     /**
      * Builds IN statement for specified collection of values.

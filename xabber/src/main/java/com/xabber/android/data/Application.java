@@ -351,7 +351,6 @@ public class Application extends android.app.Application {
 
         Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
         addManagers();
-        DatabaseManager.getInstance().addTables();
         LogManager.i(this, "onCreate finished...");
     }
 
