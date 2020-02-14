@@ -161,8 +161,7 @@ import rx.subjects.PublishSubject;
 public class ChatFragment extends FileInteractionFragment implements PopupMenu.OnMenuItemClickListener,
         View.OnClickListener, Toolbar.OnMenuItemClickListener, MessageVH.MessageClickListener,
         MessagesAdapter.Listener, AdapterView.OnItemClickListener, PopupWindow.OnDismissListener,
-        OnAccountChangedListener, BottomMessagesPanel.OnCloseListener, MessagesAdapter.AnchorHolder,
-        IncomingMessageVH.BindListener {
+        OnAccountChangedListener, BottomMessagesPanel.OnCloseListener, IncomingMessageVH.BindListener {
 
     public static final String ARGUMENT_ACCOUNT = "ARGUMENT_ACCOUNT";
     public static final String ARGUMENT_USER = "ARGUMENT_USER";
@@ -211,7 +210,6 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
     private ImageView ivDelete;
     private ImageView ivCopy;
     private ImageView ivEdit;
-    private TextView tvTopDate;
 
     boolean isInputEmpty = true;
     private boolean skipOnTextChanges = false;
@@ -680,16 +678,14 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         placeholder = view.findViewById(R.id.placeholder);
         placeholder.setOnClickListener(this);
 
-        tvTopDate = view.findViewById(R.id.tvTopDate);
-        tvTopDate.setVisibility(View.INVISIBLE);
-        tvTopDate.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+        rootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                    tvTopDate.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    rootView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                } else {
+                    rootView.getViewTreeObserver().removeGlobalOnLayoutListener(this);
                 }
-                else tvTopDate.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-                //updateTopDateIfNeed();
                 //measurements for the recording layout animations.
                 rootViewHeight = rootView.getHeight();
                 rootViewWidth = rootView.getWidth();
@@ -729,8 +725,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         }
 
         chatMessageAdapter = new MessagesAdapter(getActivity(), messageItems, abstractChat,
-                this, this, this, this, this,
-                this);
+                this, this, this, this, this);
         realmRecyclerView.setAdapter(chatMessageAdapter);
         realmRecyclerView.setItemAnimator(null);
         realmRecyclerView.addItemDecoration(new MessageHeaderViewDecoration());
@@ -2116,15 +2111,6 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
         }
     }
 
-    //private void updateTopDateIfNeed() {
-    //    int position = layoutManager.findFirstVisibleItemPosition();
-    //    MessageItem message = chatMessageAdapter.getMessageItem(position);
-    //    if (message != null) {
-    //        tvTopDate.setSingleLine(true);
-    //        tvTopDate.setText(StringUtils.getDateStringForMessage(message.getTimestamp()));
-    //    }
-    //}
-
     @Override
     public void onBind(MessageItem message) {
         if (message != null && message.isValid() && !message.isRead()) {
@@ -2448,12 +2434,5 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
 
     private void openChooserForForward(ArrayList<String> forwardIds) {
         ((ChatActivity)getActivity()).forwardMessages(forwardIds);
-    }
-
-    /** Anchor Holder */
-
-    @Override
-    public View getAnchor() {
-        return tvTopDate;
     }
 }

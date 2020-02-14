@@ -108,7 +108,7 @@ public class ForwardedAdapter extends RealmRecyclerViewAdapter<MessageItem, Basi
         GroupchatUser groupchatUser = GroupchatUserManager.getInstance().getGroupchatUser(messageItem.getGroupchatUserId());
 
         MessagesAdapter.MessageExtraData extraData = new MessagesAdapter.MessageExtraData(
-                null, null, null, this.extraData.getContext(), messageItem.getOriginalFrom(),
+                null, null, this.extraData.getContext(), messageItem.getOriginalFrom(),
                 this.extraData.getColorStateList(), groupchatUser,
                 this.extraData.getAccountMainColor(), this.extraData.getMentionColor(),
                 this.extraData.getMainMessageTimestamp(), false, false, false, false, false, false);

@@ -54,7 +54,6 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
     private final FileMessageVH.FileListener fileListener;
     private final ForwardedAdapter.ForwardListener fwdListener;
     private final Listener listener;
-    private final AnchorHolder anchorHolder;
     private final IncomingMessageVH.BindListener bindListener;
 
     // message font style
@@ -85,15 +84,11 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
         void scrollTo(int position);
     }
 
-    public interface AnchorHolder {
-        View getAnchor();
-    }
-
     public MessagesAdapter(
             Context context, RealmResults<MessageItem> messageItems,
             AbstractChat chat, MessageVH.MessageClickListener messageListener,
             FileMessageVH.FileListener fileListener, ForwardedAdapter.ForwardListener fwdListener,
-            Listener listener, IncomingMessageVH.BindListener bindListener, AnchorHolder anchorHolder) {
+            Listener listener, IncomingMessageVH.BindListener bindListener) {
         super(context, messageItems, true);
 
         this.context = context;
@@ -101,7 +96,6 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
         this.fileListener = fileListener;
         this.fwdListener = fwdListener;
         this.listener = listener;
-        this.anchorHolder = anchorHolder;
         this.bindListener = bindListener;
 
         account = chat.getAccount();
@@ -268,7 +262,7 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
 
         mainMessageTimestamp = messageItem.getTimestamp();
 
-        MessageExtraData extraData = new MessageExtraData(fileListener, fwdListener, anchorHolder,
+        MessageExtraData extraData = new MessageExtraData(fileListener, fwdListener,
                 context, userName, colorStateList, groupchatUser, accountMainColor, mentionColor, mainMessageTimestamp, isMUC,
                 showOriginalOTR, unread, checked, needTail, needDate);
 
@@ -452,7 +446,6 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
         private Context context;
         private FileMessageVH.FileListener listener;
         private ForwardedAdapter.ForwardListener fwdListener;
-        private AnchorHolder anchorHolder;
         private String username;
         private ColorStateList colorStateList;
         private int accountMainColor;
@@ -469,14 +462,12 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
 
         public MessageExtraData(FileMessageVH.FileListener listener,
                                 ForwardedAdapter.ForwardListener fwdListener,
-                                AnchorHolder anchorHolder,
                                 Context context, String username, ColorStateList colorStateList,
                                 GroupchatUser groupchatUser, int accountMainColor, int mentionColor, Long mainTimestamp,
                                 boolean isMuc, boolean showOriginalOTR, boolean unread, boolean checked,
                                 boolean needTail, boolean needDate) {
             this.listener = listener;
             this.fwdListener = fwdListener;
-            this.anchorHolder = anchorHolder;
             this.context = context;
             this.username = username;
             this.colorStateList = colorStateList;
@@ -498,10 +489,6 @@ public class MessagesAdapter extends RealmRecyclerViewAdapter<MessageItem, Basic
 
         public ForwardedAdapter.ForwardListener getFwdListener() {
             return fwdListener;
-        }
-
-        public AnchorHolder getAnchorHolder() {
-            return anchorHolder;
         }
 
         public Context getContext() {
