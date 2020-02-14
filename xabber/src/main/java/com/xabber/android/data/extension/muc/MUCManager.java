@@ -14,8 +14,6 @@
  */
 package com.xabber.android.data.extension.muc;
 
-import android.database.Cursor;
-
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
@@ -25,7 +23,7 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.StanzaSender;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
-import com.xabber.android.data.database.sqlite.RoomTable;
+import com.xabber.android.data.database.repositories.RoomRepository;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.vcard.VCardManager;
@@ -54,11 +52,8 @@ import org.jivesoftware.smackx.muc.packet.MUCUser;
 import org.jxmpp.jid.DomainBareJid;
 import org.jxmpp.jid.EntityBareJid;
 import org.jxmpp.jid.Jid;
-import org.jxmpp.jid.impl.JidCreate;
 import org.jxmpp.jid.parts.Resourcepart;
-import org.jxmpp.stringprep.XmppStringprepException;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -91,54 +86,19 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
 
     @Override
     public void onLoad() {
-        Application.getInstance().runInBackground(new Runnable() {
-            @Override
-            public void run() {
+        final Collection<RoomChat> roomChats = RoomRepository.getAllRoomChatsFromRealm();
+        final Collection<RoomChat> needJoins = RoomRepository.getAllNeedJoinRoomChatsFromRealm();
 
-                final Collection<RoomChat> roomChats = new ArrayList<>();
-                final Collection<RoomChat> needJoins = new ArrayList<>();
-                Cursor cursor = RoomTable.getInstance().list();
-                try {
-                    if (cursor.moveToFirst()) {
-                        do {
-
-                            try {
-                                Resourcepart nickName = Resourcepart.from(RoomTable.getNickname(cursor));
-                                AccountJid account = AccountJid.from(RoomTable.getAccount(cursor));
-                                EntityBareJid room = JidCreate.entityBareFrom(RoomTable.getRoom(cursor));
-
-                                RoomChat roomChat = RoomChat.create(account, room, nickName, RoomTable.getPassword(cursor));
-                                if (RoomTable.needJoin(cursor)) {
-                                    needJoins.add(roomChat);
-                                }
-
-                                // set unread and archived data to room chats
-                                ChatData chatData = ChatManager.getInstance().loadChatDataFromRealm(roomChat);
-                                if (chatData != null) {
-                                    roomChat.setLastPosition(chatData.getLastPosition());
-                                    roomChat.setArchived(chatData.isArchived(), false);
-                                    roomChat.setNotificationState(chatData.getNotificationState(), false);
-                                }
-
-                                roomChats.add(roomChat);
-
-
-                            } catch (UserJid.UserJidCreateException | XmppStringprepException e) {
-                                e.printStackTrace();
-                            }
-
-                        } while (cursor.moveToNext());
-                    }
-                } finally {
-                    cursor.close();
-                }
-                onLoaded(roomChats, needJoins);
-            }
-        });
-    }
-
-    private void onLoaded(Collection<RoomChat> roomChats, Collection<RoomChat> needJoins) {
         for (RoomChat roomChat : roomChats) {
+
+            // set unread and archived data to room chats
+            ChatData chatData = ChatManager.getInstance().loadChatDataFromRealm(roomChat);
+            if (chatData != null) {
+                roomChat.setLastPosition(chatData.getLastPosition());
+                roomChat.setArchived(chatData.isArchived(), false);
+                roomChat.setNotificationState(chatData.getNotificationState(), false);
+            }
+
             AbstractChat abstractChat = MessageManager.getInstance().getChat(
                     roomChat.getAccount(), roomChat.getUser());
             if (abstractChat != null) {
@@ -255,12 +215,9 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
         } catch (UserJid.UserJidCreateException e) {
             LogManager.exception(this, e);
         }
-        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
-            @Override
-            public void run() {
-                RoomTable.getInstance().remove(account.toString(), room.toString());
-            }
-        });
+
+        RoomRepository.deleteRoomFromRealm(account.toString(), room.toString());
+
     }
 
     /**
@@ -301,13 +258,8 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
 
     private void requestToWriteRoom(final AccountJid account, final EntityBareJid room,
                                     final Resourcepart nickname, final String password, final boolean join) {
-        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
-            @Override
-            public void run() {
-                RoomTable.getInstance().write(account.toString(), room.toString(), nickname.toString(),
-                        password, join);
-            }
-        });
+        RoomRepository.saveRoomToRealm(account.toString(), room.toString(), nickname.toString(),
+                password, join);
     }
 
     /**
