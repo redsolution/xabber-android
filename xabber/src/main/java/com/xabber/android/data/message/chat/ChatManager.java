@@ -26,18 +26,14 @@ import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.listeners.OnAccountRemovedListener;
 import com.xabber.android.data.database.realmobjects.ChatDataRealm;
 import com.xabber.android.data.database.realmobjects.NotificationStateRealm;
-import com.xabber.android.data.database.repositories.PrivateChatRepository;
 import com.xabber.android.data.database.sqlite.NotifyVisibleTable;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.NestedMap;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.ChatData;
 import com.xabber.android.data.message.NotificationState;
-
-import java.util.Set;
 
 import io.realm.Realm;
 import io.realm.RealmObject;
@@ -61,10 +57,6 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
      */
     private final NestedMap<ChatInput> chatInputs;
     /**
-     * List of chats whose messages mustn't be saved for user in account.
-     */
-    private final NestedMap<Object> privateChats;
-    /**
      * Whether notification in visible chat should be used for user in account.
      */
     private final NestedMap<Boolean> notifyVisible;
@@ -82,7 +74,6 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
 
     private ChatManager() {
         chatInputs = new NestedMap<>();
-        privateChats = new NestedMap<>();
         notifyVisible = new NestedMap<>();
     }
 
@@ -110,62 +101,19 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
         Application.getInstance().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                onLoaded(PrivateChatRepository.getSetOfAllBasePrivateChatEntitiesFromRealm()
-                        , notifyVisible);
+                onLoaded(notifyVisible);
             }
         });
     }
 
-    private void onLoaded(Set<BaseEntity> privateChats, NestedMap<Boolean> notifyVisible) {
-        for (BaseEntity baseEntity : privateChats) {
-            this.privateChats.put(baseEntity.getAccount().toString(),
-                    baseEntity.getUser().toString(), PRIVATE_CHAT);
-        }
+    private void onLoaded(NestedMap<Boolean> notifyVisible) {
         this.notifyVisible.addAll(notifyVisible);
     }
 
     @Override
     public void onAccountRemoved(AccountItem accountItem) {
         chatInputs.clear(accountItem.getAccount().toString());
-        privateChats.clear(accountItem.getAccount().toString());
         notifyVisible.clear(accountItem.getAccount().toString());
-    }
-
-    /**
-     * Whether to save history for specified chat.
-     *
-     * @param account
-     * @param user
-     * @return
-     */
-    public boolean isSaveMessages(AccountJid account, UserJid user) {
-        return privateChats.get(account.toString(), user.toString()) != PRIVATE_CHAT;
-    }
-
-    /**
-     * Sets whether to save history for specified chat.
-     *
-     * @param account
-     * @param user
-     * @param save
-     */
-    public void setSaveMessages(final AccountJid account, final UserJid user,
-                                final boolean save) {
-        if (save) {
-            privateChats.remove(account.toString(), user.toString());
-        } else {
-            privateChats.put(account.toString(), user.toString(), PRIVATE_CHAT);
-        }
-//        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
-//            @Override
-//            public void run() {
-//                if (save) {
-//                    PrivateChatTable.getInstance().remove(account.toString(), user.toString());
-//                } else {
-//                    PrivateChatTable.getInstance().write(account.toString(), user.toString());
-//                }
-//            }
-//        });
     }
 
     /**
