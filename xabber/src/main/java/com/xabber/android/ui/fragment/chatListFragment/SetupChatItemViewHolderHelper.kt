@@ -11,7 +11,7 @@ import android.view.View
 import com.xabber.android.R
 import com.xabber.android.data.SettingsManager
 import com.xabber.android.data.account.AccountManager
-import com.xabber.android.data.database.messagerealm.MessageItem
+import com.xabber.android.data.database.realmobjects.MessageItem
 import com.xabber.android.data.extension.cs.ChatStateManager
 import com.xabber.android.data.extension.muc.MUCManager
 import com.xabber.android.data.extension.muc.RoomChat

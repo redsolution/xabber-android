@@ -1,7 +1,7 @@
 package com.xabber.android.data.extension.capability;
 
 import com.xabber.android.data.Application;
-import com.xabber.android.data.database.realm.DiscoveryInfoCache;
+import com.xabber.android.data.database.realmobjects.DiscoveryInfoCache;
 import com.xabber.android.data.log.LogManager;
 
 import org.jivesoftware.smackx.caps.cache.EntityCapsPersistentCache;

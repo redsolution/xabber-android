@@ -12,7 +12,7 @@ import androidx.annotation.StyleRes;
 
 import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
-import com.xabber.android.data.database.messagerealm.MessageItem;
+import com.xabber.android.data.database.realmobjects.MessageItem;
 import com.xabber.android.utils.Utils;
 
 public class OutgoingMessageVH extends FileMessageVH {

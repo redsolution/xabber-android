@@ -18,7 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
-import com.xabber.android.data.database.messagerealm.Attachment;
+import com.xabber.android.data.database.realmobjects.Attachment;
 import com.xabber.android.data.extension.references.voice.VoiceManager;
 import com.xabber.android.data.extension.references.voice.VoiceMessagePresenterManager;
 import com.xabber.android.data.filedownload.DownloadManager;

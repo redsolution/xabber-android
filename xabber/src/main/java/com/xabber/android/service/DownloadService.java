@@ -10,7 +10,7 @@ import android.webkit.MimeTypeMap;
 
 import androidx.annotation.Nullable;
 
-import com.xabber.android.data.database.messagerealm.Attachment;
+import com.xabber.android.data.database.realmobjects.Attachment;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.utils.HttpClientWithMTM;
@@ -166,7 +166,7 @@ public class DownloadService extends IntentService {
                 fos.flush();
                 fos.close();
 
-                // save path to realm
+                // save path to realmobjects
                 saveAttachmentPathToRealm(file.getPath());
             } else publishError("File not created");
 

@@ -2,7 +2,7 @@ package com.xabber.android.ui.adapter.chat;
 
 import android.view.View;
 
-import com.xabber.android.data.database.messagerealm.MessageItem;
+import com.xabber.android.data.database.realmobjects.MessageItem;
 
 public class NoFlexOutgoingMsgVH extends OutgoingMessageVH {
 

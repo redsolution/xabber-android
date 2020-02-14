@@ -15,7 +15,6 @@
 package com.xabber.android.data.extension.otr;
 
 import android.content.Intent;
-import android.database.Cursor;
 
 import androidx.annotation.Nullable;
 
@@ -34,7 +33,7 @@ import com.xabber.android.data.account.listeners.OnAccountRemovedListener;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.StanzaSender;
 import com.xabber.android.data.connection.listeners.OnConnectedListener;
-import com.xabber.android.data.database.sqlite.OTRTable;
+import com.xabber.android.data.database.repositories.OtrRepository;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.NestedMap;
 import com.xabber.android.data.entity.NestedMap.Entry;
@@ -156,26 +155,8 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
 
     @Override
     public void onLoad() {
-        final NestedNestedMaps<String, Boolean> fingerprints = new NestedNestedMaps<>();
-        Cursor cursor = OTRTable.getInstance().list();
-        try {
-            if (cursor.moveToFirst()) {
-                do {
-                    String account = OTRTable.getAccount(cursor);
-                    String user = OTRTable.getUser(cursor);
-                    fingerprints.put(account, user,
-                            OTRTable.getFingerprint(cursor),
-                            OTRTable.isVerified(cursor));
-                } while (cursor.moveToNext());
-            }
-        } finally {
-            cursor.close();
-        }
-        Application.getInstance().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                onLoaded(fingerprints);
-            }
+        Application.getInstance().runOnUiThread(() -> {
+            onLoaded(OtrRepository.getFingerprintsFromRealm());
         });
     }
 
@@ -393,7 +374,7 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
                 actives.put(sessionID.getAccountID(), sessionID.getUserID(), value);
                 if (fingerprints.get(sessionID.getAccountID(), sessionID.getUserID(), value) == null) {
                     fingerprints.put(sessionID.getAccountID(), sessionID.getUserID(), value, false);
-                    requestToWrite(sessionID.getAccountID(), sessionID.getUserID(), value, false);
+                    OtrRepository.saveOtrToRealm(sessionID.getAccountID(), sessionID.getUserID(), value, false);
                 }
             }
             newAction(sessionID.getAccountID(), sessionID.getUserID(), null, isVerified(sessionID.getAccountID(),
@@ -540,7 +521,7 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
 
     private void setVerifyWithoutNotification(String account, String user, String fingerprint, boolean value) {
         fingerprints.put(account, user, fingerprint, value);
-        requestToWrite(account, user, fingerprint, value);
+        OtrRepository.saveOtrToRealm(account, user, fingerprint, value);
     }
 
     /**
@@ -744,19 +725,6 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
         actives.clear(accountItem.getAccount().toString());
         finished.clear(accountItem.getAccount().toString());
         sessions.clear(accountItem.getAccount().toString());
-    }
-
-    /**
-     * Save chat specific otr settings.
-     */
-    private void requestToWrite(final String account, final String user,
-                                final String fingerprint, final boolean verified) {
-        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
-            @Override
-            public void run() {
-                OTRTable.getInstance().write(account, user, fingerprint, verified);
-            }
-        });
     }
 
     private void endAllSessions() {

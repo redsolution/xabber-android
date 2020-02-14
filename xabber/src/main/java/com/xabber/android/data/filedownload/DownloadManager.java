@@ -13,7 +13,7 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 
 import com.xabber.android.data.Application;
-import com.xabber.android.data.database.messagerealm.Attachment;
+import com.xabber.android.data.database.realmobjects.Attachment;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.service.DownloadService;

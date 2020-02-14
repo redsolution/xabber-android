@@ -19,7 +19,7 @@ package com.xabber.android.data.roster;
  *
  * @author alexander.ivanov
  */
-class GroupConfiguration {
+public class GroupConfiguration {
 
     /**
      * Whether group must be expanded.

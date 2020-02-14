@@ -18,7 +18,7 @@ import android.widget.Toast;
 
 import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
-import com.xabber.android.data.database.realm.CrowdfundingMessage;
+import com.xabber.android.data.database.realmobjects.CrowdfundingMessage;
 import com.xabber.android.data.http.CrowdfundingManager;
 import com.xabber.android.data.http.IXabberCom;
 import com.xabber.android.ui.adapter.chat.CrowdfundingChatAdapter;

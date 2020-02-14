@@ -20,7 +20,7 @@ import com.bumptech.glide.request.target.DrawableImageViewTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
-import com.xabber.android.data.database.realm.CrowdfundingMessage;
+import com.xabber.android.data.database.realmobjects.CrowdfundingMessage;
 import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.widget.CorrectlyMeasuringTextView;

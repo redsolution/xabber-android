@@ -14,22 +14,20 @@
  */
 package com.xabber.android.data.message.phrase;
 
-import android.database.Cursor;
 import android.net.Uri;
+
+import androidx.annotation.Nullable;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.OnLoadListener;
-import com.xabber.android.data.database.sqlite.PhraseTable;
+import com.xabber.android.data.database.repositories.PhraseNotificationRepository;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
-import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.roster.RosterManager;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
-import androidx.annotation.Nullable;
 
 /**
  * Manage custom notification based on message.
@@ -59,61 +57,18 @@ public class PhraseManager implements OnLoadListener {
 
     @Override
     public void onLoad() {
-        final Collection<Phrase> phrases = new ArrayList<>();
-        Cursor cursor;
-        cursor = PhraseTable.getInstance().list();
-        try {
-            if (cursor.moveToFirst()) {
-                do {
-                    phrases.add(new Phrase(PhraseTable.getId(cursor),
-                            PhraseTable.getValue(cursor), PhraseTable
-                            .getUser(cursor), PhraseTable
-                            .getGroup(cursor), PhraseTable
-                            .isRegexp(cursor), PhraseTable
-                            .getSound(cursor)));
-                } while (cursor.moveToNext());
-            }
-        } finally {
-            cursor.close();
-        }
-        Application.getInstance().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                onLoaded(phrases);
-            }
+        Application.getInstance().runOnUiThread(() -> {
+            this.phrases.addAll(PhraseNotificationRepository.getAllPhrases());
         });
     }
 
-    private void onLoaded(Collection<Phrase> phrases) {
-        this.phrases.addAll(phrases);
-    }
-
-    /**
-     * @param text
-     * @return Sound associated with first matched phrase. Chat specific setting
-     * if no one matches .
-     */
-    @Deprecated
-    public Uri getSound(AccountJid account, UserJid user, String text, boolean isMUC) {
-        Collection<String> groups = RosterManager.getInstance().getGroups(
-                account, user);
-        for (Phrase phrase : phrases)
-            if (phrase.matches(text, user.toString(), groups)) {
-                Uri value = phrase.getSound();
-                if (ChatManager.EMPTY_SOUND.equals(value))
-                    return null;
-                return value;
-            }
-        return ChatManager.getInstance().getSound(account, user, isMUC);
-    }
-
-    public Long getPhraseID(AccountJid account, UserJid user, String text) {
+    public long getPhraseID(AccountJid account, UserJid user, String text) {
         Collection<String> groups = RosterManager.getInstance().getGroups(
                 account, user);
         for (Phrase phrase : phrases) {
             if (phrase.matches(text, user.toString(), groups)) return phrase.getId();
         }
-        return null;
+        return 0;
     }
 
     @Nullable
@@ -140,7 +95,7 @@ public class PhraseManager implements OnLoadListener {
         } else {
             phrase.update(value, user, group, regexp, sound);
         }
-        writePhrase(phrase, value, user, group, regexp, sound);
+        PhraseNotificationRepository.saveNewPhrase(phrase, value, user, group, regexp, sound);
     }
 
     /**
@@ -152,21 +107,8 @@ public class PhraseManager implements OnLoadListener {
         Phrase phrase = getPhrase(index);
         if (phrase != null) {
             phrases.remove(phrase);  // remove from the local list
-            PhraseTable.getInstance().remove(phrase.getId());  // remove from database
+            PhraseNotificationRepository.removePhraseById(phrase.getId());
         }
-    }
-
-    private void writePhrase(final Phrase phrase, final String value,
-                             final String user, final String group, final boolean regexp,
-                             final Uri sound) {
-        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
-            @Override
-            public void run() {
-                phrase.setId(PhraseTable.getInstance().write(phrase.getId(),
-                        value, user, group, regexp,
-                        sound == null ? ChatManager.EMPTY_SOUND : sound));
-            }
-        });
     }
 
     public Collection<Integer> getPhrases() {

@@ -36,7 +36,6 @@ import com.xabber.android.data.connection.ConnectionManager;
 import com.xabber.android.data.connection.NetworkManager;
 import com.xabber.android.data.connection.ReconnectionManager;
 import com.xabber.android.data.database.DatabaseManager;
-import com.xabber.android.data.database.NewDatabaseManager;
 import com.xabber.android.data.extension.attention.AttentionManager;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.avatar.AvatarStorage;
@@ -351,7 +350,6 @@ public class Application extends android.app.Application {
 
         Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
         addManagers();
-        DatabaseManager.getInstance().addTables();
         LogManager.i(this, "onCreate finished...");
     }
 
@@ -360,7 +358,6 @@ public class Application extends android.app.Application {
         addManager(SettingsManager.getInstance());
         addManager(LogManager.getInstance());
         addManager(DatabaseManager.getInstance());
-        addManager(NewDatabaseManager.getInstance());
         addManager(AvatarStorage.getInstance());
         addManager(OTRManager.getInstance());
         addManager(ConnectionManager.getInstance());

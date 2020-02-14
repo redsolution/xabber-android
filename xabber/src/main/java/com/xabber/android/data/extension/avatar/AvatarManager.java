@@ -14,7 +14,6 @@
  */
 package com.xabber.android.data.extension.avatar;
 
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -41,8 +40,7 @@ import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
-import com.xabber.android.data.database.sqlite.AvatarTable;
-import com.xabber.android.data.database.sqlite.AvatarXepTable;
+import com.xabber.android.data.database.repositories.AvatarRepository;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.vcard.VCardManager;
@@ -57,8 +55,6 @@ import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.util.StringUtils;
 import org.jxmpp.jid.Jid;
-import org.jxmpp.jid.impl.JidCreate;
-import org.jxmpp.stringprep.XmppStringprepException;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -239,50 +235,9 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
 
     @Override
     public void onLoad() {
-        final Map<Jid, String> hashes = new HashMap<>();
+        final Map<Jid, String> hashes = AvatarRepository.getHashesMapFromRealm();
         final Map<String, Bitmap> bitmaps = new HashMap<>();
-        final Map<Jid, String> XEPHashes = new HashMap<>();
-
-        //vcard table
-        Cursor cursor = AvatarTable.getInstance().list();
-        try {
-            if (cursor.moveToFirst()) {
-                do {
-                    String hash = AvatarTable.getHash(cursor);
-                    try {
-                        Jid jid = JidCreate.from(AvatarTable.getUser(cursor));
-                        hashes.put(jid, hash == null ? EMPTY_HASH : hash);
-                        //XEPHashes.put(jid, hash == null ? EMPTY_HASH : hash);
-                        //hashes.put(jid, hash == null ? EMPTY_HASH : hash);
-                    } catch (XmppStringprepException e) {
-                        LogManager.exception(this, e);
-                    }
-
-                } while (cursor.moveToNext());
-            }
-        } finally {
-            cursor.close();
-        }
-
-        //xep-0084 table
-        cursor = AvatarXepTable.getInstance().list();
-        try {
-            if (cursor.moveToFirst()) {
-                do {
-                    String hash = AvatarXepTable.getHash(cursor);
-                    try {
-                        Jid jid = JidCreate.from(AvatarXepTable.getUser(cursor));
-                        XEPHashes.put(jid, hash == null ? EMPTY_HASH : hash);
-                        //hashes.put(jid, hash == null ? EMPTY_HASH : hash);
-                    } catch (XmppStringprepException e) {
-                        LogManager.exception(this, e);
-                    }
-
-                } while (cursor.moveToNext());
-            }
-        } finally {
-            cursor.close();
-        }
+        final Map<Jid, String> XEPHashes = AvatarRepository.getPepHashesMapFromRealm();
 
         for (String hash : new HashSet<>(hashes.values()))
             if (!hash.equals(EMPTY_HASH)) {
@@ -323,24 +278,14 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
         hashes.put(jid, hash == null ? EMPTY_HASH : hash);
         contactListDrawables.remove(jid);
         contactListDefaultDrawables.remove(jid);
-        application.runInBackground(new Runnable() {
-            @Override
-            public void run() {
-                AvatarTable.getInstance().write(jid.toString(), hash);
-            }
-        });
+        AvatarRepository.saveHashToRealm(jid.toString(), hash);
     }
 
     private void setXEPHash(final Jid jid, final String hash) {
         XEPHashes.put(jid, hash == null ? EMPTY_HASH : hash);
         contactListDrawables.remove(jid);
         contactListDefaultDrawables.remove(jid);
-        application.runInBackground(new Runnable() {
-            @Override
-            public void run() {
-                AvatarXepTable.getInstance().write(jid.toString(), hash);
-            }
-        });
+        AvatarRepository.savePepHashToRealm(jid.toString(), hash);
     }
 
     /**

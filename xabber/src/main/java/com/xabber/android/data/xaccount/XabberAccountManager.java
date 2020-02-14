@@ -11,11 +11,11 @@ import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
-import com.xabber.android.data.database.realm.EmailRealm;
-import com.xabber.android.data.database.realm.SocialBindingRealm;
-import com.xabber.android.data.database.realm.SyncStateRealm;
-import com.xabber.android.data.database.realm.XMPPUserRealm;
-import com.xabber.android.data.database.realm.XabberAccountRealm;
+import com.xabber.android.data.database.realmobjects.EmailRealm;
+import com.xabber.android.data.database.realmobjects.SocialBindingRealm;
+import com.xabber.android.data.database.realmobjects.SyncStateRealm;
+import com.xabber.android.data.database.realmobjects.XMPPUserRealm;
+import com.xabber.android.data.database.realmobjects.XabberAccountRealm;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.ui.color.ColorManager;
@@ -210,7 +210,7 @@ public class XabberAccountManager implements OnLoadListener {
 
         this.lastOrderChangeTimestamp = SettingsManager.getLastOrderChangeTimestamp();
 
-        // load sync state from realm
+        // load sync state from realmobjects
         this.accountsSyncState = loadSyncStatesFromRealm();
 
         if (account != null) {

@@ -5,7 +5,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.xabber.android.R
-import com.xabber.android.data.database.messagerealm.MessageItem
+import com.xabber.android.data.database.realmobjects.MessageItem
 import github.ankushsachdeva.emojicon.EmojiconTextView
 
 class ChatViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){

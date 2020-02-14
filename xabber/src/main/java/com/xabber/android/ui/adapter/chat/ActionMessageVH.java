@@ -5,7 +5,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.xabber.android.R;
-import com.xabber.android.data.database.messagerealm.MessageItem;
+import com.xabber.android.data.database.realmobjects.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.message.ChatAction;
 import com.xabber.android.data.roster.RosterManager;

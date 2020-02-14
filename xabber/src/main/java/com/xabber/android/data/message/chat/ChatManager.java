@@ -14,38 +14,23 @@
  */
 package com.xabber.android.data.message.chat;
 
-import android.database.Cursor;
 import android.net.Uri;
 
 import androidx.annotation.Nullable;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.OnLoadListener;
-import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.listeners.OnAccountRemovedListener;
-import com.xabber.android.data.database.realm.ChatDataRealm;
-import com.xabber.android.data.database.realm.NotificationStateRealm;
-import com.xabber.android.data.database.sqlite.NotifyVisibleTable;
-import com.xabber.android.data.database.sqlite.PrivateChatTable;
-import com.xabber.android.data.database.sqlite.ShowTextTable;
-import com.xabber.android.data.database.sqlite.SoundTable;
-import com.xabber.android.data.database.sqlite.Suppress100Table;
-import com.xabber.android.data.database.sqlite.VibroTable;
+import com.xabber.android.data.database.realmobjects.ChatDataRealm;
+import com.xabber.android.data.database.realmobjects.NotificationStateRealm;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.NestedMap;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.ChatData;
 import com.xabber.android.data.message.NotificationState;
-import com.xabber.android.data.roster.RosterManager;
-
-import org.jxmpp.stringprep.XmppStringprepException;
-
-import java.util.HashSet;
-import java.util.Set;
 
 import io.realm.Realm;
 import io.realm.RealmObject;
@@ -69,32 +54,6 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
      */
     private final NestedMap<ChatInput> chatInputs;
     /**
-     * List of chats whose messages mustn't be saved for user in account.
-     */
-    private final NestedMap<Object> privateChats;
-    /**
-     * Whether notification in visible chat should be used for user in account.
-     */
-    private final NestedMap<Boolean> notifyVisible;
-    /**
-     * Whether text of incoming message should be shown in notification bar for
-     * user in account.
-     */
-    private final NestedMap<ShowMessageTextInNotification> showText;
-    /**
-     * Whether vibro notification should be used for user in account.
-     */
-    private final NestedMap<Boolean> makeVibro;
-    /**
-     * Sound, associated with chat for user in account.
-     */
-    private final NestedMap<Uri> sounds;
-    /**
-     * Whether 'This room is not anonymous'-messages (Status Code 100) should be suppressed
-     */
-    private final NestedMap<Boolean> suppress100;
-
-    /**
      * chat scroll states - position of message list
      */
 
@@ -108,178 +67,17 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
 
     private ChatManager() {
         chatInputs = new NestedMap<>();
-        privateChats = new NestedMap<>();
-        sounds = new NestedMap<>();
-        showText = new NestedMap<>();
-        makeVibro = new NestedMap<>();
-        notifyVisible = new NestedMap<>();
-        suppress100 = new NestedMap<>();
     }
 
     @Override
     public void onLoad() {
-        final Set<BaseEntity> privateChats = new HashSet<>();
-        final NestedMap<Boolean> notifyVisible = new NestedMap<>();
-        final NestedMap<ShowMessageTextInNotification> showText = new NestedMap<>();
-        final NestedMap<Boolean> makeVibro = new NestedMap<>();
-        final NestedMap<Uri> sounds = new NestedMap<>();
-        final NestedMap<Boolean> suppress100 = new NestedMap<>();
-        Cursor cursor;
-        cursor = PrivateChatTable.getInstance().list();
-        try {
-            if (cursor.moveToFirst()) {
-                do {
-                    try {
-                        privateChats.add(RosterManager.getInstance().getAbstractContact(
-                                AccountJid.from(PrivateChatTable.getAccount(cursor)),
-                                UserJid.from(PrivateChatTable.getUser(cursor))
-                        ));
-
-                    } catch (UserJid.UserJidCreateException | XmppStringprepException e) {
-                        LogManager.exception(this, e);
-                    }
-                } while (cursor.moveToNext());
-            }
-        } finally {
-            cursor.close();
-        }
-
-        cursor = NotifyVisibleTable.getInstance().list();
-        try {
-            if (cursor.moveToFirst()) {
-                do {
-                    notifyVisible.put(NotifyVisibleTable.getAccount(cursor),
-                            NotifyVisibleTable.getUser(cursor),
-                            NotifyVisibleTable.getValue(cursor));
-                } while (cursor.moveToNext());
-            }
-        } finally {
-            cursor.close();
-        }
-
-        cursor = ShowTextTable.getInstance().list();
-        try {
-            if (cursor.moveToFirst()) {
-                do {
-                    showText.put(ShowTextTable.getAccount(cursor),
-                            ShowTextTable.getUser(cursor),
-                            ShowTextTable.getValue(cursor));
-                } while (cursor.moveToNext());
-            }
-        } finally {
-            cursor.close();
-        }
-
-        cursor = VibroTable.getInstance().list();
-        try {
-            if (cursor.moveToFirst()) {
-                do {
-                    makeVibro.put(VibroTable.getAccount(cursor),
-                            VibroTable.getUser(cursor),
-                            VibroTable.getValue(cursor));
-                } while (cursor.moveToNext());
-            }
-        } finally {
-            cursor.close();
-        }
-
-        cursor = SoundTable.getInstance().list();
-        try {
-            if (cursor.moveToFirst()) {
-                do {
-                    sounds.put(SoundTable.getAccount(cursor),
-                            SoundTable.getUser(cursor),
-                            SoundTable.getValue(cursor));
-                } while (cursor.moveToNext());
-            }
-        } finally {
-            cursor.close();
-        }
-
-        cursor = Suppress100Table.getInstance().list();
-        try {
-            if (cursor.moveToFirst()) {
-                do {
-                    makeVibro.put(Suppress100Table.getAccount(cursor),
-                            Suppress100Table.getUser(cursor),
-                            Suppress100Table.getValue(cursor));
-                } while (cursor.moveToNext());
-            }
-        } finally {
-            cursor.close();
-        }
-
         clearUnusedNotificationStateFromRealm();
-
-        Application.getInstance().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                onLoaded(privateChats, notifyVisible, showText, makeVibro,
-                        sounds, suppress100);
-            }
-        });
     }
 
-    private void onLoaded(Set<BaseEntity> privateChats,
-                          NestedMap<Boolean> notifyVisible, NestedMap<ShowMessageTextInNotification> showText,
-                          NestedMap<Boolean> vibro, NestedMap<Uri> sounds, NestedMap<Boolean> suppress100) {
-        for (BaseEntity baseEntity : privateChats) {
-            this.privateChats.put(baseEntity.getAccount().toString(),
-                    baseEntity.getUser().toString(), PRIVATE_CHAT);
-        }
-        this.notifyVisible.addAll(notifyVisible);
-        this.showText.addAll(showText);
-        this.makeVibro.addAll(vibro);
-        this.sounds.addAll(sounds);
-        this.suppress100.addAll(suppress100);
-    }
 
     @Override
     public void onAccountRemoved(AccountItem accountItem) {
         chatInputs.clear(accountItem.getAccount().toString());
-        privateChats.clear(accountItem.getAccount().toString());
-        sounds.clear(accountItem.getAccount().toString());
-        showText.clear(accountItem.getAccount().toString());
-        makeVibro.clear(accountItem.getAccount().toString());
-        notifyVisible.clear(accountItem.getAccount().toString());
-        suppress100.clear(accountItem.getAccount().toString());
-    }
-
-    /**
-     * Whether to save history for specified chat.
-     *
-     * @param account
-     * @param user
-     * @return
-     */
-    public boolean isSaveMessages(AccountJid account, UserJid user) {
-        return privateChats.get(account.toString(), user.toString()) != PRIVATE_CHAT;
-    }
-
-    /**
-     * Sets whether to save history for specified chat.
-     *
-     * @param account
-     * @param user
-     * @param save
-     */
-    public void setSaveMessages(final AccountJid account, final UserJid user,
-                                final boolean save) {
-        if (save) {
-            privateChats.remove(account.toString(), user.toString());
-        } else {
-            privateChats.put(account.toString(), user.toString(), PRIVATE_CHAT);
-        }
-        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
-            @Override
-            public void run() {
-                if (save) {
-                    PrivateChatTable.getInstance().remove(account.toString(), user.toString());
-                } else {
-                    PrivateChatTable.getInstance().write(account.toString(), user.toString());
-                }
-            }
-        });
     }
 
     /**
@@ -338,155 +136,6 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
             chatInputs.put(account.toString(), user.toString(), chat);
         }
         chat.setTyped(typedMessage, selectionStart, selectionEnd);
-    }
-
-    /**
-     * @param account
-     * @param user
-     * @return Whether notification in visible chat must be shown. Common value
-     * if there is no user specific value.
-     */
-    public boolean isNotifyVisible(AccountJid account, UserJid user) {
-        Boolean value = notifyVisible.get(account.toString(), user.toString());
-        if (value == null) {
-            return SettingsManager.eventsVisibleChat();
-        }
-        return value;
-    }
-
-    public void setNotifyVisible(final AccountJid account, final UserJid user, final boolean value) {
-        notifyVisible.put(account.toString(), user.toString(), value);
-        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
-            @Override
-            public void run() {
-                NotifyVisibleTable.getInstance().write(account.toString(), user.toString(), value);
-            }
-        });
-    }
-
-    /**
-     * @param account
-     * @param user
-     * @return Whether text of messages must be shown in notification area.
-     * Common value if there is no user specific value.
-     */
-    public boolean isShowText(AccountJid account, UserJid user) {
-        switch (getShowText(account, user)) {
-            case show:
-                return true;
-            case hide:
-                return false;
-            case default_settings:
-            default:
-                return SettingsManager.eventsShowText();
-        }
-    }
-
-    public boolean isShowTextOnMuc(AccountJid account, UserJid user) {
-        switch (getShowText(account, user)) {
-            case show:
-                return true;
-            case hide:
-                return false;
-            case default_settings:
-            default:
-                return SettingsManager.eventsShowTextOnMuc();
-        }
-    }
-
-    public ShowMessageTextInNotification getShowText(AccountJid account, UserJid user) {
-        ShowMessageTextInNotification showMessageTextInNotification = showText.get(account.toString(), user.toString());
-        if (showMessageTextInNotification == null) {
-            return ShowMessageTextInNotification.default_settings;
-        } else {
-            return showMessageTextInNotification;
-        }
-    }
-
-    public void setShowText(final AccountJid account, final UserJid user, final ShowMessageTextInNotification value) {
-        showText.put(account.toString(), user.toString(), value);
-        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
-            @Override
-            public void run() {
-                ShowTextTable.getInstance().write(account.toString(), user.toString(), value);
-            }
-        });
-    }
-
-    /**
-     * @param account
-     * @param user
-     * @return Whether vibro should be used while notification. Common value if
-     * there is no user specific value.
-     */
-    public boolean isMakeVibro(AccountJid account, UserJid user) {
-        Boolean value = makeVibro.get(account.toString(), user.toString());
-        if (value == null) {
-            return true;
-        }
-        return value;
-    }
-
-    public void setMakeVibro(final AccountJid account, final UserJid user, final boolean value) {
-        makeVibro.put(account.toString(), user.toString(), value);
-        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
-            @Override
-            public void run() {
-                VibroTable.getInstance().write(account.toString(), user.toString(), value);
-            }
-        });
-    }
-
-    /**
-     * @param account
-     * @param user
-     * @return Sound for notification. Common value if there is no user specific
-     * value.
-     */
-    public Uri getSound(AccountJid account, UserJid user, boolean isMUC) {
-        Uri value = sounds.get(account.toString(), user.toString());
-        if (value == null) {
-            if (isMUC) return SettingsManager.eventsSoundMuc();
-            return SettingsManager.eventsSound();
-        }
-        if (EMPTY_SOUND.equals(value)) {
-            return null;
-        }
-        return value;
-    }
-
-    public void setSound(final AccountJid account, final UserJid user, final Uri value) {
-        sounds.put(account.toString(), user.toString(), value == null ? EMPTY_SOUND : value);
-        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
-            @Override
-            public void run() {
-                SoundTable.getInstance().write(account.toString(), user.toString(),
-                        value == null ? EMPTY_SOUND : value);
-            }
-        });
-    }
-
-    /**
-     * @param account
-     * @param user
-     * @return Whether 'This Room is not Anonymous'-messages (Status Code 100) should be suppressed.
-     */
-    public boolean isSuppress100(AccountJid account, UserJid user) {
-        Boolean value = suppress100.get(account.toString(), user.toString());
-        if (value == null)
-            return SettingsManager.eventsSuppress100();
-        return value;
-    }
-
-    public void setSuppress100(final AccountJid account, final UserJid user,
-                             final boolean value) {
-        suppress100.put(account.toString(), user.toString(), value);
-        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
-            @Override
-            public void run() {
-                Suppress100Table.getInstance().write(account.toString(), user.toString(), value);
-            }
-        });
     }
 
     public void saveOrUpdateChatDataToRealm(final AbstractChat chat) {

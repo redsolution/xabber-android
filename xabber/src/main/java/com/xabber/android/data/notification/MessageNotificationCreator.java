@@ -30,7 +30,6 @@ import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
-import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.message.phrase.PhraseManager;
 import com.xabber.android.data.notification.custom_notification.CustomNotifyPrefsManager;
 import com.xabber.android.data.notification.custom_notification.NotifyPrefs;
@@ -219,9 +218,7 @@ public class MessageNotificationCreator {
     private boolean isNeedShowTextInNotification(MessageNotificationManager.Chat chat) {
         NotifyPrefs prefs = getCustomPrefs(chat);
         if (prefs != null) return prefs.isShowPreview();
-        else return chat.isGroupChat() ?
-                ChatManager.getInstance().isShowTextOnMuc(chat.getAccountJid(), chat.getUserJid())
-                : ChatManager.getInstance().isShowText(chat.getAccountJid(), chat.getUserJid());
+        else return chat.isGroupChat() ? SettingsManager.eventsShowTextOnMuc() : SettingsManager.eventsShowText();
     }
 
     private int getMessageCount(List<MessageNotificationManager.Chat> chats) {
@@ -287,14 +284,10 @@ public class MessageNotificationCreator {
         if (chat != null && (chat.getFirstNotification() || !SettingsManager.eventsFirstOnly())) {
 
             Uri sound = getSound(notifChat, text, isMUC);
-            boolean makeVibration = ChatManager.getInstance().isMakeVibro(account, user);
             boolean led = isMUC ? SettingsManager.eventsLightningForMuc() : SettingsManager.eventsLightning();
 
             com.xabber.android.data.notification.NotificationManager.getInstance()
                     .setNotificationDefaults(notificationBuilder, led, sound, AudioManager.STREAM_NOTIFICATION);
-
-            // vibration
-            if (makeVibration) setVibration(notifChat, isMUC, context, notificationBuilder);
         }
     }
 

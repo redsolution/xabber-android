@@ -14,15 +14,13 @@
  */
 package com.xabber.android.data.roster;
 
-import android.database.Cursor;
-
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.listeners.OnAccountRemovedListener;
-import com.xabber.android.data.database.sqlite.GroupTable;
+import com.xabber.android.data.database.repositories.GroupRepository;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.NestedMap;
 import com.xabber.android.data.entity.NestedMap.Entry;
@@ -88,33 +86,9 @@ public class GroupManager implements OnLoadListener, OnAccountRemovedListener,
 
     @Override
     public void onLoad() {
-        final NestedMap<GroupConfiguration> groupConfigurations = new NestedMap<>();
-        Cursor cursor = GroupTable.getInstance().list();
-        try {
-            if (cursor.moveToFirst()) {
-                do {
-                    GroupConfiguration rosterConfiguration = new GroupConfiguration();
-                    rosterConfiguration.setExpanded(GroupTable
-                            .isExpanded(cursor));
-                    rosterConfiguration.setShowOfflineMode(GroupTable
-                            .getShowOfflineMode(cursor));
-                    groupConfigurations.put(GroupTable.getAccount(cursor),
-                            GroupTable.getGroup(cursor), rosterConfiguration);
-                } while (cursor.moveToNext());
-            }
-        } finally {
-            cursor.close();
-        }
-        Application.getInstance().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                onLoaded(groupConfigurations);
-            }
+        Application.getInstance().runOnUiThread(() -> {
+            this.groupConfigurations.addAll(GroupRepository.getGroupConfigurationsFromRealm());
         });
-    }
-
-    private void onLoaded(NestedMap<GroupConfiguration> groupConfigurations) {
-        this.groupConfigurations.addAll(groupConfigurations);
     }
 
     @Override
@@ -172,7 +146,7 @@ public class GroupManager implements OnLoadListener, OnAccountRemovedListener,
             groupConfigurations.put(account.toString(), group, configuration);
         }
         configuration.setExpanded(expanded);
-        requestToWriteGroup(account, group, configuration.isExpanded(),
+        GroupRepository.saveGroupToRealm(account.toString(), group, expanded,
                 configuration.getShowOfflineMode());
     }
 
@@ -185,8 +159,8 @@ public class GroupManager implements OnLoadListener, OnAccountRemovedListener,
             groupConfigurations.put(account.toString(), group, configuration);
         }
         configuration.setShowOfflineMode(showOfflineMode);
-        requestToWriteGroup(account, group, configuration.isExpanded(),
-                configuration.getShowOfflineMode());
+        GroupRepository.saveGroupToRealm(account.toString(), group, configuration.isExpanded(),
+                showOfflineMode);
     }
 
     /**
@@ -203,16 +177,6 @@ public class GroupManager implements OnLoadListener, OnAccountRemovedListener,
                 }
             }
         }
-    }
-
-    private void requestToWriteGroup(final AccountJid account, final String group,
-                                     final boolean expanded, final ShowOfflineMode showOfflineMode) {
-        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
-            @Override
-            public void run() {
-                GroupTable.getInstance().write(account.toString(), group, expanded, showOfflineMode);
-            }
-        });
     }
 
 }

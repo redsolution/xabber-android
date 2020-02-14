@@ -36,9 +36,9 @@ import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.StanzaSender;
 import com.xabber.android.data.connection.listeners.OnDisconnectListener;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
-import com.xabber.android.data.database.messagerealm.Attachment;
-import com.xabber.android.data.database.messagerealm.ForwardId;
-import com.xabber.android.data.database.messagerealm.MessageItem;
+import com.xabber.android.data.database.realmobjects.Attachment;
+import com.xabber.android.data.database.realmobjects.ForwardId;
+import com.xabber.android.data.database.realmobjects.MessageItem;
 import com.xabber.android.data.database.repositories.MessageRepository;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
@@ -1002,7 +1002,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
 //                Application.getInstance().runOnUiThread(new Runnable() {
 //                    @Override
 //                    public void run() {
-//                        // fix for saving to realm
+//                        // fix for saving to realmobjects
 //                        String text;
 //                        if (statusText != null) {
 //                            if (!statusText.isEmpty() && statusText.length() > 0) text = statusText;
@@ -1025,7 +1025,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
 //                Application.getInstance().runOnUiThread(new Runnable() {
 //                    @Override
 //                    public void run() {
-//                        // fix for saving to realm
+//                        // fix for saving to realmobjects
 //                        String text;
 //                        if (statusText != null) {
 //                            if (!statusText.isEmpty() && statusText.length() > 0) text = statusText;
