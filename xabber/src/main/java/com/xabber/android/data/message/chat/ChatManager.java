@@ -26,8 +26,8 @@ import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.listeners.OnAccountRemovedListener;
 import com.xabber.android.data.database.realmobjects.ChatDataRealm;
 import com.xabber.android.data.database.realmobjects.NotificationStateRealm;
+import com.xabber.android.data.database.repositories.PrivateChatRepository;
 import com.xabber.android.data.database.sqlite.NotifyVisibleTable;
-import com.xabber.android.data.database.sqlite.PrivateChatTable;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.NestedMap;
@@ -36,11 +36,7 @@ import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.ChatData;
 import com.xabber.android.data.message.NotificationState;
-import com.xabber.android.data.roster.RosterManager;
 
-import org.jxmpp.stringprep.XmppStringprepException;
-
-import java.util.HashSet;
 import java.util.Set;
 
 import io.realm.Realm;
@@ -73,11 +69,6 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
      */
     private final NestedMap<Boolean> notifyVisible;
     /**
-     * Whether 'This room is not anonymous'-messages (Status Code 100) should be suppressed
-     */
-    private final NestedMap<Boolean> suppress100;
-
-    /**
      * chat scroll states - position of message list
      */
 
@@ -93,33 +84,13 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
         chatInputs = new NestedMap<>();
         privateChats = new NestedMap<>();
         notifyVisible = new NestedMap<>();
-        suppress100 = new NestedMap<>();
     }
 
     @Override
     public void onLoad() {
-        final Set<BaseEntity> privateChats = new HashSet<>();
-        final NestedMap<Boolean> notifyVisible = new NestedMap<>();
-        final NestedMap<Boolean> suppress100 = new NestedMap<>();
-        Cursor cursor;
-        cursor = PrivateChatTable.getInstance().list();
-        try {
-            if (cursor.moveToFirst()) {
-                do {
-                    try {
-                        privateChats.add(RosterManager.getInstance().getAbstractContact(
-                                AccountJid.from(PrivateChatTable.getAccount(cursor)),
-                                UserJid.from(PrivateChatTable.getUser(cursor))
-                        ));
 
-                    } catch (UserJid.UserJidCreateException | XmppStringprepException e) {
-                        LogManager.exception(this, e);
-                    }
-                } while (cursor.moveToNext());
-            }
-        } finally {
-            cursor.close();
-        }
+        final NestedMap<Boolean> notifyVisible = new NestedMap<>();
+        Cursor cursor;
 
         cursor = NotifyVisibleTable.getInstance().list();
         try {
@@ -139,19 +110,18 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
         Application.getInstance().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                onLoaded(privateChats, notifyVisible, suppress100);
+                onLoaded(PrivateChatRepository.getSetOfAllBasePrivateChatEntitiesFromRealm()
+                        , notifyVisible);
             }
         });
     }
 
-    private void onLoaded(Set<BaseEntity> privateChats, NestedMap<Boolean> notifyVisible,
-                          NestedMap<Boolean> suppress100) {
+    private void onLoaded(Set<BaseEntity> privateChats, NestedMap<Boolean> notifyVisible) {
         for (BaseEntity baseEntity : privateChats) {
             this.privateChats.put(baseEntity.getAccount().toString(),
                     baseEntity.getUser().toString(), PRIVATE_CHAT);
         }
         this.notifyVisible.addAll(notifyVisible);
-        this.suppress100.addAll(suppress100);
     }
 
     @Override
@@ -159,7 +129,6 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
         chatInputs.clear(accountItem.getAccount().toString());
         privateChats.clear(accountItem.getAccount().toString());
         notifyVisible.clear(accountItem.getAccount().toString());
-        suppress100.clear(accountItem.getAccount().toString());
     }
 
     /**
@@ -187,16 +156,16 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
         } else {
             privateChats.put(account.toString(), user.toString(), PRIVATE_CHAT);
         }
-        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
-            @Override
-            public void run() {
-                if (save) {
-                    PrivateChatTable.getInstance().remove(account.toString(), user.toString());
-                } else {
-                    PrivateChatTable.getInstance().write(account.toString(), user.toString());
-                }
-            }
-        });
+//        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
+//            @Override
+//            public void run() {
+//                if (save) {
+//                    PrivateChatTable.getInstance().remove(account.toString(), user.toString());
+//                } else {
+//                    PrivateChatTable.getInstance().write(account.toString(), user.toString());
+//                }
+//            }
+//        });
     }
 
     /**
