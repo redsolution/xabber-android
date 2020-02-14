@@ -17,10 +17,10 @@ package com.xabber.android.data;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Handler;
+
 import androidx.annotation.NonNull;
 import androidx.multidex.MultiDex;
 
-import com.xabber.android.BuildConfig;
 import com.xabber.android.R;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.ScreenManager;
@@ -28,7 +28,6 @@ import com.xabber.android.data.connection.CertificateManager;
 import com.xabber.android.data.connection.ConnectionManager;
 import com.xabber.android.data.connection.NetworkManager;
 import com.xabber.android.data.connection.ReconnectionManager;
-import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.extension.attention.AttentionManager;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.avatar.AvatarStorage;
@@ -319,7 +318,6 @@ public class TestApplication extends android.app.Application {
         addManager(SyncManager.getInstance());
         addManager(SettingsManager.getInstance());
         addManager(LogManager.getInstance());
-        addManager(DatabaseManager.getInstance());
         addManager(AvatarStorage.getInstance());
         addManager(OTRManager.getInstance());
         addManager(ConnectionManager.getInstance());
