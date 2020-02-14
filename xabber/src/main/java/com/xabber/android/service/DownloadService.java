@@ -213,7 +213,7 @@ public class DownloadService extends IntentService {
     }
 
     private static String getDownloadDirPath() {
-        return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath()
+        return Environment.getExternalStorageDirectory().getPath()
                 + File.separator + XABBER_DIR;
     }
 
