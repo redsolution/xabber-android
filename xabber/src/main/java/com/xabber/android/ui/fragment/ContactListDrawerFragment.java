@@ -147,6 +147,7 @@ public class ContactListDrawerFragment extends Fragment implements View.OnClickL
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(accountListAdapter);
+        recyclerView.setNestedScrollingEnabled(false);
 
         ivReorder = (ImageView) view.findViewById(R.id.ivReorder);
         ivReorder.setOnClickListener(this);
