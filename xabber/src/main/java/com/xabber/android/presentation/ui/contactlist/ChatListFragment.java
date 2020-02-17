@@ -45,7 +45,6 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.CommonState;
 import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.MessageItem;
-import com.xabber.android.data.database.repositories.MessageRepository;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
@@ -133,6 +132,8 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
     private ImageView toolbarStatusIv;
     private ImageView toolbarSearchIv;
 
+    private int unreadCount;
+
     private Subscription realmChangeListenerSubscription;
 
     public interface ChatListFragmentListener{
@@ -188,7 +189,9 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
     @Override
     public void onResume() {
         Application.getInstance().addUIListener(OnChatStateListener.class, this);
-        if (MessageRepository.getAllUnreadMessagesCount() == 0){
+
+        updateUnreadCount();
+        if (unreadCount == 0){
             onStateSelected(ChatListState.recent);
         }
 
@@ -539,12 +542,12 @@ public class ChatListFragment extends Fragment implements ChatListItemListener, 
     }
 
     public void updateUnreadCount() {
-//        int unreadCount = 0;
-//        for (AbstractChat abstractChat : MessageManager.getInstance().getChatsOfEnabledAccount())
-//            if (abstractChat.notifyAboutMessage() && !abstractChat.isArchived())
-//                unreadCount += abstractChat.getUnreadMessageCount();
-//        if (chatListFragmentListener != null)
-//            chatListFragmentListener.onUnreadChanged(unreadCount);
+        unreadCount = 0;
+        for (AbstractChat abstractChat : MessageManager.getInstance().getChatsOfEnabledAccount())
+            if (abstractChat.notifyAboutMessage() && !abstractChat.isArchived())
+                unreadCount += abstractChat.getUnreadMessageCount();
+        if (chatListFragmentListener != null)
+            chatListFragmentListener.onUnreadChanged(unreadCount);
     }
 
     @Override
