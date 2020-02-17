@@ -478,6 +478,12 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
         createChatForAcceptingOutgoingRequest(account, from);
     }
 
+    public void clearSubscriptionRequestNotification(AccountJid account, UserJid from) {
+        if (subscriptionRequestProvider.get(account, from) != null) {
+            subscriptionRequestProvider.remove(account, from);
+        }
+    }
+
     public void onAuthorized(ConnectionItem connection) {
         try {
             resendPresence(connection.getAccount());

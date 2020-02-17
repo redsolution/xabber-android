@@ -1916,6 +1916,7 @@ public class ChatFragment extends FileInteractionFragment implements PopupMenu.O
             inflateNewContactLayout(subscriptionState, inRoster);
         } else {
             if (newContactLayout != null) newContactLayout.setVisibility(View.GONE);
+            PresenceManager.getInstance().clearSubscriptionRequestNotification(account, user);
         }
     }
 
