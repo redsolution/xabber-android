@@ -149,7 +149,7 @@ public abstract class ConnectionItem {
     public boolean connect() {
         LogManager.i(logTag, "connect");
 
-        if(getState() == ConnectionState.disconnecting) {
+        if(getState() == ConnectionState.disconnecting || getState() == ConnectionState.waiting) {
             // if we wanted to connect during the disconnection process, we
             // need to make sure our connection settings aren't outdated.
             checkIfConnectionIsOutdated();
@@ -303,8 +303,11 @@ public abstract class ConnectionItem {
     // recreates the connection if it's outdated
     public void checkIfConnectionIsOutdated() {
         if (connectionIsOutdated) {
+            LogManager.d(logTag, "connection is outdated, creating a new one");
             connectionIsOutdated = false;
             createNewConnection();
+        } else {
+            LogManager.d(logTag, "connection is not outdated");
         }
     }
 
